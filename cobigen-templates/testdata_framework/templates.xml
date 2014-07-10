@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+-->
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
+	<templates>
+		<template id="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.ftl" mergeStrategy="javamerge" />
+		<template id="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.ftl" mergeStrategy="javamerge_override" />
+		<template id="P" destinationPath="src/test/java/${variables.rootPackage}/common/builders/P.java" templateFile="P.ftl" />
+	</templates>
+
+	<increments>
+		<increment id="testdata_factory" description="Testdata Factory">
+			<templateRef idref="entityBuilder"/>
+			<templateRef idref="entityBuilder_fillMandatoryFields"/>
+			<templateRef idref="P"/>
+		</increment>
+	</increments>
+</templatesConfiguration>

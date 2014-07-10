@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+--> 
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+	<triggers>
+		<trigger id="persistenceEntity" type="java" templateFolder="persistenceEntity_templates" >
+			<matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
+				<variableAssignment type="regex" key="rootPackage" value="1" />
+				<variableAssignment type="regex" key="component" value="2" />
+				<variableAssignment type="regex" key="pojoName" value="3" />
+			</matcher>
+		</trigger>
+		<trigger id="testdataFramework" type="java" templateFolder="testdata_framework" >
+			<matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
+	            <variableAssignment type="regex" key="rootPackage" value="1" />
+	            <variableAssignment type="regex" key="component" value="2" />
+	            <variableAssignment type="regex" key="pojoName" value="3" />
+	        </matcher>
+        </trigger>
+        <trigger id="testDocumentation" type="java" templateFolder="testDocumentation" >
+	        <!--  <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivetest\.systemtest" />-->
+	        <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivetest\.awltest" />
+	        <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivega\.test\.komptest" />
+	        <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivega\.test\.kompinttest" />
+			<matcher type="fqn" value="de\.bund\.bva\.visa\.vivetest\.(systemtest|awltest)\.([^\.]+)\.([^\.]+)\.[^\.]+">
+	            <variableAssignment type="regex" key="bereich" value="2" />
+	            <variableAssignment type="regex" key="unterbereich" value="3" />
+	        </matcher>
+	        <matcher type="fqn" value="de\.bund\.bva\.visa\.vivega\.test\.(komptest|kompinttest)\.([^\.]+)\.([^\.]+)\.[^\.]+">
+	            <variableAssignment type="regex" key="bereich" value="2" />
+	            <variableAssignment type="regex" key="unterbereich" value="3" />
+	        </matcher>
+        </trigger>
+	</triggers>
+</contextConfiguration>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://capgemini.com" xmlns:tns="http://capgemini.com"
+        elementFormDefault="qualified">
+	
+	<xs:include schemaLocation="template.xsd"/>
+	<xs:include schemaLocation="increment.xsd"/>
+	
+	<xs:element name="templatesConfiguration">
+        <xs:complexType>
+			<xs:sequence>
+				<xs:element name="templates" type="tns:templates" />
+				<xs:element name="increments" minOccurs="0" maxOccurs="1" type="tns:increments" />
+			</xs:sequence>
+		</xs:complexType>
+        
+        <xs:key name="templateId">
+            <xs:selector xpath="./templates/template" />
+            <xs:field xpath="@id" />
+        </xs:key>
+        <xs:keyref name="templateIdRef" refer="tns:templateId">
+            <xs:selector xpath="./increments/increment/templateRef" />
+            <xs:field xpath="@idref" />
+        </xs:keyref>
+        <xs:key name="incrementId">
+            <xs:selector xpath="./increments/increment" />
+            <xs:field xpath="@id" />
+        </xs:key>
+        <xs:keyref name="incrementIdRef" refer="tns:incrementId">
+            <xs:selector xpath="./increments/increment/incrementRef" />
+            <xs:field xpath="@idref" />
+        </xs:keyref>
+    </xs:element>	
+	
+	<xs:complexType name="templates">
+		<xs:sequence maxOccurs="unbounded" minOccurs="1">
+			<xs:element name="template" type="tns:template" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="increments">
+		<xs:sequence maxOccurs="unbounded" minOccurs="1">
+			<xs:element name="increment" type="tns:increment" />
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

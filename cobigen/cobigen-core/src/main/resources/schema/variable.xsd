@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://capgemini.com" xmlns:tns="http://capgemini.com"
+        elementFormDefault="qualified">
+
+	<xs:complexType name="variable">
+    	<xs:attribute name="name" use="required">
+    		<xs:simpleType>
+    			<xs:restriction base="xs:string">
+                    <xs:enumeration value="templatesRootPath" />
+					<xs:enumeration value="generationTargetRootPath" />
+                    <xs:enumeration value="rootPackage" />
+					<xs:enumeration value="componentName" />
+					<xs:enumeration value="pojoName" />
+    			</xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
+   		<xs:attribute name="value" use="required" type="xs:string" />
+    </xs:complexType>
+	
+</xs:schema>

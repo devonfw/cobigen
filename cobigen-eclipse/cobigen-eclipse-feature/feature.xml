@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="cobigen-eclipse-feature"
+      label="CobiGen Feature"
+      version="1.2.0.qualifier"
+      provider-name="Capgemini">
+
+   <description>
+      The CobiGen is an incremental generator which is able to generate at least every text-base contents using templates.
+The CobiGen is also capable of merging Java, XML and Property contents. The only necessary input is a valid compiling Java-Class.
+   </description>
+
+   <copyright>
+      Copyright © Capgemini 2013. All rights reserved.
+   </copyright>
+
+   <license url="">
+      Capgemini CobiGen License Agreement
+June 20, 2013
+
+The usage of this software is subject to the terms and conditions of the Capgemini CobiGen License Agreement. 
+To the extent that CobiGen contains software licensed under open source licenses, the respective license terms apply. The rights for using the open source software are granted directly by the respective owner of those rights as set forth in the corresponding open source license terms. 
+To the extent CobiGen contains Capgemini proprietary code, non-transferrable use rights are granted by Capgemini as set forth in the CobiGen License Agreement.
+   </license>
+
+   <plugin
+         id="cobigen-eclipse"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

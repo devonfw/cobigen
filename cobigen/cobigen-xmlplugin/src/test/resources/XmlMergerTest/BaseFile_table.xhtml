@@ -1,0 +1,43 @@
+<!--
+ Copyright © Capgemini 2013. All rights reserved.
+-->
+<!-- @author Capgemini, Thomas Rippl -->
+<div
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk">
+
+    <div class="tabelle_mitte_bestellung">
+
+		<h:dataTable id="bestellungen" forceId="true" value="#{model.alleOffenenBestellungen}"
+	      			 var="bestellungen" styleClass="order-table" headerClass="order-table-header"
+				     rowClasses="order-table-odd-row,order-table-even-row">
+			<h:column>
+				<!-- column header -->
+				<f:facet name="header">Bestellnummer</f:facet>
+				<!-- row record -->
+				#{bestellungen.id}
+			</h:column>
+			<h:column>
+				<f:facet name="header">Angebotsnummer</f:facet>
+				#{bestellungen.bestelltesAngebot.id}
+			</h:column>
+			<h:column>
+				<f:facet name="header">Angebotsname</f:facet>
+				#{bestellungen.bestelltesAngebot.name}
+			</h:column>
+			<h:column>
+				<f:facet name="header">Tisch</f:facet>
+				#{bestellungen.tischId}
+			</h:column>
+			<h:column>
+		    	<f:facet name="header">Fertig</f:facet>
+	     		<h:selectBooleanCheckbox value="#{model.markierteBestellungen[bestellungen.id]}" />
+	   		</h:column>
+		</h:dataTable>
+
+	</div>
+
+</div>

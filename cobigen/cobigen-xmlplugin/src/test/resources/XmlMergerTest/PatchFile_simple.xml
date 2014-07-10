@@ -1,0 +1,11 @@
+<!--
+ Copyright © Capgemini 2013. All rights reserved.
+-->
+<root>
+	<a>
+		<b id="1" text="neu" />
+		<c />
+	</a>
+	<b id="2"
+		text="neu" />
+</root>

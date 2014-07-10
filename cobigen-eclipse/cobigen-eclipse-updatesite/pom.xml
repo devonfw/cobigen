@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.capgemini</groupId>
+	<artifactId>cobigen-eclipse-updatesite</artifactId>
+	<name>CobiGen - Eclipse Plug-In UpdateSite</name>
+	<version>1.2.0-SNAPSHOT</version>
+	<packaging>eclipse-repository</packaging>
+
+	<parent>
+		<groupId>com.capgemini</groupId>
+		<artifactId>cobigen-eclipse-parent</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>${maven.eclipse_plugin.version}</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-extras.version}</version>
+				<configuration>
+					<archiveSite>true</archiveSite>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-director-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<id>create-product-distributions</id>
+						<goals>
+							<goal>materialize-products</goal>
+							<goal>archive-products</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- copy into deployment folder -->
+			<!--<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+		          <execution>
+		            <id>copy-resources</id>
+		            <phase>install</phase>
+		            <goals>
+		              <goal>copy-resources</goal>
+		            </goals>
+		            <configuration>
+		              <outputDirectory>${basedir}/../deployment</outputDirectory>
+		              <resources>          
+		                <resource>
+		                  <directory>target</directory>
+		                  <includes>
+		                  	<include>cobigen-eclipse-updatesite-*.zip</include>
+		                  </includes>
+		                </resource>
+		              </resources>
+		              <overwrite>true</overwrite>
+		            </configuration>            
+		          </execution>
+		        </executions>
+			</plugin>-->
+		</plugins>
+	</build>
+</project>

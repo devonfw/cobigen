@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright © Capgemini 2013. All rights reserved.
+-->
+<!-- @generated -->
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
+	parent="plisParentFlow">
+
+	<view-state id="startpageViewState">
+		<transition on="toTableOverview" to="tableOverviewMask" />
+		<transition on="toStaffMemberOverview" to="staffmemberOverviewMask" />
+
+		<transition on="back" to="end" />
+	</view-state>
+
+	<subflow-state id="tableOverviewMask" subflow="tableoverviewFlow">
+		<transition on="end" to="startpageViewState" />
+	</subflow-state>
+	
+	<subflow-state id="staffmemberOverviewMask" subflow="staffmemberoverviewFlow">
+		<transition on="end" to="startpageViewState" />
+	</subflow-state>
+
+	<end-state id="end"></end-state>
+
+</flow>

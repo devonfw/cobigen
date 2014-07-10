@@ -1,0 +1,10 @@
+<!--
+ Copyright © Capgemini 2013. All rights reserved.
+-->
+<root>
+	<a>
+		<b id="1" text="alt" />
+	</a>
+	<b id="2"
+		text="alt" />
+</root>
