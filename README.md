@@ -1,4 +1,4 @@
-tools-coby-gen
+CobiGen
 ==============
 
-Incremental Code Generator
+Code-based incremental Generator
