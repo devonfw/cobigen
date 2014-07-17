@@ -5,19 +5,19 @@
 	<groupId>com.capgemini</groupId>
 	<artifactId>cobigen-propertyplugin</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>CobiGen - Property File Plug-In</name>
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.capgemini</groupId>
 			<artifactId>cobigen-core</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
