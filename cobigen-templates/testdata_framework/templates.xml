@@ -5,12 +5,19 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
 	<templates>
 		<template id="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.ftl" mergeStrategy="javamerge" />
-		<template id="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.ftl" mergeStrategy="javamerge_override" />
+		<template id="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.ftl" mergeStrategy="javamerge_override" />
+		<template id="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.ftl" mergeStrategy="javamerge_override" />
 		<template id="P" destinationPath="src/test/java/${variables.rootPackage}/common/builders/P.java" templateFile="P.ftl" />
 	</templates>
 
 	<increments>
-		<increment id="testdata_factory" description="Testdata Factory">
+		<increment id="testdata_builder_persistable" description="Testdaten-Builder (persistable)">
+			<templateRef idref="entityBuilder"/>
+			<templateRef idref="entityBuilder_fillMandatoryFields"/>
+			<templateRef idref="entityBuilder_persistable"/>
+			<templateRef idref="P"/>
+		</increment>
+		<increment id="testdata_builder" description="Testdaten-Builder">
 			<templateRef idref="entityBuilder"/>
 			<templateRef idref="entityBuilder_fillMandatoryFields"/>
 			<templateRef idref="P"/>
