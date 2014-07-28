@@ -55,6 +55,8 @@
 
 <#macro insertIdObjectType>
 <#compress>
+<#assign ids=doc["/doc/pojo/attributes[isId='true']"]>
+<#if ids[0]??>
 <#assign idType=doc["/doc/pojo/attributes[isId='true']"].type[0]>
 <#if idType="int">
 Integer
@@ -62,6 +64,7 @@ Integer
 Character
 <#else>
 ${idType?cap_first}
+</#if>
 </#if>
 </#compress>
 </#macro>
