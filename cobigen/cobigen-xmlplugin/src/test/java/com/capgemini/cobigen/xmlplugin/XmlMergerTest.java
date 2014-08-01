@@ -81,4 +81,27 @@ public class XmlMergerTest {
                         .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
                                 + "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
     }
+
+    /**
+     * Tests whether merging of schemaLocations is not producing duplicates
+     * 
+     * @throws FileNotFoundException test fails
+     * @throws IOException test fails
+     * @throws MergeException test fails
+     */
+    @Test
+    public void testNoDuplicateNamespacesMerged() throws FileNotFoundException, IOException, MergeException {
+
+        File base = new File(testFileRootPath + "BaseFile_namespaces.xml");
+
+        XmlMerger merger = new XmlMerger("", new CompleteMergeAction());
+        String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(base)), "UTF-8");
+
+        Assert.assertFalse(
+                "Merge duplicates schema locations.",
+                mergedDoc
+                        .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                                + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+    }
+
 }
