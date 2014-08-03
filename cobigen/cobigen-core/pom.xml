@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright © Capgemini 2013. All rights reserved.
--->
+<!-- Copyright © Capgemini 2013. All rights reserved. -->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
@@ -10,7 +8,7 @@
 	<name>CobiGen</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
@@ -18,18 +16,18 @@
 	</parent>
 
 	<dependencies>
-		<!-- Corn Classpath Scanner -->
-		<dependency>
-			<groupId>net.sf.corn</groupId>
-			<artifactId>corn-cps</artifactId>
-			<version>1.1.7</version>
-		</dependency>
-		<!-- Helper library, especially for java reflection -->
+		<!-- Helper libraries, especially for java reflection -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>14.0.1</version>
+			<version>17.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.9-RC2</version>
+		</dependency>
+
 		<!-- FreeMarker engine -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -66,15 +64,14 @@
 			<artifactId>jdom</artifactId>
 			<version>1.1.3</version>
 		</dependency>
-		
+
 		<!-- Mocking Library for developer tests -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.9.5</version>
 			<scope>test</scope>
-			<!-- Hamcrest wird ausgeschlossen, weil JUnit die Hamcrest-Klassen 
-				beinhaltet. -->
+			<!-- Hamcrest wird ausgeschlossen, weil JUnit die Hamcrest-Klassen beinhaltet. -->
 			<exclusions>
 				<exclusion>
 					<groupId>org.hamcrest</groupId>
@@ -100,14 +97,14 @@
 				</executions>
 			</plugin>
 			<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.9</version>
-					<configuration>
-						<downloadSources>true</downloadSources>
-						<downloadJavadocs>true</downloadJavadocs>
-					</configuration>
-				</plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -196,17 +193,16 @@
 					<schemaDirectory>${basedir}/src/main/resources/schema</schemaDirectory>
 					<outputDirectory>${basedir}/src/generated/java</outputDirectory>
 					<includeSchemas>
-                        <includeSchema>contextConfiguration.xsd</includeSchema>
-                        <includeSchema>templatesConfiguration.xsd</includeSchema>
-                        <includeSchema>customBatches.xsd</includeSchema>
-                    </includeSchemas>
+						<includeSchema>contextConfiguration.xsd</includeSchema>
+						<includeSchema>templatesConfiguration.xsd</includeSchema>
+						<includeSchema>customBatches.xsd</includeSchema>
+					</includeSchemas>
 				</configuration>
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
