@@ -47,6 +47,11 @@ import com.google.common.collect.Maps;
 public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
+     * Assigning logger to SelectFileContentProvider
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
+
+    /**
      * The paths which are affected by the upcoming generation process
      */
     private Set<String> filteredPaths = new HashSet<String>();
@@ -62,26 +67,26 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     private Map<String, Object[]> _cacheChildren = Maps.newHashMap();
 
     /**
-     * Assigning logger to SelectFileContentProvider
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
-
-    /**
      * Filters the {@link TreeViewer} contents by the given paths
+     * 
      * @param paths
      * @author mbrunnli (14.02.2013)
      */
     public void filter(Set<String> paths) {
+
         filteredPaths = new HashSet<String>(paths);
         _cacheChildren.clear();
+        HierarchicalTreeOperator.resetCache();
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public Object[] getElements(Object inputElement) {
+
         Object[] result = new Object[0];
         if (inputElement instanceof IProject[]) {
             // hack due to bug 9262 (see javadoc of getElements)
@@ -92,8 +97,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 } catch (JavaModelException e) {
                     // Ignore (only usablility issue)
                     LOG.error(
-                        "An internal java model exception occured while retrieving the package fragment roots for project '{}'.",
-                        jProj.getElementName(), e);
+                            "An internal java model exception occured while retrieving the package fragment roots for project '{}'.",
+                            jProj.getElementName(), e);
                 }
                 result = new IJavaProject[] { jProj };
             } else {
@@ -105,10 +110,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public Object[] getChildren(Object parentElement) {
+
         if (parentElement instanceof IContainer) {
 
             // check cache
@@ -119,18 +126,16 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
             try {
                 Set<Object> affectedChildren =
-                    new HashSet<Object>(
-                        Arrays
-                            .asList(getAffectedChildren(getNoneDuplicateResourceChildren((IContainer) parentElement))));
+                        new HashSet<Object>(
+                                Arrays.asList(getAffectedChildren(getNoneDuplicateResourceChildren((IContainer) parentElement))));
 
                 // Add all non existent but targeting resources using Mocks
                 affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
-                _cacheChildren.put(((IContainer) parentElement).getFullPath().toString(),
-                    affectedChildren.toArray());
+                _cacheChildren.put(((IContainer) parentElement).getFullPath().toString(), affectedChildren.toArray());
                 return affectedChildren.toArray();
             } catch (CoreException e) {
                 LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
-                    ((IContainer) parentElement).getName(), e);
+                        ((IContainer) parentElement).getName(), e);
             }
         } else if (parentElement instanceof IParent && parentElement instanceof IJavaElement) {
 
@@ -141,15 +146,18 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
 
             try {
+                List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
+
                 List<Object> children = new ArrayList<Object>();
                 if (parentElement instanceof IPackageFragmentRoot) {
                     children =
-                        HierarchicalTreeOperator.getPackageChildren((IPackageFragmentRoot) parentElement);
+                            HierarchicalTreeOperator.getPackageChildren((IPackageFragmentRoot) parentElement,
+                                    stubbedChildren);
                 } else if (parentElement instanceof IPackageFragment) {
                     if (!((IPackageFragment) parentElement).isDefaultPackage()) {
                         children.clear();
-                        children.addAll(HierarchicalTreeOperator
-                            .getPackageChildren((IPackageFragment) parentElement));
+                        children.addAll(HierarchicalTreeOperator.getPackageChildren((IPackageFragment) parentElement,
+                                stubbedChildren));
                     }
                 } else if (parentElement instanceof IParent && !(parentElement instanceof ICompilationUnit)) {
                     IJavaElement[] jChildren = ((IParent) parentElement).getChildren();
@@ -176,14 +184,13 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
                 Set<Object> affectedChildrenList = new HashSet<Object>(Arrays.asList(affectedChildren));
                 // Add all non existent but targeting resources using Mocks
-                affectedChildrenList.addAll(stubNonExistentChildren((IJavaElement) parentElement, true));
+                // affectedChildrenList.addAll(stubNonExistentChildren((IJavaElement) parentElement, true));
 
-                _cacheChildren.put(((IJavaElement) parentElement).getPath().toString(),
-                    affectedChildrenList.toArray());
+                _cacheChildren.put(((IJavaElement) parentElement).getPath().toString(), affectedChildrenList.toArray());
                 return affectedChildrenList.toArray();
             } catch (CoreException e) {
                 LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
-                    ((IJavaElement) parentElement).getElementName(), e);
+                        ((IJavaElement) parentElement).getElementName(), e);
             }
         }
 
@@ -192,56 +199,84 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Mocks all non existent Packages, which are selected to be generated and returns all mocked packages
-     * @param parentElement
-     *            parent {@link IJavaElement} to retrieve the children from
-     * @param evaluateChildren
-     *            states whether the children should be retrieved recursively
+     * 
+     * @param parentElement parent {@link IJavaElement} to retrieve the children from
+     * @param evaluateChildren states whether the children should be retrieved recursively
      * @return List of {@link IPackageFragment}s, which will be mocked
      * @throws JavaModelException
      * @author mbrunnli (01.04.2014)
      */
     private List<Object> stubNonExistentChildren(Object parentElement, boolean evaluateChildren)
-        throws JavaModelException {
+            throws JavaModelException {
+
         List<Object> stubbedChildren = new LinkedList<Object>();
         if (parentElement instanceof IJavaElement) {
+
+            if (parentElement instanceof IPackageFragment && ((IPackageFragment) parentElement).isDefaultPackage()) {
+                return Lists.newArrayList();// a default package cannot have packages as children
+            }
+
             for (String path : getNonExistentChildren(((IJavaElement) parentElement).getPath())) {
 
-                String elementName = path.substring(path.lastIndexOf("/") + 1);
-                IPath elementpath =
-                    ((IJavaElement) parentElement).getPath().addTrailingSeparator().append(elementName);
+                String atomicElementName = path.substring(path.lastIndexOf("/") + 1);
+                IPath elementpath = new Path(path);
 
                 IJavaElementStub javaElementStub;
-                if (elementName.contains(".")) {
+                String debugInfo;
+                if (atomicElementName.contains(".")) {
+                    // Create CompilationUnit
+
                     javaElementStub = new ICompilationUnitStub();
                     javaElementStub.setElementType(IJavaElement.COMPILATION_UNIT);
+                    debugInfo = "COMPILATION_UNIT";
+                    javaElementStub.setElementName(elementpath.lastSegment());
+                    javaElementStub.setPath(elementpath);
                 } else {
-                    if (parentElement instanceof IPackageFragment
-                        && ((IPackageFragment) parentElement).isDefaultPackage()) {
-                        continue; // a default package cannot have packages as children
+                    // check whether the path fits any existing package fragment root
+                    boolean pathWithinExistingPackageFragmentRoot = false;
+                    for (IPackageFragmentRoot root : _cachePackageFragmentRoots) {
+                        if (!root.isReadOnly() && path.startsWith(root.getPath().toString())) {
+                            pathWithinExistingPackageFragmentRoot = true;
+                            break;
+                        }
                     }
+
+                    // TODO create non-java resource
+                    // If path is not within an existing package fragment root, we cannot create packages for it
+                    if (!pathWithinExistingPackageFragmentRoot)
+                        continue;
+
                     javaElementStub = new IPackageFragmentStub();
                     javaElementStub.setElementType(IJavaElement.PACKAGE_FRAGMENT);
+                    debugInfo = "PACKAGE_FRAGMENT";
                     ((IPackageFragmentStub) javaElementStub).setNonJavaResources(new Object[0]); // TODO check
                                                                                                  // simulated
+
+                    javaElementStub.setPath(elementpath);
+
+                    IJavaElement parent = determineJavaModelParent((IJavaElement) parentElement, javaElementStub);
+                    IPath packagePath = elementpath.removeFirstSegments(parent.getPath().segmentCount());
+                    packagePath.removeTrailingSeparator();
+                    String elementName = packagePath.toString().replaceAll("/", ".");
+                    javaElementStub.setElementName(elementName);
                 }
-                javaElementStub.setPath(elementpath);
+
+                if (((IJavaElement) parentElement) instanceof IPackageFragment) {
+                    javaElementStub.setParent(((IJavaElement) parentElement).getParent());
+                } else {
+                    javaElementStub.setParent(determineJavaModelParent((IJavaElement) parentElement, javaElementStub));
+                }
 
                 IJavaElement[] javaChildren = new IJavaElement[0];
                 if (evaluateChildren) {
                     Object[] childrenArr = stubNonExistentChildren(javaElementStub, false).toArray();
-
                     javaChildren = Arrays.copyOf(childrenArr, childrenArr.length, IJavaElement[].class);
                 }
-
-                javaElementStub.setElementName(elementName);
                 javaElementStub.setChildren(javaChildren);
-                if (((IJavaElement) parentElement) instanceof IPackageFragment) {
-                    javaElementStub.setParent(((IJavaElement) parentElement).getParent());
-                } else {
-                    javaElementStub.setParent((IJavaElement) parentElement);
-                }
 
                 stubbedChildren.add(javaElementStub);
+                LOG.debug("Stub created for {} with element name '{}' and path '{}'", debugInfo,
+                        javaElementStub.getElementName(), javaElementStub.getPath().toString());
             }
         } else if (parentElement instanceof IResource) {
             for (String path : getNonExistentChildren(((IResource) parentElement).getFullPath())) {
@@ -255,7 +290,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
                 String elementName = path.substring(path.lastIndexOf("/") + 1);
                 resourceStub.setFullPath(((IResource) parentElement).getFullPath().addTrailingSeparator()
-                    .append(elementName));
+                        .append(elementName));
                 resourceStub.setName(elementName);
 
                 stubbedChildren.add(resourceStub);
@@ -265,21 +300,62 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
+     * TODO mbrunnli
+     * 
+     * @param parent
+     * @param child
+     * @return
+     */
+    private IJavaElement determineJavaModelParent(IJavaElement parent, IJavaElementStub child) {
+
+        if (child instanceof IPackageFragmentStub) {
+            // parent should be the source folder
+            if (parent instanceof IJavaProject) {
+                // cache is correctly initialized and filled because of the invariant, that getElements will be called
+                // before getChildren
+                for (IPackageFragmentRoot root : _cachePackageFragmentRoots) {
+                    if (!root.isReadOnly() && child.getPath().toString().startsWith(root.getPath().toString())) {
+                        return root;
+                    }
+                }
+            } else if (parent instanceof IPackageFragmentRoot) {
+                return parent;
+            } else if (parent instanceof IPackageFragment) {
+                // invariant: we only consider children of the parent, so the child has to be in the same source
+                // folder as the parent
+                return parent.getParent();
+            }
+        } else if (child instanceof ICompilationUnitStub) {
+            // invariant: we only consider children of the parent, so the compilation unit has to be right within the
+            // parent, which has to be a package fragment
+            return parent;
+        }
+        LOG.error("Unhandled exceptional case! Needs further investigation - Parent: {} Child: {}", parent.getClass()
+                .getCanonicalName(), child.getClass().getCanonicalName());
+        throw new IllegalArgumentException("Unhandled exceptional case! Needs further investigation.");
+    }
+
+    /**
+     * TODO
+     * 
      * @param parentPath
      * @return the list of paths for all non existent but addressed children
      * @author mbrunnli (01.04.2014)
      */
     private List<String> getNonExistentChildren(IPath parentPath) {
+
         List<String> paths = new LinkedList<String>();
         for (String fp : filteredPaths) {
             IPath filteredPath = new Path(fp);
             if (parentPath.isPrefixOf(filteredPath)) {
                 filteredPath = filteredPath.removeFirstSegments(parentPath.segmentCount());
-                if (filteredPath.segmentCount() > 0) {
-                    IPath newChildPath = new Path(parentPath.toString());
+                IPath newChildPath = new Path(parentPath.toString());
+                int filteredPathLength = filteredPath.segmentCount();
+                for (int i = 0; i < filteredPathLength; i++) {
                     newChildPath = newChildPath.addTrailingSeparator().append(filteredPath.segment(0));
+                    filteredPath = filteredPath.removeFirstSegments(1);
                     if (!ResourcesPlugin.getWorkspace().getRoot().exists(newChildPath)
-                        && !paths.contains(newChildPath.toString())) {
+                            && !paths.contains(newChildPath.toString())) {
                         paths.add(newChildPath.toString());
                     }
                 }
@@ -290,47 +366,56 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public Object getParent(Object element) {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public boolean hasChildren(Object element) {
+
         return getChildren(element).length > 0;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public void dispose() {
+
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (13.02.2013)
      */
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+
     }
 
     /**
      * Retrieves all non package children
-     * @param parent
-     *            the children should be retrieved for
+     * 
+     * @param parent the children should be retrieved for
      * @return all non package children
      * @throws CoreException
      * @author mbrunnli (14.02.2013)
      */
     private Set<Object> getNonPackageChildren(IParent parent) throws CoreException {
+
         Set<Object> children = new HashSet<Object>();
         for (IJavaElement c : parent.getChildren()) {
             if (!(c instanceof IPackageFragment) && !(c instanceof IPackageFragmentRoot)) {
@@ -349,13 +434,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Returns all children of the given parent {@link IResource} if and only if it has no corresponding
      * {@link IJavaElement} determined by {@link JavaCore#create(org.eclipse.core.resources.IResource)}
-     * @param parent
-     *            {@link IResource} the children should be determined
+     * 
+     * @param parent {@link IResource} the children should be determined
      * @return all {@link IResource} children which have no {@link IJavaElement} representation
      * @throws CoreException
      * @author mbrunnli (04.03.2013)
      */
     private List<Object> getNoneDuplicateResourceChildren(IContainer parent) throws CoreException {
+
         List<Object> children = new ArrayList<Object>();
         IResource[] resources = parent.members();
         for (IResource child : resources) {
@@ -382,12 +468,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * @param children
-     *            a list of children which should be filtered
+     * @param children a list of children which should be filtered
      * @return all children affected by the generation process
      * @author mbrunnli (14.02.2013)
      */
     private Object[] getAffectedChildren(List<Object> children) {
+
         List<Object> affectedChildren = new ArrayList<Object>();
         for (Object e : children) {
             if (e instanceof IJavaElement && isElementToBeShown(((IJavaElement) e).getPath())) {
@@ -401,13 +487,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Checks whether the given path is affected by the generation
-     * @param fullPath
-     *            path of the current element
+     * 
+     * @param fullPath path of the current element
      * @return true, if the path is affected by any template generation<br>
      *         false, otherwise
      * @author mbrunnli (14.02.2013)
      */
     private boolean isElementToBeShown(IPath fullPath) {
+
         for (String s : filteredPaths) {
             if (s.startsWith(fullPath.toString()) || fullPath.toString().contains("MOCK")) {
                 return true;
@@ -418,14 +505,15 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Checks whether the given path is defined within an {@link IPackageFragmentRoot} or is part of one
-     * @param path
-     *            to be checked
-     * @return <code>true</code> if the path starts with the path of any {@link IPackageFragmentRoot} or is
-     *         contained in it<br>
+     * 
+     * @param path to be checked
+     * @return <code>true</code> if the path starts with the path of any {@link IPackageFragmentRoot} or is contained in
+     *         it<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (11.03.2013)
      */
     private boolean isPartOfAnySourceFolder(String path) {
+
         for (IPackageFragmentRoot root : _cachePackageFragmentRoots) {
             if (root.getPath().toString().contains(path)) {
                 return true;
@@ -436,12 +524,13 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Checks whether the given path is part of any filtered path which is not defined within a source folder
-     * @param path
-     *            to be checked
+     * 
+     * @param path to be checked
      * @return <code>true</code> if the given path is not defined within any source folder
      * @author mbrunnli (12.03.2013)
      */
     private boolean isPartOfAnyNonJavaPath(String path) {
+
         for (String resourcePath : getNonJavaResourcePaths()) {
             if (resourcePath.startsWith(path)) {
                 return true;
@@ -452,10 +541,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Returns all filtered paths which do not contain any jdt containers
+     * 
      * @return all filtered paths which do not contain any jdt containers
      * @author mbrunnli (11.03.2013)
      */
     private Set<String> getNonJavaResourcePaths() {
+
         Set<String> nonJavaPaths = new HashSet<String>();
         for (String path : filteredPaths) {
             if (!isDefinedInAnySourceFolder(path)) {
@@ -467,13 +558,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Checks whether the given path is defined within an {@link IPackageFragmentRoot}
-     * @param path
-     *            to be checked
+     * 
+     * @param path to be checked
      * @return <code>true</code> if the path starts with the path of any {@link IPackageFragmentRoot}<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (11.03.2013)
      */
     private boolean isDefinedInAnySourceFolder(String path) {
+
         for (IPackageFragmentRoot root : _cachePackageFragmentRoots) {
             if (path.startsWith(root.getPath().toString())) {
                 return true;
