@@ -183,9 +183,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 }
 
                 Set<Object> affectedChildrenList = new HashSet<Object>(Arrays.asList(affectedChildren));
-                // Add all non existent but targeting resources using Mocks
-                // affectedChildrenList.addAll(stubNonExistentChildren((IJavaElement) parentElement, true));
-
                 _cachedChildren
                         .put(((IJavaElement) parentElement).getPath().toString(), affectedChildrenList.toArray());
                 return affectedChildrenList.toArray();
@@ -220,14 +217,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
             for (String path : getNonExistentChildren(((IJavaElement) parentElement).getPath())) {
 
-                String atomicElementName = path.substring(path.lastIndexOf("/") + 1);
                 IPath elementpath = new Path(path);
 
                 IJavaElementStub javaElementStub;
                 String debugInfo;
-                // this may be not a good idea to determine the difference between a file and a package path, but
-                // for now there is no better way
-                if (atomicElementName.contains(".")) {
+                if (targetIsFile(elementpath)) {
 
                     // If the file is not a direct child of the parent, we will skip it
                     IPath p = elementpath.removeFirstSegments(((IJavaElement) parentElement).getPath().segmentCount());
@@ -295,24 +289,42 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath))
                         continue;
 
-                    // check for children -> As the considered path is only a part of the whole path, the only possible
-                    // cause is that we will have to create a folder
-                    resourceStub = new IFolderStub();
-
+                    if (targetIsFile(atomicChildPath)) {
+                        resourceStub = new IFileStub();
+                    } else {
+                        resourceStub = new IFolderStub();
+                    }
+                    resourceStub.setFullPath(atomicChildPath);
                 } else if (childPathFragment.segmentCount() == 1) {
-                    // target path is atomic -> just stub it as a child (only possible case: path points to file)
-                    resourceStub = new IFileStub();
+                    if (targetIsFile(childPath)) {
+                        resourceStub = new IFileStub();
+                    } else {
+                        resourceStub = new IFolderStub();
+                    }
+                    resourceStub.setFullPath(childPath);
                 } else
                     continue;
 
-                String elementName = path.substring(path.lastIndexOf("/") + 1);
-                resourceStub.setFullPath(parentPath.addTrailingSeparator().append(elementName));
-                resourceStub.setName(elementName);
-
-                stubbedChildren.add(resourceStub);
+                if (!stubbedChildren.contains(resourceStub)) {
+                    stubbedChildren.add(resourceStub);
+                }
             }
         }
         return stubbedChildren;
+    }
+
+    /**
+     * Checks whether the target of the given path should be interpreted as file.<br>
+     * <i>This may be not the best idea to determine the difference between a file and a package path, but for now there
+     * is no better way.</i>
+     * 
+     * @param path to target
+     * @return <code>true</code> if the last element of the path contains a dot<br>
+     *         <code>false</code>, otherwise
+     */
+    private boolean targetIsFile(IPath path) {
+
+        return path.lastSegment().contains(".");
     }
 
     /**
