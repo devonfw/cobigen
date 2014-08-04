@@ -96,7 +96,6 @@ public class HierarchicalTreeOperator {
     public static List<IPackageFragment> getPackageChildren(IPackageFragment parentElement,
             List<Object> stubbedResources) throws JavaModelException {
 
-        // TODO check also stubbed children
         List<IPackageFragment> children = new LinkedList<IPackageFragment>();
         for (IPackageFragment frag : retrievePackageChildren(parentElement, stubbedResources)) {
             if (isAtomicChild(parentElement, frag, false)) {
