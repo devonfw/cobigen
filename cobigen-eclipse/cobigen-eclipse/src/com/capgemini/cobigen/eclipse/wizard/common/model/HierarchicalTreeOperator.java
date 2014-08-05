@@ -3,9 +3,12 @@
  ******************************************************************************/
 package com.capgemini.cobigen.eclipse.wizard.common.model;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaElement;
@@ -34,9 +37,11 @@ public class HierarchicalTreeOperator {
     /**
      * Cache for mapping package fragments onto their folded representation.<br>
      * This cache works only under the assumption that the {@link SelectFileContentProvider} will be executed before the
-     * {@link SelectFileLabelProvider}, which is usally the case.
+     * {@link SelectFileLabelProvider}, which is usually the case.
      */
-    private static Map<IPackageFragment, IPackageFragment> foldingMapping = Maps.newHashMap();
+    private static Map<IPackageFragment, IPackageFragment> _cachedFoldings = Maps.newHashMap();
+
+    private static Map<String, Map<String, IPackageFragment>> _cachedPackageFragments = Maps.newHashMap();
 
     /**
      * 
@@ -44,7 +49,8 @@ public class HierarchicalTreeOperator {
      */
     public static void resetCache() {
 
-        foldingMapping.clear();
+        _cachedFoldings.clear();
+        _cachedPackageFragments.clear();
     }
 
     /**
@@ -118,19 +124,38 @@ public class HierarchicalTreeOperator {
     private static IPackageFragment fold(IPackageFragment frag, List<Object> stubbedResources)
             throws JavaModelException {
 
-        if (foldingMapping.containsKey(frag))
-            return foldingMapping.get(frag);
+        if (_cachedFoldings.containsKey(frag))
+            return _cachedFoldings.get(frag);
 
-        List<IPackageFragment> packageChildren = getPackageChildren(frag, stubbedResources);
         IPackageFragment curr = frag;
+        Set<IPackageFragment> packageChildren =
+                new HashSet<IPackageFragment>(getPackageChildren(frag, stubbedResources));
         packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
+        cacheSeenPackageFragment(curr);
         while (curr.getChildren().length == 0 && packageChildren.size() == 1) {
-            curr = packageChildren.get(0);
-            packageChildren = getPackageChildren(curr, stubbedResources);
+            curr = packageChildren.iterator().next();
+            packageChildren.clear();
+            packageChildren.addAll(getPackageChildren(curr, stubbedResources));
+            packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
+            cacheSeenPackageFragment(curr);
         }
 
-        foldingMapping.put(frag, curr);
+        _cachedFoldings.put(frag, curr);
         return curr;
+    }
+
+    /**
+     * 
+     * TODO mbrunnli
+     * 
+     * @param curr
+     */
+    private static void cacheSeenPackageFragment(IPackageFragment curr) {
+
+        if (!_cachedPackageFragments.containsKey(curr.getElementName())) {
+            _cachedPackageFragments.put(curr.getElementName(), new HashMap<String, IPackageFragment>());
+        }
+        _cachedPackageFragments.get(curr.getElementName()).put(curr.getParent().getElementName(), curr);
     }
 
     /**
@@ -140,18 +165,23 @@ public class HierarchicalTreeOperator {
      * @param frag
      * @param stubbedResources
      * @return
+     * @throws JavaModelException
      */
     private static List<IPackageFragment> getStubbedAtomicPackageChildren(IPackageFragment frag,
-            List<Object> stubbedResources) {
+            List<Object> stubbedResources) throws JavaModelException {
+
+        if (stubbedResources == null)
+            return Lists.newArrayList();
 
         List<IPackageFragment> stubbedPackages = Lists.newLinkedList();
         for (Object child : stubbedResources) {
             if (child instanceof IPackageFragment) {
                 IPath childPackagePath = ((IPackageFragment) child).getPath();
-                if (childPackagePath.toString().startsWith(frag.getPath().toString())) {
+                if (childPackagePath.toString().startsWith(frag.getPath().toString())
+                        && !childPackagePath.equals(frag.getPath())) {
                     childPackagePath = childPackagePath.removeFirstSegments(frag.getPath().segmentCount());
                     if (!childPackagePath.toString().contains("/")) // check if the child package is atomic
-                        stubbedPackages.add((IPackageFragment) child);
+                        stubbedPackages.add(fold((IPackageFragment) child, stubbedResources));
                 }
             }
         }
@@ -163,18 +193,37 @@ public class HierarchicalTreeOperator {
      * 
      * @param fragment {@link IPackageFragment} for which the parent should be retrieved
      * @return the parent object (either an {@link IPackageFragment} or an {@link IPackageFragmentRoot})
+     * @throws JavaModelException
      * @author mbrunnli (18.03.2013)
      */
-    public static Object getParent(IPackageFragment fragment) {
+    private static Object getParent(IPackageFragment fragment) throws JavaModelException {
 
         IPackageFragmentRoot root = (IPackageFragmentRoot) fragment.getParent();
         if (isAtomicChild(null, fragment, true)) {
             return root;
         } else {
-            String fragName = fragment.getElementName();
-            String parentPackageName = fragName.substring(0, fragName.lastIndexOf("."));
-            IPackageFragment parentPackage = root.getPackageFragment(parentPackageName);
-            return parentPackage;
+            String[] fragNameFragments = fragment.getElementName().split("\\.");
+            for (int i = fragNameFragments.length - 1; i > 0; i--) {
+                StringBuilder packageBuilder = new StringBuilder();
+                for (int j = 0; j < i; j++) {
+                    packageBuilder.append(fragNameFragments[j]);
+                    packageBuilder.append(".");
+                }
+                if (packageBuilder.length() > 0)
+                    packageBuilder.deleteCharAt(packageBuilder.length() - 1);
+
+                // assumption: all packages have been seen during first phase providing the contents. This method will
+                // be called while providing labels and thus all package fragments should be cached beforehand.
+                IPackageFragment parentPackage =
+                        _cachedPackageFragments.get(packageBuilder.toString()).get(root.getElementName());
+
+                // rely on folding mapping cache (pass null parameter)
+                if (parentPackage.equals(fold(parentPackage, null))) {
+                    return parentPackage;
+                }
+            }
+            // else return source folder as a last option
+            return root;
         }
     }
 
@@ -183,9 +232,10 @@ public class HierarchicalTreeOperator {
      * 
      * @param fragment {@link IPackageFragment}
      * @return the child name in a hierarchical manner
+     * @throws JavaModelException
      * @author mbrunnli (18.03.2013)
      */
-    public static String getChildName(IPackageFragment fragment) {
+    public static String getChildName(IPackageFragment fragment) throws JavaModelException {
 
         Object parent = getParent(fragment);
         if (parent instanceof IPackageFragmentRoot) {
@@ -218,7 +268,7 @@ public class HierarchicalTreeOperator {
      */
     private static boolean isFolded(IPackageFragment parent) {
 
-        return !parent.equals(foldingMapping.get(parent));
+        return !parent.equals(_cachedFoldings.get(parent));
     }
 
     /**
@@ -240,11 +290,13 @@ public class HierarchicalTreeOperator {
                 packageChildren.add((IPackageFragment) child);
             }
         }
-        for (Object stubbedResource : stubbedResources) {
-            if (stubbedResource instanceof IPackageFragment
-                    && ((IPackageFragment) stubbedResource).getPath().toString()
-                            .startsWith(parentElement.getPath().toString())) {
-                packageChildren.add((IPackageFragment) stubbedResource);
+        if (stubbedResources != null) {
+            for (Object stubbedResource : stubbedResources) {
+                if (stubbedResource instanceof IPackageFragment
+                        && ((IPackageFragment) stubbedResource).getPath().toString()
+                                .startsWith(parentElement.getPath().toString())) {
+                    packageChildren.add((IPackageFragment) stubbedResource);
+                }
             }
         }
         return packageChildren;
