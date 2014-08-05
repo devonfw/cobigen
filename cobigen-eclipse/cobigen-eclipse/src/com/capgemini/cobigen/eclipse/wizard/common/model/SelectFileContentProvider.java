@@ -67,6 +67,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     private Map<String, Object[]> _cachedChildren = Maps.newHashMap();
 
     /**
+     * Cached already provided resources (including stubs) for performance improvements & reverse lookup (mapping from
+     * path to resources)
+     */
+    private Map<String, Object> _cachedProvidedResources = Maps.newHashMap();
+
+    /**
      * Filters the {@link TreeViewer} contents by the given paths
      * 
      * @param paths
@@ -76,6 +82,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
         filteredPaths = new HashSet<String>(paths);
         _cachedChildren.clear();
+        _cachedProvidedResources.clear();
         HierarchicalTreeOperator.resetCache();
     }
 
@@ -209,7 +216,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             throws JavaModelException {
 
         List<Object> stubbedChildren = new LinkedList<Object>();
-        String debugInfo;
+        String debugInfo = null;
         if (parentElement instanceof IJavaElement) {
 
             if (parentElement instanceof IPackageFragment && ((IPackageFragment) parentElement).isDefaultPackage()) {
@@ -227,6 +234,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     IPath p = elementpath.removeFirstSegments(((IJavaElement) parentElement).getPath().segmentCount());
                     if (p.segmentCount() != 1)
                         continue;
+                    else if (_cachedProvidedResources.containsKey(path)) {
+                        // if already seen, just get it and skip creation
+                        stubbedChildren.add(_cachedProvidedResources.get(path));
+                        continue;
+                    }
 
                     // Create CompilationUnit Stub
                     javaElementStub = new ICompilationUnitStub();
@@ -238,6 +250,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     // If path is not within an existing package fragment root, we cannot create packages for it
                     if (!isDefinedInSourceFolder(path) || !considerPackages)
                         continue;
+                    else if (_cachedProvidedResources.containsKey(path)) {
+                        // if already seen, just get it and skip creation
+                        stubbedChildren.add(_cachedProvidedResources.get(path));
+                        continue;
+                    }
 
                     // Create PackageFragment Stub
                     javaElementStub = new IPackageFragmentStub();
@@ -268,6 +285,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 javaElementStub.setChildren(javaChildren);
 
                 stubbedChildren.add(javaElementStub);
+                _cachedProvidedResources.put(javaElementStub.getPath().toString(), javaElementStub);
                 LOG.debug("Stub created for {} with element name '{}' and path '{}'", debugInfo,
                         javaElementStub.getElementName(), javaElementStub.getPath().toString());
             }
@@ -275,9 +293,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             IPath parentPath = ((IResource) parentElement).getFullPath();
             for (String path : getNonExistentChildren(parentPath)) {
 
-                IResourceStub resourceStub;
+                IResourceStub resourceStub = null;
                 IPath childPath = new Path(path);
                 IPath childPathFragment = childPath.removeFirstSegments(parentPath.segmentCount());
+
                 if (childPathFragment.segmentCount() > 1) {
                     // target path is no atomic child -> stub next element if necessary
                     childPathFragment = childPathFragment.removeFirstSegments(1);
@@ -288,6 +307,13 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     // parent
                     if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath))
                         continue;
+                    else if (_cachedProvidedResources.containsKey(atomicChildPath.toString())) {
+                        // if already seen, just get it and skip creation
+                        Object cachedStub = _cachedProvidedResources.get(atomicChildPath.toString());
+                        if (!stubbedChildren.contains(cachedStub))
+                            stubbedChildren.add(cachedStub);
+                        continue;
+                    }
 
                     if (targetIsFile(atomicChildPath)) {
                         resourceStub = new IFileStub();
@@ -298,6 +324,15 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     }
                     resourceStub.setFullPath(atomicChildPath);
                 } else if (childPathFragment.segmentCount() == 1) {
+
+                    if (_cachedProvidedResources.containsKey(childPath.toString())) {
+                        // if already seen, just get it and skip creation
+                        Object cachedStub = _cachedProvidedResources.get(childPath.toString());
+                        if (!stubbedChildren.contains(cachedStub))
+                            stubbedChildren.add(cachedStub);
+                        continue;
+                    }
+
                     if (targetIsFile(childPath)) {
                         resourceStub = new IFileStub();
                         debugInfo = "File";
@@ -307,10 +342,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     }
                     resourceStub.setFullPath(childPath);
                 } else
-                    continue;
+                    continue; // no child of parentPath
 
                 if (!stubbedChildren.contains(resourceStub)) {
                     stubbedChildren.add(resourceStub);
+                    _cachedProvidedResources.put(resourceStub.getFullPath().toString(), resourceStub);
                 }
                 LOG.debug("Stub created for {} with name '{}' and path '{}'", debugInfo, resourceStub.getName(),
                         resourceStub.getFullPath().toString());
@@ -506,8 +542,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         for (Object e : children) {
             if (e instanceof IJavaElement && isElementToBeShown(((IJavaElement) e).getPath())) {
                 affectedChildren.add(e);
+                _cachedProvidedResources.put(((IJavaElement) e).getPath().toString(), e);
             } else if (e instanceof IResource && isElementToBeShown(((IResource) e).getFullPath())) {
                 affectedChildren.add(e);
+                _cachedProvidedResources.put(((IResource) e).getFullPath().toString(), e);
             }
         }
         return affectedChildren.toArray();
