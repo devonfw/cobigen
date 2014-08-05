@@ -356,6 +356,17 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
+     * Retrieves the stub for the given path from the current cache state.
+     * 
+     * @param path workspace dependent path as used for every eclipse resource
+     * @return the stub object for the path or <code>null</code> if no stub has been created for this path
+     */
+    public Object getProvidedObject(String path) {
+
+        return _cachedProvidedResources.get(path);
+    }
+
+    /**
      * Checks whether the target of the given path should be interpreted as file.<br>
      * <i>This may be not the best idea to determine the difference between a file and a package path, but for now there
      * is no better way.</i>
