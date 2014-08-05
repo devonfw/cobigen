@@ -209,6 +209,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             throws JavaModelException {
 
         List<Object> stubbedChildren = new LinkedList<Object>();
+        String debugInfo;
         if (parentElement instanceof IJavaElement) {
 
             if (parentElement instanceof IPackageFragment && ((IPackageFragment) parentElement).isDefaultPackage()) {
@@ -220,7 +221,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 IPath elementpath = new Path(path);
 
                 IJavaElementStub javaElementStub;
-                String debugInfo;
                 if (targetIsFile(elementpath)) {
 
                     // If the file is not a direct child of the parent, we will skip it
@@ -291,15 +291,19 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
                     if (targetIsFile(atomicChildPath)) {
                         resourceStub = new IFileStub();
+                        debugInfo = "File";
                     } else {
                         resourceStub = new IFolderStub();
+                        debugInfo = "Folder";
                     }
                     resourceStub.setFullPath(atomicChildPath);
                 } else if (childPathFragment.segmentCount() == 1) {
                     if (targetIsFile(childPath)) {
                         resourceStub = new IFileStub();
+                        debugInfo = "File";
                     } else {
                         resourceStub = new IFolderStub();
+                        debugInfo = "Folder";
                     }
                     resourceStub.setFullPath(childPath);
                 } else
@@ -308,6 +312,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 if (!stubbedChildren.contains(resourceStub)) {
                     stubbedChildren.add(resourceStub);
                 }
+                LOG.debug("Stub created for {} with name '{}' and path '{}'", debugInfo, resourceStub.getName(),
+                        resourceStub.getFullPath().toString());
             }
         }
         return stubbedChildren;
@@ -328,17 +334,18 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * TODO mbrunnli
+     * Determines the correct parent for a stubbed {@link IJavaElement} according to the eclipse java model for a given
+     * child and its parent in the tree.
      * 
-     * @param parent
-     * @param child
-     * @return
+     * @param treeParent parent of the child in the displayed tree
+     * @param child {@link IJavaElementStub} to determine the correct java model parent for
+     * @return the java model parent
      */
-    private IJavaElement determineJavaModelParent(IJavaElement parent, IJavaElementStub child) {
+    private IJavaElement determineJavaModelParent(IJavaElement treeParent, IJavaElementStub child) {
 
         if (child instanceof IPackageFragmentStub) {
             // parent should be the source folder
-            if (parent instanceof IJavaProject) {
+            if (treeParent instanceof IJavaProject) {
                 // cache is correctly initialized and filled because of the invariant, that getElements will be called
                 // before getChildren
                 for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
@@ -346,27 +353,28 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                         return root;
                     }
                 }
-            } else if (parent instanceof IPackageFragmentRoot) {
-                return parent;
-            } else if (parent instanceof IPackageFragment) {
+            } else if (treeParent instanceof IPackageFragmentRoot) {
+                return treeParent;
+            } else if (treeParent instanceof IPackageFragment) {
                 // invariant: we only consider children of the parent, so the child has to be in the same source
                 // folder as the parent
-                return parent.getParent();
+                return treeParent.getParent();
             }
         } else if (child instanceof ICompilationUnitStub) {
             // invariant: we only consider children of the parent, so the compilation unit has to be right within the
             // parent, which has to be a package fragment
-            return parent;
+            return treeParent;
         }
-        LOG.error("Unhandled exceptional case! Needs further investigation - Parent: {} Child: {}", parent.getClass()
-                .getCanonicalName(), child.getClass().getCanonicalName());
+        LOG.error("Unhandled exceptional case! Needs further investigation - Parent: {} Child: {}", treeParent
+                .getClass().getCanonicalName(), child.getClass().getCanonicalName());
         throw new IllegalArgumentException("Unhandled exceptional case! Needs further investigation.");
     }
 
     /**
-     * TODO
+     * Calculates all non existent paths from the {@link #filteredPaths}. For one path /a/b/c in {@link #filteredPaths}
+     * this method will return /a if not existent, /a/b if not existent /a/b/c if not existent.
      * 
-     * @param parentPath
+     * @param parentPath parent path, which will be included in all resulting non existent child paths
      * @return the list of paths for all non existent but addressed children
      * @author mbrunnli (01.04.2014)
      */
@@ -478,7 +486,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             IJavaElement jChild = JavaCore.create(child);
             // only add child of type IResource if it has not java representation
             // in this case it should have been added before
-            if (jChild == null) {
+            if (jChild == null
+                    && (!isPartOfAnySourceFolder(child.getFullPath().toString()) || isPartOfAnyNonSourceFolderPath(child
+                            .getFullPath().toString()))) {
                 children.add(child);
             }
         }
@@ -548,7 +558,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @return <code>true</code> if the given path is part of any source folder path<br>
      *         <code>false</code>, otherwise
      */
-    private boolean isPartOfSourceFolder(String path) {
+    private boolean isPartOfAnySourceFolder(String path) {
 
         for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
             if (!root.isReadOnly() && root.getPath().toString().startsWith(path)) {
@@ -565,7 +575,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @return <code>true</code> if the given path is not defined within any source folder
      * @author mbrunnli (12.03.2013)
      */
-    private boolean isPartOfAnyNonJavaPath(String path) {
+    private boolean isPartOfAnyNonSourceFolderPath(String path) {
 
         for (String resourcePath : getNonJavaResourcePaths()) {
             if (resourcePath.startsWith(path)) {
@@ -576,7 +586,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * Returns all filtered paths which do not contain any jdt containers
+     * Returns all filtered paths which do not contain any jdt containers, resp., which are not dependent on any jdt
+     * {@link IPackageFragmentRoot}
      * 
      * @return all filtered paths which do not contain any jdt containers
      * @author mbrunnli (11.03.2013)
