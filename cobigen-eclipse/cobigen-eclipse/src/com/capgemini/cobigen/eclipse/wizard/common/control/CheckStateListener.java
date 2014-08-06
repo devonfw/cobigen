@@ -326,8 +326,13 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private void setAllResourcesChecked() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (Object o : resourcesTree.getVisibleExpandedElements()) {
-            resourcesTree.setChecked(o, true);
+        for (IFile f : javaGeneratorWrapper.getAllFiles()) {
+            Object treeObject =
+                    ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(f.getFullPath()
+                            .toString());
+            if (treeObject != null) {
+                resourcesTree.setChecked(treeObject, true);
+            }
         }
     }
 
