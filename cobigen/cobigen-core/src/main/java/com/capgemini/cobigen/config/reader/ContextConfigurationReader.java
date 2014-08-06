@@ -20,6 +20,7 @@ import javax.xml.validation.SchemaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.capgemini.ContainerMatcher;
 import com.capgemini.ContextConfiguration;
@@ -27,6 +28,7 @@ import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.util.ExceptionUtil;
 import com.google.common.collect.Maps;
 
 /**
@@ -74,7 +76,13 @@ public class ContextConfigurationReader {
             }
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", file.getPath(), e);
-            throw new InvalidConfigurationException(file, "Could not parse configuration file: " + e.getMessage(), e);
+            // try getting SAXParseException for better error handling and user support
+            SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
+            String message = null;
+            if (parseCause != null) {
+                message = parseCause.getMessage();
+            }
+            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             LOG.error("Could not parse context configuration schema.", e);

@@ -423,18 +423,18 @@ public class CobiGen {
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
+            Map<String, String> variables;
             try {
-                Map<String, String> variables =
-                        new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
-                File templatesConfigurationFolder =
-                        new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-
-                templateConfigurations
-                        .add(new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables));
+                variables = new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
             } catch (Throwable e) {
                 LOG.error("The TriggerInterpreter for type '{}' exited abruptly.", triggerInterpreter.getType(), e);
+                continue;
             }
+            File templatesConfigurationFolder =
+                    new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+                            + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
+
+            templateConfigurations.add(new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables));
         }
         return templateConfigurations;
     }

@@ -20,6 +20,7 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.capgemini.IncrementRef;
 import com.capgemini.Increments;
@@ -32,6 +33,7 @@ import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.util.ExceptionUtil;
 
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
@@ -86,7 +88,13 @@ public class TemplatesConfigurationReader {
             configNode = (TemplatesConfiguration) unmarschaller.unmarshal(file);
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", file.getPath(), e);
-            throw new InvalidConfigurationException(file, "Could not parse configuration file: " + e.getMessage(), e);
+            // try getting SAXParseException for better error handling and user support
+            SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
+            String message = null;
+            if (parseCause != null) {
+                message = parseCause.getMessage();
+            }
+            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             LOG.error("Could not parse templates configuration schema.", e);

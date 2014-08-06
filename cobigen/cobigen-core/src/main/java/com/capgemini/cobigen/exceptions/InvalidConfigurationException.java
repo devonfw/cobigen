@@ -7,48 +7,55 @@ import java.io.File;
 
 /**
  * Occurs if the configuration xml could not be parsed successfully
+ * 
  * @author mbrunnli (19.02.2013)
  */
-public class InvalidConfigurationException extends Exception {
+public class InvalidConfigurationException extends RuntimeException {
 
     /**
-     * Generated serial version UID
+     * Default serial version UID
      */
-    private static final long serialVersionUID = 8744712919444512918L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
+     * 
      * @param file
-     *            {@link File} causing the InvalidConfigurationException
+     *        {@link File} causing the InvalidConfigurationException
      * @param msg
-     *            error message of the exception
+     *        error message of the exception
      * @param t
-     *            cause exception
+     *        cause exception
      * @author mbrunnli (25.04.2014)
      */
     public InvalidConfigurationException(File file, String msg, Throwable t) {
+
         super(file.getAbsolutePath().toString() + ":\n" + msg, t);
     }
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
+     * 
      * @param file
-     *            {@link File} causing the InvalidConfigurationException
+     *        {@link File} causing the InvalidConfigurationException
      * @param msg
-     *            error message of the exception
+     *        error message of the exception
      * @author mbrunnli (19.02.2013)
      */
     public InvalidConfigurationException(File file, String msg) {
+
         super(file.getAbsolutePath().toString() + ":\n" + msg);
     }
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
+     * 
      * @param msg
-     *            error message
+     *        error message
      * @author mbrunnli (08.04.2014)
      */
     public InvalidConfigurationException(String msg) {
+
         super(msg);
     }
 }
