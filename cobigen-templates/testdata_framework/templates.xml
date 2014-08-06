@@ -11,16 +11,17 @@
 	</templates>
 
 	<increments>
-		<increment id="testdata_builder_persistable" description="Testdaten-Builder (persistable)">
+		<increment id="testdata_builder" description="Testdata-Builder">
 			<templateRef idref="entityBuilder"/>
 			<templateRef idref="entityBuilder_fillMandatoryFields"/>
-			<templateRef idref="entityBuilder_persistable"/>
 			<templateRef idref="P"/>
 		</increment>
-		<increment id="testdata_builder" description="Testdaten-Builder">
-			<templateRef idref="entityBuilder"/>
-			<templateRef idref="entityBuilder_fillMandatoryFields"/>
-			<templateRef idref="P"/>
+		<increment id="testdata_builder_persistable" description="Testdata-Builder (persistable)">
+			<inrementRef idref="testdata_builder"/>
+			<!-- <templateRef idref="entityBuilder_persistable"/> -->
+		</increment>
+		<increment id="abc" description="asdf">
+			<inkrementRef idref="testdata_builder" />
 		</increment>
 	</increments>
 </templatesConfiguration>

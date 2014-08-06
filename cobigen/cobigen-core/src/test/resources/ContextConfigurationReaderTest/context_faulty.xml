@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+--> 
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+	<triggers>
+		<Trigger id="testdataFramework" type="java" templateFolder="testdata_framework" >
+        </Trigger>
+	</triggers>
+</contextConfiguration>

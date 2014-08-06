@@ -8,13 +8,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import com.capgemini.IncrementRef;
 import com.capgemini.Increments;
@@ -29,8 +34,8 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 
 /**
- * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and
- * converts the information to the working entities
+ * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
+ * information to the working entities
  * 
  * @author mbrunnli (11.03.2013)
  */
@@ -57,27 +62,36 @@ public class TemplatesConfigurationReader {
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
     /**
-     * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
-     * configuration file
+     * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given configuration
+     * file
      * 
      * @param file
-     *            configuration file
+     *        configuration file
      * @throws InvalidConfigurationException
-     *             if the configuration is not valid against its xsd specification
+     *         if the configuration is not valid against its xsd specification
      * @author mbrunnli (11.03.2013)
      */
     public TemplatesConfigurationReader(File file) throws InvalidConfigurationException {
+
         configFile = file;
 
         try {
             JAXBContext context = JAXBContext.newInstance(TemplatesConfiguration.class);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema =
+                    schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
+                            "/schema/templatesConfiguration.xsd")));
             Unmarshaller unmarschaller = context.createUnmarshaller();
+            unmarschaller.setSchema(schema);
             configNode = (TemplatesConfiguration) unmarschaller.unmarshal(file);
-        } catch (JAXBException e) { // TODO there should be a failure thrown
-                                    // when parsing is not valid... e.g.
-                                    // false naming of <increments> node
-            LOG.error("Could not parse the templates.xml configuration.", e);
-            throw new InvalidConfigurationException(file, e.getMessage(), e);
+        } catch (JAXBException e) {
+            LOG.error("Could not parse configuration file {}", file.getPath(), e);
+            throw new InvalidConfigurationException(file, "Could not parse configuration file: " + e.getMessage(), e);
+        } catch (SAXException e) {
+            // Should never occur. Programming error.
+            LOG.error("Could not parse templates configuration schema.", e);
+            throw new IllegalStateException(
+                    "Could not parse templates configuration schema. Please state this as a bug.");
         }
 
     }
@@ -86,20 +100,20 @@ public class TemplatesConfigurationReader {
      * Loads all templates of the static configuration into the local representation
      * 
      * @param variables
-     *            Map of settings reference
+     *        Map of settings reference
      * @param trigger
-     *            {@link Trigger} for which the templates should be loaded
+     *        {@link Trigger} for which the templates should be loaded
      * @return the mapping of template id's to the corresponding {@link Template}
      * @throws UnknownContextVariableException
-     *             if the destination path contains an undefined context variable
+     *         if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *             if there is an unknown variable modifier
+     *         if there is an unknown variable modifier
      * @throws InvalidConfigurationException
-     *             if there are multiple templates with the same id
+     *         if there are multiple templates with the same id
      * @author mbrunnli (06.02.2013) edited by trippl (07.03.2013)
      */
     public Map<String, Template> loadTemplates(Trigger trigger, Map<String, String> variables)
-        throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
+            throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         Map<String, Template> templates = new HashMap<String, Template>();
         PathExpressionResolver expressionResolver = new PathExpressionResolver(variables);
@@ -107,13 +121,13 @@ public class TemplatesConfigurationReader {
         for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
             expressionResolver.checkExpressions(t.getDestinationPath());
             if (templates.get(t.getId()) != null) {
-                throw new InvalidConfigurationException(configFile,
-                    "Multiple template definitions found for idRef='" + t.getId() + "'");
+                throw new InvalidConfigurationException(configFile, "Multiple template definitions found for idRef='"
+                        + t.getId() + "'");
             }
             templates.put(
-                t.getId(),
-                new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
-                    .getTargetCharset(), expressionResolver, trigger));
+                    t.getId(),
+                    new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
+                            .getTargetCharset(), expressionResolver, trigger));
         }
         return templates;
     }
@@ -123,22 +137,22 @@ public class TemplatesConfigurationReader {
      * 
      * @return the mapping of increment id's to the corresponding {@link Increment}
      * @param templates
-     *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
+     *        {@link Map} of all templates (see {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
      * @param trigger
-     *            {@link Trigger} for which the templates should be loaded
+     *        {@link Trigger} for which the templates should be loaded
      * @throws InvalidConfigurationException
-     *             if there is an invalid idref attribute
+     *         if there is an invalid idref attribute
      * @author trippl (25.02.2013)
      */
     public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
-        throws InvalidConfigurationException {
+            throws InvalidConfigurationException {
+
         Map<String, Increment> generationIncrements = new HashMap<String, Increment>();
         Increments increments = configNode.getIncrements();
         if (increments != null) {
             for (com.capgemini.Increment source : increments.getIncrement()) {
                 generationIncrements.put(source.getId(),
-                    new Increment(source.getId(), source.getDescription(), trigger));
+                        new Increment(source.getId(), source.getDescription(), trigger));
             }
             for (com.capgemini.Increment p : configNode.getIncrements().getIncrement()) {
                 Increment target = generationIncrements.get(p.getId());
@@ -152,28 +166,28 @@ public class TemplatesConfigurationReader {
      * Adds all templates defined within the increment and sub increments recursively
      * 
      * @param rootTarget
-     *            the {@link Increment} on which the templates should be added
+     *        the {@link Increment} on which the templates should be added
      * @param current
-     *            the source {@link com.capgemini.Increment} from which to retrieve the data
+     *        the source {@link com.capgemini.Increment} from which to retrieve the data
      * @param templates
-     *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
+     *        {@link Map} of all templates (see {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
      * @param generationIncrements
-     *            {@link Map} of all retrieved increments
+     *        {@link Map} of all retrieved increments
      * @throws InvalidConfigurationException
-     *             if there is an invalid idref attribute
+     *         if there is an invalid idref attribute
      * @author mbrunnli (07.03.2013)
      */
     private void addAllTemplatesRecursively(Increment rootTarget, com.capgemini.Increment current,
-        Map<String, Template> templates, Map<String, Increment> generationIncrements)
-        throws InvalidConfigurationException {
+            Map<String, Template> templates, Map<String, Increment> generationIncrements)
+            throws InvalidConfigurationException {
+
         for (Object ref : current.getTemplateRefOrIncrementRef()) {
             if (ref instanceof TemplateRef) {
                 TemplateRef tRef = (TemplateRef) ref;
                 Template temp = templates.get(tRef.getIdref());
                 if (temp == null) {
                     throw new InvalidConfigurationException(configFile, "No Template found for idRef='"
-                        + tRef.getIdref() + "'");
+                            + tRef.getIdref() + "'");
                 }
                 rootTarget.addTemplate(temp);
             }
@@ -195,14 +209,13 @@ public class TemplatesConfigurationReader {
      * Returns the {@link com.capgemini.Increment} for the given {@link IncrementRef}
      * 
      * @param source
-     *            {@link IncrementRef}
+     *        {@link IncrementRef}
      * @return the referenced {@link com.capgemini.Increment}
      * @throws InvalidConfigurationException
-     *             if there is an invalid increment idref
+     *         if there is an invalid increment idref
      * @author mbrunnli (11.03.2013)
      */
-    private com.capgemini.Increment getIncrementDeclaration(IncrementRef source)
-        throws InvalidConfigurationException {
+    private com.capgemini.Increment getIncrementDeclaration(IncrementRef source) throws InvalidConfigurationException {
 
         if (xPathContext == null) {
             xPathContext = JXPathContext.newContext(configNode);
@@ -210,7 +223,7 @@ public class TemplatesConfigurationReader {
         // declare namespace s='http://capgemini.com';
         @SuppressWarnings("unchecked")
         Iterator<com.capgemini.Increment> it =
-            xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
+                xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
 
         int count = 0;
         com.capgemini.Increment p = null;
@@ -222,12 +235,12 @@ public class TemplatesConfigurationReader {
         switch (count) {
         case 0:
             throw new InvalidConfigurationException(configFile, "No increment definition found for idRef='"
-                + source.getIdref() + "'");
+                    + source.getIdref() + "'");
         case 1:
             return p;
         default:
-            throw new InvalidConfigurationException(configFile,
-                "Multiple increment definitions found for idRef='" + source.getIdref() + "'");
+            throw new InvalidConfigurationException(configFile, "Multiple increment definitions found for idRef='"
+                    + source.getIdref() + "'");
         }
 
         // XmlCursor cursor = source.newCursor();
