@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-0.0.1-SNAPSHOT.jar" sourcepath="/cobigen-core"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-0.0.1-SNAPSHOT.jar" sourcepath="/cobigen-javaplugin"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-0.0.1-SNAPSHOT.jar"/>

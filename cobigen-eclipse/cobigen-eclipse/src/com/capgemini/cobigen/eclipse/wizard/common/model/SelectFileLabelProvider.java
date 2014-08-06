@@ -184,7 +184,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             path = ((IJavaElement) element).getPath().toString();
         }
 
-        List<TemplateTo> templates = javaGeneratorWrapper.getTemplatesForFilePath(path);
+        // boundary case: multiple templates target one path, which are not mergable... does not make sense
+        List<TemplateTo> templates = javaGeneratorWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
             if (path != null && template.getMergeStrategy() != null) {
                 return true;

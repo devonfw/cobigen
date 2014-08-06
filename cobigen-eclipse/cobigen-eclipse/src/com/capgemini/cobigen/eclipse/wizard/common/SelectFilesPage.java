@@ -47,8 +47,10 @@ import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeV
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
+import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation process
@@ -151,7 +153,7 @@ public class SelectFilesPage extends WizardPage {
 
         packageSelector = new CustomizedCheckboxTreeViewer(containerLeft);
         packageSelector.setContentProvider(new PackagesContentProvider());
-        packageSelector.setInput(javaGeneratorWrapper.getAllGenerationPackages());
+        packageSelector.setInput(javaGeneratorWrapper.getAllIncrements());
         gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
         packageSelector.getTree().setLayoutData(gd);
@@ -308,9 +310,15 @@ public class SelectFilesPage extends WizardPage {
      */
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
+        Set<IncrementTo> selectedIncrements = Sets.newHashSet();
+        for (Object checkedElement : packageSelector.getCheckedElements()) {
+            if (checkedElement instanceof IncrementTo)
+                selectedIncrements.add((IncrementTo) checkedElement);
+        }
+
         List<TemplateTo> templates = Lists.newLinkedList();
         for (String path : getFilePathsToBeGenerated()) {
-            templates.addAll(javaGeneratorWrapper.getTemplatesForFilePath(path));
+            templates.addAll(javaGeneratorWrapper.getTemplatesForFilePath(path, selectedIncrements));
         }
         return templates;
     }
