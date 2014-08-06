@@ -124,8 +124,8 @@ public class ParsedJavaModelBuilder {
             }
             Map<String, Object> attrValues = new HashMap<String, Object>();
             attrValues.put(ModelConstant.NAME, f.getName());
-            attrValues.put(ModelConstant.TYPE, f.getType().getName());
-            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getCanonicalName());
+            attrValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
+            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericFullyQualifiedName());
             attributes.add(attrValues);
         }
         return attributes;

@@ -110,7 +110,19 @@ public class JavaModelBuilder {
             }
             Map<String, Object> attrValues = new HashMap<String, Object>();
             attrValues.put(ModelConstant.NAME, f.getName());
-            attrValues.put(ModelConstant.TYPE, f.getType().getName());
+            // build type name with type parameters (parameter types cannot be retrieved, so use generic parameter '?'
+            String type = f.getType().getSimpleName();
+            if (f.getType().getTypeParameters().length > 0) {
+                type += "<";
+                for (int i = 0; i < f.getType().getTypeParameters().length; i++) {
+                    if (!type.endsWith("<")) {
+                        type += ",";
+                    }
+                    type += "?";
+                }
+                type += ">";
+            }
+            attrValues.put(ModelConstant.TYPE, type);
             attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getCanonicalName());
             attributes.add(attrValues);
         }
