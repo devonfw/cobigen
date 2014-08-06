@@ -90,6 +90,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
                     if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
                             generator.reloadConfigurationFromFile();
+                            LOG.info("The CobiGen context.xml has been changed and reloaded.");
                         } catch (IOException e) {
                             LOG.error("Could not read the context.xml.", e);
                         } catch (InvalidConfigurationException e) {
@@ -103,6 +104,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
                     } else if (fileDelta.getResource().equals(logbackXmlFile)) {
                         try {
                             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
+                            LOG.info("The Logback logback.xml has been changed and reloaded.");
                         } catch (IOException e) {
                             LOG.error("Unable to read config file", e);
                         } catch (JoranException e) {
@@ -110,10 +112,8 @@ public class ConfigurationRCL implements IResourceChangeListener {
                                     "The context.xml of the generator configuration was changed into an invalid state.\n"
                                             + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.error(
-                                    "{}{}{}",
-                                    "Warning",
-                                    "The context.xml of the generator configuration was changed into an invalid state.\n",
-                                    "The generator might not behave as intended:\n", e.getMessage());
+                                    "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                    e);
                         }
                     }
                 }
@@ -124,9 +124,12 @@ public class ConfigurationRCL implements IResourceChangeListener {
     /**
      * (Re-)Loads Logback configuration
      * 
-     * @param externalConfigFileLocation location of the new logback.xml
-     * @throws IOException if the file could not be read or written
-     * @throws JoranException if the file could not be handled by log4j
+     * @param externalConfigFileLocation
+     *        location of the new logback.xml
+     * @throws IOException
+     *         if the file could not be read or written
+     * @throws JoranException
+     *         if the file could not be handled by log4j
      * @author sbasnet (11.06.2014)
      */
     public void loadLogbackConfiguration(String externalConfigFileLocation) throws IOException, JoranException {
@@ -147,7 +150,6 @@ public class ConfigurationRCL implements IResourceChangeListener {
                     configurator.setContext(lc);
                     lc.reset();
                     configurator.doConfigure(externalConfigFileLocation);
-
                     LOG.info("Configured Logback with config file from: " + externalConfigFileLocation);
                 }
             }
