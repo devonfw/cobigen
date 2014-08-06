@@ -208,8 +208,7 @@ public class JavaGeneratorWrapper {
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation()
-                .toString());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation().toString());
     }
 
     /**
@@ -226,7 +225,7 @@ public class JavaGeneratorWrapper {
     /**
      * Generates the given template
      * 
-     * @param template {@link Template} to be generated
+     * @param template {@link TemplateTo} to be generated
      * @param forceOverride forces the generator to override the maybe existing target file of the template
      * @throws TemplateException any exception of the FreeMarker engine
      * @throws IOException if the specified template could not be found
@@ -384,7 +383,7 @@ public class JavaGeneratorWrapper {
     }
 
     /**
-     * Returns the {@link Template}, which has the given templateId and belongs to the {@link Trigger} with the given
+     * Returns the {@link TemplateTo}, which has the given templateId and belongs to the {@link Trigger} with the given
      * triggerId or <code>null</code> if there is no template with the given id
      * 
      * @param templateId the template id

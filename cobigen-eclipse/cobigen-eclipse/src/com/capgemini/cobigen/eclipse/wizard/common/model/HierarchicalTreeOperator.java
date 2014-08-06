@@ -15,8 +15,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,22 +28,23 @@ import com.google.common.collect.Maps;
 public class HierarchicalTreeOperator {
 
     /**
-     * Assigning logger to HierarchicalTreeOperator
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(HierarchicalTreeOperator.class);
-
-    /**
      * Cache for mapping package fragments onto their folded representation.<br>
      * This cache works only under the assumption that the {@link SelectFileContentProvider} will be executed before the
      * {@link SelectFileLabelProvider}, which is usually the case.
      */
     private static Map<IPackageFragment, IPackageFragment> _cachedFoldings = Maps.newHashMap();
 
+    /**
+     * Cache for all seen package fragments. This cache improves performance significantly and provides the ability of
+     * folding stubbed resources, i.e., retrieving the potentially folded parent of a tree node has to be done using
+     * this cache. The cache maps {@link IPackageFragment#getElementName()} to
+     * {@link IPackageFragmentRoot#getElementName()} to the cached {@link IPackageFragment}.
+     */
     private static Map<String, Map<String, IPackageFragment>> _cachedPackageFragments = Maps.newHashMap();
 
     /**
-     * 
-     * TODO mbrunnli
+     * Resets the internal caches. This method should only be called if the tree, which has been build is not used
+     * anymore
      */
     public static void resetCache() {
 
@@ -131,13 +130,13 @@ public class HierarchicalTreeOperator {
         Set<IPackageFragment> packageChildren =
                 new HashSet<IPackageFragment>(getPackageChildren(frag, stubbedResources));
         packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
-        cacheSeenPackageFragment(curr);
+        cachePackageFragment(curr);
         while (curr.getChildren().length == 0 && packageChildren.size() == 1) {
             curr = packageChildren.iterator().next();
             packageChildren.clear();
             packageChildren.addAll(getPackageChildren(curr, stubbedResources));
             packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
-            cacheSeenPackageFragment(curr);
+            cachePackageFragment(curr);
         }
 
         _cachedFoldings.put(frag, curr);
@@ -145,12 +144,11 @@ public class HierarchicalTreeOperator {
     }
 
     /**
+     * Caches a package fragment into {@link #_cachedPackageFragments}
      * 
-     * TODO mbrunnli
-     * 
-     * @param curr
+     * @param curr to be cached
      */
-    private static void cacheSeenPackageFragment(IPackageFragment curr) {
+    private static void cachePackageFragment(IPackageFragment curr) {
 
         if (!_cachedPackageFragments.containsKey(curr.getElementName())) {
             _cachedPackageFragments.put(curr.getElementName(), new HashMap<String, IPackageFragment>());
@@ -160,14 +158,14 @@ public class HierarchicalTreeOperator {
 
     /**
      * 
-     * TODO mbrunnli
+     * This method calculates all atomic children from the stubbedResources and returns them
      * 
-     * @param frag
-     * @param stubbedResources
-     * @return
-     * @throws JavaModelException
+     * @param parent to calculate children for
+     * @param stubbedResources list of all stubbed resources
+     * @return the stubbed resources, which represent atomic children for the given parent
+     * @throws JavaModelException if an internal model exception occurs during folding
      */
-    private static List<IPackageFragment> getStubbedAtomicPackageChildren(IPackageFragment frag,
+    private static List<IPackageFragment> getStubbedAtomicPackageChildren(IPackageFragment parent,
             List<Object> stubbedResources) throws JavaModelException {
 
         if (stubbedResources == null)
@@ -177,9 +175,9 @@ public class HierarchicalTreeOperator {
         for (Object child : stubbedResources) {
             if (child instanceof IPackageFragment) {
                 IPath childPackagePath = ((IPackageFragment) child).getPath();
-                if (childPackagePath.toString().startsWith(frag.getPath().toString())
-                        && !childPackagePath.equals(frag.getPath())) {
-                    childPackagePath = childPackagePath.removeFirstSegments(frag.getPath().segmentCount());
+                if (childPackagePath.toString().startsWith(parent.getPath().toString())
+                        && !childPackagePath.equals(parent.getPath())) {
+                    childPackagePath = childPackagePath.removeFirstSegments(parent.getPath().segmentCount());
                     if (!childPackagePath.toString().contains("/")) // check if the child package is atomic
                         stubbedPackages.add(fold((IPackageFragment) child, stubbedResources));
                 }
