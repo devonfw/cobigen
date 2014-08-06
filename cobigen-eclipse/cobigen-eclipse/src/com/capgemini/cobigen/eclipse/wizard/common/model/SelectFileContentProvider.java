@@ -477,7 +477,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     @Override
     public void dispose() {
 
-        HierarchicalTreeOperator.resetCache();
     }
 
     /**
