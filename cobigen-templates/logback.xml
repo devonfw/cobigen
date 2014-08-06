@@ -2,12 +2,7 @@
 <!-- This file is for logback classic. The file contains the configuration for sl4j logging -->
 <configuration>
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<!-- defines the level of logging -->
-			<level>ERROR</level>
-		</filter>
-		<!-- TODO choose your log file location -->
-		<file>D:\workspace_RF_Generator\CobiGen\deployment\CobiGen_Templates\CobiGen.log</file>
+		<file><!-- TODO choose your log file location --></file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>%n%date %d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n
 			</Pattern>
@@ -15,10 +10,6 @@
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<!-- defines the level of logging -->
-			<level>DEBUG</level>
-		</filter>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 			</Pattern>
