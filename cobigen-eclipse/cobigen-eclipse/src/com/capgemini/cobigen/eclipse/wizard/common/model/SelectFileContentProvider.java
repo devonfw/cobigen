@@ -163,8 +163,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 } else if (parentElement instanceof IPackageFragment) {
                     if (!((IPackageFragment) parentElement).isDefaultPackage()) {
                         children.clear();
+                        // add package children
                         children.addAll(HierarchicalTreeOperator.getPackageChildren((IPackageFragment) parentElement,
                                 stubbedChildren));
+                        // add non-package children
+                        for (Object stub : stubbedChildren) {
+                            if (stub instanceof ICompilationUnitStub)
+                                children.add(stub);
+                        }
                     }
                 } else if (parentElement instanceof IParent && !(parentElement instanceof ICompilationUnit)) {
                     IJavaElement[] jChildren = ((IParent) parentElement).getChildren();
@@ -205,9 +211,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Mocks all non existent Packages, which are selected to be generated and returns all mocked packages
      * 
-     * @param parentElement parent {@link IJavaElement} to retrieve the children from
-     * @param considerPackages states whether packages should be considered when retrieving the children. This also
-     *        includes recursively retrieving children of packages
+     * @param parentElement
+     *        parent {@link IJavaElement} to retrieve the children from
+     * @param considerPackages
+     *        states whether packages should be considered when retrieving the children. This also includes recursively
+     *        retrieving children of packages
      * @return List of {@link IPackageFragment}s, which will be mocked
      * @throws JavaModelException
      * @author mbrunnli (01.04.2014)
@@ -358,7 +366,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Retrieves the stub for the given path from the current cache state.
      * 
-     * @param path workspace dependent path as used for every eclipse resource
+     * @param path
+     *        workspace dependent path as used for every eclipse resource
      * @return the stub object for the path or <code>null</code> if no stub has been created for this path
      */
     public Object getProvidedObject(String path) {
@@ -371,7 +380,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * <i>This may be not the best idea to determine the difference between a file and a package path, but for now there
      * is no better way.</i>
      * 
-     * @param path to target
+     * @param path
+     *        to target
      * @return <code>true</code> if the last element of the path contains a dot<br>
      *         <code>false</code>, otherwise
      */
@@ -384,8 +394,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * Determines the correct parent for a stubbed {@link IJavaElement} according to the eclipse java model for a given
      * child and its parent in the tree.
      * 
-     * @param treeParent parent of the child in the displayed tree
-     * @param child {@link IJavaElementStub} to determine the correct java model parent for
+     * @param treeParent
+     *        parent of the child in the displayed tree
+     * @param child
+     *        {@link IJavaElementStub} to determine the correct java model parent for
      * @return the java model parent
      */
     private IJavaElement determineJavaModelParent(IJavaElement treeParent, IJavaElementStub child) {
@@ -421,7 +433,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * Calculates all non existent paths from the {@link #filteredPaths}. For one path /a/b/c in {@link #filteredPaths}
      * this method will return /a if not existent, /a/b if not existent /a/b/c if not existent.
      * 
-     * @param parentPath parent path, which will be included in all resulting non existent child paths
+     * @param parentPath
+     *        parent path, which will be included in all resulting non existent child paths
      * @return the list of paths for all non existent but addressed children
      * @author mbrunnli (01.04.2014)
      */
@@ -493,7 +506,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Retrieves all non package children
      * 
-     * @param parent the children should be retrieved for
+     * @param parent
+     *        the children should be retrieved for
      * @return all non package children
      * @throws CoreException
      * @author mbrunnli (14.02.2013)
@@ -519,7 +533,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * Returns all children of the given parent {@link IResource} if and only if it has no corresponding
      * {@link IJavaElement} determined by {@link JavaCore#create(org.eclipse.core.resources.IResource)}
      * 
-     * @param parent {@link IResource} the children should be determined
+     * @param parent
+     *        {@link IResource} the children should be determined
      * @return all {@link IResource} children which have no {@link IJavaElement} representation
      * @throws CoreException
      * @author mbrunnli (04.03.2013)
@@ -542,7 +557,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * @param children a list of children which should be filtered
+     * @param children
+     *        a list of children which should be filtered
      * @return all children affected by the generation process
      * @author mbrunnli (14.02.2013)
      */
@@ -564,7 +580,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Checks whether the given path is affected by the generation
      * 
-     * @param fullPath path of the current element
+     * @param fullPath
+     *        path of the current element
      * @return true, if the path is affected by any template generation<br>
      *         false, otherwise
      * @author mbrunnli (14.02.2013)
@@ -582,7 +599,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Checks whether the given path is defined within an {@link IPackageFragmentRoot} or is part of one
      * 
-     * @param path to be checked
+     * @param path
+     *        to be checked
      * @return <code>true</code> if the path starts with the path of any {@link IPackageFragmentRoot} or is contained in
      *         it<br>
      *         <code>false</code> otherwise
@@ -602,7 +620,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * Checks whether the given path is part of or equal to a path defined by any package fragment root, resp. source
      * folder.
      * 
-     * @param path to be checked
+     * @param path
+     *        to be checked
      * @return <code>true</code> if the given path is part of any source folder path<br>
      *         <code>false</code>, otherwise
      */
@@ -619,7 +638,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     /**
      * Checks whether the given path is part of any filtered path which is not defined within a source folder
      * 
-     * @param path to be checked
+     * @param path
+     *        to be checked
      * @return <code>true</code> if the given path is not defined within any source folder
      * @author mbrunnli (12.03.2013)
      */
