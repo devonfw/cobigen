@@ -49,14 +49,16 @@ public class JavaModelBuilder {
 
     /**
      * Creates the object model for the template instantiation.
+     * 
      * @param pojo
-     *            {@link Class} object of the pojo all information should be retrieved from
+     *        {@link Class} object of the pojo all information should be retrieved from
      * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
      *         corresponding information. Learn more about the FreeMarker data model at http
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
      * @author mbrunnli (06.02.2013)
      */
     Map<String, Object> createModel(final Class<?> pojo) {
+
         if (cachedPojo != null && cachedPojo.equals(pojo)) {
             return new HashMap<String, Object>(cachedModel);
         }
@@ -64,51 +66,52 @@ public class JavaModelBuilder {
 
         cachedModel = new HashMap<String, Object>();
         Map<String, Object> pojoModel = new HashMap<String, Object>();
-        pojoModel.put("name", pojo.getSimpleName());
+        pojoModel.put(ModelConstant.NAME, pojo.getSimpleName());
         if (pojo.getPackage() != null) {
-            pojoModel.put("package", pojo.getPackage().getName());
+            pojoModel.put(ModelConstant.PACKAGE, pojo.getPackage().getName());
         } else {
-            pojoModel.put("package", "");
+            pojoModel.put(ModelConstant.PACKAGE, "");
         }
-        pojoModel.put("canonicalName", pojo.getCanonicalName());
+        pojoModel.put(ModelConstant.CANONICAL_NAME, pojo.getCanonicalName());
 
         Map<String, Object> annotations = new HashMap<>();
         extractAnnotationsRecursively(annotations, pojo.getAnnotations());
-        pojoModel.put("annotations", annotations);
+        pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
         List<Map<String, Object>> attributes = extractAttributes(pojo);
-        pojoModel.put("attributes", attributes);
+        pojoModel.put(ModelConstant.FIELDS, attributes);
         determinePojoIds(pojo, attributes);
         collectAnnotations(pojo, attributes);
 
-        pojoModel.put("methods", extractMethods(pojo));
-        cachedModel.put("pojo", pojoModel);
+        pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
+        cachedModel.put(ModelConstant.ROOT, pojoModel);
 
         // Utils to enable type checks
-        cachedModel.put("utils", new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()),
-            new DefaultObjectWrapper()));
+        cachedModel.put("utils", new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
 
         return new HashMap<String, Object>(cachedModel);
     }
 
     /**
      * Extracts the attributes from the given POJO
+     * 
      * @param pojo
-     *            {@link Class} object of the POJO the data should be retrieved from
-     * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a
-     *         {@link String} key to the corresponding {@link String} value of meta information
+     *        {@link Class} object of the POJO the data should be retrieved from
+     * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a {@link String} key
+     *         to the corresponding {@link String} value of meta information
      * @author mbrunnli (06.02.2013)
      */
     private List<Map<String, Object>> extractAttributes(Class<?> pojo) {
+
         List<Map<String, Object>> attributes = new LinkedList<Map<String, Object>>();
         for (Field f : pojo.getDeclaredFields()) {
             if (Modifier.isStatic(f.getModifiers())) {
                 continue;
             }
             Map<String, Object> attrValues = new HashMap<String, Object>();
-            attrValues.put("name", f.getName());
-            attrValues.put("type", f.getType().getSimpleName());
-            attrValues.put("canonicalType", f.getType().getCanonicalName());
+            attrValues.put(ModelConstant.NAME, f.getName());
+            attrValues.put(ModelConstant.TYPE, f.getType().getName());
+            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getCanonicalName());
             attributes.add(attrValues);
         }
         return attributes;
@@ -116,58 +119,62 @@ public class JavaModelBuilder {
 
     /**
      * Extracts all methods and their properties from the given java class
+     * 
      * @param pojo
-     *            java class
+     *        java class
      * @return a {@link List} of attributes for all methods
      * @author mbrunnli (04.06.2014)
      */
     private List<Map<String, Object>> extractMethods(Class<?> pojo) {
+
         List<Map<String, Object>> methods = new LinkedList<>();
         for (Method method : pojo.getMethods()) {
             Map<String, Object> methodAttributes = new HashMap<>();
-            methodAttributes.put("name", method.getName());
+            methodAttributes.put(ModelConstant.NAME, method.getName());
             Map<String, Object> annotations = new HashMap<>();
             extractAnnotationsRecursively(annotations, method.getAnnotations());
-            methodAttributes.put("annotations", annotations);
+            methodAttributes.put(ModelConstant.ANNOTATIONS, annotations);
             methods.add(methodAttributes);
         }
         return methods;
     }
 
     /**
-     * Collect all annotations for the given pojo from setter and getter methods by searching using the
-     * attribute names. Annotation information retrieved from the setter and getter methods will be added the
-     * the corresponding attribute meta data
+     * Collect all annotations for the given pojo from setter and getter methods by searching using the attribute names.
+     * Annotation information retrieved from the setter and getter methods will be added the the corresponding attribute
+     * meta data
+     * 
      * @param pojo
-     *            class for which the setter and getter should be evaluated according to their annotations
+     *        class for which the setter and getter should be evaluated according to their annotations
      * @param attributes
-     *            list of attribute meta data for the generation (object model)
+     *        list of attribute meta data for the generation (object model)
      * @author mbrunnli (01.04.2014)
      */
     private void collectAnnotations(Class<?> pojo, List<Map<String, Object>> attributes) {
+
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<String, Object>();
-            attr.put("annotations", annotations);
+            attr.put(ModelConstant.ANNOTATIONS, annotations);
             try {
-                Field field = pojo.getField((String) attr.get("name"));
+                Field field = pojo.getField((String) attr.get(ModelConstant.NAME));
                 extractAnnotationsRecursively(annotations, field.getAnnotations());
             } catch (NoSuchFieldException e) {
                 // Do nothing if the method does not exist
             }
             try {
-                Method getter = pojo.getMethod("get" + StringUtils.capitalize((String) attr.get("name")));
+                Method getter = pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
             }
             try {
-                Method getter = pojo.getMethod("is" + StringUtils.capitalize((String) attr.get("name")));
+                Method getter = pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
             }
             try {
-                Method setter = pojo.getMethod("set" + StringUtils.capitalize((String) attr.get("name")));
+                Method setter = pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -178,21 +185,23 @@ public class JavaModelBuilder {
     /**
      * Extracts all information of the given annotations recursively and writes them into the object model
      * (annotationsMap)
+     * 
      * @param annotationsMap
-     *            object model for annotations
+     *        object model for annotations
      * @param annotations
-     *            to be analyzed
+     *        to be analyzed
      * @author mbrunnli (01.04.2014)
      */
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap, Annotation[] annotations) {
+
         for (Annotation annotation : annotations) {
             Map<String, Object> annotationParameters = new HashMap<String, Object>();
             annotationsMap.put(annotation.annotationType().getCanonicalName().replaceAll("\\.", "_"),
-                annotationParameters);
+                    annotationParameters);
 
             for (Method getter : annotation.annotationType().getMethods()) {
                 if (getter.getParameterTypes().length > 0 || getter.getName().equals("hashCode")
-                    || getter.getName().equals("annotationType") || getter.getName().equals("toString"))
+                        || getter.getName().equals("annotationType") || getter.getName().equals("toString"))
                     continue;
                 try {
                     Object value = getter.invoke(annotation);
@@ -214,30 +223,32 @@ public class JavaModelBuilder {
                         annotationParameters.put(getter.getName(), value);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.",
-                        getter.getName(), annotation.getClass(), e);
+                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.", getter.getName(),
+                            annotation.getClass(), e);
                 }
             }
         }
     }
 
     /**
-     * Determines whether the given attributes behaving as IDs on the persistence layer. The information will
-     * be integrated into the default model as stated in {@link #createModel(Class)}
+     * Determines whether the given attributes behaving as IDs on the persistence layer. The information will be
+     * integrated into the default model as stated in {@link #createModel(Class)}
+     * 
      * @param pojo
-     *            {@link Class} object of the POJO the data should be retrieved from
+     *        {@link Class} object of the POJO the data should be retrieved from
      * @param attributes
-     *            a {@link List} of all attributes and their properties
+     *        a {@link List} of all attributes and their properties
      * @author mbrunnli (12.02.2013)
      */
     private void determinePojoIds(Class<?> pojo, List<Map<String, Object>> attributes) {
+
         for (Map<String, Object> attr : attributes) {
             try {
                 Method getter = null;
                 try {
-                    getter = pojo.getDeclaredMethod("get" + StringUtil.capFirst((String) attr.get("name")));
+                    getter = pojo.getDeclaredMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 } catch (NoSuchMethodException | SecurityException e) {
-                    getter = pojo.getDeclaredMethod("is" + StringUtil.capFirst((String) attr.get("name")));
+                    getter = pojo.getDeclaredMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
                 if (getter == null)
                     return;
