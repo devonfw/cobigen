@@ -52,7 +52,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Lastly checked generation packages
      */
-    private Set<Object> lastCheckedPackages = new HashSet<Object>();
+    private Set<Object> lastCheckedIncrements = new HashSet<Object>();
 
     /**
      * Defines whether the {@link JavaGeneratorWrapper} is in batch mode.
@@ -96,6 +96,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
             Set<String> paths = getSelectedGenerationPaths();
             ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths);
+            resourcesTree.setCheckedElements(new Object[0]);
             resourcesTree.refresh();
             resourcesTree.expandAll();
             if (!batch) {
@@ -191,7 +192,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private Set<String> getSelectedGenerationPaths() {
 
         Set<String> paths = new HashSet<String>();
-        for (Object o : lastCheckedPackages) {
+        for (Object o : lastCheckedIncrements) {
             if (o instanceof ComparableIncrement) {
                 ComparableIncrement pkg = ((ComparableIncrement) o);
                 paths.addAll(PathUtil.createWorkspaceRelativePaths(javaGeneratorWrapper.getGenerationTargetProject(),
@@ -230,23 +231,23 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private void performCheckLogicForALLPackage(CheckboxTreeViewer packageSelector, Set<Object> checkedElements) {
 
         Set<Object> addedDiff = new HashSet<Object>(checkedElements);
-        Set<Object> removedDiff = new HashSet<Object>(lastCheckedPackages);
-        addedDiff.removeAll(lastCheckedPackages);
+        Set<Object> removedDiff = new HashSet<Object>(lastCheckedIncrements);
+        addedDiff.removeAll(lastCheckedIncrements);
         removedDiff.removeAll(checkedElements);
         ComparableIncrement all =
                 new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
                         Lists.<IncrementTo> newLinkedList());
-        if (!lastCheckedPackages.contains(all) && addedDiff.contains(all)) {
+        if (!lastCheckedIncrements.contains(all) && addedDiff.contains(all)) {
             selectAllPackages(packageSelector);
-        } else if (lastCheckedPackages.contains(all) && removedDiff.contains(all)) {
+        } else if (lastCheckedIncrements.contains(all) && removedDiff.contains(all)) {
             setAllChecked(packageSelector, false);
-            lastCheckedPackages.clear();
+            lastCheckedIncrements.clear();
         } else if (!removedDiff.isEmpty()) {
-            lastCheckedPackages = checkedElements;
-            lastCheckedPackages.remove(all);
+            lastCheckedIncrements = checkedElements;
+            lastCheckedIncrements.remove(all);
             packageSelector.setChecked(all, false);
         } else {
-            lastCheckedPackages = checkedElements;
+            lastCheckedIncrements = checkedElements;
         }
     }
 
@@ -268,13 +269,13 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Selects all packages in the package selector
      * 
-     * @param packageSelector package selector
+     * @param incrementSelector package selector
      * @author mbrunnli (26.02.2013)
      */
-    private void selectAllPackages(CheckboxTreeViewer packageSelector) {
+    private void selectAllPackages(CheckboxTreeViewer incrementSelector) {
 
-        setAllChecked(packageSelector, true);
-        lastCheckedPackages = new HashSet<Object>(Arrays.asList((Object[]) packageSelector.getInput()));
+        setAllChecked(incrementSelector, true);
+        lastCheckedIncrements = new HashSet<Object>(Arrays.asList((Object[]) incrementSelector.getInput()));
     }
 
     /**
@@ -318,7 +319,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Sets all files to be checked
+     * Sets all resources to be checked or unchecked
      * 
      * @author trippl (24.04.2013)
      */
