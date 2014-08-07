@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
 import freemarker.template.TemplateException;
@@ -133,6 +134,10 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
         } catch (SAXException e) {
             MessageDialog.openError(shell, "SAX Exception", e.getMessage());
             LOG.error("SAX Exception", e);
+        } catch (PluginProcessingException e) {
+            MessageDialog.openError(shell, "Plug-in Processing Exception", "A plug-in caused an unhandled exception:\n"
+                    + e.getMessage());
+            LOG.error("A plug-in caused an unhandled exception:\n" + e.getMessage(), e);
         } catch (Throwable e) {
             MessageDialog.openError(shell, "Unknown Exception", e.getMessage());
             LOG.error("Unknown Exception", e);

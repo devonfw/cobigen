@@ -16,12 +16,28 @@ public class PluginProcessingException extends RuntimeException {
 
     /**
      * Creates a new {@link PluginProcessingException} with the given message
+     * 
      * @param msg
-     *            error message
+     *        error message
      * @author mbrunnli (10.04.2014)
      */
     public PluginProcessingException(String msg) {
+
         super(msg);
+    }
+
+    /**
+     * Creates a new {@link PluginProcessingException} with the given message and the given cause
+     * 
+     * @param msg
+     *        error message
+     * @param cause
+     *        cause of the exception
+     * @author mbrunnli (07.08.2014)
+     */
+    public PluginProcessingException(String msg, Throwable cause) {
+
+        super(msg, cause);
     }
 
 }
