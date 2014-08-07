@@ -9,16 +9,7 @@ import ${variables.rootPackage}.common.builders.P;
 
 public class ${pojo.name}Builder {
 
-    private List<P<${pojo.name}>> parameterToBeApplied = new LinkedList<P<${pojo.name}>>();
-    
-    private void fillMandatoryFields() {
-        <#list pojo.attributes as attr>
-		<#if (attr.annotations.javax_validation_constraints_NotNull)?has_content>
-		<@callNotNullPropertyWithDefaultValue attr=attr/>
-		
-		</#if>
-	    </#list>
-    }
+    private List<P<${pojo.name}>> parameterToBeApplied;
     
     <#list pojo.attributes as attr>
 	public ${pojo.name}Builder ${attr.name}(final ${attr.type} ${attr.name}) {
