@@ -26,16 +26,16 @@ import freemarker.ext.beans.BeanModel;
 import freemarker.template.DefaultObjectWrapper;
 
 /**
- * The {@link JavaModelBuilder} creates a new model for a given input pojo class
+ * The {@link ReflectedJavaModelBuilder} creates a new model for a given input pojo class
  * 
  * @author mbrunnli (12.03.2013)
  */
-public class JavaModelBuilder {
+public class ReflectedJavaModelBuilder {
 
     /**
      * Assigning logger to JavaModelBuilder
      */
-    private static final Logger LOG = LoggerFactory.getLogger(JavaModelBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReflectedJavaModelBuilder.class);
 
     /**
      * Cached input pojo class in order to avoid unnecessary efforts
@@ -86,10 +86,23 @@ public class JavaModelBuilder {
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
         cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        // Utils to enable type checks
-        cachedModel.put("utils", new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
+        enrichModelByUtils(cachedModel, pojo);
 
         return new HashMap<String, Object>(cachedModel);
+    }
+
+    /**
+     * Enriches the given model by type utils
+     * 
+     * @param model
+     *        raw model
+     * @param pojo
+     *        the model has been created for
+     */
+    public static void enrichModelByUtils(Map<String, Object> model, Class<?> pojo) {
+
+        // Utils to enable type checks
+        model.put("utils", new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
     }
 
     /**

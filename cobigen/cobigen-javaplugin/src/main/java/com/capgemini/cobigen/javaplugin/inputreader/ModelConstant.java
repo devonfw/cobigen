@@ -12,6 +12,11 @@ import java.util.Map;
 public class ModelConstant {
 
     /**
+     * Node for hand-written template utils
+     */
+    public static final String UTILS = "utils";
+
+    /**
      * Root element for java model ({@link Map}&lt;{@link String}, {@link Object}&gt;)
      */
     public static final String ROOT = "pojo";

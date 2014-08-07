@@ -75,10 +75,6 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
         cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        // Utils to enable type checks //TODO not possible any more?
-        // cachedModel.put("utils", new BeanModel(new FreeMarkerUtil(javaClass.getClassLoader()),
-        // new DefaultObjectWrapper()));
-
         return new HashMap<String, Object>(cachedModel);
     }
 

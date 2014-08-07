@@ -7,12 +7,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Tests for Class {@link JavaModelBuilderTest}
+ * Tests for Class {@link ReflectedJavaModelBuilder}
  * 
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public class JavaModelBuilderTest {
+public class ReflectedJavaModelBuilderTest {
 
     /**
      * TestAttribute for {@link #testCorrectlyExtractedAttributeTypes()}
@@ -27,7 +27,7 @@ public class JavaModelBuilderTest {
     @SuppressWarnings("unchecked")
     public void testCorrectlyExtractedAttributeTypes() {
 
-        JavaModelBuilder javaModelBuilder = new JavaModelBuilder();
+        ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);

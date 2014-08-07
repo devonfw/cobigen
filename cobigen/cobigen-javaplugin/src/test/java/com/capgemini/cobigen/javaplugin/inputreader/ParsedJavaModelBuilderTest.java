@@ -3,18 +3,12 @@ package com.capgemini.cobigen.javaplugin.inputreader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
-import com.thoughtworks.qdox.library.ClassLibraryBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Tests for Class {@link ParsedJavaModelBuilderTest}
@@ -22,7 +16,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public class ParsedJavaModelBuilderTest {
+public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
     /**
      * Root path to all resources used in this test case
      */
@@ -41,46 +35,38 @@ public class ParsedJavaModelBuilderTest {
      *         test fails
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testCorrectlyExtractedAttributeTypes() throws FileNotFoundException {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model = javaModelBuilder.createModel(getJavaClass(new FileReader(file)));
+        Map<String, Object> customList = getField(model, "customList");
 
-        Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
-        Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        List<Map<String, Object>> attributes = (List<Map<String, Object>>) pojoMap.get(ModelConstant.FIELDS);
-        Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
-
-        Map<String, Object> parametricTestAttribute = null;
-        for (Map<String, Object> attr : attributes) {
-            if ("parametricTestAttribute".equals(attr.get(ModelConstant.NAME))) {
-                parametricTestAttribute = attr;
-                break;
-            }
-        }
-
-        Assert.assertNotNull("There is no field with name 'parametricTestAttribute' in the model",
-                parametricTestAttribute);
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        Assert.assertEquals("List<String>", parametricTestAttribute.get(ModelConstant.TYPE));
+        Assert.assertEquals("List<String>", customList.get(ModelConstant.TYPE));
     }
 
     /**
-     * Returns the {@link JavaClass} parsed by the given {@link Reader}
+     * Tests whether inherited fields will also be included in the model
      * 
-     * @param reader
-     *        {@link Reader} which contents should be parsed
-     * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
+     * @throws FileNotFoundException
+     *         test fails
      */
-    private ModifyableJavaClass getJavaClass(Reader reader) {
+    @Test
+    @Ignore("Logic not implemented. Has to be discussed whether this logic is intended as default.")
+    public void testModelBuildingWithInheritance() throws FileNotFoundException {
 
-        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        classLibraryBuilder.appendDefaultClassLoaders();
-        JavaSource source = classLibraryBuilder.addSource(reader);
-        return (ModifyableJavaClass) source.getClasses().get(0);
+        File subClass = new File(testFileRootPath + "TestClass.java");
+        File superClass = new File(testFileRootPath + "AbstractTestClass.java");
+
+        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        Map<String, Object> model =
+                javaModelBuilder.createModel(getJavaClass(new FileReader(subClass), new FileReader(superClass)));
+
+        Assert.assertEquals(2, getFields(model).size());
+        Assert.assertNotNull(getField(model, "id"));
+        Assert.assertNotNull(getField(model, "customList"));
     }
+
 }
