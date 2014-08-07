@@ -25,7 +25,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
     private static String testFileRootPath = "src/test/resources/JavaInputReaderTests/";
 
     /**
-     * TestAttribute for {@link #testCorrectlyExtractedAttributeTypes()}
+     * TestAttribute for {@link #testCorrectlyExtractedGenericAttributeTypes()}
      */
     @SuppressWarnings("unused")
     private List<String> parametricTestAttribute;
@@ -37,7 +37,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
      *         test fails
      */
     @Test
-    public void testCorrectlyExtractedAttributeTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -47,6 +47,28 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("List<String>", customList.get(ModelConstant.TYPE));
+        Assert.assertEquals("java.util.List<java.lang.String>", customList.get(ModelConstant.CANONICAL_TYPE));
+    }
+
+    /**
+     * Tests whether the type and the canonical type of a field will be extracted correctly
+     * 
+     * @throws FileNotFoundException
+     *         test fails
+     */
+    @Test
+    public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException {
+
+        File file = new File(testFileRootPath + "Pojo.java");
+
+        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        Map<String, Object> model = javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
+        Map<String, Object> customTypeField = getField(model, "customTypeField");
+
+        // "List<String>" is not possible to retrieve using reflection due to type erasure
+        Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.AnyOtherType",
+                customTypeField.get(ModelConstant.CANONICAL_TYPE));
     }
 
     /**
