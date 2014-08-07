@@ -102,7 +102,8 @@ public class ReflectedJavaModelBuilder {
     public static void enrichModelByUtils(Map<String, Object> model, Class<?> pojo) {
 
         // Utils to enable type checks
-        model.put("utils", new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
+        model.put(ModelConstant.UTILS, new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()),
+                new DefaultObjectWrapper()));
     }
 
     /**

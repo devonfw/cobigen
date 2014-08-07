@@ -4,6 +4,7 @@
 package com.capgemini.cobigen.eclipse.generator.java;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.javaplugin.util.ParserUtil;
 import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
@@ -196,7 +198,6 @@ public class JavaGeneratorWrapper {
 
         this.type = type;
         packageFolder = null;
-        // TODO maybe migrate to parsing
         ClassLoader projectClassLoader = ClassLoaderUtil.getProjectClassLoader(type.getJavaProject());
         pojo = projectClassLoader.loadClass(type.getFullyQualifiedName());
         matchingTemplates = cobiGen.getMatchingTemplates(pojo);
@@ -275,10 +276,14 @@ public class JavaGeneratorWrapper {
         if (packageFolder != null) {
             cobiGen.generate(packageFolder, template, forceOverride);
         } else {
-            Map<String, Object> model = cobiGen.getModelBuilder(pojo, template.getTriggerId()).createModel();
+            Object[] inputSourceAndClass =
+                    new Object[] { pojo,
+                    ParserUtil.getJavaClass(new StringReader(type.getCompilationUnit().getSource())) };
+            Map<String, Object> model =
+                    cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
             adaptModel(model, type);
             removeIgnoredFieldsFromModel(model);
-            cobiGen.generate(pojo, template, model, forceOverride);
+            cobiGen.generate(inputSourceAndClass, template, model, forceOverride);
         }
     }
 

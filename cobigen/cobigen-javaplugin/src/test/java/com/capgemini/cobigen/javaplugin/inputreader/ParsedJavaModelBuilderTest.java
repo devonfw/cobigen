@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.util.ParserUtil;
+
 /**
  * Tests for Class {@link ParsedJavaModelBuilderTest}
  * 
@@ -40,7 +42,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
-        Map<String, Object> model = javaModelBuilder.createModel(getJavaClass(new FileReader(file)));
+        Map<String, Object> model = javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
         Map<String, Object> customList = getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
@@ -62,7 +64,8 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-                javaModelBuilder.createModel(getJavaClass(new FileReader(subClass), new FileReader(superClass)));
+                javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(subClass), new FileReader(
+                        superClass)));
 
         Assert.assertEquals(2, getFields(model).size());
         Assert.assertNotNull(getField(model, "id"));

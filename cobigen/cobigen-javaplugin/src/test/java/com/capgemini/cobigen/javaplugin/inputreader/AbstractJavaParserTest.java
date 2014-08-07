@@ -1,16 +1,9 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
-import com.thoughtworks.qdox.library.ClassLibraryBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Abstract test class for Java parser tests, which provides useful functionality for Java parser testing
@@ -19,29 +12,6 @@ import com.thoughtworks.qdox.model.JavaSource;
  * @version $Revision$
  */
 public abstract class AbstractJavaParserTest {
-
-    /**
-     * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files will be
-     * added to the class library
-     * 
-     * @param reader
-     *        {@link Reader}s which contents should be parsed
-     * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    protected ModifyableJavaClass getJavaClass(Reader... reader) {
-
-        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        classLibraryBuilder.appendDefaultClassLoaders();
-        JavaSource source = null;
-        ModifyableJavaClass targetClass = null;
-        for (Reader r : reader) {
-            source = classLibraryBuilder.addSource(r);
-            if (targetClass == null)
-                targetClass = (ModifyableJavaClass) source.getClasses().get(0);
-        }
-        return targetClass;
-    }
 
     /**
      * Returns the model root-element ({@link ModelConstant#ROOT})

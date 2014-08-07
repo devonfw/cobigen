@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.util.ParserUtil;
 
 /**
  * This class tests the {@link JavaInputReader}. More specific it should test the model extraction by using reflection
@@ -38,7 +39,8 @@ public class JavaInputReaderTest extends AbstractJavaParserTest {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =
-                javaInputReader.createModel(new Object[] { getJavaClass(new FileReader(javaSourceFile)), javaClass });
+                javaInputReader.createModel(new Object[] { ParserUtil.getJavaClass(new FileReader(javaSourceFile)),
+                javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
         // Check parser feature (resolving of parametric type variables)
