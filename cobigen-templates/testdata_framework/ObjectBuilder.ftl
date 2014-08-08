@@ -11,6 +11,12 @@ public class ${pojo.name}Builder {
 
     private List<P<${pojo.name}>> parameterToBeApplied;
     
+    public ${pojo.name}Builder() {
+		parameterToBeApplied = new LinkedList<P<${pojo.name}>>();
+		fillMandatoryFields();
+		fillMandatoryFields_custom();
+	}
+    
     <#list pojo.attributes as attr>
 	public ${pojo.name}Builder ${attr.name}(final ${attr.type} ${attr.name}) {
         parameterToBeApplied.add(new P<${pojo.name}>() {
