@@ -54,11 +54,6 @@
                   label="Generate..."
                   style="push">
             </command>
-            <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.runCustomBatch"
-                  label="Run custom batch..."
-                  style="push">
-            </command>
          </menu>
          <separator
                name="com.capgemini.cobigen.eclipseplugin.separator2"
