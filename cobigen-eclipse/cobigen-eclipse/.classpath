@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/annotations-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-17.0.jar"/>
@@ -35,7 +36,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/module-core-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/module-xml_merge-common-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/which4j-0.21.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
