@@ -15,4 +15,9 @@ JDOM 1.1.3 = "Apache-style open source license" (http://www.jdom.org/docs/faq.ht
 ------------
 
 Änderung:
-QDox 2.0-M1
+QDox 2.0-M2
+Guava 17.0
+FreeMarker 2.3.20
+
+Neu:
+Reflections 0.9.9-RC2 = WTFPL (https://code.google.com/p/reflections/)
