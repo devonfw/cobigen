@@ -13,6 +13,7 @@
 			<xs:sequence>
 				<xs:element ref="tns:triggers" />
 			</xs:sequence>
+			<xs:attribute name="version" use="required" type="xs:decimal"/>
 		</xs:complexType>
 	</xs:element>
 	

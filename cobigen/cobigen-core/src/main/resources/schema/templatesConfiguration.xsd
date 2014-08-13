@@ -9,6 +9,7 @@
 				<xs:element name="templates" type="tns:templates" />
 				<xs:element name="increments" minOccurs="0" maxOccurs="1" type="tns:increments" />
 			</xs:sequence>
+			<xs:attribute name="version" use="required" type="xs:decimal"/>
 		</xs:complexType>
 
 		<xs:key name="templateId">

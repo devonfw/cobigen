@@ -2,7 +2,7 @@
 <!--
   Copyright © Capgemini 2013. All rights reserved.
 -->
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">	
 	<templates>
 		<template id="java_common_constants_exceptionKeys" destinationPath="src/main/java/${variables.rootPackage}/common/constants/ExceptionKeys.java" templateFile="java/common/constants/ExceptionKeys.ftl" mergeStrategy="javamerge" />
 		<template id="java_common_constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/common/constants/NamedQueries.java" templateFile="java/common/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
