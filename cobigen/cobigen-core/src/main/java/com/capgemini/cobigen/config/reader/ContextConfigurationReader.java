@@ -4,6 +4,7 @@
 package com.capgemini.cobigen.config.reader;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.capgemini.ContextConfiguration;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
+import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
 import com.google.common.collect.Maps;
@@ -60,20 +62,34 @@ public class ContextConfigurationReader {
     public ContextConfigurationReader(File file) throws InvalidConfigurationException {
 
         try {
-            JAXBContext context = JAXBContext.newInstance(ContextConfiguration.class);
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema =
-                    schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
-                            "/schema/contextConfiguration.xsd")));
-            Unmarshaller unmarschaller = context.createUnmarshaller();
-            unmarschaller.setSchema(schema);
+            Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+
+            // Unmarshal without schema checks for getting the version attribute of the root node.
+            // This is necessary to provide an automatic upgrade client later on
             Object rootNode = unmarschaller.unmarshal(file);
             if (rootNode instanceof ContextConfiguration) {
-                contextNode = (ContextConfiguration) rootNode;
+                BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
+                if (configVersion == null) {
+                    throw new InvalidConfigurationException(file,
+                            "The required 'version' attribute of node \"contextConfiguration\" has not been set");
+                } else {
+                    VersionValidator.validateContextConfig(configVersion);
+                }
             } else {
                 throw new InvalidConfigurationException(file,
                         "Unknown Root Node. Use \"contextConfiguration\" as root Node");
             }
+
+            // If we reach this point, the configuration version and root node has been validated.
+            // Unmarshal with schema checks for checking the correctness and give the user more hints to correct his
+            // failures
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema =
+                    schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
+                            "/schema/contextConfiguration.xsd")));
+            unmarschaller.setSchema(schema);
+            rootNode = unmarschaller.unmarshal(file);
+            contextNode = (ContextConfiguration) rootNode;
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", file.getPath(), e);
             // try getting SAXParseException for better error handling and user support

@@ -63,6 +63,11 @@ public class CobiGen {
     private static final Logger LOG = LoggerFactory.getLogger(CobiGen.class);
 
     /**
+     * Current version of the generation, needed for configuration file validation
+     */
+    public static final String CURRENT_VERSION = "1.0.0";
+
+    /**
      * The {@link ContextConfiguration} for this instance
      */
     private ContextConfiguration contextConfiguration;

@@ -4,6 +4,7 @@
 package com.capgemini.cobigen.config.reader;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,6 +31,7 @@ import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
@@ -78,14 +80,34 @@ public class TemplatesConfigurationReader {
         configFile = file;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(TemplatesConfiguration.class);
+            Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
+
+            // Unmarshal without schema checks for getting the version attribute of the root node.
+            // This is necessary to provide an automatic upgrade client later on
+            Object rootNode = unmarschaller.unmarshal(file);
+            if (rootNode instanceof TemplatesConfiguration) {
+                BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
+                if (configVersion == null) {
+                    throw new InvalidConfigurationException(file,
+                            "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
+                } else {
+                    VersionValidator.validateTemplatesConfig(configVersion);
+                }
+            } else {
+                throw new InvalidConfigurationException(file,
+                        "Unknown Root Node. Use \"templatesConfiguration\" as root Node");
+            }
+
+            // If we reach this point, the configuration version and root node has been validated.
+            // Unmarshal with schema checks for checking the correctness and give the user more hints to correct his
+            // failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema =
                     schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
                             "/schema/templatesConfiguration.xsd")));
-            Unmarshaller unmarschaller = context.createUnmarshaller();
             unmarschaller.setSchema(schema);
-            configNode = (TemplatesConfiguration) unmarschaller.unmarshal(file);
+            rootNode = unmarschaller.unmarshal(file);
+            configNode = (TemplatesConfiguration) rootNode;
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", file.getPath(), e);
             // try getting SAXParseException for better error handling and user support
