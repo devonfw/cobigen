@@ -103,6 +103,12 @@ public class ContextConfigurationReader {
             // Should never occur. Programming error.
             LOG.error("Could not parse context configuration schema.", e);
             throw new IllegalStateException("Could not parse context configuration schema. Please state this as a bug.");
+        } catch (NumberFormatException e) {
+            // The version number is currently the only xml value which will be parsed to a number data type
+            // So provide help
+            LOG.error("Invalid version number for context configuration defined.", e);
+            throw new InvalidConfigurationException(
+                    "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         }
 
     }
