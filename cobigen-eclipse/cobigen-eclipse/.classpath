@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.20.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/annotations-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
@@ -24,7 +25,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dtdparser-1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collections-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.inject-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
