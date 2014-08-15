@@ -162,7 +162,7 @@ public class HierarchicalTreeOperator {
         if (!_cachedPackageFragments.containsKey(curr.getElementName())) {
             _cachedPackageFragments.put(curr.getElementName(), new HashMap<String, IPackageFragment>());
         }
-        _cachedPackageFragments.get(curr.getElementName()).put(curr.getParent().getElementName(), curr);
+        _cachedPackageFragments.get(curr.getElementName()).put(curr.getParent().getPath().toString(), curr);
     }
 
     /**
@@ -226,7 +226,7 @@ public class HierarchicalTreeOperator {
                 // assumption: all packages have been seen during first phase providing the contents. This method will
                 // be called while providing labels and thus all package fragments should be cached beforehand.
                 IPackageFragment parentPackage =
-                        _cachedPackageFragments.get(packageBuilder.toString()).get(root.getElementName());
+                        _cachedPackageFragments.get(packageBuilder.toString()).get(root.getPath().toString());
 
                 // rely on folding mapping cache (pass null parameter)
                 if (parentPackage.equals(fold(parentPackage, null))) {
