@@ -209,29 +209,36 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * Mocks all non existent Packages, which are selected to be generated and returns all mocked packages
+     * Stubs all non existent Packages, which are selected to be generated and returns all stubbed packages
      * 
      * @param parentElement
      *        parent {@link IJavaElement} to retrieve the children from
      * @param considerPackages
      *        states whether packages should be considered when retrieving the children. This also includes recursively
      *        retrieving children of packages
-     * @return List of {@link IPackageFragment}s, which will be mocked
+     * @return List of {@link IPackageFragment}s, which will be stubbed
      * @throws JavaModelException
      * @author mbrunnli (01.04.2014)
      */
     private List<Object> stubNonExistentChildren(Object parentElement, boolean considerPackages)
             throws JavaModelException {
 
+        // Default package handling
+        if (parentElement instanceof IPackageFragment && ((IPackageFragment) parentElement).isDefaultPackage()) {
+            return Lists.newArrayList();// a default package cannot have packages as children
+        }
+
         List<Object> stubbedChildren = new LinkedList<Object>();
         String debugInfo = null;
         if (parentElement instanceof IJavaElement) {
 
-            if (parentElement instanceof IPackageFragment && ((IPackageFragment) parentElement).isDefaultPackage()) {
-                return Lists.newArrayList();// a default package cannot have packages as children
-            }
-
             for (String path : getNonExistentChildren(((IJavaElement) parentElement).getPath())) {
+
+                // check inclusion and exclusion patterns to stub the correct elements
+                if (!JavaClasspathUtil.isCompiledSource((IJavaElement) parentElement, path)) {
+                    stubNonExistentChildren(((IJavaElement) parentElement).getCorrespondingResource(), stubbedChildren);
+                    continue;
+                }
 
                 IPath elementpath = new Path(path);
 
@@ -298,69 +305,86 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                         javaElementStub.getElementName(), javaElementStub.getPath().toString());
             }
         } else if (parentElement instanceof IResource) {
-            IPath parentPath = ((IResource) parentElement).getFullPath();
-            for (String path : getNonExistentChildren(parentPath)) {
-
-                IResourceStub resourceStub = null;
-                IPath childPath = new Path(path);
-                IPath childPathFragment = childPath.removeFirstSegments(parentPath.segmentCount());
-
-                if (childPathFragment.segmentCount() > 1) {
-                    // target path is no atomic child -> stub next element if necessary
-                    childPathFragment = childPathFragment.removeFirstSegments(1);
-                    IPath atomicChildPath = new Path(path);
-                    atomicChildPath = atomicChildPath.removeLastSegments(childPathFragment.segmentCount());
-
-                    // If resource already exists, we will continue as we will be called later again with this folder as
-                    // parent
-                    if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath))
-                        continue;
-                    else if (_cachedProvidedResources.containsKey(atomicChildPath.toString())) {
-                        // if already seen, just get it and skip creation
-                        Object cachedStub = _cachedProvidedResources.get(atomicChildPath.toString());
-                        if (!stubbedChildren.contains(cachedStub))
-                            stubbedChildren.add(cachedStub);
-                        continue;
-                    }
-
-                    if (targetIsFile(atomicChildPath)) {
-                        resourceStub = new IFileStub();
-                        debugInfo = "File";
-                    } else {
-                        resourceStub = new IFolderStub();
-                        debugInfo = "Folder";
-                    }
-                    resourceStub.setFullPath(atomicChildPath);
-                } else if (childPathFragment.segmentCount() == 1) {
-
-                    if (_cachedProvidedResources.containsKey(childPath.toString())) {
-                        // if already seen, just get it and skip creation
-                        Object cachedStub = _cachedProvidedResources.get(childPath.toString());
-                        if (!stubbedChildren.contains(cachedStub))
-                            stubbedChildren.add(cachedStub);
-                        continue;
-                    }
-
-                    if (targetIsFile(childPath)) {
-                        resourceStub = new IFileStub();
-                        debugInfo = "File";
-                    } else {
-                        resourceStub = new IFolderStub();
-                        debugInfo = "Folder";
-                    }
-                    resourceStub.setFullPath(childPath);
-                } else
-                    continue; // no child of parentPath
-
-                if (!stubbedChildren.contains(resourceStub)) {
-                    stubbedChildren.add(resourceStub);
-                    _cachedProvidedResources.put(resourceStub.getFullPath().toString(), resourceStub);
-                }
-                LOG.debug("Stub created for {} with name '{}' and path '{}'", debugInfo, resourceStub.getName(),
-                        resourceStub.getFullPath().toString());
-            }
+            stubNonExistentChildren((IResource) parentElement, stubbedChildren);
         }
         return stubbedChildren;
+    }
+
+    /**
+     * Stubs all non existent resources, which are selected to be generated
+     * 
+     * @param parentElement
+     *        parent {@link IJavaElement} to retrieve the children from
+     * @param stubbedChildren
+     *        the so far stubbed resources and similarly the output of this method as new stubbed resources will be
+     *        added to this list. This is necessary in order to avoid duplicates in this list.
+     * @author mbrunnli (01.04.2014)
+     */
+    private void stubNonExistentChildren(IResource parentElement, List<Object> stubbedChildren) {
+
+        String debugInfo;
+
+        IPath parentPath = parentElement.getFullPath();
+        for (String path : getNonExistentChildren(parentPath)) {
+
+            IResourceStub resourceStub = null;
+            IPath childPath = new Path(path);
+            IPath childPathFragment = childPath.removeFirstSegments(parentPath.segmentCount());
+
+            if (childPathFragment.segmentCount() > 1) {
+                // target path is no atomic child -> stub next element if necessary
+                childPathFragment = childPathFragment.removeFirstSegments(1);
+                IPath atomicChildPath = new Path(path);
+                atomicChildPath = atomicChildPath.removeLastSegments(childPathFragment.segmentCount());
+
+                // If resource already exists, we will continue as we will be called later again with this folder as
+                // parent
+                if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath))
+                    continue;
+                else if (_cachedProvidedResources.containsKey(atomicChildPath.toString())) {
+                    // if already seen, just get it and skip creation
+                    Object cachedStub = _cachedProvidedResources.get(atomicChildPath.toString());
+                    if (!stubbedChildren.contains(cachedStub))
+                        stubbedChildren.add(cachedStub);
+                    continue;
+                }
+
+                if (targetIsFile(atomicChildPath)) {
+                    resourceStub = new IFileStub();
+                    debugInfo = "File";
+                } else {
+                    resourceStub = new IFolderStub();
+                    debugInfo = "Folder";
+                }
+                resourceStub.setFullPath(atomicChildPath);
+            } else if (childPathFragment.segmentCount() == 1) {
+
+                if (_cachedProvidedResources.containsKey(childPath.toString())) {
+                    // if already seen, just get it and skip creation
+                    Object cachedStub = _cachedProvidedResources.get(childPath.toString());
+                    if (!stubbedChildren.contains(cachedStub))
+                        stubbedChildren.add(cachedStub);
+                    continue;
+                }
+
+                if (targetIsFile(childPath)) {
+                    resourceStub = new IFileStub();
+                    debugInfo = "File";
+                } else {
+                    resourceStub = new IFolderStub();
+                    debugInfo = "Folder";
+                }
+                resourceStub.setFullPath(childPath);
+            } else
+                continue; // no child of parentPath
+
+            if (!stubbedChildren.contains(resourceStub)) {
+                stubbedChildren.add(resourceStub);
+                _cachedProvidedResources.put(resourceStub.getFullPath().toString(), resourceStub);
+            }
+            LOG.debug("Stub created for {} with name '{}' and path '{}'", debugInfo, resourceStub.getName(),
+                    resourceStub.getFullPath().toString());
+        }
     }
 
     /**

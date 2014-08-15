@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Stub for the {@link IJavaElement} in order to simulate resources in the generate wizard
+ * 
  * @author mbrunnli (06.04.2014)
  */
 public class IJavaElementStub implements IParent, IJavaElement {
@@ -47,258 +48,314 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'parent'.
+     * 
      * @param parent
-     *            Neuer Wert für parent
+     *        Neuer Wert für parent
      * @author mbrunnli (05.04.2014)
      */
     public void setParent(IJavaElement parent) {
+
         this.parent = parent;
     }
 
     /**
      * Setzt das Feld 'children'.
+     * 
      * @param children
-     *            Neuer Wert für children
+     *        Neuer Wert für children
      * @author mbrunnli (05.04.2014)
      */
     public void setChildren(IJavaElement[] children) {
+
         this.children = children;
     }
 
     /**
      * Setzt das Feld 'path'.
+     * 
      * @param path
-     *            Neuer Wert für path
+     *        Neuer Wert für path
      * @author mbrunnli (05.04.2014)
      */
     public void setPath(IPath path) {
+
         this.path = path;
     }
 
     /**
      * Setzt das Feld 'elementName'.
+     * 
      * @param elementName
-     *            Neuer Wert für elementName
+     *        Neuer Wert für elementName
      * @author mbrunnli (05.04.2014)
      */
     public void setElementName(String elementName) {
+
         this.elementName = elementName;
     }
 
     /**
      * Setzt das Feld 'elementType'.
+     * 
      * @param elementType
-     *            Neuer Wert für elementType
+     *        Neuer Wert für elementType
      * @author mbrunnli (05.04.2014)
      */
     public void setElementType(int elementType) {
+
         this.elementType = elementType;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean exists() {
+
         return false;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement getAncestor(int ancestorType) {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IResource getCorrespondingResource() throws JavaModelException {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String getElementName() {
+
         return elementName;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public int getElementType() {
+
         return elementType;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String getHandleIdentifier() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaModel getJavaModel() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaProject getJavaProject() {
-        return null;
+
+        return parent.getJavaProject();
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IOpenable getOpenable() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement getParent() {
+
         return parent;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IPath getPath() {
+
         return path;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement getPrimaryElement() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IResource getResource() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public ISchedulingRule getSchedulingRule() {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IResource getUnderlyingResource() throws JavaModelException {
+
         return null;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean isReadOnly() {
+
         return false;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean isStructureKnown() throws JavaModelException {
+
         return false;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement[] getChildren() throws JavaModelException {
+
         return children;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean hasChildren() throws JavaModelException {
+
         return children != null && children.length > 0;
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String toString() {
+
         return getClass().getSimpleName() + "[" + elementName + "]";
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean equals(Object obj) {
+
         if (obj == null)
             return false;
         if (obj instanceof IJavaElementStub)
@@ -314,10 +371,12 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
+     * 
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public int hashCode() {
+
         int hash = 0;
         if (path != null) {
             hash ^= path.toString().hashCode();
