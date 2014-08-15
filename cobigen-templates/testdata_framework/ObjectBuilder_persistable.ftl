@@ -4,6 +4,8 @@ package ${variables.rootPackage}.common.builders;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import ${pojo.package}.${pojo.name};
 import ${variables.rootPackage}.common.builders.P;
 

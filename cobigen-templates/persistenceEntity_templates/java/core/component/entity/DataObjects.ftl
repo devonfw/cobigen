@@ -22,7 +22,7 @@ public class ${pojo.name} implements Serializable {
 	<#assign getterBool='is'+$attrCapName>
 	
 	<#if doc["/doc/pojo/methods[name=$getter or name=$getterBool]"].javaDoc[0]??>
-    ${doc["/doc/pojo/methods[name=$getter or name=$getterBool]"].javaDoc}
+    /**${doc["/doc/pojo/methods[name=$getter or name=$getterBool]"].javaDoc}*/
     </#if>
 	public ${attr.type} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
 		return ${attr.name};
@@ -30,7 +30,7 @@ public class ${pojo.name} implements Serializable {
 	
 	<#assign setter='set'+$attrCapName>
 	<#if doc["/doc/pojo/methods[name=$setter]"].javaDoc[0]??>
-    ${doc["/doc/pojo/methods[name=$setter]"].javaDoc}
+    /**${doc["/doc/pojo/methods[name=$setter]"].javaDoc}*/
     </#if>
 	public void set${attrCapName}(${attr.type} ${attr.name}) {
 		this.${attr.name} = ${attr.name};
