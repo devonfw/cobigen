@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="cobigen-eclipse-feature"
-      label="CobiGen Feature"
+      label="CobiGen Eclipse Plug-in"
       version="1.0.0"
       provider-name="Capgemini">
 
