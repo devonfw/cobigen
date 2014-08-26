@@ -17,14 +17,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>${maven.eclipse_plugin.version}</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<version>${tycho-extras.version}</version>
@@ -36,9 +28,9 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
 				<version>${tycho.version}</version>
-				<configuration>
+				<!--<configuration>
 					<includeAllDependencies>true</includeAllDependencies>
-				</configuration>
+				</configuration>-->
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -54,34 +46,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!-- copy into deployment folder -->
-			<!--<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-		          <execution>
-		            <id>copy-resources</id>
-		            <phase>install</phase>
-		            <goals>
-		              <goal>copy-resources</goal>
-		            </goals>
-		            <configuration>
-		              <outputDirectory>${basedir}/../deployment</outputDirectory>
-		              <resources>          
-		                <resource>
-		                  <directory>target</directory>
-		                  <includes>
-		                  	<include>cobigen-eclipse-updatesite-*.zip</include>
-		                  </includes>
-		                </resource>
-		              </resources>
-		              <overwrite>true</overwrite>
-		            </configuration>            
-		          </execution>
-		        </executions>
-			</plugin>-->
 		</plugins>
 	</build>
 </project>

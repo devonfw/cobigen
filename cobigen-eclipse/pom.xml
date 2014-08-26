@@ -35,7 +35,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>${maven.eclipse_plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
