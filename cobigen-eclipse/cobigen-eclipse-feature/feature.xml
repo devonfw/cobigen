@@ -2,7 +2,7 @@
 <feature
       id="cobigen-eclipse-feature"
       label="CobiGen Feature"
-      version="0.0.1.qualifier"
+      version="1.0.0"
       provider-name="Capgemini">
 
    <description>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/cobigen-eclipse-feature_0.0.1.qualifier.jar" id="cobigen-eclipse-feature" version="0.0.1.qualifier">
+   <feature url="features/cobigen-eclipse-feature_1.0.0.qualifier.jar" id="cobigen-eclipse-feature" version="1.0.0.qualifier">
       <category name="com.capgemini.category"/>
    </feature>
    <category-def name="com.capgemini.category" label="Capgemini Development Tools"/>
