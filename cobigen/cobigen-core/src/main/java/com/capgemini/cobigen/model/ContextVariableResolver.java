@@ -47,17 +47,15 @@ public class ContextVariableResolver {
      * Creates a new {@link ModelBuilder} instance for the given properties
      * 
      * @param input
-     *        object for which a new object model should be created
+     *            object for which a new object model should be created
      * @param trigger
-     *        which has been activated for the given input
+     *            which has been activated for the given input
      * @author mbrunnli (09.04.2014)
      */
     public ContextVariableResolver(Object input, Trigger trigger) {
 
-        if (input == null || trigger == null || trigger.getMatcher() == null) {
-            throw new IllegalArgumentException(
-                    "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null");
-        }
+        if (input == null || trigger == null || trigger.getMatcher() == null) { throw new IllegalArgumentException(
+            "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null"); }
         this.input = input;
         this.trigger = trigger;
     }
@@ -66,14 +64,14 @@ public class ContextVariableResolver {
      * Resolves all {@link VariableAssignment}s by using the given {@link ITriggerInterpreter}
      * 
      * @param triggerInterpreter
-     *        to be used
+     *            to be used
      * @return the mapping of variable to value
      * @throws InvalidConfigurationException
-     *         if there are {@link VariableAssignment}s, which could not be resolved
+     *             if there are {@link VariableAssignment}s, which could not be resolved
      * @author mbrunnli (08.04.2014)
      */
     public Map<String, String> resolveVariables(ITriggerInterpreter triggerInterpreter)
-            throws InvalidConfigurationException {
+        throws InvalidConfigurationException {
 
         Map<String, String> variables = Maps.newHashMap();
         for (Matcher m : trigger.getMatcher()) {
@@ -81,18 +79,19 @@ public class ContextVariableResolver {
             if (!m.isContainerMatcher() && triggerInterpreter.getMatcher().matches(matcherTo)) {
                 try {
                     Map<String, String> resolvedVariables =
-                            triggerInterpreter.getMatcher().resolveVariables(matcherTo, getVariableAssignments(m));
+                        triggerInterpreter.getMatcher()
+                            .resolveVariables(matcherTo, getVariableAssignments(m));
                     InputValidator.validateResolvedVariables(resolvedVariables);
                     variables.putAll(resolvedVariables);
                 } catch (Throwable e) {
                     LOG.error(
-                            "The matcher '{}' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
-                            triggerInterpreter.getMatcher().getClass().getCanonicalName(), e);
+                        "The matcher '{}' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
+                        triggerInterpreter.getMatcher().getClass().getCanonicalName(), e);
                     throw new PluginProcessingException(
-                            "The matcher '"
-                                    + triggerInterpreter.getMatcher().getClass().getCanonicalName()
-                                    + "' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
-                            e);
+                        "The matcher '"
+                            + triggerInterpreter.getMatcher().getClass().getCanonicalName()
+                            + "' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
+                        e);
                 }
             }
         }
@@ -100,10 +99,11 @@ public class ContextVariableResolver {
     }
 
     /**
-     * Retrieves all {@link VariableAssignment}s from the given {@link Matcher} and converts them into transfer objects
+     * Retrieves all {@link VariableAssignment}s from the given {@link Matcher} and converts them into
+     * transfer objects
      * 
      * @param m
-     *        {@link Matcher} to retrieve the {@link VariableAssignment}s from
+     *            {@link Matcher} to retrieve the {@link VariableAssignment}s from
      * @return a {@link List} of {@link VariableAssignmentTo}s
      * @author mbrunnli (08.04.2014)
      */

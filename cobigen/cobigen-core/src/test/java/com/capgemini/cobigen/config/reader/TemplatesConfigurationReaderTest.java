@@ -41,7 +41,7 @@ public class TemplatesConfigurationReaderTest {
     public void testTemplatesOfAPackageRetrieval() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader target =
-                new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>());
         Template templateMock = mock(Template.class);

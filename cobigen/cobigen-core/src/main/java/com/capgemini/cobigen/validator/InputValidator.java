@@ -25,8 +25,7 @@ public class InputValidator {
      * @author mbrunnli (08.04.2014)
      */
     public static void validateTriggerInterpreter(ITriggerInterpreter triggerInterpreter, Trigger trigger) {
-        if (trigger == null)
-            throw new IllegalArgumentException("Invalid trigger == null");
+        if (trigger == null) throw new IllegalArgumentException("Invalid trigger == null");
         validateTriggerInterpreterInternal(triggerInterpreter, trigger.getType());
     }
 
@@ -68,8 +67,7 @@ public class InputValidator {
      */
     public static void validateInputsUnequalNull(Object... objects) {
         for (Object o : objects) {
-            if (o == null)
-                throw new IllegalArgumentException("None of the input values must be null");
+            if (o == null) throw new IllegalArgumentException("None of the input values must be null");
         }
     }
 
@@ -80,9 +78,8 @@ public class InputValidator {
      * @author mbrunnli (10.04.2014)
      */
     public static void validateResolvedVariables(Map<String, String> resolvedVariables) {
-        if (resolvedVariables == null) {
-            throw new PluginProcessingException("A Plug-In must not return null as resolved Variables");
-        }
+        if (resolvedVariables == null) { throw new PluginProcessingException(
+            "A Plug-In must not return null as resolved Variables"); }
 
         for (Entry<String, String> var : resolvedVariables.entrySet()) {
             if (var.getKey() == null)

@@ -20,8 +20,8 @@ import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.util.SystemUtil;
 
 /**
- * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about templates
- * and the target destination for the generated data.
+ * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about
+ * templates and the target destination for the generated data.
  * 
  * @author trippl (04.04.2013)
  */
@@ -48,28 +48,29 @@ public class TemplatesConfiguration {
     private Trigger trigger;
 
     /**
-     * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference
+     * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
+     * reference
      * 
      * @param file
-     *        template folder for this context
+     *            template folder for this context
      * @param variables
-     *        settings reference for resolving the expressions
+     *            settings reference for resolving the expressions
      * @param trigger
-     *        {@link Trigger} of this {@link TemplatesConfiguration}
+     *            {@link Trigger} of this {@link TemplatesConfiguration}
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws InvalidConfigurationException
-     *         if the given templates.xml is not valid
+     *             if the given templates.xml is not valid
      * @author trippl (04.04.2013)
      */
     public TemplatesConfiguration(File file, Trigger trigger, Map<String, String> variables)
-            throws InvalidConfigurationException {
+        throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-                new TemplatesConfigurationReader(new File(file.getAbsolutePath() + SystemUtil.FILE_SEPARATOR
-                        + "templates.xml"));
+            new TemplatesConfigurationReader(new File(file.getAbsolutePath() + SystemUtil.FILE_SEPARATOR
+                + "templates.xml"));
         templatesFolderName = file.getName();
         templates = reader.loadTemplates(trigger, variables);
         increments = reader.loadIncrements(templates, trigger);
@@ -80,7 +81,7 @@ public class TemplatesConfiguration {
      * Returns the {@link Template} with the given id
      * 
      * @param id
-     *        of the {@link Template} to be searched for
+     *            of the {@link Template} to be searched for
      * @return the {@link Template} with the given id or <code>null</code> if there is no
      * @author mbrunnli (09.04.2014)
      */

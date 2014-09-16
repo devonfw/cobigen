@@ -17,8 +17,7 @@ public class StringUtil {
      * @author mbrunnli (06.02.2013)
      */
     public static String capFirst(String in) {
-        if (in == null || in.isEmpty())
-            return in;
+        if (in == null || in.isEmpty()) return in;
         return in.substring(0, 1).toUpperCase() + in.substring(1, in.length());
     }
 
@@ -30,8 +29,7 @@ public class StringUtil {
      * @author mbrunnli (18.02.2013)
      */
     public static String uncapFirst(String in) {
-        if (in == null || in.isEmpty())
-            return in;
+        if (in == null || in.isEmpty()) return in;
         return in.substring(0, 1).toLowerCase() + in.substring(1, in.length());
     }
 

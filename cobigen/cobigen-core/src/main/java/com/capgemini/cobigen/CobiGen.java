@@ -79,13 +79,13 @@ public class CobiGen {
 
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}. Beside the
-     * {@link ContextSetting#GeneratorProjectRootPath} all context variables can be changed during runtime affecting the
-     * generation mechanisms.
+     * {@link ContextSetting#GeneratorProjectRootPath} all context variables can be changed during runtime
+     * affecting the generation mechanisms.
      * 
      * @param rootConfigFolder
-     *        the root folder containing the context.xml and all templates, configurations etc.
+     *            the root folder containing the context.xml and all templates, configurations etc.
      * @throws IOException
-     *         if the configured {@link ContextSetting#GeneratorProjectRootPath} cannot be accessed
+     *             if the configured {@link ContextSetting#GeneratorProjectRootPath} cannot be accessed
      * @author mbrunnli (05.02.2013)
      * @throws InvalidConfigurationException
      */
@@ -101,28 +101,29 @@ public class CobiGen {
     }
 
     /**
-     * Generates code for the given input with the given template to the destination specified by the templates
-     * configuration.
+     * Generates code for the given input with the given template to the destination specified by the
+     * templates configuration.
      * 
      * @param input
-     *        generator input object
+     *            generator input object
      * @param template
-     *        to be used for generation
+     *            to be used for generation
      * @param forceOverride
-     *        if <code>true</code> and the destination path is already existent, the contents will be overwritten by the
-     *        generated ones iff there is no merge strategy defined by the templates configuration
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
      * @throws IOException
-     *         if the output file could not be read or written
+     *             if the output file could not be read or written
      * @throws TemplateException
-     *         if an exception occurs during template processing by FreeMarker
+     *             if an exception occurs during template processing by FreeMarker
      * @throws MergeException
-     *         if an exception occurs during content merging
+     *             if an exception occurs during content merging
      * @throws InvalidConfigurationException
-     *         if the inputs do not fit to the configuration or there are some configuration failures
+     *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (08.04.2014)
      */
     public void generate(Object input, TemplateTo template, boolean forceOverride) throws IOException,
-            TemplateException, MergeException, InvalidConfigurationException {
+        TemplateException, MergeException, InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
@@ -130,73 +131,76 @@ public class CobiGen {
     }
 
     /**
-     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to the
-     * destination specified by the templates configuration.
+     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
+     * the destination specified by the templates configuration.
      * 
      * @param generatorInput
-     *        generator input object
+     *            generator input object
      * @param template
-     *        to be used for generation
+     *            to be used for generation
      * @param triggerInterpreter
-     *        {@link ITriggerInterpreter} to be used for reading the input and creating the model
+     *            {@link ITriggerInterpreter} to be used for reading the input and creating the model
      * @param forceOverride
-     *        if <code>true</code> and the destination path is already existent, the contents will be overwritten by the
-     *        generated ones iff there is no merge strategy defined by the templates configuration
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
      * @throws IOException
-     *         if the output file could not be read or written
+     *             if the output file could not be read or written
      * @throws TemplateException
-     *         if an exception occurs during template processing by FreeMarker
+     *             if an exception occurs during template processing by FreeMarker
      * @throws MergeException
-     *         if an exception occurs during content merging
+     *             if an exception occurs during content merging
      * @throws InvalidConfigurationException
-     *         if the inputs do not fit to the configuration or there are some configuration failures
+     *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (06.02.2013) edited by trippl (05.03.2013)
      */
     private void generate(Object generatorInput, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-            boolean forceOverride) throws IOException, TemplateException, MergeException, InvalidConfigurationException {
+        boolean forceOverride) throws IOException, TemplateException, MergeException,
+        InvalidConfigurationException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template);
         InputValidator.validateTriggerInterpreter(triggerInterpreter,
-                contextConfiguration.getTrigger(template.getTriggerId()));
+            contextConfiguration.getTrigger(template.getTriggerId()));
 
         generate(generatorInput, template, triggerInterpreter, forceOverride, null);
     }
 
     /**
-     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to the
-     * destination specified by the templates configuration.
+     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
+     * the destination specified by the templates configuration.
      * 
      * @param input
-     *        input object for the generation
+     *            input object for the generation
      * @param template
-     *        to be used for generation
+     *            to be used for generation
      * @param triggerInterpreter
-     *        {@link ITriggerInterpreter} to be used for reading the input and creating the model
+     *            {@link ITriggerInterpreter} to be used for reading the input and creating the model
      * @param forceOverride
-     *        if <code>true</code> and the destination path is already existent, the contents will be overwritten by the
-     *        generated ones iff there is no merge strategy defined by the templates configuration
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
      * @param rawModel
-     *        if provided by the user or <code>null</code> if not
+     *            if provided by the user or <code>null</code> if not
      * @throws IOException
-     *         if the output file could not be read or written
+     *             if the output file could not be read or written
      * @throws TemplateException
-     *         if an exception occurs during template processing by FreeMarker
+     *             if an exception occurs during template processing by FreeMarker
      * @throws MergeException
-     *         if an exception occurs during content merging
+     *             if an exception occurs during content merging
      * @throws InvalidConfigurationException
-     *         if the inputs do not fit to the configuration or there are some configuration failures
+     *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (10.04.2014)
      */
     private void generate(Object input, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-            boolean forceOverride, Map<String, Object> rawModel) throws InvalidConfigurationException, IOException,
-            TemplateException, MergeException {
+        boolean forceOverride, Map<String, Object> rawModel) throws InvalidConfigurationException,
+        IOException, TemplateException, MergeException {
 
         Template templateIntern = getTemplate(template, triggerInterpreter, input);
 
         freeMarkerConfig.setDirectoryForTemplateLoading(new File(contextConfiguration
-                .get(ContextSetting.GeneratorProjectRootPath)
-                + SystemUtil.FILE_SEPARATOR
-                + templateIntern.getTrigger().getTemplateFolder()));
+            .get(ContextSetting.GeneratorProjectRootPath)
+            + SystemUtil.FILE_SEPARATOR
+            + templateIntern.getTrigger().getTemplateFolder()));
 
         IInputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
@@ -207,9 +211,9 @@ public class CobiGen {
                 Object next = it.next();
                 Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
                 for (Matcher m : trigger.getMatcher()) {
-                    if (m.isContainerMatcher())
-                        continue;
-                    if (triggerInterpreter.getMatcher().matches(new MatcherTo(m.getType(), m.getValue(), next))) {
+                    if (m.isContainerMatcher()) continue;
+                    if (triggerInterpreter.getMatcher().matches(
+                        new MatcherTo(m.getType(), m.getValue(), next))) {
                         continue InputObjectsLoop;
                     }
                 }
@@ -222,8 +226,8 @@ public class CobiGen {
             Document model;
             if (rawModel == null) {
                 model =
-                        new ModelBuilder(targetInput, templateIntern.getTrigger(), input)
-                                .createModelAndConvertToDOM(triggerInterpreter);
+                    new ModelBuilder(targetInput, templateIntern.getTrigger(), input)
+                        .createModelAndConvertToDOM(triggerInterpreter);
             } else {
                 model = new ModelConverter(rawModel).convertToDOM();
             }
@@ -244,12 +248,12 @@ public class CobiGen {
                                 result = merger.merge(originalFile, out.toString(), targetCharset);
                             } else {
                                 throw new InvalidConfigurationException("No merger for merge strategy '"
-                                        + templateIntern.getMergeStrategy() + "' found.");
+                                    + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
                             LOG.error("Fehler beim Mergen der Datei {}", originalFile.getName(), e);
-                            throw new MergeException("Fehler beim Mergen der Datei " + originalFile.getName() + ":\n"
-                                    + e.getMessage());
+                            throw new MergeException("Fehler beim Mergen der Datei " + originalFile.getName()
+                                + ":\n" + e.getMessage());
                         }
 
                         if (result != null) {
@@ -266,30 +270,32 @@ public class CobiGen {
     }
 
     /**
-     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to the
-     * destination specified by the templates configuration.
+     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
+     * the destination specified by the templates configuration.
      * 
      * @param generatorInput
-     *        input object for the generation
+     *            input object for the generation
      * @param template
-     *        to be used for generation
+     *            to be used for generation
      * @param model
-     *        to be used for generation
+     *            to be used for generation
      * @param forceOverride
-     *        if <code>true</code> and the destination path is already existent, the contents will be overwritten by the
-     *        generated ones iff there is no merge strategy defined by the templates configuration
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
      * @throws IOException
-     *         if the output file could not be read or written
+     *             if the output file could not be read or written
      * @throws TemplateException
-     *         if an exception occurs during template processing by FreeMarker
+     *             if an exception occurs during template processing by FreeMarker
      * @throws MergeException
-     *         if an exception occurs during content merging
+     *             if an exception occurs during content merging
      * @throws InvalidConfigurationException
-     *         if the inputs do not fit to the configuration or there are some configuration failures
+     *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (09.04.2014)
      */
-    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model, boolean forceOverride)
-            throws InvalidConfigurationException, IOException, TemplateException, MergeException {
+    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
+        boolean forceOverride) throws InvalidConfigurationException, IOException, TemplateException,
+        MergeException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template, model);
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
@@ -301,7 +307,7 @@ public class CobiGen {
      * Returns all matching trigger ids for a given input object
      * 
      * @param matcherInput
-     *        object
+     *            object
      * @return the {@link List} of matching trigger ids
      * @author mbrunnli (09.04.2014)
      */
@@ -318,7 +324,7 @@ public class CobiGen {
      * Returns all matching increments for a given input object
      * 
      * @param matcherInput
-     *        object
+     *            object
      * @return this {@link List} of matching increments
      * @author mbrunnli (09.04.2014)
      */
@@ -327,7 +333,7 @@ public class CobiGen {
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
-                    templatesConfiguration.getTrigger()));
+                templatesConfiguration.getTrigger()));
         }
         return increments;
     }
@@ -337,9 +343,9 @@ public class CobiGen {
      * {@link IncrementTo}s
      * 
      * @param increments
-     *        the {@link List} of {@link Increment}s
+     *            the {@link List} of {@link Increment}s
      * @param trigger
-     *        the parent {@link Trigger}
+     *            the parent {@link Trigger}
      * @return the {@link List} of {@link IncrementTo}s
      * @author mbrunnli (10.04.2014)
      */
@@ -351,10 +357,10 @@ public class CobiGen {
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
                 templates.add(new TemplateTo(template.getId(), template.getDestinationPath(), template
-                        .getMergeStrategy(), trigger.getId()));
+                    .getMergeStrategy(), trigger.getId()));
             }
-            incrementTos.add(new IncrementTo(increment.getId(), increment.getDescription(), trigger.getId(), templates,
-                    convertIncrements(increment.getDependentIncrements(), trigger)));
+            incrementTos.add(new IncrementTo(increment.getId(), increment.getDescription(), trigger.getId(),
+                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
     }
@@ -363,7 +369,7 @@ public class CobiGen {
      * Returns all matching {@link Trigger}s for the given input object
      * 
      * @param matcherInput
-     *        object
+     *            object
      * @return the {@link List} of matching {@link Trigger}s
      * @author mbrunnli (09.04.2014)
      */
@@ -378,7 +384,8 @@ public class CobiGen {
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
                     for (Matcher matcher : trigger.getMatcher()) {
-                        MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
+                        MatcherTo matcherTo =
+                            new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
                         if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                             matchingTrigger.add(trigger);
                             break;
@@ -386,7 +393,8 @@ public class CobiGen {
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly", triggerInterpreter.getType(), e);
+                LOG.error("The TriggerInterpreter for type '{}' exited abruptly",
+                    triggerInterpreter.getType(), e);
             }
         }
         return matchingTrigger;
@@ -396,8 +404,8 @@ public class CobiGen {
      * Returns the {@link List} of matching templates for the given input object
      * 
      * @param matcherInput
-     *        input object activates a matcher and thus is target for context variable extraction. Possibly a combined
-     *        or wrapping object for multiple input objects
+     *            input object activates a matcher and thus is target for context variable extraction.
+     *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching templates
      * @author mbrunnli (09.04.2014)
      */
@@ -407,7 +415,7 @@ public class CobiGen {
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getId(), template.getDestinationPath(), template
-                        .getMergeStrategy(), template.getTrigger().getId()));
+                    .getMergeStrategy(), template.getTrigger().getId()));
             }
         }
         return templates;
@@ -417,8 +425,8 @@ public class CobiGen {
      * Returns the {@link List} of matching {@link TemplatesConfiguration}s for the given input object
      * 
      * @param matcherInput
-     *        input object activates a matcher and thus is target for context variable extraction. Possibly a combined
-     *        or wrapping object for multiple input objects
+     *            input object activates a matcher and thus is target for context variable extraction.
+     *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching {@link TemplatesConfiguration}s
      * @author mbrunnli (09.04.2014)
      */
@@ -430,16 +438,19 @@ public class CobiGen {
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
             Map<String, String> variables;
             try {
-                variables = new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
+                variables =
+                    new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly.", triggerInterpreter.getType(), e);
+                LOG.error("The TriggerInterpreter for type '{}' exited abruptly.",
+                    triggerInterpreter.getType(), e);
                 continue;
             }
             File templatesConfigurationFolder =
-                    new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                            + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
+                new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+                    + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
-            templateConfigurations.add(new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables));
+            templateConfigurations.add(new TemplatesConfiguration(templatesConfigurationFolder, trigger,
+                variables));
         }
         return templateConfigurations;
     }
@@ -448,57 +459,59 @@ public class CobiGen {
      * Returns the {@link Template} for a given {@link TemplateTo}
      * 
      * @param templateTo
-     *        which should be found as internal representation
+     *            which should be found as internal representation
      * @param triggerInterpreter
-     *        to be used for variable resolving (for the final destination path)
+     *            to be used for variable resolving (for the final destination path)
      * @param matcherInput
-     *        input object activates a matcher and thus is target for context variable extraction. Possibly a combined
-     *        or wrapping object for multiple input objects
+     *            input object activates a matcher and thus is target for context variable extraction.
+     *            Possibly a combined or wrapping object for multiple input objects
      * @return the recovered {@link Template} object
      * @throws InvalidConfigurationException
-     *         if at least one of the destination path variables could not be resolved
+     *             if at least one of the destination path variables could not be resolved
      * @author mbrunnli (09.04.2014)
      */
-    private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter, Object matcherInput)
-            throws InvalidConfigurationException {
+    private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter,
+        Object matcherInput) throws InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
         Map<String, String> variables =
-                new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
+            new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
         File templatesConfigurationFolder =
-                new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath) + SystemUtil.FILE_SEPARATOR
-                        + trigger.getTemplateFolder());
+            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
-        TemplatesConfiguration tConfig = new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables);
+        TemplatesConfiguration tConfig =
+            new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null)
             throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
-                    + ". Template could not be found in the configuration.");
+                + ". Template could not be found in the configuration.");
         return template;
     }
 
     /**
-     * Generates the given template contents using the given model and writes the contents into the given {@link File}
+     * Generates the given template contents using the given model and writes the contents into the given
+     * {@link File}
      * 
      * @param output
-     *        {@link File} to be written
+     *            {@link File} to be written
      * @param template
-     *        FreeMarker template which will generate the contents
+     *            FreeMarker template which will generate the contents
      * @param model
-     *        to generate with
+     *            to generate with
      * @param outputCharset
-     *        charset the target file should be written with
+     *            charset the target file should be written with
      * @throws TemplateException
-     *         if an exception occurs during template processing
+     *             if an exception occurs during template processing
      * @throws IOException
-     *         if an I/O exception occurs (during writing to the writer)
+     *             if an I/O exception occurs (during writing to the writer)
      * @throws FileNotFoundException
-     *         if the file exists but is a directory rather than a regular file, does not exist but cannot be created,
-     *         or cannot be opened for any other reason
+     *             if the file exists but is a directory rather than a regular file, does not exist but cannot
+     *             be created, or cannot be opened for any other reason
      * @author mbrunnli (21.03.2013)
      */
-    private void generateTemplateAndWriteFile(File output, Template template, Document model, String outputCharset)
-            throws FileNotFoundException, TemplateException, IOException {
+    private void generateTemplateAndWriteFile(File output, Template template, Document model,
+        String outputCharset) throws FileNotFoundException, TemplateException, IOException {
 
         try (Writer out = new StringWriter()) {
             generateTemplateAndWritePatch(out, template, model, outputCharset);
@@ -510,7 +523,7 @@ public class CobiGen {
      * Determines the destination file and creates the path to the file if necessary
      * 
      * @param relDestinationPath
-     *        relative destination path from {@link ContextSetting#GenerationTargetRootPath}
+     *            relative destination path from {@link ContextSetting#GenerationTargetRootPath}
      * @return the destination file (might not be existent)
      * @author mbrunnli (12.03.2013)
      */
@@ -533,24 +546,26 @@ public class CobiGen {
     }
 
     /**
-     * Generates the given template contents using the given model and writes the contents into the given {@link Writer}
+     * Generates the given template contents using the given model and writes the contents into the given
+     * {@link Writer}
      * 
      * @param out
-     *        {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and closed)
+     *            {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and
+     *            closed)
      * @param template
-     *        FreeMarker template which will generate the contents
+     *            FreeMarker template which will generate the contents
      * @param model
-     *        Object model for FreeMarker template generation
+     *            Object model for FreeMarker template generation
      * @param outputCharset
-     *        charset the target file should be written with
+     *            charset the target file should be written with
      * @throws TemplateException
-     *         if an exception occurs during template processing
+     *             if an exception occurs during template processing
      * @throws IOException
-     *         if an I/O exception occurs (during writing to the writer)
+     *             if an I/O exception occurs (during writing to the writer)
      * @author mbrunnli (12.03.2013)
      */
-    private void generateTemplateAndWritePatch(Writer out, Template template, Document model, String outputCharset)
-            throws TemplateException, IOException {
+    private void generateTemplateAndWritePatch(Writer out, Template template, Document model,
+        String outputCharset) throws TemplateException, IOException {
 
         freemarker.template.Template fmTemplate;
         try {
@@ -571,9 +586,9 @@ public class CobiGen {
      * Set a {@link ContextSetting}
      * 
      * @param contextSetting
-     *        {@link ContextSetting} to be set
+     *            {@link ContextSetting} to be set
      * @param value
-     *        to be set
+     *            to be set
      * @author mbrunnli (09.04.2014)
      */
     public void setContextSetting(ContextSetting contextSetting, String value) {
@@ -585,7 +600,7 @@ public class CobiGen {
      * Returns the requested context setting
      * 
      * @param contextSetting
-     *        requested {@link ContextSetting}
+     *            requested {@link ContextSetting}
      * @author mbrunnli (09.04.2014)
      */
     public void getContextSetting(ContextSetting contextSetting) {
@@ -594,13 +609,13 @@ public class CobiGen {
     }
 
     /**
-     * Creates shortcuts for accessing the model in a more comfortable manner. All top level children of the root node
-     * will get a shortcut in the target environment
+     * Creates shortcuts for accessing the model in a more comfortable manner. All top level children of the
+     * root node will get a shortcut in the target environment
      * 
      * @param doc
-     *        {@link Document} to add the shortcuts for
+     *            {@link Document} to add the shortcuts for
      * @param env
-     *        target environment
+     *            target environment
      * @author mbrunnli (08.04.2014)
      */
     private void createModelShortcuts(Document doc, Environment env) {
@@ -616,9 +631,9 @@ public class CobiGen {
      * Returns a new {@link IModelBuilder} instance for the given input object and its matching trigger id
      * 
      * @param generatorInput
-     *        object, models should be created for
+     *            object, models should be created for
      * @param triggerId
-     *        which has been activated by the given object
+     *            which has been activated by the given object
      * @return a new {@link IModelBuilder} instance
      * @author mbrunnli (09.04.2014)
      */
@@ -634,12 +649,12 @@ public class CobiGen {
      * Returns a new {@link IModelBuilder} instance for the given input object and its matching trigger id
      * 
      * @param generatorInput
-     *        object, models should be created for
+     *            object, models should be created for
      * @param matcherInput
-     *        input object activates a matcher and thus is target for context variable extraction. Possibly a combined
-     *        or wrapping object for multiple input objects
+     *            input object activates a matcher and thus is target for context variable extraction.
+     *            Possibly a combined or wrapping object for multiple input objects
      * @param triggerId
-     *        which has been activated by the given object
+     *            which has been activated by the given object
      * @return a new {@link IModelBuilder} instance
      * @author mbrunnli (09.04.2014)
      */
@@ -652,13 +667,13 @@ public class CobiGen {
     }
 
     /**
-     * Reloads the configuration from source. This function might be called if the configuration file has changed in a
-     * running system
+     * Reloads the configuration from source. This function might be called if the configuration file has
+     * changed in a running system
      * 
      * @throws IOException
-     *         if the file could not be accessed
+     *             if the file could not be accessed
      * @throws InvalidConfigurationException
-     *         thrown if the {@link File} is not valid with respect to the context.xsd
+     *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author sbasnet (15.04.2014)
      */
     public void reloadConfigurationFromFile() throws IOException, InvalidConfigurationException {

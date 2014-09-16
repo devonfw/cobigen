@@ -112,11 +112,8 @@ public class Trigger {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj instanceof Trigger) {
-            return ((Trigger) obj).getId().equals(getId());
-        }
+        if (obj == null) return false;
+        if (obj instanceof Trigger) { return ((Trigger) obj).getId().equals(getId()); }
         return false;
     }
 

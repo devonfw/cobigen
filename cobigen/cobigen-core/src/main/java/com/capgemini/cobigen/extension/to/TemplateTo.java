@@ -92,10 +92,8 @@ public class TemplateTo {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj instanceof TemplateTo)
-            return ((TemplateTo) obj).getId().equals(getId());
+        if (obj == null) return false;
+        if (obj instanceof TemplateTo) return ((TemplateTo) obj).getId().equals(getId());
         return false;
     }
 }

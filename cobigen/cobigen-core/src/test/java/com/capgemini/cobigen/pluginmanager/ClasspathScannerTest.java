@@ -18,7 +18,7 @@ public class ClasspathScannerTest {
 
         Assert.assertNotNull("TestMerger not registered", PluginRegistry.getMerger("TestMerger"));
         Assert.assertNotNull("TestTriggerInterpreter not registered",
-                PluginRegistry.getTriggerInterpreter("TestTriggerInterpreter"));
+            PluginRegistry.getTriggerInterpreter("TestTriggerInterpreter"));
     }
 
 }

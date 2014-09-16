@@ -51,18 +51,20 @@ public class ContextConfigurationReader {
     private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
     /**
-     * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
+     * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
+     * context file
      * 
      * @param file
-     *        context file
+     *            context file
      * @throws InvalidConfigurationException
-     *         if the configuration is not valid against its xsd specification
+     *             if the configuration is not valid against its xsd specification
      * @author trippl (04.04.2013)
      */
     public ContextConfigurationReader(File file) throws InvalidConfigurationException {
 
         try {
-            Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+            Unmarshaller unmarschaller =
+                JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
@@ -71,22 +73,23 @@ public class ContextConfigurationReader {
                 BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
                 if (configVersion == null) {
                     throw new InvalidConfigurationException(file,
-                            "The required 'version' attribute of node \"contextConfiguration\" has not been set");
+                        "The required 'version' attribute of node \"contextConfiguration\" has not been set");
                 } else {
                     VersionValidator.validateContextConfig(configVersion);
                 }
             } else {
                 throw new InvalidConfigurationException(file,
-                        "Unknown Root Node. Use \"contextConfiguration\" as root Node");
+                    "Unknown Root Node. Use \"contextConfiguration\" as root Node");
             }
 
             // If we reach this point, the configuration version and root node has been validated.
-            // Unmarshal with schema checks for checking the correctness and give the user more hints to correct his
+            // Unmarshal with schema checks for checking the correctness and give the user more hints to
+            // correct his
             // failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema =
-                    schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
-                            "/schema/contextConfiguration.xsd")));
+                schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
+                    "/schema/contextConfiguration.xsd")));
             unmarschaller.setSchema(schema);
             rootNode = unmarschaller.unmarshal(file);
             contextNode = (ContextConfiguration) rootNode;
@@ -98,17 +101,19 @@ public class ContextConfigurationReader {
             if (parseCause != null) {
                 message = parseCause.getMessage();
             }
-            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message, e);
+            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message,
+                e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             LOG.error("Could not parse context configuration schema.", e);
-            throw new IllegalStateException("Could not parse context configuration schema. Please state this as a bug.");
+            throw new IllegalStateException(
+                "Could not parse context configuration schema. Please state this as a bug.");
         } catch (NumberFormatException e) {
             // The version number is currently the only xml value which will be parsed to a number data type
             // So provide help
             LOG.error("Invalid version number for context configuration defined.", e);
             throw new InvalidConfigurationException(
-                    "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
+                "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         }
 
     }
@@ -123,9 +128,10 @@ public class ContextConfigurationReader {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
         for (com.capgemini.Trigger t : contextNode.getTriggers().getTrigger()) {
-            triggers.put(t.getId(),
-                    new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t.getInputCharset()),
-                            loadMatchers(t)));
+            triggers.put(
+                t.getId(),
+                new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t
+                    .getInputCharset()), loadMatchers(t)));
         }
         return triggers;
     }
@@ -134,7 +140,7 @@ public class ContextConfigurationReader {
      * Loads all {@link Matcher}s of a given {@link com.capgemini.Trigger}
      * 
      * @param trigger
-     *        {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
+     *            {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
@@ -154,7 +160,7 @@ public class ContextConfigurationReader {
      * Loads all {@link VariableAssignment}s from a given {@link com.capgemini.Matcher}
      * 
      * @param matcher
-     *        {@link com.capgemini.Matcher} to retrieve the {@link VariableAssignment} from
+     *            {@link com.capgemini.Matcher} to retrieve the {@link VariableAssignment} from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
