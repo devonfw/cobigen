@@ -104,4 +104,13 @@ public class PathExpressionResolverTest {
         Assert.assertEquals("asdf Value Suffix asdf",
             target.evaluateExpressions("asdf${variables.v1?removePraefix(\"praefix\")} asdf"));
     }
+
+    /**
+     * Tests expression resolving with ?upper_case expression
+     */
+    @Test
+    public void testEvaluateExpressionConcatenation() {
+        Assert.assertEquals("asdf value suffix asdf",
+            target.evaluateExpressions("asdf${variables.v1?lower_case?removePraefix(\"praefix\")} asdf"));
+    }
 }

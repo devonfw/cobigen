@@ -87,15 +87,24 @@ public class PathExpressionResolver {
     public String evaluateExpressions(String in) throws UnknownContextVariableException {
 
         if (in == null) return null;
-        Pattern p = Pattern.compile("\\$\\{([^?}]+)(\\?([^}]+))?\\}");
+        Pattern p = Pattern.compile("\\$\\{([^?}]+)((\\?[^}?]+)*)\\}");
         Matcher m = p.matcher(in);
         StringBuffer out = new StringBuffer();
         while (m.find()) {
             if (this.variables.get(m.group(1)) == null) {
                 throw new UnknownContextVariableException(m.group(1));
             }
-            if (m.group(3) != null) {
-                m.appendReplacement(out, applyStringModifier(m.group(3), this.variables.get(m.group(1))));
+            if (m.group(2) != null) {
+                boolean first = true;
+                String modifiedValue = this.variables.get(m.group(1));
+                for (String modifier : m.group(2).split("\\?")) {
+                    if (first) {
+                        first = false;
+                        continue; // ignore first as always empty due to beginning '?'
+                    }
+                    modifiedValue = applyStringModifier(modifier, modifiedValue);
+                }
+                m.appendReplacement(out, modifiedValue);
             } else {
                 m.appendReplacement(out, this.variables.get(m.group(1)));
             }
