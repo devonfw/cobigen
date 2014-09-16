@@ -138,8 +138,10 @@ public class PathExpressionResolver {
             return string.toUpperCase();
         }
 
+        String parameterRegex = "\\s*'([^']*)'\\s*";
+
         // ?replace(String regex, String replacement)
-        Pattern p = Pattern.compile("replace\\(\\s*\"([^\"]*)\"\\s*,\\s*\"([^\"]*)\"\\s*\\)");
+        Pattern p = Pattern.compile("replace\\(" + parameterRegex + "," + parameterRegex + "\\)");
         Matcher m = p.matcher(modifierName);
 
         if (m.matches()) {
@@ -147,7 +149,7 @@ public class PathExpressionResolver {
         }
 
         // ?removeSuffix(String suffix)
-        p = Pattern.compile("removeSuffix\\(\\s*\"([^\"]*)\"\\s*\\)");
+        p = Pattern.compile("removeSuffix\\(" + parameterRegex + "\\)");
         m = p.matcher(modifierName);
 
         if (m.matches() && string.endsWith(m.group(1))) {
@@ -155,7 +157,7 @@ public class PathExpressionResolver {
         }
 
         // ?removePraefix(String praefix)
-        p = Pattern.compile("removePraefix\\(\\s*\"([^\"]*)\"\\s*\\)");
+        p = Pattern.compile("removePraefix\\(" + parameterRegex + "\\)");
         m = p.matcher(modifierName);
 
         if (m.matches() && string.startsWith(m.group(1))) {

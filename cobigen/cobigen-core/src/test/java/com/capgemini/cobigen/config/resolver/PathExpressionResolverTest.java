@@ -75,7 +75,7 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionReplace() {
         Assert.assertEquals("asdfpraefix Replacement Suffix asdf",
-            target.evaluateExpressions("asdf${variables.v1?replace(\"Value\", \"Replacement\")} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?replace('Value', 'Replacement')} asdf"));
     }
 
     /**
@@ -84,7 +84,7 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionReplaceAll() {
         Assert.assertEquals("asdfpraefiXXX Value SuffiXXX asdf",
-            target.evaluateExpressions("asdf${variables.v1?replace(\"x\", \"XXX\")} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?replace('x', 'XXX')} asdf"));
     }
 
     /**
@@ -93,7 +93,7 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionRemoveSuffix() {
         Assert.assertEquals("asdfpraefix Value  asdf",
-            target.evaluateExpressions("asdf${variables.v1?removeSuffix(\"Suffix\")} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?removeSuffix('Suffix')} asdf"));
     }
 
     /**
@@ -102,7 +102,7 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionRemovePraefix() {
         Assert.assertEquals("asdf Value Suffix asdf",
-            target.evaluateExpressions("asdf${variables.v1?removePraefix(\"praefix\")} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?removePraefix('praefix')} asdf"));
     }
 
     /**
@@ -111,6 +111,6 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionConcatenation() {
         Assert.assertEquals("asdf value suffix asdf",
-            target.evaluateExpressions("asdf${variables.v1?lower_case?removePraefix(\"praefix\")} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?lower_case?removePraefix('praefix')} asdf"));
     }
 }
