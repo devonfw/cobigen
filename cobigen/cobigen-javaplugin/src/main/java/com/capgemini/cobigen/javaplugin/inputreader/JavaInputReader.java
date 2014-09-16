@@ -23,8 +23,8 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
- * Extension for the {@link IInputReader} Interface of the CobiGen, to be able to read Java classes into FreeMarker
- * models
+ * Extension for the {@link IInputReader} Interface of the CobiGen, to be able to read Java classes into
+ * FreeMarker models
  * 
  * @author mbrunnli (15.10.2013)
  */
@@ -51,12 +51,10 @@ public class JavaInputReader implements IInputReader {
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
                     if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                            ((Class<?>) inputArr[1]).getCanonicalName()))
-                        return true;
+                        ((Class<?>) inputArr[1]).getCanonicalName())) return true;
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
                     if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                            ((JavaClass) inputArr[1]).getFullyQualifiedName()))
-                        return true;
+                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) return true;
                 }
             }
         }
@@ -71,10 +69,8 @@ public class JavaInputReader implements IInputReader {
     @Override
     public Map<String, Object> createModel(Object o) {
 
-        if (o instanceof Class<?>)
-            return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
-        if (o instanceof JavaClass)
-            return new ParsedJavaModelBuilder().createModel((JavaClass) o);
+        if (o instanceof Class<?>) return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
+        if (o instanceof JavaClass) return new ParsedJavaModelBuilder().createModel((JavaClass) o);
         if (o instanceof Object[] && isValidInput(o)) {
             Map<String, Object> model;
             Object[] inputArr = (Object[]) o;
@@ -98,8 +94,7 @@ public class JavaInputReader implements IInputReader {
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
 
-        if (input instanceof PackageFolder)
-            return true;
+        if (input instanceof PackageFolder) return true;
         return false;
     }
 
@@ -121,7 +116,8 @@ public class JavaInputReader implements IInputReader {
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
                 classLibraryBuilder.appendDefaultClassLoaders();
                 try {
-                    classLibraryBuilder.addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
+                    classLibraryBuilder
+                        .addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
                     JavaSource source = null;
                     for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
                         source = s;
@@ -136,7 +132,8 @@ public class JavaInputReader implements IInputReader {
                         }
                     }
                 } catch (IOException e) {
-                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath().toString(), e);
+                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath()
+                        .toString(), e);
                 }
 
             }
@@ -148,7 +145,7 @@ public class JavaInputReader implements IInputReader {
      * Retrieves all java source files (with ending *.java) under the package's folder recursively
      * 
      * @param packageFolder
-     *        the package's folder
+     *            the package's folder
      * @return the list of files contained in the package's folder
      * @author mbrunnli (03.06.2014)
      */

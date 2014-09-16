@@ -131,8 +131,7 @@ public class XmlMatcher implements Matcher {
         if (element1Parent == null || element2Parent == null) {
             return false;
         } else {
-            if (idsMatch(element1Parent, element2Parent))
-                return true;
+            if (idsMatch(element1Parent, element2Parent)) return true;
             return parentElementsMatch(element1Parent, element2Parent);
         }
     }

@@ -50,7 +50,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
      * Setzt das Feld 'parent'.
      * 
      * @param parent
-     *        Neuer Wert für parent
+     *            Neuer Wert für parent
      * @author mbrunnli (05.04.2014)
      */
     public void setParent(IJavaElement parent) {
@@ -62,7 +62,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
      * Setzt das Feld 'children'.
      * 
      * @param children
-     *        Neuer Wert für children
+     *            Neuer Wert für children
      * @author mbrunnli (05.04.2014)
      */
     public void setChildren(IJavaElement[] children) {
@@ -74,7 +74,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
      * Setzt das Feld 'path'.
      * 
      * @param path
-     *        Neuer Wert für path
+     *            Neuer Wert für path
      * @author mbrunnli (05.04.2014)
      */
     public void setPath(IPath path) {
@@ -86,7 +86,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
      * Setzt das Feld 'elementName'.
      * 
      * @param elementName
-     *        Neuer Wert für elementName
+     *            Neuer Wert für elementName
      * @author mbrunnli (05.04.2014)
      */
     public void setElementName(String elementName) {
@@ -98,7 +98,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
      * Setzt das Feld 'elementType'.
      * 
      * @param elementType
-     *        Neuer Wert für elementType
+     *            Neuer Wert für elementType
      * @author mbrunnli (05.04.2014)
      */
     public void setElementType(int elementType) {
@@ -356,8 +356,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null)
-            return false;
+        if (obj == null) return false;
         if (obj instanceof IJavaElementStub)
             if (getPath() == null ^ ((IJavaElementStub) obj).getPath() == null)
                 return false;

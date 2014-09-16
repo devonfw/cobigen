@@ -31,13 +31,14 @@ public abstract class AbstractJavaParserTest {
      * Returns the list of all field models ({@link ModelConstant#FIELDS})
      * 
      * @param model
-     *        raw model
+     *            raw model
      * @return the list of all field models
      */
     @SuppressWarnings("unchecked")
     protected List<Map<String, Object>> getFields(Map<String, Object> model) {
 
-        List<Map<String, Object>> attributes = (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
+        List<Map<String, Object>> attributes =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
         Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
         return attributes;
     }
@@ -46,11 +47,11 @@ public abstract class AbstractJavaParserTest {
      * Returns the field model with the given field name from model
      * 
      * @param model
-     *        raw model
+     *            raw model
      * @param fieldName
-     *        field name to be retrieved
-     * @return the field model for the given field name. If the field could not be found, an assertion exception will be
-     *         thrown
+     *            field name to be retrieved
+     * @return the field model for the given field name. If the field could not be found, an assertion
+     *         exception will be thrown
      */
     protected Map<String, Object> getField(Map<String, Object> model, String fieldName) {
 

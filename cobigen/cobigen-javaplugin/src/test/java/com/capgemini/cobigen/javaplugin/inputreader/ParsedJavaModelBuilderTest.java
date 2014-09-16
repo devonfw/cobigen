@@ -34,7 +34,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
      * Tests whether parametric attribute types will be extracted correctly to the model
      * 
      * @throws FileNotFoundException
-     *         test fails
+     *             test fails
      */
     @Test
     public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException {
@@ -42,7 +42,8 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
-        Map<String, Object> model = javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
+        Map<String, Object> model =
+            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
         Map<String, Object> customList = getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
@@ -54,7 +55,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
      * Tests whether the type and the canonical type of a field will be extracted correctly
      * 
      * @throws FileNotFoundException
-     *         test fails
+     *             test fails
      */
     @Test
     public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException {
@@ -62,20 +63,21 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         File file = new File(testFileRootPath + "Pojo.java");
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
-        Map<String, Object> model = javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
+        Map<String, Object> model =
+            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
         Map<String, Object> customTypeField = getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
         Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.AnyOtherType",
-                customTypeField.get(ModelConstant.CANONICAL_TYPE));
+            customTypeField.get(ModelConstant.CANONICAL_TYPE));
     }
 
     /**
      * Tests whether inherited fields will also be included in the model
      * 
      * @throws FileNotFoundException
-     *         test fails
+     *             test fails
      */
     @Test
     @Ignore("Logic not implemented. Has to be discussed whether this logic is intended as default.")
@@ -86,8 +88,8 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-                javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(subClass), new FileReader(
-                        superClass)));
+            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(subClass), new FileReader(
+                superClass)));
 
         Assert.assertEquals(2, getFields(model).size());
         Assert.assertNotNull(getField(model, "id"));

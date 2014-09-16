@@ -54,8 +54,10 @@ public class ModelBuilder implements IModelBuilder {
      * @author mbrunnli (09.04.2014)
      */
     public ModelBuilder(Object generatorInput, Trigger trigger, Object matcherInput) {
-        if (generatorInput == null || trigger == null || trigger.getMatcher() == null) { throw new IllegalArgumentException(
-            "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null"); }
+        if (generatorInput == null || trigger == null || trigger.getMatcher() == null) {
+            throw new IllegalArgumentException(
+                "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null");
+        }
         this.generatorInput = generatorInput;
         this.trigger = trigger;
         this.matcherInput = matcherInput;

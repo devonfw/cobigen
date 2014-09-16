@@ -18,8 +18,7 @@ public class SourceProvider extends AbstractSourceProvider {
      * Source Variable stating if the currently selected resources are valid input POJOs for the generation
      * process
      */
-    public static final String VALID_INPUT =
-        "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
+    public static final String VALID_INPUT = "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
 
     /**
      * Creates the SourceProvider and initiates all states with false

@@ -58,30 +58,31 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      * The {@link GenerateWizard} guides through the generation process
      * 
      * @param selection
-     *        the selection that stores the types which should be the source of all information retrieved for the code
-     *        generation
+     *            the selection that stores the types which should be the source of all information retrieved
+     *            for the code generation
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws UnknownTemplateException
-     *         if there is no template with the given name
+     *             if there is no template with the given name
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws CoreException
-     *         if any internal eclipse exception occurs while creating the temporary simulated resources or the
-     *         generation configuration project could not be opened
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws GeneratorProjectNotExistentException
-     *         if the generator configuration project "RF-Generation" is not existent
+     *             if the generator configuration project "RF-Generation" is not existent
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchWizard(IStructuredSelection selection) throws CoreException, UnknownTemplateException,
-            UnknownContextVariableException, IOException, InvalidConfigurationException, UnknownExpressionException,
-            ClassNotFoundException, GeneratorProjectNotExistentException {
+    public GenerateBatchWizard(IStructuredSelection selection) throws CoreException,
+        UnknownTemplateException, UnknownContextVariableException, IOException,
+        InvalidConfigurationException, UnknownExpressionException, ClassNotFoundException,
+        GeneratorProjectNotExistentException {
 
         super();
         g = new JavaGeneratorWrapper();
@@ -94,38 +95,39 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      * Initializes the {@link JavaGeneratorWrapper}
      * 
      * @param inputType
-     *        type which should be the source of all information retrieved for the code generation
+     *            type which should be the source of all information retrieved for the code generation
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws UnknownTemplateException
-     *         if there is no template with the given name
+     *             if there is no template with the given name
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws CoreException
-     *         if any internal eclipse exception occurs while creating the temporary simulated resources or the
-     *         generation configuration project could not be opened
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws GeneratorProjectNotExistentException
-     *         if the generator configuration project "RF-Generation" is not existent
+     *             if the generator configuration project "RF-Generation" is not existent
      * @author trippl (22.04.2013)
      */
     @Override
     protected void initializeWizard(IType inputType) throws IOException, InvalidConfigurationException,
-            UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
-            ClassNotFoundException, GeneratorProjectNotExistentException {
+        UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
+        ClassNotFoundException, GeneratorProjectNotExistentException {
 
         super.initializeWizard(inputType);
 
         page1 = new SelectFilesPage(g, true);
-        page1.setMessage(
+        page1
+            .setMessage(
                 "You are running a generation in batch mode!\n"
-                        + "The shown target files are based on the first input of your selection. "
-                        + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
+                    + "The shown target files are based on the first input of your selection. "
+                    + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
                 IMessageProvider.WARNING);
     }
 
@@ -133,9 +135,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      * Loads the {@link IType}s of the items within selection.
      * 
      * @param selection
-     *        to load the input types from
+     *            to load the input types from
      * @throws JavaModelException
-     *         if an internal eclipse exception occurs
+     *             if an internal eclipse exception occurs
      * @author trippl (22.04.2013)
      */
     private void loadInputTypes(IStructuredSelection selection) throws JavaModelException {
@@ -157,23 +159,23 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     }
 
     /**
-     * Returns retrieves all {@link IType}s under the given {@link IPackageFragment} recursively and saves them to the
-     * {@link #inputTypes} list
+     * Returns retrieves all {@link IType}s under the given {@link IPackageFragment} recursively and saves
+     * them to the {@link #inputTypes} list
      * 
      * @param next
-     *        {@link IPackageFragment} to search in
+     *            {@link IPackageFragment} to search in
      * @param triggerIds
-     *        which have been seen in former selected items
+     *            which have been seen in former selected items
      * @throws JavaModelException
      * @author mbrunnli (03.06.2014)
      */
-    private void getInputTypesRecursively(IPackageFragment next, List<String> triggerIds) throws JavaModelException {
+    private void getInputTypesRecursively(IPackageFragment next, List<String> triggerIds)
+        throws JavaModelException {
 
         List<IPackageFragment> children = HierarchicalTreeOperator.getPackageChildren(next);
 
         for (ICompilationUnit cu : next.getCompilationUnits()) {
-            if (inputTypes.size() > 0)
-                break;
+            if (inputTypes.size() > 0) break;
             IType type = JavaModelUtil.getJavaClassType(cu);
             try {
                 g.setInputType(type);
@@ -190,10 +192,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             }
         }
         // only fetch first one for visualization due to performance issues
-        if (inputTypes.size() == 0)
-            for (IPackageFragment frag : children) {
-                getInputTypesRecursively(frag, triggerIds);
-            }
+        if (inputTypes.size() == 0) for (IPackageFragment frag : children) {
+            getInputTypesRecursively(frag, triggerIds);
+        }
     }
 
     /**
@@ -211,7 +212,7 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      * Generates the contents to be generated and reports the progress to the user
      * 
      * @param dialog
-     *        {@link ProgressMonitorDialog} which should be used for reporting the progress
+     *            {@link ProgressMonitorDialog} which should be used for reporting the progress
      * @author trippl (22.04.2013)
      */
     @Override
@@ -219,9 +220,12 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
 
         GenerateBatchSelectionProcess job;
         if (container == null) {
-            job = new GenerateBatchSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated(), inputTypes);
+            job =
+                new GenerateBatchSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated(),
+                    inputTypes);
         } else {
-            job = new GenerateBatchSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated(), container);
+            job =
+                new GenerateBatchSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated(), container);
         }
         try {
             dialog.run(false, false, job);

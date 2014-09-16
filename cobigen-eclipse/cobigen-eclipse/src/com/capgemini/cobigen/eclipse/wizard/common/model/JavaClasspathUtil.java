@@ -24,15 +24,15 @@ public class JavaClasspathUtil {
     private static final Logger LOG = LoggerFactory.getLogger(JavaClasspathUtil.class);
 
     /**
-     * Checks whether the given path is a compiled resource due to the {@link IPackageFragmentRoot} classpath excludes
-     * the given javaElement is defined in.
+     * Checks whether the given path is a compiled resource due to the {@link IPackageFragmentRoot} classpath
+     * excludes the given javaElement is defined in.
      * 
      * @param javaElement
-     *        {@link IJavaElement} to retrieve the {@link IPackageFragmentRoot} from
+     *            {@link IJavaElement} to retrieve the {@link IPackageFragmentRoot} from
      * @param path
-     *        to be checked
-     * @return <code>true</code> iff the given path does not match any of the {@link IPackageFragmentRoot}s classpath
-     *         exclusions.
+     *            to be checked
+     * @return <code>true</code> iff the given path does not match any of the {@link IPackageFragmentRoot}s
+     *         classpath exclusions.
      * @throws JavaModelException
      */
     public static boolean isCompiledSource(IJavaElement javaElement, String path) throws JavaModelException {
@@ -44,8 +44,8 @@ public class JavaClasspathUtil {
                 for (IPath exclusionPattern : classpathEntry.getExclusionPatterns()) {
                     if (SelectorUtils.matchPath(exclusionPattern.toString(), path)) {
                         LOG.debug(
-                                "{} in source folder {} matches exclusion pattern {} and thus will be treated as a none-compiled resource.",
-                                path, javaElement.getPath().toString(), exclusionPattern.toString());
+                            "{} in source folder {} matches exclusion pattern {} and thus will be treated as a none-compiled resource.",
+                            path, javaElement.getPath().toString(), exclusionPattern.toString());
                         return false;
                     }
                 }
@@ -56,8 +56,8 @@ public class JavaClasspathUtil {
                     for (IPath inclusionPattern : classpathEntry.getInclusionPatterns()) {
                         if (SelectorUtils.matchPath(inclusionPattern.toString(), path)) {
                             LOG.debug(
-                                    "{} in source folder {} matches inclusion pattern {} and thus will be treated as a compiled resource.",
-                                    path, javaElement.getPath().toString(), inclusionPattern.toString());
+                                "{} in source folder {} matches inclusion pattern {} and thus will be treated as a compiled resource.",
+                                path, javaElement.getPath().toString(), inclusionPattern.toString());
                             return true;
                         }
                     }

@@ -69,26 +69,29 @@ public class FreeMarkerUtilIntegrationTest {
     }
 
     /**
-     * Generates the given template contents using the given model and writes the contents into the given {@link Writer}
+     * Generates the given template contents using the given model and writes the contents into the given
+     * {@link Writer}
      * 
      * @param out
-     *        {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and closed)
+     *            {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and
+     *            closed)
      * @param template
-     *        FreeMarker template which will generate the contents
+     *            FreeMarker template which will generate the contents
      * @throws TemplateException
-     *         if an exception occurs during template processing
+     *             if an exception occurs during template processing
      * @throws IOException
-     *         if an I/O exception occurs (during writing to the writer)
+     *             if an I/O exception occurs (during writing to the writer)
      * @author mbrunnli (12.03.2013)
      */
-    private void generateTemplateAndWritePatch(Writer out, Template template) throws TemplateException, IOException {
+    private void generateTemplateAndWritePatch(Writer out, Template template) throws TemplateException,
+        IOException {
 
         Document doc = new ModelConverter(new HashMap<String, Object>()).convertToDOM();
         Environment env = template.createProcessingEnvironment(doc, out);
         env.setOutputEncoding(template.getOutputEncoding());
         env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(doc));
-        env.setGlobalVariable(ModelConstant.UTILS, new BeanModel(new FreeMarkerUtil(this.getClass().getClassLoader()),
-                new DefaultObjectWrapper()));
+        env.setGlobalVariable(ModelConstant.UTILS, new BeanModel(new FreeMarkerUtil(this.getClass()
+            .getClassLoader()), new DefaultObjectWrapper()));
         env.process();
         out.flush();
         out.close();
@@ -98,7 +101,7 @@ public class FreeMarkerUtilIntegrationTest {
      * Loads a template from test root path
      * 
      * @param template
-     *        to be loaded
+     *            to be loaded
      * @return {@link Template}
      * @throws IOException
      * @author mbrunnli (16.04.2013)

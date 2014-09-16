@@ -16,11 +16,11 @@ import com.thoughtworks.qdox.model.JavaSource;
  */
 public class ParserUtil {
     /**
-     * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files will be
-     * added to the class library
+     * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files
+     * will be added to the class library
      * 
      * @param reader
-     *        {@link Reader}s which contents should be parsed
+     *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
@@ -32,8 +32,7 @@ public class ParserUtil {
         ModifyableJavaClass targetClass = null;
         for (Reader r : reader) {
             source = classLibraryBuilder.addSource(r);
-            if (targetClass == null)
-                targetClass = (ModifyableJavaClass) source.getClasses().get(0);
+            if (targetClass == null) targetClass = (ModifyableJavaClass) source.getClasses().get(0);
         }
         return targetClass;
     }

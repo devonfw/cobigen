@@ -29,18 +29,22 @@ public class XmlMergerTest {
     private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
 
     /**
-     * This test tests, whether the schema location definition (xsi:schemaLocation) is not destroyed. One bug occured
-     * which removes the xsi namespace from the schemaLocation definition
+     * This test tests, whether the schema location definition (xsi:schemaLocation) is not destroyed. One bug
+     * occured which removes the xsi namespace from the schemaLocation definition
      * 
-     * @throws AbstractXmlMergeException test fails
-     * @throws IOException test fails
-     * @throws FileNotFoundException test fails
-     * @throws MergeException test fails
+     * @throws AbstractXmlMergeException
+     *             test fails
+     * @throws IOException
+     *             test fails
+     * @throws FileNotFoundException
+     *             test fails
+     * @throws MergeException
+     *             test fails
      * @author mbrunnli (21.06.2013)
      */
     @Test
-    public void testMergeDoesNotDestroySchemaLocation() throws AbstractXmlMergeException, FileNotFoundException,
-            IOException, MergeException {
+    public void testMergeDoesNotDestroySchemaLocation() throws AbstractXmlMergeException,
+        FileNotFoundException, IOException, MergeException {
 
         File base = new File(testFileRootPath + "BaseFile_namespaces.xml");
 
@@ -48,18 +52,22 @@ public class XmlMergerTest {
         String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(base)), "UTF-8");
 
         Assert.assertTrue("Schema definition 'xsi:schemaLocation' has been destroyed.",
-                mergedDoc.contains("xsi:schemaLocation"));
+            mergedDoc.contains("xsi:schemaLocation"));
     }
 
     /**
      * Tests Issue #18 - https://github.com/oasp/tools-cobigen/issues/18
      * 
-     * @throws FileNotFoundException test fails
-     * @throws IOException test fails
-     * @throws MergeException test fails
+     * @throws FileNotFoundException
+     *             test fails
+     * @throws IOException
+     *             test fails
+     * @throws MergeException
+     *             test fails
      */
     @Test
-    public void testMergeAlsoMergesSchemaLocations() throws FileNotFoundException, IOException, MergeException {
+    public void testMergeAlsoMergesSchemaLocations() throws FileNotFoundException, IOException,
+        MergeException {
 
         File base = new File(testFileRootPath + "BaseFile_namespaces.xml");
         File patch = new File(testFileRootPath + "PatchFile_namespaces.xml");
@@ -67,27 +75,33 @@ public class XmlMergerTest {
         XmlMerger merger = new XmlMerger("", new CompleteMergeAction());
         String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(patch)), "UTF-8");
 
-        Assert.assertTrue(
+        Assert
+            .assertTrue(
                 "Merged document does not contain schema locations defined in base.",
                 mergedDoc
-                        .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
-        Assert.assertTrue(
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+        Assert
+            .assertTrue(
                 "Merged document does not contain schema locations defined in patch.",
                 mergedDoc
-                        .contains("http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
-        Assert.assertTrue(
+                    .contains("http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+        Assert
+            .assertTrue(
                 "Merged schema locations are not separated by whitespace.",
                 mergedDoc
-                        .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
-                                + "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                        + "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
     }
 
     /**
      * Tests whether merging of schemaLocations is not producing duplicates
      * 
-     * @throws FileNotFoundException test fails
-     * @throws IOException test fails
-     * @throws MergeException test fails
+     * @throws FileNotFoundException
+     *             test fails
+     * @throws IOException
+     *             test fails
+     * @throws MergeException
+     *             test fails
      */
     @Test
     public void testNoDuplicateNamespacesMerged() throws FileNotFoundException, IOException, MergeException {
@@ -97,11 +111,12 @@ public class XmlMergerTest {
         XmlMerger merger = new XmlMerger("", new CompleteMergeAction());
         String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(base)), "UTF-8");
 
-        Assert.assertFalse(
+        Assert
+            .assertFalse(
                 "Merge duplicates schema locations.",
                 mergedDoc
-                        .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
-                                + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                        + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
     }
 
 }

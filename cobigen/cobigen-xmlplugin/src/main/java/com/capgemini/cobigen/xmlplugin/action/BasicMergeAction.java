@@ -41,7 +41,7 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
      */
     @Override
     public void perform(Element originalElement, Element patchElement, Element outputParentElement)
-            throws AbstractXmlMergeException {
+        throws AbstractXmlMergeException {
 
         Mapper mapper = (Mapper) m_mapperFactory.getOperation(originalElement, patchElement);
 
@@ -52,8 +52,8 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
         } else {
 
             Element workingElement =
-                    new Element(originalElement.getName(), originalElement.getNamespacePrefix(),
-                            originalElement.getNamespaceURI());
+                new Element(originalElement.getName(), originalElement.getNamespacePrefix(),
+                    originalElement.getNamespaceURI());
 
             mergeNamespaces(workingElement, originalElement, patchElement);
             mergeAttributes(workingElement, originalElement, patchElement);
@@ -65,21 +65,29 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
     }
 
     /**
-     * Merges the {@link Namespace}s of the originalElement and the patchElement and adds them to the outElement.
+     * Merges the {@link Namespace}s of the originalElement and the patchElement and adds them to the
+     * outElement.
      * 
-     * @param outElement the {@link Element} the namespaces are added to
-     * @param originalElement the original {@link Element}
-     * @param patchElement the patch {@link Element}
+     * @param outElement
+     *            the {@link Element} the namespaces are added to
+     * @param originalElement
+     *            the original {@link Element}
+     * @param patchElement
+     *            the patch {@link Element}
      * @author trippl (05.04.2013)
      */
     protected abstract void mergeNamespaces(Element outElement, Element originalElement, Element patchElement);
 
     /**
-     * Merges the {@link Attribute}s of the originalElement and the patchElement and adds them to the outElement.
+     * Merges the {@link Attribute}s of the originalElement and the patchElement and adds them to the
+     * outElement.
      * 
-     * @param outElement the {@link Element} the namespaces are added to
-     * @param originalElement the original {@link Element}
-     * @param patchElement the patch {@link Element}
+     * @param outElement
+     *            the {@link Element} the namespaces are added to
+     * @param originalElement
+     *            the original {@link Element}
+     * @param patchElement
+     *            the patch {@link Element}
      * @author trippl (05.04.2013)
      */
     protected abstract void mergeAttributes(Element outElement, Element originalElement, Element patchElement);
@@ -87,10 +95,13 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
     /**
      * Checks if the given {@link List} contains the specified {@link Content}.
      * 
-     * @param content {@link Content} to be searched
-     * @param contents {@link List} of {@link Content} to be compared
+     * @param content
+     *            {@link Content} to be searched
+     * @param contents
+     *            {@link List} of {@link Content} to be compared
      * @return The {@link Content} in the {@link List}, if found, else null
-     * @throws AbstractXmlMergeException - If an error occurs during the match-operation creation
+     * @throws AbstractXmlMergeException
+     *             - If an error occurs during the match-operation creation
      * @author trippl (03.04.2013)
      */
     protected Content findContent(Content content, List<Content> contents) throws AbstractXmlMergeException {
@@ -98,8 +109,7 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
         for (Content c : contents) {
             if (content.getClass().equals(c.getClass())) {
                 if (content instanceof Comment) {
-                    if (content.getValue().equals(c.getValue()))
-                        return c;
+                    if (content.getValue().equals(c.getValue())) return c;
                 } else if (content instanceof Text) {
                     return c;
                 } else if (content instanceof Element) {
@@ -115,27 +125,36 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
     }
 
     /**
-     * Merges the {@link Content}s of the originalElement and the patchElement and adds them to the outElement.
+     * Merges the {@link Content}s of the originalElement and the patchElement and adds them to the
+     * outElement.
      * 
-     * @param outElement the {@link Element} the contents are added to
-     * @param originalElement the original {@link Element}
-     * @param patchElement the patch {@link Element}
-     * @throws AbstractXmlMergeException if an error occurred during the merge
+     * @param outElement
+     *            the {@link Element} the contents are added to
+     * @param originalElement
+     *            the original {@link Element}
+     * @param patchElement
+     *            the patch {@link Element}
+     * @throws AbstractXmlMergeException
+     *             if an error occurred during the merge
      * @author trippl (28.03.2013)
      */
     protected abstract void mergeContent(Element outElement, Element originalElement, Element patchElement)
-            throws AbstractXmlMergeException;
+        throws AbstractXmlMergeException;
 
     /**
      * Applies the action which performs the merge between two source elements.
      *
-     * @param workingParent Output parent element
-     * @param originalElement Original element
-     * @param patchElement Patch element
-     * @throws AbstractXmlMergeException if an error occurred during the merge
+     * @param workingParent
+     *            Output parent element
+     * @param originalElement
+     *            Original element
+     * @param patchElement
+     *            Patch element
+     * @throws AbstractXmlMergeException
+     *             if an error occurred during the merge
      */
     protected void applyAction(Element workingParent, Element originalElement, Element patchElement)
-            throws AbstractXmlMergeException {
+        throws AbstractXmlMergeException {
 
         Action action = (Action) m_actionFactory.getOperation(originalElement, patchElement);
         Mapper mapper = (Mapper) m_mapperFactory.getOperation(originalElement, patchElement);
@@ -153,8 +172,10 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
     /**
      * Adds attributes from in element to out element.
      * 
-     * @param out out element
-     * @param in in element
+     * @param out
+     *            out element
+     * @param in
+     *            in element
      */
     protected void addAttributes(Element out, Element in) {
 
@@ -171,7 +192,8 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
         }
 
         for (Attribute attr : outAttributes) {
-            if (!attr.getName().equals("schemaLocation") || allAttributes.get(attr.getQualifiedName()) == null) {
+            if (!attr.getName().equals("schemaLocation")
+                || allAttributes.get(attr.getQualifiedName()) == null) {
                 allAttributes.put(attr.getQualifiedName(), (Attribute) attr.clone());
             } else {
                 String schemaLocationOrig = allAttributes.get(attr.getQualifiedName()).getValue().trim();
@@ -193,7 +215,8 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
     /**
      * Writes schema locations back to a single string
      * 
-     * @param schemaLocations a mapping of schema name to schema location
+     * @param schemaLocations
+     *            a mapping of schema name to schema location
      * @return the schema location value
      */
     private String schemaLocationsToString(Map<String, String> schemaLocations) {
@@ -210,10 +233,11 @@ public abstract class BasicMergeAction extends AbstractMergeAction {
 
     /**
      * Extracts all schema location definitions from the schema location value by splitting the value at each
-     * whitespace. Each odd element will be interpreted as a schema, each even one will be interpreted as the schema
-     * location from the previous element.
+     * whitespace. Each odd element will be interpreted as a schema, each even one will be interpreted as the
+     * schema location from the previous element.
      * 
-     * @param schemaLocationValue schemaLocation attribute value
+     * @param schemaLocationValue
+     *            schemaLocation attribute value
      * @return a mapping of schema name to schema location
      */
     private Map<String, String> extractSchemaLocationDefinitions(String schemaLocationValue) {

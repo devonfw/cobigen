@@ -329,8 +329,7 @@ public class CustomModelWriter implements ModelWriter {
 
     private boolean writeTypeParameters(JavaGenericDeclaration decl) {
         List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = decl.getTypeParameters();
-        if (typeParameters.size() == 0)
-            return false;
+        if (typeParameters.size() == 0) return false;
 
         buffer.write("<");
         boolean first = true;

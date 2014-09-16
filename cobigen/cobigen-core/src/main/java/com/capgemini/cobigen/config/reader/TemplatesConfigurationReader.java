@@ -159,8 +159,10 @@ public class TemplatesConfigurationReader {
 
         for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
             expressionResolver.checkExpressions(t.getDestinationPath());
-            if (templates.get(t.getId()) != null) { throw new InvalidConfigurationException(configFile,
-                "Multiple template definitions found for idRef='" + t.getId() + "'"); }
+            if (templates.get(t.getId()) != null) {
+                throw new InvalidConfigurationException(configFile,
+                    "Multiple template definitions found for idRef='" + t.getId() + "'");
+            }
             templates.put(
                 t.getId(),
                 new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
@@ -224,8 +226,10 @@ public class TemplatesConfigurationReader {
             if (ref instanceof TemplateRef) {
                 TemplateRef tRef = (TemplateRef) ref;
                 Template temp = templates.get(tRef.getIdref());
-                if (temp == null) { throw new InvalidConfigurationException(configFile,
-                    "No Template found for idRef='" + tRef.getIdref() + "'"); }
+                if (temp == null) {
+                    throw new InvalidConfigurationException(configFile, "No Template found for idRef='"
+                        + tRef.getIdref() + "'");
+                }
                 rootTarget.addTemplate(temp);
             }
         }

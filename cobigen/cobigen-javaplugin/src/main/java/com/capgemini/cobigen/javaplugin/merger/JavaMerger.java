@@ -44,10 +44,10 @@ public class JavaMerger implements IMerger {
      * Creates a new {@link JavaMerger}
      * 
      * @param type
-     *        merger type
+     *            merger type
      * @param patchOverrides
-     *        if <code>true</code>, conflicts will be resolved by using the patch contents<br>
-     *        if <code>false</code>, conflicts will be resolved by using the base contents
+     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+     *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @author mbrunnli (19.03.2013)
      */
     public JavaMerger(String type, boolean patchOverrides) {
@@ -71,19 +71,21 @@ public class JavaMerger implements IMerger {
      * {@inheritDoc}
      * 
      * @throws IOException
-     *         if the base file does not exist or could not be written
+     *             if the base file does not exist or could not be written
      * @throws MergeException
-     *         if problems occurs while merging
+     *             if problems occurs while merging
      * @author mbrunnli (19.03.2013)
      */
     @Override
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
 
-        ModifyableJavaClass baseClass = getJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
+        ModifyableJavaClass baseClass =
+            getJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
         ModifyableJavaClass patchClass = getJavaClass(new StringReader(patch));
 
         if (baseClass == null) {
-            throw new MergeException("The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");
+            throw new MergeException("The base file " + base.getAbsolutePath()
+                + " does not declare a valid JavaClass");
         } else if (patchClass == null) {
             throw new MergeException("The patch does not declare a valid JavaClass");
         }
@@ -96,7 +98,7 @@ public class JavaMerger implements IMerger {
      * Consolidates all line endings to the System default
      * 
      * @param codeBlock
-     *        which should be consolidate
+     *            which should be consolidate
      * @return the consolidated code block
      * @author mbrunnli (04.06.2013)
      */
@@ -110,9 +112,9 @@ public class JavaMerger implements IMerger {
      * 
      * @return the merged {@link JavaClass}
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
     private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -129,9 +131,9 @@ public class JavaMerger implements IMerger {
      * Merges all super types of the two class sources
      * 
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (03.06.2013)
      */
     private void mergeSupertypes(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -162,9 +164,9 @@ public class JavaMerger implements IMerger {
      * Merges all imports of the two class sources
      * 
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (05.04.2013)
      */
     private void mergeImports(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -209,9 +211,9 @@ public class JavaMerger implements IMerger {
      * Merges all inner {@link JavaClass}es of the given {@link JavaClass}es
      * 
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
     private void mergeInnerClasses(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -219,7 +221,7 @@ public class JavaMerger implements IMerger {
         for (JavaClass rawInnerPatchClass : patchClass.getNestedClasses()) {
             ModifyableJavaClass innerPatchClass = (ModifyableJavaClass) rawInnerPatchClass;
             ModifyableJavaClass nestedBaseClass =
-                    (ModifyableJavaClass) baseClass.getNestedClassByName(innerPatchClass.getName());
+                (ModifyableJavaClass) baseClass.getNestedClassByName(innerPatchClass.getName());
             if (nestedBaseClass == null) {
                 baseClass.addClass(innerPatchClass);
             } else {
@@ -232,9 +234,9 @@ public class JavaMerger implements IMerger {
      * Merges all fields of the given {@link JavaClass}es
      * 
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
     private void mergeFields(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -255,9 +257,9 @@ public class JavaMerger implements IMerger {
      * Merges all methods of the given {@link JavaClass}es
      * 
      * @param baseClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @param patchClass
-     *        {@link JavaClass}
+     *            {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
     private void mergeMethods(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
@@ -278,7 +280,7 @@ public class JavaMerger implements IMerger {
         }
         for (JavaMethod patchMethod : patchClass.getMethods()) {
             JavaMethod baseMethod =
-                    baseClass.getMethodBySignature(patchMethod.getName(), patchMethod.getParameterTypes(true));
+                baseClass.getMethodBySignature(patchMethod.getName(), patchMethod.getParameterTypes(true));
             if (baseMethod == null) {
                 baseClass.addMethod(patchMethod);
             } else {
@@ -293,7 +295,7 @@ public class JavaMerger implements IMerger {
      * Returns the {@link JavaClass} parsed by the given {@link Reader}
      * 
      * @param reader
-     *        {@link Reader} which contents should be parsed
+     *            {@link Reader} which contents should be parsed
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */

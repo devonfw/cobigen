@@ -27,7 +27,8 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
     /**
      * Setzt das Feld 'nonJavaResources'.
      * 
-     * @param nonJavaResources Neuer Wert für nonJavaResources
+     * @param nonJavaResources
+     *            Neuer Wert für nonJavaResources
      * @author mbrunnli (05.04.2014)
      */
     public void setNonJavaResources(Object[] nonJavaResources) {
@@ -137,7 +138,7 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
      */
     @Override
     public void copy(IJavaElement container, IJavaElement sibling, String rename, boolean replace,
-            IProgressMonitor monitor) throws JavaModelException {
+        IProgressMonitor monitor) throws JavaModelException {
 
     }
 
@@ -158,7 +159,7 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
      */
     @Override
     public void move(IJavaElement container, IJavaElement sibling, String rename, boolean replace,
-            IProgressMonitor monitor) throws JavaModelException {
+        IProgressMonitor monitor) throws JavaModelException {
 
     }
 
@@ -189,8 +190,8 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
      * @author mbrunnli (06.04.2014)
      */
     @Override
-    public ICompilationUnit createCompilationUnit(String name, String contents, boolean force, IProgressMonitor monitor)
-            throws JavaModelException {
+    public ICompilationUnit createCompilationUnit(String name, String contents, boolean force,
+        IProgressMonitor monitor) throws JavaModelException {
 
         return null;
     }
@@ -303,8 +304,7 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null)
-            return false;
+        if (obj == null) return false;
         if (obj instanceof IPackageFragment) {
             return ((IPackageFragment) obj).getPath().equals(getPath());
         }

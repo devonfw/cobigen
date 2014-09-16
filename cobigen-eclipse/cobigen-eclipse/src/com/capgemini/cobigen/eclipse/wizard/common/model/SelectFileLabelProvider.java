@@ -64,11 +64,13 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     private boolean batch;
 
     /**
-     * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to the
-     * simulated resources
+     * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to
+     * the simulated resources
      * 
-     * @param javaGeneratorWrapper the currently used {@link JavaGeneratorWrapper} instance
-     * @param batch states whether the generation process is running in batch mode
+     * @param javaGeneratorWrapper
+     *            the currently used {@link JavaGeneratorWrapper} instance
+     * @param batch
+     *            states whether the generation process is running in batch mode
      * @author mbrunnli (14.02.2013)
      */
     public SelectFileLabelProvider(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) {
@@ -96,8 +98,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 result = HierarchicalTreeOperator.getChildName((IPackageFragment) element);
             } catch (JavaModelException e) {
                 LOG.error(
-                        "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
-                        ((IPackageFragment) element).getElementName(), e);
+                    "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
+                    ((IPackageFragment) element).getElementName(), e);
                 result = "ERROR";
             }
             if (result.isEmpty()) {
@@ -121,7 +123,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     public Image getImage(Object element) {
 
         ImageDescriptor defaultImageDescriptor =
-                PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(getText(element));
+            PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(getText(element));
         Image result = defaultImageDescriptor.createImage();
         if (element instanceof IProject) {
             result = PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
@@ -170,7 +172,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /**
      * Checks whether the given object is marked as mergable
      * 
-     * @param element to be checked
+     * @param element
+     *            to be checked
      * @return <code>true</code> if the given object can be merged<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (14.03.2013)
@@ -197,7 +200,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /**
      * Sets the currently selected resources
      * 
-     * @param checkedResources the currently selected resources
+     * @param checkedResources
+     *            the currently selected resources
      * @author mbrunnli (14.03.2013)
      */
     public void setCheckedResources(Object[] checkedResources) {
@@ -208,8 +212,10 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /**
      * Adds meta information to the elements name, such as new or merge or override
      * 
-     * @param element to be enriched with information
-     * @param result enriched string
+     * @param element
+     *            to be enriched with information
+     * @param result
+     *            enriched string
      * @return the enriched result string
      * @author mbrunnli (14.03.2013)
      */
@@ -230,10 +236,11 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     }
 
     /**
-     * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is returned by
-     * {@link IJavaElement#getElementName()}
+     * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is
+     * returned by {@link IJavaElement#getElementName()}
      * 
-     * @param root {@link IPackageFragmentRoot} for which the whole name should be determined
+     * @param root
+     *            {@link IPackageFragmentRoot} for which the whole name should be determined
      * @return the full name of an {@link IPackageFragmentRoot}
      * @author mbrunnli (19.02.2013)
      */

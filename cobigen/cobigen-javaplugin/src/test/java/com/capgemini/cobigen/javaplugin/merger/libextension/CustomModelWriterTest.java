@@ -39,7 +39,8 @@ public class CustomModelWriterTest {
 
         File baseFile = new File(testFileRootPath + "ClassFile_field.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaField field = ParserUtil.getJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
+        JavaField field =
+            ParserUtil.getJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
         target.writeField(field);
         Assert.assertEquals("private int baseFieldUndefined;", target.getBuffer().toString().trim());
     }
@@ -75,11 +76,13 @@ public class CustomModelWriterTest {
         JavaClass parsedClass = ParserUtil.getJavaClass(new FileReader(file));
         target.writeClass(parsedClass);
 
-        Assert.assertTrue(target.getBuffer().toString().contains("class Clazz<T extends Object, Z extends Clazz>"));
+        Assert.assertTrue(target.getBuffer().toString()
+            .contains("class Clazz<T extends Object, Z extends Clazz>"));
         Assert.assertTrue(target.getBuffer().toString().contains("Map<String,T>"));
         Assert.assertTrue(target.getBuffer().toString().contains("private T t;"));
         Assert.assertTrue(target.getBuffer().toString().contains("public T get()"));
-        Assert.assertTrue(target.getBuffer().toString().contains("public <U extends Number> void inspect(U u)"));
+        Assert.assertTrue(target.getBuffer().toString()
+            .contains("public <U extends Number> void inspect(U u)"));
     }
 
     /**
@@ -99,8 +102,9 @@ public class CustomModelWriterTest {
 
         Assert.assertTrue(target.getBuffer().toString().contains("public final class FooBar"));
         Assert.assertTrue(target.getBuffer().toString()
-                .contains("private static final volatile int baseFieldUndefined"));
-        Assert.assertTrue(target.getBuffer().toString().contains("public final void method1(String parameter)"));
+            .contains("private static final volatile int baseFieldUndefined"));
+        Assert.assertTrue(target.getBuffer().toString()
+            .contains("public final void method1(String parameter)"));
         Assert.assertTrue(target.getBuffer().toString().contains("method2(final String parameter)"));
     }
 

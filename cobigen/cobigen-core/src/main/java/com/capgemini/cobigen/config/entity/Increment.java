@@ -121,8 +121,9 @@ public class Increment {
         if (obj != null && obj instanceof Increment) {
             Increment objIncrement = (Increment) obj;
             if (hasTrigger() && objIncrement.hasTrigger()) {
-                if (trigger.getType().equals(objIncrement.getTrigger().getType())) { return id
-                    .equals(((Increment) obj).getId()); }
+                if (trigger.getType().equals(objIncrement.getTrigger().getType())) {
+                    return id.equals(((Increment) obj).getId());
+                }
             }
         }
         return false;

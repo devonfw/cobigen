@@ -54,8 +54,10 @@ public class ContextVariableResolver {
      */
     public ContextVariableResolver(Object input, Trigger trigger) {
 
-        if (input == null || trigger == null || trigger.getMatcher() == null) { throw new IllegalArgumentException(
-            "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null"); }
+        if (input == null || trigger == null || trigger.getMatcher() == null) {
+            throw new IllegalArgumentException(
+                "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null");
+        }
         this.input = input;
         this.trigger = trigger;
     }

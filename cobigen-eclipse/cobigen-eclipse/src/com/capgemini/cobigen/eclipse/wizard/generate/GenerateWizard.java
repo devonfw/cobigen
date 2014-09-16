@@ -44,28 +44,28 @@ public class GenerateWizard extends AbstractGenerateWizard {
      * The {@link GenerateWizard} guides through the generation process
      * 
      * @param inputType
-     *        type which should be the source of all information retrieved for the code generation
+     *            type which should be the source of all information retrieved for the code generation
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws UnknownTemplateException
-     *         if there is no template with the given name
+     *             if there is no template with the given name
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws CoreException
-     *         if any internal eclipse exception occurs while creating the temporary simulated resources or the
-     *         generation configuration project could not be opened
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws GeneratorProjectNotExistentException
      * @author mbrunnli (15.02.2013)
      */
     public GenerateWizard(IType inputType) throws CoreException, UnknownTemplateException,
-            UnknownContextVariableException, IOException, InvalidConfigurationException, UnknownExpressionException,
-            ClassNotFoundException, GeneratorProjectNotExistentException {
+        UnknownContextVariableException, IOException, InvalidConfigurationException,
+        UnknownExpressionException, ClassNotFoundException, GeneratorProjectNotExistentException {
 
         super();
         setWindowTitle("CobiGen");
@@ -76,30 +76,30 @@ public class GenerateWizard extends AbstractGenerateWizard {
      * Initializes the {@link JavaGeneratorWrapper}
      * 
      * @param inputType
-     *        type which should be the source of all information retrieved for the code generation
+     *            type which should be the source of all information retrieved for the code generation
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws UnknownTemplateException
-     *         if there is no template with the given name
+     *             if there is no template with the given name
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws CoreException
-     *         if any internal eclipse exception occurs while creating the temporary simulated resources or the
-     *         generation configuration project could not be opened
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws GeneratorProjectNotExistentException
-     *         if the generator configuration project "RF-Generation" is not existent
+     *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
     @Override
     protected void initializeWizard(IType inputType) throws IOException, InvalidConfigurationException,
-            UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
-            ClassNotFoundException, GeneratorProjectNotExistentException {
+        UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
+        ClassNotFoundException, GeneratorProjectNotExistentException {
 
         super.initializeWizard(inputType);
 
@@ -123,7 +123,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
      * Generates the contents to be generated and reports the progress to the user
      * 
      * @param dialog
-     *        {@link ProgressMonitorDialog} which should be used for reporting the progress
+     *            {@link ProgressMonitorDialog} which should be used for reporting the progress
      * @author mbrunnli (25.02.2013)
      */
     @Override
@@ -133,7 +133,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
             g.removeFieldFromModel(attr);
         }
 
-        GenerateSelectionProcess job = new GenerateSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated());
+        GenerateSelectionProcess job =
+            new GenerateSelectionProcess(getShell(), g, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(false, false, job);
         } catch (InvocationTargetException e) {

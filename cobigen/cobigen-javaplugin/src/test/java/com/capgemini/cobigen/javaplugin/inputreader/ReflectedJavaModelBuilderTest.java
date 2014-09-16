@@ -44,7 +44,7 @@ public class ReflectedJavaModelBuilderTest {
         }
 
         Assert.assertNotNull("There is no field with name 'parametricTestAttribute' in the model",
-                parametricTestAttribute);
+            parametricTestAttribute);
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("List<?>", parametricTestAttribute.get(ModelConstant.TYPE));
     }

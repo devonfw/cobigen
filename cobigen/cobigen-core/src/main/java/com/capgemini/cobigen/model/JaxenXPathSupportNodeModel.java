@@ -57,7 +57,9 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
             return node.getTextContent();
         } else if (node instanceof Attr) {
             return node.getNodeValue();
-        } else if (node instanceof Text) { return node.getNodeName(); }
+        } else if (node instanceof Text) {
+            return node.getNodeName();
+        }
         return null;
     }
 
@@ -72,7 +74,9 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
             return node.getTextContent().trim().isEmpty();
         } else if (node instanceof Attr) {
             return node.getNodeValue().trim().isEmpty();
-        } else if (node instanceof Text) { return node.getNodeName().trim().isEmpty(); }
+        } else if (node instanceof Text) {
+            return node.getNodeName().trim().isEmpty();
+        }
         return false;
     }
 

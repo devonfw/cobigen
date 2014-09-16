@@ -162,8 +162,8 @@ public class ModifyableModelBuilder implements Builder {
         if (newClass.isInterface()) {
             newClass.setSuperClass(null);
         } else if (!newClass.isEnum()) {
-            newClass.setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0)
-                    : null);
+            newClass.setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator()
+                .next(), 0) : null);
         }
 
         // implements
@@ -179,7 +179,8 @@ public class ModifyableModelBuilder implements Builder {
 
         // typeParameters
         if (def.getTypeParameters() != null) {
-            List<DefaultJavaTypeVariable<JavaClass>> typeParams = new LinkedList<DefaultJavaTypeVariable<JavaClass>>();
+            List<DefaultJavaTypeVariable<JavaClass>> typeParams =
+                new LinkedList<DefaultJavaTypeVariable<JavaClass>>();
             for (TypeVariableDef typeVariableDef : def.getTypeParameters()) {
                 typeParams.add(createTypeVariable(typeVariableDef, (JavaClass) newClass));
             }
@@ -223,8 +224,8 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     /**
-     * this one is specific for those cases where dimensions can be part of both the type and identifier i.e. private
-     * String[] matrix[]; //field public abstract String[] getMatrix[](); //method
+     * this one is specific for those cases where dimensions can be part of both the type and identifier i.e.
+     * private String[] matrix[]; //field public abstract String[] getMatrix[](); //method
      * 
      * @param typeDef
      * @param dimensions
@@ -236,7 +237,7 @@ public class ModifyableModelBuilder implements Builder {
             return null;
         }
         return TypeAssembler.createUnresolved(typeDef, dimensions,
-                classStack.isEmpty() ? source : classStack.getFirst());
+            classStack.isEmpty() ? source : classStack.getFirst());
     }
 
     private void addJavaDoc(AbstractBaseJavaEntity entity) {
@@ -245,7 +246,7 @@ public class ModifyableModelBuilder implements Builder {
         List<DocletTag> tagList = new LinkedList<DocletTag>();
         for (TagDef tagDef : lastTagSet) {
             tagList.add(docletTagFactory.createDocletTag(tagDef.getName(), tagDef.getText(),
-                    (JavaAnnotatedElement) entity, tagDef.getLineNumber()));
+                (JavaAnnotatedElement) entity, tagDef.getLineNumber()));
         }
         entity.setTags(tagList);
 
@@ -293,7 +294,8 @@ public class ModifyableModelBuilder implements Builder {
 
         // typeParameters
         if (def.getTypeParams() != null) {
-            List<JavaTypeVariable<JavaConstructor>> typeParams = new LinkedList<JavaTypeVariable<JavaConstructor>>();
+            List<JavaTypeVariable<JavaConstructor>> typeParams =
+                new LinkedList<JavaTypeVariable<JavaConstructor>>();
             for (TypeVariableDef typeVariableDef : def.getTypeParams()) {
                 typeParams.add(createTypeVariable(typeVariableDef, (JavaConstructor) currentConstructor));
             }
@@ -371,13 +373,13 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     private <G extends JavaGenericDeclaration> DefaultJavaTypeVariable<G> createTypeVariable(
-            TypeVariableDef typeVariableDef, G genericDeclaration) {
+        TypeVariableDef typeVariableDef, G genericDeclaration) {
 
         if (typeVariableDef == null) {
             return null;
         }
         DefaultJavaTypeVariable<G> result =
-                new DefaultJavaTypeVariable<G>(typeVariableDef.getName(), genericDeclaration);
+            new DefaultJavaTypeVariable<G>(typeVariableDef.getName(), genericDeclaration);
 
         if (typeVariableDef.getBounds() != null && !typeVariableDef.getBounds().isEmpty()) {
             List<JavaType> bounds = new LinkedList<JavaType>();
@@ -444,8 +446,8 @@ public class ModifyableModelBuilder implements Builder {
     public void addParameter(FieldDef fieldDef) {
 
         DefaultJavaParameter jParam =
-                new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
-                        fieldDef.getModifiers(), fieldDef.isVarArgs());
+            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
+                fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
         // jParam.setParentMethod(currentMethod); -> not available any more since 2.0-M2
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);
@@ -457,7 +459,7 @@ public class ModifyableModelBuilder implements Builder {
 
         if (!currentAnnoDefs.isEmpty()) {
             DefaultJavaAnnotationAssembler assembler =
-                    new DefaultJavaAnnotationAssembler((JavaAnnotatedElement) entity);
+                new DefaultJavaAnnotationAssembler((JavaAnnotatedElement) entity);
 
             List<JavaAnnotation> annotations = new LinkedList<JavaAnnotation>();
             for (AnnoDef annoDef : currentAnnoDefs) {

@@ -38,7 +38,8 @@ public class IResourceStub implements IResource {
     /**
      * Setzt das Feld 'fullPath'.
      * 
-     * @param fullPath Neuer Wert für fullPath
+     * @param fullPath
+     *            Neuer Wert für fullPath
      * @author mbrunnli (06.04.2014)
      */
     public void setFullPath(IPath fullPath) {
@@ -145,7 +146,8 @@ public class IResourceStub implements IResource {
      * @author mbrunnli (05.04.2014)
      */
     @Override
-    public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
+    public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 
@@ -155,7 +157,8 @@ public class IResourceStub implements IResource {
      * @author mbrunnli (05.04.2014)
      */
     @Override
-    public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+    public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 
@@ -669,8 +672,8 @@ public class IResourceStub implements IResource {
      * @author mbrunnli (05.04.2014)
      */
     @Override
-    public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor)
-            throws CoreException {
+    public void move(IProjectDescription description, boolean force, boolean keepHistory,
+        IProgressMonitor monitor) throws CoreException {
 
     }
 
@@ -680,7 +683,8 @@ public class IResourceStub implements IResource {
      * @author mbrunnli (05.04.2014)
      */
     @Override
-    public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+    public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 
@@ -838,8 +842,7 @@ public class IResourceStub implements IResource {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null)
-            return false;
+        if (obj == null) return false;
         if (obj instanceof IResource) {
             return ((IResource) obj).getFullPath().equals(getFullPath());
         }

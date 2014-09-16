@@ -91,8 +91,9 @@ public class PathExpressionResolver {
         Matcher m = p.matcher(in);
         StringBuffer out = new StringBuffer();
         while (m.find()) {
-            if (this.variables.get(m.group(1)) == null) { throw new UnknownContextVariableException(
-                m.group(1)); }
+            if (this.variables.get(m.group(1)) == null) {
+                throw new UnknownContextVariableException(m.group(1));
+            }
             if (m.group(3) != null) {
                 m.appendReplacement(out, applyStringModifier(m.group(3), this.variables.get(m.group(1))));
             } else {
@@ -124,27 +125,33 @@ public class PathExpressionResolver {
             return StringUtil.uncapFirst(string);
         } else if (modifierName.equals("lower_case")) {
             return string.toLowerCase();
-        } else if (modifierName.equals("upper_case")) { return string.toUpperCase(); }
+        } else if (modifierName.equals("upper_case")) {
+            return string.toUpperCase();
+        }
 
         // ?replace(String regex, String replacement)
         Pattern p = Pattern.compile("replace\\(\\s*\"([^\"]*)\"\\s*,\\s*\"([^\"]*)\"\\s*\\)");
         Matcher m = p.matcher(modifierName);
 
-        if (m.matches()) { return string.replaceAll(m.group(1), m.group(2)); }
+        if (m.matches()) {
+            return string.replaceAll(m.group(1), m.group(2));
+        }
 
         // ?removeSuffix(String suffix)
         p = Pattern.compile("removeSuffix\\(\\s*\"([^\"]*)\"\\s*\\)");
         m = p.matcher(modifierName);
 
-        if (m.matches() && string.endsWith(m.group(1))) { return string.substring(0, string.length()
-            - m.group(1).length()); }
+        if (m.matches() && string.endsWith(m.group(1))) {
+            return string.substring(0, string.length() - m.group(1).length());
+        }
 
         // ?removePraefix(String praefix)
         p = Pattern.compile("removePraefix\\(\\s*\"([^\"]*)\"\\s*\\)");
         m = p.matcher(modifierName);
 
-        if (m.matches() && string.startsWith(m.group(1))) { return string.substring(m.group(1).length(),
-            string.length()); }
+        if (m.matches() && string.startsWith(m.group(1))) {
+            return string.substring(m.group(1).length(), string.length());
+        }
 
         throw new UnknownExpressionException("?" + modifierName);
     }

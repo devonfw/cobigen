@@ -237,8 +237,7 @@ public class XmlMerger implements IMerger {
      */
     private boolean containsComment(NodeList comments, Node comment) {
         for (int i = 0; i < comments.getLength(); i++) {
-            if (comments.item(i).getNodeValue().equals(comment.getNodeValue()))
-                return true;
+            if (comments.item(i).getNodeValue().equals(comment.getNodeValue())) return true;
         }
         return false;
     }
@@ -280,8 +279,7 @@ public class XmlMerger implements IMerger {
     private void addEmptyLinesBetweenRootChildNodes(Document doc) {
 
         Node root = doc.getDocumentElement();
-        if (root == null)
-            return;
+        if (root == null) return;
 
         List<Node> nodes = copyNodeList(root.getChildNodes());
 

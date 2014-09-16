@@ -53,7 +53,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation process
+ * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation
+ * process
  * 
  * @author mbrunnli (14.02.2013)
  */
@@ -109,18 +110,20 @@ public class SelectFilesPage extends WizardPage {
     private final static Logger LOG = LoggerFactory.getLogger(SelectFilesPage.class);
 
     /**
-     * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be change by the
-     * generation process
+     * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be
+     * change by the generation process
      * 
-     * @param javaGeneratorWrapper the {@link JavaGeneratorWrapper} instance
-     * @param batch states whether the generation will run in batch mode
+     * @param javaGeneratorWrapper
+     *            the {@link JavaGeneratorWrapper} instance
+     * @param batch
+     *            states whether the generation will run in batch mode
      * @throws UnknownExpressionException
      * @throws UnknownContextVariableException
      * @throws UnknownTemplateException
      * @author mbrunnli (14.02.2013)
      */
-    public SelectFilesPage(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) throws UnknownTemplateException,
-            UnknownContextVariableException, UnknownExpressionException {
+    public SelectFilesPage(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch)
+        throws UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException {
 
         super("Generate");
         setTitle("Select the Resources, which should be generated.");
@@ -225,7 +228,8 @@ public class SelectFilesPage extends WizardPage {
     /**
      * Builds the {@link TreeViewer} providing the tree of resources to be generated
      * 
-     * @param customizable states whether the checkboxes of the tree should be displayed or not
+     * @param customizable
+     *            states whether the checkboxes of the tree should be displayed or not
      * @author mbrunnli (12.03.2013)
      */
     public void buildResourceTreeViewer(boolean customizable) {
@@ -312,8 +316,7 @@ public class SelectFilesPage extends WizardPage {
 
         Set<IncrementTo> selectedIncrements = Sets.newHashSet();
         for (Object checkedElement : packageSelector.getCheckedElements()) {
-            if (checkedElement instanceof IncrementTo)
-                selectedIncrements.add((IncrementTo) checkedElement);
+            if (checkedElement instanceof IncrementTo) selectedIncrements.add((IncrementTo) checkedElement);
         }
 
         List<TemplateTo> templates = Lists.newLinkedList();
@@ -356,7 +359,7 @@ public class SelectFilesPage extends WizardPage {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
                 String value =
-                        selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
+                    selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
                     packageSelector.setChecked(element, true);
                 }

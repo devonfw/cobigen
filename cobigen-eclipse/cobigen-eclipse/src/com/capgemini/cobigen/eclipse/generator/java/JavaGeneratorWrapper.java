@@ -89,21 +89,21 @@ public class JavaGeneratorWrapper {
      * Creates a new generator instance
      * 
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws GeneratorProjectNotExistentException
-     *         if the generator configuration project "RF-Generation" is not existent
+     *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
-     *         if the generator configuration project could not be opened
+     *             if the generator configuration project could not be opened
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @author mbrunnli (21.03.2014)
      */
     public JavaGeneratorWrapper() throws UnknownExpressionException, UnknownContextVariableException,
-            GeneratorProjectNotExistentException, CoreException, IOException, InvalidConfigurationException {
+        GeneratorProjectNotExistentException, CoreException, IOException, InvalidConfigurationException {
 
         cobiGen = initializeGenerator();
     }
@@ -112,26 +112,26 @@ public class JavaGeneratorWrapper {
      * Creates a new generator instance
      * 
      * @param type
-     *        of the input POJO
+     *            of the input POJO
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws IOException
-     *         if the generator project "RF-Generation" could not be accessed
+     *             if the generator project "RF-Generation" could not be accessed
      * @throws GeneratorProjectNotExistentException
-     *         if the generator configuration project "RF-Generation" is not existent
+     *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
-     *         if the generator configuration project could not be opened
+     *             if the generator configuration project could not be opened
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @author mbrunnli (13.02.2013)
      */
     public JavaGeneratorWrapper(IType type) throws IOException, InvalidConfigurationException,
-            GeneratorProjectNotExistentException, CoreException, UnknownExpressionException,
-            UnknownContextVariableException, ClassNotFoundException {
+        GeneratorProjectNotExistentException, CoreException, UnknownExpressionException,
+        UnknownContextVariableException, ClassNotFoundException {
 
         this();
         setInputType(type);
@@ -142,19 +142,20 @@ public class JavaGeneratorWrapper {
      * 
      * @return the configured{@link CobiGen}
      * @throws IOException
-     *         if the {@link IFile} could not be accessed
+     *             if the {@link IFile} could not be accessed
      * @throws InvalidConfigurationException
-     *         if the given configuration does not match the templates.xsd
+     *             if the given configuration does not match the templates.xsd
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @author mbrunnli (05.02.2013)
      * @throws CoreException
      * @throws GeneratorProjectNotExistentException
      */
     private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
-            UnknownExpressionException, UnknownContextVariableException, IOException, InvalidConfigurationException {
+        UnknownExpressionException, UnknownContextVariableException, IOException,
+        InvalidConfigurationException {
 
         IProject generatorProj = ConfigResources.getGeneratorConfigurationProject();
         return new CobiGen(generatorProj.getLocation().toFile());
@@ -164,7 +165,7 @@ public class JavaGeneratorWrapper {
      * Sets a {@link IPackageFragment} as input for the generator
      * 
      * @param packageFragment
-     *        generator input
+     *            generator input
      * @author mbrunnli (03.06.2014)
      */
     public void setInputPackage(IPackageFragment packageFragment) {
@@ -172,26 +173,27 @@ public class JavaGeneratorWrapper {
         this.type = null;
         this.pojo = null;
         packageFolder =
-                new PackageFolder(packageFragment.getResource().getLocationURI(), packageFragment.getElementName());
+            new PackageFolder(packageFragment.getResource().getLocationURI(),
+                packageFragment.getElementName());
         matchingTemplates = cobiGen.getMatchingTemplates(packageFolder);
     }
 
     /**
-     * Changes the {@link JavaGeneratorWrapper}'s type an by this its pojo, model and template configuration. Useful for
-     * batch generation.
+     * Changes the {@link JavaGeneratorWrapper}'s type an by this its pojo, model and template configuration.
+     * Useful for batch generation.
      * 
      * @param type
-     *        of the input POJO
+     *            of the input POJO
      * @throws CoreException
-     *         if the Java runtime class path could not be determined
+     *             if the Java runtime class path could not be determined
      * @throws ClassNotFoundException
-     *         if the given type could not be found by the project {@link ClassLoader}
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws IOException
-     *         if one of the template configurations could not be accessed
+     *             if one of the template configurations could not be accessed
      * @author trippl (22.04.2013)
      */
     public void setInputType(IType type) throws CoreException, ClassNotFoundException, IOException {
@@ -207,15 +209,17 @@ public class JavaGeneratorWrapper {
      * Builds an adapted model for the generation process containing javadoc
      * 
      * @param type
-     *        input {@link IType}
+     *            input {@link IType}
      * @param origModel
-     *        the original model
+     *            the original model
      * @return the adapted model
      * @throws JavaModelException
-     *         if the given type does not exist or if an exception occurs while accessing its corresponding resource
+     *             if the given type does not exist or if an exception occurs while accessing its
+     *             corresponding resource
      * @author mbrunnli (05.04.2013)
      */
-    private Map<String, Object> adaptModel(Map<String, Object> origModel, IType type) throws JavaModelException {
+    private Map<String, Object> adaptModel(Map<String, Object> origModel, IType type)
+        throws JavaModelException {
 
         Map<String, Object> newModel = new HashMap<String, Object>(origModel);
         JavaModelAdaptor javaModelAdaptor = new JavaModelAdaptor(newModel);
@@ -228,13 +232,14 @@ public class JavaGeneratorWrapper {
      * Sets the generation root target for all templates
      * 
      * @param proj
-     *        {@link IProject} which represents the target root
+     *            {@link IProject} which represents the target root
      * @author mbrunnli (13.02.2013)
      */
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation().toString());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation()
+            .toString());
     }
 
     /**
@@ -252,35 +257,36 @@ public class JavaGeneratorWrapper {
      * Generates the given template
      * 
      * @param template
-     *        {@link TemplateTo} to be generated
+     *            {@link TemplateTo} to be generated
      * @param forceOverride
-     *        forces the generator to override the maybe existing target file of the template
+     *            forces the generator to override the maybe existing target file of the template
      * @throws TemplateException
-     *         any exception of the FreeMarker engine
+     *             any exception of the FreeMarker engine
      * @throws IOException
-     *         if the specified template could not be found
+     *             if the specified template could not be found
      * @throws TransformerException
-     *         if an unrecoverable error occurs during the course of the transformation.
+     *             if an unrecoverable error occurs during the course of the transformation.
      * @throws SAXException
-     *         if any parse errors occur.
+     *             if any parse errors occur.
      * @throws JavaModelException
-     *         if any exception occurs while retrieving additional information from the eclipse java model like javaDoc
+     *             if any exception occurs while retrieving additional information from the eclipse java model
+     *             like javaDoc
      * @throws MergeException
-     *         if there are some problems while merging
+     *             if there are some problems while merging
      * @throws InvalidConfigurationException
      * @author mbrunnli (14.02.2013)
      */
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-            SAXException, TransformerException, JavaModelException, MergeException, InvalidConfigurationException {
+        SAXException, TransformerException, JavaModelException, MergeException, InvalidConfigurationException {
 
         if (packageFolder != null) {
             cobiGen.generate(packageFolder, template, forceOverride);
         } else {
             Object[] inputSourceAndClass =
-                    new Object[] { pojo,
+                new Object[] { pojo,
                     ParserUtil.getJavaClass(new StringReader(type.getCompilationUnit().getSource())) };
             Map<String, Object> model =
-                    cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
+                cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
             adaptModel(model, type);
             removeIgnoredFieldsFromModel(model);
             cobiGen.generate(inputSourceAndClass, template, model, forceOverride);
@@ -297,13 +303,13 @@ public class JavaGeneratorWrapper {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
         for (IncrementTo increment : cobiGen.getMatchingIncrements(pojo)) {
-            result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment.getTriggerId(),
-                    increment.getTemplates(), increment.getDependentIncrements()));
+            result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment
+                .getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
         }
 
         ComparableIncrement all =
-                new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-                        Lists.<IncrementTo> newLinkedList());
+            new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
+                Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -366,7 +372,7 @@ public class JavaGeneratorWrapper {
      * Removes a given attributes from the model
      * 
      * @param name
-     *        name of the attribute to be removed
+     *            name of the attribute to be removed
      * @author mbrunnli (21.03.2013)
      */
     public void removeFieldFromModel(String name) {
@@ -378,7 +384,7 @@ public class JavaGeneratorWrapper {
      * Removes all fields from the model which have been flagged to be ignored
      * 
      * @param model
-     *        in which the ignored fields should be removed
+     *            in which the ignored fields should be removed
      * @author mbrunnli (15.10.2013)
      */
     private void removeIgnoredFieldsFromModel(Map<String, Object> model) {
@@ -404,9 +410,9 @@ public class JavaGeneratorWrapper {
      * Returns the {@link List} of templates, which target to the given path.
      * 
      * @param filePath
-     *        for which templates should be retrieved
+     *            for which templates should be retrieved
      * @param consideredIncrements
-     *        increments which should be considered for fetching templates
+     *            increments which should be considered for fetching templates
      * @return the {@link List} of templates, which generates the given file
      * @author mbrunnli (14.02.2013)
      */
@@ -435,13 +441,13 @@ public class JavaGeneratorWrapper {
     }
 
     /**
-     * Returns the {@link TemplateTo}, which has the given templateId and belongs to the trigger with the given
-     * triggerId or <code>null</code> if there is no template with the given id
+     * Returns the {@link TemplateTo}, which has the given templateId and belongs to the trigger with the
+     * given triggerId or <code>null</code> if there is no template with the given id
      * 
      * @param templateId
-     *        the template id
+     *            the template id
      * @param triggerId
-     *        the trigger id
+     *            the trigger id
      * @return the template, which has the given id<br>
      *         <code>null</code>, if there is no template with the given id
      * @author trippl (22.04.2013)

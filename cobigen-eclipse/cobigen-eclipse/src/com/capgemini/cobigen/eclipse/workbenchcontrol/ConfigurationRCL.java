@@ -95,11 +95,11 @@ public class ConfigurationRCL implements IResourceChangeListener {
                             LOG.error("Could not read the context.xml.", e);
                         } catch (InvalidConfigurationException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                    "The context.xml of the generator configuration was changed into an invalid state.\n"
-                                            + "The generator might not behave as intended:\n" + e.getMessage());
+                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                    + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.warn(
-                                    "The context.xml of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
-                                    e);
+                                "The context.xml of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
+                                e);
                         }
                     } else if (fileDelta.getResource().equals(logbackXmlFile)) {
                         try {
@@ -109,11 +109,11 @@ public class ConfigurationRCL implements IResourceChangeListener {
                             LOG.error("Unable to read config file", e);
                         } catch (JoranException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                    "The context.xml of the generator configuration was changed into an invalid state.\n"
-                                            + "The generator might not behave as intended:\n" + e.getMessage());
+                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                    + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.error(
-                                    "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
-                                    e);
+                                "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                e);
                         }
                     }
                 }
@@ -125,26 +125,30 @@ public class ConfigurationRCL implements IResourceChangeListener {
      * (Re-)Loads Logback configuration
      * 
      * @param externalConfigFileLocation
-     *        location of the new logback.xml
+     *            location of the new logback.xml
      * @throws IOException
-     *         if the file could not be read or written
+     *             if the file could not be read or written
      * @throws JoranException
-     *         if the file could not be handled by log4j
+     *             if the file could not be handled by log4j
      * @author sbasnet (11.06.2014)
      */
-    public void loadLogbackConfiguration(String externalConfigFileLocation) throws IOException, JoranException {
+    public void loadLogbackConfiguration(String externalConfigFileLocation) throws IOException,
+        JoranException {
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         File externalConfigFile = new File(externalConfigFileLocation);
         if (!externalConfigFile.exists()) {
-            throw new IOException("Logback External Config File Parameter does not reference a file that exists");
+            throw new IOException(
+                "Logback External Config File Parameter does not reference a file that exists");
         } else {
             if (!externalConfigFile.isFile()) {
-                throw new IOException("Logback External Config File Parameter exists, but does not reference a file");
+                throw new IOException(
+                    "Logback External Config File Parameter exists, but does not reference a file");
             } else {
                 if (!externalConfigFile.canRead()) {
-                    throw new IOException("Logback External Config File exists and is a file, but cannot be read.");
+                    throw new IOException(
+                        "Logback External Config File exists and is a file, but cannot be read.");
                 } else {
                     JoranConfigurator configurator = new JoranConfigurator();
                     configurator.setContext(lc);

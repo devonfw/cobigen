@@ -99,8 +99,7 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     public void startSelectionServiceListener() {
-        if (selectionServiceListenerStarted)
-            return;
+        if (selectionServiceListenerStarted) return;
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -139,8 +138,7 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     public void stopSelectionServiceListener() {
-        if (!selectionServiceListenerStarted)
-            return;
+        if (!selectionServiceListenerStarted) return;
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
