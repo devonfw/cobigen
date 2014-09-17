@@ -8,9 +8,9 @@
 	<groupId>com.capgemini</groupId>
 	<artifactId>cobigen-xmlplugin</artifactId>
 	<name>CobiGen - XML Plug-In</name>
-	<version>1.0.0</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
@@ -23,7 +23,7 @@
 			<artifactId>cobigen-core</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		
+
 		<!-- XML Merge for structural merge-->
 		<dependency>
 			<groupId>ch.elca.el4j.modules</groupId>
@@ -52,7 +52,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- Adopt legacy logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -64,7 +64,7 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>1.7.7</version>
 		</dependency>
-		
+
 		<!-- <dependency>
 			<groupId>ch.elca.el4j.modules</groupId>
 			<artifactId>module-jmx</artifactId>
@@ -91,7 +91,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- Explicit definition of dependency due to access restrictions of the original XML Merge library dependencies -->
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -99,7 +99,7 @@
 			<version>1</version>
 		</dependency>
 	</dependencies>
-	
+
 	<repositories>
 		<!-- For XML Merge -->
 		<!-- Build with Maven2 or 3.1.x due to strange dependencies which should be authorized !!! -->
