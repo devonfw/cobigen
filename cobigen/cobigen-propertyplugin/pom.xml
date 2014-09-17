@@ -6,7 +6,7 @@
 	<artifactId>cobigen-propertyplugin</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0</version>
-	<name>CobiGen - Property File Plug-In</name>
+	<name>CobiGen - Property File Plug-in</name>
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
