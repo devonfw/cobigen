@@ -5,9 +5,9 @@ import ${variables.rootPackage}.general.logic.base.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
 /**
- * Entity transport object of ${variables.entityName}
+ * Composite transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Eto extends AbstractEto implements ${variables.entityName} {
+public class ${variables.entityName}Cto extends AbstractCto {
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,8 +15,8 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	<#if attr.javaDoc[0]??>
     ${attr.javaDoc}
     </#if>
-	<#if attr.type?ends_with("Entity")>
-   	private Long ${attr.name};
+    <#if attr.type?ends_with("Entity")>
+   	private ${attr.type?replace("Entity","")}Eto ${attr.name};
    	<#else>
    	private ${attr.type} ${attr.name};
     </#if>
@@ -29,7 +29,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <#if attr.type?ends_with("Entity")>Long<#else>${attr.type}</#if> <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
+	public <#if attr.type?ends_with("Entity")>${attr.type?replace("Entity","")}Eto<#else>${attr.type}</#if> <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
 		return ${attr.name};
 	}
 	
@@ -37,7 +37,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void set${attrCapName}(<#if attr.type?ends_with("Entity")>Long<#else>${attr.type}</#if> ${attr.name}) {
+	public void set${attrCapName}(<#if attr.type?ends_with("Entity")>${attr.type?replace("Entity","")}Eto<#else>${attr.type}</#if> ${attr.name}) {
 		this.${attr.name} = ${attr.name};
 	}
 </#list>
