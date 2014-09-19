@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">	
+	<templates>
+		<!-- Infrastructure -->
+		<template id="persistence_persistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/${variables.domain?cap_first}PersistenceEntity.java" templateFile="java/general/persistence/base/PersistenceEntity.ftl" />
+		<template id="common_domainEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/${variables.domain?cap_first}Entity.java" templateFile="java/general/common/api/DomainEntity.ftl" />
+	
+		<!-- daos_static -->
+		<template id="persistence_abstractDao" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/dao/AbstractDao.java" templateFile="java/general/persistence/api/dao/AbstractDao.ftl" />
+		<template id="persistence_abstractDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/dao/AbstractDaoImpl.java" templateFile="java/general/persistence/base/dao/AbstractDaoImpl.ftl" />
+	
+		<!-- daos_dynamic -->
+		<template id="constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/general/common/constants/NamedQueries.java" templateFile="java/general/common/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
+		<template id="persistence_dataDao" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/api/dao/${variables.entityName}Dao.java" templateFile="java/component/persistence/api/dao/DataDao.ftl"/>
+		<template id="persistence_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/impl/dao/${variables.entityName}DaoImpl.java" templateFile="java/component/persistence/impl/dao/DataDaoImpl.ftl"/>
+		<template id="namedQueries" destinationPath="src/main/resources/config/app/persistence/NamedQueries.hbm.xml" templateFile="resources/config/app/persistence/NamedQueries.hbm.xml.ftl" mergeStrategy="xmlmerge" />
+		
+		<!-- logic_layer_static -->
+		<template id="common_abstractBeanMapperSupport" destinationPath="src/main/java/${variables.rootPackage}/general/common/base/AbstractBeanMapperSupport.java" templateFile="java/general/common/base/AbstractBeanMapperSupport.ftl" />
+		<template id="common_abstractLayerImpl" destinationPath="src/main/java/${variables.rootPackage}/general/common/base/AbstractLayerImpl.java" templateFile="java/general/common/base/AbstractLayerImpl.ftl" />
+		<template id="logic_abstractCto" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractCto.java" templateFile="java/general/logic/base/AbstractCto.ftl" />
+		<template id="logic_abstractEto" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractEto.java" templateFile="java/general/logic/base/AbstractEto.ftl" />
+		<template id="logic_abstractUc" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractUc.java" templateFile="java/general/logic/base/AbstractUc.ftl" />
+		
+		<!-- logic_layer_dynamic -->
+		<template id="logic_eto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Eto.java" templateFile="java/component/logic/api/to/DataEto.ftl" />
+		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.entityName}Management.java" templateFile="java/component/logic/api/DataManagement.ftl" />
+		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/AbstractDataUc.ftl" />
+		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcFind${variables.entityName}.java" templateFile="java/component/logic/base/UcFindData.ftl" />
+		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcManage${variables.entityName}.java" templateFile="java/component/logic/base/UcManageData.ftl" />
+		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.entityName}ManagementImpl.java" templateFile="java/component/logic/impl/DataManagementImpl.ftl" />
+		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcFindDataImpl.ftl" />
+		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcManageDataImpl.ftl" />
+	</templates>
+
+	<increments>
+		<increment id="daos" description="DAO's">
+			<templateRef idref="persistence_abstractDao"/>
+			<templateRef idref="persistence_abstractDaoImpl"/>
+			<templateRef idref="constants_namedQueries"/>
+			<templateRef idref="persistence_dataDao"/>
+			<templateRef idref="persistence_dataDaoImpl"/>
+			<templateRef idref="namedQueries" />
+		</increment>
+		<increment id="logic_layer" description="Logic layer">
+			<incrementRef idref="tos"/>
+			<incrementRef idref="logic_impl"/>
+		</increment>
+		<increment id="tos" description="TO's">
+			<templateRef idref="logic_abstractCto"/>
+			<templateRef idref="logic_abstractEto"/>
+			<templateRef idref="logic_abstractUc"/>
+			<templateRef idref="logic_eto"/>	
+		</increment>
+		<increment id="logic_impl" description="Implementation">
+			<templateRef idref="common_abstractBeanMapperSupport"/>
+			<templateRef idref="common_abstractLayerImpl"/>
+			<templateRef idref="logic_componentInterface"/>
+			<templateRef idref="logic_AbstractDataUc"/>
+			<templateRef idref="logic_UcFindData"/>
+			<templateRef idref="logic_UcManageData"/>
+			<templateRef idref="logic_componentInterfaceImpl"/>
+			<templateRef idref="logic_ucFindDataImpl"/>
+			<templateRef idref="logic_ucManageDataImpl"/>
+		</increment>
+	</increments>
+</templatesConfiguration>
