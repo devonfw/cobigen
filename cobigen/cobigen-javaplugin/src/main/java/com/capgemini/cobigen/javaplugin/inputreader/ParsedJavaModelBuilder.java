@@ -21,7 +21,7 @@ import com.thoughtworks.qdox.model.JavaMethod;
 
 /**
  * The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser
- * 
+ *
  * @author mbrunnli (03.06.2014)
  */
 public class ParsedJavaModelBuilder {
@@ -38,9 +38,9 @@ public class ParsedJavaModelBuilder {
 
     /**
      * Creates the object model for the template instantiation.
-     * 
+     *
      * @param javaClass
-     *        {@link Class} object of the pojo all information should be retrieved from
+     *            {@link Class} object of the pojo all information should be retrieved from
      * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
      *         corresponding information. Learn more about the FreeMarker data model at http
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
@@ -48,13 +48,13 @@ public class ParsedJavaModelBuilder {
      */
     Map<String, Object> createModel(final JavaClass javaClass) {
 
-        if (cachedPojo != null && cachedPojo.equals(javaClass)) {
-            return new HashMap<String, Object>(cachedModel);
+        if (this.cachedPojo != null && this.cachedPojo.equals(javaClass)) {
+            return new HashMap<>(this.cachedModel);
         }
-        cachedPojo = javaClass;
+        this.cachedPojo = javaClass;
 
-        cachedModel = new HashMap<String, Object>();
-        Map<String, Object> pojoModel = new HashMap<String, Object>();
+        this.cachedModel = new HashMap<>();
+        Map<String, Object> pojoModel = new HashMap<>();
         pojoModel.put(ModelConstant.NAME, javaClass.getName());
         if (javaClass.getPackage() != null) {
             pojoModel.put(ModelConstant.PACKAGE, javaClass.getPackage().getName());
@@ -73,16 +73,16 @@ public class ParsedJavaModelBuilder {
         collectAnnotations(javaClass, attributes);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
-        cachedModel.put(ModelConstant.ROOT, pojoModel);
+        this.cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        return new HashMap<String, Object>(cachedModel);
+        return new HashMap<>(this.cachedModel);
     }
 
     /**
      * Extracts all methods and the method properties for the model
-     * 
+     *
      * @param javaClass
-     *        input java class
+     *            input java class
      * @return a {@link List} of methods mapping each property to its value
      * @author mbrunnli (04.06.2014)
      */
@@ -104,21 +104,21 @@ public class ParsedJavaModelBuilder {
 
     /**
      * Extracts the attributes from the given POJO
-     * 
+     *
      * @param pojo
-     *        {@link Class} object of the POJO the data should be retrieved from
-     * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a {@link String} key
-     *         to the corresponding {@link String} value of meta information
+     *            {@link Class} object of the POJO the data should be retrieved from
+     * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a
+     *         {@link String} key to the corresponding {@link String} value of meta information
      * @author mbrunnli (06.02.2013)
      */
     private List<Map<String, Object>> extractAttributes(JavaClass pojo) {
 
-        List<Map<String, Object>> attributes = new LinkedList<Map<String, Object>>();
+        List<Map<String, Object>> attributes = new LinkedList<>();
         for (JavaField f : pojo.getFields()) {
             if (f.isStatic()) {
                 continue;
             }
-            Map<String, Object> attrValues = new HashMap<String, Object>();
+            Map<String, Object> attrValues = new HashMap<>();
             attrValues.put(ModelConstant.NAME, f.getName());
             attrValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
             attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
@@ -128,66 +128,65 @@ public class ParsedJavaModelBuilder {
     }
 
     /**
-     * Collect all annotations for the given pojo from setter and getter methods by searching using the attribute names.
-     * Annotation information retrieved from the setter and getter methods will be added the the corresponding attribute
-     * meta data
-     * 
+     * Collect all annotations for the given pojo from setter and getter methods by searching using the
+     * attribute names. Annotation information retrieved from the setter and getter methods will be added the
+     * the corresponding attribute meta data
+     *
      * @param javaClass
-     *        class for which the setter and getter should be evaluated according to their annotations
+     *            class for which the setter and getter should be evaluated according to their annotations
      * @param attributes
-     *        list of attribute meta data for the generation (object model)
+     *            list of attribute meta data for the generation (object model)
      * @author mbrunnli (01.04.2014)
      */
     private void collectAnnotations(JavaClass javaClass, List<Map<String, Object>> attributes) {
 
         for (Map<String, Object> attr : attributes) {
-            Map<String, Object> annotations = new HashMap<String, Object>();
+            Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
 
             JavaMethod getter =
-                    javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null,
-                            false);
-            if (getter != null)
-                extractAnnotationsRecursively(annotations, getter.getAnnotations());
+                javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
+                    null, false);
+            if (getter != null) extractAnnotationsRecursively(annotations, getter.getAnnotations());
 
             getter =
-                    javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null,
-                            false);
-            if (getter != null)
-                extractAnnotationsRecursively(annotations, getter.getAnnotations());
+                javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
+                    null, false);
+            if (getter != null) extractAnnotationsRecursively(annotations, getter.getAnnotations());
 
             // TODO bugfixing: setter has to have some parameters
             JavaMethod setter =
-                    javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null,
-                            false);
-            if (setter != null)
-                extractAnnotationsRecursively(annotations, setter.getAnnotations());
+                javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
+                    null, false);
+            if (setter != null) extractAnnotationsRecursively(annotations, setter.getAnnotations());
         }
     }
 
     /**
      * Extracts all information of the given annotations recursively and writes them into the object model
      * (annotationsMap)
-     * 
+     *
      * @param annotationsMap
-     *        object model for annotations
+     *            object model for annotations
      * @param annotations
-     *        to be analysed
+     *            to be analysed
      * @author mbrunnli (01.04.2014)
      */
-    private void extractAnnotationsRecursively(Map<String, Object> annotationsMap, List<JavaAnnotation> annotations) {
+    private void extractAnnotationsRecursively(Map<String, Object> annotationsMap,
+        List<JavaAnnotation> annotations) {
 
         for (JavaAnnotation annotation : annotations) {
-            Map<String, Object> annotationParameters = new HashMap<String, Object>();
-            annotationsMap.put(annotation.getType().getCanonicalName().replaceAll("\\.", "_"), annotationParameters);
+            Map<String, Object> annotationParameters = new HashMap<>();
+            annotationsMap.put(annotation.getType().getCanonicalName().replaceAll("\\.", "_"),
+                annotationParameters);
 
             for (String propertyName : annotation.getPropertyMap().keySet()) {
                 Object value = annotation.getPropertyMap().get(propertyName).getParameterValue();
                 if (value instanceof JavaAnnotation[]) {
-                    Map<String, Object> annotationParameterParameters = new HashMap<String, Object>();
+                    Map<String, Object> annotationParameterParameters = new HashMap<>();
                     annotationParameters.put(propertyName, annotationParameterParameters);
                     extractAnnotationsRecursively(annotationParameterParameters,
-                            Arrays.asList((JavaAnnotation[]) value));
+                        Arrays.asList((JavaAnnotation[]) value));
                 } else if (value instanceof Enum<?>[]) {
                     List<String> enumValues = Lists.newLinkedList();
                     for (Enum<?> e : ((Enum<?>[]) value)) {
@@ -206,13 +205,13 @@ public class ParsedJavaModelBuilder {
     }
 
     /**
-     * Determines whether the given attributes behaving as IDs on the persistence layer. The information will be
-     * integrated into the default model as stated in {@link #createModel(JavaClass)}
-     * 
+     * Determines whether the given attributes behaving as IDs on the persistence layer. The information will
+     * be integrated into the default model as stated in {@link #createModel(JavaClass)}
+     *
      * @param javaClass
-     *        {@link Class} object of the POJO the data should be retrieved from
+     *            {@link Class} object of the POJO the data should be retrieved from
      * @param attributes
-     *        a {@link List} of all attributes and their properties
+     *            a {@link List} of all attributes and their properties
      * @author mbrunnli (12.02.2013)
      */
     private void determinePojoIds(JavaClass javaClass, List<Map<String, Object>> attributes) {
@@ -221,15 +220,14 @@ public class ParsedJavaModelBuilder {
             JavaMethod getter = null;
             try {
                 getter =
-                        javaClass.getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null,
-                                false);
+                    javaClass.getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)),
+                        null, false);
             } catch (Exception e) {
                 getter =
-                        javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null,
-                                false);
+                    javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)),
+                        null, false);
             }
-            if (getter == null)
-                return;
+            if (getter == null) return;
 
             List<JavaAnnotation> annotations = getter.getAnnotations();
             for (JavaAnnotation a : annotations) {

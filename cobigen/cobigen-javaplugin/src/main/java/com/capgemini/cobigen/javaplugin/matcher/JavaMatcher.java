@@ -23,7 +23,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 
 /**
  * Matcher implementation for the Java Plugin
- * 
+ *
  * @author mbrunnli (08.04.2014)
  */
 public class JavaMatcher implements IMatcher {
@@ -35,7 +35,7 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * Currently supported matcher types
-     * 
+     *
      * @author mbrunnli (08.04.2014)
      */
     private enum MatcherType {
@@ -49,7 +49,7 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * Available variable types for the matcher
-     * 
+     *
      * @author mbrunnli (08.04.2014)
      */
     private enum VariableType {
@@ -61,7 +61,7 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (08.04.2014)
      */
     @Override
@@ -75,11 +75,12 @@ public class JavaMatcher implements IMatcher {
                 return fqn != null && fqn.matches(matcher.getValue());
             case PACKAGE:
                 return matcher.getTarget() instanceof PackageFolder
-                        && ((PackageFolder) matcher.getTarget()).getPackageName().matches(matcher.getValue());
+                    && ((PackageFolder) matcher.getTarget()).getPackageName().matches(matcher.getValue());
             case EXPRESSION:
                 Object target = matcher.getTarget();
                 if (target instanceof Object[]) {
-                    // in this case we get the java class and the java source, so pick the right one to resolve the
+                    // in this case we get the java class and the java source, so pick the right one to
+                    // resolve the
                     // expression
                     if (((Object[]) target)[0] instanceof Class<?>) {
                         target = ((Object[]) target)[0];
@@ -100,13 +101,12 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * {@inheritDoc}
-     * 
-     * @throws InvalidConfigurationException
+     *
      * @author mbrunnli (08.04.2014)
      */
     @Override
-    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
-            throws InvalidConfigurationException {
+    public Map<String, String> resolveVariables(MatcherTo matcher,
+        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
 
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
@@ -125,9 +125,9 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * Returns the full qualified name of the matchers input
-     * 
+     *
      * @param matcher
-     *        {@link MatcherTo} to retrieve the input from
+     *            {@link MatcherTo} to retrieve the input from
      * @return the full qualified name of the matchers input
      */
     private String getFqn(MatcherTo matcher) {
@@ -148,24 +148,25 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * Resolves all variables for this trigger
-     * 
+     *
      * @param matcherType
-     *        matcher type
+     *            matcher type
      * @param matcherValue
-     *        matcher value
+     *            matcher value
      * @param stringToMatch
-     *        String to match
+     *            String to match
      * @param variableAssignments
-     *        variable assigments to be resolved
+     *            variable assigments to be resolved
      * @return a {@link Map} from variable name to the resolved value
      * @throws InvalidConfigurationException
-     *         if some of the matcher type and variable type combinations are not supported
+     *             if some of the matcher type and variable type combinations are not supported
      * @author mbrunnli (15.04.2013)
      */
-    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue, String stringToMatch,
-            List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
+    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue,
+        String stringToMatch, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException {
 
-        Map<String, String> resolvedVariables = new HashMap<String, String>();
+        Map<String, String> resolvedVariables = new HashMap<>();
         for (VariableAssignmentTo va : variableAssignments) {
             VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
             switch (variableType) {
@@ -173,7 +174,8 @@ public class JavaMatcher implements IMatcher {
                 resolvedVariables.put(va.getVarName(), va.getValue());
                 break;
             case REGEX:
-                resolvedVariables.put(va.getVarName(), resolveRegexValue(matcherType, matcherValue, stringToMatch, va));
+                resolvedVariables.put(va.getVarName(),
+                    resolveRegexValue(matcherType, matcherValue, stringToMatch, va));
                 break;
             }
         }
@@ -182,22 +184,22 @@ public class JavaMatcher implements IMatcher {
 
     /**
      * Resolves the variable assignments of type {@link VariableType#REGEX}
-     * 
+     *
      * @param matcherType
-     *        type of the matcher
+     *            type of the matcher
      * @param matcherValue
-     *        value of the matcher
+     *            value of the matcher
      * @param stringToMatch
-     *        string to match
+     *            string to match
      * @param va
-     *        {@link VariableAssignmentTo} to be resolved
+     *            {@link VariableAssignmentTo} to be resolved
      * @return the resolved variable
      * @throws InvalidConfigurationException
-     *         thrown if the matcher type and matcher value does not work in combination
+     *             thrown if the matcher type and matcher value does not work in combination
      * @author mbrunnli (08.04.2014)
      */
     private String resolveRegexValue(MatcherType matcherType, String matcherValue, String stringToMatch,
-            VariableAssignmentTo va) throws InvalidConfigurationException {
+        VariableAssignmentTo va) throws InvalidConfigurationException {
 
         Pattern p = Pattern.compile(matcherValue);
         Matcher m = p.matcher(stringToMatch);
@@ -207,27 +209,30 @@ public class JavaMatcher implements IMatcher {
                 try {
                     String value = m.group(Integer.parseInt(va.getValue()));
                     if (value == null)
-                        throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
-                                + "' in the Matcher of type '" + matcherType.toString()
+                        throw new InvalidConfigurationException(
+                            "The VariableAssignment '"
+                                + va.getType().toUpperCase()
+                                + "' in the Matcher of type '"
+                                + matcherType.toString()
                                 + "' does not match a regular expression group of the matcher value.\nCurrent value: '"
                                 + va.getValue() + "'");
                     return value;
                 } catch (NumberFormatException e) {
                     LOG.error(
-                            "The VariableAssignment '{}' in the Matcher of type '{}' should have an integer as value representing a regular expression group.\nCurrent value: '{}'",
-                            va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
+                        "The VariableAssignment '{}' in the Matcher of type '{}' should have an integer as value representing a regular expression group.\nCurrent value: '{}'",
+                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException(
-                            "The VariableAssignment '"
-                                    + va.getType().toUpperCase()
-                                    + "' in the Matcher of type '"
-                                    + matcherType.toString()
-                                    + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
-                                    + va.getValue() + "'");
+                        "The VariableAssignment '"
+                            + va.getType().toUpperCase()
+                            + "' in the Matcher of type '"
+                            + matcherType.toString()
+                            + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
+                            + va.getValue() + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {
             throw new InvalidConfigurationException(
-                    "The VariableAssignment type 'REGEX' can only be combined with matcher type 'FQN' or 'PACKAGE'");
+                "The VariableAssignment type 'REGEX' can only be combined with matcher type 'FQN' or 'PACKAGE'");
         }
         return null; // should not occur
     }

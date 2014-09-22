@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 
 /**
  * Util class for providing additional functionality for the FreeMarker model
- * 
+ *
  * @author mbrunnli (12.04.2013)
  */
 public class FreeMarkerUtil {
@@ -40,7 +40,7 @@ public class FreeMarkerUtil {
      * @author mbrunnli (12.04.2013)
      */
     public boolean isSubtypeOf(String subType, String superType) throws ClassNotFoundException {
-        return classLoader.loadClass(superType).isAssignableFrom(classLoader.loadClass(subType));
+        return this.classLoader.loadClass(superType).isAssignableFrom(this.classLoader.loadClass(subType));
     }
 
     /**
@@ -50,10 +50,12 @@ public class FreeMarkerUtil {
      * @return <code>true</code> if the class is abstract<br>
      *         <code>false</code> otherwise
      * @throws ClassNotFoundException
+     *             if the class with the given className could not be found in the FreeMarkerUtil's
+     *             classLoader
      * @author mbrunnli (12.04.2013)
      */
     public boolean isAbstract(String className) throws ClassNotFoundException {
-        return Modifier.isAbstract(classLoader.loadClass(className).getModifiers());
+        return Modifier.isAbstract(this.classLoader.loadClass(className).getModifiers());
     }
 
 }

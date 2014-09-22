@@ -41,7 +41,7 @@ public class ExtendedJavaParameter extends DefaultJavaParameter {
      */
     public ExtendedJavaParameter(JavaClass type, String name, Set<String> modifiers, boolean varArgs) {
         super(type, name, varArgs);
-        this.modifiers = new LinkedList<String>(modifiers);
+        this.modifiers = new LinkedList<>(modifiers);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ExtendedJavaParameter extends DefaultJavaParameter {
      * @author mbrunnli (10.04.2014)
      */
     public List<String> getModifiers() {
-        return modifiers;
+        return this.modifiers;
     }
 
 }
