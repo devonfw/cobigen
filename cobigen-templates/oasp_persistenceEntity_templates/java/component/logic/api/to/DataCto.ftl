@@ -4,6 +4,9 @@ package ${variables.rootPackage}.${variables.component}.logic.api.to;
 import ${variables.rootPackage}.general.logic.base.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Composite transport object of ${variables.entityName}
  */
@@ -12,32 +15,17 @@ public class ${variables.entityName}Cto extends AbstractCto {
 	private static final long serialVersionUID = 1L;
 
 <#list pojo.attributes as attr>
-	<#if attr.javaDoc[0]??>
-    ${attr.javaDoc}
-    </#if>
-    <#if attr.type?ends_with("Entity")>
-   	private ${attr.type?replace("Entity","")}Eto ${attr.name};
-   	<#else>
-   	private ${attr.type} ${attr.name};
-    </#if>
+   	private ${attr.type?replace("Entity","Eto")} ${attr.name};
 </#list>
 
 <#list pojo.attributes as attr>
 	<#assign attrCapName=attr.name?cap_first>
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <#if attr.type?ends_with("Entity")>${attr.type?replace("Entity","")}Eto<#else>${attr.type}</#if> <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
+	public ${attr.type?replace("Entity","Eto")} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
 		return ${attr.name};
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void set${attrCapName}(<#if attr.type?ends_with("Entity")>${attr.type?replace("Entity","")}Eto<#else>${attr.type}</#if> ${attr.name}) {
+	public void set${attrCapName}(${attr.type?replace("Entity","Eto")} ${attr.name}) {
 		this.${attr.name} = ${attr.name};
 	}
 </#list>
@@ -78,7 +66,7 @@ public class ${variables.entityName}Cto extends AbstractCto {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    ${variables.entityName}Eto other = (${variables.entityName}Eto) obj;
+    ${variables.entityName}Cto other = (${variables.entityName}Cto) obj;
     <#list pojo.attributes as attr>
     <#if equalsJavaPrimitive(attr.type)>
 	if(this.${attr.name} != other.${attr.name}) {

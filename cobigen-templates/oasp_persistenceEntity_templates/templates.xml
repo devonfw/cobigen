@@ -51,7 +51,6 @@
 		<increment id="tos" description="TO's">
 			<templateRef idref="logic_abstractCto"/>
 			<templateRef idref="logic_abstractEto"/>
-			<templateRef idref="logic_abstractUc"/>
 			<templateRef idref="logic_eto"/>
 			<templateRef idref="logic_cto"/>
 		</increment>
@@ -60,6 +59,7 @@
 			<templateRef idref="common_abstractLayerImpl"/>
 			<templateRef idref="logic_componentInterface"/>
 			<templateRef idref="logic_AbstractDataUc"/>
+			<templateRef idref="logic_abstractUc"/>
 			<templateRef idref="logic_UcFindData"/>
 			<templateRef idref="logic_UcManageData"/>
 			<templateRef idref="logic_componentInterfaceImpl"/>

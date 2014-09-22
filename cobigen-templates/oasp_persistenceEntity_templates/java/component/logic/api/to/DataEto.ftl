@@ -4,6 +4,9 @@ package ${variables.rootPackage}.${variables.component}.logic.api.to;
 import ${variables.rootPackage}.general.logic.base.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Entity transport object of ${variables.entityName}
  */
@@ -12,14 +15,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	private static final long serialVersionUID = 1L;
 
 <#list pojo.attributes as attr>
-	<#if attr.javaDoc[0]??>
-    ${attr.javaDoc}
-    </#if>
-	<#if attr.type?ends_with("Entity")>
-   	private Long ${attr.name};
-   	<#else>
-   	private ${attr.type} ${attr.name};
-    </#if>
+   	private ${attr.type?replace("[^<>,]+Entity","Long","r")} ${attr.name};
 </#list>
 
 <#list pojo.attributes as attr>
@@ -29,7 +25,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <#if attr.type?ends_with("Entity")>Long<#else>${attr.type}</#if> <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
+	public ${attr.type?replace("[^<>,]+Entity","Long","r")} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}<#if attr.type?contains("Entity")>Id</#if></#if>() {
 		return ${attr.name};
 	}
 	
@@ -37,7 +33,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void set${attrCapName}(<#if attr.type?ends_with("Entity")>Long<#else>${attr.type}</#if> ${attr.name}) {
+	public void set${attrCapName}<#if attr.type?contains("Entity")>Id</#if>(${attr.type?replace("[^<>,]+Entity","Long","r")} ${attr.name}) {
 		this.${attr.name} = ${attr.name};
 	}
 </#list>
@@ -75,7 +71,8 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    // class check will be done by super type EntityTo!
+    if (!super.equals(obj)) {
       return false;
     }
     ${variables.entityName}Eto other = (${variables.entityName}Eto) obj;
