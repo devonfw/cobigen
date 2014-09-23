@@ -1,7 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl;
 
 import ${variables.rootPackage}.general.common.base.AbstractLayerImpl;
-import ${variables.rootPackage}.${variables.component}.logic.api.${variables.entityName}Management;
+import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
@@ -12,10 +12,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Implementation of component interface ${variables.component}
+ * Implementation of component interface of ${variables.component}
  */
 @Named
-public class ${variables.entityName}ManagementImpl extends AbstractLayerImpl implements ${variables.entityName}Management {
+public class ${variables.component?cap_first}Impl extends AbstractLayerImpl implements ${variables.component?cap_first} {
 
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
@@ -24,7 +24,7 @@ public class ${variables.entityName}ManagementImpl extends AbstractLayerImpl imp
     /**
      * The constructor.
      */
-    public ${variables.entityName}ManagementImpl() {
+    public ${variables.component?cap_first}Impl() {
         super();
     }
     

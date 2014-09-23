@@ -22,11 +22,11 @@
 		<template id="logic_abstractUc" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractUc.java" templateFile="java/general/logic/base/AbstractUc.ftl" />
 		
 		<!-- logic layer dynamic -->
-		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.entityName}Management.java" templateFile="java/component/logic/api/DataManagement.ftl" />
+		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component?cap_first}.java" templateFile="java/component/logic/api/DataManagement.ftl" mergeStrategy="javamerge" />
 		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/AbstractDataUc.ftl" />
 		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcFind${variables.entityName}.java" templateFile="java/component/logic/base/UcFindData.ftl" />
 		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcManage${variables.entityName}.java" templateFile="java/component/logic/base/UcManageData.ftl" />
-		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.entityName}ManagementImpl.java" templateFile="java/component/logic/impl/DataManagementImpl.ftl" />
+		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component?cap_first}Impl.java" templateFile="java/component/logic/impl/DataManagementImpl.ftl" mergeStrategy="javamerge" />
 		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcFindDataImpl.ftl" />
 		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcManageDataImpl.ftl" />
 		

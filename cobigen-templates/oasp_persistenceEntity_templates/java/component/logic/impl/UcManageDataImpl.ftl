@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class UcManage${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcManage${variables.entityName} {
 
   /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(UcFind${variables.entityName}Impl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UcManage${variables.entityName}Impl.class);
 
   /**
    * {@inheritDoc}

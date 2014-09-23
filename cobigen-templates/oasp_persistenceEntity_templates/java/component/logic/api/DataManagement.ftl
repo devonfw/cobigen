@@ -4,8 +4,8 @@ import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variab
 import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
 
 /**
- * Interface for ${variables.entityName}Management component.
+ * Interface for ${variables.component?cap_first} component.
  */
-public interface ${variables.entityName}Management extends UcFind${variables.entityName}, UcManage${variables.entityName} {
+public interface ${variables.component?cap_first} extends UcFind${variables.entityName}, UcManage${variables.entityName} {
 
 }
