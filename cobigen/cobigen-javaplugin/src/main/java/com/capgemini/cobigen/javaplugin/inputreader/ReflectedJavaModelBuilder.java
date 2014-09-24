@@ -83,6 +83,12 @@ public class ReflectedJavaModelBuilder {
         determinePojoIds(pojo, attributes);
         collectAnnotations(pojo, attributes);
 
+        Map<String, Object> superclass = extractSuperclass(pojo);
+        pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
+
+        List<Map<String, Object>> interfaces = extractInterfaces(pojo);
+        pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
+
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
         this.cachedModel.put(ModelConstant.ROOT, pojoModel);
 
@@ -142,6 +148,51 @@ public class ReflectedJavaModelBuilder {
             attributes.add(attrValues);
         }
         return attributes;
+    }
+
+    /**
+     * Extracts the superclass from the given POJO
+     *
+     * @param pojo
+     *            {@link Class} object of the POJO the supertype should be retrieved from
+     * @return the supertype, represented by a {@link Map} of a {@link String} key to the corresponding
+     *         {@link String} value of meta information
+     * @author fkreis (24.09.2014)
+     */
+    private Map<String, Object> extractSuperclass(Class<?> pojo) {
+
+        Map<String, Object> superclassModel = new HashMap<>();
+
+        Class<?> superclass = pojo.getSuperclass();
+        superclassModel.put(ModelConstant.NAME, superclass.getName());
+        superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
+        superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+
+        return superclassModel;
+    }
+
+    /**
+     * Extracts the implementedTypes (interfaces) from the given POJO
+     *
+     * @param pojo
+     *            {@link Class} object of the POJO the interfaces should be retrieved from
+     * @return a {@link Set} of implementedTypes (interfaces), where each is represented by a {@link Map} of a
+     *         {@link String} key to the corresponding {@link String} value of meta information
+     * @author fkreis (24.09.2014)
+     */
+    private List<Map<String, Object>> extractInterfaces(Class<?> pojo) {
+
+        List<Map<String, Object>> interfaceList = new LinkedList<>();
+
+        for (Class<?> c : pojo.getInterfaces()) {
+            Map<String, Object> interfaceModel = new HashMap<>();
+            interfaceModel.put(ModelConstant.NAME, c.getName());
+            interfaceModel.put(ModelConstant.CANONICAL_NAME, c.getCanonicalName());
+            interfaceModel.put(ModelConstant.PACKAGE, c.getPackage().getName());
+            interfaceList.add(interfaceModel);
+        }
+
+        return interfaceList;
     }
 
     /**
@@ -284,7 +335,8 @@ public class ReflectedJavaModelBuilder {
                         pojo.getDeclaredMethod("is"
                             + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
-                if (getter == null) return;
+                if (getter == null)
+                    return;
 
                 Annotation[] annotations = getter.getAnnotations();
                 for (Annotation a : annotations) {
