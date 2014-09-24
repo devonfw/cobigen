@@ -72,6 +72,12 @@ public class ParsedJavaModelBuilder {
         determinePojoIds(javaClass, attributes);
         collectAnnotations(javaClass, attributes);
 
+        Map<String, Object> superclass = extractSuperclass(javaClass);
+        pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
+
+        List<Map<String, Object>> interfaces = extractInterfaces(javaClass);
+        pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
+
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
         this.cachedModel.put(ModelConstant.ROOT, pojoModel);
 
@@ -128,6 +134,51 @@ public class ParsedJavaModelBuilder {
     }
 
     /**
+     * Extracts the superclass from the given POJO
+     *
+     * @param pojo
+     *            {@link Class} object of the POJO the supertype should be retrieved from
+     * @return the supertype, represented by a {@link Map} of a {@link String} key to the corresponding
+     *         {@link String} value of meta information
+     * @author fkreis (24.09.2014)
+     */
+    private Map<String, Object> extractSuperclass(JavaClass pojo) {
+
+        Map<String, Object> superclassModel = new HashMap<>();
+
+        JavaClass superclass = pojo.getSuperJavaClass();
+        superclassModel.put(ModelConstant.NAME, superclass.getName());
+        superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
+        superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+
+        return superclassModel;
+    }
+
+    /**
+     * Extracts the implementedTypes (interfaces) from the given POJO
+     *
+     * @param pojo
+     *            {@link Class} object of the POJO the interfaces should be retrieved from
+     * @return a {@link Set} of implementedTypes (interfaces), where each is represented by a {@link Map} of a
+     *         {@link String} key to the corresponding {@link String} value of meta information
+     * @author fkreis (24.09.2014)
+     */
+    private List<Map<String, Object>> extractInterfaces(JavaClass pojo) {
+
+        List<Map<String, Object>> interfaceList = new LinkedList<>();
+
+        for (JavaClass c : pojo.getImplementedInterfaces()) {
+            Map<String, Object> interfaceModel = new HashMap<>();
+            interfaceModel.put(ModelConstant.NAME, c.getName());
+            interfaceModel.put(ModelConstant.CANONICAL_NAME, c.getCanonicalName());
+            interfaceModel.put(ModelConstant.PACKAGE, c.getPackage().getName());
+            interfaceList.add(interfaceModel);
+        }
+
+        return interfaceList;
+    }
+
+    /**
      * Collect all annotations for the given pojo from setter and getter methods by searching using the
      * attribute names. Annotation information retrieved from the setter and getter methods will be added the
      * the corresponding attribute meta data
@@ -147,18 +198,21 @@ public class ParsedJavaModelBuilder {
             JavaMethod getter =
                 javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (getter != null) extractAnnotationsRecursively(annotations, getter.getAnnotations());
+            if (getter != null)
+                extractAnnotationsRecursively(annotations, getter.getAnnotations());
 
             getter =
                 javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (getter != null) extractAnnotationsRecursively(annotations, getter.getAnnotations());
+            if (getter != null)
+                extractAnnotationsRecursively(annotations, getter.getAnnotations());
 
             // TODO bugfixing: setter has to have some parameters
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (setter != null) extractAnnotationsRecursively(annotations, setter.getAnnotations());
+            if (setter != null)
+                extractAnnotationsRecursively(annotations, setter.getAnnotations());
         }
     }
 
@@ -227,7 +281,8 @@ public class ParsedJavaModelBuilder {
                     javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)),
                         null, false);
             }
-            if (getter == null) return;
+            if (getter == null)
+                return;
 
             List<JavaAnnotation> annotations = getter.getAnnotations();
             for (JavaAnnotation a : annotations) {
