@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.util.ModelUtil;
 import com.capgemini.cobigen.javaplugin.util.ParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 
@@ -19,7 +20,7 @@ import com.thoughtworks.qdox.model.JavaClass;
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
+public class ParsedJavaModelBuilderTest {
     /**
      * Root path to all resources used in this test case
      */
@@ -45,7 +46,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
             javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
-        Map<String, Object> customList = getField(model, "customList");
+        Map<String, Object> customList = ModelUtil.getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("List<String>", customList.get(ModelConstant.TYPE));
@@ -71,10 +72,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
             javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(classFile)));
 
         // check whether extended Type meets expectations
-        @SuppressWarnings("unchecked")
-        Map<String, Object> supermodel =
-            (Map<String, Object>) ((Map<String, Object>) model.get(ModelConstant.ROOT))
-                .get(ModelConstant.EXTENDED_TYPE);
+        Map<String, Object> supermodel = ModelUtil.getExtendedType(model);
         JavaClass superClass = ParserUtil.getJavaClass(new FileReader(superClassFile));
 
         Assert.assertEquals(supermodel.get(ModelConstant.NAME), superClass.getName());
@@ -82,10 +80,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         Assert.assertEquals(supermodel.get(ModelConstant.PACKAGE), superClass.getPackage().getName());
 
         // check whether implemented Types (interfaces) meet expectations
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> interfaces =
-            (List<Map<String, Object>>) ((Map<String, Object>) model.get(ModelConstant.ROOT))
-                .get(ModelConstant.IMPLEMENTED_TYPES);
+        List<Map<String, Object>> interfaces = ModelUtil.getImplementedTypes(model);
         JavaClass interfaceClass1 = ParserUtil.getJavaClass(new FileReader(interface1File));
         JavaClass interfaceClass2 = ParserUtil.getJavaClass(new FileReader(interface2File));
         System.out.println(interfaces);
@@ -117,7 +112,7 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
             javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
-        Map<String, Object> customTypeField = getField(model, "customTypeField");
+        Map<String, Object> customTypeField = ModelUtil.getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
@@ -143,9 +138,9 @@ public class ParsedJavaModelBuilderTest extends AbstractJavaParserTest {
             javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(subClass), new FileReader(
                 superClass)));
 
-        Assert.assertEquals(2, getFields(model).size());
-        Assert.assertNotNull(getField(model, "id"));
-        Assert.assertNotNull(getField(model, "customList"));
+        Assert.assertEquals(2, ModelUtil.getFields(model).size());
+        Assert.assertNotNull(ModelUtil.getField(model, "id"));
+        Assert.assertNotNull(ModelUtil.getField(model, "customList"));
     }
 
 }

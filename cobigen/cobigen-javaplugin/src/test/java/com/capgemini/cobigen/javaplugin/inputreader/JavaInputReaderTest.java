@@ -9,16 +9,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.util.ModelUtil;
 import com.capgemini.cobigen.javaplugin.util.ParserUtil;
 
 /**
- * This class tests the {@link JavaInputReader}. More specific it should test the model extraction by using reflection
- * and java parsing in combination.
- * 
+ * This class tests the {@link JavaInputReader}. More specific it should test the model extraction by using
+ * reflection and java parsing in combination.
+ *
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public class JavaInputReaderTest extends AbstractJavaParserTest {
+public class JavaInputReaderTest {
 
     /**
      * Root path to all resources used in this test case
@@ -27,9 +28,9 @@ public class JavaInputReaderTest extends AbstractJavaParserTest {
 
     /**
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class
-     * 
+     *
      * @throws FileNotFoundException
-     *         test fails
+     *             test fails
      */
     @Test
     public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException {
@@ -39,14 +40,14 @@ public class JavaInputReaderTest extends AbstractJavaParserTest {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =
-                javaInputReader.createModel(new Object[] { ParserUtil.getJavaClass(new FileReader(javaSourceFile)),
-                javaClass });
+            javaInputReader.createModel(new Object[] {
+                ParserUtil.getJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
         // Check parser feature (resolving of parametric type variables)
-        Map<String, Object> fieldAttributes = getField(model, "customList");
+        Map<String, Object> fieldAttributes = ModelUtil.getField(model, "customList");
         Assert.assertEquals("Parametric types are not be resolved correctly!", "List<String>",
-                fieldAttributes.get(ModelConstant.TYPE));
+            fieldAttributes.get(ModelConstant.TYPE));
 
         // Check reflection feature (existence of util for classpath dependent checks)
         Assert.assertNotNull("Reflection Util not attached to model!", model.get(ModelConstant.UTILS));

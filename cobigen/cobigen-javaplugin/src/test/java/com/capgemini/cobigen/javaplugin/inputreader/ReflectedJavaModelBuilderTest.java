@@ -7,6 +7,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.util.ModelUtil;
+
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}
  *
@@ -25,15 +27,14 @@ public class ReflectedJavaModelBuilderTest {
      * Tests whether parametric attribute types will be extracted correctly to the model
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testCorrectlyExtractedAttributeTypes() {
 
         ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
-        Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
+        Map<String, Object> pojoMap = ModelUtil.getRoot(model);
         Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        List<Map<String, Object>> attributes = (List<Map<String, Object>>) pojoMap.get(ModelConstant.FIELDS);
+        List<Map<String, Object>> attributes = ModelUtil.getFields(model);
         Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
 
         Map<String, Object> parametricTestAttribute = null;
@@ -61,13 +62,10 @@ public class ReflectedJavaModelBuilderTest {
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         // check whether extended Type meets expectations
-        @SuppressWarnings("unchecked")
-        Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
+        Map<String, Object> pojoMap = ModelUtil.getRoot(model);
         Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> supertype = (Map<String, Object>) pojoMap.get(ModelConstant.EXTENDED_TYPE);
+        Map<String, Object> supertype = ModelUtil.getExtendedType(model);
         Assert.assertNotNull(ModelConstant.EXTENDED_TYPE + " is not accessible in model", supertype);
-        System.out.println(supertype);
         Assert.assertEquals(supertype.get(ModelConstant.NAME), "java.lang.Object");
         Assert.assertEquals(supertype.get(ModelConstant.CANONICAL_NAME), "java.lang.Object");
         Assert.assertEquals(supertype.get(ModelConstant.PACKAGE), "java.lang");

@@ -18,12 +18,23 @@ public class ModelUtil {
      *            raw model
      * @return the model root-element ({@link ModelConstant#ROOT})
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, Object> getRoot(Map<String, Object> model) {
 
         Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
-        // Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
         return pojoMap;
+    }
+
+    /**
+     * Returns the model annotations-element ({@link ModelConstant#ANNOTATIONS})
+     *
+     * @param model
+     *            raw model
+     * @return the model annotations-element ({@link ModelConstant#ANNOTATIONS})
+     */
+    public static Map<String, Object> getAnnotations(Map<String, Object> model) {
+
+        Map<String, Object> annotations = (Map<String, Object>) model.get(ModelConstant.ANNOTATIONS);
+        return annotations;
     }
 
     /**
@@ -38,7 +49,6 @@ public class ModelUtil {
 
         List<Map<String, Object>> attributes =
             (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
-        // Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
         return attributes;
     }
 
@@ -60,9 +70,69 @@ public class ModelUtil {
                 break;
             }
         }
-
-        // Assert.assertNotNull("There is no field with name '" + fieldName + "' in the model", field);
         return field;
+    }
+
+    /**
+     * Returns the model's supertype element
+     *
+     * @param model
+     *            raw model
+     * @return the model's supertype element
+     */
+    public static Map<String, Object> getExtendedType(Map<String, Object> model) {
+        Map<String, Object> supertype = (Map<String, Object>) getRoot(model).get(ModelConstant.EXTENDED_TYPE);
+        return supertype;
+    }
+
+    /**
+     * Returns the model's implemented types element, which is a list consisting of the interface models
+     *
+     * @param model
+     *            raw model
+     * @return the model's interfaces element
+     */
+    public static List<Map<String, Object>> getImplementedTypes(Map<String, Object> model) {
+        List<Map<String, Object>> interfaces =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.IMPLEMENTED_TYPES);
+        return interfaces;
+    }
+
+    /**
+     * Returns the model's methods element, which is a list consisting of the method models
+     *
+     * @param model
+     *            raw model
+     * @return the model's methods element
+     */
+    public static List<Map<String, Object>> getMethods(Map<String, Object> model) {
+        List<Map<String, Object>> methods =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.METHODS);
+        return methods;
+    }
+
+    /**
+     * Returns the model's name element, which is the simple name of the input class
+     *
+     * @param model
+     *            raw model
+     * @return the model's name element
+     */
+    public static String getName(Map<String, Object> model) {
+        String name = (String) getRoot(model).get(ModelConstant.NAME);
+        return name;
+    }
+
+    /**
+     * Returns the model's canonicalName element, which is the full qualified name of the input class
+     *
+     * @param model
+     *            raw model
+     * @return the model's canonicalName element
+     */
+    public static String getCanonicalName(Map<String, Object> model) {
+        String cName = (String) getRoot(model).get(ModelConstant.CANONICAL_NAME);
+        return cName;
     }
 
 }
