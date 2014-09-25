@@ -2,7 +2,7 @@ package com.capgemini.cobigen.javaplugin.inputreader.testdata;
 
 import java.util.List;
 
-public class TestClass extends AbstractTestClass {
+public class TestClass extends AbstractTestClass implements TestInterface1, TestInterface2{
 
     private List<String> customList;
 

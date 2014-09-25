@@ -166,7 +166,6 @@ public class ParsedJavaModelBuilder {
     private List<Map<String, Object>> extractInterfaces(JavaClass pojo) {
 
         List<Map<String, Object>> interfaceList = new LinkedList<>();
-
         for (JavaClass c : pojo.getImplementedInterfaces()) {
             Map<String, Object> interfaceModel = new HashMap<>();
             interfaceModel.put(ModelConstant.NAME, c.getName());
