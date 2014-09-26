@@ -6,10 +6,10 @@ import java.util.Map;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 
 /**
- * * The {@link ModelUtil} class provides helper functions to access the given model.
+ * * The {@link JavaModelUtil} class provides helper functions to access the given model.
  * @author fkreis (25.09.2014)
  */
-public class ModelUtil {
+public class JavaModelUtil {
 
     /**
      * Returns the model root-element ({@link ModelConstant#ROOT})
@@ -59,7 +59,7 @@ public class ModelUtil {
      *            raw model
      * @param fieldName
      *            field name to be retrieved
-     * @return the field model for the given field name.
+     * @return the field model for the given field name if such a field exists, otherwise null.
      */
     public static Map<String, Object> getField(Map<String, Object> model, String fieldName) {
 
@@ -96,6 +96,26 @@ public class ModelUtil {
         List<Map<String, Object>> interfaces =
             (List<Map<String, Object>>) getRoot(model).get(ModelConstant.IMPLEMENTED_TYPES);
         return interfaces;
+    }
+
+    /**
+     * Returns the interface model for the given interface name if such an interface exists, otherwise null.
+     *
+     * @param model
+     *            raw model
+     * @param fqn
+     *            full qualified name, which identifies the specific interface
+     * @return the interface model
+     */
+    public static Map<String, Object> getImplementedType(Map<String, Object> model, String fqn) {
+        Map<String, Object> implType = null;
+        for (Map<String, Object> typ : getImplementedTypes(model)) {
+            if (fqn.equals(typ.get(ModelConstant.CANONICAL_NAME))) {
+                implType = typ;
+                break;
+            }
+        }
+        return implType;
     }
 
     /**

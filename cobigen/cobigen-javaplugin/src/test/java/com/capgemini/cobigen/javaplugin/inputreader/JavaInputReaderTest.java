@@ -9,8 +9,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
-import com.capgemini.cobigen.javaplugin.util.ModelUtil;
-import com.capgemini.cobigen.javaplugin.util.ParserUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 /**
  * This class tests the {@link JavaInputReader}. More specific it should test the model extraction by using
@@ -41,11 +41,11 @@ public class JavaInputReaderTest {
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =
             javaInputReader.createModel(new Object[] {
-                ParserUtil.getJavaClass(new FileReader(javaSourceFile)), javaClass });
+                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
         // Check parser feature (resolving of parametric type variables)
-        Map<String, Object> fieldAttributes = ModelUtil.getField(model, "customList");
+        Map<String, Object> fieldAttributes = JavaModelUtil.getField(model, "customList");
         Assert.assertEquals("Parametric types are not be resolved correctly!", "List<String>",
             fieldAttributes.get(ModelConstant.TYPE));
 

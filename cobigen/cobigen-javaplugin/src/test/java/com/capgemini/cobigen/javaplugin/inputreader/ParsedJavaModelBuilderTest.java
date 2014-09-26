@@ -10,8 +10,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.util.ModelUtil;
-import com.capgemini.cobigen.javaplugin.util.ParserUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
@@ -45,8 +45,8 @@ public class ParsedJavaModelBuilderTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
-        Map<String, Object> customList = ModelUtil.getField(model, "customList");
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("List<String>", customList.get(ModelConstant.TYPE));
@@ -70,21 +70,21 @@ public class ParsedJavaModelBuilderTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(classFile)));
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
         // check whether extended Type meets expectations
-        Map<String, Object> supermodel = ModelUtil.getExtendedType(model);
-        JavaClass superClass = ParserUtil.getJavaClass(new FileReader(superClassFile));
+        Map<String, Object> supermodel = JavaModelUtil.getExtendedType(model);
+        JavaClass superClass = JavaParserUtil.getFirstJavaClass(new FileReader(superClassFile));
 
         Assert.assertEquals(supermodel.get(ModelConstant.NAME), superClass.getName());
         Assert.assertEquals(supermodel.get(ModelConstant.CANONICAL_NAME), superClass.getCanonicalName());
         Assert.assertEquals(supermodel.get(ModelConstant.PACKAGE), superClass.getPackage().getName());
 
         // check whether implemented Types (interfaces) meet expectations
-        List<Map<String, Object>> interfaces = ModelUtil.getImplementedTypes(model);
-        JavaClass interfaceClass1 = ParserUtil.getJavaClass(new FileReader(interface1File));
-        JavaClass interfaceClass2 = ParserUtil.getJavaClass(new FileReader(interface2File));
-        System.out.println(interfaces);
+        List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
+        JavaClass interfaceClass1 = JavaParserUtil.getFirstJavaClass(new FileReader(interface1File));
+        JavaClass interfaceClass2 = JavaParserUtil.getFirstJavaClass(new FileReader(interface2File));
+
         // interface1
         Assert.assertEquals(interfaces.get(0).get(ModelConstant.NAME), interfaceClass1.getName());
         Assert.assertEquals(interfaces.get(0).get(ModelConstant.CANONICAL_NAME),
@@ -100,8 +100,8 @@ public class ParsedJavaModelBuilderTest {
 
         // debug nullPointerException in case of superclass without package
         Map<String, Object> noPackagemodel =
-            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(noPackageFile)));
-        Assert.assertEquals(ModelUtil.getExtendedType(noPackagemodel).get(ModelConstant.PACKAGE), "");
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
+        Assert.assertEquals(JavaModelUtil.getExtendedType(noPackagemodel).get(ModelConstant.PACKAGE), "");
     }
 
     /**
@@ -117,8 +117,8 @@ public class ParsedJavaModelBuilderTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(file)));
-        Map<String, Object> customTypeField = ModelUtil.getField(model, "customTypeField");
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
@@ -141,12 +141,12 @@ public class ParsedJavaModelBuilderTest {
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
-            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(subClass), new FileReader(
-                superClass)));
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(subClass),
+                new FileReader(superClass)));
 
-        Assert.assertEquals(2, ModelUtil.getFields(model).size());
-        Assert.assertNotNull(ModelUtil.getField(model, "id"));
-        Assert.assertNotNull(ModelUtil.getField(model, "customList"));
+        Assert.assertEquals(2, JavaModelUtil.getFields(model).size());
+        Assert.assertNotNull(JavaModelUtil.getField(model, "id"));
+        Assert.assertNotNull(JavaModelUtil.getField(model, "customList"));
     }
 
 }

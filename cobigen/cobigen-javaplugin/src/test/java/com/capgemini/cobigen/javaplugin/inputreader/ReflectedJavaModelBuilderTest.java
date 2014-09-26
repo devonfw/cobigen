@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.util.ModelUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}
@@ -32,9 +32,9 @@ public class ReflectedJavaModelBuilderTest {
         ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
-        Map<String, Object> pojoMap = ModelUtil.getRoot(model);
+        Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
         Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        List<Map<String, Object>> attributes = ModelUtil.getFields(model);
+        List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
         Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
 
         Map<String, Object> parametricTestAttribute = null;
@@ -62,9 +62,9 @@ public class ReflectedJavaModelBuilderTest {
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         // check whether extended Type meets expectations
-        Map<String, Object> pojoMap = ModelUtil.getRoot(model);
+        Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
         Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        Map<String, Object> supertype = ModelUtil.getExtendedType(model);
+        Map<String, Object> supertype = JavaModelUtil.getExtendedType(model);
         Assert.assertNotNull(ModelConstant.EXTENDED_TYPE + " is not accessible in model", supertype);
         Assert.assertEquals(supertype.get(ModelConstant.NAME), "java.lang.Object");
         Assert.assertEquals(supertype.get(ModelConstant.CANONICAL_NAME), "java.lang.Object");

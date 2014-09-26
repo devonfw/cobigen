@@ -6,7 +6,6 @@ package com.capgemini.cobigen.javaplugin.merger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
@@ -16,9 +15,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -30,7 +28,7 @@ import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * TestCase testing {@link JavaMerger}
- * 
+ *
  * @author mbrunnli (04.04.2013)
  */
 public class JavaMergerTest {
@@ -283,13 +281,13 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_encoding.java");
         String mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-        JavaSource mergedSource = getJavaClass(new StringReader(mergedContents)).getSource();
+        JavaSource mergedSource = JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
 
         baseFile = new File(testFileRootPath + "BaseFile_encoding_ISO-8859-1.java");
         mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
-        mergedSource = getJavaClass(new StringReader(mergedContents)).getSource();
+        mergedSource = JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
     }
 
@@ -347,14 +345,14 @@ public class JavaMergerTest {
 
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         JavaSource source = classLibraryBuilder.addSource(new FileInputStream(file));
-        JavaClass origClazz = (ModifyableJavaClass) source.getClasses().get(0);
+        JavaClass origClazz = source.getClasses().get(0);
 
         String mergedContents =
             new JavaMerger("", true).merge(file, Files.toString(file, Charset.forName("UTF-8")), "UTF-8");
 
         classLibraryBuilder = new ModifyableClassLibraryBuilder();
         source = classLibraryBuilder.addSource(new StringReader(mergedContents));
-        JavaClass resultClazz = (ModifyableJavaClass) source.getClasses().get(0);
+        JavaClass resultClazz = source.getClasses().get(0);
 
         for (JavaMethod method : resultClazz.getMethods()) {
             JavaMethod origMethod =
@@ -381,28 +379,7 @@ public class JavaMergerTest {
         MergeException {
         String mergedContents =
             new JavaMerger("", override).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-        return getJavaClass(new StringReader(mergedContents)).getSource();
-    }
-
-    /**
-     * Returns the {@link JavaClass} parsed by the given {@link Reader}
-     * @param reader
-     *            {@link Reader} which contents should be parsed
-     * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private ModifyableJavaClass getJavaClass(Reader reader) {
-        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        classLibraryBuilder.appendDefaultClassLoaders();
-        classLibraryBuilder.addSource(reader);
-        JavaSource source = null;
-        for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
-            source = s;
-            // only consider one class per file
-            break;
-        }
-        // save cast as given by the customized builder
-        return (ModifyableJavaClass) source.getClasses().get(0);
+        return JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
     }
 
 }
