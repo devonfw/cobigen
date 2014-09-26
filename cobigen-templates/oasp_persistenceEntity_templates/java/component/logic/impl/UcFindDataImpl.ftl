@@ -27,7 +27,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
     @Override
     public ${variables.entityName}Eto get${variables.entityName}(Long id) {
         LOG.debug("Get ${variables.entityName} with id {} from database.", id);
-        return getBeanMapper().map(this.${variables.entityName?uncap_first}Dao.findIfExists(id), ${variables.entityName}Eto.class);
+        return getBeanMapper().map(get${variables.entityName}Dao().findIfExists(id), ${variables.entityName}Eto.class);
     }
 
     /**
@@ -36,7 +36,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
     @Override
     public List<${variables.entityName}Eto> getAll${variables.entityName}s() {
         LOG.debug("Get all ${variables.entityName}s from database.");
-        List<${variables.entityName}Entity> ${variables.entityName?uncap_first}s = this.${variables.entityName?uncap_first}Dao.getAll${variables.entityName}s();
+        List<${variables.entityName}Entity> ${variables.entityName?uncap_first}s = get${variables.entityName}Dao().getAll${variables.entityName}s();
         return getBeanMapper().mapList(${variables.entityName?uncap_first}s, ${variables.entityName}Eto.class);
     }
 

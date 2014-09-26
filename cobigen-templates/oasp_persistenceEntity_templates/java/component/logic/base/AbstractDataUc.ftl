@@ -9,7 +9,7 @@ import ${variables.rootPackage}.${variables.component}.persistence.api.dao.${var
 public class Abstract${variables.entityName}Uc extends AbstractUc {
 
 	/** @see #get${variables.entityName}Dao() */
-    protected ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
+    private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
     
     /**
      * Returns the field '${variables.entityName?uncap_first}Dao'.
