@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Composite transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Cto extends <#if pojo.extendedType.canonicalName=="java.lang.Object">AbstractCto<#else>${pojo.extendedType.name}</#if> {
+public class ${variables.entityName}Cto extends <#if pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package>AbstractCto<#else>${pojo.extendedType.name?replace("Entity","Cto")}</#if> {
 
 	private static final long serialVersionUID = 1L;
 
