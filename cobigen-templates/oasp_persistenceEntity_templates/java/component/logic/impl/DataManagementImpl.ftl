@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl;
 
-import ${variables.rootPackage}.general.common.base.AbstractLayerImpl;
+import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variables.entityName};
@@ -15,7 +15,7 @@ import javax.inject.Named;
  * Implementation of component interface of ${variables.component}
  */
 @Named
-public class ${variables.component?cap_first}Impl extends AbstractLayerImpl implements ${variables.component?cap_first} {
+public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupport implements ${variables.component?cap_first} {
 
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
