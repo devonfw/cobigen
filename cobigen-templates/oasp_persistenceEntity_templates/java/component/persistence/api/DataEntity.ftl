@@ -6,6 +6,9 @@ import javax.persistence.Entity;
 
 import net.sf.mmm.util.entity.api.PersistenceEntity;
 
+/**
+ * Data access object for ${variables.entityName} entities
+ */
 @Entity(name = "${variables.entityName}")
 @javax.persistence.Table(name = "${variables.entityName}")
 public class ${pojo.name} implements PersistenceEntity<Long>, ${variables.entityName} {

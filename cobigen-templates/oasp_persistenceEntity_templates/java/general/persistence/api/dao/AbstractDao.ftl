@@ -6,8 +6,6 @@ import net.sf.mmm.util.entity.api.PersistenceEntity;
 /**
  * Interface for {@link GenericDao Data Access Object} in this project.
  * 
- * @author etomety
- * 
  * @param <ID> is the type of the {@link PersistenceEntity#getId() primary key}
  *        of the managed
  *        {@link io.oasp.gastronomy.restaurant.general.persistence.base.RestaurantPersistenceEntity

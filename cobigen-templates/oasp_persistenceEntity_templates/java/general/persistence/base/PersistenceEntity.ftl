@@ -15,9 +15,6 @@ import net.sf.mmm.util.entity.api.PersistenceEntity;
 
 /**
  * Abstract Entity for all Entities with an id and a version field.
- *
- * @author hohwille
- * @author rjoeris
  */
 @MappedSuperclass
 public abstract class ${variables.domain?cap_first}PersistenceEntity implements PersistenceEntity<Long>, MutableGenericEntity<Long> {

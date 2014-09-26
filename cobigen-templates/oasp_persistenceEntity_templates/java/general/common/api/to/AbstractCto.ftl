@@ -4,8 +4,6 @@ import net.sf.mmm.util.transferobject.api.CompositeTo;
 
 /**
  * Abstract base class for a <em>{@link CompositeTo composite transfer-object}</em> in this application.
- *
- * @author hohwille
  */
 public class AbstractCto extends CompositeTo {
 

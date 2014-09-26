@@ -6,7 +6,7 @@ import ${variables.rootPackage}.general.persistence.api.dao.AbstractDao;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${pojo.name};
 
 /**
- * @generated
+ * Data access interface for ${variables.entityName} entities
  */
 public interface ${variables.entityName}Dao extends AbstractDao<${pojo.name}, Long> {
 
