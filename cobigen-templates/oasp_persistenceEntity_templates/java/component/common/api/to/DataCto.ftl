@@ -1,6 +1,7 @@
 <#include '/functions.ftl'>
 package ${variables.rootPackage}.${variables.component}.common.api.to;
 
+import ${variables.rootPackage}.general.logic.base.AbstractCto;
 import ${variables.rootPackage}.general.common.api.to.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
@@ -10,7 +11,7 @@ import java.util.Set;
 /**
  * Composite transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Cto extends AbstractCto {
+public class ${variables.entityName}Cto extends <#if pojo.extendedType.canonicalName=="java.lang.Object">AbstractCto<#else>${pojo.extendedType.name}</#if> {
 
 	private static final long serialVersionUID = 1L;
 
