@@ -63,6 +63,7 @@ public class ParsedJavaModelBuilderTest {
     public void testCorrectlyExtractedSuperTypes() throws FileNotFoundException {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
+        File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
         File superClassFile = new File(testFileRootPath + "AbstractTestClass.java");
         File interface1File = new File(testFileRootPath + "TestInterface1.java");
         File interface2File = new File(testFileRootPath + "TestInterface2.java");
@@ -96,6 +97,11 @@ public class ParsedJavaModelBuilderTest {
             interfaceClass2.getCanonicalName());
         Assert.assertEquals(interfaces.get(1).get(ModelConstant.PACKAGE), interfaceClass2.getPackage()
             .getName());
+
+        // debug nullPointerException in case of superclass without package
+        Map<String, Object> noPackagemodel =
+            javaModelBuilder.createModel(ParserUtil.getJavaClass(new FileReader(noPackageFile)));
+        Assert.assertEquals(ModelUtil.getExtendedType(noPackagemodel).get(ModelConstant.PACKAGE), "");
     }
 
     /**

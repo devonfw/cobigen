@@ -149,8 +149,11 @@ public class ParsedJavaModelBuilder {
         JavaClass superclass = pojo.getSuperJavaClass();
         superclassModel.put(ModelConstant.NAME, superclass.getName());
         superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
-        superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
-
+        if (superclass.getPackage() != null) {
+            superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+        } else {
+            superclassModel.put(ModelConstant.PACKAGE, "");
+        }
         return superclassModel;
     }
 
@@ -170,7 +173,12 @@ public class ParsedJavaModelBuilder {
             Map<String, Object> interfaceModel = new HashMap<>();
             interfaceModel.put(ModelConstant.NAME, c.getName());
             interfaceModel.put(ModelConstant.CANONICAL_NAME, c.getCanonicalName());
-            interfaceModel.put(ModelConstant.PACKAGE, c.getPackage().getName());
+            if (c.getPackage() != null) {
+                interfaceModel.put(ModelConstant.PACKAGE, c.getPackage().getName());
+            } else {
+                interfaceModel.put(ModelConstant.PACKAGE, "");
+            }
+
             interfaceList.add(interfaceModel);
         }
 
