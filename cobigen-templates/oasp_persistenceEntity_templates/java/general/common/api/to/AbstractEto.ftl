@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.general.logic.base;
+package ${variables.rootPackage}.general.common.api.to;
 
 import net.sf.mmm.util.transferobject.api.EntityTo;
 

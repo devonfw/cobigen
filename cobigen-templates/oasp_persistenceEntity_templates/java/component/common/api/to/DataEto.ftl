@@ -1,7 +1,7 @@
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.${variables.component}.logic.api.to;
+package ${variables.rootPackage}.${variables.component}.common.api.to;
 
-import ${variables.rootPackage}.general.logic.base.AbstractEto;
+import ${variables.rootPackage}.general.common.api.to.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 
 <#list pojo.attributes as attr>
 	<#assign attrCapName=attr.name?cap_first>
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -28,7 +28,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	public ${attr.type?replace("[^<>,]+Entity","Long","r")} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}<#if attr.type?contains("Entity")>Id</#if></#if>() {
 		return ${attr.name};
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -58,7 +58,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
         </#if>
         return result;
     }
-    
+
   /**
    * {@inheritDoc}
    */
@@ -80,7 +80,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
     <#if equalsJavaPrimitive(attr.type)>
 	if(this.${attr.name} != other.${attr.name}) {
 		return false;
-	} 
+	}
     <#else>
     if (this.${attr.name} == null) {
       if (other.${attr.name} != null) {

@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.general.common.constants;
+package ${variables.rootPackage}.general.common.api.constants;
 
 /**
  * Constants for commonly used named queries
