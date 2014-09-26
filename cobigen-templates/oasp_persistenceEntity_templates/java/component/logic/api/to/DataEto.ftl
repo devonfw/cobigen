@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Entity transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Eto extends AbstractEto implements ${variables.entityName} {
+public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonicalName=="java.lang.Object">AbstractEto<#else>${pojo.extendedType.name}</#if> implements ${variables.entityName} {
 
 	private static final long serialVersionUID = 1L;
 
@@ -25,7 +25,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ${attr.type?replace("[^<>,]+Entity","Long","r")} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}<#if attr.type?contains("Entity")>Id</#if></#if>() {
+	public ${attr.type?replace("[^<>,]+Entity","Long","r")} <#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}<#if attr.type?contains("Entity")>Id</#if></#if>() {
 		return ${attr.name};
 	}
 	
