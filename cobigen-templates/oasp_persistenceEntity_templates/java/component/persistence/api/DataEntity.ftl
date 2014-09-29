@@ -11,7 +11,7 @@ import net.sf.mmm.util.entity.api.PersistenceEntity;
  */
 @Entity(name = "${variables.entityName}")
 @javax.persistence.Table(name = "${variables.entityName}")
-public class ${pojo.name} implements PersistenceEntity<Long>, ${variables.entityName} {
+public class ${pojo.name} extends ${variables.domain?cap_first}PersistenceEntity implements PersistenceEntity<Long>, ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
 
