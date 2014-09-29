@@ -5,6 +5,7 @@ package com.capgemini.cobigen.javaplugin.merger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging imports
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -58,6 +60,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging fields
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -82,6 +85,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging methods
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -111,6 +115,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging classes recursively
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -155,6 +160,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging imports
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -172,6 +178,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging fields
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -196,6 +203,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging methods
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -226,6 +234,7 @@ public class JavaMergerTest {
     /**
      * Test of {@link JavaMerger} merging classes recursively
      * @throws Exception
+     *             test fails
      * @author mbrunnli (04.04.2013)
      */
     @Test
@@ -272,7 +281,9 @@ public class JavaMergerTest {
      * Tests whether the contents will be rewritten after parsing and printing with QDox with the right
      * encoding
      * @throws IOException
+     *             test fails
      * @throws MergeException
+     *             test fails
      * @author mbrunnli (12.04.2013)
      */
     @Test
@@ -296,6 +307,7 @@ public class JavaMergerTest {
      * @throws IOException
      *             test fails
      * @throws MergeException
+     *             test fails
      * @author mbrunnli (04.06.2013)
      */
     @Test
@@ -315,7 +327,9 @@ public class JavaMergerTest {
     /**
      * Tests whether all generics of the original file will be existent after merging
      * @throws IOException
+     *             test fails
      * @throws MergeException
+     *             test fails
      * @author mbrunnli (17.06.2013)
      */
     @Test
@@ -335,7 +349,9 @@ public class JavaMergerTest {
     /**
      * Tests merging java without adding new lines to method bodies (was a bug)
      * @throws IOException
+     *             test fails
      * @throws MergeException
+     *             test fails
      * @author mbrunnli (07.06.2014)
      */
     @Test
@@ -362,6 +378,38 @@ public class JavaMergerTest {
     }
 
     /**
+     * Tests issue <a href=https://github.com/oasp/tools-cobigen/issues/39>#39</a>: inheritance relation
+     * should be merged also if the base class (natively) extends java.lang.Object
+     * @throws IOException
+     *             test fails
+     * @throws MergeException
+     *             test fails
+     * @author mbrunnli (29.09.2014)
+     */
+    @Test
+    public void testMergeInheritanceRelation() throws IOException, MergeException {
+        File baseFile = new File(testFileRootPath + "BaseFile_inheritance.java");
+        File patchFile = new File(testFileRootPath + "PatchFile_inheritance.java");
+
+        JavaClass origClazz = JavaParserUtil.getJavaClass(new FileReader(baseFile));
+        Assert.assertEquals("java.lang.Object", origClazz.getSuperClass().getCanonicalName());
+
+        String mergedContents =
+            new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")),
+                "UTF-8");
+
+        JavaClass resultClazz = JavaParserUtil.getJavaClass(new StringReader(mergedContents));
+        Assert
+            .assertEquals(
+                "The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'",
+                "java.util.HashMap", resultClazz.getSuperClass().getCanonicalName());
+        Assert
+            .assertEquals(
+                "The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'",
+                "HashMap<String,Long>", resultClazz.getSuperClass().getGenericValue());
+    }
+
+    /**
      * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
      * @param baseFile
      *            base file
@@ -373,6 +421,7 @@ public class JavaMergerTest {
      * @throws IOException
      *             if one of the files could not be read
      * @throws MergeException
+     *             test fails
      * @author mbrunnli (17.04.2013)
      */
     private JavaSource getMergedSource(File baseFile, File patchFile, boolean override) throws IOException,

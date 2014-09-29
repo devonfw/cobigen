@@ -152,7 +152,8 @@ public class JavaMerger implements IMerger {
                 }
             }
             baseClass.setImplementz(baseClassInterfaces);
-            if (baseClass.getSuperClass() == null) {
+            if (baseClass.getSuperClass() == null
+                || baseClass.getSuperClass().getCanonicalName().equals("java.lang.Object")) {
                 baseClass.setSuperClass(patchClass.getSuperClass());
             }
         }
