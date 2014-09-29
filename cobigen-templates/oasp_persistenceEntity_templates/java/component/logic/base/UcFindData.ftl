@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.base;
 
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
 
 import java.util.List;
 

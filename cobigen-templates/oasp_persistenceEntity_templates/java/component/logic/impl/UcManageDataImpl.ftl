@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl;
 
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};

@@ -1,6 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.persistence.api;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
+import ${variables.rootPackage}.general.persistence.base.${variables.domain?cap_first}PersistenceEntity;
 
 import javax.persistence.Entity;
 
