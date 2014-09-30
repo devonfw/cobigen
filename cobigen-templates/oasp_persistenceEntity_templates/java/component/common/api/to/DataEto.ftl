@@ -19,13 +19,27 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 </#list>
 
 <#list pojo.attributes as attr>
+  <#compress>
+  <#assign newAttrType=attr.type?replace("[^<>,]+Entity","Long","r")>
 	<#assign attrCapName=attr.name?cap_first>
+	<#assign suffix="">
+	<#if attr.type?contains("Entity") && (attr.canonicalType?contains("java.util.List") || attr.canonicalType?contains("java.util.Set"))>
+	   <#assign suffix="Ids">
+	   <#-- Handle the standard case. Due to no knowledge of the interface, we have no other possibility than guessing -->
+	   <#-- Therefore remove (hopefully) plural 's' from attribute's name to attach it on the suffix -->
+	   <#if attrCapName?ends_with("s")>
+	     <#assign attrCapName=attrCapName?substring(0, attrCapName?length-1)>
+	   </#if>
+	<#elseif attr.type?contains("Entity")>
+	   <#assign suffix="Id">
+	</#if> 
+  </#compress>
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ${attr.type?replace("[^<>,]+Entity","Long","r")} <#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}<#if attr.type?contains("Entity")>Id</#if></#if>() {
+	public ${newAttrType} <#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>() {
 		return ${attr.name};
 	}
 
@@ -33,7 +47,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void set${attrCapName}<#if attr.type?contains("Entity")>Id</#if>(${attr.type?replace("[^<>,]+Entity","Long","r")} ${attr.name}) {
+	public void set${attrCapName}${suffix}(${newAttrType} ${attr.name}) {
 		this.${attr.name} = ${attr.name};
 	}
 </#list>
