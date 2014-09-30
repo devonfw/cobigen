@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.thoughtworks.qdox.model.JavaClass;
 
 /**
  * Tests for Class {@link ParsedJavaModelBuilderTest}
@@ -60,48 +59,73 @@ public class ParsedJavaModelBuilderTest {
      *             test fails
      */
     @Test
-    public void testCorrectlyExtractedSuperTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
-        File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
-        File superClassFile = new File(testFileRootPath + "AbstractTestClass.java");
-        File interface1File = new File(testFileRootPath + "TestInterface1.java");
-        File interface2File = new File(testFileRootPath + "TestInterface2.java");
 
         ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        // check whether extended Type meets expectations
-        Map<String, Object> supermodel = JavaModelUtil.getExtendedType(model);
-        JavaClass superClass = JavaParserUtil.getFirstJavaClass(new FileReader(superClassFile));
-
-        Assert.assertEquals(supermodel.get(ModelConstant.NAME), superClass.getName());
-        Assert.assertEquals(supermodel.get(ModelConstant.CANONICAL_NAME), superClass.getCanonicalName());
-        Assert.assertEquals(supermodel.get(ModelConstant.PACKAGE), superClass.getPackage().getName());
-
         // check whether implemented Types (interfaces) meet expectations
         List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
-        JavaClass interfaceClass1 = JavaParserUtil.getFirstJavaClass(new FileReader(interface1File));
-        JavaClass interfaceClass2 = JavaParserUtil.getFirstJavaClass(new FileReader(interface2File));
 
         // interface1
-        Assert.assertEquals(interfaces.get(0).get(ModelConstant.NAME), interfaceClass1.getName());
-        Assert.assertEquals(interfaces.get(0).get(ModelConstant.CANONICAL_NAME),
-            interfaceClass1.getCanonicalName());
-        Assert.assertEquals(interfaces.get(0).get(ModelConstant.PACKAGE), interfaceClass1.getPackage()
-            .getName());
+        Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface1",
+            interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
+            interfaces.get(0).get(ModelConstant.PACKAGE));
+
         // interface2
-        Assert.assertEquals(interfaces.get(1).get(ModelConstant.NAME), interfaceClass2.getName());
-        Assert.assertEquals(interfaces.get(1).get(ModelConstant.CANONICAL_NAME),
-            interfaceClass2.getCanonicalName());
-        Assert.assertEquals(interfaces.get(1).get(ModelConstant.PACKAGE), interfaceClass2.getPackage()
-            .getName());
+        Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface2",
+            interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
+            interfaces.get(1).get(ModelConstant.PACKAGE));
+    }
+
+    /**
+     * Tests whether no {@link NullPointerException} will be thrown if the extended type is in the default
+     * package
+     * @throws FileNotFoundException
+     *             test fails
+     * @author mbrunnli (30.09.2014)
+     */
+    @Test
+    public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration()
+        throws FileNotFoundException {
+
+        File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
+
+        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
 
         // debug nullPointerException in case of superclass without package
-        Map<String, Object> noPackagemodel =
+        Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
-        Assert.assertEquals(JavaModelUtil.getExtendedType(noPackagemodel).get(ModelConstant.PACKAGE), "");
+        Assert.assertEquals(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE), "");
+    }
+
+    /**
+     * Tests whether the inherited type will be correctly extracted and put into the model
+     * @throws FileNotFoundException
+     *             test fails
+     * @author mbrunnli (30.09.2014)
+     */
+    @Test
+    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
+        File classFile = new File(testFileRootPath + "TestClass.java");
+
+        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        Map<String, Object> model =
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
+
+        Assert
+            .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.AbstractTestClass",
+            JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata", JavaModelUtil
+            .getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
     /**

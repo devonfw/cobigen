@@ -1,12 +1,13 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
-import java.util.LinkedList;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
@@ -37,41 +38,67 @@ public class ReflectedJavaModelBuilderTest {
         List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
         Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
 
-        Map<String, Object> parametricTestAttribute = null;
+        Map<String, Object> parametricTestAttributeModel = null;
         for (Map<String, Object> attr : attributes) {
             if ("parametricTestAttribute".equals(attr.get(ModelConstant.NAME))) {
-                parametricTestAttribute = attr;
+                parametricTestAttributeModel = attr;
                 break;
             }
         }
 
         Assert.assertNotNull("There is no field with name 'parametricTestAttribute' in the model",
-            parametricTestAttribute);
+            parametricTestAttributeModel);
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        Assert.assertEquals("List<?>", parametricTestAttribute.get(ModelConstant.TYPE));
+        Assert.assertEquals("List<?>", parametricTestAttributeModel.get(ModelConstant.TYPE));
     }
 
     /**
      * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
      *
+     * @throws FileNotFoundException
+     *             test fails
      */
     @Test
-    public void testCorrectlyExtractedSuperTypes() {
+    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
 
         ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
-        Map<String, Object> model = javaModelBuilder.createModel(getClass());
+        Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
 
-        // check whether extended Type meets expectations
-        Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
-        Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
-        Map<String, Object> supertype = JavaModelUtil.getExtendedType(model);
-        Assert.assertNotNull(ModelConstant.EXTENDED_TYPE + " is not accessible in model", supertype);
-        Assert.assertEquals(supertype.get(ModelConstant.NAME), "java.lang.Object");
-        Assert.assertEquals(supertype.get(ModelConstant.CANONICAL_NAME), "java.lang.Object");
-        Assert.assertEquals(supertype.get(ModelConstant.PACKAGE), "java.lang");
+        // check whether implemented Types (interfaces) meet expectations
+        List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
 
-        // check whether implemented Types (interfaces) meet expectations (should be empty list)
-        Assert.assertEquals(new LinkedList<Map<String, Object>>(),
-            pojoMap.get(ModelConstant.IMPLEMENTED_TYPES));
+        // interface1
+        Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface1",
+            interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
+            interfaces.get(0).get(ModelConstant.PACKAGE));
+
+        // interface2
+        Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface2",
+            interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
+            interfaces.get(1).get(ModelConstant.PACKAGE));
     }
+
+    /**
+     * Tests whether the inherited type will be correctly extracted and put into the model
+     * @throws FileNotFoundException
+     *             test fails
+     * @author mbrunnli (30.09.2014)
+     */
+    @Test
+    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
+        ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
+        Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
+
+        Assert
+            .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.AbstractTestClass",
+            JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata", JavaModelUtil
+            .getExtendedType(model).get(ModelConstant.PACKAGE));
+    }
+
 }

@@ -164,7 +164,7 @@ public class ReflectedJavaModelBuilder {
         Map<String, Object> superclassModel = new HashMap<>();
 
         Class<?> superclass = pojo.getSuperclass();
-        superclassModel.put(ModelConstant.NAME, superclass.getName());
+        superclassModel.put(ModelConstant.NAME, superclass.getSimpleName());
         superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
         if (superclass.getPackage() != null) {
             superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
@@ -190,7 +190,7 @@ public class ReflectedJavaModelBuilder {
 
         for (Class<?> c : pojo.getInterfaces()) {
             Map<String, Object> interfaceModel = new HashMap<>();
-            interfaceModel.put(ModelConstant.NAME, c.getName());
+            interfaceModel.put(ModelConstant.NAME, c.getSimpleName());
             interfaceModel.put(ModelConstant.CANONICAL_NAME, c.getCanonicalName());
             if (c.getPackage() != null) {
                 interfaceModel.put(ModelConstant.PACKAGE, c.getPackage().getName());
@@ -344,8 +344,7 @@ public class ReflectedJavaModelBuilder {
                         pojo.getDeclaredMethod("is"
                             + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
-                if (getter == null)
-                    return;
+                if (getter == null) return;
 
                 Annotation[] annotations = getter.getAnnotations();
                 for (Annotation a : annotations) {
