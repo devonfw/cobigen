@@ -15,6 +15,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * @version $Revision$
  */
 public class JavaParserUtil {
+
     /**
      * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files
      * will be added to the class library
@@ -25,9 +26,42 @@ public class JavaParserUtil {
      * @author mbrunnli (19.03.2013)
      */
     public static JavaClass getFirstJavaClass(Reader... reader) {
-
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         classLibraryBuilder.appendDefaultClassLoaders();
+        return getFirstJavaClass(classLibraryBuilder, reader);
+    }
+
+    /**
+     * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files
+     * will be added to the class library. By passing a {@link ClassLoader}, you can take impact on the class
+     * name resolving
+     *
+     * @param classLoader
+     *            which should be used for class name resolving
+     * @param reader
+     *            {@link Reader}s which contents should be parsed
+     * @return the parsed {@link JavaClass}
+     * @author mbrunnli (01.10.2014)
+     */
+    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) {
+        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
+        classLibraryBuilder.appendClassLoader(classLoader);
+        return getFirstJavaClass(classLibraryBuilder, reader);
+    }
+
+    /**
+     * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files
+     * will be added to the class library. Furthermore, a pre-built {@link ClassLibraryBuilder} should be
+     * passed, which should be previously enriched by all necessary {@link ClassLoader}s.
+     *
+     * @param classLibraryBuilder
+     *            {@link ClassLibraryBuilder} to build the sources with
+     * @param reader
+     *            {@link Reader}s which contents should be parsed
+     * @return the parsed {@link JavaClass}
+     * @author mbrunnli (01.10.2014)
+     */
+    private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader) {
         JavaSource source = null;
         ModifyableJavaClass targetClass = null;
         for (Reader r : reader) {
@@ -36,26 +70,5 @@ public class JavaParserUtil {
                 targetClass = (ModifyableJavaClass) source.getClasses().get(0);
         }
         return targetClass;
-    }
-
-    /**
-     * Returns the {@link JavaClass} parsed by the given {@link Reader}
-     * @param reader
-     *            {@link Reader} which contents should be parsed
-     * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    public static ModifyableJavaClass getJavaClass(Reader reader) {
-        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        classLibraryBuilder.appendDefaultClassLoaders();
-        classLibraryBuilder.addSource(reader);
-        JavaSource source = null;
-        for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
-            source = s;
-            // only consider one class per file
-            break;
-        }
-        // save cast as given by the customized builder
-        return (ModifyableJavaClass) source.getClasses().get(0);
     }
 }

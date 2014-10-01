@@ -3,6 +3,8 @@
  ******************************************************************************/
 package com.capgemini.cobigen.javaplugin.merger;
 
+import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -17,7 +19,6 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -292,13 +293,13 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_encoding.java");
         String mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-        JavaSource mergedSource = JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
+        JavaSource mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
 
         baseFile = new File(testFileRootPath + "BaseFile_encoding_ISO-8859-1.java");
         mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
-        mergedSource = JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
+        mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
     }
 
@@ -391,14 +392,14 @@ public class JavaMergerTest {
         File baseFile = new File(testFileRootPath + "BaseFile_inheritance.java");
         File patchFile = new File(testFileRootPath + "PatchFile_inheritance.java");
 
-        JavaClass origClazz = JavaParserUtil.getJavaClass(new FileReader(baseFile));
+        JavaClass origClazz = getFirstJavaClass(new FileReader(baseFile));
         Assert.assertEquals("java.lang.Object", origClazz.getSuperClass().getCanonicalName());
 
         String mergedContents =
             new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")),
                 "UTF-8");
 
-        JavaClass resultClazz = JavaParserUtil.getJavaClass(new StringReader(mergedContents));
+        JavaClass resultClazz = getFirstJavaClass(new StringReader(mergedContents));
         Assert
             .assertEquals(
                 "The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'",
@@ -428,7 +429,7 @@ public class JavaMergerTest {
         MergeException {
         String mergedContents =
             new JavaMerger("", override).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-        return JavaParserUtil.getJavaClass(new StringReader(mergedContents)).getSource();
+        return getFirstJavaClass(new StringReader(mergedContents)).getSource();
     }
 
 }
