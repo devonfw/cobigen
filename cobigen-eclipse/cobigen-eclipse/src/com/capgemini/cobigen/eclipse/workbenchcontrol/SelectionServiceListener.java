@@ -35,12 +35,13 @@ import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.google.common.collect.Lists;
 
 /**
  * The {@link SelectionServiceListener} listens on the selections of the jdt {@link PackageExplorerPart} and
  * enables/disables the {@link SourceProvider#VALID_INPUT} system variable
- * 
+ *
  * @author mbrunnli (15.02.2013)
  */
 @SuppressWarnings("restriction")
@@ -63,31 +64,31 @@ public class SelectionServiceListener implements ISelectionListener {
 
     /**
      * Creates a new instance of the {@link SelectionServiceListener}
-     * 
+     *
      * @throws CoreException
      * @throws GeneratorProjectNotExistentException
      * @throws InvalidConfigurationException
      * @throws IOException
      * @author mbrunnli (15.02.2013)
      */
-    public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException, IOException,
-            InvalidConfigurationException {
+    public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
+        IOException, InvalidConfigurationException {
 
         ISourceProviderService isps =
-                (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
-                        ISourceProviderService.class);
-        sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
+            (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
+                ISourceProviderService.class);
+        this.sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
         IProject generatorConfProj = ConfigResources.getGeneratorConfigurationProject();
-        cobiGen = new CobiGen(generatorConfProj.getLocation().toFile());
+        this.cobiGen = new CobiGen(generatorConfProj.getLocation().toFile());
         // TODO check if needed as every time there will be a new instance of the generator
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ConfigurationRCL(generatorConfProj, cobiGen),
-                IResourceChangeEvent.POST_CHANGE);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(
+            new ConfigurationRCL(generatorConfProj, this.cobiGen), IResourceChangeEvent.POST_CHANGE);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (15.02.2013), adapted by trippl (22.04.2013)
      */
     @Override
@@ -95,18 +96,19 @@ public class SelectionServiceListener implements ISelectionListener {
 
         if (part instanceof PackageExplorerPart && selection instanceof IStructuredSelection) {
             if (isValidInput((IStructuredSelection) selection)) {
-                sp.setVariable(SourceProvider.VALID_INPUT, true);
+                this.sp.setVariable(SourceProvider.VALID_INPUT, true);
             } else {
-                sp.setVariable(SourceProvider.VALID_INPUT, false);
+                this.sp.setVariable(SourceProvider.VALID_INPUT, false);
             }
         }
     }
 
     /**
-     * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported by the same
-     * {@link Trigger}s
-     * 
-     * @param selection the selection made
+     * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported
+     * by the same {@link Trigger}s
+     *
+     * @param selection
+     *            the selection made
      * @return true, if all items are supported by the same trigger(s)<br>
      *         false, if they are not supported by any trigger at all, or the triggers are not the same
      * @author trippl (22.04.2013)
@@ -132,8 +134,9 @@ public class SelectionServiceListener implements ISelectionListener {
                 }
             } else if (tmp instanceof IPackageFragment) {
                 if (firstTriggers == null) {
-                    // TODO support Packages --> will currently never find an supporting plugin
-                    firstTriggers = cobiGen.getMatchingTriggerIds(((IPackageFragment) tmp).getElementName());
+                    firstTriggers =
+                        this.cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
+                            .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
                     packageFragmentSelected = true;
                 } else {
                     // It is only possible to select one IPackageFragment
@@ -148,8 +151,9 @@ public class SelectionServiceListener implements ISelectionListener {
 
     /**
      * Returns a {@link Set} of {@link Trigger}s that support the give {@link ICompilationUnit}
-     * 
-     * @param cu {@link ICompilationUnit} to be checked
+     *
+     * @param cu
+     *            {@link ICompilationUnit} to be checked
      * @return the {@link Set} of {@link Trigger}s
      * @author trippl (22.04.2013)
      */
@@ -160,10 +164,10 @@ public class SelectionServiceListener implements ISelectionListener {
         try {
             classLoader = ClassLoaderUtil.getProjectClassLoader(cu.getJavaProject());
             type = JavaModelUtil.getJavaClassType(cu);
-            return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
+            return this.cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
-            LOG.error("Error while retrieving the project's ('{}') classloader", cu.getJavaProject().getElementName(),
-                    e);
+            LOG.error("Error while retrieving the project's ('{}') classloader", cu.getJavaProject()
+                .getElementName(), e);
         } catch (CoreException e) {
             LOG.error("An eclipse internal exception occured", e);
         } catch (ClassNotFoundException e) {
@@ -174,11 +178,11 @@ public class SelectionServiceListener implements ISelectionListener {
                 public void run() {
 
                     MessageDialog
-                            .openError(
-                                    Display.getDefault().getActiveShell(),
-                                    "Incompatible Java version",
-                                    "You have selected a java class, which Java version is higher than your current Java runtime, you are running eclipse with.\n"
-                                            + "Please update your PATH variable to hold the latest Java runtime you are developing for and restart eclipse.");
+                        .openError(
+                            Display.getDefault().getActiveShell(),
+                            "Incompatible Java version",
+                            "You have selected a java class, which Java version is higher than your current Java runtime, you are running eclipse with.\n"
+                                + "Please update your PATH variable to hold the latest Java runtime you are developing for and restart eclipse.");
                 }
             });
             LOG.error("Incompatible java version. Current runtime: {}", System.getProperty("java.version"), e);
