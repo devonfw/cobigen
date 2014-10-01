@@ -268,23 +268,22 @@ public class JavaGeneratorWrapper {
      *             if an unrecoverable error occurs during the course of the transformation.
      * @throws SAXException
      *             if any parse errors occur.
-     * @throws JavaModelException
-     *             if any exception occurs while retrieving additional information from the eclipse java model
-     *             like javaDoc
      * @throws MergeException
      *             if there are some problems while merging
-     * @throws InvalidConfigurationException
+     * @throws CoreException
      * @author mbrunnli (14.02.2013)
      */
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        SAXException, TransformerException, JavaModelException, MergeException, InvalidConfigurationException {
+        SAXException, TransformerException, MergeException, CoreException {
 
         if (this.packageFolder != null) {
             this.cobiGen.generate(this.packageFolder, template, forceOverride);
         } else {
             Object[] inputSourceAndClass =
-                new Object[] { this.pojo,
-                    JavaParserUtil.getJavaClass(new StringReader(this.type.getCompilationUnit().getSource())) };
+                new Object[] {
+                    this.pojo,
+                    JavaParserUtil.getFirstJavaClass(ClassLoaderUtil.getProjectClassLoader(this.type
+                        .getJavaProject()), new StringReader(this.type.getCompilationUnit().getSource())) };
             Map<String, Object> model =
                 this.cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
             adaptModel(model, this.type);
