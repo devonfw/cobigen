@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.util.ParserUtil;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 
@@ -39,7 +39,7 @@ public class CustomModelWriterTest {
 
         File baseFile = new File(testFileRootPath + "ClassFile_field.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaField field = ParserUtil.getJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
+        JavaField field = JavaParserUtil.getFirstJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
         target.writeField(field);
         Assert.assertEquals("private int baseFieldUndefined;", target.getBuffer().toString().trim());
     }
@@ -56,7 +56,7 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_header.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = ParserUtil.getJavaClass(new FileReader(file));
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeSource(parsedClass.getSource());
         Assert.assertTrue(target.getBuffer().toString().contains("/* HEADER */"));
     }
@@ -72,7 +72,7 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_generics.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = ParserUtil.getJavaClass(new FileReader(file));
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeClass(parsedClass);
 
         Assert.assertTrue(target.getBuffer().toString().contains("class Clazz<T extends Object, Z extends Clazz>"));
@@ -94,7 +94,7 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_modifiers.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = ParserUtil.getJavaClass(new FileReader(file));
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeClass(parsedClass);
 
         Assert.assertTrue(target.getBuffer().toString().contains("public final class FooBar"));

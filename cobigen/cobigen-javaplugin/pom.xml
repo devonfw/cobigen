@@ -8,9 +8,9 @@
 	<groupId>com.capgemini</groupId>
 	<artifactId>cobigen-javaplugin</artifactId>
 	<name>CobiGen - Java Plug-in</name>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
@@ -23,7 +23,7 @@
 			<artifactId>cobigen-core</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		
+
 		<!-- QDox for Java parsing-->
 		<dependency>
 			<groupId>com.thoughtworks.qdox</groupId>
