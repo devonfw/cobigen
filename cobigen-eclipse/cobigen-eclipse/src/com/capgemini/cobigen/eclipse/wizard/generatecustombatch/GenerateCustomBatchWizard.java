@@ -64,7 +64,7 @@ public class GenerateCustomBatchWizard extends Wizard {
     /**
      * Java generator wrapper for CobiGen application
      */
-    private JavaGeneratorWrapper g;
+    private JavaGeneratorWrapper javaGenerator;
 
     /**
      * Assigning logger to GenerateCustomBatchWizard
@@ -97,8 +97,8 @@ public class GenerateCustomBatchWizard extends Wizard {
         customBatchIds = loadCustomBatches(targetPath);
         page1 = new CustomBatchSeletionPage("Select Batch Runner", customBatchIds.keySet());
 
-        g = new JavaGeneratorWrapper();
-        g.setGenerationTargetProject(targetProject);
+        javaGenerator = new JavaGeneratorWrapper();
+        javaGenerator.setGenerationTargetProject(targetProject);
     }
 
     /**
@@ -156,12 +156,12 @@ public class GenerateCustomBatchWizard extends Wizard {
             }
 
             for (Mapping m : batch.getMapping()) {
-                List<IType> inputTypes = getInputTypesToGenerate(g, batch, m);
+                List<IType> inputTypes = getInputTypesToGenerate(javaGenerator, batch, m);
                 if (inputTypes.size() > 0) {
                     try {
-                        g.setInputType(inputTypes.get(0));
+                        javaGenerator.setInputType(inputTypes.get(0));
                         GenerateBatchSelectionProcess bp =
-                            new GenerateBatchSelectionProcess(getShell(), g, getTemplatesToGenerate(g,
+                            new GenerateBatchSelectionProcess(getShell(), javaGenerator, getTemplatesToGenerate(javaGenerator,
                                 batch.getTrigger(), m), inputTypes);
 
                         dialog.run(false, false, bp);

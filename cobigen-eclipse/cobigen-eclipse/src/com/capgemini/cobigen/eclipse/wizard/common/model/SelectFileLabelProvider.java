@@ -51,7 +51,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /**
      * The currently selected resources
      */
-    private Set<Object> checkedResources = new HashSet<Object>();
+    private Set<Object> checkedResources = new HashSet<>();
 
     /**
      * The current {@link JavaGeneratorWrapper} instance
@@ -64,11 +64,13 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     private boolean batch;
 
     /**
-     * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to the
-     * simulated resources
-     * 
-     * @param javaGeneratorWrapper the currently used {@link JavaGeneratorWrapper} instance
-     * @param batch states whether the generation process is running in batch mode
+     * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to
+     * the simulated resources
+     *
+     * @param javaGeneratorWrapper
+     *            the currently used {@link JavaGeneratorWrapper} instance
+     * @param batch
+     *            states whether the generation process is running in batch mode
      * @author mbrunnli (14.02.2013)
      */
     public SelectFileLabelProvider(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) {
@@ -79,7 +81,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (14.02.2013)
      */
     @Override
@@ -96,8 +98,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 result = HierarchicalTreeOperator.getChildName((IPackageFragment) element);
             } catch (JavaModelException e) {
                 LOG.error(
-                        "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
-                        ((IPackageFragment) element).getElementName(), e);
+                    "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
+                    ((IPackageFragment) element).getElementName(), e);
                 result = "ERROR";
             }
             if (result.isEmpty()) {
@@ -114,14 +116,14 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (14.02.2013)
      */
     @Override
     public Image getImage(Object element) {
 
         ImageDescriptor defaultImageDescriptor =
-                PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(getText(element));
+            PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(getText(element));
         Image result = defaultImageDescriptor.createImage();
         if (element instanceof IProject) {
             result = PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
@@ -136,7 +138,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (14.02.2013)
      */
     @Override
@@ -147,14 +149,14 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (14.02.2013)
      */
     @Override
     public Color getBackground(Object element) {
 
-        if (checkedResources.contains(element)) {
-            if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !batch) {
+        if (this.checkedResources.contains(element)) {
+            if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !this.batch) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
                 if (isMergableFile(element)) {
@@ -169,8 +171,9 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * Checks whether the given object is marked as mergable
-     * 
-     * @param element to be checked
+     *
+     * @param element
+     *            to be checked
      * @return <code>true</code> if the given object can be merged<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (14.03.2013)
@@ -185,7 +188,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         }
 
         // boundary case: multiple templates target one path, which are not mergable... does not make sense
-        List<TemplateTo> templates = javaGeneratorWrapper.getTemplatesForFilePath(path, null);
+        List<TemplateTo> templates = this.javaGeneratorWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
             if (path != null && template.getMergeStrategy() != null) {
                 return true;
@@ -196,33 +199,36 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
     /**
      * Sets the currently selected resources
-     * 
-     * @param checkedResources the currently selected resources
+     *
+     * @param checkedResources
+     *            the currently selected resources
      * @author mbrunnli (14.03.2013)
      */
     public void setCheckedResources(Object[] checkedResources) {
 
-        this.checkedResources = new HashSet<Object>(Arrays.asList(checkedResources));
+        this.checkedResources = new HashSet<>(Arrays.asList(checkedResources));
     }
 
     /**
      * Adds meta information to the elements name, such as new or merge or override
-     * 
-     * @param element to be enriched with information
-     * @param result enriched string
+     *
+     * @param element
+     *            to be enriched with information
+     * @param result
+     *            enriched string
      * @return the enriched result string
      * @author mbrunnli (14.03.2013)
      */
     private String addMetaInformation(Object element, String result) {
 
-        if (checkedResources.contains(element)) {
+        if (this.checkedResources.contains(element)) {
             if (element instanceof IJavaElementStub || element instanceof IResourceStub) {
                 result += " (new)";
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
                 if (isMergableFile(element)) {
-                    result += batch ? " (create/merge)" : " (merge)";
+                    result += this.batch ? " (create/merge)" : " (merge)";
                 } else {
-                    result += batch ? " (create/override)" : " (override)";
+                    result += this.batch ? " (create/override)" : " (override)";
                 }
             }
         }
@@ -230,10 +236,11 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     }
 
     /**
-     * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is returned by
-     * {@link IJavaElement#getElementName()}
-     * 
-     * @param root {@link IPackageFragmentRoot} for which the whole name should be determined
+     * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is
+     * returned by {@link IJavaElement#getElementName()}
+     *
+     * @param root
+     *            {@link IPackageFragmentRoot} for which the whole name should be determined
      * @return the full name of an {@link IPackageFragmentRoot}
      * @author mbrunnli (19.02.2013)
      */

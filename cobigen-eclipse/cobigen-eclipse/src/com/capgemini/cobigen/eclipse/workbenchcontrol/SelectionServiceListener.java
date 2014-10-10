@@ -66,9 +66,13 @@ public class SelectionServiceListener implements ISelectionListener {
      * Creates a new instance of the {@link SelectionServiceListener}
      *
      * @throws CoreException
+     *             if an internal eclipse exception occured
      * @throws GeneratorProjectNotExistentException
+     *             if the generation configuration folder does not exist
      * @throws InvalidConfigurationException
+     *             if the configuration is invalid
      * @throws IOException
+     *             if some of the configuration files could not be read
      * @author mbrunnli (15.02.2013)
      */
     public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
@@ -129,8 +133,7 @@ public class SelectionServiceListener implements ISelectionListener {
                 if (firstTriggers == null) {
                     firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
                 } else {
-                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp)))
-                        return false;
+                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) return false;
                 }
             } else if (tmp instanceof IPackageFragment) {
                 if (firstTriggers == null) {

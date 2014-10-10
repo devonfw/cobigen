@@ -78,7 +78,7 @@ public class JavaGeneratorWrapper {
     /**
      * A set of removed fields for the generation.
      */
-    private Set<String> ignoreFields = new HashSet<String>();
+    private Set<String> ignoreFields = new HashSet<>();
 
     /**
      * All matching templates for the currently configured {@link #pojo}
@@ -149,9 +149,11 @@ public class JavaGeneratorWrapper {
      *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
      *             if there is an unknown variable modifier
-     * @author mbrunnli (05.02.2013)
      * @throws CoreException
+     *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration folder does not exist
+     * @author mbrunnli (05.02.2013)
      */
     private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
         UnknownExpressionException, UnknownContextVariableException, IOException,
@@ -208,7 +210,7 @@ public class JavaGeneratorWrapper {
     /**
      * Builds an adapted model for the generation process containing javadoc
      *
-     * @param type
+     * @param inputType
      *            input {@link IType}
      * @param origModel
      *            the original model
@@ -218,13 +220,13 @@ public class JavaGeneratorWrapper {
      *             corresponding resource
      * @author mbrunnli (05.04.2013)
      */
-    private Map<String, Object> adaptModel(Map<String, Object> origModel, IType type)
+    private Map<String, Object> adaptModel(Map<String, Object> origModel, IType inputType)
         throws JavaModelException {
 
-        Map<String, Object> newModel = new HashMap<String, Object>(origModel);
+        Map<String, Object> newModel = new HashMap<>(origModel);
         JavaModelAdaptor javaModelAdaptor = new JavaModelAdaptor(newModel);
-        javaModelAdaptor.addAttributesDescription(type);
-        javaModelAdaptor.addMethods(type);
+        javaModelAdaptor.addAttributesDescription(inputType);
+        javaModelAdaptor.addMethods(inputType);
         return newModel;
     }
 
@@ -271,6 +273,7 @@ public class JavaGeneratorWrapper {
      * @throws MergeException
      *             if there are some problems while merging
      * @throws CoreException
+     *             if an internal eclipse exception occurs
      * @author mbrunnli (14.02.2013)
      */
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
@@ -347,20 +350,21 @@ public class JavaGeneratorWrapper {
      * Returns the attributes and its types from the current model
      *
      * @return a {@link Map} mapping attribute name to attribute type name
-     * @author mbrunnli (12.03.2013)
      * @throws InvalidConfigurationException
+     *             if the generator's configuration is faulty
+     * @author mbrunnli (12.03.2013)
      */
     public Map<String, String> getAttributesToTypeMap() throws InvalidConfigurationException {
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         List<String> matchingTriggerIds = this.cobiGen.getMatchingTriggerIds(this.pojo);
         Map<String, Object> model =
             this.cobiGen.getModelBuilder(this.pojo, matchingTriggerIds.get(0)).createModel();
         @SuppressWarnings("unchecked")
-        Map<String, Object> pojo = (Map<String, Object>) model.get("pojo");
-        if (pojo != null) {
+        Map<String, Object> pojoModel = (Map<String, Object>) model.get("pojo");
+        if (pojoModel != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, String>> attributes = (List<Map<String, String>>) pojo.get("attributes");
+            List<Map<String, String>> attributes = (List<Map<String, String>>) pojoModel.get("attributes");
             for (Map<String, String> attr : attributes) {
                 result.put(attr.get("name"), attr.get("type"));
             }
@@ -390,10 +394,10 @@ public class JavaGeneratorWrapper {
     private void removeIgnoredFieldsFromModel(Map<String, Object> model) {
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> pojo = (Map<String, Object>) model.get("pojo");
-        if (pojo != null) {
+        Map<String, Object> pojoModel = (Map<String, Object>) model.get("pojo");
+        if (pojoModel != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, String>> fields = (List<Map<String, String>>) pojo.get("attributes");
+            List<Map<String, String>> fields = (List<Map<String, String>>) pojoModel.get("attributes");
             for (Iterator<Map<String, String>> it = fields.iterator(); it.hasNext();) {
                 Map<String, String> next = it.next();
                 for (String ignoredField : this.ignoreFields) {
@@ -473,7 +477,7 @@ public class JavaGeneratorWrapper {
      */
     public Set<IFile> getMergeableFiles() {
 
-        Set<IFile> mergeableFiles = new HashSet<IFile>();
+        Set<IFile> mergeableFiles = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
@@ -491,7 +495,7 @@ public class JavaGeneratorWrapper {
      */
     public Set<IFile> getAllFiles() {
 
-        Set<IFile> files = new HashSet<IFile>();
+        Set<IFile> files = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             files.add(targetProjet.getFile(t.getDestinationPath()));

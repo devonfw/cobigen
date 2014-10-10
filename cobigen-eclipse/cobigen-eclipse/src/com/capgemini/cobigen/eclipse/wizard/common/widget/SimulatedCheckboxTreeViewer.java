@@ -43,18 +43,18 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
      */
     @Override
     public void setCheckedElements(Object[] elements) {
-        checkedElements = new HashSet<Object>(Arrays.asList(elements));
+        this.checkedElements = new HashSet<>(Arrays.asList(elements));
         fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
     }
 
     /**
-     * 
+     *
      * {@inheritDoc}
      * @author mbrunnli (12.03.2013)
      */
     @Override
     public Object[] getCheckedElements() {
-        return checkedElements.toArray();
+        return this.checkedElements.toArray();
     }
 
     /**
@@ -65,13 +65,13 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
     public boolean setChecked(Object element, boolean state) {
         if (state) {
             if (isVisible(element)) {
-                checkedElements.add(element);
+                this.checkedElements.add(element);
                 fireCheckStateChanged(new CheckStateChangedEvent(this, element, state));
             } else {
-                checkedElements.remove(element);
+                this.checkedElements.remove(element);
             }
         } else {
-            checkedElements.remove(element);
+            this.checkedElements.remove(element);
             fireCheckStateChanged(new CheckStateChangedEvent(this, element, state));
         }
         return true;
@@ -87,7 +87,7 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
      */
     private boolean isVisible(Object element) {
         Object[] objects = getVisibleExpandedElements();
-        Set<Object> visibleObjects = new HashSet<Object>();
+        Set<Object> visibleObjects = new HashSet<>();
         visibleObjects.addAll(Arrays.asList(objects));
         for (Object o : objects) {
             visibleObjects

@@ -17,7 +17,7 @@ import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 
 /**
  * {@link ITreeContentProvider} for displaying an hierarchical tree of dependent generation packages.
- * 
+ *
  * @author mbrunnli (26.03.2013)
  */
 public class PackagesContentProvider implements ITreePathContentProvider {
@@ -50,14 +50,14 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof ComparableIncrement[]) {
-            rootElements = new LinkedList<ComparableIncrement>();
+            this.rootElements = new LinkedList<>();
             ComparableIncrement[] rootPackages = (ComparableIncrement[]) inputElement;
             for (ComparableIncrement pkg : rootPackages) {
                 if (!isChildOfAnyPackage(rootPackages, pkg)) {
-                    rootElements.add(pkg);
+                    this.rootElements.add(pkg);
                 }
             }
-            return rootElements.toArray();
+            return this.rootElements.toArray();
         }
         return new Object[0];
     }
@@ -131,9 +131,9 @@ public class PackagesContentProvider implements ITreePathContentProvider {
      */
     @Override
     public TreePath[] getParents(Object element) {
-        Set<TreePath> parents = new HashSet<TreePath>();
+        Set<TreePath> parents = new HashSet<>();
         if (element instanceof ComparableIncrement) {
-            for (ComparableIncrement pkg : rootElements) {
+            for (ComparableIncrement pkg : this.rootElements) {
                 if (pkg.equals(element)) {
                     parents.add(TreePath.EMPTY);
                 }
@@ -173,9 +173,9 @@ public class PackagesContentProvider implements ITreePathContentProvider {
      * @author mbrunnli (26.03.2013)
      */
     public TreePath[] getAllPaths(Object element) {
-        Set<TreePath> paths = new HashSet<TreePath>();
+        Set<TreePath> paths = new HashSet<>();
         if (element instanceof ComparableIncrement) {
-            for (ComparableIncrement pkg : rootElements) {
+            for (ComparableIncrement pkg : this.rootElements) {
                 TreePath path = TreePath.EMPTY.createChildPath(pkg);
                 if (pkg.equals(element)) {
                     paths.add(path);
@@ -192,8 +192,8 @@ public class PackagesContentProvider implements ITreePathContentProvider {
      * @author mbrunnli (26.03.2013)
      */
     public TreePath[] getAllRootPaths() {
-        Set<TreePath> paths = new HashSet<TreePath>();
-        for (ComparableIncrement pkg : rootElements) {
+        Set<TreePath> paths = new HashSet<>();
+        for (ComparableIncrement pkg : this.rootElements) {
             paths.add(TreePath.EMPTY.createChildPath(pkg));
         }
         return paths.toArray(new TreePath[0]);

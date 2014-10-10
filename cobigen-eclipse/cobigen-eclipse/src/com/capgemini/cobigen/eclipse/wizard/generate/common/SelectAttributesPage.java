@@ -39,6 +39,7 @@ public class SelectAttributesPage extends WizardPage {
     /**
      * Creates a new page for selecting mandatory attributes
      * @param attributes
+     *            to be displayed
      * @author mbrunnli (12.03.2013)
      */
     public SelectAttributesPage(Map<String, String> attributes) {
@@ -60,15 +61,15 @@ public class SelectAttributesPage extends WizardPage {
         // label
         // .setText("Every attribute selected will be displayed as a column in the overview or search results table:");
 
-        tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
-        tableAttributes.setContentProvider(new SelectAttributesContentProvider());
-        tableAttributes.setLabelProvider(new SelectAttributesLabelProvider());
-        tableAttributes.setInput(attributes);
-        tableAttributes.setAllChecked(true);
+        this.tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
+        this.tableAttributes.setContentProvider(new SelectAttributesContentProvider());
+        this.tableAttributes.setLabelProvider(new SelectAttributesLabelProvider());
+        this.tableAttributes.setInput(this.attributes);
+        this.tableAttributes.setAllChecked(true);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
         gd.grabExcessHorizontalSpace = true;
-        tableAttributes.getTable().setLayoutData(gd);
+        this.tableAttributes.getTable().setLayoutData(gd);
 
         // label = new Label(container, SWT.WRAP);
         // label
@@ -94,9 +95,9 @@ public class SelectAttributesPage extends WizardPage {
      * @author mbrunnli (21.03.2013)
      */
     public Set<String> getUncheckedAttributes() {
-        Set<String> uncheckedAttributes = new HashSet<String>();
-        for (Entry<String, String> attr : attributes.entrySet()) {
-            if (!tableAttributes.getChecked(attr)) {
+        Set<String> uncheckedAttributes = new HashSet<>();
+        for (Entry<String, String> attr : this.attributes.entrySet()) {
+            if (!this.tableAttributes.getChecked(attr)) {
                 uncheckedAttributes.add(attr.getKey());
             }
         }

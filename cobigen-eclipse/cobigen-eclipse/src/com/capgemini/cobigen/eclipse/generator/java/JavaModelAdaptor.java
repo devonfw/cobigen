@@ -43,12 +43,13 @@ public class JavaModelAdaptor {
      * @param type
      *            source {@link IType} from which the javaDoc should be retrieved
      * @throws JavaModelException
+     *             if an internal exception occurs while accessing the eclipse jdt java model
      * @author mbrunnli (13.02.2013)
      */
     public void addAttributesDescription(IType type) throws JavaModelException {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> attributes =
-            (List<Map<String, String>>) ((Map<String, Object>) model.get("pojo")).get("attributes");
+            (List<Map<String, String>>) ((Map<String, Object>) this.model.get("pojo")).get("attributes");
         Iterator<Map<String, String>> it = attributes.iterator();
         Map<String, String> currentAttr;
         while (it.hasNext()) {
@@ -75,10 +76,10 @@ public class JavaModelAdaptor {
      * @author mbrunnli (13.02.2013)
      */
     public void addMethods(IType type) throws JavaModelException {
-        List<Map<String, String>> methods = new LinkedList<Map<String, String>>();
+        List<Map<String, String>> methods = new LinkedList<>();
 
         for (IMethod method : type.getMethods()) {
-            Map<String, String> methodData = new HashMap<String, String>();
+            Map<String, String> methodData = new HashMap<>();
             methodData.put("name", method.getElementName());
             String doc = getJavaDoc(method, false);
             String docText = getJavaDoc(method, true);
@@ -90,7 +91,7 @@ public class JavaModelAdaptor {
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> pojo = (Map<String, Object>) model.get("pojo");
+        Map<String, Object> pojo = (Map<String, Object>) this.model.get("pojo");
         pojo.put("methods", methods);
     }
 

@@ -18,21 +18,20 @@ public class SourceProvider extends AbstractSourceProvider {
      * Source Variable stating if the currently selected resources are valid input POJOs for the generation
      * process
      */
-    public static final String VALID_INPUT =
-        "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
+    public static final String VALID_INPUT = "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
 
     /**
      * Creates the SourceProvider and initiates all states with false
      * @author mbrunnli (15.02.2013)
      */
     public SourceProvider() {
-        map.put(VALID_INPUT, false);
+        this.map.put(VALID_INPUT, false);
     }
 
     /**
      * Map of variable value mappings
      */
-    private final HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+    private final HashMap<String, Boolean> map = new HashMap<>();
 
     /**
      * {@inheritDoc}
@@ -40,7 +39,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public void dispose() {
-        map.clear();
+        this.map.clear();
     }
 
     /**
@@ -49,7 +48,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public Map<String, Boolean> getCurrentState() {
-        return map;
+        return this.map;
     }
 
     /**
@@ -58,7 +57,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public String[] getProvidedSourceNames() {
-        return map.keySet().toArray(new String[0]);
+        return this.map.keySet().toArray(new String[0]);
     }
 
     /**
@@ -70,9 +69,9 @@ public class SourceProvider extends AbstractSourceProvider {
      * @author mbrunnli (15.02.2013)
      */
     public void setVariable(String variable, boolean b) {
-        if (map.get(variable) != b) {
-            map.put(variable, b);
-            fireSourceChanged(0, map);
+        if (this.map.get(variable) != b) {
+            this.map.put(variable, b);
+            fireSourceChanged(0, this.map);
         }
     }
 

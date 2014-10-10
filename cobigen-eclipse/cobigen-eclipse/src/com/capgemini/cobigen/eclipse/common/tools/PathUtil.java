@@ -50,7 +50,7 @@ public class PathUtil {
      * @author mbrunnli (18.02.2013)
      */
     public static Set<String> createWorkspaceRelativePaths(IProject proj, Set<String> relativeDestinationPaths) {
-        Set<String> adaptedPaths = new HashSet<String>();
+        Set<String> adaptedPaths = new HashSet<>();
         for (String p : relativeDestinationPaths) {
             adaptedPaths.add("/" + proj.getName() + "/" + p);
         }

@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Stub for the {@link IJavaElement} in order to simulate resources in the generate wizard
- * 
+ *
  * @author mbrunnli (06.04.2014)
  */
 public class IJavaElementStub implements IParent, IJavaElement {
@@ -48,9 +48,9 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'parent'.
-     * 
+     *
      * @param parent
-     *        Neuer Wert für parent
+     *            Neuer Wert für parent
      * @author mbrunnli (05.04.2014)
      */
     public void setParent(IJavaElement parent) {
@@ -60,9 +60,9 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'children'.
-     * 
+     *
      * @param children
-     *        Neuer Wert für children
+     *            Neuer Wert für children
      * @author mbrunnli (05.04.2014)
      */
     public void setChildren(IJavaElement[] children) {
@@ -72,9 +72,9 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'path'.
-     * 
+     *
      * @param path
-     *        Neuer Wert für path
+     *            Neuer Wert für path
      * @author mbrunnli (05.04.2014)
      */
     public void setPath(IPath path) {
@@ -84,9 +84,9 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'elementName'.
-     * 
+     *
      * @param elementName
-     *        Neuer Wert für elementName
+     *            Neuer Wert für elementName
      * @author mbrunnli (05.04.2014)
      */
     public void setElementName(String elementName) {
@@ -96,9 +96,9 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'elementType'.
-     * 
+     *
      * @param elementType
-     *        Neuer Wert für elementType
+     *            Neuer Wert für elementType
      * @author mbrunnli (05.04.2014)
      */
     public void setElementType(int elementType) {
@@ -108,18 +108,18 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
-    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+    public Object getAdapter(Class adapter) {
 
         return null;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -130,7 +130,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -141,7 +141,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -152,7 +152,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -163,29 +163,29 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String getElementName() {
 
-        return elementName;
+        return this.elementName;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public int getElementType() {
 
-        return elementType;
+        return this.elementType;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -196,7 +196,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -207,18 +207,18 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaProject getJavaProject() {
 
-        return parent.getJavaProject();
+        return this.parent.getJavaProject();
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -229,29 +229,29 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement getParent() {
 
-        return parent;
+        return this.parent;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IPath getPath() {
 
-        return path;
+        return this.path;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -262,7 +262,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -273,7 +273,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -284,7 +284,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -295,7 +295,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -306,7 +306,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
@@ -317,47 +317,46 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public IJavaElement[] getChildren() throws JavaModelException {
 
-        return children;
+        return this.children;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean hasChildren() throws JavaModelException {
 
-        return children != null && children.length > 0;
+        return this.children != null && this.children.length > 0;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public String toString() {
 
-        return getClass().getSimpleName() + "[" + elementName + "]";
+        return getClass().getSimpleName() + "[" + this.elementName + "]";
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null)
-            return false;
+        if (obj == null) return false;
         if (obj instanceof IJavaElementStub)
             if (getPath() == null ^ ((IJavaElementStub) obj).getPath() == null)
                 return false;
@@ -371,15 +370,15 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     @Override
     public int hashCode() {
 
         int hash = 0;
-        if (path != null) {
-            hash ^= path.toString().hashCode();
+        if (this.path != null) {
+            hash ^= this.path.toString().hashCode();
         }
         return hash;
     }
