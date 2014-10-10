@@ -156,8 +156,8 @@ public class PathExpressionResolver {
             return string.substring(0, string.length() - m.group(1).length());
         }
 
-        // ?removePraefix(String praefix)
-        p = Pattern.compile("removePraefix\\(" + parameterRegex + "\\)");
+        // ?removePrefix(String prefix)
+        p = Pattern.compile("removePrefix\\(" + parameterRegex + "\\)");
         m = p.matcher(modifierName);
 
         if (m.matches() && string.startsWith(m.group(1))) {

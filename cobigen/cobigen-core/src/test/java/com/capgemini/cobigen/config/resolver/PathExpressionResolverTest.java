@@ -102,7 +102,7 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionRemovePraefix() {
         Assert.assertEquals("asdf Value Suffix asdf",
-            target.evaluateExpressions("asdf${variables.v1?removePraefix('praefix')} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?removePrefix('praefix')} asdf"));
     }
 
     /**
@@ -111,6 +111,6 @@ public class PathExpressionResolverTest {
     @Test
     public void testEvaluateExpressionConcatenation() {
         Assert.assertEquals("asdf value suffix asdf",
-            target.evaluateExpressions("asdf${variables.v1?lower_case?removePraefix('praefix')} asdf"));
+            target.evaluateExpressions("asdf${variables.v1?lower_case?removePrefix('praefix')} asdf"));
     }
 }
