@@ -5,6 +5,7 @@ package com.capgemini.cobigen.eclipse.generator.java;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.transform.TransformerException;
@@ -40,6 +42,7 @@ import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import freemarker.template.TemplateException;
 
@@ -56,19 +59,14 @@ public class JavaGeneratorWrapper {
     private CobiGen cobiGen;
 
     /**
-     * Current input type
+     * Current input types
      */
-    private IType type;
+    private Map<IType, Class<?>> inputTypes;
 
     /**
      * Package folder to be generated
      */
     private PackageFolder packageFolder;
-
-    /**
-     * Current input {@link Class}
-     */
-    private Class<?> pojo;
 
     /**
      * Target Project for the generation
@@ -81,7 +79,7 @@ public class JavaGeneratorWrapper {
     private Set<String> ignoreFields = new HashSet<>();
 
     /**
-     * All matching templates for the currently configured {@link #pojo}
+     * All matching templates for the currently configured {@link #inputTypes input types}
      */
     private List<TemplateTo> matchingTemplates = Lists.newLinkedList();
 
@@ -172,8 +170,7 @@ public class JavaGeneratorWrapper {
      */
     public void setInputPackage(IPackageFragment packageFragment) {
 
-        this.type = null;
-        this.pojo = null;
+        this.inputTypes = null;
         this.packageFolder =
             new PackageFolder(packageFragment.getResource().getLocationURI(),
                 packageFragment.getElementName());
@@ -200,11 +197,47 @@ public class JavaGeneratorWrapper {
      */
     public void setInputType(IType type) throws CoreException, ClassNotFoundException, IOException {
 
-        this.type = type;
         this.packageFolder = null;
         ClassLoader projectClassLoader = ClassLoaderUtil.getProjectClassLoader(type.getJavaProject());
-        this.pojo = projectClassLoader.loadClass(type.getFullyQualifiedName());
-        this.matchingTemplates = this.cobiGen.getMatchingTemplates(this.pojo);
+        this.inputTypes = Maps.newHashMapWithExpectedSize(1);
+        Class<?> loadedClass = projectClassLoader.loadClass(type.getFullyQualifiedName());
+        this.inputTypes.put(type, loadedClass);
+        this.matchingTemplates = this.cobiGen.getMatchingTemplates(loadedClass);
+    }
+
+    /**
+     * Changes the {@link JavaGeneratorWrapper}'s input to the list of types. Useful for batch generation.
+     *
+     * @param inputTypes
+     *            to be generated
+     * @throws CoreException
+     *             if the Java runtime class path could not be determined
+     * @throws ClassNotFoundException
+     *             if the given type could not be found by the project {@link ClassLoader}
+     * @throws UnknownExpressionException
+     *             if there is an unknown variable modifier
+     * @throws UnknownContextVariableException
+     *             if the destination path contains an undefined context variable
+     * @throws MalformedURLException
+     *             while resolving an input type's project class loader
+     * @author mbrunnli (12.10.2014)
+     */
+    public void setInputTypes(List<IType> inputTypes) throws CoreException, ClassNotFoundException,
+        MalformedURLException {
+        if (inputTypes != null && inputTypes.size() > 0) {
+            this.packageFolder = null;
+            this.inputTypes = Maps.newHashMapWithExpectedSize(inputTypes.size());
+            this.matchingTemplates = Lists.newLinkedList();
+            // Take first input type as precondition for the input is that all input types are part of the
+            // same project
+            ClassLoader projectClassLoader =
+                ClassLoaderUtil.getProjectClassLoader(inputTypes.get(0).getJavaProject());
+            for (IType type : inputTypes) {
+                Class<?> loadedClass = projectClassLoader.loadClass(type.getFullyQualifiedName());
+                this.inputTypes.put(type, loadedClass);
+                this.matchingTemplates.addAll(this.cobiGen.getMatchingTemplates(loadedClass));
+            }
+        }
     }
 
     /**
@@ -282,16 +315,19 @@ public class JavaGeneratorWrapper {
         if (this.packageFolder != null) {
             this.cobiGen.generate(this.packageFolder, template, forceOverride);
         } else {
-            Object[] inputSourceAndClass =
-                new Object[] {
-                    this.pojo,
-                    JavaParserUtil.getFirstJavaClass(ClassLoaderUtil.getProjectClassLoader(this.type
-                        .getJavaProject()), new StringReader(this.type.getCompilationUnit().getSource())) };
-            Map<String, Object> model =
-                this.cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
-            adaptModel(model, this.type);
-            removeIgnoredFieldsFromModel(model);
-            this.cobiGen.generate(inputSourceAndClass, template, model, forceOverride);
+            for (Entry<IType, Class<?>> entry : this.inputTypes.entrySet()) {
+                Object[] inputSourceAndClass =
+                    new Object[] {
+                        entry.getValue(),
+                        JavaParserUtil.getFirstJavaClass(
+                            ClassLoaderUtil.getProjectClassLoader(entry.getKey().getJavaProject()),
+                            new StringReader(entry.getKey().getCompilationUnit().getSource())) };
+                Map<String, Object> model =
+                    this.cobiGen.getModelBuilder(inputSourceAndClass, template.getTriggerId()).createModel();
+                adaptModel(model, entry.getKey());
+                removeIgnoredFieldsFromModel(model);
+                this.cobiGen.generate(inputSourceAndClass, template, model, forceOverride);
+            }
         }
     }
 
@@ -304,7 +340,10 @@ public class JavaGeneratorWrapper {
     public ComparableIncrement[] getAllIncrements() {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
-        for (IncrementTo increment : this.cobiGen.getMatchingIncrements(this.pojo)) {
+        // It is ok to only get the matching increments of the first input type as all input types should
+        // retrieve the same increments as this is a precondition for generation
+        for (IncrementTo increment : this.cobiGen.getMatchingIncrements(this.inputTypes.values().iterator()
+            .next())) {
             result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment
                 .getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
         }
@@ -332,7 +371,7 @@ public class JavaGeneratorWrapper {
         if (this.packageFolder != null)
             return this.cobiGen.getMatchingTriggerIds(this.packageFolder);
         else
-            return this.cobiGen.getMatchingTriggerIds(this.pojo);
+            return this.cobiGen.getMatchingTriggerIds(this.inputTypes.values().iterator().next());
     }
 
     /**
@@ -354,12 +393,13 @@ public class JavaGeneratorWrapper {
      *             if the generator's configuration is faulty
      * @author mbrunnli (12.03.2013)
      */
-    public Map<String, String> getAttributesToTypeMap() throws InvalidConfigurationException {
+    public Map<String, String> getAttributesToTypeMapOfFirstInput() throws InvalidConfigurationException {
 
         Map<String, String> result = new HashMap<>();
-        List<String> matchingTriggerIds = this.cobiGen.getMatchingTriggerIds(this.pojo);
+        Class<?> firstInputClass = this.inputTypes.values().iterator().next();
+        List<String> matchingTriggerIds = this.cobiGen.getMatchingTriggerIds(firstInputClass);
         Map<String, Object> model =
-            this.cobiGen.getModelBuilder(this.pojo, matchingTriggerIds.get(0)).createModel();
+            this.cobiGen.getModelBuilder(firstInputClass, matchingTriggerIds.get(0)).createModel();
         @SuppressWarnings("unchecked")
         Map<String, Object> pojoModel = (Map<String, Object>) model.get("pojo");
         if (pojoModel != null) {
@@ -502,4 +542,22 @@ public class JavaGeneratorWrapper {
         }
         return files;
     }
+
+    /**
+     * Get all templates, which id's are contained in the list of template ids
+     * @param templateIds
+     *            a {@link List} of template, the list of all templates should be filtered with
+     * @return all templates, which id's match one of the given template ids
+     * @author mbrunnli (12.10.2014)
+     */
+    public List<TemplateTo> getTemplates(List<String> templateIds) {
+        List<TemplateTo> templates = Lists.newLinkedList();
+        for (TemplateTo template : getAllTemplates()) {
+            if (templateIds.contains(template.getId())) {
+                templates.add(template);
+            }
+        }
+        return templates;
+    }
+
 }
