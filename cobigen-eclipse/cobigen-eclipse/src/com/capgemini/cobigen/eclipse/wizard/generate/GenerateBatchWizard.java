@@ -31,6 +31,8 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
+import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.google.common.collect.Lists;
 
 /**
  * Wizard for running the generation in batch mode
@@ -85,10 +87,10 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         GeneratorProjectNotExistentException {
 
         super();
-        this.g = new JavaGeneratorWrapper();
+        this.javaGeneratorWrapper = new JavaGeneratorWrapper();
         loadInputTypes(selection);
         setWindowTitle("CobiGen (batch mode)");
-        initializeWizard(this.inputTypes.get(0));
+        initializeWizard(this.inputTypes);
     }
 
     /**
@@ -122,13 +124,47 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
 
         super.initializeWizard(inputType);
 
-        this.page1 = new SelectFilesPage(this.g, true);
+        this.page1 = new SelectFilesPage(this.javaGeneratorWrapper, true);
         this.page1
             .setMessage(
                 "You are running a generation in batch mode!\n"
                     + "The shown target files are based on the first input of your selection. "
                     + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
                 IMessageProvider.WARNING);
+    }
+
+    /**
+     * Initializes the {@link JavaGeneratorWrapper}
+     *
+     * @param inputTypes
+     *            types, which should be the source of all information retrieved for the code generation
+     * @throws InvalidConfigurationException
+     *             if the given configuration does not match the templates.xsd
+     * @throws IOException
+     *             if the generator project "RF-Generation" could not be accessed
+     * @throws UnknownTemplateException
+     *             if there is no template with the given name
+     * @throws UnknownContextVariableException
+     *             if the destination path contains an undefined context variable
+     * @throws UnknownExpressionException
+     *             if there is an unknown variable modifier
+     * @throws CoreException
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
+     * @throws ClassNotFoundException
+     *             if the given type could not be found by the project {@link ClassLoader}
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration project "RF-Generation" is not existent
+     * @author mbrunnli (12.10.2014)
+     */
+    private void initializeWizard(List<IType> inputTypes) throws UnknownContextVariableException,
+        UnknownExpressionException, InvalidConfigurationException, UnknownTemplateException,
+        ClassNotFoundException, IOException, CoreException, GeneratorProjectNotExistentException {
+        if (inputTypes != null && inputTypes.size() > 0) {
+            initializeWizard(inputTypes.get(0));
+            this.inputTypes = inputTypes;
+            this.javaGeneratorWrapper.setInputTypes(inputTypes);
+        }
     }
 
     /**
@@ -151,8 +187,8 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
                 this.inputTypes.add(type);
             } else if (next instanceof IPackageFragment) {
                 this.container = (IPackageFragment) next;
-                this.g.setInputPackage((IPackageFragment) next);
-                List<String> triggerIds = this.g.getMatchingTriggerIds();
+                this.javaGeneratorWrapper.setInputPackage((IPackageFragment) next);
+                List<String> triggerIds = this.javaGeneratorWrapper.getMatchingTriggerIds();
                 getInputTypesRecursively((IPackageFragment) next, triggerIds);
             }
         }
@@ -179,8 +215,8 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             if (this.inputTypes.size() > 0) break;
             IType type = JavaModelUtil.getJavaClassType(cu);
             try {
-                this.g.setInputType(type);
-                List<String> matchingTriggerIds = this.g.getMatchingTriggerIds();
+                this.javaGeneratorWrapper.setInputType(type);
+                List<String> matchingTriggerIds = this.javaGeneratorWrapper.getMatchingTriggerIds();
                 if (triggerIds.containsAll(matchingTriggerIds) && matchingTriggerIds.containsAll(triggerIds)) {
                     this.inputTypes.add(type);
                 }
@@ -219,15 +255,21 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
 
+        List<TemplateTo> templatesToBeGenerated = this.page1.getTemplatesToBeGenerated();
+        List<String> templateIds = Lists.newLinkedList();
+        for (TemplateTo template : templatesToBeGenerated) {
+            templateIds.add(template.getId());
+        }
+
         GenerateBatchSelectionProcess job;
         if (this.container == null) {
             job =
-                new GenerateBatchSelectionProcess(getShell(), this.g, this.page1.getTemplatesToBeGenerated(),
-                    this.inputTypes);
+                new GenerateBatchSelectionProcess(getShell(), this.javaGeneratorWrapper,
+                    this.javaGeneratorWrapper.getTemplates(templateIds), this.inputTypes);
         } else {
             job =
-                new GenerateBatchSelectionProcess(getShell(), this.g, this.page1.getTemplatesToBeGenerated(),
-                    this.container);
+                new GenerateBatchSelectionProcess(getShell(), this.javaGeneratorWrapper,
+                    this.javaGeneratorWrapper.getTemplates(templateIds), this.container);
         }
         try {
             dialog.run(false, false, job);

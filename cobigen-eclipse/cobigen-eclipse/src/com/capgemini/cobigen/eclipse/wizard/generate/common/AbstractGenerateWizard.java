@@ -48,7 +48,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     /**
      * Wrapper for the {@link CobiGen}
      */
-    protected JavaGeneratorWrapper g;
+    protected JavaGeneratorWrapper javaGeneratorWrapper;
 
     /**
      * Assigning logger to AbstractGenerateWizard
@@ -83,8 +83,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
         UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
         ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        this.g = new JavaGeneratorWrapper(inputType);
-        this.g.setGenerationTargetProject(inputType.getJavaProject().getProject());
+        this.javaGeneratorWrapper = new JavaGeneratorWrapper(inputType);
+        this.javaGeneratorWrapper.setGenerationTargetProject(inputType.getJavaProject().getProject());
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     public Set<String> getAllGenerationPaths() {
 
         Set<String> paths = new HashSet<>();
-        for (TemplateTo tmp : this.g.getAllTemplates()) {
+        for (TemplateTo tmp : this.javaGeneratorWrapper.getAllTemplates()) {
             paths.add(tmp.getDestinationPath());
         }
         return paths;
@@ -152,7 +152,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             }
         }
         // Delete mergable files
-        Set<IFile> mergableFiles = this.g.getMergeableFiles();
+        Set<IFile> mergableFiles = this.javaGeneratorWrapper.getMergeableFiles();
         it = diff.iterator();
         while (it.hasNext()) {
             Object r = it.next();
