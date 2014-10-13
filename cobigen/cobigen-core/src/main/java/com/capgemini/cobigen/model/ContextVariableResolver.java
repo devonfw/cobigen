@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 
 /**
  * Resolves all context variables for a given input and its trigger
- * 
+ *
  * @author mbrunnli (03.06.2014)
  */
 public class ContextVariableResolver {
@@ -45,7 +45,7 @@ public class ContextVariableResolver {
 
     /**
      * Creates a new {@link ModelBuilder} instance for the given properties
-     * 
+     *
      * @param input
      *            object for which a new object model should be created
      * @param trigger
@@ -64,7 +64,7 @@ public class ContextVariableResolver {
 
     /**
      * Resolves all {@link VariableAssignment}s by using the given {@link ITriggerInterpreter}
-     * 
+     *
      * @param triggerInterpreter
      *            to be used
      * @return the mapping of variable to value
@@ -76,9 +76,9 @@ public class ContextVariableResolver {
         throws InvalidConfigurationException {
 
         Map<String, String> variables = Maps.newHashMap();
-        for (Matcher m : trigger.getMatcher()) {
-            MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
-            if (!m.isContainerMatcher() && triggerInterpreter.getMatcher().matches(matcherTo)) {
+        for (Matcher m : this.trigger.getMatcher()) {
+            MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), this.input);
+            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                 try {
                     Map<String, String> resolvedVariables =
                         triggerInterpreter.getMatcher()
@@ -103,7 +103,7 @@ public class ContextVariableResolver {
     /**
      * Retrieves all {@link VariableAssignment}s from the given {@link Matcher} and converts them into
      * transfer objects
-     * 
+     *
      * @param m
      *            {@link Matcher} to retrieve the {@link VariableAssignment}s from
      * @return a {@link List} of {@link VariableAssignmentTo}s

@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.w3c.dom.NodeList;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
+import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
@@ -52,7 +54,7 @@ import freemarker.template.TemplateException;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
- * 
+ *
  * @author mbrunnli (05.02.2013)
  */
 public class CobiGen {
@@ -81,15 +83,14 @@ public class CobiGen {
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}. Beside the
      * {@link ContextSetting#GeneratorProjectRootPath} all context variables can be changed during runtime
      * affecting the generation mechanisms.
-     * 
+     *
      * @param rootConfigFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
      * @throws IOException
      *             if the configured {@link ContextSetting#GeneratorProjectRootPath} cannot be accessed
      * @author mbrunnli (05.02.2013)
-     * @throws InvalidConfigurationException
      */
-    public CobiGen(File rootConfigFolder) throws IOException, InvalidConfigurationException {
+    public CobiGen(File rootConfigFolder) throws IOException {
 
         this.contextConfiguration = new ContextConfiguration(rootConfigFolder);
         this.freeMarkerConfig = new Configuration();
@@ -103,7 +104,7 @@ public class CobiGen {
     /**
      * Generates code for the given input with the given template to the destination specified by the
      * templates configuration.
-     * 
+     *
      * @param input
      *            generator input object
      * @param template
@@ -125,7 +126,7 @@ public class CobiGen {
     public void generate(Object input, TemplateTo template, boolean forceOverride) throws IOException,
         TemplateException, MergeException, InvalidConfigurationException {
 
-        Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+        Trigger trigger = this.contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(input, template, triggerInterpreter, forceOverride);
     }
@@ -133,7 +134,7 @@ public class CobiGen {
     /**
      * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
      * the destination specified by the templates configuration.
-     * 
+     *
      * @param generatorInput
      *            generator input object
      * @param template
@@ -160,7 +161,7 @@ public class CobiGen {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template);
         InputValidator.validateTriggerInterpreter(triggerInterpreter,
-            contextConfiguration.getTrigger(template.getTriggerId()));
+            this.contextConfiguration.getTrigger(template.getTriggerId()));
 
         generate(generatorInput, template, triggerInterpreter, forceOverride, null);
     }
@@ -168,7 +169,7 @@ public class CobiGen {
     /**
      * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
      * the destination specified by the templates configuration.
-     * 
+     *
      * @param input
      *            input object for the generation
      * @param template
@@ -197,7 +198,7 @@ public class CobiGen {
 
         Template templateIntern = getTemplate(template, triggerInterpreter, input);
 
-        freeMarkerConfig.setDirectoryForTemplateLoading(new File(contextConfiguration
+        this.freeMarkerConfig.setDirectoryForTemplateLoading(new File(this.contextConfiguration
             .get(ContextSetting.GeneratorProjectRootPath)
             + SystemUtil.FILE_SEPARATOR
             + templateIntern.getTrigger().getTemplateFolder()));
@@ -207,11 +208,11 @@ public class CobiGen {
         if (inputReader.combinesMultipleInputObjects(input)) {
             inputObjects = inputReader.getInputObjects(input, templateIntern.getTrigger().getInputCharset());
             Iterator<Object> it = inputObjects.iterator();
-            InputObjectsLoop: while (it.hasNext()) {
+            InputObjectsLoop:
+            while (it.hasNext()) {
                 Object next = it.next();
-                Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+                Trigger trigger = this.contextConfiguration.getTrigger(template.getTriggerId());
                 for (Matcher m : trigger.getMatcher()) {
-                    if (m.isContainerMatcher()) continue;
                     if (triggerInterpreter.getMatcher().matches(
                         new MatcherTo(m.getType(), m.getValue(), next))) {
                         continue InputObjectsLoop;
@@ -272,7 +273,7 @@ public class CobiGen {
     /**
      * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
      * the destination specified by the templates configuration.
-     * 
+     *
      * @param generatorInput
      *            input object for the generation
      * @param template
@@ -298,14 +299,14 @@ public class CobiGen {
         MergeException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template, model);
-        Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+        Trigger trigger = this.contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(generatorInput, template, triggerInterpreter, forceOverride, model);
     }
 
     /**
      * Returns all matching trigger ids for a given input object
-     * 
+     *
      * @param matcherInput
      *            object
      * @return the {@link List} of matching trigger ids
@@ -322,7 +323,7 @@ public class CobiGen {
 
     /**
      * Returns all matching increments for a given input object
-     * 
+     *
      * @param matcherInput
      *            object
      * @return this {@link List} of matching increments
@@ -341,7 +342,7 @@ public class CobiGen {
     /**
      * Converts a {@link List} of {@link Increment}s with their parent {@link Trigger} to a {@link List} of
      * {@link IncrementTo}s
-     * 
+     *
      * @param increments
      *            the {@link List} of {@link Increment}s
      * @param trigger
@@ -367,7 +368,7 @@ public class CobiGen {
 
     /**
      * Returns all matching {@link Trigger}s for the given input object
-     * 
+     *
      * @param matcherInput
      *            object
      * @return the {@link List} of matching {@link Trigger}s
@@ -376,7 +377,7 @@ public class CobiGen {
     private List<Trigger> getMatchingTriggers(Object matcherInput) {
 
         List<Trigger> matchingTrigger = Lists.newLinkedList();
-        for (Trigger trigger : contextConfiguration.getTriggers()) {
+        for (Trigger trigger : this.contextConfiguration.getTriggers()) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger); // TODO do not throw
                                                                                     // exception if not known
@@ -391,6 +392,33 @@ public class CobiGen {
                             break;
                         }
                     }
+
+                    // if a match has been found do not check container matchers also for performance issues.
+                    if (matchingTrigger.isEmpty()) {
+                        FOR_CONTAINERMATCHER:
+                        for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+                            MatcherTo matcherTo =
+                                new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
+                                    matcherInput);
+                            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                                // the charset does not matter as we only want to see whether there is one
+                                // matcher for one of the container resources
+                                List<Object> containerResources =
+                                    triggerInterpreter.getInputReader().getInputObjects(matcherInput,
+                                        Charsets.UTF_8);
+                                for (Matcher matcher : trigger.getMatcher()) {
+                                    for (Object resource : containerResources) {
+                                        matcherTo =
+                                            new MatcherTo(matcher.getType(), matcher.getValue(), resource);
+                                        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                                            matchingTrigger.add(trigger);
+                                            break FOR_CONTAINERMATCHER;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             } catch (Throwable e) {
                 LOG.error("The TriggerInterpreter for type '{}' exited abruptly",
@@ -402,7 +430,7 @@ public class CobiGen {
 
     /**
      * Returns the {@link List} of matching templates for the given input object
-     * 
+     *
      * @param matcherInput
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
@@ -423,7 +451,7 @@ public class CobiGen {
 
     /**
      * Returns the {@link List} of matching {@link TemplatesConfiguration}s for the given input object
-     * 
+     *
      * @param matcherInput
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
@@ -446,7 +474,7 @@ public class CobiGen {
                 continue;
             }
             File templatesConfigurationFolder =
-                new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+                new File(this.contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
                     + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
             templateConfigurations.add(new TemplatesConfiguration(templatesConfigurationFolder, trigger,
@@ -457,7 +485,7 @@ public class CobiGen {
 
     /**
      * Returns the {@link Template} for a given {@link TemplateTo}
-     * 
+     *
      * @param templateTo
      *            which should be found as internal representation
      * @param triggerInterpreter
@@ -473,11 +501,11 @@ public class CobiGen {
     private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter,
         Object matcherInput) throws InvalidConfigurationException {
 
-        Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
+        Trigger trigger = this.contextConfiguration.getTrigger(templateTo.getTriggerId());
         Map<String, String> variables =
             new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
         File templatesConfigurationFolder =
-            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+            new File(this.contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
                 + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
         TemplatesConfiguration tConfig =
@@ -492,7 +520,7 @@ public class CobiGen {
     /**
      * Generates the given template contents using the given model and writes the contents into the given
      * {@link File}
-     * 
+     *
      * @param output
      *            {@link File} to be written
      * @param template
@@ -521,7 +549,7 @@ public class CobiGen {
 
     /**
      * Determines the destination file and creates the path to the file if necessary
-     * 
+     *
      * @param relDestinationPath
      *            relative destination path from {@link ContextSetting#GenerationTargetRootPath}
      * @return the destination file (might not be existent)
@@ -548,7 +576,7 @@ public class CobiGen {
     /**
      * Generates the given template contents using the given model and writes the contents into the given
      * {@link Writer}
-     * 
+     *
      * @param out
      *            {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and
      *            closed)
@@ -584,7 +612,7 @@ public class CobiGen {
 
     /**
      * Set a {@link ContextSetting}
-     * 
+     *
      * @param contextSetting
      *            {@link ContextSetting} to be set
      * @param value
@@ -593,25 +621,25 @@ public class CobiGen {
      */
     public void setContextSetting(ContextSetting contextSetting, String value) {
 
-        contextConfiguration.set(contextSetting, value);
+        this.contextConfiguration.set(contextSetting, value);
     }
 
     /**
      * Returns the requested context setting
-     * 
+     *
      * @param contextSetting
      *            requested {@link ContextSetting}
      * @author mbrunnli (09.04.2014)
      */
     public void getContextSetting(ContextSetting contextSetting) {
 
-        contextConfiguration.get(contextSetting);
+        this.contextConfiguration.get(contextSetting);
     }
 
     /**
      * Creates shortcuts for accessing the model in a more comfortable manner. All top level children of the
      * root node will get a shortcut in the target environment
-     * 
+     *
      * @param doc
      *            {@link Document} to add the shortcuts for
      * @param env
@@ -629,7 +657,7 @@ public class CobiGen {
 
     /**
      * Returns a new {@link IModelBuilder} instance for the given input object and its matching trigger id
-     * 
+     *
      * @param generatorInput
      *            object, models should be created for
      * @param triggerId
@@ -639,7 +667,7 @@ public class CobiGen {
      */
     public IModelBuilder getModelBuilder(Object generatorInput, String triggerId) {
 
-        Trigger trigger = contextConfiguration.getTrigger(triggerId);
+        Trigger trigger = this.contextConfiguration.getTrigger(triggerId);
         if (trigger == null)
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         return new ModelBuilder(generatorInput, trigger, null);
@@ -647,7 +675,7 @@ public class CobiGen {
 
     /**
      * Returns a new {@link IModelBuilder} instance for the given input object and its matching trigger id
-     * 
+     *
      * @param generatorInput
      *            object, models should be created for
      * @param matcherInput
@@ -660,7 +688,7 @@ public class CobiGen {
      */
     public IModelBuilder getModelBuilder(Object generatorInput, Object matcherInput, String triggerId) {
 
-        Trigger trigger = contextConfiguration.getTrigger(triggerId);
+        Trigger trigger = this.contextConfiguration.getTrigger(triggerId);
         if (trigger == null)
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         return new ModelBuilder(generatorInput, trigger, matcherInput);
@@ -669,7 +697,7 @@ public class CobiGen {
     /**
      * Reloads the configuration from source. This function might be called if the configuration file has
      * changed in a running system
-     * 
+     *
      * @throws IOException
      *             if the file could not be accessed
      * @throws InvalidConfigurationException
@@ -683,7 +711,7 @@ public class CobiGen {
 
     /**
      * not used
-     * 
+     *
      * @author mbrunnli (06.02.2013)
      */
     @SuppressWarnings("javadoc")
