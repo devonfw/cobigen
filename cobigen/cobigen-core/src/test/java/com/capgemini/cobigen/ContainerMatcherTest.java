@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
@@ -25,15 +26,15 @@ import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.google.common.collect.Lists;
 
 /**
- * This test suite should mainly focus on API tests to avoid inconsistencies
+ * This test suite concentrates on the {@link ContainerMatcher} support and semantics
  * @author mbrunnli (13.10.2014)
  */
-public class CobiGenTest {
+public class ContainerMatcherTest {
 
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/CobiGenTest/";
+    private static String testFileRootPath = "src/test/resources/ContainerMatcherTest/";
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers

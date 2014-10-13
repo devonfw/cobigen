@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.testdata;
+package com.capgemini.cobigen.common.testdata;
 
 /**
  *
