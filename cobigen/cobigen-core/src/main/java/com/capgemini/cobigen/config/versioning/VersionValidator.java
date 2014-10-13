@@ -102,7 +102,7 @@ public class VersionValidator {
         BigDecimal firstCompatibleCobiGenVersion = incompatibleVersionSteps.get(configVersion);
         if (currentCobiGenVersion.equals(firstCompatibleCobiGenVersion)) {
             // valid -> first version of CobiGen supporting this configuration
-            LOG.info("Compatible {} due to version declaration. CobiGen: {} / {}: {}", configName,
+            LOG.debug("Compatible {} due to version declaration. CobiGen: {} / {}: {}", configName,
                 currentCobiGenVersionStr, configName, configVersion.toString());
             return;
         } else if (currentCobiGenVersion.compareTo(firstCompatibleCobiGenVersion) > 0) {
@@ -123,7 +123,7 @@ public class VersionValidator {
                         } else {
                             // valid -> CobiGen version between first compatible version and next incompatible
                             // version
-                            LOG.info("Compatible {} due to version declaration. CobiGen: {} / {}: {}",
+                            LOG.debug("Compatible {} due to version declaration. CobiGen: {} / {}: {}",
                                 configName, currentCobiGenVersionStr, configName, configVersion.toString());
                             break;
                         }
