@@ -379,9 +379,8 @@ public class CobiGen {
         List<Trigger> matchingTrigger = Lists.newLinkedList();
         for (Trigger trigger : this.contextConfiguration.getTriggers()) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger); // TODO do not throw
-                                                                                    // exception if not known
-                                                                                    // type
+            InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
+
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
                     for (Matcher matcher : trigger.getMatcher()) {
@@ -393,7 +392,8 @@ public class CobiGen {
                         }
                     }
 
-                    // if a match has been found do not check container matchers also for performance issues.
+                    // if a match has been found do not check container matchers in addition for performance
+                    // issues.
                     if (matchingTrigger.isEmpty()) {
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
@@ -464,23 +464,54 @@ public class CobiGen {
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
-            Map<String, String> variables;
-            try {
-                variables =
-                    new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
-            } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly.",
-                    triggerInterpreter.getType(), e);
-                continue;
-            }
-            File templatesConfigurationFolder =
-                new File(this.contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                    + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
-            templateConfigurations.add(new TemplatesConfiguration(templatesConfigurationFolder, trigger,
-                variables));
+            IInputReader inputReader = triggerInterpreter.getInputReader();
+            if (inputReader.combinesMultipleInputObjects(matcherInput)) {
+                List<Object> containerChildren = inputReader.getInputObjects(matcherInput, Charsets.UTF_8);
+                for (Object child : containerChildren) {
+                    TemplatesConfiguration childTemplatesConfiguration =
+                        createTemplatesConfiguration(child, trigger, triggerInterpreter);
+                    if (childTemplatesConfiguration != null)
+                        templateConfigurations.add(childTemplatesConfiguration);
+                }
+            } else {
+                TemplatesConfiguration childTemplatesConfiguration =
+                    createTemplatesConfiguration(matcherInput, trigger, triggerInterpreter);
+                if (childTemplatesConfiguration != null)
+                    templateConfigurations.add(childTemplatesConfiguration);
+            }
         }
         return templateConfigurations;
+    }
+
+    /**
+     * Creates a new templates configuration while resolving the context variables dependend on the given
+     * input. The context variables will be retrieved from the given {@link Trigger} resp.
+     * {@link ITriggerInterpreter trigger interpreter}.
+     * @param input
+     *            to derive the context variables from
+     * @param trigger
+     *            to get matcher declarations from
+     * @param triggerInterpreter
+     *            to get the matcher implementation from
+     * @return the {@link ContextConfiguration} for the given input or <code>null</code> if the context
+     *         variables could not be resolved.
+     * @author mbrunnli (14.10.2014)
+     */
+    private TemplatesConfiguration createTemplatesConfiguration(Object input, Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) {
+        Map<String, String> variables;
+        try {
+            variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
+        } catch (Throwable e) {
+            LOG.error("The TriggerInterpreter for type '{}' exited abruptly.", triggerInterpreter.getType(),
+                e);
+            return null;
+        }
+        File templatesConfigurationFolder =
+            new File(this.contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
+                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
+        return new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables);
     }
 
     /**

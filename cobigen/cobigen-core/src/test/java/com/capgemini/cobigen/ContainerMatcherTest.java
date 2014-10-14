@@ -1,5 +1,6 @@
 package com.capgemini.cobigen;
 
+import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.mockito.Matchers.any;
@@ -17,12 +18,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
@@ -38,16 +41,13 @@ public class ContainerMatcherTest {
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
-     * @throws InvalidConfigurationException
-     *             test fails
      * @throws IOException
      *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws InvalidConfigurationException,
-        IOException {
+    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws IOException {
 
         // we only need any objects for inputs to have a unique object reference to affect the mocked method
         // calls as intended
@@ -89,15 +89,13 @@ public class ContainerMatcherTest {
 
     /**
      * Tests whether a container matcher will match iff there are matchers matching the child resources
-     * @throws InvalidConfigurationException
-     *             test fails
      * @throws IOException
      *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void testContainerMatcherMatches() throws InvalidConfigurationException, IOException {
+    public void testContainerMatcherMatches() throws IOException {
 
         // we only need any objects for inputs to have a unique object reference to affect the mocked method
         // calls as intended
@@ -135,5 +133,76 @@ public class ContainerMatcherTest {
         Assert.assertNotNull(matchingTriggerIds);
         Assert.assertEquals(1, matchingTriggerIds.size());
 
+    }
+
+    /**
+     * Tests whether variable resolving works for a container's children as the container itself does not
+     * include any variable resolving
+     * @throws IOException
+     *             test fails
+     * @author mbrunnli (13.10.2014)
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testContextVariableResolvingForContainerMatches() throws IOException {
+        // we only need any objects for inputs to have a unique object reference to affect the mocked method
+        // calls as intended
+        Object container = new Object() {
+            @Override
+            public String toString() {
+                return "container";
+            }
+        };
+        Object firstChildResource = new Object() {
+            @Override
+            public String toString() {
+                return "child";
+            }
+        };
+
+        // Pre-processing: Mocking
+        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
+        IMatcher matcher = mock(IMatcher.class);
+        IInputReader inputReader = mock(IInputReader.class);
+
+        when(triggerInterpreter.getType()).thenReturn("java");
+        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
+        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+
+        when(inputReader.isValidInput(any())).thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
+            .thenReturn(false);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
+            .thenReturn(true);
+        // Simulate container children resolution of any plug-in
+        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
+            Lists.newArrayList(firstChildResource));
+
+        when(
+            matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
+                sameInstance(firstChildResource))))).thenReturn(true);
+        // Simulate variable resolving of any plug-in
+        when(
+            matcher.resolveVariables(
+                argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+                argThat(hasItemsInList(
+                    //
+                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
+                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
+            .thenReturn(
+                ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
+                    .put("entityName", "Test").build());
+
+        // Execution
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        List<TemplateTo> matchingTemplates = target.getMatchingTemplates(container);
+
+        // Verification
+        Assert.assertNotNull(matchingTemplates);
+        Assert.assertEquals(1, matchingTemplates.size());
     }
 }
