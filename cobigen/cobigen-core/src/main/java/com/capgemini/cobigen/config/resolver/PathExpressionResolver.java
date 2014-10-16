@@ -51,11 +51,11 @@ public class PathExpressionResolver {
      */
     private void adaptVariables() {
 
-        HashMap<String, String> newVariables = new HashMap<String, String>();
-        for (String var : this.variables.keySet()) {
-            newVariables.put(var, this.variables.get(var).replaceAll("\\.", "/"));
+        HashMap<String, String> newVariables = new HashMap<>();
+        for (String var : variables.keySet()) {
+            newVariables.put(var, variables.get(var).replaceAll("\\.", "/"));
         }
-        this.variables = newVariables;
+        variables = newVariables;
     }
 
     /**
@@ -81,22 +81,25 @@ public class PathExpressionResolver {
      * @param in
      *            {@link String} containing variable expressions
      * @return the given {@link String} where all variable expressions are replaced by its values
-     * @author mbrunnli (18.02.2013)
      * @throws UnknownContextVariableException
+     *             if a context variable could not be resolved
+     * @author mbrunnli (18.02.2013)
      */
     public String evaluateExpressions(String in) throws UnknownContextVariableException {
 
-        if (in == null) return null;
+        if (in == null) {
+            return null;
+        }
         Pattern p = Pattern.compile("\\$\\{([^?}]+)((\\?[^}?]+)*)\\}");
         Matcher m = p.matcher(in);
         StringBuffer out = new StringBuffer();
         while (m.find()) {
-            if (this.variables.get(m.group(1)) == null) {
+            if (variables.get(m.group(1)) == null) {
                 throw new UnknownContextVariableException(m.group(1));
             }
             if (m.group(2) != null) {
                 boolean first = true;
-                String modifiedValue = this.variables.get(m.group(1));
+                String modifiedValue = variables.get(m.group(1));
                 for (String modifier : m.group(2).split("\\?")) {
                     if (first) {
                         first = false;
@@ -106,7 +109,7 @@ public class PathExpressionResolver {
                 }
                 m.appendReplacement(out, modifiedValue);
             } else {
-                m.appendReplacement(out, this.variables.get(m.group(1)));
+                m.appendReplacement(out, variables.get(m.group(1)));
             }
         }
         m.appendTail(out);
@@ -166,4 +169,5 @@ public class PathExpressionResolver {
 
         throw new UnknownExpressionException("?" + modifierName);
     }
+
 }

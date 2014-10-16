@@ -93,7 +93,7 @@ public class ContextConfigurationReader {
                     "/schema/contextConfiguration.xsd")));
             unmarschaller.setSchema(schema);
             rootNode = unmarschaller.unmarshal(file);
-            this.contextNode = (ContextConfiguration) rootNode;
+            contextNode = (ContextConfiguration) rootNode;
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", file.getPath(), e);
             // try getting SAXParseException for better error handling and user support
@@ -128,7 +128,7 @@ public class ContextConfigurationReader {
     public Map<String, Trigger> loadTriggers() {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
-        for (com.capgemini.Trigger t : this.contextNode.getTriggers().getTrigger()) {
+        for (com.capgemini.Trigger t : contextNode.getTriggers().getTrigger()) {
             triggers.put(
                 t.getId(),
                 new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t

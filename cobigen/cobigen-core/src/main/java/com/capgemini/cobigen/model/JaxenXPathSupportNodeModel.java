@@ -15,7 +15,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * A {@link NodeModel} for FreeMarker in order to support XPath in templates
- * 
+ *
  * @author mbrunnli (19.02.2013)
  */
 public class JaxenXPathSupportNodeModel extends NodeModel {
@@ -32,8 +32,9 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
 
     /**
      * Creates a new {@link JaxenXPathSupportNodeModel} for the given node
-     * 
+     *
      * @param node
+     *            to be root for this {@link NodeModel}
      * @author mbrunnli (08.02.2013)
      */
     public JaxenXPathSupportNodeModel(Node node) {
@@ -48,7 +49,7 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (08.02.2013)
      */
     @Override
@@ -65,7 +66,7 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (08.02.2013)
      */
     @Override

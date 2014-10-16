@@ -97,11 +97,11 @@ public class ContextConfiguration {
 
     /**
      * Initializes all settings with the empty string
-     * 
+     *
      * @author mbrunnli (05.04.2013)
      */
     private void initializeSettings() {
-        contextSettings = new HashMap<ContextSetting, String>();
+        contextSettings = new HashMap<>();
         for (ContextSetting cv : ContextSetting.values()) {
             contextSettings.put(cv, "");
         }
@@ -136,7 +136,7 @@ public class ContextConfiguration {
      * @author mbrunnli (09.04.2014)
      */
     public List<Trigger> getTriggers() {
-        return new LinkedList<Trigger>(triggers.values());
+        return new LinkedList<>(triggers.values());
     }
 
     /**

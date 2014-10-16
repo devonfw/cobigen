@@ -15,10 +15,13 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
+import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
@@ -38,6 +41,13 @@ public class ContainerMatcherTest {
      * Root path to all resources used in this test case
      */
     private static String testFileRootPath = "src/test/resources/ContainerMatcherTest/";
+
+    /**
+     * JUnit Rule to temporarily create files and folders, which will be automatically removed after test
+     * execution
+     */
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
@@ -106,6 +116,30 @@ public class ContainerMatcherTest {
         // Verification
         Assert.assertNotNull(matchingTemplates);
         Assert.assertEquals(1, matchingTemplates.size());
+    }
+
+    /**
+     * Tests whether variable resolving works for a contains's children during generation
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (16.10.2014)
+     */
+    @Test
+    public void testContextVariableResolvingForContainerMatchesOnGeneration() throws Exception {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
+        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
+        List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
+
+        // Execution
+        // should not throw any UnknownContextVariableException
+        target.generate(containerInput, templates.get(0), false);
     }
 
     // ######################### PRIVATE ##############################

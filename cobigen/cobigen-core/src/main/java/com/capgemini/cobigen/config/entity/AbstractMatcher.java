@@ -35,7 +35,7 @@ public abstract class AbstractMatcher {
      * @author mbrunnli (08.04.2014)
      */
     public String getType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -44,6 +44,6 @@ public abstract class AbstractMatcher {
      * @author mbrunnli (08.04.2014)
      */
     public String getValue() {
-        return this.value;
+        return value;
     }
 }

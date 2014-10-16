@@ -76,8 +76,8 @@ public class ContextVariableResolver {
         throws InvalidConfigurationException {
 
         Map<String, String> variables = Maps.newHashMap();
-        for (Matcher m : this.trigger.getMatcher()) {
-            MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), this.input);
+        for (Matcher m : trigger.getMatcher()) {
+            MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                 try {
                     Map<String, String> resolvedVariables =

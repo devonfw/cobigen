@@ -84,9 +84,10 @@ public class PluginRegistry {
      */
     public static void registerMerger(IMerger merger) {
 
-        if (merger == null || StringUtils.isEmpty(merger.getType()))
+        if (merger == null || StringUtils.isEmpty(merger.getType())) {
             throw new IllegalArgumentException(
                 "You cannot register a new Merger with merger==null or type==null or empty!");
+        }
         registeredMerger.put(merger.getType(), merger);
         LOG.info("Merger for type '{}' registered ({})", merger.getType(), merger.getClass()
             .getCanonicalName());
@@ -101,9 +102,10 @@ public class PluginRegistry {
      */
     public static void registerTriggerInterpreter(ITriggerInterpreter triggerInterpreter) {
 
-        if (triggerInterpreter == null || StringUtils.isEmpty(triggerInterpreter.getType()))
+        if (triggerInterpreter == null || StringUtils.isEmpty(triggerInterpreter.getType())) {
             throw new IllegalArgumentException(
                 "You cannot register a new TriggerInterpreter with triggerInterpreter==null or type==null or empty!");
+        }
         registeredTriggerInterpreter.put(triggerInterpreter.getType(), triggerInterpreter);
         LOG.info("TriggerInterpreter for type '{}' registered ({})", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
@@ -120,7 +122,9 @@ public class PluginRegistry {
      */
     public static IMerger getMerger(String mergerType) {
 
-        if (mergerType == null) return null;
+        if (mergerType == null) {
+            return null;
+        }
         return registeredMerger.get(mergerType);
     }
 
@@ -134,7 +138,9 @@ public class PluginRegistry {
      */
     public static ITriggerInterpreter getTriggerInterpreter(String triggerType) {
 
-        if (triggerType == null) return null;
+        if (triggerType == null) {
+            return null;
+        }
         return registeredTriggerInterpreter.get(triggerType);
     }
 

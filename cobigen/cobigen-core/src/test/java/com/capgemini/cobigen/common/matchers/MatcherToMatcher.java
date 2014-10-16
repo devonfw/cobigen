@@ -49,8 +49,8 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
      */
     @Override
     public void describeTo(Description description) {
-        description.appendText(MatcherTo.class.getSimpleName() + "(type='" + this.type + "', value='"
-            + this.value + "', target='" + this.target + "')");
+        description.appendText(MatcherTo.class.getSimpleName() + "(type='" + type + "', value='" + value
+            + "', target='" + target + "')");
     }
 
     /**
@@ -60,9 +60,9 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
     @Override
     public boolean matches(Object item) {
         if (item instanceof MatcherTo) {
-            return this.type != null && this.type.matches(((MatcherTo) item).getType()) && this.value != null
-                && this.value.matches(((MatcherTo) item).getValue()) && this.target != null
-                && this.target.matches(((MatcherTo) item).getTarget());
+            return type != null && type.matches(((MatcherTo) item).getType()) && value != null
+                && value.matches(((MatcherTo) item).getValue()) && target != null
+                && target.matches(((MatcherTo) item).getTarget());
         }
         return false;
     }
@@ -73,7 +73,7 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
      */
     @Override
     public void describeMismatch(Object item, Description mismatchDescription) {
-        if (this.type == null || this.value == null || this.target == null) {
+        if (type == null || value == null || target == null) {
             mismatchDescription
                 .appendText("One of the parameter matcher has been null. Please use AnyOf matchers instead.");
             return;
@@ -82,11 +82,11 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
         MatcherTo matchedMatcherTo = (MatcherTo) item;
 
         mismatchDescription.appendText("MatcherTo does not match!\nShould be MatcherTo(");
-        this.type.describeTo(mismatchDescription);
+        type.describeTo(mismatchDescription);
         mismatchDescription.appendText(", ");
-        this.value.describeTo(mismatchDescription);
+        value.describeTo(mismatchDescription);
         mismatchDescription.appendText(", ");
-        this.target.describeTo(mismatchDescription);
+        target.describeTo(mismatchDescription);
         mismatchDescription.appendText(")\nWas       MatcherTo('" + matchedMatcherTo.getType() + "', '"
             + matchedMatcherTo.getValue() + "', '" + matchedMatcherTo.getTarget() + "')");
     }

@@ -87,6 +87,7 @@ public class ModelBuilder implements IModelBuilder {
      *             if there are {@link VariableAssignment}s, which could not be resolved
      * @author mbrunnli (08.04.2014)
      */
+    @Override
     public Map<String, Object> createModel() throws InvalidConfigurationException {
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
@@ -103,10 +104,11 @@ public class ModelBuilder implements IModelBuilder {
      *             if there are {@link VariableAssignment}s, which could not be resolved
      * @author mbrunnli (08.04.2014)
      */
+    @Override
     public Map<String, Object> createModel(ITriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
         Map<String, Object> model =
-            new HashMap<String, Object>(triggerInterpreter.getInputReader().createModel(generatorInput));
+            new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
         if (matcherInput != null) {
             model.put("variables",
                 new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter));

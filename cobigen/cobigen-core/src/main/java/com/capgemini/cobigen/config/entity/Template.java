@@ -71,7 +71,7 @@ public class Template {
         this.templateFile = templateFile;
         this.expressionResolver = expressionResolver;
         this.mergeStrategy = mergeStrategy;
-        this.targetCharset = outputCharset;
+        targetCharset = outputCharset;
         this.trigger = trigger;
     }
 

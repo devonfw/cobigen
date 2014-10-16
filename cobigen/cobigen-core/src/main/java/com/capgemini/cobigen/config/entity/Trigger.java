@@ -66,7 +66,7 @@ public class Trigger {
         this.type = type;
         this.templateFolder = templateFolder;
         this.inputCharset = inputCharset;
-        this.matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
+        matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
         this.containerMatchers =
             containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
     }
@@ -77,7 +77,7 @@ public class Trigger {
      * @author mbrunnli (08.04.2014)
      */
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Trigger {
      * @author trippl (05.04.2013)
      */
     public String getType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -95,7 +95,7 @@ public class Trigger {
      * @author mbrunnli (08.04.2014)
      */
     public String getTemplateFolder() {
-        return this.templateFolder;
+        return templateFolder;
     }
 
     /**
@@ -104,7 +104,7 @@ public class Trigger {
      * @author mbrunnli (06.06.2014)
      */
     public Charset getInputCharset() {
-        return this.inputCharset;
+        return inputCharset;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Trigger {
      * @author mbrunnli (08.04.2014)
      */
     public List<Matcher> getMatcher() {
-        return this.matchers;
+        return matchers;
     }
 
     /**
@@ -122,7 +122,7 @@ public class Trigger {
      * @author mbrunnli (13.10.2014)
      */
     public List<ContainerMatcher> getContainerMatchers() {
-        return this.containerMatchers;
+        return containerMatchers;
     }
 
     /**
@@ -131,7 +131,9 @@ public class Trigger {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof Trigger) {
             return ((Trigger) obj).getId().equals(getId());
         }
@@ -144,7 +146,7 @@ public class Trigger {
      */
     @Override
     public int hashCode() {
-        return this.id.hashCode();
+        return id.hashCode();
     }
 
 }

@@ -40,9 +40,9 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
      */
     public VariableAssignmentToMatcher(Matcher<String> typeMatcher, Matcher<String> varNameMatcher,
         Matcher<String> valueMatcher) {
-        this.type = typeMatcher;
-        this.varName = varNameMatcher;
-        this.value = valueMatcher;
+        type = typeMatcher;
+        varName = varNameMatcher;
+        value = valueMatcher;
     }
 
     /**
@@ -51,8 +51,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
      */
     @Override
     public void describeTo(Description description) {
-        description.appendText(MatcherTo.class.getSimpleName() + "(type='" + this.type + "', varName='"
-            + this.varName + "', value='" + this.value + "')");
+        description.appendText(MatcherTo.class.getSimpleName() + "(type='" + type + "', varName='" + varName
+            + "', value='" + value + "')");
     }
 
     /**
@@ -62,9 +62,9 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
     @Override
     public boolean matches(Object item) {
         if (item instanceof VariableAssignmentTo) {
-            return this.type != null && this.type.matches(((VariableAssignmentTo) item).getType())
-                && this.varName != null && this.varName.matches(((VariableAssignmentTo) item).getVarName())
-                && this.value != null && this.value.matches(((VariableAssignmentTo) item).getValue());
+            return type != null && type.matches(((VariableAssignmentTo) item).getType()) && varName != null
+                && varName.matches(((VariableAssignmentTo) item).getVarName()) && value != null
+                && value.matches(((VariableAssignmentTo) item).getValue());
         }
         return false;
     }
@@ -75,7 +75,7 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
      */
     @Override
     public void describeMismatch(Object item, Description mismatchDescription) {
-        if (this.type == null || this.value == null || this.varName == null) {
+        if (type == null || value == null || varName == null) {
             mismatchDescription
                 .appendText("One of the parameter matcher has been null. Please use AnyOf matchers instead.");
             return;
@@ -85,11 +85,11 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
 
         mismatchDescription
             .appendText("VariableAssignmentTo does not match!\nShould be VariableAssignmentTo(");
-        this.type.describeTo(mismatchDescription);
+        type.describeTo(mismatchDescription);
         mismatchDescription.appendText(", ");
-        this.varName.describeTo(mismatchDescription);
+        varName.describeTo(mismatchDescription);
         mismatchDescription.appendText(", ");
-        this.value.describeTo(mismatchDescription);
+        value.describeTo(mismatchDescription);
         mismatchDescription.appendText(")\nWas       VariableAssignmentTo('" + varAssignTo.getType() + "', '"
             + varAssignTo.getVarName() + "', '" + varAssignTo.getValue() + "')");
     }

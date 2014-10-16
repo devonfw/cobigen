@@ -40,7 +40,7 @@ import com.capgemini.cobigen.util.ExceptionUtil;
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and
  * converts the information to the working entities
- * 
+ *
  * @author mbrunnli (11.03.2013)
  */
 public class TemplatesConfigurationReader {
@@ -68,7 +68,7 @@ public class TemplatesConfigurationReader {
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
      * configuration file
-     * 
+     *
      * @param file
      *            configuration file
      * @throws InvalidConfigurationException
@@ -137,7 +137,7 @@ public class TemplatesConfigurationReader {
 
     /**
      * Loads all templates of the static configuration into the local representation
-     * 
+     *
      * @param variables
      *            Map of settings reference
      * @param trigger
@@ -154,7 +154,7 @@ public class TemplatesConfigurationReader {
     public Map<String, Template> loadTemplates(Trigger trigger, Map<String, String> variables)
         throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
-        Map<String, Template> templates = new HashMap<String, Template>();
+        Map<String, Template> templates = new HashMap<>();
         PathExpressionResolver expressionResolver = new PathExpressionResolver(variables);
 
         for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
@@ -173,7 +173,7 @@ public class TemplatesConfigurationReader {
 
     /**
      * Loads all increments of the static configuration into the local representation
-     * 
+     *
      * @return the mapping of increment id's to the corresponding {@link Increment}
      * @param templates
      *            {@link Map} of all templates (see
@@ -187,7 +187,7 @@ public class TemplatesConfigurationReader {
     public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
         throws InvalidConfigurationException {
 
-        Map<String, Increment> generationIncrements = new HashMap<String, Increment>();
+        Map<String, Increment> generationIncrements = new HashMap<>();
         Increments increments = configNode.getIncrements();
         if (increments != null) {
             for (com.capgemini.Increment source : increments.getIncrement()) {
@@ -204,7 +204,7 @@ public class TemplatesConfigurationReader {
 
     /**
      * Adds all templates defined within the increment and sub increments recursively
-     * 
+     *
      * @param rootTarget
      *            the {@link Increment} on which the templates should be added
      * @param current
@@ -248,7 +248,7 @@ public class TemplatesConfigurationReader {
 
     /**
      * Returns the {@link com.capgemini.Increment} for the given {@link IncrementRef}
-     * 
+     *
      * @param source
      *            {@link IncrementRef}
      * @return the referenced {@link com.capgemini.Increment}
@@ -263,7 +263,6 @@ public class TemplatesConfigurationReader {
             xPathContext = JXPathContext.newContext(configNode);
         }
         // declare namespace s='http://capgemini.com';
-        @SuppressWarnings("unchecked")
         Iterator<com.capgemini.Increment> it =
             xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
 

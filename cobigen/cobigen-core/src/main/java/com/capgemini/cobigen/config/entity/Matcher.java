@@ -52,7 +52,7 @@ public class Matcher extends AbstractMatcher {
      * @author mbrunnli (08.04.2014)
      */
     public List<VariableAssignment> getVariableAssignments() {
-        return this.variableAssignments;
+        return variableAssignments;
     }
 
 }
