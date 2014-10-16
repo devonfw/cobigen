@@ -26,6 +26,7 @@ import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.google.common.collect.ImmutableMap;
@@ -103,7 +104,7 @@ public class ContainerMatcherTest {
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContextVariableResolvingForContainerMatches() throws IOException {
+    public void testContextVariableResolving() throws IOException {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
@@ -125,7 +126,7 @@ public class ContainerMatcherTest {
      * @author mbrunnli (16.10.2014)
      */
     @Test
-    public void testContextVariableResolvingForContainerMatchesOnGeneration() throws Exception {
+    public void testContextVariableResolvingOnGeneration() throws Exception {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
         File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
@@ -142,7 +143,34 @@ public class ContainerMatcherTest {
         target.generate(containerInput, templates.get(0), false);
     }
 
+    @Test
+    public void testGetAllIncrements() throws Exception {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true, true);
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+
+        // Execution
+        List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
+
+        // Verification
+        Assert.assertNotNull(increments);
+        Assert.assertEquals(1, increments.size());
+    }
+
     // ######################### PRIVATE ##############################
+
+    /**
+     * calls {@link #createTestDataAndConfigureMock(boolean, boolean)
+     * createTestDataAndConfigureMock(containerChildMatchesTrigger, false)}
+     * @author mbrunnli (16.10.2014)
+     */
+    @SuppressWarnings("javadoc")
+    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
+        return createTestDataAndConfigureMock(containerChildMatchesTrigger, false);
+    }
 
     /**
      * Creates simple to debug test data, which includes on container object and one child of the container
@@ -151,11 +179,14 @@ public class ContainerMatcherTest {
      * directly registered in the {@link PluginRegistry}.
      * @param containerChildMatchesTrigger
      *            defines whether the child of the container input should match any non-container matcher
+     * @param multipleContainerChildren
+     *            defines whether the container should contain multiple children
      * @return the container as input for generation interpreter for
      * @author mbrunnli (16.10.2014)
      */
     @SuppressWarnings("unchecked")
-    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
+    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,
+        boolean multipleContainerChildren) {
         // we only need any objects for inputs to have a unique object reference to affect the mocked method
         // calls as intended
         Object container = new Object() {
@@ -188,8 +219,19 @@ public class ContainerMatcherTest {
 
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-            Lists.newArrayList(firstChildResource));
+        if (multipleContainerChildren) {
+            Object secondChildResource = new Object() {
+                @Override
+                public String toString() {
+                    return "child2";
+                }
+            };
+            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
+                Lists.newArrayList(firstChildResource, secondChildResource));
+        } else {
+            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
+                Lists.newArrayList(firstChildResource));
+        }
 
         when(
             matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,

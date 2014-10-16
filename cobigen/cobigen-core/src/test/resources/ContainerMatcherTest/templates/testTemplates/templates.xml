@@ -6,4 +6,10 @@
     <template id="t1" destinationPath="${variables.rootPackage}/${variables.entityName}.java" templateFile="TestClassT1.ftl" />
   </templates>
 
+  <increments>
+    <increment id="i1" description="the only increment">
+      <templateRef idref="t1" />
+    </increment>
+  </increments>
+
 </templatesConfiguration>

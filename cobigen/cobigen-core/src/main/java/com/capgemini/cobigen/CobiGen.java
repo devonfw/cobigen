@@ -470,33 +470,19 @@ public class CobiGen {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
 
-            IInputReader inputReader = triggerInterpreter.getInputReader();
-            if (inputReader.combinesMultipleInputObjects(matcherInput)) {
-                List<Object> containerChildren = inputReader.getInputObjects(matcherInput, Charsets.UTF_8);
-                for (Object child : containerChildren) {
-                    TemplatesConfiguration childTemplatesConfiguration =
-                        createTemplatesConfiguration(child, trigger, triggerInterpreter);
-                    if (childTemplatesConfiguration != null) {
-                        templateConfigurations.add(childTemplatesConfiguration);
-                    }
-                }
-            } else {
-                TemplatesConfiguration childTemplatesConfiguration =
-                    createTemplatesConfiguration(matcherInput, trigger, triggerInterpreter);
-                if (childTemplatesConfiguration != null) {
-                    templateConfigurations.add(childTemplatesConfiguration);
-                }
+            TemplatesConfiguration templatesConfiguration =
+                createTemplatesConfiguration(trigger, triggerInterpreter);
+            if (templatesConfiguration != null) {
+                templateConfigurations.add(templatesConfiguration);
             }
         }
         return templateConfigurations;
     }
 
     /**
-     * Creates a new templates configuration while resolving the context variables dependend on the given
+     * Creates a new templates configuration while resolving the context variables dependent on the given
      * input. The context variables will be retrieved from the given {@link Trigger} resp.
      * {@link ITriggerInterpreter trigger interpreter}.
-     * @param input
-     *            to derive the context variables from
      * @param trigger
      *            to get matcher declarations from
      * @param triggerInterpreter
@@ -505,7 +491,7 @@ public class CobiGen {
      *         variables could not be resolved.
      * @author mbrunnli (14.10.2014)
      */
-    private TemplatesConfiguration createTemplatesConfiguration(Object input, Trigger trigger,
+    private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger,
         ITriggerInterpreter triggerInterpreter) {
         File templatesConfigurationFolder =
             new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
