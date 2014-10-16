@@ -20,7 +20,7 @@ import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
  *
  * @author mbrunnli (26.03.2013)
  */
-public class PackagesContentProvider implements ITreePathContentProvider {
+public class SelectIncrementContentProvider implements ITreePathContentProvider {
 
     /**
      * All current root packages
@@ -51,9 +51,9 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof ComparableIncrement[]) {
             rootElements = new LinkedList<>();
-            ComparableIncrement[] rootPackages = (ComparableIncrement[]) inputElement;
-            for (ComparableIncrement pkg : rootPackages) {
-                if (!isChildOfAnyPackage(rootPackages, pkg)) {
+            ComparableIncrement[] rootIncrements = (ComparableIncrement[]) inputElement;
+            for (ComparableIncrement pkg : rootIncrements) {
+                if (!isChildOfAnyIncrement(rootIncrements, pkg)) {
                     rootElements.add(pkg);
                 }
             }
@@ -63,24 +63,24 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     }
 
     /**
-     * Checks whether the given target is child of any other root package recursively
-     * @param rootPackages
-     *            array of all root packages
+     * Checks whether the given target is child of any other root increment recursively
+     * @param rootIncrements
+     *            array of all root increments
      * @param target
      *            element to be checked
-     * @return <code>true</code> if the target package is child any root package<br>
+     * @return <code>true</code> if the target increment is child any root inrement<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (26.03.2013)
      */
-    private boolean isChildOfAnyPackage(ComparableIncrement[] rootPackages, ComparableIncrement target) {
-        for (ComparableIncrement pkg : rootPackages) {
+    private boolean isChildOfAnyIncrement(ComparableIncrement[] rootIncrements, ComparableIncrement target) {
+        for (ComparableIncrement pkg : rootIncrements) {
             Object o = getChildren(pkg);
             if (o instanceof ComparableIncrement[]) {
                 for (ComparableIncrement child : (ComparableIncrement[]) o) {
                     if (target.equals(child)) {
                         return true;
                     }
-                    if (isChildOfAnyPackage(new ComparableIncrement[] { child }, target)) {
+                    if (isChildOfAnyIncrement(new ComparableIncrement[] { child }, target)) {
                         return true;
                     }
                 }
@@ -175,9 +175,9 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     public TreePath[] getAllPaths(Object element) {
         Set<TreePath> paths = new HashSet<>();
         if (element instanceof ComparableIncrement) {
-            for (ComparableIncrement pkg : rootElements) {
-                TreePath path = TreePath.EMPTY.createChildPath(pkg);
-                if (pkg.equals(element)) {
+            for (ComparableIncrement increment : rootElements) {
+                TreePath path = TreePath.EMPTY.createChildPath(increment);
+                if (increment.equals(element)) {
                     paths.add(path);
                 }
                 addTreePaths(element, path, paths, false);
@@ -193,8 +193,8 @@ public class PackagesContentProvider implements ITreePathContentProvider {
      */
     public TreePath[] getAllRootPaths() {
         Set<TreePath> paths = new HashSet<>();
-        for (ComparableIncrement pkg : rootElements) {
-            paths.add(TreePath.EMPTY.createChildPath(pkg));
+        for (ComparableIncrement increment : rootElements) {
+            paths.add(TreePath.EMPTY.createChildPath(increment));
         }
         return paths.toArray(new TreePath[0]);
     }

@@ -114,8 +114,8 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
                 formatSourceCode();
             }
 
-            MessageDialog.openInformation(shell, "Success!", "Contents from "
-                + templatesToBeGenerated.size() + " templates have been generated.");
+            MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
+                + " templates have been generated.");
 
         } catch (MalformedURLException e) {
             // should not occur --> programmatical fault
@@ -214,7 +214,10 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             List<ICompilationUnit> cus = new LinkedList<>();
             for (TemplateTo template : templatesToBeGenerated) {
-                IFile file = root.getFile(proj.getFullPath().append(new Path(template.getDestinationPath())));
+                IFile file =
+                    root.getFile(proj.getFullPath().append(
+                        new Path(template.resolveDestinationPath(javaGeneratorWrapper
+                            .getCurrentRepresentingInput()))));
                 if (file.exists()) {
                     IJavaElement elem = JavaCore.create(file);
                     if (elem instanceof ICompilationUnit) {

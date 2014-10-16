@@ -40,7 +40,7 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
 import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
-import com.capgemini.cobigen.eclipse.wizard.common.model.PackagesContentProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
@@ -66,7 +66,7 @@ public class SelectFilesPage extends WizardPage {
     /**
      * List of generation packages
      */
-    private CheckboxTreeViewer packageSelector;
+    private CheckboxTreeViewer incrementSelector;
 
     /**
      * Container holding the right site of the UI, containing a label and the resources tree
@@ -148,13 +148,13 @@ public class SelectFilesPage extends WizardPage {
         Label label = new Label(containerLeft, SWT.NONE);
         label.setText("Filter (generation packages):");
 
-        packageSelector = new CustomizedCheckboxTreeViewer(containerLeft);
-        packageSelector.setContentProvider(new PackagesContentProvider());
-        packageSelector.setInput(javaGeneratorWrapper.getAllIncrements());
+        incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
+        incrementSelector.setContentProvider(new SelectIncrementContentProvider());
+        incrementSelector.setInput(javaGeneratorWrapper.getAllIncrements());
         gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
-        packageSelector.getTree().setLayoutData(gd);
-        packageSelector.expandAll();
+        incrementSelector.getTree().setLayoutData(gd);
+        incrementSelector.expandAll();
 
         containerRight = new Composite(sash, SWT.FILL);
         containerRight.setLayout(new GridLayout(1, false));
@@ -164,7 +164,7 @@ public class SelectFilesPage extends WizardPage {
 
         CheckStateListener checkListener =
             new CheckStateListener(javaGeneratorWrapper, this, batch);
-        packageSelector.addCheckStateListener(checkListener);
+        incrementSelector.addCheckStateListener(checkListener);
 
         sash.setWeights(new int[] { 1, 3 });
 
@@ -205,7 +205,7 @@ public class SelectFilesPage extends WizardPage {
      */
     public CheckboxTreeViewer getPackageSelector() {
 
-        return packageSelector;
+        return incrementSelector;
     }
 
     /**
@@ -311,7 +311,7 @@ public class SelectFilesPage extends WizardPage {
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
         Set<IncrementTo> selectedIncrements = Sets.newHashSet();
-        for (Object checkedElement : packageSelector.getCheckedElements()) {
+        for (Object checkedElement : incrementSelector.getCheckedElements()) {
             if (checkedElement instanceof IncrementTo) {
                 selectedIncrements.add((IncrementTo) checkedElement);
             }
@@ -352,19 +352,19 @@ public class SelectFilesPage extends WizardPage {
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = packageSelector.getTree().getItems();
+        TreeItem[] items = incrementSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
                 String value =
                     selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    packageSelector.setChecked(element, true);
+                    incrementSelector.setChecked(element, true);
                 }
             } else if (element.getId().equals("all")) {
                 String value = selection.node("All").get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    packageSelector.setChecked(element, true);
+                    incrementSelector.setChecked(element, true);
                 }
             }
         }
@@ -383,7 +383,7 @@ public class SelectFilesPage extends WizardPage {
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = packageSelector.getTree().getItems();
+        TreeItem[] items = incrementSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {

@@ -92,7 +92,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
                 for (IResourceDelta fileDelta : affectedChildren) {
                     if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
-                            generator.reloadConfigurationFromFile();
+                            generator.reloadContextConfigurationFromFile();
                             LOG.info("The CobiGen context.xml has been changed and reloaded.");
                         } catch (IOException e) {
                             LOG.error("Could not read the context.xml.", e);

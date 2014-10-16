@@ -107,7 +107,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
         Set<String> paths = new HashSet<>();
         for (TemplateTo tmp : javaGeneratorWrapper.getAllTemplates()) {
-            paths.add(tmp.getDestinationPath());
+            paths.add(tmp.resolveDestinationPath(javaGeneratorWrapper.getCurrentRepresentingInput()));
         }
         return paths;
     }

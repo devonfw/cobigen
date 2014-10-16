@@ -18,6 +18,7 @@ import java.util.Set;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -39,6 +40,7 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
@@ -273,8 +275,8 @@ public class JavaGeneratorWrapper {
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject()
-            .getLocation().toString());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation()
+            .toString());
     }
 
     /**
@@ -346,8 +348,7 @@ public class JavaGeneratorWrapper {
         } else { // inputTypes != null (invariant)
             // It is ok to only get the matching increments of the first input type as all input types should
             // retrieve the same increments as this is a precondition for generation
-            matchingIncrements =
-                cobiGen.getMatchingIncrements(inputTypes.values().iterator().next());
+            matchingIncrements = cobiGen.getMatchingIncrements(inputTypes.values().iterator().next());
         }
 
         // convert to comparable increments
@@ -477,7 +478,8 @@ public class JavaGeneratorWrapper {
             for (IncrementTo increment : getAllIncrements()) {
                 if (consideredIncrements.contains(increment)) {
                     for (TemplateTo tmp : increment.getTemplates()) {
-                        if (tmp.getDestinationPath().equals(PathUtil.getProjectDependendFilePath(filePath))) {
+                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
+                            PathUtil.getProjectDependendFilePath(filePath))) {
                             templates.add(tmp);
                         }
                     }
@@ -485,7 +487,8 @@ public class JavaGeneratorWrapper {
             }
         } else {
             for (TemplateTo tmp : getAllTemplates()) {
-                if (tmp.getDestinationPath().equals(PathUtil.getProjectDependendFilePath(filePath))) {
+                if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
+                    PathUtil.getProjectDependendFilePath(filePath))) {
                     templates.add(tmp);
                 }
             }
@@ -531,7 +534,8 @@ public class JavaGeneratorWrapper {
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
-                mergeableFiles.add(targetProjet.getFile(t.getDestinationPath()));
+                mergeableFiles.add(targetProjet.getFile(t
+                    .resolveDestinationPath(getCurrentRepresentingInput())));
             }
         }
         return mergeableFiles;
@@ -548,7 +552,7 @@ public class JavaGeneratorWrapper {
         Set<IFile> files = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
-            files.add(targetProjet.getFile(t.getDestinationPath()));
+            files.add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
         }
         return files;
     }
@@ -568,6 +572,22 @@ public class JavaGeneratorWrapper {
             }
         }
         return templates;
+    }
+
+    /**
+     * Returns the currently set input to be generated with
+     * @return the currently set input to be generated with
+     * @author mbrunnli (16.10.2014)
+     */
+    public Object getCurrentRepresentingInput() {
+        if (packageFolder != null) {
+            // not nice but necessary
+            List<Object> packageChildren =
+                new JavaInputReader().getInputObjects(packageFolder, Charsets.UTF_8);
+            return packageChildren.get(0);
+        } else {
+            return inputTypes.values().iterator().next();
+        }
     }
 
 }

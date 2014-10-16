@@ -22,7 +22,7 @@ import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
-import com.capgemini.cobigen.eclipse.wizard.common.model.PackagesContentProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
@@ -142,7 +142,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
 
-        PackagesContentProvider cp = (PackagesContentProvider) packageSelector.getContentProvider();
+        SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
         TreePath[] paths = cp.getAllPaths(event.getElement());
         for (TreePath path : paths) {
             packageSelector.setSubtreeChecked(path, event.getChecked());
@@ -223,7 +223,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         Set<String> paths = new HashSet<>();
         for (TemplateTo tmp : pkg.getTemplates()) {
-            paths.add(tmp.getDestinationPath());
+            paths.add(tmp.resolveDestinationPath(javaGeneratorWrapper.getCurrentRepresentingInput()));
         }
         return paths;
     }
@@ -273,7 +273,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private void setAllChecked(CheckboxTreeViewer packageSelector, boolean checked) {
 
         TreePath[] rootPaths =
-            ((PackagesContentProvider) packageSelector.getContentProvider()).getAllRootPaths();
+            ((SelectIncrementContentProvider) packageSelector.getContentProvider()).getAllRootPaths();
         for (TreePath path : rootPaths) {
             packageSelector.setSubtreeChecked(path, checked);
         }
