@@ -1,6 +1,6 @@
-#Mon Oct 13 12:37:50 CEST 2014
+#Thu Oct 16 11:20:07 CEST 2014
 eclipse.preferences.version=1
-org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*.launch
+org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*.launch,*.ucls,*.useq
 org.eclipse.jdt.core.classpathVariable.ECLIPSE_HOME=${client.env.home}/software/eclipse
 org.eclipse.jdt.core.classpathVariable.FINDBUGS_ANNOTATIONS=${client.env.home}/software/eclipse/plugins/edu.umd.cs.findbugs.plugin.eclipse_2.0.0.20111221/lib/annotations.jar
 org.eclipse.jdt.core.classpathVariable.GENERIC_00=
