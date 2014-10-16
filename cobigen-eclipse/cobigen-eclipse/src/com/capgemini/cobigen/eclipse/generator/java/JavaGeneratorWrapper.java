@@ -340,14 +340,23 @@ public class JavaGeneratorWrapper {
     public ComparableIncrement[] getAllIncrements() {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
-        // It is ok to only get the matching increments of the first input type as all input types should
-        // retrieve the same increments as this is a precondition for generation
-        for (IncrementTo increment : this.cobiGen.getMatchingIncrements(this.inputTypes.values().iterator()
-            .next())) {
+        List<IncrementTo> matchingIncrements;
+        if (this.packageFolder != null) {
+            matchingIncrements = this.cobiGen.getMatchingIncrements(this.packageFolder);
+        } else { // inputTypes != null (invariant)
+            // It is ok to only get the matching increments of the first input type as all input types should
+            // retrieve the same increments as this is a precondition for generation
+            matchingIncrements =
+                this.cobiGen.getMatchingIncrements(this.inputTypes.values().iterator().next());
+        }
+
+        // convert to comparable increments
+        for (IncrementTo increment : matchingIncrements) {
             result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment
                 .getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
         }
 
+        // add "all" increment, which should include all possible templates
         ComparableIncrement all =
             new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
                 Lists.<IncrementTo> newLinkedList());

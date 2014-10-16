@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,7 +59,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     /**
      * Initializes the {@link JavaGeneratorWrapper}
      *
-     * @param inputType
+     * @param input
      *            type which should be the source of all information retrieved for the code generation
      * @throws InvalidConfigurationException
      *             if the given configuration does not match the templates.xsd
@@ -79,12 +80,20 @@ public abstract class AbstractGenerateWizard extends Wizard {
      *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
-    protected void initializeWizard(IType inputType) throws IOException, InvalidConfigurationException,
+    protected void initializeWizard(IJavaElement input) throws IOException, InvalidConfigurationException,
         UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
         ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        this.javaGeneratorWrapper = new JavaGeneratorWrapper(inputType);
-        this.javaGeneratorWrapper.setGenerationTargetProject(inputType.getJavaProject().getProject());
+        this.javaGeneratorWrapper = new JavaGeneratorWrapper();
+
+        if (input instanceof IType)
+            this.javaGeneratorWrapper.setInputType((IType) input);
+        else if (input instanceof IPackageFragment)
+            this.javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
+
+        this.javaGeneratorWrapper.setGenerationTargetProject(input.getJavaProject().getProject());
+
+        this.page1 = new SelectFilesPage(this.javaGeneratorWrapper, false);
     }
 
     /**
