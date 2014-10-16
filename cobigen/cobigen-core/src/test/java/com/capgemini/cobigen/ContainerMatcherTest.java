@@ -46,40 +46,15 @@ public class ContainerMatcherTest {
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testContainerMatcherDoesNotMatchWithoutMatcher() throws IOException {
 
-        // we only need any objects for inputs to have a unique object reference to affect the mocked method
-        // calls as intended
-        Object input = new Object();
-        Object firstChildResource = new Object();
-
-        // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
-
-        when(triggerInterpreter.getType()).thenReturn("java");
-        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
-        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
-
-        when(inputReader.isValidInput(any())).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input)))))
-            .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(input)))))
-            .thenReturn(true);
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-            Lists.newArrayList(firstChildResource));
-        when(
-            matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
-                sameInstance(firstChildResource))))).thenReturn(false);
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(false);
 
         // Execution
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
-
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = new CobiGen(templatesFolder);
-        List<String> matchingTriggerIds = target.getMatchingTriggerIds(input);
+        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
         Assert.assertNotNull(matchingTriggerIds);
@@ -94,40 +69,15 @@ public class ContainerMatcherTest {
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testContainerMatcherMatches() throws IOException {
 
-        // we only need any objects for inputs to have a unique object reference to affect the mocked method
-        // calls as intended
-        Object input = new Object();
-        Object firstChildResource = new Object();
-
-        // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
-
-        when(triggerInterpreter.getType()).thenReturn("java");
-        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
-        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
-
-        when(inputReader.isValidInput(any())).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input)))))
-            .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(input)))))
-            .thenReturn(true);
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-            Lists.newArrayList(firstChildResource));
-        when(
-            matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
-                sameInstance(firstChildResource))))).thenReturn(true);
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
 
         // Execution
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
-
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = new CobiGen(templatesFolder);
-        List<String> matchingTriggerIds = target.getMatchingTriggerIds(input);
+        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
         Assert.assertNotNull(matchingTriggerIds);
@@ -143,8 +93,35 @@ public class ContainerMatcherTest {
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void testContextVariableResolvingForContainerMatches() throws IOException {
+
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
+
+        // Execution
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
+
+        // Verification
+        Assert.assertNotNull(matchingTemplates);
+        Assert.assertEquals(1, matchingTemplates.size());
+    }
+
+    // ######################### PRIVATE ##############################
+
+    /**
+     * Creates simple to debug test data, which includes on container object and one child of the container
+     * object. A {@link ITriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
+     * classes to mock a simple java trigger interpreter. Furthermore, the mocked trigger interpreter will be
+     * directly registered in the {@link PluginRegistry}.
+     * @param containerChildMatchesTrigger
+     *            defines whether the child of the container input should match any non-container matcher
+     * @return the container as input for generation interpreter for
+     * @author mbrunnli (16.10.2014)
+     */
+    @SuppressWarnings("unchecked")
+    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
         // we only need any objects for inputs to have a unique object reference to affect the mocked method
         // calls as intended
         Object container = new Object() {
@@ -174,6 +151,7 @@ public class ContainerMatcherTest {
             .thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
             .thenReturn(true);
+
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
         when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
@@ -181,7 +159,8 @@ public class ContainerMatcherTest {
 
         when(
             matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
-                sameInstance(firstChildResource))))).thenReturn(true);
+                sameInstance(firstChildResource))))).thenReturn(containerChildMatchesTrigger);
+
         // Simulate variable resolving of any plug-in
         when(
             matcher.resolveVariables(
@@ -194,15 +173,8 @@ public class ContainerMatcherTest {
                 ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
                     .put("entityName", "Test").build());
 
-        // Execution
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
-        List<TemplateTo> matchingTemplates = target.getMatchingTemplates(container);
-
-        // Verification
-        Assert.assertNotNull(matchingTemplates);
-        Assert.assertEquals(1, matchingTemplates.size());
+        return container;
     }
 }
