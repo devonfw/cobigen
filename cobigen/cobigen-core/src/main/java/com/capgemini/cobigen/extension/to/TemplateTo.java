@@ -3,51 +3,47 @@
  */
 package com.capgemini.cobigen.extension.to;
 
+import com.capgemini.cobigen.config.entity.AbstractTemplateResolver;
+import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.extension.ITriggerInterpreter;
+
 /**
- * 
+ *
  * The transfer object for templates
  * @author mbrunnli (09.04.2014)
  */
-public class TemplateTo {
+public class TemplateTo extends AbstractTemplateResolver {
 
     /**
      * Id of the template
      */
-    protected String id;
-
-    /**
-     * Relative path for the result.
-     */
-    protected String destinationPath;
+    private String id;
 
     /**
      * Determines the required strategy to merge the template
      */
-    protected String mergeStrategy;
-
-    /**
-     * The trigger's id the template is assigned to
-     */
-    protected String triggerId;
+    private String mergeStrategy;
 
     /**
      * Creates a new templates transfer object with the given properties
-     * 
+     *
      * @param id
      *            of the template
-     * @param destinationPath
+     * @param unresolvedDestinationPath
      *            the generated resources should be generated to
      * @param mergeStrategy
      *            merge strategy the generated sources can be merged with
-     * @param triggerId
+     * @param trigger
      *            the template is assigned to
+     * @param triggerInterpreter
+     *            used interpreter of the trigger
      * @author mbrunnli (09.04.2014)
      */
-    public TemplateTo(String id, String destinationPath, String mergeStrategy, String triggerId) {
+    public TemplateTo(String id, String unresolvedDestinationPath, String mergeStrategy, Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) {
+        super(unresolvedDestinationPath, trigger, triggerInterpreter);
         this.id = id;
-        this.destinationPath = destinationPath;
         this.mergeStrategy = mergeStrategy;
-        this.triggerId = triggerId;
     }
 
     /**
@@ -57,15 +53,6 @@ public class TemplateTo {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Returns the destination path the generated resources should be generated to
-     * @return the destination path
-     * @author mbrunnli (09.04.2014)
-     */
-    public String getDestinationPath() {
-        return destinationPath;
     }
 
     /**
@@ -83,7 +70,7 @@ public class TemplateTo {
      * @author mbrunnli (09.04.2014)
      */
     public String getTriggerId() {
-        return triggerId;
+        return getTrigger().getId();
     }
 
     /**

@@ -30,11 +30,11 @@ import com.capgemini.TemplatesConfiguration;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.util.ExceptionUtil;
 
 /**
@@ -138,10 +138,10 @@ public class TemplatesConfigurationReader {
     /**
      * Loads all templates of the static configuration into the local representation
      *
-     * @param variables
-     *            Map of settings reference
      * @param trigger
      *            {@link Trigger} for which the templates should be loaded
+     * @param triggerInterpreter
+     *            {@link ITriggerInterpreter} the trigger has been interpreted with
      * @return the mapping of template id's to the corresponding {@link Template}
      * @throws UnknownContextVariableException
      *             if the destination path contains an undefined context variable
@@ -151,14 +151,11 @@ public class TemplatesConfigurationReader {
      *             if there are multiple templates with the same id
      * @author mbrunnli (06.02.2013) edited by trippl (07.03.2013)
      */
-    public Map<String, Template> loadTemplates(Trigger trigger, Map<String, String> variables)
+    public Map<String, Template> loadTemplates(Trigger trigger, ITriggerInterpreter triggerInterpreter)
         throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         Map<String, Template> templates = new HashMap<>();
-        PathExpressionResolver expressionResolver = new PathExpressionResolver(variables);
-
         for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
-            expressionResolver.checkExpressions(t.getDestinationPath());
             if (templates.get(t.getId()) != null) {
                 throw new InvalidConfigurationException(configFile,
                     "Multiple template definitions found for idRef='" + t.getId() + "'");
@@ -166,7 +163,7 @@ public class TemplatesConfigurationReader {
             templates.put(
                 t.getId(),
                 new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
-                    .getTargetCharset(), expressionResolver, trigger));
+                    .getTargetCharset(), trigger, triggerInterpreter));
         }
         return templates;
     }
@@ -177,7 +174,7 @@ public class TemplatesConfigurationReader {
      * @return the mapping of increment id's to the corresponding {@link Increment}
      * @param templates
      *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
      * @param trigger
      *            {@link Trigger} for which the templates should be loaded
      * @throws InvalidConfigurationException
@@ -211,7 +208,7 @@ public class TemplatesConfigurationReader {
      *            the source {@link com.capgemini.Increment} from which to retrieve the data
      * @param templates
      *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, Map)}
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
      * @param generationIncrements
      *            {@link Map} of all retrieved increments
      * @throws InvalidConfigurationException

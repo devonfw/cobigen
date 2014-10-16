@@ -3,14 +3,14 @@
  ******************************************************************************/
 package com.capgemini.cobigen.config.entity;
 
-import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.extension.ITriggerInterpreter;
 
 /**
  * Storage class for template data provided within the config.xml
  * @author trippl (07.03.2013)
- * 
+ *
  */
-public class Template {
+public class Template extends AbstractTemplateResolver {
 
     /**
      * Identifies the {@link Template}.
@@ -18,19 +18,9 @@ public class Template {
     private String id;
 
     /**
-     * Relative path for the result.
-     */
-    private String destinationPath;
-
-    /**
      * Relative path to the template file.
      */
     private String templateFile;
-
-    /**
-     * {@link PathExpressionResolver} for resolving the destination path variables
-     */
-    private PathExpressionResolver expressionResolver;
 
     /**
      * Determines the required strategy to merge the {@link Template}
@@ -41,11 +31,6 @@ public class Template {
      * Charset of the target file
      */
     private String targetCharset;
-
-    /**
-     * {@link Trigger} the template is dependent on
-     */
-    private Trigger trigger;
 
     /**
      * Creates a new {@link Template} for the given data
@@ -59,20 +44,18 @@ public class Template {
      *            for the template
      * @param outputCharset
      *            output charset for the generated contents
-     * @param expressionResolver
-     *            {@link PathExpressionResolver} to resolve the destination paths
      * @param trigger
      *            {@link Trigger} the template is dependent on
+     * @param triggerInterpreter
+     *            {@link ITriggerInterpreter} the trigger has been interpreted with
      */
     public Template(String id, String destinationPath, String templateFile, String mergeStrategy,
-        String outputCharset, PathExpressionResolver expressionResolver, Trigger trigger) {
+        String outputCharset, Trigger trigger, ITriggerInterpreter triggerInterpreter) {
+        super(destinationPath, trigger, triggerInterpreter);
         this.id = id;
-        this.destinationPath = destinationPath;
         this.templateFile = templateFile;
-        this.expressionResolver = expressionResolver;
         this.mergeStrategy = mergeStrategy;
         targetCharset = outputCharset;
-        this.trigger = trigger;
     }
 
     /**
@@ -82,15 +65,6 @@ public class Template {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Returns the {@link Template}'s {@link #destinationPath}
-     * @return the destination path
-     * @author trippl (07.03.2013)
-     */
-    public String getDestinationPath() {
-        return expressionResolver.evaluateExpressions(destinationPath);
     }
 
     /**
@@ -118,14 +92,5 @@ public class Template {
      */
     public String getTargetCharset() {
         return targetCharset;
-    }
-
-    /**
-     * Returns the {@link Trigger} the template is dependent on
-     * @return the {@link Trigger} the template is dependent on
-     * @author mbrunnli (05.04.2013)
-     */
-    public Trigger getTrigger() {
-        return trigger;
     }
 }

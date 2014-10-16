@@ -38,7 +38,6 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.capgemini.cobigen.model.ContextVariableResolver;
 import com.capgemini.cobigen.model.JaxenXPathSupportNodeModel;
 import com.capgemini.cobigen.model.ModelBuilder;
 import com.capgemini.cobigen.model.ModelConverter;
@@ -223,7 +222,6 @@ public class CobiGen {
         }
 
         Template templateIntern = getTemplate(template, triggerInterpreter, input);
-
         for (Object targetInput : inputObjects) {
             Document model;
             if (rawModel == null) {
@@ -233,7 +231,7 @@ public class CobiGen {
             } else {
                 model = new ModelConverter(rawModel).convertToDOM();
             }
-            File originalFile = getDestinationFile(templateIntern.getDestinationPath());
+            File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
             LOG.info("Generating template '{}' with input '{}' ...", templateIntern.getId(), targetInput);
 
@@ -335,7 +333,7 @@ public class CobiGen {
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
-                templatesConfiguration.getTrigger()));
+                templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
         return increments;
     }
@@ -349,20 +347,25 @@ public class CobiGen {
      * @param trigger
      *            the parent {@link Trigger}
      * @return the {@link List} of {@link IncrementTo}s
+     * @param triggerInterpreter
+     *            {@link ITriggerInterpreter} the trigger has been interpreted with
      * @author mbrunnli (10.04.2014)
      */
     // TODO create ToConverter
-    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger) {
+    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getId(), template.getDestinationPath(), template
-                    .getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getId(), template.getUnresolvedDestinationPath(),
+                    template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos.add(new IncrementTo(increment.getId(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
+            incrementTos
+                .add(new IncrementTo(increment.getId(), increment.getDescription(), trigger.getId(),
+                    templates, convertIncrements(increment.getDependentIncrements(), trigger,
+                        triggerInterpreter)));
         }
         return incrementTos;
     }
@@ -443,8 +446,9 @@ public class CobiGen {
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
-                templates.add(new TemplateTo(template.getId(), template.getDestinationPath(), template
-                    .getMergeStrategy(), template.getTrigger().getId()));
+                templates.add(new TemplateTo(template.getId(), template.getUnresolvedDestinationPath(),
+                    template.getMergeStrategy(), templatesConfiguration.getTrigger(), templatesConfiguration
+                        .getTriggerInterpreter()));
             }
         }
         return templates;
@@ -503,18 +507,10 @@ public class CobiGen {
      */
     private TemplatesConfiguration createTemplatesConfiguration(Object input, Trigger trigger,
         ITriggerInterpreter triggerInterpreter) {
-        Map<String, String> variables;
-        try {
-            variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        } catch (Throwable e) {
-            LOG.error("The TriggerInterpreter for type '{}' exited abruptly.", triggerInterpreter.getType(),
-                e);
-            return null;
-        }
         File templatesConfigurationFolder =
             new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
                 + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-        return new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables);
+        return new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
     }
 
     /**
@@ -536,14 +532,12 @@ public class CobiGen {
         Object matcherInput) throws InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
-        Map<String, String> variables =
-            new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter);
         File templatesConfigurationFolder =
             new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
                 + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
 
         TemplatesConfiguration tConfig =
-            new TemplatesConfiguration(templatesConfigurationFolder, trigger, variables);
+            new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
             throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
