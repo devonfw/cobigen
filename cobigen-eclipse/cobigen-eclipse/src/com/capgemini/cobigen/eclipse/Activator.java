@@ -67,6 +67,7 @@ public class Activator extends AbstractUIPlugin {
      * {@inheritDoc}
      * @author mbrunnli (14.02.2013)
      */
+    @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
@@ -99,8 +100,9 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     public void startSelectionServiceListener() {
-        if (selectionServiceListenerStarted)
+        if (selectionServiceListenerStarted) {
             return;
+        }
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -139,8 +141,9 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     public void stopSelectionServiceListener() {
-        if (!selectionServiceListenerStarted)
+        if (!selectionServiceListenerStarted) {
             return;
+        }
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
@@ -155,6 +158,7 @@ public class Activator extends AbstractUIPlugin {
      * {@inheritDoc}
      * @author mbrunnli (14.02.2013)
      */
+    @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;
         super.stop(context);

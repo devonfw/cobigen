@@ -85,8 +85,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     @Override
     public void checkStateChanged(CheckStateChangedEvent event) {
 
-        CheckboxTreeViewer resourcesTree = this.page.getResourcesTree();
-        CheckboxTreeViewer packageSelector = this.page.getPackageSelector();
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        CheckboxTreeViewer packageSelector = page.getPackageSelector();
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider()).setCheckedResources(resourcesTree
@@ -102,7 +102,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             resourcesTree.setCheckedElements(new Object[0]);
             resourcesTree.refresh();
             resourcesTree.expandAll();
-            if (!this.batch) {
+            if (!batch) {
                 setSimulatedResourcesChecked();
                 setMergeableResourcesChecked();
             } else {
@@ -121,11 +121,11 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void checkPageComplete() {
 
-        CheckboxTreeViewer resourcesTree = this.page.getResourcesTree();
-        if (this.page.isSetRememberSelection() || resourcesTree.getCheckedElements().length > 0) {
-            this.page.setPageComplete(true);
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        if (page.isSetRememberSelection() || resourcesTree.getCheckedElements().length > 0) {
+            page.setPageComplete(true);
         } else {
-            this.page.setPageComplete(false);
+            page.setPageComplete(false);
         }
     }
 
@@ -182,10 +182,10 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         if (event.getElement() instanceof Object[]) {
             for (Object o : (Object[]) event.getElement()) {
-                this.page.getResourcesTree().refresh(o);
+                page.getResourcesTree().refresh(o);
             }
         } else {
-            this.page.getResourcesTree().refresh(event.getElement());
+            page.getResourcesTree().refresh(event.getElement());
         }
     }
 
@@ -198,11 +198,11 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private Set<String> getSelectedGenerationPaths() {
 
         Set<String> paths = new HashSet<>();
-        for (Object o : this.lastCheckedIncrements) {
+        for (Object o : lastCheckedIncrements) {
             if (o instanceof ComparableIncrement) {
                 ComparableIncrement pkg = ((ComparableIncrement) o);
                 paths.addAll(PathUtil.createWorkspaceRelativePaths(
-                    this.javaGeneratorWrapper.getGenerationTargetProject(), getDestinationPaths(pkg)));
+                    javaGeneratorWrapper.getGenerationTargetProject(), getDestinationPaths(pkg)));
                 if (pkg.getId().equals("all")) {
                     break;
                 }
@@ -241,23 +241,23 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         Set<Object> checkedElements) {
 
         Set<Object> addedDiff = new HashSet<>(checkedElements);
-        Set<Object> removedDiff = new HashSet<>(this.lastCheckedIncrements);
-        addedDiff.removeAll(this.lastCheckedIncrements);
+        Set<Object> removedDiff = new HashSet<>(lastCheckedIncrements);
+        addedDiff.removeAll(lastCheckedIncrements);
         removedDiff.removeAll(checkedElements);
         ComparableIncrement all =
             new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
                 Lists.<IncrementTo> newLinkedList());
-        if (!this.lastCheckedIncrements.contains(all) && addedDiff.contains(all)) {
+        if (!lastCheckedIncrements.contains(all) && addedDiff.contains(all)) {
             selectAllPackages(packageSelector);
-        } else if (this.lastCheckedIncrements.contains(all) && removedDiff.contains(all)) {
+        } else if (lastCheckedIncrements.contains(all) && removedDiff.contains(all)) {
             setAllChecked(packageSelector, false);
-            this.lastCheckedIncrements.clear();
+            lastCheckedIncrements.clear();
         } else if (!removedDiff.isEmpty()) {
-            this.lastCheckedIncrements = checkedElements;
-            this.lastCheckedIncrements.remove(all);
+            lastCheckedIncrements = checkedElements;
+            lastCheckedIncrements.remove(all);
             packageSelector.setChecked(all, false);
         } else {
-            this.lastCheckedIncrements = checkedElements;
+            lastCheckedIncrements = checkedElements;
         }
     }
 
@@ -289,7 +289,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private void selectAllPackages(CheckboxTreeViewer incrementSelector) {
 
         setAllChecked(incrementSelector, true);
-        this.lastCheckedIncrements = new HashSet<>(Arrays.asList((Object[]) incrementSelector.getInput()));
+        lastCheckedIncrements = new HashSet<>(Arrays.asList((Object[]) incrementSelector.getInput()));
     }
 
     /**
@@ -299,7 +299,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void setSimulatedResourcesChecked() {
 
-        CheckboxTreeViewer resourcesTree = this.page.getResourcesTree();
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         LinkedList<Object> worklist =
             Lists
                 .newLinkedList(Arrays.asList(((SelectFileContentProvider) resourcesTree.getContentProvider())
@@ -322,8 +322,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void setMergeableResourcesChecked() {
 
-        CheckboxTreeViewer resourcesTree = this.page.getResourcesTree();
-        for (IFile file : this.javaGeneratorWrapper.getMergeableFiles()) {
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        for (IFile file : javaGeneratorWrapper.getMergeableFiles()) {
             Object mergableTreeObject =
                 ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(file
                     .getFullPath().toString());
@@ -340,8 +340,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void setAllResourcesChecked() {
 
-        CheckboxTreeViewer resourcesTree = this.page.getResourcesTree();
-        for (IFile f : this.javaGeneratorWrapper.getAllFiles()) {
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        for (IFile f : javaGeneratorWrapper.getAllFiles()) {
             Object treeObject =
                 ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(f
                     .getFullPath().toString());

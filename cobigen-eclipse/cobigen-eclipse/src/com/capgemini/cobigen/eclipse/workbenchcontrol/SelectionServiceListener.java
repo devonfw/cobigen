@@ -81,13 +81,13 @@ public class SelectionServiceListener implements ISelectionListener {
         ISourceProviderService isps =
             (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
                 ISourceProviderService.class);
-        this.sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
+        sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
         IProject generatorConfProj = ConfigResources.getGeneratorConfigurationProject();
-        this.cobiGen = new CobiGen(generatorConfProj.getLocation().toFile());
+        cobiGen = new CobiGen(generatorConfProj.getLocation().toFile());
         // TODO check if needed as every time there will be a new instance of the generator
         ResourcesPlugin.getWorkspace().addResourceChangeListener(
-            new ConfigurationRCL(generatorConfProj, this.cobiGen), IResourceChangeEvent.POST_CHANGE);
+            new ConfigurationRCL(generatorConfProj, cobiGen), IResourceChangeEvent.POST_CHANGE);
     }
 
     /**
@@ -100,9 +100,9 @@ public class SelectionServiceListener implements ISelectionListener {
 
         if (part instanceof PackageExplorerPart && selection instanceof IStructuredSelection) {
             if (isValidInput((IStructuredSelection) selection)) {
-                this.sp.setVariable(SourceProvider.VALID_INPUT, true);
+                sp.setVariable(SourceProvider.VALID_INPUT, true);
             } else {
-                this.sp.setVariable(SourceProvider.VALID_INPUT, false);
+                sp.setVariable(SourceProvider.VALID_INPUT, false);
             }
         }
     }
@@ -133,12 +133,14 @@ public class SelectionServiceListener implements ISelectionListener {
                 if (firstTriggers == null) {
                     firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
                 } else {
-                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) return false;
+                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
+                        return false;
+                    }
                 }
             } else if (tmp instanceof IPackageFragment) {
                 if (firstTriggers == null) {
                     firstTriggers =
-                        this.cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
+                        cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
                             .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
                     packageFragmentSelected = true;
                 } else {
@@ -167,7 +169,7 @@ public class SelectionServiceListener implements ISelectionListener {
         try {
             classLoader = ClassLoaderUtil.getProjectClassLoader(cu.getJavaProject());
             type = JavaModelUtil.getJavaClassType(cu);
-            return this.cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
+            return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
             LOG.error("Error while retrieving the project's ('{}') classloader", cu.getJavaProject()
                 .getElementName(), e);

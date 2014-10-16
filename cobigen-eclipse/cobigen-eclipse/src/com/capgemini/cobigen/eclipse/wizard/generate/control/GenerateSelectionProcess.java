@@ -49,14 +49,14 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
 
-        final IProject proj = this.javaGeneratorWrapper.getGenerationTargetProject();
+        final IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
-            monitor.beginTask("Generate files...", this.templatesToBeGenerated.size());
-            for (TemplateTo template : this.templatesToBeGenerated) {
+            monitor.beginTask("Generate files...", templatesToBeGenerated.size());
+            for (TemplateTo template : templatesToBeGenerated) {
                 if (template.getMergeStrategy() == null) {
-                    this.javaGeneratorWrapper.generate(template, true);
+                    javaGeneratorWrapper.generate(template, true);
                 } else {
-                    this.javaGeneratorWrapper.generate(template, false);
+                    javaGeneratorWrapper.generate(template, false);
                 }
                 monitor.worked(1);
             }

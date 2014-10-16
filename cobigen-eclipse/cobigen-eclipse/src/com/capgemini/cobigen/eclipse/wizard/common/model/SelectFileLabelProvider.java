@@ -155,8 +155,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     @Override
     public Color getBackground(Object element) {
 
-        if (this.checkedResources.contains(element)) {
-            if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !this.batch) {
+        if (checkedResources.contains(element)) {
+            if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !batch) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
                 if (isMergableFile(element)) {
@@ -188,7 +188,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         }
 
         // boundary case: multiple templates target one path, which are not mergable... does not make sense
-        List<TemplateTo> templates = this.javaGeneratorWrapper.getTemplatesForFilePath(path, null);
+        List<TemplateTo> templates = javaGeneratorWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
             if (path != null && template.getMergeStrategy() != null) {
                 return true;
@@ -221,14 +221,14 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      */
     private String addMetaInformation(Object element, String result) {
 
-        if (this.checkedResources.contains(element)) {
+        if (checkedResources.contains(element)) {
             if (element instanceof IJavaElementStub || element instanceof IResourceStub) {
                 result += " (new)";
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
                 if (isMergableFile(element)) {
-                    result += this.batch ? " (create/merge)" : " (merge)";
+                    result += batch ? " (create/merge)" : " (merge)";
                 } else {
-                    result += this.batch ? " (create/override)" : " (override)";
+                    result += batch ? " (create/override)" : " (override)";
                 }
             }
         }

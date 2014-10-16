@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -147,32 +148,32 @@ public class SelectFilesPage extends WizardPage {
         Label label = new Label(containerLeft, SWT.NONE);
         label.setText("Filter (generation packages):");
 
-        this.packageSelector = new CustomizedCheckboxTreeViewer(containerLeft);
-        this.packageSelector.setContentProvider(new PackagesContentProvider());
-        this.packageSelector.setInput(this.javaGeneratorWrapper.getAllIncrements());
+        packageSelector = new CustomizedCheckboxTreeViewer(containerLeft);
+        packageSelector.setContentProvider(new PackagesContentProvider());
+        packageSelector.setInput(javaGeneratorWrapper.getAllIncrements());
         gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
-        this.packageSelector.getTree().setLayoutData(gd);
-        this.packageSelector.expandAll();
+        packageSelector.getTree().setLayoutData(gd);
+        packageSelector.expandAll();
 
-        this.containerRight = new Composite(sash, SWT.FILL);
-        this.containerRight.setLayout(new GridLayout(1, false));
+        containerRight = new Composite(sash, SWT.FILL);
+        containerRight.setLayout(new GridLayout(1, false));
 
         boolean initiallyCustomizable = false;
         buildResourceTreeViewer(initiallyCustomizable);
 
         CheckStateListener checkListener =
-            new CheckStateListener(this.javaGeneratorWrapper, this, this.batch);
-        this.packageSelector.addCheckStateListener(checkListener);
+            new CheckStateListener(javaGeneratorWrapper, this, batch);
+        packageSelector.addCheckStateListener(checkListener);
 
         sash.setWeights(new int[] { 1, 3 });
 
-        this.rememberSelection = new Button(container, SWT.CHECK);
-        this.rememberSelection.setText("Remember my selection");
+        rememberSelection = new Button(container, SWT.CHECK);
+        rememberSelection.setText("Remember my selection");
         gd = new GridData();
         gd.horizontalAlignment = SWT.BEGINNING;
-        this.rememberSelection.setLayoutData(gd);
-        this.rememberSelection.addSelectionListener(checkListener);
+        rememberSelection.setLayoutData(gd);
+        rememberSelection.addSelectionListener(checkListener);
 
         Button but = new Button(container, SWT.PUSH);
         but.setText("Customize");
@@ -193,7 +194,7 @@ public class SelectFilesPage extends WizardPage {
      */
     public CheckboxTreeViewer getResourcesTree() {
 
-        return this.resourcesTree;
+        return resourcesTree;
     }
 
     /**
@@ -204,7 +205,7 @@ public class SelectFilesPage extends WizardPage {
      */
     public CheckboxTreeViewer getPackageSelector() {
 
-        return this.packageSelector;
+        return packageSelector;
     }
 
     /**
@@ -214,7 +215,7 @@ public class SelectFilesPage extends WizardPage {
      */
     private void disposeContainerRightChildren() {
 
-        for (Control c : this.containerRight.getChildren()) {
+        for (Control c : containerRight.getChildren()) {
             c.dispose();
         }
     }
@@ -231,42 +232,42 @@ public class SelectFilesPage extends WizardPage {
         IContentProvider cp;
         IBaseLabelProvider lp;
         Object[] checkedElements;
-        if (this.resourcesTree != null) {
-            cp = this.resourcesTree.getContentProvider();
-            lp = this.resourcesTree.getLabelProvider();
-            checkedElements = this.resourcesTree.getCheckedElements();
+        if (resourcesTree != null) {
+            cp = resourcesTree.getContentProvider();
+            lp = resourcesTree.getLabelProvider();
+            checkedElements = resourcesTree.getCheckedElements();
         } else {
             cp = new SelectFileContentProvider();
-            lp = new SelectFileLabelProvider(this.javaGeneratorWrapper, this.batch);
+            lp = new SelectFileLabelProvider(javaGeneratorWrapper, batch);
             checkedElements = new Object[0];
         }
 
         disposeContainerRightChildren();
 
-        Label label = new Label(this.containerRight, SWT.NONE);
+        Label label = new Label(containerRight, SWT.NONE);
         label.setText("Resources to be generated (selected):");
 
         if (customizable) {
-            this.resourcesTree = new CustomizedCheckboxTreeViewer(this.containerRight);
+            resourcesTree = new CustomizedCheckboxTreeViewer(containerRight);
         } else {
-            this.resourcesTree = new SimulatedCheckboxTreeViewer(this.containerRight);
+            resourcesTree = new SimulatedCheckboxTreeViewer(containerRight);
         }
 
-        this.resourcesTree.setContentProvider(cp);
-        this.resourcesTree.setLabelProvider(lp);
-        this.resourcesTree
-            .setInput(new IProject[] { this.javaGeneratorWrapper.getGenerationTargetProject() });
-        this.resourcesTree.expandToLevel(TreeViewer.ALL_LEVELS);
+        resourcesTree.setContentProvider(cp);
+        resourcesTree.setLabelProvider(lp);
+        resourcesTree
+            .setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
+        resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;
         gd.grabExcessVerticalSpace = true;
-        this.resourcesTree.getTree().setLayoutData(gd);
+        resourcesTree.getTree().setLayoutData(gd);
 
-        CheckStateListener listener = new CheckStateListener(this.javaGeneratorWrapper, this, this.batch);
-        this.resourcesTree.addCheckStateListener(listener);
-        this.resourcesTree.setCheckedElements(checkedElements);
+        CheckStateListener listener = new CheckStateListener(javaGeneratorWrapper, this, batch);
+        resourcesTree.addCheckStateListener(listener);
+        resourcesTree.setCheckedElements(checkedElements);
 
-        this.containerRight.layout();
+        containerRight.layout();
     }
 
     /**
@@ -277,7 +278,7 @@ public class SelectFilesPage extends WizardPage {
     @Override
     public boolean canFlipToNextPage() {
 
-        return this.resourcesTree.getCheckedElements().length > 0;
+        return resourcesTree.getCheckedElements().length > 0;
     }
 
     /**
@@ -289,7 +290,7 @@ public class SelectFilesPage extends WizardPage {
     public Set<String> getFilePathsToBeGenerated() {
 
         Set<String> filesToBeGenerated = new HashSet<>();
-        Object[] checkedElements = this.resourcesTree.getCheckedElements();
+        Object[] checkedElements = resourcesTree.getCheckedElements();
         for (Object e : checkedElements) {
             if (e instanceof IJavaElement) {
                 filesToBeGenerated.add(((IJavaElement) e).getPath().toString());
@@ -310,13 +311,15 @@ public class SelectFilesPage extends WizardPage {
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
         Set<IncrementTo> selectedIncrements = Sets.newHashSet();
-        for (Object checkedElement : this.packageSelector.getCheckedElements()) {
-            if (checkedElement instanceof IncrementTo) selectedIncrements.add((IncrementTo) checkedElement);
+        for (Object checkedElement : packageSelector.getCheckedElements()) {
+            if (checkedElement instanceof IncrementTo) {
+                selectedIncrements.add((IncrementTo) checkedElement);
+            }
         }
 
         List<TemplateTo> templates = Lists.newLinkedList();
         for (String path : getFilePathsToBeGenerated()) {
-            templates.addAll(this.javaGeneratorWrapper.getTemplatesForFilePath(path, selectedIncrements));
+            templates.addAll(javaGeneratorWrapper.getTemplatesForFilePath(path, selectedIncrements));
         }
         return templates;
     }
@@ -330,7 +333,7 @@ public class SelectFilesPage extends WizardPage {
     public List<Object> getSelectedResources() {
 
         List<Object> selectedResources = new LinkedList<>();
-        Object[] checkedElements = this.resourcesTree.getCheckedElements();
+        Object[] checkedElements = resourcesTree.getCheckedElements();
         for (Object e : checkedElements) {
             if (e instanceof IJavaElement || e instanceof IResource) {
                 selectedResources.add(e);
@@ -349,19 +352,19 @@ public class SelectFilesPage extends WizardPage {
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = this.packageSelector.getTree().getItems();
+        TreeItem[] items = packageSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
                 String value =
                     selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    this.packageSelector.setChecked(element, true);
+                    packageSelector.setChecked(element, true);
                 }
             } else if (element.getId().equals("all")) {
                 String value = selection.node("All").get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    this.packageSelector.setChecked(element, true);
+                    packageSelector.setChecked(element, true);
                 }
             }
         }
@@ -374,12 +377,13 @@ public class SelectFilesPage extends WizardPage {
      */
     public void saveSelection() {
 
-        if (!this.rememberSelection.getSelection()) // only save Selection if intended
+        if (!rememberSelection.getSelection()) {
             return;
+        }
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = this.packageSelector.getTree().getItems();
+        TreeItem[] items = packageSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
@@ -413,8 +417,8 @@ public class SelectFilesPage extends WizardPage {
      */
     public boolean isSetRememberSelection() {
 
-        if (this.rememberSelection != null) {
-            return this.rememberSelection.getSelection();
+        if (rememberSelection != null) {
+            return rememberSelection.getSelection();
         }
         return false;
     }

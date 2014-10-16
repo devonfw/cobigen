@@ -35,7 +35,7 @@ public class ButtonListener implements Listener {
      * @author mbrunnli (12.03.2013)
      */
     public ButtonListener(boolean initiallyCustomizable, SelectFilesPage page) {
-        this.isCustomizable = initiallyCustomizable;
+        isCustomizable = initiallyCustomizable;
         this.page = page;
     }
 

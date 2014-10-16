@@ -277,7 +277,7 @@ public class IResourceStub implements IResource {
     @Override
     public IPath getFullPath() {
 
-        return this.fullPath;
+        return fullPath;
     }
 
     /**
@@ -343,10 +343,11 @@ public class IResourceStub implements IResource {
     @Override
     public String getName() {
 
-        if (this.fullPath != null)
-            return this.fullPath.lastSegment();
-        else
+        if (fullPath != null) {
+            return fullPath.lastSegment();
+        } else {
             return null;
+        }
     }
 
     /**
@@ -845,7 +846,9 @@ public class IResourceStub implements IResource {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null) return false;
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof IResource) {
             return ((IResource) obj).getFullPath().equals(getFullPath());
         }

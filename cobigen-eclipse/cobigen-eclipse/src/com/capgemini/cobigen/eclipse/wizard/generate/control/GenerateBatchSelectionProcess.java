@@ -81,36 +81,38 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
 
-        if (this.inputTypes != null && this.inputTypes.size() == 0 && this.container == null) return false;
+        if (inputTypes != null && inputTypes.size() == 0 && container == null) {
+            return false;
+        }
 
-        final IProject proj = this.javaGeneratorWrapper.getGenerationTargetProject();
+        final IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
-            if (this.inputTypes != null) {
-                monitor.beginTask("Generate files ", this.templatesToBeGenerated.size());
-                for (TemplateTo temp : this.templatesToBeGenerated) {
+            if (inputTypes != null) {
+                monitor.beginTask("Generate files ", templatesToBeGenerated.size());
+                for (TemplateTo temp : templatesToBeGenerated) {
                     if (temp.getMergeStrategy() == null) {
-                        this.javaGeneratorWrapper.generate(temp, true);
+                        javaGeneratorWrapper.generate(temp, true);
                     } else {
-                        this.javaGeneratorWrapper.generate(temp, false);
+                        javaGeneratorWrapper.generate(temp, false);
                     }
                     monitor.worked(1);
                 }
-            } else if (this.container != null) {
-                this.javaGeneratorWrapper.setInputPackage(this.container);
-                monitor.beginTask("Generate files for " + this.container.getElementName() + "...",
-                    this.templatesToBeGenerated.size());
-                for (TemplateTo temp : this.templatesToBeGenerated) {
+            } else if (container != null) {
+                javaGeneratorWrapper.setInputPackage(container);
+                monitor.beginTask("Generate files for " + container.getElementName() + "...",
+                    templatesToBeGenerated.size());
+                for (TemplateTo temp : templatesToBeGenerated) {
                     TemplateTo t =
-                        this.javaGeneratorWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
+                        javaGeneratorWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
                     if (t.getMergeStrategy() == null) {
-                        this.javaGeneratorWrapper.generate(t, true);
+                        javaGeneratorWrapper.generate(t, true);
                     } else {
-                        this.javaGeneratorWrapper.generate(t, false);
+                        javaGeneratorWrapper.generate(t, false);
                     }
                 }
                 monitor.worked(1);
             } else {
-                this.LOG
+                LOG
                     .error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
             }
             return true;

@@ -68,10 +68,10 @@ public class ConfigurationRCL implements IResourceChangeListener {
 
         this.generatorConfProj = generatorConfProj;
         this.generator = generator;
-        this.contextXmlFile = generatorConfProj.getFile("context.xml");
-        this.logbackXmlFile = generatorConfProj.getFile("logback.xml");
+        contextXmlFile = generatorConfProj.getFile("context.xml");
+        logbackXmlFile = generatorConfProj.getFile("logback.xml");
         try {
-            loadLogbackConfiguration(this.logbackXmlFile.getRawLocation().toString());
+            loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
         } catch (IOException | JoranException e) {
             LOG.error("Logback file could not be read or written.", e);
         }
@@ -87,12 +87,12 @@ public class ConfigurationRCL implements IResourceChangeListener {
 
         IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
         for (IResourceDelta projDelta : affectedProjects) {
-            if (projDelta.getResource().equals(this.generatorConfProj)) {
+            if (projDelta.getResource().equals(generatorConfProj)) {
                 IResourceDelta[] affectedChildren = projDelta.getAffectedChildren(IResourceDelta.CHANGED);
                 for (IResourceDelta fileDelta : affectedChildren) {
-                    if (fileDelta.getResource().equals(this.contextXmlFile)) {
+                    if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
-                            this.generator.reloadConfigurationFromFile();
+                            generator.reloadConfigurationFromFile();
                             LOG.info("The CobiGen context.xml has been changed and reloaded.");
                         } catch (IOException e) {
                             LOG.error("Could not read the context.xml.", e);
@@ -104,9 +104,9 @@ public class ConfigurationRCL implements IResourceChangeListener {
                                 "The context.xml of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
                                 e);
                         }
-                    } else if (fileDelta.getResource().equals(this.logbackXmlFile)) {
+                    } else if (fileDelta.getResource().equals(logbackXmlFile)) {
                         try {
-                            loadLogbackConfiguration(this.logbackXmlFile.getRawLocation().toString());
+                            loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
                             LOG.info("The Logback logback.xml has been changed and reloaded.");
                         } catch (IOException e) {
                             LOG.error("Unable to read config file", e);

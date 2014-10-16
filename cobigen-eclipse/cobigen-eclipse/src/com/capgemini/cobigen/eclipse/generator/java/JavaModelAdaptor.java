@@ -49,7 +49,7 @@ public class JavaModelAdaptor {
     public void addAttributesDescription(IType type) throws JavaModelException {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> attributes =
-            (List<Map<String, String>>) ((Map<String, Object>) this.model.get("pojo")).get("attributes");
+            (List<Map<String, String>>) ((Map<String, Object>) model.get("pojo")).get("attributes");
         Iterator<Map<String, String>> it = attributes.iterator();
         Map<String, String> currentAttr;
         while (it.hasNext()) {
@@ -91,7 +91,7 @@ public class JavaModelAdaptor {
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> pojo = (Map<String, Object>) this.model.get("pojo");
+        Map<String, Object> pojo = (Map<String, Object>) model.get("pojo");
         pojo.put("methods", methods);
     }
 

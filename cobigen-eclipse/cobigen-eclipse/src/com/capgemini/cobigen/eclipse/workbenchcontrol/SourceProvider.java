@@ -25,7 +25,7 @@ public class SourceProvider extends AbstractSourceProvider {
      * @author mbrunnli (15.02.2013)
      */
     public SourceProvider() {
-        this.map.put(VALID_INPUT, false);
+        map.put(VALID_INPUT, false);
     }
 
     /**
@@ -39,7 +39,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public void dispose() {
-        this.map.clear();
+        map.clear();
     }
 
     /**
@@ -48,7 +48,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public Map<String, Boolean> getCurrentState() {
-        return this.map;
+        return map;
     }
 
     /**
@@ -57,7 +57,7 @@ public class SourceProvider extends AbstractSourceProvider {
      */
     @Override
     public String[] getProvidedSourceNames() {
-        return this.map.keySet().toArray(new String[0]);
+        return map.keySet().toArray(new String[0]);
     }
 
     /**
@@ -69,9 +69,9 @@ public class SourceProvider extends AbstractSourceProvider {
      * @author mbrunnli (15.02.2013)
      */
     public void setVariable(String variable, boolean b) {
-        if (this.map.get(variable) != b) {
-            this.map.put(variable, b);
-            fireSourceChanged(0, this.map);
+        if (map.get(variable) != b) {
+            map.put(variable, b);
+            fireSourceChanged(0, map);
         }
     }
 

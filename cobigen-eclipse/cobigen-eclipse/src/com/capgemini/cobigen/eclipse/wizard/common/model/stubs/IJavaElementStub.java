@@ -169,7 +169,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public String getElementName() {
 
-        return this.elementName;
+        return elementName;
     }
 
     /**
@@ -180,7 +180,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public int getElementType() {
 
-        return this.elementType;
+        return elementType;
     }
 
     /**
@@ -213,7 +213,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public IJavaProject getJavaProject() {
 
-        return this.parent.getJavaProject();
+        return parent.getJavaProject();
     }
 
     /**
@@ -235,7 +235,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public IJavaElement getParent() {
 
-        return this.parent;
+        return parent;
     }
 
     /**
@@ -246,7 +246,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public IPath getPath() {
 
-        return this.path;
+        return path;
     }
 
     /**
@@ -323,7 +323,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public IJavaElement[] getChildren() throws JavaModelException {
 
-        return this.children;
+        return children;
     }
 
     /**
@@ -334,7 +334,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public boolean hasChildren() throws JavaModelException {
 
-        return this.children != null && this.children.length > 0;
+        return children != null && children.length > 0;
     }
 
     /**
@@ -345,7 +345,7 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public String toString() {
 
-        return getClass().getSimpleName() + "[" + this.elementName + "]";
+        return getClass().getSimpleName() + "[" + elementName + "]";
     }
 
     /**
@@ -356,16 +356,20 @@ public class IJavaElementStub implements IParent, IJavaElement {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null) return false;
-        if (obj instanceof IJavaElementStub)
-            if (getPath() == null ^ ((IJavaElementStub) obj).getPath() == null)
-                return false;
-            else if (getPath() == null)
-                return true;
-            else
-                return ((IJavaElementStub) obj).getPath().equals(getPath());
-        else
+        if (obj == null) {
             return false;
+        }
+        if (obj instanceof IJavaElementStub) {
+            if (getPath() == null ^ ((IJavaElementStub) obj).getPath() == null) {
+                return false;
+            } else if (getPath() == null) {
+                return true;
+            } else {
+                return ((IJavaElementStub) obj).getPath().equals(getPath());
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -377,8 +381,8 @@ public class IJavaElementStub implements IParent, IJavaElement {
     public int hashCode() {
 
         int hash = 0;
-        if (this.path != null) {
-            hash ^= this.path.toString().hashCode();
+        if (path != null) {
+            hash ^= path.toString().hashCode();
         }
         return hash;
     }

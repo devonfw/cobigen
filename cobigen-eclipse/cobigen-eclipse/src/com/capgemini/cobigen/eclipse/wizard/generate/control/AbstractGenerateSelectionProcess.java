@@ -94,15 +94,18 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 
-        if (this.templatesToBeGenerated.size() == 0) return;
+        if (templatesToBeGenerated.size() == 0) {
+            return;
+        }
 
         try {
             boolean anyResults = performGeneration(monitor);
 
             if (anyResults) {
-                IProject proj = this.javaGeneratorWrapper.getGenerationTargetProject();
-                if (proj != null)
+                IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
+                if (proj != null) {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                }
 
                 monitor.setTaskName("Organize Imports...");
                 organizeImports();
@@ -111,36 +114,36 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
                 formatSourceCode();
             }
 
-            MessageDialog.openInformation(this.shell, "Success!", "Contents from "
-                + this.templatesToBeGenerated.size() + " templates have been generated.");
+            MessageDialog.openInformation(shell, "Success!", "Contents from "
+                + templatesToBeGenerated.size() + " templates have been generated.");
 
         } catch (MalformedURLException e) {
             // should not occur --> programmatical fault
-            MessageDialog.openError(this.shell, "Malformed URL Exception", e.getMessage());
-            this.LOG.error("Malformed URL Exception", e);
+            MessageDialog.openError(shell, "Malformed URL Exception", e.getMessage());
+            LOG.error("Malformed URL Exception", e);
         } catch (CoreException e) {
-            MessageDialog.openError(this.shell, "Eclipse internal Exception", e.getMessage());
-            this.LOG.error("Eclipse internal Exception", e);
+            MessageDialog.openError(shell, "Eclipse internal Exception", e.getMessage());
+            LOG.error("Eclipse internal Exception", e);
         } catch (TemplateException e) {
-            MessageDialog.openError(this.shell, "Template Exception",
+            MessageDialog.openError(shell, "Template Exception",
                 e.getMessage() + "\n" + e.getFTLInstructionStack());
-            this.LOG.error("Template Exception", e);
+            LOG.error("Template Exception", e);
         } catch (IOException e) {
-            MessageDialog.openError(this.shell, "IO Exception", e.getMessage());
-            this.LOG.error("IO Exception", e);
+            MessageDialog.openError(shell, "IO Exception", e.getMessage());
+            LOG.error("IO Exception", e);
         } catch (TransformerException e) {
-            MessageDialog.openError(this.shell, "Transformer Exception", e.getMessage());
-            this.LOG.error("Transforer Exception", e);
+            MessageDialog.openError(shell, "Transformer Exception", e.getMessage());
+            LOG.error("Transforer Exception", e);
         } catch (SAXException e) {
-            MessageDialog.openError(this.shell, "SAX Exception", e.getMessage());
-            this.LOG.error("SAX Exception", e);
+            MessageDialog.openError(shell, "SAX Exception", e.getMessage());
+            LOG.error("SAX Exception", e);
         } catch (PluginProcessingException e) {
-            MessageDialog.openError(this.shell, "Plug-in Processing Exception",
+            MessageDialog.openError(shell, "Plug-in Processing Exception",
                 "A plug-in caused an unhandled exception:\n" + e.getMessage());
-            this.LOG.error("A plug-in caused an unhandled exception:\n" + e.getMessage(), e);
+            LOG.error("A plug-in caused an unhandled exception:\n" + e.getMessage(), e);
         } catch (Throwable e) {
-            MessageDialog.openError(this.shell, "Unknown Exception", e.getMessage());
-            this.LOG.error("Unknown Exception", e);
+            MessageDialog.openError(shell, "Unknown Exception", e.getMessage());
+            LOG.error("Unknown Exception", e);
         }
         monitor.done();
     }
@@ -206,11 +209,11 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      */
     private ICompilationUnit[] getGeneratedCompilationUnits() {
 
-        IProject proj = this.javaGeneratorWrapper.getGenerationTargetProject();
+        IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             List<ICompilationUnit> cus = new LinkedList<>();
-            for (TemplateTo template : this.templatesToBeGenerated) {
+            for (TemplateTo template : templatesToBeGenerated) {
                 IFile file = root.getFile(proj.getFullPath().append(new Path(template.getDestinationPath())));
                 if (file.exists()) {
                     IJavaElement elem = JavaCore.create(file);

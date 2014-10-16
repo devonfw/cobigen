@@ -50,14 +50,14 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof ComparableIncrement[]) {
-            this.rootElements = new LinkedList<>();
+            rootElements = new LinkedList<>();
             ComparableIncrement[] rootPackages = (ComparableIncrement[]) inputElement;
             for (ComparableIncrement pkg : rootPackages) {
                 if (!isChildOfAnyPackage(rootPackages, pkg)) {
-                    this.rootElements.add(pkg);
+                    rootElements.add(pkg);
                 }
             }
-            return this.rootElements.toArray();
+            return rootElements.toArray();
         }
         return new Object[0];
     }
@@ -133,7 +133,7 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     public TreePath[] getParents(Object element) {
         Set<TreePath> parents = new HashSet<>();
         if (element instanceof ComparableIncrement) {
-            for (ComparableIncrement pkg : this.rootElements) {
+            for (ComparableIncrement pkg : rootElements) {
                 if (pkg.equals(element)) {
                     parents.add(TreePath.EMPTY);
                 }
@@ -175,7 +175,7 @@ public class PackagesContentProvider implements ITreePathContentProvider {
     public TreePath[] getAllPaths(Object element) {
         Set<TreePath> paths = new HashSet<>();
         if (element instanceof ComparableIncrement) {
-            for (ComparableIncrement pkg : this.rootElements) {
+            for (ComparableIncrement pkg : rootElements) {
                 TreePath path = TreePath.EMPTY.createChildPath(pkg);
                 if (pkg.equals(element)) {
                     paths.add(path);
@@ -193,7 +193,7 @@ public class PackagesContentProvider implements ITreePathContentProvider {
      */
     public TreePath[] getAllRootPaths() {
         Set<TreePath> paths = new HashSet<>();
-        for (ComparableIncrement pkg : this.rootElements) {
+        for (ComparableIncrement pkg : rootElements) {
             paths.add(TreePath.EMPTY.createChildPath(pkg));
         }
         return paths.toArray(new TreePath[0]);

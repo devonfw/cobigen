@@ -135,7 +135,9 @@ public class HierarchicalTreeOperator {
     private static IPackageFragment fold(IPackageFragment frag, List<Object> stubbedResources)
         throws JavaModelException {
 
-        if (_cachedFoldings.containsKey(frag)) return _cachedFoldings.get(frag);
+        if (_cachedFoldings.containsKey(frag)) {
+            return _cachedFoldings.get(frag);
+        }
 
         IPackageFragment curr = frag;
         Set<IPackageFragment> packageChildren = new HashSet<>(getPackageChildren(frag, stubbedResources));
@@ -182,7 +184,9 @@ public class HierarchicalTreeOperator {
     private static List<IPackageFragment> getStubbedAtomicPackageChildren(IPackageFragment parent,
         List<Object> stubbedResources) throws JavaModelException {
 
-        if (stubbedResources == null) return Lists.newArrayList();
+        if (stubbedResources == null) {
+            return Lists.newArrayList();
+        }
 
         List<IPackageFragment> stubbedPackages = Lists.newLinkedList();
         for (Object child : stubbedResources) {
@@ -191,8 +195,9 @@ public class HierarchicalTreeOperator {
                 if (childPackagePath.toString().startsWith(parent.getPath().toString())
                     && !childPackagePath.equals(parent.getPath())) {
                     childPackagePath = childPackagePath.removeFirstSegments(parent.getPath().segmentCount());
-                    if (!childPackagePath.toString().contains("/")) // check if the child package is atomic
+                    if (!childPackagePath.toString().contains("/")) {
                         stubbedPackages.add(fold((IPackageFragment) child, stubbedResources));
+                    }
                 }
             }
         }
@@ -222,7 +227,9 @@ public class HierarchicalTreeOperator {
                     packageBuilder.append(fragNameFragments[j]);
                     packageBuilder.append(".");
                 }
-                if (packageBuilder.length() > 0) packageBuilder.deleteCharAt(packageBuilder.length() - 1);
+                if (packageBuilder.length() > 0) {
+                    packageBuilder.deleteCharAt(packageBuilder.length() - 1);
+                }
 
                 // assumption: all packages have been seen during first phase providing the contents. This
                 // method will

@@ -84,16 +84,17 @@ public abstract class AbstractGenerateWizard extends Wizard {
         UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
         ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        this.javaGeneratorWrapper = new JavaGeneratorWrapper();
+        javaGeneratorWrapper = new JavaGeneratorWrapper();
 
-        if (input instanceof IType)
-            this.javaGeneratorWrapper.setInputType((IType) input);
-        else if (input instanceof IPackageFragment)
-            this.javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
+        if (input instanceof IType) {
+            javaGeneratorWrapper.setInputType((IType) input);
+        } else if (input instanceof IPackageFragment) {
+            javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
+        }
 
-        this.javaGeneratorWrapper.setGenerationTargetProject(input.getJavaProject().getProject());
+        javaGeneratorWrapper.setGenerationTargetProject(input.getJavaProject().getProject());
 
-        this.page1 = new SelectFilesPage(this.javaGeneratorWrapper, false);
+        page1 = new SelectFilesPage(javaGeneratorWrapper, false);
     }
 
     /**
@@ -105,7 +106,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     public Set<String> getAllGenerationPaths() {
 
         Set<String> paths = new HashSet<>();
-        for (TemplateTo tmp : this.javaGeneratorWrapper.getAllTemplates()) {
+        for (TemplateTo tmp : javaGeneratorWrapper.getAllTemplates()) {
             paths.add(tmp.getDestinationPath());
         }
         return paths;
@@ -125,7 +126,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             return false;
         }
 
-        this.page1.saveSelection();
+        page1.saveSelection();
         generateContents(dialog);
 
         return true;
@@ -150,7 +151,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     private boolean userConfirmed() {
 
-        List<Object> diff = this.page1.getSelectedResources();
+        List<Object> diff = page1.getSelectedResources();
 
         // Delete simulated resources
         Iterator<Object> it = diff.iterator();
@@ -161,7 +162,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             }
         }
         // Delete mergable files
-        Set<IFile> mergableFiles = this.javaGeneratorWrapper.getMergeableFiles();
+        Set<IFile> mergableFiles = javaGeneratorWrapper.getMergeableFiles();
         it = diff.iterator();
         while (it.hasNext()) {
             Object r = it.next();

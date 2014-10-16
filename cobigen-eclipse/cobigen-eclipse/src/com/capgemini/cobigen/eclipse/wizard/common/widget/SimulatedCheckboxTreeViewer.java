@@ -43,7 +43,7 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
      */
     @Override
     public void setCheckedElements(Object[] elements) {
-        this.checkedElements = new HashSet<>(Arrays.asList(elements));
+        checkedElements = new HashSet<>(Arrays.asList(elements));
         fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
     }
 
@@ -54,7 +54,7 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
      */
     @Override
     public Object[] getCheckedElements() {
-        return this.checkedElements.toArray();
+        return checkedElements.toArray();
     }
 
     /**
@@ -65,13 +65,13 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
     public boolean setChecked(Object element, boolean state) {
         if (state) {
             if (isVisible(element)) {
-                this.checkedElements.add(element);
+                checkedElements.add(element);
                 fireCheckStateChanged(new CheckStateChangedEvent(this, element, state));
             } else {
-                this.checkedElements.remove(element);
+                checkedElements.remove(element);
             }
         } else {
-            this.checkedElements.remove(element);
+            checkedElements.remove(element);
             fireCheckStateChanged(new CheckStateChangedEvent(this, element, state));
         }
         return true;

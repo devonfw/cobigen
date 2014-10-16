@@ -86,7 +86,7 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         GeneratorProjectNotExistentException {
 
         super();
-        this.javaGeneratorWrapper = new JavaGeneratorWrapper();
+        javaGeneratorWrapper = new JavaGeneratorWrapper();
         extractInput(selection);
         initializeWizard();
         setWindowTitle("CobiGen (batch mode)");
@@ -118,13 +118,13 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         InvalidConfigurationException, UnknownTemplateException, ClassNotFoundException, IOException,
         CoreException, GeneratorProjectNotExistentException {
 
-        if (this.inputTypes != null) {
-            super.initializeWizard(this.inputTypes.get(0));
+        if (inputTypes != null) {
+            super.initializeWizard(inputTypes.get(0));
         } else {
-            super.initializeWizard(this.container);
+            super.initializeWizard(container);
         }
 
-        this.page1
+        page1
             .setMessage(
                 "You are running a generation in batch mode!\n"
                     + "The shown target files are based on the first input of your selection. "
@@ -153,25 +153,27 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             Object next = it.next();
             if (next instanceof ICompilationUnit) {
                 IType type = JavaModelUtil.getJavaClassType((ICompilationUnit) next);
-                if (this.inputTypes == null) {
-                    this.inputTypes = new ArrayList<>();
+                if (inputTypes == null) {
+                    inputTypes = new ArrayList<>();
                 }
-                this.inputTypes.add(type);
+                inputTypes.add(type);
             } else if (next instanceof IPackageFragment) {
-                if (this.container != null)
+                if (container != null) {
                     throw new NotImplementedException(
                         "If you see this message please contact one of the developers of CobiGen.");
-                this.container = (IPackageFragment) next;
+                }
+                container = (IPackageFragment) next;
             }
         }
-        if (this.inputTypes != null) {
-            this.javaGeneratorWrapper.setInputTypes(this.inputTypes);
-        } else if (this.container != null) {
-            this.javaGeneratorWrapper.setInputPackage(this.container);
-        } else if (this.container != null && this.inputTypes != null || this.container == null
-            && this.inputTypes == null)
+        if (inputTypes != null) {
+            javaGeneratorWrapper.setInputTypes(inputTypes);
+        } else if (container != null) {
+            javaGeneratorWrapper.setInputPackage(container);
+        } else if (container != null && inputTypes != null || container == null
+            && inputTypes == null) {
             throw new NotImplementedException(
                 "If you see this message please contact one of the developers of CobiGen.");
+        }
     }
 
     /**
@@ -182,7 +184,7 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     @Override
     public void addPages() {
 
-        addPage(this.page1);
+        addPage(page1);
     }
 
     /**
@@ -195,21 +197,21 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
 
-        List<TemplateTo> templatesToBeGenerated = this.page1.getTemplatesToBeGenerated();
+        List<TemplateTo> templatesToBeGenerated = page1.getTemplatesToBeGenerated();
         List<String> templateIds = Lists.newLinkedList();
         for (TemplateTo template : templatesToBeGenerated) {
             templateIds.add(template.getId());
         }
 
         GenerateBatchSelectionProcess job;
-        if (this.container == null) {
+        if (container == null) {
             job =
-                new GenerateBatchSelectionProcess(getShell(), this.javaGeneratorWrapper,
-                    this.javaGeneratorWrapper.getTemplates(templateIds), this.inputTypes);
+                new GenerateBatchSelectionProcess(getShell(), javaGeneratorWrapper,
+                    javaGeneratorWrapper.getTemplates(templateIds), inputTypes);
         } else {
             job =
-                new GenerateBatchSelectionProcess(getShell(), this.javaGeneratorWrapper,
-                    this.javaGeneratorWrapper.getTemplates(templateIds), this.container);
+                new GenerateBatchSelectionProcess(getShell(), javaGeneratorWrapper,
+                    javaGeneratorWrapper.getTemplates(templateIds), container);
         }
         try {
             dialog.run(false, false, job);

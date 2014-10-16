@@ -81,9 +81,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     public void filter(Set<String> paths) {
 
-        this.filteredPaths = new HashSet<>(paths);
-        this._cachedChildren.clear();
-        this._cachedProvidedResources.clear();
+        filteredPaths = new HashSet<>(paths);
+        _cachedChildren.clear();
+        _cachedProvidedResources.clear();
         HierarchicalTreeOperator.resetCache();
     }
 
@@ -101,7 +101,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             IJavaProject jProj = JavaCore.create(((IProject[]) inputElement)[0]);
             if (jProj != null) {
                 try {
-                    this._cachedPackageFragmentRoots = jProj.getPackageFragmentRoots();
+                    _cachedPackageFragmentRoots = jProj.getPackageFragmentRoots();
                 } catch (JavaModelException e) {
                     // Ignore (only usablility issue)
                     LOG.error(
@@ -128,8 +128,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
             // check cache
             String key = ((IContainer) parentElement).getFullPath().toString();
-            if (this._cachedChildren.containsKey(key)) {
-                return this._cachedChildren.get(key);
+            if (_cachedChildren.containsKey(key)) {
+                return _cachedChildren.get(key);
             }
 
             try {
@@ -140,7 +140,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
                 // Add all non existent but targeting resources using Mocks
                 affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
-                this._cachedChildren.put(((IContainer) parentElement).getFullPath().toString(),
+                _cachedChildren.put(((IContainer) parentElement).getFullPath().toString(),
                     affectedChildren.toArray());
                 return affectedChildren.toArray();
             } catch (CoreException e) {
@@ -151,8 +151,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
             // check cache
             String key = ((IJavaElement) parentElement).getPath().toString();
-            if (this._cachedChildren.containsKey(key)) {
-                return this._cachedChildren.get(key);
+            if (_cachedChildren.containsKey(key)) {
+                return _cachedChildren.get(key);
             }
 
             try {
@@ -171,7 +171,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                             (IPackageFragment) parentElement, stubbedChildren));
                         // add non-package children
                         for (Object stub : stubbedChildren) {
-                            if (stub instanceof ICompilationUnitStub) children.add(stub);
+                            if (stub instanceof ICompilationUnitStub) {
+                                children.add(stub);
+                            }
                         }
                     }
                 } else if (parentElement instanceof IParent && !(parentElement instanceof ICompilationUnit)) {
@@ -198,7 +200,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 }
 
                 Set<Object> affectedChildrenList = new HashSet<>(Arrays.asList(affectedChildren));
-                this._cachedChildren.put(((IJavaElement) parentElement).getPath().toString(),
+                _cachedChildren.put(((IJavaElement) parentElement).getPath().toString(),
                     affectedChildrenList.toArray());
                 return affectedChildrenList.toArray();
             } catch (CoreException e) {
@@ -254,11 +256,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     IPath p =
                         elementpath.removeFirstSegments(((IJavaElement) parentElement).getPath()
                             .segmentCount());
-                    if (p.segmentCount() != 1)
+                    if (p.segmentCount() != 1) {
                         continue;
-                    else if (this._cachedProvidedResources.containsKey(path)) {
+                    } else if (_cachedProvidedResources.containsKey(path)) {
                         // if already seen, just get it and skip creation
-                        stubbedChildren.add(this._cachedProvidedResources.get(path));
+                        stubbedChildren.add(_cachedProvidedResources.get(path));
                         continue;
                     }
 
@@ -271,11 +273,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 } else {
                     // If path is not within an existing package fragment root, we cannot create packages for
                     // it
-                    if (!isDefinedInSourceFolder(path) || !considerPackages)
+                    if (!isDefinedInSourceFolder(path) || !considerPackages) {
                         continue;
-                    else if (this._cachedProvidedResources.containsKey(path)) {
+                    } else if (_cachedProvidedResources.containsKey(path)) {
                         // if already seen, just get it and skip creation
-                        stubbedChildren.add(this._cachedProvidedResources.get(path));
+                        stubbedChildren.add(_cachedProvidedResources.get(path));
                         continue;
                     }
 
@@ -310,7 +312,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 javaElementStub.setChildren(javaChildren);
 
                 stubbedChildren.add(javaElementStub);
-                this._cachedProvidedResources.put(javaElementStub.getPath().toString(), javaElementStub);
+                _cachedProvidedResources.put(javaElementStub.getPath().toString(), javaElementStub);
                 LOG.debug("Stub created for {} with element name '{}' and path '{}'", debugInfo,
                     javaElementStub.getElementName(), javaElementStub.getPath().toString());
             }
@@ -351,12 +353,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 // If resource already exists, we will continue as we will be called later again with this
                 // folder as
                 // parent
-                if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath))
+                if (ResourcesPlugin.getWorkspace().getRoot().exists(atomicChildPath)) {
                     continue;
-                else if (this._cachedProvidedResources.containsKey(atomicChildPath.toString())) {
+                } else if (_cachedProvidedResources.containsKey(atomicChildPath.toString())) {
                     // if already seen, just get it and skip creation
-                    Object cachedStub = this._cachedProvidedResources.get(atomicChildPath.toString());
-                    if (!stubbedChildren.contains(cachedStub)) stubbedChildren.add(cachedStub);
+                    Object cachedStub = _cachedProvidedResources.get(atomicChildPath.toString());
+                    if (!stubbedChildren.contains(cachedStub)) {
+                        stubbedChildren.add(cachedStub);
+                    }
                     continue;
                 }
 
@@ -370,10 +374,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 resourceStub.setFullPath(atomicChildPath);
             } else if (childPathFragment.segmentCount() == 1) {
 
-                if (this._cachedProvidedResources.containsKey(childPath.toString())) {
+                if (_cachedProvidedResources.containsKey(childPath.toString())) {
                     // if already seen, just get it and skip creation
-                    Object cachedStub = this._cachedProvidedResources.get(childPath.toString());
-                    if (!stubbedChildren.contains(cachedStub)) stubbedChildren.add(cachedStub);
+                    Object cachedStub = _cachedProvidedResources.get(childPath.toString());
+                    if (!stubbedChildren.contains(cachedStub)) {
+                        stubbedChildren.add(cachedStub);
+                    }
                     continue;
                 }
 
@@ -385,12 +391,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     debugInfo = "Folder";
                 }
                 resourceStub.setFullPath(childPath);
-            } else
+            }
+            else {
                 continue; // no child of parentPath
+            }
 
             if (!stubbedChildren.contains(resourceStub)) {
                 stubbedChildren.add(resourceStub);
-                this._cachedProvidedResources.put(resourceStub.getFullPath().toString(), resourceStub);
+                _cachedProvidedResources.put(resourceStub.getFullPath().toString(), resourceStub);
             }
             LOG.debug("Stub created for {} with name '{}' and path '{}'", debugInfo, resourceStub.getName(),
                 resourceStub.getFullPath().toString());
@@ -406,7 +414,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     public Object getProvidedObject(String path) {
 
-        return this._cachedProvidedResources.get(path);
+        return _cachedProvidedResources.get(path);
     }
 
     /**
@@ -442,7 +450,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 // cache is correctly initialized and filled because of the invariant, that getElements will
                 // be called
                 // before getChildren
-                for (IPackageFragmentRoot root : this._cachedPackageFragmentRoots) {
+                for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
                     if (!root.isReadOnly()
                         && child.getPath().toString().startsWith(root.getPath().toString())) {
                         return root;
@@ -480,7 +488,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     private List<String> getNonExistentChildren(IPath parentPath) {
 
         List<String> paths = new LinkedList<>();
-        for (String fp : this.filteredPaths) {
+        for (String fp : filteredPaths) {
             IPath filteredPath = new Path(fp);
             if (parentPath.isPrefixOf(filteredPath)) {
                 filteredPath = filteredPath.removeFirstSegments(parentPath.segmentCount());
@@ -609,10 +617,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         for (Object e : children) {
             if (e instanceof IJavaElement && isElementToBeShown(((IJavaElement) e).getPath())) {
                 affectedChildren.add(e);
-                this._cachedProvidedResources.put(((IJavaElement) e).getPath().toString(), e);
+                _cachedProvidedResources.put(((IJavaElement) e).getPath().toString(), e);
             } else if (e instanceof IResource && isElementToBeShown(((IResource) e).getFullPath())) {
                 affectedChildren.add(e);
-                this._cachedProvidedResources.put(((IResource) e).getFullPath().toString(), e);
+                _cachedProvidedResources.put(((IResource) e).getFullPath().toString(), e);
             }
         }
         return affectedChildren.toArray();
@@ -629,7 +637,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     private boolean isElementToBeShown(IPath fullPath) {
 
-        for (String s : this.filteredPaths) {
+        for (String s : filteredPaths) {
             if (s.startsWith(fullPath.toString())) {
                 return true;
             }
@@ -649,7 +657,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     private boolean isDefinedInSourceFolder(String path) {
 
-        for (IPackageFragmentRoot root : this._cachedPackageFragmentRoots) {
+        for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
             if (!root.isReadOnly() && path.startsWith(root.getPath().toString())) {
                 return true;
             }
@@ -668,7 +676,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     private boolean isPartOfAnySourceFolder(String path) {
 
-        for (IPackageFragmentRoot root : this._cachedPackageFragmentRoots) {
+        for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
             if (!root.isReadOnly() && root.getPath().toString().startsWith(path)) {
                 return true;
             }
@@ -704,7 +712,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     private Set<String> getNonJavaResourcePaths() {
 
         Set<String> nonJavaPaths = new HashSet<>();
-        for (String path : this.filteredPaths) {
+        for (String path : filteredPaths) {
             if (!isDefinedInSourceFolder(path)) {
                 nonJavaPaths.add(path);
             }

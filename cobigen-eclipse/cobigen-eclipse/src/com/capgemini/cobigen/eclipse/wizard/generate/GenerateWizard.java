@@ -84,7 +84,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
 
         super.initializeWizard(input);
 
-        this.page2 = new SelectAttributesPage(this.javaGeneratorWrapper.getAttributesToTypeMapOfFirstInput());
+        page2 = new SelectAttributesPage(javaGeneratorWrapper.getAttributesToTypeMapOfFirstInput());
     }
 
     /**
@@ -95,8 +95,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
     @Override
     public void addPages() {
 
-        addPage(this.page1);
-        addPage(this.page2);
+        addPage(page1);
+        addPage(page2);
     }
 
     /**
@@ -109,13 +109,13 @@ public class GenerateWizard extends AbstractGenerateWizard {
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
 
-        for (String attr : this.page2.getUncheckedAttributes()) {
-            this.javaGeneratorWrapper.removeFieldFromModel(attr);
+        for (String attr : page2.getUncheckedAttributes()) {
+            javaGeneratorWrapper.removeFieldFromModel(attr);
         }
 
         GenerateSelectionProcess job =
-            new GenerateSelectionProcess(getShell(), this.javaGeneratorWrapper,
-                this.page1.getTemplatesToBeGenerated());
+            new GenerateSelectionProcess(getShell(), javaGeneratorWrapper,
+                page1.getTemplatesToBeGenerated());
         try {
             dialog.run(false, false, job);
         } catch (InvocationTargetException e) {

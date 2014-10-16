@@ -61,15 +61,15 @@ public class SelectAttributesPage extends WizardPage {
         // label
         // .setText("Every attribute selected will be displayed as a column in the overview or search results table:");
 
-        this.tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
-        this.tableAttributes.setContentProvider(new SelectAttributesContentProvider());
-        this.tableAttributes.setLabelProvider(new SelectAttributesLabelProvider());
-        this.tableAttributes.setInput(this.attributes);
-        this.tableAttributes.setAllChecked(true);
+        tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
+        tableAttributes.setContentProvider(new SelectAttributesContentProvider());
+        tableAttributes.setLabelProvider(new SelectAttributesLabelProvider());
+        tableAttributes.setInput(attributes);
+        tableAttributes.setAllChecked(true);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
         gd.grabExcessHorizontalSpace = true;
-        this.tableAttributes.getTable().setLayoutData(gd);
+        tableAttributes.getTable().setLayoutData(gd);
 
         // label = new Label(container, SWT.WRAP);
         // label
@@ -96,8 +96,8 @@ public class SelectAttributesPage extends WizardPage {
      */
     public Set<String> getUncheckedAttributes() {
         Set<String> uncheckedAttributes = new HashSet<>();
-        for (Entry<String, String> attr : this.attributes.entrySet()) {
-            if (!this.tableAttributes.getChecked(attr)) {
+        for (Entry<String, String> attr : attributes.entrySet()) {
+            if (!tableAttributes.getChecked(attr)) {
                 uncheckedAttributes.add(attr.getKey());
             }
         }

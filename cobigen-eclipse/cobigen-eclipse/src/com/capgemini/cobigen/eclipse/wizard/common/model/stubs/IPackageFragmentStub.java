@@ -270,7 +270,7 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
     @Override
     public Object[] getNonJavaResources() throws JavaModelException {
 
-        return this.nonJavaResources;
+        return nonJavaResources;
     }
 
     /**
@@ -310,7 +310,9 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null) return false;
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof IPackageFragment) {
             return ((IPackageFragment) obj).getPath().equals(getPath());
         }
