@@ -12,12 +12,9 @@ import javax.xml.transform.TransformerException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
@@ -211,13 +208,8 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
         IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
-            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             List<ICompilationUnit> cus = new LinkedList<>();
-            for (TemplateTo template : templatesToBeGenerated) {
-                IFile file =
-                    root.getFile(proj.getFullPath().append(
-                        new Path(template.resolveDestinationPath(javaGeneratorWrapper
-                            .getCurrentRepresentingInput()))));
+            for (IFile file : javaGeneratorWrapper.getAllTargetFiles()) {
                 if (file.exists()) {
                     IJavaElement elem = JavaCore.create(file);
                     if (elem instanceof ICompilationUnit) {

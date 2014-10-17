@@ -3,6 +3,7 @@
  ******************************************************************************/
 package com.capgemini.cobigen.eclipse.generator.java;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -25,6 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
@@ -472,7 +474,7 @@ public class JavaGeneratorWrapper {
      * @author mbrunnli (14.02.2013)
      */
     public List<TemplateTo> getTemplatesForFilePath(String filePath, Set<IncrementTo> consideredIncrements) {
-
+        // TODO DRINGEND!!! BUG, da die selektion sonst nicht mehr funktioniert??? testen!
         List<TemplateTo> templates = Lists.newLinkedList();
         if (consideredIncrements != null) {
             for (IncrementTo increment : getAllIncrements()) {
@@ -542,17 +544,45 @@ public class JavaGeneratorWrapper {
     }
 
     /**
-     * Returns project dependent paths of all possible generated resources
+     * Returns project dependent paths of all possible generated resources for the first input in case of
+     * batch generation
      *
      * @return project dependent paths of all possible generated resources
      * @author mbrunnli (26.04.2013)
      */
-    public Set<IFile> getAllFiles() {
+    public Set<IFile> getAllTargetFilesForOneInput() {
 
         Set<IFile> files = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             files.add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
+        }
+        return files;
+    }
+
+    /**
+     * Returns project dependent paths of all possible generated resources
+     *
+     * @return project dependent paths of all possible generated resources
+     * @author mbrunnli (26.04.2013)
+     */
+    public Set<IFile> getAllTargetFiles() {
+
+        Set<IFile> files = new HashSet<>();
+        IProject targetProjet = getGenerationTargetProject();
+        for (TemplateTo t : getAllTemplates()) {
+            if (packageFolder != null) {
+                List<Object> children = new JavaInputReader().getInputObjects(packageFolder, Charsets.UTF_8);
+                for (Object child : children) {
+                    if (child instanceof File) {
+                        files.add(ResourceUtil.getFile(child));
+                    }
+                }
+            } else {
+                for (Class<?> inputClass : inputTypes.values()) {
+                    files.add(targetProjet.getFile(t.resolveDestinationPath(inputClass)));
+                }
+            }
         }
         return files;
     }
