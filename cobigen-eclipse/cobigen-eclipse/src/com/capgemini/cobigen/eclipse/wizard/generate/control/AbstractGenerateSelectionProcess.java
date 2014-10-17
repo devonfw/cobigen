@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
@@ -143,7 +144,10 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
         } catch (PluginProcessingException e) {
             MessageDialog.openError(shell, "Plug-in Processing Exception",
                 "A plug-in caused an unhandled exception:\n" + e.getMessage());
-            LOG.error("A plug-in caused an unhandled exception:\n" + e.getMessage(), e);
+            LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
+        } catch (NotYetSupportedException e) {
+            MessageDialog.openInformation(shell, "Not yet supported operation!", e.getMessage());
+            LOG.warn("An unsupported operation has been triggered:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             MessageDialog.openError(shell, "Unknown Exception", e.getMessage());
             LOG.error("Unknown Exception", e);

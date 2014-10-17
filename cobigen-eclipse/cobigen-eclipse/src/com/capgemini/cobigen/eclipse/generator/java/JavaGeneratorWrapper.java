@@ -22,8 +22,10 @@ import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.xml.sax.SAXException;
 
@@ -31,6 +33,7 @@ import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
@@ -309,12 +312,22 @@ public class JavaGeneratorWrapper {
      *             if there are some problems while merging
      * @throws CoreException
      *             if an internal eclipse exception occurs
+     * @throws NotYetSupportedException
+     *             if any action has been triggered, which is currently not supported
      * @author mbrunnli (14.02.2013)
      */
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        SAXException, TransformerException, MergeException, CoreException {
+        SAXException, TransformerException, MergeException, CoreException, NotYetSupportedException {
 
         if (packageFolder != null) {
+            IProject proj = getGenerationTargetProject();
+            IJavaProject javaProject = JavaCore.create(proj);
+            if (javaProject == null) {
+                throw new NotYetSupportedException(
+                    "The target project, where you selected the input from, should be a java project. "
+                        + "Currently this is the only type of projects to be supported.");
+            }
+            packageFolder.setClassLoader(ClassLoaderUtil.getProjectClassLoader(javaProject));
             cobiGen.generate(packageFolder, template, forceOverride);
         } else {
             for (Entry<IType, Class<?>> entry : inputTypes.entrySet()) {
