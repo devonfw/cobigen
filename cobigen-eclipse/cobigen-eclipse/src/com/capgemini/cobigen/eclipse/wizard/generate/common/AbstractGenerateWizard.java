@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -80,19 +81,27 @@ public abstract class AbstractGenerateWizard extends Wizard {
      *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
-    protected void initializeWizard(IJavaElement input) throws IOException, InvalidConfigurationException,
+    protected void initializeWizard(Object input) throws IOException, InvalidConfigurationException,
         UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
         ClassNotFoundException, GeneratorProjectNotExistentException {
 
         javaGeneratorWrapper = new JavaGeneratorWrapper();
 
+        IJavaProject javaProject = null;
         if (input instanceof IType) {
             javaGeneratorWrapper.setInputType((IType) input);
+            javaProject = ((IType) input).getJavaProject();
         } else if (input instanceof IPackageFragment) {
             javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
+            javaProject = ((IPackageFragment) input).getJavaProject();
+        } else {
+            @SuppressWarnings("unchecked")
+            List<IType> inputList = (List<IType>) input;
+            javaGeneratorWrapper.setInputTypes(inputList);
+            javaProject = inputList.get(0).getJavaProject();
         }
 
-        javaGeneratorWrapper.setGenerationTargetProject(input.getJavaProject().getProject());
+        javaGeneratorWrapper.setGenerationTargetProject(javaProject.getProject());
 
         page1 = new SelectFilesPage(javaGeneratorWrapper, false);
     }

@@ -119,7 +119,7 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         CoreException, GeneratorProjectNotExistentException {
 
         if (inputTypes != null) {
-            super.initializeWizard(inputTypes.get(0));
+            super.initializeWizard(inputTypes);
         } else {
             super.initializeWizard(container);
         }
@@ -169,8 +169,7 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             javaGeneratorWrapper.setInputTypes(inputTypes);
         } else if (container != null) {
             javaGeneratorWrapper.setInputPackage(container);
-        } else if (container != null && inputTypes != null || container == null
-            && inputTypes == null) {
+        } else if (container != null && inputTypes != null || container == null && inputTypes == null) {
             throw new NotImplementedException(
                 "If you see this message please contact one of the developers of CobiGen.");
         }

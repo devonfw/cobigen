@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
@@ -78,7 +77,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
      * @author mbrunnli (18.02.2013)
      */
     @Override
-    protected void initializeWizard(IJavaElement input) throws IOException, InvalidConfigurationException,
+    protected void initializeWizard(Object input) throws IOException, InvalidConfigurationException,
         UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
         ClassNotFoundException, GeneratorProjectNotExistentException {
 
@@ -114,8 +113,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
         }
 
         GenerateSelectionProcess job =
-            new GenerateSelectionProcess(getShell(), javaGeneratorWrapper,
-                page1.getTemplatesToBeGenerated());
+            new GenerateSelectionProcess(getShell(), javaGeneratorWrapper, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(false, false, job);
         } catch (InvocationTargetException e) {
