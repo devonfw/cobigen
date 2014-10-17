@@ -93,11 +93,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInterface() {
-        return this.anInterface;
+        return anInterface;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPrimitive() {
         final String name = getName();
         return "void".equals(name) || "boolean".equals(name) || "byte".equals(name) || "char".equals(name)
@@ -106,36 +108,43 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isVoid() {
         return "void".equals(getName());
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isEnum() {
-        return this.anEnum;
+        return anEnum;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isAnnotation() {
-        return this.anAnnotation;
+        return anAnnotation;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isArray() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaClass getComponentType() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDimensions() {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaType getSuperClass() {
         JavaType result = null;
         JavaClass OBJECT_JAVACLASS = getJavaClassLibrary().getJavaClass("java.lang.Object");
@@ -143,12 +152,12 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
         boolean iAmJavaLangObject = OBJECT_JAVACLASS.equals(this);
 
-        if (this.anEnum) {
+        if (anEnum) {
             result = ENUM_JAVACLASS;
-        } else if (!this.anInterface && !this.anAnnotation && (this.superClass == null) && !iAmJavaLangObject) {
+        } else if (!anInterface && !anAnnotation && (superClass == null) && !iAmJavaLangObject) {
             result = OBJECT_JAVACLASS;
         } else {
-            result = this.superClass;
+            result = superClass;
         }
         return result;
     }
@@ -156,6 +165,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     /**
      * Shorthand for getSuperClass().getJavaClass() with null checking.
      */
+    @Override
     public JavaClass getSuperJavaClass() {
         JavaClass result = null;
         JavaType superType = getSuperClass();
@@ -166,21 +176,25 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaType> getImplements() {
-        return new LinkedList<JavaType>(this.implementz);
+        return new LinkedList<JavaType>(implementz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaClass> getImplementedInterfaces() {
-        return new LinkedList<>(this.implementz);
+        return new LinkedList<>(implementz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaClass> getInterfaces() {
-        return new LinkedList<>(this.implementz);
+        return new LinkedList<>(implementz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCodeBlock() {
         return getModelWriter().writeClass(this).toString();
     }
@@ -198,18 +212,18 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     public void addConstructor(JavaConstructor constructor) {
-        this.constructors.add(constructor);
+        constructors.add(constructor);
     }
 
     public void addMethod(JavaMethod meth) {
-        this.methods.add(meth);
+        methods.add(meth);
     }
 
     public void setSuperClass(JavaType type) {
-        if (this.anEnum) {
+        if (anEnum) {
             throw new IllegalArgumentException("enums cannot extend other classes");
         }
-        this.superClass = type;
+        superClass = type;
     }
 
     public void setImplementz(List<JavaClass> implementz) {
@@ -217,9 +231,10 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     @SuppressWarnings("unchecked")
     public List<DefaultJavaTypeVariable<JavaClass>> getTypeParameters() {
-        return this.typeParameters;
+        return typeParameters;
     }
 
     public void setTypeParameters(List<DefaultJavaTypeVariable<JavaClass>> typeParameters) {
@@ -227,7 +242,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     public void addField(JavaField javaField) {
-        this.fields.add(javaField);
+        fields.add(javaField);
     }
 
     /**
@@ -240,6 +255,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaSource getParentSource() {
         return (getParentClass() != null ? getParentClass().getParentSource() : super.getSource());
     }
@@ -251,11 +267,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaPackage getPackage() {
-        return getParentSource() != null ? getParentSource().getPackage() : this.javaPackage;
+        return getParentSource() != null ? getParentSource().getPackage() : javaPackage;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaClassParent getParent() {
         JavaClassParent result = getParentClass();
         if (result == null) {
@@ -265,12 +283,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getPackageName() {
         JavaPackage pckg = getPackage();
         return (pckg != null && pckg.getName() != null) ? pckg.getName() : "";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFullyQualifiedName() {
         return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
             : getPackage() != null ? (getPackage().getName() + ".") : "")
@@ -278,36 +298,43 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getGenericFullyQualifiedName() {
         return getFullyQualifiedName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCanonicalName() {
         return getFullyQualifiedName().replace('$', '.');
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getGenericCanonicalName() {
         return getCanonicalName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getValue() {
         return getCanonicalName().substring(getSource().getClassNamePrefix().length());
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getGenericValue() {
         return getValue();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInner() {
         return getParentClass() != null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String resolveType(String typeName) {
         String result;
         JavaClass resolvedClass = getNestedClassByName(typeName);
@@ -320,6 +347,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public String resolveCanonicalName(String name) {
         // Maybe it's an inner class?
         for (JavaClass innerClass : getNestedClasses()) {
@@ -331,6 +359,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public String resolveFullyQualifiedName(String name) {
         // Maybe it's an inner class?
         for (JavaClass innerClass : getNestedClasses()) {
@@ -342,31 +371,37 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getClassNamePrefix() {
         return getFullyQualifiedName() + "$";
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaType asType() {
         return this;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaInitializer> getInitializers() {
-        return this.initializers;
+        return initializers;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaConstructor> getConstructors() {
-        return this.constructors;
+        return constructors;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaConstructor getConstructor(List<JavaType> parameterTypes) {
         return getConstructor(parameterTypes, false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaConstructor getConstructor(List<JavaType> parameterTypes, boolean varArgs) {
         for (JavaConstructor constructor : getConstructors()) {
             if (constructor.signatureMatches(parameterTypes, varArgs)) {
@@ -377,11 +412,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaMethod> getMethods() {
-        return this.methods;
+        return methods;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaMethod> getMethods(boolean superclasses) {
         if (superclasses) {
             return new LinkedList<>(getMethodsFromSuperclassAndInterfaces(this, this).values());
@@ -429,11 +466,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaMethod getMethodBySignature(String name, List<JavaType> parameterTypes) {
         return getMethod(name, parameterTypes, false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaMethod getMethod(String name, List<JavaType> parameterTypes, boolean varArgs) {
         for (JavaMethod method : getMethods()) {
             if (method.signatureMatches(name, parameterTypes, varArgs)) {
@@ -444,11 +483,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaMethod getMethodBySignature(String name, List<JavaType> parameterTypes, boolean superclasses) {
         return getMethodBySignature(name, parameterTypes, superclasses, false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaMethod getMethodBySignature(String name, List<JavaType> parameterTypes, boolean superclasses,
         boolean varArg) {
 
@@ -458,12 +499,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
         boolean superclasses) {
         return getMethodsBySignature(name, parameterTypes, superclasses, false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
         boolean superclasses, boolean varArg) {
         List<JavaMethod> result = new LinkedList<>();
@@ -498,11 +541,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaField> getFields() {
-        return this.fields;
+        return fields;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaField getFieldByName(String name) {
         for (JavaField field : getFields()) {
             if (field.getName().equals(name)) {
@@ -513,6 +558,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaField> getEnumConstants() {
         List<JavaField> result = null;
         if (isEnum()) {
@@ -527,43 +573,49 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaField getEnumConstantByName(String name) {
         JavaField field = getFieldByName(name);
         return field.isEnumConstant() ? field : null;
     }
 
     public void addInitializer(JavaInitializer initializer) {
-        this.initializers.add(initializer);
+        initializers.add(initializer);
     }
 
     public void addClass(JavaClass cls) {
-        this.classes.add(cls);
+        classes.add(cls);
     }
 
     /**
      * @deprecated Use {@link #getNestedClasses()} instead.
      */
+    @Override
     @Deprecated
     public List<JavaClass> getClasses() {
         return getNestedClasses();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaClass> getNestedClasses() {
-        return this.classes;
+        return classes;
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaClass getInnerClassByName(String name) {
         return getNestedClassByName(name);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaClass> getInnerClasses() {
         return getNestedClasses();
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaClass getNestedClassByName(String name) {
         int separatorIndex = name.indexOf('.');
         String directInnerClassName = (separatorIndex > 0 ? name.substring(0, separatorIndex) : name);
@@ -580,6 +632,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isA(String fullClassName) {
         if (fullClassName == null) {
             return false;
@@ -600,6 +653,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isA(JavaClass javaClass) {
         if (this == javaClass) {
             return true;
@@ -622,11 +676,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<BeanProperty> getBeanProperties() {
         return getBeanProperties(false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<BeanProperty> getBeanProperties(boolean superclasses) {
         Map<String, BeanProperty> beanPropertyMap = getBeanPropertyMap(superclasses);
         Collection<BeanProperty> beanPropertyCollection = beanPropertyMap.values();
@@ -670,16 +726,19 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public BeanProperty getBeanProperty(String propertyName) {
         return getBeanProperty(propertyName, false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public BeanProperty getBeanProperty(String propertyName, boolean superclasses) {
         return getBeanPropertyMap(superclasses).get(propertyName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<JavaClass> getDerivedClasses() {
         List<JavaClass> result = new LinkedList<>();
         for (JavaClass clazz : getSource().getJavaClassLibrary().getJavaClasses()) {
@@ -691,6 +750,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public JavaClass getDeclaringClass() {
         return getParentClass();
     }
@@ -736,6 +796,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return sb.toString();
     }
 
+    @Override
     public String toGenericString() {
         return toString();
     }
@@ -759,6 +820,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     /** {@inheritDoc} */
+    @Override
     public ClassLibrary getJavaClassLibrary() {
         return getSource().getJavaClassLibrary();
     }
@@ -774,9 +836,9 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
      */
     public void replace(JavaField baseField, JavaField patchField) {
         JavaField definedField = getFieldByName(baseField.getName());
-        int i = this.fields.indexOf(definedField);
+        int i = fields.indexOf(definedField);
         if (i != -1) {
-            this.fields.set(i, patchField);
+            fields.set(i, patchField);
         }
     }
 
@@ -791,9 +853,9 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
      */
     public void replace(JavaMethod baseMethod, JavaMethod patchMethod) {
         JavaMethod definedMethod = getMethodBySignature(baseMethod.getName(), baseMethod.getParameterTypes());
-        int i = this.methods.indexOf(definedMethod);
+        int i = methods.indexOf(definedMethod);
         if (i != -1) {
-            this.methods.set(i, patchMethod);
+            methods.set(i, patchMethod);
         }
     }
 
@@ -808,9 +870,9 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
      */
     public void replace(JavaConstructor baseConstructor, JavaConstructor patchConstructor) {
         JavaConstructor definedConstructor = getConstructor(baseConstructor.getParameterTypes());
-        int i = this.constructors.indexOf(definedConstructor);
+        int i = constructors.indexOf(definedConstructor);
         if (i != -1) {
-            this.constructors.set(i, patchConstructor);
+            constructors.set(i, patchConstructor);
         }
     }
 

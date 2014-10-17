@@ -66,8 +66,9 @@ public class JavaParserUtil {
         ModifyableJavaClass targetClass = null;
         for (Reader r : reader) {
             source = classLibraryBuilder.addSource(r);
-            if (targetClass == null)
+            if (targetClass == null) {
                 targetClass = (ModifyableJavaClass) source.getClasses().get(0);
+            }
         }
         return targetClass;
     }

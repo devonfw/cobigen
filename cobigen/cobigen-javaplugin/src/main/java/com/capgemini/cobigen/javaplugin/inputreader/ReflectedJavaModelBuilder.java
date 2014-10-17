@@ -59,12 +59,12 @@ public class ReflectedJavaModelBuilder {
      */
     Map<String, Object> createModel(final Class<?> pojo) {
 
-        if (this.cachedPojo != null && this.cachedPojo.equals(pojo)) {
-            return new HashMap<>(this.cachedModel);
+        if (cachedPojo != null && cachedPojo.equals(pojo)) {
+            return new HashMap<>(cachedModel);
         }
-        this.cachedPojo = pojo;
+        cachedPojo = pojo;
 
-        this.cachedModel = new HashMap<>();
+        cachedModel = new HashMap<>();
         Map<String, Object> pojoModel = new HashMap<>();
         pojoModel.put(ModelConstant.NAME, pojo.getSimpleName());
         if (pojo.getPackage() != null) {
@@ -90,11 +90,11 @@ public class ReflectedJavaModelBuilder {
         pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
-        this.cachedModel.put(ModelConstant.ROOT, pojoModel);
+        cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        enrichModelByUtils(this.cachedModel, pojo);
+        enrichModelByUtils(cachedModel, pojo);
 
-        return new HashMap<>(this.cachedModel);
+        return new HashMap<>(cachedModel);
     }
 
     /**
@@ -291,8 +291,9 @@ public class ReflectedJavaModelBuilder {
 
             for (Method getter : annotation.annotationType().getMethods()) {
                 if (getter.getParameterTypes().length > 0 || getter.getName().equals("hashCode")
-                    || getter.getName().equals("annotationType") || getter.getName().equals("toString"))
+                    || getter.getName().equals("annotationType") || getter.getName().equals("toString")) {
                     continue;
+                }
                 try {
                     Object value = getter.invoke(annotation);
                     if (value instanceof Annotation[]) {
@@ -344,7 +345,9 @@ public class ReflectedJavaModelBuilder {
                         pojo.getDeclaredMethod("is"
                             + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
-                if (getter == null) return;
+                if (getter == null) {
+                    return;
+                }
 
                 Annotation[] annotations = getter.getAnnotations();
                 for (Annotation a : annotations) {

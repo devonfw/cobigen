@@ -24,7 +24,7 @@ public class FreeMarkerUtil {
      * @author mbrunnli (12.04.2013)
      */
     public FreeMarkerUtil(ClassLoader inputClassLoader) {
-        this.classLoader = inputClassLoader;
+        classLoader = inputClassLoader;
     }
 
     /**
@@ -40,7 +40,7 @@ public class FreeMarkerUtil {
      * @author mbrunnli (12.04.2013)
      */
     public boolean isSubtypeOf(String subType, String superType) throws ClassNotFoundException {
-        return this.classLoader.loadClass(superType).isAssignableFrom(this.classLoader.loadClass(subType));
+        return classLoader.loadClass(superType).isAssignableFrom(classLoader.loadClass(subType));
     }
 
     /**
@@ -55,7 +55,7 @@ public class FreeMarkerUtil {
      * @author mbrunnli (12.04.2013)
      */
     public boolean isAbstract(String className) throws ClassNotFoundException {
-        return Modifier.isAbstract(this.classLoader.loadClass(className).getModifiers());
+        return Modifier.isAbstract(classLoader.loadClass(className).getModifiers());
     }
 
 }

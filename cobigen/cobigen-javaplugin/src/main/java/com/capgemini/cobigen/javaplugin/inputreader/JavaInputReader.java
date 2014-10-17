@@ -43,20 +43,22 @@ public class JavaInputReader implements IInputReader {
     @Override
     public boolean isValidInput(Object input) {
 
-        if (input instanceof Class<?> || input instanceof JavaClass || input instanceof PackageFolder)
+        if (input instanceof Class<?> || input instanceof JavaClass || input instanceof PackageFolder) {
             return true;
-        else if (input instanceof Object[]) {
+        } else if (input instanceof Object[]) {
             // check whether the same Java class has been provided as parser as well as reflection object
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
                     if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                            ((Class<?>) inputArr[1]).getCanonicalName()))
+                            ((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
+                    }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
                     if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                            ((JavaClass) inputArr[1]).getFullyQualifiedName()))
+                            ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
+                    }
                 }
             }
         }
@@ -71,10 +73,12 @@ public class JavaInputReader implements IInputReader {
     @Override
     public Map<String, Object> createModel(Object o) {
 
-        if (o instanceof Class<?>)
+        if (o instanceof Class<?>) {
             return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
-        if (o instanceof JavaClass)
+        }
+        if (o instanceof JavaClass) {
             return new ParsedJavaModelBuilder().createModel((JavaClass) o);
+        }
         if (o instanceof Object[] && isValidInput(o)) {
             Map<String, Object> model;
             Object[] inputArr = (Object[]) o;
@@ -98,8 +102,9 @@ public class JavaInputReader implements IInputReader {
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
 
-        if (input instanceof PackageFolder)
+        if (input instanceof PackageFolder) {
             return true;
+        }
         return false;
     }
 

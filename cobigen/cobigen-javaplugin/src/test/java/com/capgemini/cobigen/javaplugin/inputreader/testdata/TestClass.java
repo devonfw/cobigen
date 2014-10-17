@@ -8,7 +8,7 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
 
     public List<String> getCustomList() {
 
-        return this.customList;
+        return customList;
     }
 
     public void setCustomList(List<String> customList) {
