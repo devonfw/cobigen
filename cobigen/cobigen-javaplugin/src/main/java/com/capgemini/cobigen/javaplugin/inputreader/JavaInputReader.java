@@ -124,6 +124,9 @@ public class JavaInputReader implements IInputReader {
 
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
                 classLibraryBuilder.appendDefaultClassLoaders();
+                if (((PackageFolder) input).getClassLoader() != null) {
+                    classLibraryBuilder.appendClassLoader(((PackageFolder) input).getClassLoader());
+                }
                 try {
                     classLibraryBuilder
                         .addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
