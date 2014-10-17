@@ -23,9 +23,9 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
- * Extension for the {@link IInputReader} Interface of the CobiGen, to be able to read Java classes into FreeMarker
- * models
- * 
+ * Extension for the {@link IInputReader} Interface of the CobiGen, to be able to read Java classes into
+ * FreeMarker models
+ *
  * @author mbrunnli (15.10.2013)
  */
 public class JavaInputReader implements IInputReader {
@@ -37,7 +37,7 @@ public class JavaInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (08.04.2014)
      */
     @Override
@@ -51,12 +51,12 @@ public class JavaInputReader implements IInputReader {
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
                     if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                            ((Class<?>) inputArr[1]).getCanonicalName())) {
+                        ((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
                     if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                            ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
                     }
                 }
@@ -67,7 +67,7 @@ public class JavaInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (15.10.2013)
      */
     @Override
@@ -96,7 +96,7 @@ public class JavaInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (03.06.2014)
      */
     @Override
@@ -110,7 +110,7 @@ public class JavaInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (03.06.2014)
      */
     @Override
@@ -119,14 +119,14 @@ public class JavaInputReader implements IInputReader {
         List<Object> javaClasses = new LinkedList<>();
         if (input instanceof PackageFolder) {
             File packageFolder = new File(((PackageFolder) input).getLocation());
-            // TODO construct an option to declare recursive and non recursive input retrieval
-            List<File> files = retrieveAllJavaSourceFilesRecursively(packageFolder);
+            List<File> files = retrieveAllJavaSourceFiles(packageFolder);
             for (File f : files) {
 
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
                 classLibraryBuilder.appendDefaultClassLoaders();
                 try {
-                    classLibraryBuilder.addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
+                    classLibraryBuilder
+                        .addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
                     JavaSource source = null;
                     for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
                         source = s;
@@ -141,7 +141,8 @@ public class JavaInputReader implements IInputReader {
                         }
                     }
                 } catch (IOException e) {
-                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath().toString(), e);
+                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath()
+                        .toString(), e);
                 }
 
             }
@@ -150,21 +151,19 @@ public class JavaInputReader implements IInputReader {
     }
 
     /**
-     * Retrieves all java source files (with ending *.java) under the package's folder recursively
-     * 
+     * Retrieves all java source files (with ending *.java) under the package's folder non-recursively
+     *
      * @param packageFolder
-     *        the package's folder
+     *            the package's folder
      * @return the list of files contained in the package's folder
      * @author mbrunnli (03.06.2014)
      */
-    private List<File> retrieveAllJavaSourceFilesRecursively(File packageFolder) {
+    private List<File> retrieveAllJavaSourceFiles(File packageFolder) {
 
         List<File> files = new LinkedList<>();
         if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
-                if (f.isDirectory()) {
-                    files.addAll(retrieveAllJavaSourceFilesRecursively(f));
-                } else if (f.getName().endsWith(".java")) {
+                if (!f.isDirectory() && f.getName().endsWith(".java")) {
                     files.add(f);
                 }
             }
