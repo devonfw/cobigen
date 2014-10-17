@@ -3,7 +3,6 @@
  ******************************************************************************/
 package com.capgemini.cobigen.eclipse.generator.java;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -26,7 +25,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.ui.ide.ResourceUtil;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
@@ -564,23 +562,22 @@ public class JavaGeneratorWrapper {
      * Returns project dependent paths of all possible generated resources
      *
      * @return project dependent paths of all possible generated resources
+     * @throws JavaModelException
+     *             if an internal eclipse exception occurred during finding a package's child type
      * @author mbrunnli (26.04.2013)
      */
-    public Set<IFile> getAllTargetFiles() {
+    public Set<IFile> getAllTargetFiles() throws JavaModelException {
 
         Set<IFile> files = new HashSet<>();
-        IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (packageFolder != null) {
                 List<Object> children = new JavaInputReader().getInputObjects(packageFolder, Charsets.UTF_8);
                 for (Object child : children) {
-                    if (child instanceof File) {
-                        files.add(ResourceUtil.getFile(child));
-                    }
+                    files.add(targetProject.getFile(t.resolveDestinationPath(child)));
                 }
             } else {
                 for (Class<?> inputClass : inputTypes.values()) {
-                    files.add(targetProjet.getFile(t.resolveDestinationPath(inputClass)));
+                    files.add(targetProject.getFile(t.resolveDestinationPath(inputClass)));
                 }
             }
         }

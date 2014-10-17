@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.actions.FormatAllAction;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -104,11 +106,13 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 }
 
+                final ICompilationUnit[] cus = getGeneratedCompilationUnits();
+
                 monitor.setTaskName("Organize Imports...");
-                organizeImports();
+                organizeImports(cus);
 
                 monitor.setTaskName("Format Source Code...");
-                formatSourceCode();
+                formatSourceCode(cus);
             }
 
             MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
@@ -119,7 +123,9 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             MessageDialog.openError(shell, "Malformed URL Exception", e.getMessage());
             LOG.error("Malformed URL Exception", e);
         } catch (CoreException e) {
-            MessageDialog.openError(shell, "Eclipse internal Exception", e.getMessage());
+            MessageDialog.openError(shell, "Eclipse internal Exception",
+                "An eclipse internal exception occurred during processing:\n" + e.getMessage()
+                    + "\n If this problem persists please report it to the CobiGen developers.");
             LOG.error("Eclipse internal Exception", e);
         } catch (TemplateException e) {
             MessageDialog.openError(shell, "Template Exception",
@@ -163,11 +169,12 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     /**
      * Organizes the imports by calling the {@link OrganizeImportsAction}
      *
+     * @param cus
+     *            {@link CompilationUnit}s to be organized
      * @author mbrunnli (12.03.2013)
      */
-    private void organizeImports() {
+    private void organizeImports(final ICompilationUnit[] cus) {
 
-        final ICompilationUnit[] cus = getGeneratedCompilationUnits();
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
@@ -182,11 +189,12 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     /**
      * Formats source code of all java files which have been generated or merged
      *
+     * @param cus
+     *            {@link CompilationUnit}s to be formatted
      * @author mbrunnli (27.03.2013)
      */
-    private void formatSourceCode() {
+    private void formatSourceCode(final ICompilationUnit[] cus) {
 
-        final ICompilationUnit[] cus = getGeneratedCompilationUnits();
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -202,9 +210,11 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      * Retrieves all {@link ICompilationUnit}s targeted by the generated paths
      *
      * @return an array of {@link ICompilationUnit}s, which are targeted by the generated paths
+     * @throws JavaModelException
+     *             if an interal eclipse exception occurred
      * @author mbrunnli (04.06.2014)
      */
-    private ICompilationUnit[] getGeneratedCompilationUnits() {
+    private ICompilationUnit[] getGeneratedCompilationUnits() throws JavaModelException {
 
         IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
