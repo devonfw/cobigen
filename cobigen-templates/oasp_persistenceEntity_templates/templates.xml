@@ -3,8 +3,8 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
 		<!-- Infrastructure -->
-		<template id="persistence_persistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/${variables.domain?cap_first}PersistenceEntity.java" templateFile="java/general/persistence/base/PersistenceEntity.ftl" />
-		<template id="common_domainEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/${variables.domain?cap_first}Entity.java" templateFile="java/general/common/api/DomainEntity.ftl" />
+		<template id="persistence_applicationPersistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/ApplicationPersistenceEntity.java" templateFile="java/general/persistence/base/ApplicationPersistenceEntity.ftl" />
+		<template id="common_applicationEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/ApplicationEntity.java" templateFile="java/general/common/api/ApplicationEntity.ftl" />
 
 		<!-- daos static -->
 		<template id="persistence_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/dao/ApplicationDao.java" templateFile="java/general/persistence/api/dao/ApplicationDao.ftl" />
@@ -75,8 +75,8 @@
 		</increment>
      -->
 		<increment id="persistence_infrastructure" description="Entity infrastructure">
-			<templateRef idref="persistence_persistenceEntity" />
-			<templateRef idref="common_domainEntity" />
+			<templateRef idref="persistence_applicationPersistenceEntity" />
+			<templateRef idref="common_applicationEntity" />
 			<templateRef idref="persistence_dataEntity" />
 			<templateRef idref="common_data" />
 		</increment>
