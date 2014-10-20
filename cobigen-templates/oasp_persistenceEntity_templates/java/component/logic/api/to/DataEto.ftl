@@ -1,5 +1,5 @@
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.${variables.component}.common.api.to;
+package ${variables.rootPackage}.${variables.component}.service.api.to;
 
 import ${variables.rootPackage}.general.common.api.to.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
@@ -32,7 +32,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 	   </#if>
 	<#elseif attr.type?contains("Entity")>
 	   <#assign suffix="Id">
-	</#if> 
+	</#if>
   </#compress>
 
 	/**

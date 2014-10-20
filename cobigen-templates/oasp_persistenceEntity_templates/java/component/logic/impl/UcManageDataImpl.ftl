@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl;
 
-import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
@@ -30,7 +30,7 @@ public class UcManage${variables.entityName}Impl extends Abstract${variables.ent
     LOG.debug("The ${variables.entityName?uncap_first} with id '{}' has been deleted.", ${variables.entityName?uncap_first}Id);
     return true;
   }
-  
+
     /**
    * {@inheritDoc}
    */

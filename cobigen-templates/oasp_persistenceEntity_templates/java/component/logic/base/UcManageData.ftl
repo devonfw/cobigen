@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.base;
 
-import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.service.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;
 
 /**
@@ -23,5 +23,5 @@ public interface UcManage${variables.entityName} {
    * @return the new {@link ${variables.entityName}Eto} that has been saved with ID and version.
    */
   ${variables.entityName}Eto create${variables.entityName}(${variables.entityName}Eto ${variables.entityName?uncap_first});
-  
+
 }

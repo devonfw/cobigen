@@ -1,5 +1,5 @@
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.${variables.component}.common.api.to;
+package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import ${variables.rootPackage}.general.common.api.to.AbstractCto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
@@ -13,7 +13,7 @@ import java.util.Set;
 public class ${variables.entityName}Cto extends AbstractCto {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private ${variables.entityName}Eto ${variables.entityName?uncap_first};
 
 <#list pojo.attributes as attr>

@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl;
 
-import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Use case implementation for searching, filtering and getting ${variables.entityName}s 
+ * Use case implementation for searching, filtering and getting ${variables.entityName}s
  */
 @Named
 public class UcFind${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcFind${variables.entityName} {

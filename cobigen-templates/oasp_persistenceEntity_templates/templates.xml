@@ -34,8 +34,8 @@
 		<template id="logic_abstractEto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractEto.java" templateFile="java/general/common/api/to/AbstractEto.ftl" />
 
 		<!-- TOs dynamic -->
-		<template id="logic_eto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/common/api/to/${variables.entityName}Eto.java" templateFile="java/component/common/api/to/DataEto.ftl" />
-		<template id="logic_cto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/common/api/to/${variables.entityName}Cto.java" templateFile="java/component/common/api/to/DataCto.ftl"/>
+		<template id="logic_eto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Eto.java" templateFile="java/component/logic/api/to/DataEto.ftl" />
+		<template id="logic_cto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Cto.java" templateFile="java/component/logic/api/to/DataCto.ftl"/>
 
 		<!-- Entity Infrastructure -->
 		<template id="persistence_dataEntity" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/api/${variables.entityName}Entity.java" templateFile="java/component/persistence/api/DataEntity.ftl" mergeStrategy="javamerge" />

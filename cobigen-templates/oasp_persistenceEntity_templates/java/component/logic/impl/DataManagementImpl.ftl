@@ -2,7 +2,7 @@ package ${variables.rootPackage}.${variables.component}.logic.impl;
 
 import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
-import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
 
@@ -27,7 +27,7 @@ public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupp
     public ${variables.component?cap_first}Impl() {
         super();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -62,7 +62,7 @@ public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupp
      */
     @Override
     public boolean delete${variables.entityName}(Long id) {
-  
+
       return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
     }
 
