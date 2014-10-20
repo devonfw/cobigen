@@ -7,8 +7,8 @@
 		<template id="common_domainEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/${variables.domain?cap_first}Entity.java" templateFile="java/general/common/api/DomainEntity.ftl" />
 
 		<!-- daos static -->
-		<template id="persistence_abstractDao" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/dao/AbstractDao.java" templateFile="java/general/persistence/api/dao/AbstractDao.ftl" />
-		<template id="persistence_abstractDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/dao/AbstractDaoImpl.java" templateFile="java/general/persistence/base/dao/AbstractDaoImpl.ftl" />
+		<template id="persistence_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/dao/ApplicationDao.java" templateFile="java/general/persistence/api/dao/ApplicationDao.ftl" />
+		<template id="persistence_applicationDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/dao/ApplicationDaoImpl.java" templateFile="java/general/persistence/base/dao/ApplicationDaoImpl.ftl" />
 
 		<!-- daos dynamic -->
 		<template id="constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="java/general/common/api/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
@@ -44,8 +44,8 @@
 
 	<increments>
 		<increment id="daos" description="DAO's">
-			<templateRef idref="persistence_abstractDao"/>
-			<templateRef idref="persistence_abstractDaoImpl"/>
+			<templateRef idref="persistence_applicationDao"/>
+			<templateRef idref="persistence_applicationDaoImpl"/>
 			<templateRef idref="constants_namedQueries"/>
 			<templateRef idref="persistence_dataDao"/>
 			<templateRef idref="persistence_dataDaoImpl"/>
