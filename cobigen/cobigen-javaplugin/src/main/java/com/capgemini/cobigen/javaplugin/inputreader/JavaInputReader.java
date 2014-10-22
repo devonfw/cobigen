@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -172,5 +175,19 @@ public class JavaInputReader implements IInputReader {
             }
         }
         return files;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author fkreis (22.10.2014)
+     */
+    @Override
+    public Map<String, Object> getTemplateMethods(Object input) {
+        Map<String, Object> methodMap = new HashMap<>();
+        ClassLoader classloader = input.getClass().getClassLoader();
+        methodMap.put("isAbstract", new IsAbstractMethod(classloader));
+        methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(classloader));
+
+        return methodMap;
     }
 }
