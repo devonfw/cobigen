@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © Capgemini 2013. All rights reserved.
+-->
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="1.0">
+  <templates>
+    <template id="resources_resources_persistence_namedQueries" destinationPath="src/test/resources/XMLMergerTest/NamedQueries.hbm.xml"
+      templateFile="src/test/resources/XMLMergerTest/NamedQueries.hbm.xml.ftl" mergeStrategy="xmlmerge"/>
+  </templates>
+
+  <increments>
+    <increment id="daos" description="DAO's">
+      <templateRef idref="resources_resources_persistence_namedQueries"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
