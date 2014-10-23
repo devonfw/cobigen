@@ -51,6 +51,7 @@ import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
@@ -270,10 +271,11 @@ public class CobiGen {
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset);
+                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
+                        inputReader);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset);
+                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader);
                         String result = null;
                         try {
                             IMerger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
@@ -297,7 +299,7 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}", originalFile.getName(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset);
+                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader);
             }
         }
     }
@@ -577,6 +579,8 @@ public class CobiGen {
      *            to generate with
      * @param outputCharset
      *            charset the target file should be written with
+     * @param inputReader
+     *            the input reader the model was built with
      * @throws TemplateException
      *             if an exception occurs during template processing
      * @throws IOException
@@ -587,10 +591,11 @@ public class CobiGen {
      * @author mbrunnli (21.03.2013)
      */
     private void generateTemplateAndWriteFile(File output, Template template, Document model,
-        String outputCharset) throws FileNotFoundException, TemplateException, IOException {
+        String outputCharset, IInputReader inputReader) throws FileNotFoundException, TemplateException,
+        IOException {
 
         try (Writer out = new StringWriter()) {
-            generateTemplateAndWritePatch(out, template, model, outputCharset);
+            generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         }
     }
@@ -632,6 +637,8 @@ public class CobiGen {
      *            FreeMarker template which will generate the contents
      * @param model
      *            Object model for FreeMarker template generation
+     * @param inputReader
+     *            the input reader the model was built with
      * @param outputCharset
      *            charset the target file should be written with
      * @throws TemplateException
@@ -641,7 +648,7 @@ public class CobiGen {
      * @author mbrunnli (12.03.2013)
      */
     private void generateTemplateAndWritePatch(Writer out, Template template, Document model,
-        String outputCharset) throws TemplateException, IOException {
+        String outputCharset, IInputReader inputReader) throws TemplateException, IOException {
 
         freemarker.template.Template fmTemplate;
         try {
@@ -654,6 +661,12 @@ public class CobiGen {
         Environment env = fmTemplate.createProcessingEnvironment(model, out);
         env.setOutputEncoding(outputCharset);
         env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
+
+        Map<String, Object> templateMethods = inputReader.getTemplateMethods(this);
+        for (String key : templateMethods.keySet()) {
+            env.setVariable(key, (TemplateModel) templateMethods.get(key));
+        }
+
         createModelShortcuts(model, env);
         env.process();
     }
