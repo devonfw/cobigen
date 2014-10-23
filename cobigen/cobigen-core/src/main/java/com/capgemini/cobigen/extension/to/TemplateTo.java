@@ -74,6 +74,43 @@ public class TemplateTo extends AbstractTemplateResolver {
     }
 
     /**
+     * Intended only for debugging.
+     *
+     * <P>
+     * Here, the contents of every field are placed into the result, with one field per line.
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String NEW_LINE = System.getProperty("line.separator");
+
+        result.append(this.getClass().getName() + " Object {" + NEW_LINE);
+        result.append(" Id: " + getId() + NEW_LINE);
+        result.append(" TriggerId: " + getTriggerId() + NEW_LINE);
+        result.append(" MergeStrategy: " + getMergeStrategy() + NEW_LINE);
+        result.append("}");
+        return result.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        if (getId() != null) {
+            result = prime * result + getId().hashCode();
+        } else if (getTriggerId() != null) {
+            result = prime * result + getTriggerId().hashCode();
+        } else if (getMergeStrategy() != null) {
+            result = prime * result + getMergeStrategy().hashCode();
+        }
+        result = prime * result;
+        return result;
+    }
+
+    /**
      * {@inheritDoc}
      * @author mbrunnli (07.06.2014)
      */
@@ -83,7 +120,13 @@ public class TemplateTo extends AbstractTemplateResolver {
             return false;
         }
         if (obj instanceof TemplateTo) {
-            return ((TemplateTo) obj).getId().equals(getId());
+            if (((TemplateTo) obj).getId() != null) {
+                return ((TemplateTo) obj).getId().equals(getId());
+            } else if (((TemplateTo) obj).getTriggerId() != null) {
+                ((TemplateTo) obj).getTriggerId().equals(getTriggerId());
+            } else if (((TemplateTo) obj).getMergeStrategy() != null) {
+                return ((TemplateTo) obj).getMergeStrategy().equals(getMergeStrategy());
+            }
         }
         return false;
     }
