@@ -3,6 +3,7 @@ package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
@@ -38,14 +39,14 @@ public class IsAbstractMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Wrong number of arguments. 1 argument is expected.");
         }
         try {
-            boolean isAbstract = isAbstract((String) args.get(0));
+            boolean isAbstract = isAbstract(((SimpleScalar) args.get(0)).getAsString());
             if (isAbstract) {
                 return TemplateBooleanModel.TRUE;
             } else {
                 return TemplateBooleanModel.FALSE;
             }
         } catch (ClassNotFoundException e) {
-            throw new TemplateModelException(e.getMessage());
+            throw new TemplateModelException(e);
         }
 
     }

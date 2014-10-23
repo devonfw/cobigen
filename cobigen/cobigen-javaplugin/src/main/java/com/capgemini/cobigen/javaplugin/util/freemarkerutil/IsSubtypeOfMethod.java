@@ -2,6 +2,7 @@ package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
 
 import java.util.List;
 
+import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
@@ -51,14 +52,16 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Wrong number of arguments. 2 arguments are expected.");
         }
         try {
-            boolean isSubtypeOf = isSubtypeOf((String) args.get(0), (String) args.get(1));
+            boolean isSubtypeOf =
+                isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(),
+                    ((SimpleScalar) args.get(1)).getAsString());
             if (isSubtypeOf) {
                 return TemplateBooleanModel.TRUE;
             } else {
                 return TemplateBooleanModel.FALSE;
             }
         } catch (ClassNotFoundException e) {
-            throw new TemplateModelException(e.getMessage());
+            throw new TemplateModelException(e);
         }
     }
 
