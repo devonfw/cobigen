@@ -9,7 +9,8 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 /**
- *
+ * This class implements the {@link TemplateMethodModelEx} to provide the IsAbstract method as template
+ * method.
  * @author fkreis (22.10.2014)
  */
 public class IsAbstractMethod implements TemplateMethodModelEx {
