@@ -106,4 +106,73 @@ public class IncrementTo {
         return Lists.newLinkedList(dependentIncrements);
     }
 
+    /**
+     * Intended only for debugging.
+     *
+     * <P>
+     * Here, the contents of every field are placed into the result, with one field per line.
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getName() + " Object {");
+        result.append(" Id: " + getId());
+        result.append(" Description: " + getDescription());
+        result.append(" Templates: " + getTemplates());
+        result.append(" Trigger Id: " + getTriggerId());
+        result.append(" DependentIncrements: " + getDependentIncrements());
+        result.append("}");
+        return result.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        if (getId() != null) {
+            result += prime * getId().hashCode();
+        } else if (getDescription() != null) {
+            result += prime * getDescription().hashCode();
+        } else if (getTemplates() != null) {
+            result += prime * getTemplates().hashCode();
+        } else if (getTriggerId() != null) {
+            result += prime * getTriggerId().hashCode();
+        } else if (getDependentIncrements() != null) {
+            result += prime * getDependentIncrements().hashCode();
+        }
+        result += prime * result;
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof IncrementTo) {
+            if (((IncrementTo) obj).getId() != null && ((IncrementTo) obj).getDescription() != null
+                && ((IncrementTo) obj).getTemplates() != null && ((IncrementTo) obj).getTriggerId() != null
+                && ((IncrementTo) obj).getDependentIncrements() != null) {
+                return (((IncrementTo) obj).getId().equals(getId())
+                    && ((IncrementTo) obj).getDescription().equals(getDescription())
+                    && ((IncrementTo) obj).getTemplates().equals(getTemplates())
+                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                    .getDependentIncrements().equals(getDependentIncrements()));
+            } else if (((IncrementTo) obj).getId() == null && ((IncrementTo) obj).getDescription() == null
+                && ((IncrementTo) obj).getTemplates() == null && ((IncrementTo) obj).getTriggerId() == null
+                && ((IncrementTo) obj).getDependentIncrements() == null) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

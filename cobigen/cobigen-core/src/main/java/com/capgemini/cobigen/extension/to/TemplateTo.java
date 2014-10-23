@@ -78,41 +78,41 @@ public class TemplateTo extends AbstractTemplateResolver {
      *
      * <P>
      * Here, the contents of every field are placed into the result, with one field per line.
+     * @author sbasnet (23.10.2014)
      */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        String NEW_LINE = System.getProperty("line.separator");
-
-        result.append(this.getClass().getName() + " Object {" + NEW_LINE);
-        result.append(" Id: " + getId() + NEW_LINE);
-        result.append(" TriggerId: " + getTriggerId() + NEW_LINE);
-        result.append(" MergeStrategy: " + getMergeStrategy() + NEW_LINE);
+        result.append(this.getClass().getName() + " Object {");
+        result.append(" Id: " + getId());
+        result.append(" TriggerId: " + getTriggerId());
+        result.append(" MergeStrategy: " + getMergeStrategy());
         result.append("}");
         return result.toString();
     }
 
     /**
      * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
      */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         if (getId() != null) {
-            result = prime * result + getId().hashCode();
+            result += prime * getId().hashCode();
         } else if (getTriggerId() != null) {
-            result = prime * result + getTriggerId().hashCode();
+            result += prime * getTriggerId().hashCode();
         } else if (getMergeStrategy() != null) {
-            result = prime * result + getMergeStrategy().hashCode();
+            result += prime * getMergeStrategy().hashCode();
         }
-        result = prime * result;
+        result += prime * result;
         return result;
     }
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (07.06.2014)
+     * @author sbasnet (23.10.2014)
      */
     @Override
     public boolean equals(Object obj) {
@@ -120,12 +120,14 @@ public class TemplateTo extends AbstractTemplateResolver {
             return false;
         }
         if (obj instanceof TemplateTo) {
-            if (((TemplateTo) obj).getId() != null) {
-                return ((TemplateTo) obj).getId().equals(getId());
-            } else if (((TemplateTo) obj).getTriggerId() != null) {
-                ((TemplateTo) obj).getTriggerId().equals(getTriggerId());
-            } else if (((TemplateTo) obj).getMergeStrategy() != null) {
-                return ((TemplateTo) obj).getMergeStrategy().equals(getMergeStrategy());
+            if (((TemplateTo) obj).getId() != null && ((TemplateTo) obj).getTriggerId() != null
+                && ((TemplateTo) obj).getMergeStrategy() != null) {
+                return (((TemplateTo) obj).getId().equals(getId())
+                    && ((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
+                    .getMergeStrategy().equals(getMergeStrategy()));
+            } else if (((TemplateTo) obj).getId() == null && ((TemplateTo) obj).getTriggerId() == null
+                && ((TemplateTo) obj).getMergeStrategy() == null) {
+                return true;
             }
         }
         return false;

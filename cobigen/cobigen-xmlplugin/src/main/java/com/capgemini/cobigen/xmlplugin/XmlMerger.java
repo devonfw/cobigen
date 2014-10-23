@@ -116,21 +116,10 @@ public class XmlMerger implements IMerger {
                     docBuilder.parse(new InputSource(new InputStreamReader(new FileInputStream(base),
                         targetCharset)));
             } catch (SAXException e) {
-                if (e.getMessage().contains("[xX][mM][lL]")) {
-                    logger.error("{}{}{}{}", "An exception occured while parsing the base file ",
-                        base.getAbsolutePath(), ":\n", e.getMessage(),
-                        "The document first line is either empty or doesnot "
-                            + "start with document type decalaration");
-                    throw new MergeException("An exception occured while parsing the base file "
-                        + base.getAbsolutePath() + ":\n" + e.getMessage()
-                        + "The document first line is either empty or doesnot "
-                        + "start with document type decalaration");
-                } else {
-                    logger.error("{}{}{}", "An exception occured while parsing the base file ",
-                        base.getAbsolutePath(), ":\n", e.getMessage());
-                    throw new MergeException("An exception occured while parsing the base file "
-                        + base.getAbsolutePath() + ":\n" + e.getMessage());
-                }
+                logger.error("{}{}{}", "An exception occured while parsing the base file ",
+                    base.getAbsolutePath(), ":\n", e.getMessage());
+                throw new MergeException("An exception occured while parsing the base file "
+                    + base.getAbsolutePath() + ":\n" + e.getMessage());
             }
 
             Document patchDoc;
