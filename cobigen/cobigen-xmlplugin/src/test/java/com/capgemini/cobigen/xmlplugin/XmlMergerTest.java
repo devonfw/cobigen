@@ -3,25 +3,17 @@
  */
 package com.capgemini.cobigen.xmlplugin;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import ch.elca.el4j.services.xmlmerge.AbstractXmlMergeException;
 
@@ -52,45 +44,16 @@ public class XmlMergerTest {
     @Test
     public void testMerge() throws UnsupportedEncodingException, FileNotFoundException, IOException,
         MergeException {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder;
         File base = new File(testFileRootPath + "templates.xml");
         File patch = new File(testFileRootPath + "NamedQueries.hbm.xml.ftl");
-
+        XmlMerger xmlMerger = new XmlMerger("", new CompleteMergeAction());
+        Throwable caught = null;
         try {
-            docBuilderFactory.setNamespaceAware(true);
-            docBuilderFactory.setValidating(false);
-            docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
-                false);
-            docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                false);
-            docBuilder = docBuilderFactory.newDocumentBuilder();
-
-            Document baseDoc;
-            try {
-                baseDoc =
-                    docBuilder.parse(new InputSource(
-                        new InputStreamReader(new FileInputStream(base), "UTF-8")));
-            } catch (SAXException e) {
-                if (e.getMessage().contains("[xX][mM][lL]")) {
-                    System.out
-                        .println("The template document has first line empty or has malformed statements");
-                }
-                throw new MergeException("An exception occured while parsing the base file "
-                    + base.getAbsolutePath() + ":\n" + e.getMessage());
-            }
-
-            Document patchDoc;
-            try {
-                patchDoc =
-                    docBuilder.parse(new InputSource(
-                        new StringReader(IOUtils.toString(new FileReader(patch)))));
-            } catch (SAXException e) {
-                throw new MergeException("An exception occured while parsing the patch:\n" + e.getMessage());
-            }
-        } catch (ParserConfigurationException e) {
-            // ignore - developer fault
+            xmlMerger.merge(base, IOUtils.toString(new FileReader(patch)), "UTF-8");
+        } catch (Throwable t) {
+            caught = t;
         }
+        assertNotNull(caught);
     }
 
     /**

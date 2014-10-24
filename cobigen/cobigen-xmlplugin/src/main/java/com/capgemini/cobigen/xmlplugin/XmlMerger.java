@@ -116,7 +116,7 @@ public class XmlMerger implements IMerger {
                     docBuilder.parse(new InputSource(new InputStreamReader(new FileInputStream(base),
                         targetCharset)));
             } catch (SAXException e) {
-                logger.error("{}{}{}", "An exception occured while parsing the base file ",
+                logger.error("{}{}{}{}", "An exception occured while parsing the base file ",
                     base.getAbsolutePath(), ":\n", e.getMessage());
                 if (e.getMessage().contains("[xX][mM][lL]")) {
                     throw new MergeException("An exception occured while parsing the base file "
@@ -132,7 +132,7 @@ public class XmlMerger implements IMerger {
             try {
                 patchDoc = docBuilder.parse(new InputSource(new StringReader(patch)));
             } catch (SAXException e) {
-                logger.error("{}", "An exception occured while parsing the patch:\n", e.getMessage());
+                logger.error("{}{}", "An exception occured while parsing the patch:\n", e.getMessage());
                 throw new MergeException("An exception occured while parsing the patch:\n" + e.getMessage());
             }
             // removeRedundantComments(baseDoc, patchDoc); <-- BasicXmlMerge combined with
@@ -146,12 +146,12 @@ public class XmlMerger implements IMerger {
             // ignore - developer fault
             logger.error(e.toString());
         } catch (AbstractXmlMergeException e) {
-            logger.error("{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
+            logger.error("{}{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
                 ":\n", e.getMessage());
             throw new MergeException("An exception occured while merging the file " + base.getAbsolutePath()
                 + ":\n" + e.getMessage());
         } catch (TransformerException e) {
-            logger.error("{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
+            logger.error("{}{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
                 ":\n", e.getMessage());
             throw new MergeException("An exception occured while printing the merged file "
                 + base.getAbsolutePath() + ":\n" + e.getMessage());
