@@ -272,10 +272,11 @@ public class CobiGen {
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
                     generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
-                        inputReader);
+                        inputReader, input);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader);
+                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
+                            input);
                         String result = null;
                         try {
                             IMerger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
@@ -299,7 +300,8 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}", originalFile.getName(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader);
+                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
+                    input);
             }
         }
     }
@@ -581,6 +583,8 @@ public class CobiGen {
      *            charset the target file should be written with
      * @param inputReader
      *            the input reader the model was built with
+     * @param input
+     *            generator input object
      * @throws TemplateException
      *             if an exception occurs during template processing
      * @throws IOException
@@ -591,11 +595,11 @@ public class CobiGen {
      * @author mbrunnli (21.03.2013)
      */
     private void generateTemplateAndWriteFile(File output, Template template, Document model,
-        String outputCharset, IInputReader inputReader) throws FileNotFoundException, TemplateException,
-        IOException {
+        String outputCharset, IInputReader inputReader, Object input) throws FileNotFoundException,
+        TemplateException, IOException {
 
         try (Writer out = new StringWriter()) {
-            generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader);
+            generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader, input);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         }
     }
@@ -641,6 +645,8 @@ public class CobiGen {
      *            the input reader the model was built with
      * @param outputCharset
      *            charset the target file should be written with
+     * @param input
+     *            generator input object
      * @throws TemplateException
      *             if an exception occurs during template processing
      * @throws IOException
@@ -648,7 +654,7 @@ public class CobiGen {
      * @author mbrunnli (12.03.2013)
      */
     private void generateTemplateAndWritePatch(Writer out, Template template, Document model,
-        String outputCharset, IInputReader inputReader) throws TemplateException, IOException {
+        String outputCharset, IInputReader inputReader, Object input) throws TemplateException, IOException {
 
         freemarker.template.Template fmTemplate;
         try {
@@ -662,7 +668,7 @@ public class CobiGen {
         env.setOutputEncoding(outputCharset);
         env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
 
-        Map<String, Object> templateMethods = inputReader.getTemplateMethods(this);
+        Map<String, Object> templateMethods = inputReader.getTemplateMethods(input);
         for (String key : templateMethods.keySet()) {
             env.setVariable(key, (TemplateModel) templateMethods.get(key));
         }
