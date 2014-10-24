@@ -87,10 +87,8 @@ public class JavaInputReader implements IInputReader {
             Object[] inputArr = (Object[]) o;
             if (inputArr[0] instanceof JavaClass) {
                 model = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[0]);
-                ReflectedJavaModelBuilder.enrichModelByUtils(model, (Class<?>) inputArr[1]);
             } else {
                 model = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
-                ReflectedJavaModelBuilder.enrichModelByUtils(model, (Class<?>) inputArr[0]);
             }
             return model;
         }

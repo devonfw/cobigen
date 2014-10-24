@@ -89,26 +89,7 @@ public class ReflectedJavaModelBuilder {
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
         cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        enrichModelByUtils(cachedModel, pojo);
-
         return new HashMap<>(cachedModel);
-    }
-
-    /**
-     * Enriches the given model by type utils
-     *
-     * @param model
-     *            raw model
-     * @param pojo
-     *            the model has been created for
-     */
-    public static void enrichModelByUtils(Map<String, Object> model, Class<?> pojo) {
-
-        // this is not working any more, because model will be converted to a DOM model
-        /*
-         * // Utils to enable type checks model.put(ModelConstant.UTILS, new BeanModel(new
-         * FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
-         */
     }
 
     /**
