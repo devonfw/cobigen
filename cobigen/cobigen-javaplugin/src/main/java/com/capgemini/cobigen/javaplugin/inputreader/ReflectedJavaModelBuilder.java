@@ -22,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
 
-import freemarker.ext.beans.BeanModel;
-import freemarker.template.DefaultObjectWrapper;
-
 /**
  * The {@link ReflectedJavaModelBuilder} creates a new model for a given input pojo class
  *
@@ -107,9 +104,11 @@ public class ReflectedJavaModelBuilder {
      */
     public static void enrichModelByUtils(Map<String, Object> model, Class<?> pojo) {
 
-        // Utils to enable type checks
-        model.put(ModelConstant.UTILS, new BeanModel(new FreeMarkerUtil(pojo.getClassLoader()),
-            new DefaultObjectWrapper()));
+        // this is not working any more, because model will be converted to a DOM model
+        /*
+         * // Utils to enable type checks model.put(ModelConstant.UTILS, new BeanModel(new
+         * FreeMarkerUtil(pojo.getClassLoader()), new DefaultObjectWrapper()));
+         */
     }
 
     /**
