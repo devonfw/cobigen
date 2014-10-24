@@ -669,8 +669,10 @@ public class CobiGen {
         env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
 
         Map<String, Object> templateMethods = inputReader.getTemplateMethods(input);
-        for (String key : templateMethods.keySet()) {
-            env.setVariable(key, (TemplateModel) templateMethods.get(key));
+        if (templateMethods != null) {
+            for (String key : templateMethods.keySet()) {
+                env.setVariable(key, (TemplateModel) templateMethods.get(key));
+            }
         }
 
         createModelShortcuts(model, env);
