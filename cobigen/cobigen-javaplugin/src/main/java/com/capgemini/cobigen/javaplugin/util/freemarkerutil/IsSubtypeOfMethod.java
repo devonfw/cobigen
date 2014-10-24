@@ -39,7 +39,7 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
      * @param args
      *            a List of the method call arguments. Two String values are expected
      * @return <code>TemplateBooleanModel.TRUE</code> if the corresponding class of the first String is a sub
-     *         type of corresponding class of the second String<br>
+     *         type (or same) of corresponding class of the second String<br>
      *         <code>TemplateBooleanModel.FALSE</code> otherwise
      * @throws TemplateModelException
      *             if one of the given classes could not be found or if the number of arguments in args is not
@@ -71,7 +71,7 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
      *            qualified name of the sub type
      * @param superType
      *            qualified name of the super type
-     * @return <code>true</code> if the given subtype is a sub type of the given supertype<br>
+     * @return <code>true</code> if the given subtype is a sub type (or the same) of the given supertype<br>
      *         <code>false</code> otherwise
      * @throws ClassNotFoundException
      *             if one of the given classes could not be found

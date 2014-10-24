@@ -16,12 +16,74 @@ import freemarker.template.TemplateModelException;
 public class IsAbstractMethodTest {
 
     /**
-     * Test method for {@link IsAbstractMethod#exec(java.util.List)}.
+     * Test method for {@link IsAbstractMethod#exec(java.util.List)} with correct argument which is an
+     * abstract class.
      * @throws TemplateModelException
      *             test fails
      */
     @Test
-    public void testExec() throws TemplateModelException {
+    public void testExec_abstract() throws TemplateModelException {
+        // create instance
+        IsAbstractMethod method = new IsAbstractMethod(this.getClass().getClassLoader());
+
+        // create testdata
+        SimpleScalar abstractClass =
+            new SimpleScalar("com.capgemini.cobigen.javaplugin.util.freemarkerutil.SimpleAbstractClass");
+        ArrayList<Object> args = new ArrayList<>();
+        args.add(abstractClass);
+
+        // Execute and Check with correct argument
+        Assert.assertSame(TemplateBooleanModel.TRUE, method.exec(args));
+    }
+
+    /**
+     * Test method for {@link IsAbstractMethod#exec(java.util.List)} with correct argument which is not an
+     * abstract class.
+     * @throws TemplateModelException
+     *             test fails
+     */
+    @Test
+    public void testExec_notAbstract() throws TemplateModelException {
+        // create instance
+        IsAbstractMethod method = new IsAbstractMethod(this.getClass().getClassLoader());
+
+        // create testdata
+        SimpleScalar notAbstractClass = new SimpleScalar("java.lang.Object");
+        ArrayList<Object> args = new ArrayList<>();
+        args.add(notAbstractClass);
+
+        // Execute and Check with correct arguments
+        Assert.assertSame(TemplateBooleanModel.FALSE, method.exec(args));
+    }
+
+    /**
+     * Test method for {@link IsAbstractMethod#exec(java.util.List)} with an argument which is not an
+     * resolvable to a class. Therefore a TemplateModelException is expected.
+     * @throws TemplateModelException
+     *             this Exception is excepted, because of the unresolvable argument.
+     */
+    @Test(expected = TemplateModelException.class)
+    public void testExec_wrongArg() throws TemplateModelException {
+        // create instance
+        IsAbstractMethod method = new IsAbstractMethod(this.getClass().getClassLoader());
+
+        // create testdata
+        SimpleScalar nonsense = new SimpleScalar("nonsense");
+        ArrayList<Object> args = new ArrayList<>();
+        args.add(nonsense);
+
+        // Execute and Check with wrong arguments
+        method.exec(args);
+    }
+
+    /**
+     * Test method for {@link IsAbstractMethod#exec(java.util.List)} with too many arguments. Therefore a
+     * TemplateModelException is expected.
+     * @throws TemplateModelException
+     *             this Exception is excepted, because there are to many arguments
+     */
+    @Test(expected = TemplateModelException.class)
+    public void testExec_tooManyArgs() throws TemplateModelException {
         // create instance
         IsAbstractMethod method = new IsAbstractMethod(this.getClass().getClassLoader());
 
@@ -29,46 +91,29 @@ public class IsAbstractMethodTest {
         SimpleScalar abstractClass =
             new SimpleScalar("com.capgemini.cobigen.javaplugin.util.freemarkerutil.SimpleAbstractClass");
         SimpleScalar notAbstractClass = new SimpleScalar("java.lang.Object");
-        SimpleScalar nonsense = new SimpleScalar("nonsense");
-
-        // Execute and Check with correct arguments
         ArrayList<Object> args = new ArrayList<>();
         args.add(abstractClass);
-        Assert.assertSame(TemplateBooleanModel.TRUE, method.exec(args));
-
-        args.clear();
         args.add(notAbstractClass);
-        Assert.assertSame(TemplateBooleanModel.FALSE, method.exec(args));
-
-        // Execute and Check with wrong arguments
-        args.clear();
-        args.add(nonsense);
-        try {
-            method.exec(args);
-            Assert.fail("Exception should me thrown");
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof TemplateModelException);
-        }
 
         // Execute and Check with too many arguments
-        args.clear();
-        args.add(abstractClass);
-        args.add(notAbstractClass);
-        try {
-            method.exec(args);
-            Assert.fail("Exception should me thrown");
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof TemplateModelException);
-        }
+        method.exec(args);
+    }
 
-        // Execute and Check with too less arguments
-        args.clear();
-        try {
-            method.exec(args);
-            Assert.fail("Exception should me thrown");
-        } catch (Exception e) {
-            Assert.assertTrue(e instanceof TemplateModelException);
-        }
+    /**
+     * Test method for {@link IsAbstractMethod#exec(java.util.List)} with too less arguments. Therefore a
+     * TemplateModelException is expected.
+     * @throws TemplateModelException
+     *             this Exception is excepted, because there are to less arguments
+     */
+    @Test(expected = TemplateModelException.class)
+    public void testExec_tooLessArgs() throws TemplateModelException {
+        // create instance
+        IsAbstractMethod method = new IsAbstractMethod(this.getClass().getClassLoader());
 
+        // create testdata
+        ArrayList<Object> args = new ArrayList<>();
+
+        // Execute and Check with too many arguments
+        method.exec(args);
     }
 }
