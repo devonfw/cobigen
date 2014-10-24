@@ -51,9 +51,6 @@ public class JavaInputReaderTest {
         Map<String, Object> fieldAttributes = JavaModelUtil.getField(model, "customList");
         Assert.assertEquals("Parametric types are not be resolved correctly!", "List<String>",
             fieldAttributes.get(ModelConstant.TYPE));
-
-        // Check reflection feature (existence of util for classpath dependent checks)
-        Assert.assertNotNull("Reflection Util not attached to model!", model.get(ModelConstant.UTILS));
     }
 
     /**
