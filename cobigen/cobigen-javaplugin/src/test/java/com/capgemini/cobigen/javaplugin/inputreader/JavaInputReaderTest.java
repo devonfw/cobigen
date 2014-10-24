@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,6 +12,8 @@ import org.junit.Test;
 import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
 
 /**
  * This class tests the {@link JavaInputReader}. More specific it should test the model extraction by using
@@ -51,5 +54,25 @@ public class JavaInputReaderTest {
 
         // Check reflection feature (existence of util for classpath dependent checks)
         Assert.assertNotNull("Reflection Util not attached to model!", model.get(ModelConstant.UTILS));
+    }
+
+    /**
+     * Test method for {@link JavaInputReader#getTemplateMethods(Object)}. Checks whether the returning Map
+     * contains isSubtypeOf and isAstract as template methods.
+     */
+    @Test
+    public void testgetTemplateMethods() {
+        // create instance
+        JavaInputReader reader = new JavaInputReader();
+
+        // create test data
+        Map<String, Object> methods = reader.getTemplateMethods(this);
+        Set<String> keys = methods.keySet();
+
+        // validate
+        Assert.assertTrue(keys.contains("isSubtypeOf"));
+        Assert.assertTrue(keys.contains("isAbstract"));
+        Assert.assertTrue(methods.get("isSubtypeOf") instanceof IsSubtypeOfMethod);
+        Assert.assertTrue(methods.get("isAbstract") instanceof IsAbstractMethod);
     }
 }
