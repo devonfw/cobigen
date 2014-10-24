@@ -46,7 +46,7 @@ import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
 
 /**
  * The {@link XmlMerger} combines all functionality for merging XML structures
- * 
+ *
  * @author mbrunnli (12.03.2013)
  */
 public class XmlMerger implements IMerger {
@@ -76,7 +76,7 @@ public class XmlMerger implements IMerger {
      * @author mbrunnli (08.04.2014)
      */
     public XmlMerger(String type, BasicMergeAction action) {
-        this.xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlMatcher());
+        xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlMatcher());
         this.type = type;
     }
 
@@ -96,6 +96,7 @@ public class XmlMerger implements IMerger {
      * @throws MergeException
      * @author trippl (05.03.2013)
      */
+    @Override
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 
@@ -117,6 +118,12 @@ public class XmlMerger implements IMerger {
             } catch (SAXException e) {
                 logger.error("{}{}{}", "An exception occured while parsing the base file ",
                     base.getAbsolutePath(), ":\n", e.getMessage());
+                if (e.getMessage().contains("[xX][mM][lL]")) {
+                    throw new MergeException("An exception occured while parsing the base file "
+                        + base.getAbsolutePath() + ":\n"
+                        + "The template document has first line empty or has malformed statements"
+                        + e.getMessage());
+                }
                 throw new MergeException("An exception occured while parsing the base file "
                     + base.getAbsolutePath() + ":\n" + e.getMessage());
             }
@@ -216,8 +223,9 @@ public class XmlMerger implements IMerger {
 
             for (int i = 0; i < patchCommentNodes.getLength(); i++) {
                 Node commentNode = patchCommentNodes.item(i);
-                if (containsComment(origianlCommentNodes, commentNode))
+                if (containsComment(origianlCommentNodes, commentNode)) {
                     commentNode.getParentNode().removeChild(commentNode);
+                }
             }
         } catch (XPathExpressionException e) {
             // ignore - developer fault
@@ -237,8 +245,9 @@ public class XmlMerger implements IMerger {
      */
     private boolean containsComment(NodeList comments, Node comment) {
         for (int i = 0; i < comments.getLength(); i++) {
-            if (comments.item(i).getNodeValue().equals(comment.getNodeValue()))
+            if (comments.item(i).getNodeValue().equals(comment.getNodeValue())) {
                 return true;
+            }
         }
         return false;
     }
@@ -280,8 +289,9 @@ public class XmlMerger implements IMerger {
     private void addEmptyLinesBetweenRootChildNodes(Document doc) {
 
         Node root = doc.getDocumentElement();
-        if (root == null)
+        if (root == null) {
             return;
+        }
 
         List<Node> nodes = copyNodeList(root.getChildNodes());
 
