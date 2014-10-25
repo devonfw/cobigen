@@ -99,13 +99,9 @@ public class TemplateTo extends AbstractTemplateResolver {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        if (getId() != null) {
-            result += prime * getId().hashCode();
-        } else if (getTriggerId() != null) {
-            result += prime * getTriggerId().hashCode();
-        } else if (getMergeStrategy() != null) {
-            result += prime * getMergeStrategy().hashCode();
-        }
+        result = prime * result + getId() == null ? 0 : getId().hashCode();
+        result = prime * result + getTriggerId() == null ? 0 : getTriggerId().hashCode();
+        result = prime * result + getMergeStrategy() == null ? 0 : getMergeStrategy().hashCode();
         result += prime * result;
         return result;
     }
@@ -120,14 +116,37 @@ public class TemplateTo extends AbstractTemplateResolver {
             return false;
         }
         if (obj instanceof TemplateTo) {
-            if (((TemplateTo) obj).getId() != null && ((TemplateTo) obj).getTriggerId() != null
-                && ((TemplateTo) obj).getMergeStrategy() != null) {
-                return (((TemplateTo) obj).getId().equals(getId())
-                    && ((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
-                    .getMergeStrategy().equals(getMergeStrategy()));
-            } else if (((TemplateTo) obj).getId() == null && ((TemplateTo) obj).getTriggerId() == null
-                && ((TemplateTo) obj).getMergeStrategy() == null) {
-                return true;
+            if (((TemplateTo) obj).getId() != null) {
+                if (((TemplateTo) obj).getTriggerId() != null) {
+                    if (((TemplateTo) obj).getMergeStrategy() != null) {
+                        return (((TemplateTo) obj).getId().equals(getId())
+                            && ((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
+                            .getMergeStrategy().equals(getMergeStrategy()));
+                    } else {
+                        return (((TemplateTo) obj).getId().equals(getId()) && ((TemplateTo) obj)
+                            .getTriggerId().equals(getTriggerId()));
+                    }
+                } else {
+                    if (((TemplateTo) obj).getMergeStrategy() != null) {
+                        return (((TemplateTo) obj).getId().equals(getId()) && ((TemplateTo) obj)
+                            .getMergeStrategy().equals(getMergeStrategy()));
+                    } else {
+                        return (((TemplateTo) obj).getId().equals(getId()));
+                    }
+                }
+            } else {
+                if (((TemplateTo) obj).getTriggerId() != null) {
+                    if (((TemplateTo) obj).getMergeStrategy() != null) {
+                        return (((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
+                            .getMergeStrategy().equals(getMergeStrategy()));
+                    } else {
+                        return (((TemplateTo) obj).getTriggerId().equals(getTriggerId()));
+                    }
+                } else {
+                    if (((TemplateTo) obj).getMergeStrategy() != null) {
+                        return (((TemplateTo) obj).getMergeStrategy().equals(getMergeStrategy()));
+                    }
+                }
             }
         }
         return false;

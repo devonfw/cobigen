@@ -134,18 +134,13 @@ public class IncrementTo {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        if (getId() != null) {
-            result += prime * getId().hashCode();
-        } else if (getDescription() != null) {
-            result += prime * getDescription().hashCode();
-        } else if (getTemplates() != null) {
-            result += prime * getTemplates().hashCode();
-        } else if (getTriggerId() != null) {
-            result += prime * getTriggerId().hashCode();
-        } else if (getDependentIncrements() != null) {
-            result += prime * getDependentIncrements().hashCode();
-        }
-        result += prime * result;
+        result = prime * result + getId() == null ? 0 : getId().hashCode();
+        result = prime * result + getDescription() == null ? 0 : getDescription().hashCode();
+        int x = getTemplates() == null ? 0 : getTemplates().hashCode();
+        result = prime * result + getTriggerId() == null ? 0 : getTriggerId().hashCode();
+        result = prime * result + x;
+        x = getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode();
+        result = prime * result + x;
         return result;
     }
 
@@ -159,20 +154,182 @@ public class IncrementTo {
             return false;
         }
         if (obj instanceof IncrementTo) {
-            if (((IncrementTo) obj).getId() != null && ((IncrementTo) obj).getDescription() != null
-                && ((IncrementTo) obj).getTemplates() != null && ((IncrementTo) obj).getTriggerId() != null
-                && ((IncrementTo) obj).getDependentIncrements() != null) {
-                return (((IncrementTo) obj).getId().equals(getId())
-                    && ((IncrementTo) obj).getDescription().equals(getDescription())
-                    && ((IncrementTo) obj).getTemplates().equals(getTemplates())
-                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
-                    .getDependentIncrements().equals(getDependentIncrements()));
-            } else if (((IncrementTo) obj).getId() == null && ((IncrementTo) obj).getDescription() == null
-                && ((IncrementTo) obj).getTemplates() == null && ((IncrementTo) obj).getTriggerId() == null
-                && ((IncrementTo) obj).getDependentIncrements() == null) {
-                return true;
+            if (((IncrementTo) obj).getId() != null) {
+                if (((IncrementTo) obj).getDescription() != null) {
+                    if (((IncrementTo) obj).getTemplates() != null) {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getTemplates().equals(getTemplates()));
+                            }
+                        }
+                    } else {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId()) && ((IncrementTo) obj)
+                                    .getDescription().equals(getDescription()));
+                            }
+                        }
+                    }
+                } else {
+                    if (((IncrementTo) obj).getTemplates() != null) {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId()) && ((IncrementTo) obj)
+                                    .getTemplates().equals(getTemplates()));
+                            }
+                        }
+                    } else {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getId().equals(getId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getId().equals(getId()));
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (((IncrementTo) obj).getDescription() != null) {
+                    if (((IncrementTo) obj).getTemplates() != null) {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getTemplates().equals(getTemplates()));
+                            }
+                        }
+                    } else {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getDescription().equals(getDescription()));
+                            }
+                        }
+                    }
+                } else {
+                    if (((IncrementTo) obj).getTemplates() != null) {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getTemplates().equals(getTemplates())
+                                    && ((IncrementTo) obj).getTriggerId().equals(getTriggerId()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getTemplates().equals(getTemplates()) && ((IncrementTo) obj)
+                                    .getDependentIncrements().equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getTemplates().equals(getTemplates()));
+                            }
+                        }
+                    } else {
+                        if (((IncrementTo) obj).getTriggerId() != null) {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDependentIncrements()
+                                    .equals(getDependentIncrements()));
+                            } else {
+                                return (((IncrementTo) obj).getTriggerId().equals(getTriggerId()));
+                            }
+                        } else {
+                            if (((IncrementTo) obj).getDependentIncrements() != null) {
+                                return (((IncrementTo) obj).getDependentIncrements()
+                                    .equals(getDependentIncrements()));
+                            }
+                        }
+                    }
+                }
             }
         }
         return false;
     }
+
 }
