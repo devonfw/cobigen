@@ -1,9 +1,11 @@
-package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
+package com.capgemini.cobigen.javaplugin.test.util.freemarkerutil;
 
 import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
 
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
@@ -28,7 +30,7 @@ public class IsAbstractMethodTest {
 
         // create testdata
         SimpleScalar abstractClass =
-            new SimpleScalar("com.capgemini.cobigen.javaplugin.util.freemarkerutil.SimpleAbstractClass");
+            new SimpleScalar("com.capgemini.cobigen.javaplugin.test.util.freemarkerutil.SimpleAbstractClass");
         ArrayList<Object> args = new ArrayList<>();
         args.add(abstractClass);
 

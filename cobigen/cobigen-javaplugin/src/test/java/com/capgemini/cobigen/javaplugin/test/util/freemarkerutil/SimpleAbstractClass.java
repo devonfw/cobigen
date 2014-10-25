@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
+package com.capgemini.cobigen.javaplugin.test.util.freemarkerutil;
 
 /**
  * This empty abstract class is a needed for {@link IsAbstractMethodTest}

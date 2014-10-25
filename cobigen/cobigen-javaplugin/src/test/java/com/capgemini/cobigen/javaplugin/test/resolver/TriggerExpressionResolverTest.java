@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright © Capgemini 2013. All rights reserved.
  ******************************************************************************/
-package com.capgemini.cobigen.javaplugin.resolver;
+package com.capgemini.cobigen.javaplugin.test.resolver;
 
 import org.junit.Assert;
 import org.junit.Test;

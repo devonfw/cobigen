@@ -1,7 +1,7 @@
-package com.capgemini.cobigen.javaplugin.inputreader.testdata;
+package com.capgemini.cobigen.javaplugin.test.inputreader.testdata;
 
-import com.capgemini.cobigen.javaplugin.inputreader.ParsedJavaModelBuilderTest;
-import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilderTest;
+import com.capgemini.cobigen.javaplugin.test.inputreader.ParsedJavaModelBuilderTest;
+import com.capgemini.cobigen.javaplugin.test.inputreader.ReflectedJavaModelBuilderTest;
 
 /**
  * Interface without semantics for testcases in {@link ReflectedJavaModelBuilderTest} and

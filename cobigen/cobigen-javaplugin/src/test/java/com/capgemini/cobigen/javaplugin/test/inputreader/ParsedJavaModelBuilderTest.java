@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.inputreader;
+package com.capgemini.cobigen.javaplugin.test.inputreader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
@@ -42,7 +44,7 @@ public class ParsedJavaModelBuilderTest {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
         Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
@@ -63,7 +65,7 @@ public class ParsedJavaModelBuilderTest {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
@@ -72,17 +74,17 @@ public class ParsedJavaModelBuilderTest {
 
         // interface1
         Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface1",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestInterface1",
             interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
-            interfaces.get(0).get(ModelConstant.PACKAGE));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", interfaces.get(0)
+            .get(ModelConstant.PACKAGE));
 
         // interface2
         Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface2",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestInterface2",
             interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
-            interfaces.get(1).get(ModelConstant.PACKAGE));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", interfaces.get(1)
+            .get(ModelConstant.PACKAGE));
     }
 
     /**
@@ -98,7 +100,7 @@ public class ParsedJavaModelBuilderTest {
 
         File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
 
         // debug nullPointerException in case of superclass without package
         Map<String, Object> model =
@@ -116,15 +118,15 @@ public class ParsedJavaModelBuilderTest {
     public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
         Assert
             .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.AbstractTestClass",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.AbstractTestClass",
             JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata", JavaModelUtil
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", JavaModelUtil
             .getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
@@ -139,14 +141,14 @@ public class ParsedJavaModelBuilderTest {
 
         File file = new File(testFileRootPath + "Pojo.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
         Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.AnyOtherType",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.AnyOtherType",
             customTypeField.get(ModelConstant.CANONICAL_TYPE));
     }
 
@@ -163,7 +165,7 @@ public class ParsedJavaModelBuilderTest {
         File subClass = new File(testFileRootPath + "TestClass.java");
         File superClass = new File(testFileRootPath + "AbstractTestClass.java");
 
-        ParsedJavaModelBuilder javaModelBuilder = new ParsedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(subClass),
                 new FileReader(superClass)));

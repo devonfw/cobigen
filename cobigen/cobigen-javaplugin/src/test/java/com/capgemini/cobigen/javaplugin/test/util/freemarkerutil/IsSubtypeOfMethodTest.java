@@ -1,9 +1,11 @@
-package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
+package com.capgemini.cobigen.javaplugin.test.util.freemarkerutil;
 
 import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
 
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;

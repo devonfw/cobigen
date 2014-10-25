@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright © Capgemini 2013. All rights reserved.
  ******************************************************************************/
-package com.capgemini.cobigen.javaplugin.merger;
+package com.capgemini.cobigen.javaplugin.test.merger;
 
 import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;
 
@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.exceptions.MergeException;
+import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;

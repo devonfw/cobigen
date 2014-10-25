@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.inputreader;
+package com.capgemini.cobigen.javaplugin.test.inputreader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,7 +9,9 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;

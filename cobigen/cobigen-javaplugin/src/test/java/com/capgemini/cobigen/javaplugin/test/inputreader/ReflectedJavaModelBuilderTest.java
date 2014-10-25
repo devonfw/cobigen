@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.inputreader;
+package com.capgemini.cobigen.javaplugin.test.inputreader;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -7,7 +7,10 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
+import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
@@ -30,7 +33,7 @@ public class ReflectedJavaModelBuilderTest {
     @Test
     public void testCorrectlyExtractedAttributeTypes() {
 
-        ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
@@ -61,7 +64,7 @@ public class ReflectedJavaModelBuilderTest {
     @Test
     public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
 
-        ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
 
         // check whether implemented Types (interfaces) meet expectations
@@ -69,17 +72,17 @@ public class ReflectedJavaModelBuilderTest {
 
         // interface1
         Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface1",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestInterface1",
             interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
-            interfaces.get(0).get(ModelConstant.PACKAGE));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", interfaces.get(0)
+            .get(ModelConstant.PACKAGE));
 
         // interface2
         Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.TestInterface2",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestInterface2",
             interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata",
-            interfaces.get(1).get(ModelConstant.PACKAGE));
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", interfaces.get(1)
+            .get(ModelConstant.PACKAGE));
     }
 
     /**
@@ -90,14 +93,14 @@ public class ReflectedJavaModelBuilderTest {
      */
     @Test
     public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
-        ReflectedJavaModelBuilder javaModelBuilder = new ReflectedJavaModelBuilder();
+        JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
 
         Assert
             .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata.AbstractTestClass",
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata.AbstractTestClass",
             JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.inputreader.testdata", JavaModelUtil
+        Assert.assertEquals("com.capgemini.cobigen.javaplugin.test.inputreader.testdata", JavaModelUtil
             .getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
