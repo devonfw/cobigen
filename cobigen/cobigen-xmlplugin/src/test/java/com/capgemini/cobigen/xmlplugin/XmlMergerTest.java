@@ -1,15 +1,9 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.xmlplugin;
-
-import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -21,7 +15,7 @@ import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
 
 /**
- *
+ * Test suite for {@link XmlMerger} class
  * @author mbrunnli (06.04.2014)
  */
 public class XmlMergerTest {
@@ -32,28 +26,23 @@ public class XmlMergerTest {
     private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
 
     /**
-     * Test Issue #31 Test method for
+     * Test Issue https://github.com/oasp/tools-cobigen/issues/31 Test method for
      * {@link com.capgemini.cobigen.xmlplugin.XmlMerger#merge(java.io.File, java.lang.String, java.lang.String)}
      * .
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws UnsupportedEncodingException
-     * @throws MergeException
+     * @throws Exception
+     *             test fails
      * @author sbasnet (24.10.2014)
      */
     @Test
-    public void testMerge() throws UnsupportedEncodingException, FileNotFoundException, IOException,
-        MergeException {
-        File base = new File(testFileRootPath + "templates.xml");
-        File patch = new File(testFileRootPath + "NamedQueries.hbm.xml.ftl");
+    public void testMerge() throws Exception {
+        File base = new File(testFileRootPath + "invalid.xml");
         XmlMerger xmlMerger = new XmlMerger("", new CompleteMergeAction());
-        Throwable caught = null;
         try {
-            xmlMerger.merge(base, IOUtils.toString(new FileReader(patch)), "UTF-8");
-        } catch (Throwable t) {
-            caught = t;
+            xmlMerger.merge(base, IOUtils.toString(new FileReader(base)), "UTF-8");
+        } catch (MergeException e) {
+            Assert.assertNotEquals(
+                "The processing instruction target matching \"[xX][mM][lL]\" is not allowed", e.getMessage());
         }
-        assertNotNull(caught);
     }
 
     /**
