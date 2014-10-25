@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+  <triggers>
+    <trigger id="testTemplates" type="java" templateFolder="testTemplates">
+      <matcher type="fqn" value=".*">
+      </matcher>
+    </trigger>
+  </triggers>
+</contextConfiguration>

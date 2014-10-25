@@ -39,7 +39,8 @@ public class JavaMergerTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/JavaMergerTest/";
+    private static String testFileRootPath =
+        "src/test/resources/com/capgemini/cobigen/javaplugin/test/merger/";
 
     /**
      * Test of {@link JavaMerger} merging imports

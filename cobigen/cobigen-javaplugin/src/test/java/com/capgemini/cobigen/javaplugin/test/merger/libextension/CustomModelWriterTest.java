@@ -28,12 +28,14 @@ public class CustomModelWriterTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/CustomModelWriterTest/";
+    private static String testFileRootPath =
+        "src/test/resources/com/capgemini/cobigen/javaplugin/test/merger/libextension/";
 
     /**
      * Run the ModelWriter writeField(JavaField) method test
      *
      * @throws FileNotFoundException
+     *             test fails
      */
     @Test
     public void testWriteField() throws FileNotFoundException {
@@ -50,6 +52,7 @@ public class CustomModelWriterTest {
      * Tests whether the header will be rewritten after parsing and printing with QDox
      *
      * @throws IOException
+     *             test fails
      * @author mbrunnli (12.04.2013)
      */
     @Test
@@ -67,6 +70,7 @@ public class CustomModelWriterTest {
      * Tests whether generics will be rewritten after parsing and printing with QDox
      *
      * @throws IOException
+     *             test fails
      * @author mbrunnli (12.04.2013)
      */
     @Test
@@ -88,6 +92,7 @@ public class CustomModelWriterTest {
      * Tests whether modifiers of classes, fields, methods and method parameters are written correctly
      *
      * @throws FileNotFoundException
+     *             test fails
      * @author mbrunnli (17.06.2013)
      */
     @Test

@@ -29,7 +29,8 @@ public class JavaInputReaderTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/JavaInputReaderTests/";
+    private static String testFileRootPath =
+        "src/test/resources/com/capgemini/cobigen/javaplugin/test/inputreader/";
 
     /**
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class
