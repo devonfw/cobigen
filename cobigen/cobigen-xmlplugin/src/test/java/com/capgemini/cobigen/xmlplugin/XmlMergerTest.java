@@ -34,13 +34,14 @@ public class XmlMergerTest {
      * @author sbasnet (24.10.2014)
      */
     @Test
-    public void testMerge() throws Exception {
+    public void testMergeHandlesUnspecificXmlParserMessage() throws Exception {
         File base = new File(testFileRootPath + "invalid.xml");
         XmlMerger xmlMerger = new XmlMerger("", new CompleteMergeAction());
         try {
             xmlMerger.merge(base, IOUtils.toString(new FileReader(base)), "UTF-8");
         } catch (MergeException e) {
             Assert.assertNotEquals(
+                "Original unspecific xml parser message occured, which should be handled.",
                 "The processing instruction target matching \"[xX][mM][lL]\" is not allowed", e.getMessage());
         }
     }
