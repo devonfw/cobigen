@@ -49,6 +49,11 @@ import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
 public class XmlMerger implements IMerger {
 
     /**
+     * Assigning logger to XmlMerger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlMerger.class);
+
+    /**
      * Merger type to be registered
      */
     private String type;
@@ -57,11 +62,6 @@ public class XmlMerger implements IMerger {
      * {@link XmlMerge} instance
      */
     private XmlMerge xmlMerge;
-
-    /**
-     * Assigning logger to XmlMerger
-     */
-    private Logger LOG = LoggerFactory.getLogger(XmlMerger.class);
 
     /**
      * Creates a new {@link XmlMerger} with the given {@link BasicMergeAction} to be performed when merging
@@ -260,7 +260,7 @@ public class XmlMerger implements IMerger {
             }
         } catch (XPathExpressionException e) {
             // ignore - developer fault
-            LOG.error(e.toString());
+            LOG.error("This might be a bug.", e);
         }
     }
 
