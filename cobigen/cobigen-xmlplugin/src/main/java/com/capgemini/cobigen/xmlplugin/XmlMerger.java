@@ -138,7 +138,7 @@ public class XmlMerger implements IMerger {
             if (e.getMessage().contains(
                 "The processing instruction target matching \"[xX][mM][lL]\" is not allowed")) {
                 throw new MergeException("An exception occured while parsing the " + source + ".\n"
-                    + "Please check whether the first line of the " + source
+                    + "Please check whether the first line of the " + source + "(" + base.getName() + ") "
                     + " starts with the xml declaration like:\n"
                     + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\nOtherwise you will get this error.");
             }
