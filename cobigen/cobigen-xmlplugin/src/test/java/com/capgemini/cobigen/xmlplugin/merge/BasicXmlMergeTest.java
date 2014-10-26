@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.xmlplugin.merge;
 
 import java.io.File;
@@ -18,11 +15,10 @@ import ch.elca.el4j.services.xmlmerge.mapper.IdentityMapper;
 import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
 import com.capgemini.cobigen.xmlplugin.action.OverrideMergeAction;
 import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
-import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
 
 /**
  * TestCase testing {@link BasicXmlMerge}
- * 
+ *
  * @author trippl
  */
 public class BasicXmlMergeTest {
@@ -37,6 +33,7 @@ public class BasicXmlMergeTest {
      * @param documentFile
      *            the {@link File} to be parsed into a {@link Document}
      * @throws Exception
+     *             test fails
      * @return the {@link Document} representing the given file
      * @author trippl (17.04.2013)
      */
@@ -57,6 +54,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging Flow.xml files
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test
@@ -84,6 +82,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging Overview.xhtml files
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test
@@ -112,6 +111,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging NamedQuery.xml files
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test
@@ -131,6 +131,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging xhtml Files containing a table
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test
@@ -154,6 +155,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging a simple xml file
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test
@@ -180,6 +182,7 @@ public class BasicXmlMergeTest {
     /**
      * Test of {@link BasicXmlMerge} merging a simpel xml file in override mode
      * @throws Exception
+     *             test fails
      * @author trippl (17.04.2013)
      */
     @Test

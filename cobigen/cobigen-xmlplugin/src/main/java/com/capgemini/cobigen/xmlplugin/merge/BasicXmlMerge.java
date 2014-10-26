@@ -51,8 +51,6 @@ import ch.elca.el4j.services.xmlmerge.merge.DefaultXmlMerge;
 import com.capgemini.cobigen.util.SystemUtil;
 import com.capgemini.cobigen.xmlplugin.action.BasicMergeAction;
 
-// Checkstyle: MagicNumber off
-
 /**
  * This class is basically the same as the {@link DefaultXmlMerge} class. The only difference is, that
  * {@link Document}s are build with a {@link DOMBuilder} that is using a {@link UncheckedJDOMFactory}.<br>
@@ -94,19 +92,22 @@ public class BasicXmlMerge implements XmlMerge {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setRootMapper(Mapper rootMapper) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setRootMergeAction(MergeAction rootMergeAction) {
-        this.m_rootMergeAction = rootMergeAction;
+        m_rootMergeAction = rootMergeAction;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String merge(String[] sources) throws AbstractXmlMergeException {
 
         InputStream[] inputStreams = new InputStream[sources.length];
@@ -137,6 +138,7 @@ public class BasicXmlMerge implements XmlMerge {
     /**
      * {@inheritDoc}
      */
+    @Override
     public org.w3c.dom.Document merge(org.w3c.dom.Document[] sources) throws AbstractXmlMergeException {
         DOMBuilder domb = new DOMBuilder();
         domb.setFactory(new DefaultJDOMFactory());
@@ -165,6 +167,7 @@ public class BasicXmlMerge implements XmlMerge {
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputStream merge(InputStream[] sources) throws AbstractXmlMergeException {
         SAXBuilder sxb = new SAXBuilder();
 
@@ -211,7 +214,7 @@ public class BasicXmlMerge implements XmlMerge {
 
     /**
      * Performs the actual merge.
-     * 
+     *
      * @param docs
      *            The documents to merge
      * @return The merged result document

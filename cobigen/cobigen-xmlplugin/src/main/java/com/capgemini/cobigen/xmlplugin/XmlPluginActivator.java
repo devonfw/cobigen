@@ -1,6 +1,3 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.xmlplugin;
 
 import java.util.List;
@@ -13,7 +10,7 @@ import com.capgemini.cobigen.xmlplugin.action.OverrideMergeAction;
 import com.google.common.collect.Lists;
 
 /**
- * 
+ *
  * @author mbrunnli (06.04.2014)
  */
 public class XmlPluginActivator implements IGeneratorPluginActivator {

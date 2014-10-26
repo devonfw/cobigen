@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.xmlplugin.action;
 
 import java.util.List;
@@ -17,8 +14,9 @@ import ch.elca.el4j.services.xmlmerge.action.CompleteAction;
 import ch.elca.el4j.services.xmlmerge.action.OrderedMergeAction;
 
 /**
- * This class combines the functionality of the {@link OrderedMergeAction} class and the {@link CompleteAction} class
- * 
+ * This class combines the functionality of the {@link OrderedMergeAction} class and the
+ * {@link CompleteAction} class
+ *
  * @author trippl (05.04.2013)
  */
 public class CompleteMergeAction extends BasicMergeAction {
@@ -26,14 +24,13 @@ public class CompleteMergeAction extends BasicMergeAction {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void mergeContent(Element outElement, Element originalElement, Element patchElement)
-            throws AbstractXmlMergeException {
+        throws AbstractXmlMergeException {
 
         ContentFilter filter =
-                new ContentFilter(ContentFilter.ELEMENT | ContentFilter.COMMENT | ContentFilter.TEXT
-                        | ContentFilter.CDATA);
+            new ContentFilter(ContentFilter.ELEMENT | ContentFilter.COMMENT | ContentFilter.TEXT
+                | ContentFilter.CDATA);
         List<Content> originalContent = originalElement.getContent(filter);
         List<Content> patchContent = patchElement.getContent(filter);
 
@@ -75,7 +72,6 @@ public class CompleteMergeAction extends BasicMergeAction {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void mergeNamespaces(Element outElement, Element originalElement, Element patchElement) {
 
