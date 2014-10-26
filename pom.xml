@@ -161,7 +161,7 @@
 								<configuration>
 									<fromDir>${project.build.directory}</fromDir>
 									<includes>cobigen-eclipse*.zip</includes>
-									<url>file://localhost///de-file10/ClientPE</url>
+									<url>file://localhost///de-file10/ClientPE/OASP</url>
 									<toDir>CobiGenerator/Releases/snapshot</toDir>
 								</configuration>
 							</execution>
@@ -187,7 +187,7 @@
 								<configuration>
 									<fromDir>${project.build.directory}</fromDir>
 									<includes>cobigen-*.jar</includes>
-									<url>file://localhost///de-file10/ClientPE</url>
+									<url>file://localhost///de-file10/ClientPE/OASP</url>
 									<toDir>CobiGenerator/Releases/stable</toDir>
 								</configuration>
 							</execution>
