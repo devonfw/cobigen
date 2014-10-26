@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.xmlplugin.matcher;
 
 import org.jdom.Attribute;
@@ -12,7 +9,7 @@ import ch.elca.el4j.services.xmlmerge.Matcher;
  * Used by an {@link ch.elca.el4j.services.xmlmerge.XmlMerge} instance to evaluate whether two elements match,
  * by calling the Matcher's {@link XmlMatcher#matches} method.
  * @author trippl (12.03.2013)
- * 
+ *
  */
 public class XmlMatcher implements Matcher {
 
@@ -101,7 +98,9 @@ public class XmlMatcher implements Matcher {
     /**
      * Compares the values of the {@link Element}s "id" {@link Attribute}, if they have one.
      * @param element1
+     *            to check the id from
      * @param element2
+     *            to check the id from
      * @return true, if the ids match, false, if they don't match or don't exist
      * @author trippl (27.03.2013)
      */
@@ -131,8 +130,9 @@ public class XmlMatcher implements Matcher {
         if (element1Parent == null || element2Parent == null) {
             return false;
         } else {
-            if (idsMatch(element1Parent, element2Parent))
+            if (idsMatch(element1Parent, element2Parent)) {
                 return true;
+            }
             return parentElementsMatch(element1Parent, element2Parent);
         }
     }

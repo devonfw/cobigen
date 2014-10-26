@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.xmlplugin;
 
 import java.io.File;
@@ -46,10 +43,15 @@ import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
 
 /**
  * The {@link XmlMerger} combines all functionality for merging XML structures
- * 
+ *
  * @author mbrunnli (12.03.2013)
  */
 public class XmlMerger implements IMerger {
+
+    /**
+     * Assigning logger to XmlMerger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlMerger.class);
 
     /**
      * Merger type to be registered
@@ -62,11 +64,6 @@ public class XmlMerger implements IMerger {
     private XmlMerge xmlMerge;
 
     /**
-     * Assigning logger to XmlMerger
-     */
-    private Logger logger = LoggerFactory.getLogger(XmlMerger.class);
-
-    /**
      * Creates a new {@link XmlMerger} with the given {@link BasicMergeAction} to be performed when merging
      * xml elements
      * @param type
@@ -76,7 +73,7 @@ public class XmlMerger implements IMerger {
      * @author mbrunnli (08.04.2014)
      */
     public XmlMerger(String type, BasicMergeAction action) {
-        this.xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlMatcher());
+        xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlMatcher());
         this.type = type;
     }
 
@@ -91,15 +88,14 @@ public class XmlMerger implements IMerger {
 
     /**
      * {@inheritDoc}
-     * @throws IOException
-     *             If the specified template could not be found
-     * @throws MergeException
      * @author trippl (05.03.2013)
      */
+    @Override
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 
         DocumentBuilder docBuilder;
+        String source = "base file"; // just for better error handling
         try {
             docBuilderFactory.setNamespaceAware(true);
             docBuilderFactory.setValidating(false);
@@ -109,25 +105,13 @@ public class XmlMerger implements IMerger {
                 false);
             docBuilder = docBuilderFactory.newDocumentBuilder();
 
-            Document baseDoc;
-            try {
-                baseDoc =
-                    docBuilder.parse(new InputSource(new InputStreamReader(new FileInputStream(base),
-                        targetCharset)));
-            } catch (SAXException e) {
-                logger.error("{}{}{}", "An exception occured while parsing the base file ",
-                    base.getAbsolutePath(), ":\n", e.getMessage());
-                throw new MergeException("An exception occured while parsing the base file "
-                    + base.getAbsolutePath() + ":\n" + e.getMessage());
-            }
+            Document baseDoc =
+                docBuilder.parse(new InputSource(new InputStreamReader(new FileInputStream(base),
+                    targetCharset)));
+            source = "patch"; // base doc parsed correctly, next should be patch
 
-            Document patchDoc;
-            try {
-                patchDoc = docBuilder.parse(new InputSource(new StringReader(patch)));
-            } catch (SAXException e) {
-                logger.error("{}", "An exception occured while parsing the patch:\n", e.getMessage());
-                throw new MergeException("An exception occured while parsing the patch:\n" + e.getMessage());
-            }
+            Document patchDoc = docBuilder.parse(new InputSource(new StringReader(patch)));
+
             // removeRedundantComments(baseDoc, patchDoc); <-- BasicXmlMerge combined with
             // CompletMergeAction takes care of that
 
@@ -137,17 +121,25 @@ public class XmlMerger implements IMerger {
             return prettyPrintDocument(resultXml);
         } catch (ParserConfigurationException e) {
             // ignore - developer fault
-            logger.error(e.toString());
+            LOG.error("This might be a bug.", e);
         } catch (AbstractXmlMergeException e) {
-            logger.error("{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
-                ":\n", e.getMessage());
+            LOG.error("An exception occured while merging the file '{}'", base.getAbsolutePath(), e);
             throw new MergeException("An exception occured while merging the file " + base.getAbsolutePath()
                 + ":\n" + e.getMessage());
         } catch (TransformerException e) {
-            logger.error("{}{}{}", "An exception occured while merging the file ", base.getAbsolutePath(),
-                ":\n", e.getMessage());
+            LOG.error("An exception occured while merging the file '{}'", base.getAbsolutePath(), e);
             throw new MergeException("An exception occured while printing the merged file "
                 + base.getAbsolutePath() + ":\n" + e.getMessage());
+        } catch (SAXException e) {
+            LOG.error("An exception occured while parsing the patch.", e);
+            if (e.getMessage().contains(
+                "The processing instruction target matching \"[xX][mM][lL]\" is not allowed")) {
+                throw new MergeException("An exception occured while parsing the " + source + ".\n"
+                    + "Please check whether the first line of the " + source + "(" + base.getName() + ") "
+                    + " starts with the xml declaration like:\n"
+                    + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\nOtherwise you will get this error.");
+            }
+            throw new MergeException("An exception occured while parsing the patch:\n" + e.getMessage());
         }
         return null;
     }
@@ -216,12 +208,13 @@ public class XmlMerger implements IMerger {
 
             for (int i = 0; i < patchCommentNodes.getLength(); i++) {
                 Node commentNode = patchCommentNodes.item(i);
-                if (containsComment(origianlCommentNodes, commentNode))
+                if (containsComment(origianlCommentNodes, commentNode)) {
                     commentNode.getParentNode().removeChild(commentNode);
+                }
             }
         } catch (XPathExpressionException e) {
             // ignore - developer fault
-            logger.error(e.toString());
+            LOG.error("This might be a bug.", e);
         }
     }
 
@@ -237,8 +230,9 @@ public class XmlMerger implements IMerger {
      */
     private boolean containsComment(NodeList comments, Node comment) {
         for (int i = 0; i < comments.getLength(); i++) {
-            if (comments.item(i).getNodeValue().equals(comment.getNodeValue()))
+            if (comments.item(i).getNodeValue().equals(comment.getNodeValue())) {
                 return true;
+            }
         }
         return false;
     }
@@ -266,7 +260,7 @@ public class XmlMerger implements IMerger {
             }
         } catch (XPathExpressionException e) {
             // ignore - developer fault
-            logger.error(e.toString());
+            LOG.error("This might be a bug.", e);
         }
     }
 
@@ -280,8 +274,9 @@ public class XmlMerger implements IMerger {
     private void addEmptyLinesBetweenRootChildNodes(Document doc) {
 
         Node root = doc.getDocumentElement();
-        if (root == null)
+        if (root == null) {
             return;
+        }
 
         List<Node> nodes = copyNodeList(root.getChildNodes());
 
@@ -300,7 +295,7 @@ public class XmlMerger implements IMerger {
      * @author trippl (03.04.2013)
      */
     private List<Node> copyNodeList(NodeList nodes) {
-        List<Node> copy = new ArrayList<Node>();
+        List<Node> copy = new ArrayList<>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             copy.add(nodes.item(i));
