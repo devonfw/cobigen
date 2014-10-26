@@ -287,9 +287,9 @@ public class CobiGen {
                                     + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
-                            LOG.error("Fehler beim Mergen der Datei {}", originalFile.getName(), e);
-                            throw new MergeException("Fehler beim Mergen der Datei " + originalFile.getName()
-                                + ":\n" + e.getMessage());
+                            LOG.error("An error occured while merging the file {}", originalFile.getName(), e);
+                            throw new MergeException("An error occured while merging the file "
+                                + originalFile.getName() + ":\n" + e.getMessage());
                         }
 
                         if (result != null) {
