@@ -181,11 +181,37 @@ public class JavaInputReader implements IInputReader {
      */
     @Override
     public Map<String, Object> getTemplateMethods(Object input) {
+
+        // prepare result
         Map<String, Object> methodMap = new HashMap<>();
-        ClassLoader classloader = input.getClass().getClassLoader();
+        ClassLoader classloader = null;
+
+        // find corresponding ClassLoader dependent on input type
+        if (isValidInput(input)) {
+
+            if (input instanceof Class<?>) {
+                classloader = ((Class<?>) input).getClassLoader();
+            } else if (input instanceof JavaClass) {
+                classloader = getClass().getClassLoader(); // TODO
+            } else if (input instanceof PackageFolder) {
+                classloader = ((PackageFolder) input).getClassLoader();
+            } else if (input instanceof Object[]) {
+                Object[] inputArr = (Object[]) input;
+                if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
+                    ((Class<?>) inputArr[1]).getClassLoader();
+                } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
+
+                }
+            }
+        }
+
+        // create result
+        if (classloader == null) {
+            throw new IllegalArgumentException(
+                "There is no ClassLoader for the given input. Perhaps you used a bootstrap class (e.g.java.lang.String) as input which is not supported");
+        }
         methodMap.put("isAbstract", new IsAbstractMethod(classloader));
         methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(classloader));
-
         return methodMap;
     }
 }

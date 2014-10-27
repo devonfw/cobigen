@@ -65,7 +65,7 @@ public class TemplateMethodsTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isAbstractTemplate")) {
                 cobiGen.generate(getClass(), template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "isAbstractOutput.txt");
+                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isAbstractOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("falsetrue", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
@@ -100,9 +100,9 @@ public class TemplateMethodsTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isSubtypeOfTemplate")) {
                 cobiGen.generate(getClass(), template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "isSubtypeOfOutput.txt");
+                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isSubtypeOfOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("truefalsetrue", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("truetruefalse", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
