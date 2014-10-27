@@ -66,7 +66,7 @@ public class JavaInputReaderTest {
         JavaInputReader reader = new JavaInputReader();
 
         // create test data
-        Map<String, Object> methods = reader.getTemplateMethods(this);
+        Map<String, Object> methods = reader.getTemplateMethods(getClass());
         Set<String> keys = methods.keySet();
 
         // validate
