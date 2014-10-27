@@ -3,6 +3,7 @@
  */
 package com.capgemini.cobigen.extension.to;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -137,9 +138,17 @@ public class IncrementTo {
         result = prime * result + getId() == null ? 0 : getId().hashCode();
         result = prime * result + getDescription() == null ? 0 : getDescription().hashCode();
         int x = getTemplates() == null ? 0 : getTemplates().hashCode();
+        Iterator<TemplateTo> i = getTemplates().iterator();
+        while (i.hasNext()) {
+            TemplateTo obj = i.next();
+            result = prime * result + (obj == null ? 0 : obj.hashCode());
+        }
         result = prime * result + getTriggerId() == null ? 0 : getTriggerId().hashCode();
-        result = prime * result + x;
-        x = getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode();
+        Iterator<IncrementTo> j = getDependentIncrements().iterator();
+        while (i.hasNext()) {
+            IncrementTo obj = j.next();
+            result = prime * result + (obj == null ? 0 : obj.hashCode());
+        }
         result = prime * result + x;
         return result;
     }
