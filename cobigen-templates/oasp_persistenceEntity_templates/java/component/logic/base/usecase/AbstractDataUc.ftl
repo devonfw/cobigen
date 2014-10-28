@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.logic.base;
+package ${variables.rootPackage}.${variables.component}.logic.base.usecase;
 
 import ${variables.rootPackage}.general.logic.base.AbstractUc;
 import ${variables.rootPackage}.${variables.component}.persistence.api.dao.${variables.entityName}Dao;
@@ -10,7 +10,7 @@ public class Abstract${variables.entityName}Uc extends AbstractUc {
 
 	/** @see #get${variables.entityName}Dao() */
     private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
-    
+
     /**
      * Returns the field '${variables.entityName?uncap_first}Dao'.
      * @return the {@link ${variables.entityName}Dao} instance.

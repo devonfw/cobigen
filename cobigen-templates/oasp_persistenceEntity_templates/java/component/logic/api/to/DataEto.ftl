@@ -1,5 +1,5 @@
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.${variables.component}.service.api.to;
+package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import ${variables.rootPackage}.general.common.api.to.AbstractEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};

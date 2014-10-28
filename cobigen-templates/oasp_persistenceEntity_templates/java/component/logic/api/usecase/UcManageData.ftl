@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.logic.base;
+package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
 import ${variables.rootPackage}.${variables.component}.service.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;

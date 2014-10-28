@@ -4,8 +4,10 @@
 
 <hibernate-mapping default-lazy="true">
 
+  <!--
 	<query name="get.all.${pojo.name?lower_case}s">
     	<![CDATA[SELECT t FROM ${variables.entityName} t]]>
 	</query>
+	-->
 
 </hibernate-mapping>

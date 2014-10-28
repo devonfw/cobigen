@@ -3,8 +3,8 @@ package ${variables.rootPackage}.${variables.component}.logic.impl;
 import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.base.UcFind${variables.entityName};
-import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
+import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
+import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 
 import java.util.List;
 
@@ -35,15 +35,6 @@ public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupp
     public ${variables.entityName}Eto get${variables.entityName}(Long id) {
 
       return this.ucFind${variables.entityName}.get${variables.entityName}(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<${variables.entityName}Eto> getAll${variables.entityName}s() {
-
-      return this.ucFind${variables.entityName}.getAll${variables.entityName}s();
     }
 
     /**

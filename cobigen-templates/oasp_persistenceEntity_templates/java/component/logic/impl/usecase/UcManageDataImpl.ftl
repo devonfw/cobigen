@@ -1,9 +1,9 @@
-package ${variables.rootPackage}.${variables.component}.logic.impl;
+package ${variables.rootPackage}.${variables.component}.logic.impl.usecase;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.base.Abstract${variables.entityName}Uc;
+import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
+import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.persistence.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.base.UcManage${variables.entityName};
 
 import javax.inject.Named;
 

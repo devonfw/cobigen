@@ -22,12 +22,12 @@
 
 		<!-- logic layer dynamic -->
 		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component?cap_first}.java" templateFile="java/component/logic/api/DataManagement.ftl" mergeStrategy="javamerge" />
-		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/AbstractDataUc.ftl" />
-		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcFind${variables.entityName}.java" templateFile="java/component/logic/base/UcFindData.ftl" />
-		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/UcManage${variables.entityName}.java" templateFile="java/component/logic/base/UcManageData.ftl" />
+		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/usecase/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/usecase/AbstractDataUc.ftl" />
+		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcFind${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcFindData.ftl" />
+		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcManage${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcManageData.ftl" />
 		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component?cap_first}Impl.java" templateFile="java/component/logic/impl/DataManagementImpl.ftl" mergeStrategy="javamerge" />
-		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcFindDataImpl.ftl" />
-		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/UcManageDataImpl.ftl" />
+		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcFindDataImpl.ftl" />
+		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcManageDataImpl.ftl" />
 
 		<!-- TOs static -->
 		<template id="logic_abstractCto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractCto.java" templateFile="java/general/common/api/to/AbstractCto.ftl" />
