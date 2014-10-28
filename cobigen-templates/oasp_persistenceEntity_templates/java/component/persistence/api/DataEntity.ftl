@@ -1,7 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.persistence.api;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
-import ${variables.rootPackage}.general.persistence.base.${variables.domain?cap_first}PersistenceEntity;
+import ${variables.rootPackage}.general.persistence.api.ApplicationPersistenceEntity;
 
 import javax.persistence.Entity;
 
@@ -10,7 +10,7 @@ import javax.persistence.Entity;
  */
 @Entity(name = "${variables.entityName}")
 @javax.persistence.Table(name = "${variables.entityName}")
-public class ${pojo.name} extends ${variables.domain?cap_first}PersistenceEntity implements ${variables.entityName} {
+public class ${pojo.name} extends ApplicationPersistenceEntity implements ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
 

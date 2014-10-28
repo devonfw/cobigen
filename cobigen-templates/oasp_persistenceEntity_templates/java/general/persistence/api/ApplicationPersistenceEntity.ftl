@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.general.persistence.base;
+package ${variables.rootPackage}.general.persistence.api;
 
 import javax.persistence.MappedSuperclass;
 
