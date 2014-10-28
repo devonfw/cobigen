@@ -192,9 +192,12 @@ public class JavaInputReader implements IInputReader {
             if (input instanceof Class<?>) {
                 classloader = ((Class<?>) input).getClassLoader();
             } else if (input instanceof JavaClass) {
-                classloader = getClass().getClassLoader(); // TODO
+                classloader = getClass().getClassLoader(); // TODO get correct classloader of JavaClass
             } else if (input instanceof PackageFolder) {
                 classloader = ((PackageFolder) input).getClassLoader();
+                if (classloader == null) {
+                    classloader = getClass().getClassLoader();
+                }
             } else if (input instanceof Object[]) {
                 Object[] inputArr = (Object[]) input;
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
