@@ -7,6 +7,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="templates" type="tns:templates" />
+        <xs:element name="template-scans" minOccurs="0" maxOccurs="1" type="tns:template-scans"/>
 				<xs:element name="increments" minOccurs="0" maxOccurs="1" type="tns:increments" />
 			</xs:sequence>
 			<xs:attribute name="version" use="required" type="xs:decimal"/>
@@ -36,6 +37,12 @@
 		</xs:sequence>
 	</xs:complexType>
 
+  <xs:complexType name="template-scans">
+    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:element name="template-scan" type="tns:template-scan" />
+    </xs:sequence>
+  </xs:complexType>
+
 	<xs:complexType name="template">
 		<xs:attribute name="id" use="required" type="xs:NCName" />
 		<xs:attribute name="destinationPath" use="required" type="xs:string" />
@@ -43,6 +50,14 @@
 		<xs:attribute name="mergeStrategy" use="optional" type="xs:string" />
 		<xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8" />
 	</xs:complexType>
+
+  <xs:complexType name="template-scan">
+    <xs:attribute name="templatePath" use="required" type="xs:string" />
+    <xs:attribute name="templateIdPrefix" use="optional" type="xs:string" />
+    <xs:attribute name="destinationPath" use="required" type="xs:string" />
+    <xs:attribute name="destinationExtension" use="optional" type="xs:string" default="java" />
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string" />
+  </xs:complexType>
 
 	<xs:complexType name="increments">
 		<xs:sequence maxOccurs="unbounded" minOccurs="1">
