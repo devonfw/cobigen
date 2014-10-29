@@ -53,6 +53,7 @@ public class PackageFolder {
     public PackageFolder(URI location, String packageName, ClassLoader classLoader) {
         this.location = location;
         this.packageName = packageName;
+        this.classLoader = classLoader;
     }
 
     /**
