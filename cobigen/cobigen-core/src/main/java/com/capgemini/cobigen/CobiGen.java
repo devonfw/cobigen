@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +106,7 @@ public class CobiGen {
      * templates configuration. API to trigger generation for a whole increment
      * @param input
      *            generator input object
-     * @param template
+     * @param increment
      *            to be used for generation
      * @param forceOverride
      *            if <code>true</code> and the destination path is already existent, the contents will be
@@ -119,18 +118,13 @@ public class CobiGen {
      *             if an exception occurs during template processing by FreeMarker
      * @throws MergeException
      *             if an exception occurs during content merging
-     * @throws InvalidConfigurationException
-     *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author sbasnet (22.10.2014)
      */
     public void generate(Object input, IncrementTo increment, boolean forceOverride) throws IOException,
-        TemplateException, MergeException, InvalidConfigurationException {
-        List<TemplateTo> temp = new ArrayList<TemplateTo>();
-        temp = increment.getTemplates();
-        for (TemplateTo t : temp) {
-            Trigger trigger = contextConfiguration.getTrigger(t.getTriggerId());
-            ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            generate(input, t, triggerInterpreter, forceOverride);
+        TemplateException, MergeException {
+        InputValidator.validateInputsUnequalNull(input, increment);
+        for (TemplateTo t : increment.getTemplates()) {
+            generate(input, t, forceOverride);
         }
     }
 
@@ -158,7 +152,6 @@ public class CobiGen {
      */
     public void generate(Object input, TemplateTo template, boolean forceOverride) throws IOException,
         TemplateException, MergeException {
-
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(input, template, triggerInterpreter, forceOverride);
