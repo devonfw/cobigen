@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
@@ -16,6 +17,7 @@ import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 /**
@@ -67,7 +69,7 @@ public class TemplateMethodsTest {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isAbstractOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("falsetrue", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("falsetruetrue", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
@@ -102,7 +104,7 @@ public class TemplateMethodsTest {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isSubtypeOfOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("truetruefalse", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("truetruefalsefalsefalse", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
@@ -110,6 +112,46 @@ public class TemplateMethodsTest {
 
         if (!methodTemplateFound) {
             new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests whether the methods could be also retrieved for array inputs
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (29.10.2014)
+     */
+    @Test
+    public void testCorrectClassLoaderForMethods() throws Exception {
+        File configFolder =
+            new File("src/test/resources/com/capgemini/cobigen/javaplugin/integrationtest/templates");
+        CobiGen cobiGen = new CobiGen(configFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        Object[] inputArr = new Object[2];
+        File thisClassFile =
+            new File("src/test/java/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/"
+                + getClass().getSimpleName() + ".java");
+        inputArr[0] = JavaParserUtil.getFirstJavaClass(new FileReader(thisClassFile));
+        inputArr[1] = getClass();
+
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputArr);
+
+        boolean methodTemplateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("emptyTemplate")) {
+                cobiGen.generate(inputArr, template, false);
+                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\emptyTemplate.txt");
+                Assert.assertTrue(expectedFile.exists());
+                methodTemplateFound = true;
+                break;
+            }
+        }
+
+        if (!methodTemplateFound) {
+            new AssertionFailedError("No template found");
         }
     }
 }

@@ -13,4 +13,11 @@ true
 false
 </#if>
 </#compress>
+<#compress>
+<#if isAbstract(variables.abstractCollection)>
+true
+<#else>
+false
+</#if>
+</#compress>
 </#compress>

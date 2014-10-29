@@ -3,6 +3,10 @@
   <triggers>
     <trigger id="testTemplates" type="java" templateFolder="testTemplates">
       <matcher type="fqn" value=".*">
+        <variableAssignment type="constant" key="abstractCollection" value="java.util.AbstractCollection" />
+        <variableAssignment type="constant" key="stringFqn" value="java.lang.String" />
+        <variableAssignment type="constant" key="objectFqn" value="java.lang.Object" />
+        <variableAssignment type="constant" key="javaLang" value="java.lang" />
       </matcher>
     </trigger>
   </triggers>

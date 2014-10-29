@@ -5,6 +5,7 @@
   <templates>
     <template id="isAbstractTemplate" destinationPath="isAbstractOutput.txt" templateFile="isAbstract.ftl" />
     <template id="isSubtypeOfTemplate" destinationPath="isSubtypeOfOutput.txt" templateFile="isSubtypeOf.ftl" />
+    <template id="emptyTemplate" destinationPath="emptyTemplate.txt" templateFile="emptyTemplate.ftl" />
   </templates>
 
 </templatesConfiguration>
