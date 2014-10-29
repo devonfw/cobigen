@@ -30,76 +30,78 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
  */
 public class TemplatesConfigurationReaderTest extends Assert {
 
-  /**
-   * Root path to all resources used in this test case
-   */
-  private static String testFileRootPath = "src/test/resources/TemplatesConfigurationReaderTest/";
+    /**
+     * Root path to all resources used in this test case
+     */
+    private static String testFileRootPath = "src/test/resources/TemplatesConfigurationReaderTest/";
 
-  /**
-   * Tests whether all templates of a template package could be retrieved successfully
-   *
-   * @author mbrunnli (18.06.2013)
-   */
-  @Test
-  public void testTemplatesOfAPackageRetrieval() {
+    /**
+     * Tests whether all templates of a template package could be retrieved successfully
+     *
+     * @author mbrunnli (18.06.2013)
+     */
+    @Test
+    public void testTemplatesOfAPackageRetrieval() {
 
-    // given
-    TemplatesConfigurationReader target =
-        new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
 
-    Trigger trigger =
-        new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
-            new LinkedList<ContainerMatcher>());
-    Template templateMock = mock(Template.class);
-    ITriggerInterpreter triggerInterpreter = null;
-    String templateIdSpringCommon = "resources_resources_spring_common";
+        Trigger trigger =
+            new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+                new LinkedList<ContainerMatcher>());
+        Template templateMock = mock(Template.class);
+        ITriggerInterpreter triggerInterpreter = null;
+        String templateIdSpringCommon = "resources_resources_spring_common";
 
-    // when
-    Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
-    Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
 
-    // then
-    assertNotNull(templates);
-    Template templateSpringCommon = templates.get(templateIdSpringCommon);
-    assertNotNull(templateSpringCommon);
-    assertEquals(templateIdSpringCommon, templateSpringCommon.getId());
-    assertEquals("resources/resources/spring/common.ftl", templateSpringCommon.getTemplateFile());
-    assertEquals("src/main/resources/resources/spring/common.xml", templateSpringCommon.getUnresolvedDestinationPath());
-    assertNull(templateSpringCommon.getMergeStrategy());
+        // then
+        assertNotNull(templates);
+        Template templateSpringCommon = templates.get(templateIdSpringCommon);
+        assertNotNull(templateSpringCommon);
+        assertEquals(templateIdSpringCommon, templateSpringCommon.getId());
+        assertEquals("resources/resources/spring/common.ftl", templateSpringCommon.getTemplateFile());
+        assertEquals("src/main/resources/resources/spring/common.xml",
+            templateSpringCommon.getUnresolvedDestinationPath());
+        assertNull(templateSpringCommon.getMergeStrategy());
 
-    String templateIdFooClass = "prefix_FooClass";
-    Template templateFooClass = templates.get(templateIdFooClass);
-    assertNotNull(templateFooClass);
-    assertEquals(templateIdFooClass, templateFooClass.getId());
-    assertEquals("foo/FooClass.ftl", templateFooClass.getTemplateFile());
-    assertEquals("src/main/java/foo/FooClass.java", templateFooClass.getUnresolvedDestinationPath());
-    assertNull(templateFooClass.getMergeStrategy());
+        String templateIdFooClass = "prefix_FooClass";
+        Template templateFooClass = templates.get(templateIdFooClass);
+        assertNotNull(templateFooClass);
+        assertEquals(templateIdFooClass, templateFooClass.getId());
+        assertEquals("foo/FooClass.ftl", templateFooClass.getTemplateFile());
+        assertEquals("src/main/java/foo/FooClass.java", templateFooClass.getUnresolvedDestinationPath());
+        assertNull(templateFooClass.getMergeStrategy());
 
-    // this one is a predefined template and shall not be overriden by scan...
-    String templateIdFoo2Class = "prefix_Foo2Class";
-    Template templateFoo2Class = templates.get(templateIdFoo2Class);
-    assertNotNull(templateFoo2Class);
-    assertEquals(templateIdFoo2Class, templateFoo2Class.getId());
-    assertEquals("foo/Foo2Class.ftl", templateFoo2Class.getTemplateFile());
-    assertEquals("src/main/java/foo/Foo2Class${variable}.java", templateFoo2Class.getUnresolvedDestinationPath());
-    assertEquals("javaMerge", templateFoo2Class.getMergeStrategy());
+        // this one is a predefined template and shall not be overriden by scan...
+        String templateIdFoo2Class = "prefix_Foo2Class";
+        Template templateFoo2Class = templates.get(templateIdFoo2Class);
+        assertNotNull(templateFoo2Class);
+        assertEquals(templateIdFoo2Class, templateFoo2Class.getId());
+        assertEquals("foo/Foo2Class.ftl", templateFoo2Class.getTemplateFile());
+        assertEquals("src/main/java/foo/Foo2Class${variable}.java",
+            templateFoo2Class.getUnresolvedDestinationPath());
+        assertEquals("javaMerge", templateFoo2Class.getMergeStrategy());
 
-    String templateIdBarClass = "prefix_BarClass";
-    Template templateBarClass = templates.get(templateIdBarClass);
-    assertNotNull(templateBarClass);
-    assertEquals(templateIdBarClass, templateBarClass.getId());
-    assertEquals("foo/bar/BarClass.ftl", templateBarClass.getTemplateFile());
-    assertEquals("src/main/java/foo/bar/BarClass.java", templateBarClass.getUnresolvedDestinationPath());
-    assertNull(templateBarClass.getMergeStrategy());
-  }
+        String templateIdBarClass = "prefix_BarClass";
+        Template templateBarClass = templates.get(templateIdBarClass);
+        assertNotNull(templateBarClass);
+        assertEquals(templateIdBarClass, templateBarClass.getId());
+        assertEquals("foo/bar/BarClass.ftl", templateBarClass.getTemplateFile());
+        assertEquals("src/main/java/foo/bar/BarClass.java", templateBarClass.getUnresolvedDestinationPath());
+        assertNull(templateBarClass.getMergeStrategy());
+    }
 
-  /**
-   * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
-   */
-  @Test(expected = InvalidConfigurationException.class)
-  public void testErrorOnInvalidConfiguration() {
+    /**
+     * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnInvalidConfiguration() {
 
-    new TemplatesConfigurationReader(new File(testFileRootPath + "templates_faulty.xml"));
-  }
+        new TemplatesConfigurationReader(new File(testFileRootPath + "templates_faulty.xml"));
+    }
 
 }
