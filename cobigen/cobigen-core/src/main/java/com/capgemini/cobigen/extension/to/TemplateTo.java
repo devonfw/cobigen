@@ -116,37 +116,27 @@ public class TemplateTo extends AbstractTemplateResolver {
             return false;
         }
         if (obj instanceof TemplateTo) {
-            if (((TemplateTo) obj).getId() != null) {
-                if (((TemplateTo) obj).getTriggerId() != null) {
-                    if (((TemplateTo) obj).getMergeStrategy() != null) {
-                        return (((TemplateTo) obj).getId().equals(getId())
-                            && ((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
-                            .getMergeStrategy().equals(getMergeStrategy()));
-                    } else {
-                        return (((TemplateTo) obj).getId().equals(getId()) && ((TemplateTo) obj)
-                            .getTriggerId().equals(getTriggerId()));
-                    }
-                } else {
-                    if (((TemplateTo) obj).getMergeStrategy() != null) {
-                        return (((TemplateTo) obj).getId().equals(getId()) && ((TemplateTo) obj)
-                            .getMergeStrategy().equals(getMergeStrategy()));
-                    } else {
-                        return (((TemplateTo) obj).getId().equals(getId()));
-                    }
-                }
+            boolean equal = true;
+            TemplateTo otherTemplate = (TemplateTo) obj;
+            if (getId() != null) {
+                equal = equal & getId().equals(otherTemplate.getId());
+            }
+            if (!equal) {
+                return false;
+            }
+            if (getTriggerId() != null) {
+                equal = equal & getTriggerId().equals(otherTemplate.getTriggerId());
+            }
+            if (!equal) {
+                return false;
+            }
+            if (getMergeStrategy() != null) {
+                equal = equal & getMergeStrategy().equals(otherTemplate.getMergeStrategy());
+            }
+            if (!equal) {
+                return false;
             } else {
-                if (((TemplateTo) obj).getTriggerId() != null) {
-                    if (((TemplateTo) obj).getMergeStrategy() != null) {
-                        return (((TemplateTo) obj).getTriggerId().equals(getTriggerId()) && ((TemplateTo) obj)
-                            .getMergeStrategy().equals(getMergeStrategy()));
-                    } else {
-                        return (((TemplateTo) obj).getTriggerId().equals(getTriggerId()));
-                    }
-                } else {
-                    if (((TemplateTo) obj).getMergeStrategy() != null) {
-                        return (((TemplateTo) obj).getMergeStrategy().equals(getMergeStrategy()));
-                    }
-                }
+                return true;
             }
         }
         return false;
