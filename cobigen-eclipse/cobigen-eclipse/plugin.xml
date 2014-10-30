@@ -60,6 +60,26 @@
                visible="true">
          </separator>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+         <separator
+               name="com.capgemini.cobigen.eclipseplugin.separator3"
+               visible="true">
+         </separator>
+         <menu
+               label="CobiGen">
+            <command
+                  commandId="com.capgemini.cobigen.eclipseplugin.generate"
+                  label="Generate..."
+                  style="push">
+            </command>
+         </menu>
+         <separator
+               name="com.capgemini.cobigen.eclipseplugin.separator4"
+               visible="true">
+         </separator>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.services">

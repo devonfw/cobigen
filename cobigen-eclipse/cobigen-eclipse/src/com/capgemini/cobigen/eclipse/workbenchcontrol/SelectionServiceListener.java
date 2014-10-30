@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ import com.google.common.collect.Lists;
  *
  * @author mbrunnli (15.02.2013)
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction" })
 public class SelectionServiceListener implements ISelectionListener {
 
     /**
@@ -91,14 +92,15 @@ public class SelectionServiceListener implements ISelectionListener {
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (15.02.2013), adapted by trippl (22.04.2013)
+     * {@inheritDoc} The method get's called on every click of the input file/folder. Checks whether the Code
+     * generation on that file/folder is permitted or not. If not the 'Generation' is greyed. It checks for
+     * both ProjectExplorer and PackageExplorer.
+     * @author mbrunnli (15.02.2013), adapted by trippl (22.04.2013), adapted by sbasnet(30.10.2014)
      */
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-
-        if (part instanceof PackageExplorerPart && selection instanceof IStructuredSelection) {
+        if (part instanceof PackageExplorerPart || part instanceof ProjectExplorer
+            && selection instanceof IStructuredSelection) {
             if (isValidInput((IStructuredSelection) selection)) {
                 sp.setVariable(SourceProvider.VALID_INPUT, true);
             } else {
