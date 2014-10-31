@@ -25,8 +25,9 @@ public class InputValidator {
      * @author mbrunnli (08.04.2014)
      */
     public static void validateTriggerInterpreter(ITriggerInterpreter triggerInterpreter, Trigger trigger) {
-        if (trigger == null)
+        if (trigger == null) {
             throw new IllegalArgumentException("Invalid trigger == null");
+        }
         validateTriggerInterpreterInternal(triggerInterpreter, trigger.getType());
     }
 
@@ -50,14 +51,16 @@ public class InputValidator {
      */
     private static void validateTriggerInterpreterInternal(ITriggerInterpreter triggerInterpreter,
         String triggerType) {
-        if (triggerInterpreter == null)
+        if (triggerInterpreter == null) {
             throw new IllegalArgumentException("No TriggerInterpreter "
                 + (triggerType != null ? "for type '" + triggerType + "' " : "") + "found/provided!");
+        }
 
-        if (triggerInterpreter.getInputReader() == null)
+        if (triggerInterpreter.getInputReader() == null) {
             throw new IllegalArgumentException("The TriggerInterpreter for type '"
                 + triggerInterpreter.getType()
                 + "' has to declare an InputReader, which is currently not the case!");
+        }
     }
 
     /**
@@ -68,8 +71,9 @@ public class InputValidator {
      */
     public static void validateInputsUnequalNull(Object... objects) {
         for (Object o : objects) {
-            if (o == null)
+            if (o == null) {
                 throw new IllegalArgumentException("None of the input values must be null");
+            }
         }
     }
 
@@ -85,12 +89,14 @@ public class InputValidator {
         }
 
         for (Entry<String, String> var : resolvedVariables.entrySet()) {
-            if (var.getKey() == null)
+            if (var.getKey() == null) {
                 throw new PluginProcessingException(
                     "A Plug-In must not add entries with null keys into the resolved variables Map");
-            if (var.getValue() == null)
+            }
+            if (var.getValue() == null) {
                 throw new PluginProcessingException(
                     "A Plug-In must not add entries with null values into the resolved variables Map");
+            }
         }
     }
 

@@ -13,7 +13,7 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
  * This {@link TestCase} tests the {@link ContextConfigurationReader}
- * 
+ *
  * @author mbrunnli (18.06.2013)
  */
 public class ContextConfigurationReaderTest {
@@ -25,11 +25,9 @@ public class ContextConfigurationReaderTest {
 
     /**
      * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
-     * 
-     * @throws InvalidConfigurationException
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
+    public void testErrorOnInvalidConfiguration() {
 
         new ContextConfigurationReader(new File(testFileRootPath + "context_faulty.xml"));
     }

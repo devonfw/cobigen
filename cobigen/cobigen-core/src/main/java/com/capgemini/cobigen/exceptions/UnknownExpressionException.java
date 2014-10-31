@@ -19,7 +19,7 @@ public class UnknownExpressionException extends InvalidConfigurationException {
      * Creates a new {@link UnknownExpressionException}
      * 
      * @param unknownExpression
-     *        unknown expression which could not be resolved
+     *            unknown expression which could not be resolved
      * @author mbrunnli (18.02.2013)
      */
     public UnknownExpressionException(String unknownExpression) {

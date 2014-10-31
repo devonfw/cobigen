@@ -17,6 +17,7 @@ public class MergeException extends Exception {
     /**
      * Creates an exception with the given message
      * @param msg
+     *            error message
      * @author mbrunnli (18.06.2013)
      */
     public MergeException(String msg) {

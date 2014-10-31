@@ -106,4 +106,91 @@ public class IncrementTo {
         return Lists.newLinkedList(dependentIncrements);
     }
 
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (getId() == null ? 0 : getId().hashCode());
+        result = prime * result + (getDescription() == null ? 0 : getDescription().hashCode());
+        result = prime * result + (getTemplates() == null ? 0 : getTemplates().hashCode());
+        result = prime * result + (getTriggerId() == null ? 0 : getTriggerId().hashCode());
+        result =
+            prime * result + (getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof IncrementTo) {
+            boolean equal = true;
+            IncrementTo otherIncrement = (IncrementTo) obj;
+
+            if (getId() != null) {
+                equal = equal && getId().equals(otherIncrement.getId());
+            }
+            if (!equal) {
+                return false;
+            }
+
+            if (getDescription() != null) {
+                equal = equal && getDescription().equals(otherIncrement.getDescription());
+            }
+            if (!equal) {
+                return false;
+            }
+
+            if (getTemplates() != null) {
+                equal = equal && getTemplates().equals(otherIncrement.getTemplates());
+            }
+            if (!equal) {
+                return false;
+            }
+
+            if (getTriggerId() != null) {
+                equal = equal && getTriggerId().equals(otherIncrement.getTriggerId());
+            }
+            if (!equal) {
+                return false;
+            }
+
+            if (getDependentIncrements() != null) {
+                equal = equal && getDependentIncrements().equals(otherIncrement.getDependentIncrements());
+            }
+            return equal;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName() + " {");
+        result.append("id: " + getId());
+        result.append(" desc: " + getDescription());
+        result.append(" #templates: " + getTemplates().size());
+        result.append(" triggerId: " + getTriggerId());
+        result.append(" #dependentIncrements: " + getDependentIncrements().size());
+        result.append("}");
+        return result.toString();
+    }
+
 }

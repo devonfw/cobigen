@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Storage class for increments provided within the config.xml
  * @author trippl (07.03.2013)
- * 
+ *
  */
 public class Increment {
 
@@ -28,12 +28,12 @@ public class Increment {
     /**
      * Set of {@link Template}s contained in the {@link Increment}
      */
-    private Set<Template> templates = new HashSet<Template>();
+    private Set<Template> templates = new HashSet<>();
 
     /**
      * Dependent {@link Increment}s
      */
-    private Set<Increment> dependentIncrements = new HashSet<Increment>();
+    private Set<Increment> dependentIncrements = new HashSet<>();
 
     /**
      * {@link Trigger} the incrment is dependent on
@@ -80,7 +80,7 @@ public class Increment {
      * @author trippl (07.03.2013)
      */
     public Set<Template> getTemplates() {
-        return new HashSet<Template>(templates);
+        return new HashSet<>(templates);
     }
 
     /**
@@ -109,7 +109,7 @@ public class Increment {
      * @author mbrunnli (26.03.2013)
      */
     public List<Increment> getDependentIncrements() {
-        return new LinkedList<Increment>(dependentIncrements);
+        return new LinkedList<>(dependentIncrements);
     }
 
     /**

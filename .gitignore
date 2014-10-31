@@ -1,3 +1,5 @@
 /*.settings
 bin
 target
+
+/cobigen-eclipse/.project

@@ -17,12 +17,13 @@ import com.capgemini.cobigen.config.reader.TemplatesConfigurationReader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.util.SystemUtil;
 
 /**
- * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about templates
- * and the target destination for the generated data.
- * 
+ * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about
+ * templates and the target destination for the generated data.
+ *
  * @author trippl (04.04.2013)
  */
 public class TemplatesConfiguration {
@@ -48,39 +49,46 @@ public class TemplatesConfiguration {
     private Trigger trigger;
 
     /**
-     * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference
-     * 
+     * {@link ITriggerInterpreter} the trigger has been interpreted with
+     */
+    private ITriggerInterpreter triggerInterpreter;
+
+    /**
+     * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
+     * reference
+     *
      * @param file
-     *        template folder for this context
-     * @param variables
-     *        settings reference for resolving the expressions
+     *            template folder for this context
      * @param trigger
-     *        {@link Trigger} of this {@link TemplatesConfiguration}
+     *            {@link Trigger} of this {@link TemplatesConfiguration}
+     * @param triggerInterpreter
+     *            the trigger has been interpreted with
      * @throws UnknownContextVariableException
-     *         if the destination path contains an undefined context variable
+     *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
-     *         if there is an unknown variable modifier
+     *             if there is an unknown variable modifier
      * @throws InvalidConfigurationException
-     *         if the given templates.xml is not valid
+     *             if the given templates.xml is not valid
      * @author trippl (04.04.2013)
      */
-    public TemplatesConfiguration(File file, Trigger trigger, Map<String, String> variables)
-            throws InvalidConfigurationException {
+    public TemplatesConfiguration(File file, Trigger trigger, ITriggerInterpreter triggerInterpreter)
+        throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-                new TemplatesConfigurationReader(new File(file.getAbsolutePath() + SystemUtil.FILE_SEPARATOR
-                        + "templates.xml"));
+            new TemplatesConfigurationReader(new File(file.getAbsolutePath() + SystemUtil.FILE_SEPARATOR
+                + "templates.xml"));
         templatesFolderName = file.getName();
-        templates = reader.loadTemplates(trigger, variables);
+        templates = reader.loadTemplates(trigger, triggerInterpreter);
         increments = reader.loadIncrements(templates, trigger);
         this.trigger = trigger;
+        this.triggerInterpreter = triggerInterpreter;
     }
 
     /**
      * Returns the {@link Template} with the given id
-     * 
+     *
      * @param id
-     *        of the {@link Template} to be searched for
+     *            of the {@link Template} to be searched for
      * @return the {@link Template} with the given id or <code>null</code> if there is no
      * @author mbrunnli (09.04.2014)
      */
@@ -91,18 +99,18 @@ public class TemplatesConfiguration {
 
     /**
      * Returns the set of all available templates
-     * 
+     *
      * @return the set of all available templates
      * @author mbrunnli (12.02.2013)
      */
     public Set<Template> getAllTemplates() {
 
-        return new HashSet<Template>(templates.values());
+        return new HashSet<>(templates.values());
     }
 
     /**
      * Returns the {@link Trigger}, this {@link TemplatesConfiguration} is related to
-     * 
+     *
      * @return the {@link Trigger}, this {@link TemplatesConfiguration} is related to
      * @author mbrunnli (09.04.2014)
      */
@@ -112,19 +120,28 @@ public class TemplatesConfiguration {
     }
 
     /**
+     * Returns the field 'triggerInterpreter'
+     * @return value of triggerInterpreter
+     * @author mbrunnli (16.10.2014)
+     */
+    public ITriggerInterpreter getTriggerInterpreter() {
+        return triggerInterpreter;
+    }
+
+    /**
      * Returns the set of all available increments
-     * 
+     *
      * @return the set of all available increments
      * @author trippl (25.02.2013)
      */
     public List<Increment> getAllGenerationPackages() {
 
-        return new LinkedList<Increment>(increments.values());
+        return new LinkedList<>(increments.values());
     }
 
     /**
      * Returns the folder name of this context definition (root folder for all templates)
-     * 
+     *
      * @return the folder name of this context definition (root folder for all templates)
      * @author mbrunnli (05.04.2013)
      */

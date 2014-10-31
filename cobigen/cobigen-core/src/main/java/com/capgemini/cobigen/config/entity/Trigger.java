@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Storage class for trigger data provided within the context.xml
  * @author trippl (05.04.2013)
- * 
+ *
  */
 public class Trigger {
 
@@ -37,7 +37,12 @@ public class Trigger {
     /**
      * All available matchers
      */
-    private List<Matcher> matcher;
+    private List<Matcher> matchers;
+
+    /**
+     * All available container matchers
+     */
+    private List<ContainerMatcher> containerMatchers;
 
     /**
      * Creates a new {@link Trigger} for the given data
@@ -51,14 +56,19 @@ public class Trigger {
      *            which should be used to read the inputs
      * @param matcher
      *            all declared {@link Matcher}s for this trigger
+     * @param containerMatchers
+     *            all declared {@link ContainerMatcher}s for this trigger
      * @author trippl (05.04.2013)
      */
-    public Trigger(String id, String type, String templateFolder, Charset inputCharset, List<Matcher> matcher) {
+    public Trigger(String id, String type, String templateFolder, Charset inputCharset,
+        List<Matcher> matcher, List<ContainerMatcher> containerMatchers) {
         this.id = id;
         this.type = type;
         this.templateFolder = templateFolder;
         this.inputCharset = inputCharset;
-        this.matcher = matcher == null ? new LinkedList<Matcher>() : matcher;
+        matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
+        this.containerMatchers =
+            containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
     }
 
     /**
@@ -103,7 +113,16 @@ public class Trigger {
      * @author mbrunnli (08.04.2014)
      */
     public List<Matcher> getMatcher() {
-        return matcher;
+        return matchers;
+    }
+
+    /**
+     * Returns the field 'containerMatchers'
+     * @return value of containerMatchers
+     * @author mbrunnli (13.10.2014)
+     */
+    public List<ContainerMatcher> getContainerMatchers() {
+        return containerMatchers;
     }
 
     /**
@@ -112,8 +131,9 @@ public class Trigger {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
+        }
         if (obj instanceof Trigger) {
             return ((Trigger) obj).getId().equals(getId());
         }

@@ -1,0 +1,40 @@
+<#include '/makros.ftl'>
+package ${variables.rootPackage}.${variables.component}.common.builders;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import ${pojo.package}.${pojo.name};
+import ${variables.rootPackage}.${variables.component}.common.builders.P;
+
+public class ${pojo.name}Builder {
+
+    private List<P<${pojo.name}>> parameterToBeApplied;
+    
+    public ${pojo.name}Builder() {
+		parameterToBeApplied = new LinkedList<P<${pojo.name}>>();
+		fillMandatoryFields();
+		fillMandatoryFields_custom();
+	}
+    
+    <#list pojo.attributes as attr>
+	public ${pojo.name}Builder ${attr.name}(final ${attr.type} ${attr.name}) {
+        parameterToBeApplied.add(new P<${pojo.name}>() {
+            @Override
+            public void apply(${pojo.name} target) {
+                target.set${attr.name?cap_first}(${attr.name});
+            }
+        });
+        return this;
+    }
+    </#list>
+    
+    public ${pojo.name} createNew() {
+        ${pojo.name} ${pojo.name?lower_case} = new ${pojo.name}();
+        for (P<${pojo.name}> parameter : parameterToBeApplied) {
+            parameter.apply(${pojo.name?lower_case});
+        }
+        return ${pojo.name?lower_case};
+    }
+
+}

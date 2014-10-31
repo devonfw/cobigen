@@ -7,30 +7,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
+ * The {@link Matcher} type corresponds to the &lt;matcher&gt; xml node
  * @author mbrunnli (08.04.2014)
  */
-public class Matcher {
-
-    /**
-     * Matcher type
-     */
-    private String type;
-
-    /**
-     * Matcher value to be matched against
-     */
-    private String value;
+public class Matcher extends AbstractMatcher {
 
     /**
      * {@link VariableAssignment}s
      */
     private List<VariableAssignment> variableAssignments;
-
-    /**
-     * States whether this matcher is a container matcher
-     */
-    private boolean isContainerMatcher;
 
     /**
      * Creates a new container Matcher for a given type, with a given value to match against
@@ -41,9 +26,7 @@ public class Matcher {
      * @author mbrunnli (08.04.2014)
      */
     public Matcher(String type, String value) {
-        this.type = type;
-        this.value = value;
-        this.isContainerMatcher = true;
+        super(type, value);
     }
 
     /**
@@ -58,28 +41,9 @@ public class Matcher {
      * @author mbrunnli (08.04.2014)
      */
     public Matcher(String type, String value, List<VariableAssignment> variableAssignments) {
-        this.type = type;
-        this.value = value;
+        super(type, value);
         this.variableAssignments =
             variableAssignments == null ? new LinkedList<VariableAssignment>() : variableAssignments;
-    }
-
-    /**
-     * Returns the matcher type
-     * @return matcher type
-     * @author mbrunnli (08.04.2014)
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Returns the value the matcher should match against
-     * @return the value the matcher should match against
-     * @author mbrunnli (08.04.2014)
-     */
-    public String getValue() {
-        return value;
     }
 
     /**
@@ -89,16 +53,6 @@ public class Matcher {
      */
     public List<VariableAssignment> getVariableAssignments() {
         return variableAssignments;
-    }
-
-    /**
-     * Determines whether this matcher is a container matcher
-     * @return <code>true</code> if this matcher is a container matcher<br>
-     *         <code>false</code>, otherwise
-     * @author mbrunnli (03.06.2014)
-     */
-    public boolean isContainerMatcher() {
-        return isContainerMatcher;
     }
 
 }

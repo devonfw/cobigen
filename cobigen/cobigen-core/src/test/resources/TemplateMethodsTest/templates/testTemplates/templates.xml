@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+
+  <templates>
+    <template id="t1" destinationPath="${variables.rootPackage}/${variables.entityName}.java" templateFile="TestClassT1.ftl" />
+  </templates>
+
+  <increments>
+    <increment id="i1" description="the only increment">
+      <templateRef idref="t1" />
+    </increment>
+  </increments>
+
+</templatesConfiguration>
