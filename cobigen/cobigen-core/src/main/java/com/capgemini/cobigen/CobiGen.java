@@ -86,11 +86,9 @@ public class CobiGen {
      *
      * @param rootConfigFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
-     * @throws IOException
-     *             if the configured {@link ContextSetting#GeneratorProjectRootPath} cannot be accessed
      * @author mbrunnli (05.02.2013)
      */
-    public CobiGen(File rootConfigFolder) throws IOException {
+    public CobiGen(File rootConfigFolder) {
 
         contextConfiguration = new ContextConfiguration(rootConfigFolder);
         freeMarkerConfig = new Configuration();
@@ -248,7 +246,7 @@ public class CobiGen {
             }
         }
 
-        Template templateIntern = getTemplate(template, triggerInterpreter, input);
+        Template templateIntern = getTemplate(template, triggerInterpreter);
         for (Object targetInput : inputObjects) {
             Document model;
             if (rawModel == null) {
@@ -536,16 +534,13 @@ public class CobiGen {
      *            which should be found as internal representation
      * @param triggerInterpreter
      *            to be used for variable resolving (for the final destination path)
-     * @param matcherInput
-     *            input object activates a matcher and thus is target for context variable extraction.
-     *            Possibly a combined or wrapping object for multiple input objects
      * @return the recovered {@link Template} object
      * @throws InvalidConfigurationException
      *             if at least one of the destination path variables could not be resolved
      * @author mbrunnli (09.04.2014)
      */
-    private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter,
-        Object matcherInput) throws InvalidConfigurationException {
+    private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter)
+        throws InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
         File templatesConfigurationFolder =
@@ -762,13 +757,11 @@ public class CobiGen {
      * Reloads the configuration from source. This function might be called if the configuration file has
      * changed in a running system
      *
-     * @throws IOException
-     *             if the file could not be accessed
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author sbasnet (15.04.2014)
      */
-    public void reloadContextConfigurationFromFile() throws IOException, InvalidConfigurationException {
+    public void reloadContextConfigurationFromFile() throws InvalidConfigurationException {
 
         contextConfiguration.reloadConfigurationFromFile();
     }

@@ -4,7 +4,6 @@
 package com.capgemini.cobigen.config;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,11 +57,9 @@ public class ContextConfiguration {
      *            the root folder containing the context.xml and all templates, configurations etc.
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
-     * @throws IOException
-     *             thrown if the {@link File} could not be accessed
      * @author mbrunnli (04.02.2013)
      */
-    public ContextConfiguration(File rootConfigFolder) throws IOException, InvalidConfigurationException {
+    public ContextConfiguration(File rootConfigFolder) throws InvalidConfigurationException {
         initializeSettings();
         set(ContextSetting.GeneratorProjectRootPath, rootConfigFolder.getAbsolutePath());
         contextXmlFile =
@@ -85,13 +82,11 @@ public class ContextConfiguration {
     /**
      * Reloads the configuration from source. This function might be called if the configuration file has
      * changed in a running system
-     * @throws IOException
-     *             if the file could not be accessed
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author mbrunnli (10.04.2013)
      */
-    public void reloadConfigurationFromFile() throws IOException, InvalidConfigurationException {
+    public void reloadConfigurationFromFile() throws InvalidConfigurationException {
         readConfiguration();
     }
 
