@@ -74,24 +74,6 @@ public class TemplateTo extends AbstractTemplateResolver {
     }
 
     /**
-     * Intended only for debugging.
-     *
-     * <P>
-     * Here, the contents of every field are placed into the result, with one field per line.
-     * @author sbasnet (23.10.2014)
-     */
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(this.getClass().getName() + " Object {");
-        result.append(" Id: " + getId());
-        result.append(" TriggerId: " + getTriggerId());
-        result.append(" MergeStrategy: " + getMergeStrategy());
-        result.append("}");
-        return result.toString();
-    }
-
-    /**
      * {@inheritDoc}
      * @author sbasnet (23.10.2014)
      */
@@ -99,10 +81,9 @@ public class TemplateTo extends AbstractTemplateResolver {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + getId() == null ? 0 : getId().hashCode();
-        result = prime * result + getTriggerId() == null ? 0 : getTriggerId().hashCode();
-        result = prime * result + getMergeStrategy() == null ? 0 : getMergeStrategy().hashCode();
-        result += prime * result;
+        result = prime * result + (getId() == null ? 0 : getId().hashCode());
+        result = prime * result + (getTriggerId() == null ? 0 : getTriggerId().hashCode());
+        result = prime * result + (getMergeStrategy() == null ? 0 : getMergeStrategy().hashCode());
         return result;
     }
 
@@ -115,30 +96,47 @@ public class TemplateTo extends AbstractTemplateResolver {
         if (obj == null) {
             return false;
         }
+        if (obj == this) {
+            return true;
+        }
+
         if (obj instanceof TemplateTo) {
             boolean equal = true;
             TemplateTo otherTemplate = (TemplateTo) obj;
             if (getId() != null) {
-                equal = equal & getId().equals(otherTemplate.getId());
+                equal = equal && getId().equals(otherTemplate.getId());
             }
             if (!equal) {
                 return false;
             }
+
             if (getTriggerId() != null) {
-                equal = equal & getTriggerId().equals(otherTemplate.getTriggerId());
+                equal = equal && getTriggerId().equals(otherTemplate.getTriggerId());
             }
             if (!equal) {
                 return false;
             }
+
             if (getMergeStrategy() != null) {
-                equal = equal & getMergeStrategy().equals(otherTemplate.getMergeStrategy());
+                equal = equal && getMergeStrategy().equals(otherTemplate.getMergeStrategy());
             }
-            if (!equal) {
-                return false;
-            } else {
-                return true;
-            }
+            return equal;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName() + " {");
+        result.append("id: " + getId());
+        result.append(" triggerId: " + getTriggerId());
+        result.append(" mergeStrategy: " + getMergeStrategy());
+        result.append("}");
+        return result.toString();
     }
 }

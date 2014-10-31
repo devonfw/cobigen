@@ -107,26 +107,6 @@ public class IncrementTo {
     }
 
     /**
-     * Intended only for debugging.
-     *
-     * <P>
-     * Here, the contents of every field are placed into the result, with one field per line.
-     * @author sbasnet (23.10.2014)
-     */
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(this.getClass().getName() + " Object {");
-        result.append(" Id: " + getId());
-        result.append(" Description: " + getDescription());
-        result.append(" Templates: " + getTemplates());
-        result.append(" Trigger Id: " + getTriggerId());
-        result.append(" DependentIncrements: " + getDependentIncrements());
-        result.append("}");
-        return result.toString();
-    }
-
-    /**
      * {@inheritDoc}
      * @author sbasnet (23.10.2014)
      */
@@ -134,13 +114,12 @@ public class IncrementTo {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + getId() == null ? 0 : getId().hashCode();
-        result = prime * result + getDescription() == null ? 0 : getDescription().hashCode();
+        result = prime * result + (getId() == null ? 0 : getId().hashCode());
+        result = prime * result + (getDescription() == null ? 0 : getDescription().hashCode());
         result = prime * result + (getTemplates() == null ? 0 : getTemplates().hashCode());
-        result = prime * result + getTriggerId() == null ? 0 : getTriggerId().hashCode();
+        result = prime * result + (getTriggerId() == null ? 0 : getTriggerId().hashCode());
         result =
             prime * result + (getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode());
-        result += prime * result;
         return result;
     }
 
@@ -153,43 +132,65 @@ public class IncrementTo {
         if (obj == null) {
             return false;
         }
+        if (obj == this) {
+            return true;
+        }
+
         if (obj instanceof IncrementTo) {
             boolean equal = true;
             IncrementTo otherIncrement = (IncrementTo) obj;
+
             if (getId() != null) {
-                equal = equal & getId().equals(otherIncrement.getId());
+                equal = equal && getId().equals(otherIncrement.getId());
             }
             if (!equal) {
                 return false;
             }
+
             if (getDescription() != null) {
-                equal = equal & getDescription().equals(otherIncrement.getDescription());
+                equal = equal && getDescription().equals(otherIncrement.getDescription());
             }
             if (!equal) {
                 return false;
             }
+
             if (getTemplates() != null) {
-                equal = equal & getTemplates().equals(otherIncrement.getTemplates());
+                equal = equal && getTemplates().equals(otherIncrement.getTemplates());
             }
             if (!equal) {
                 return false;
             }
+
             if (getTriggerId() != null) {
-                equal = equal & getTriggerId().equals(otherIncrement.getTriggerId());
+                equal = equal && getTriggerId().equals(otherIncrement.getTriggerId());
             }
             if (!equal) {
                 return false;
             }
+
             if (getDependentIncrements() != null) {
-                equal = equal & getDependentIncrements().equals(otherIncrement.getDependentIncrements());
+                equal = equal && getDependentIncrements().equals(otherIncrement.getDependentIncrements());
             }
-            if (!equal) {
-                return false;
-            } else {
-                return true;
-            }
+            return equal;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author sbasnet (23.10.2014)
+     */
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName() + " {");
+        result.append("id: " + getId());
+        result.append(" desc: " + getDescription());
+        result.append(" #templates: " + getTemplates().size());
+        result.append(" triggerId: " + getTriggerId());
+        result.append(" #dependentIncrements: " + getDependentIncrements().size());
+        result.append("}");
+        return result.toString();
     }
 
 }
