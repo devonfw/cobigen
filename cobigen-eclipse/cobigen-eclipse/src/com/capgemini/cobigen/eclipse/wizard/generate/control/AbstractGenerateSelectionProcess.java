@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.actions.FormatAllAction;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
@@ -214,11 +213,9 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      * Retrieves all {@link ICompilationUnit}s targeted by the generated paths
      *
      * @return an array of {@link ICompilationUnit}s, which are targeted by the generated paths
-     * @throws JavaModelException
-     *             if an interal eclipse exception occurred
      * @author mbrunnli (04.06.2014)
      */
-    private ICompilationUnit[] getGeneratedCompilationUnits() throws JavaModelException {
+    private ICompilationUnit[] getGeneratedCompilationUnits() {
 
         IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {

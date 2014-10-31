@@ -3,7 +3,6 @@
  ******************************************************************************/
 package com.capgemini.cobigen.eclipse.workbenchcontrol;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
@@ -72,12 +71,10 @@ public class SelectionServiceListener implements ISelectionListener {
      *             if the generation configuration folder does not exist
      * @throws InvalidConfigurationException
      *             if the configuration is invalid
-     * @throws IOException
-     *             if some of the configuration files could not be read
      * @author mbrunnli (15.02.2013)
      */
     public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
-        IOException, InvalidConfigurationException {
+        InvalidConfigurationException {
 
         ISourceProviderService isps =
             (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(

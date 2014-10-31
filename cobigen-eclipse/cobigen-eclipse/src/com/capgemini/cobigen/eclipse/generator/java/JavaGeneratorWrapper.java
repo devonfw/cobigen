@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.xml.transform.TransformerException;
-
 import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -27,7 +25,6 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
@@ -93,8 +90,6 @@ public class JavaGeneratorWrapper {
      *
      * @throws InvalidConfigurationException
      *             if the given configuration does not match the templates.xsd
-     * @throws IOException
-     *             if the generator project "RF-Generation" could not be accessed
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
@@ -106,7 +101,7 @@ public class JavaGeneratorWrapper {
      * @author mbrunnli (21.03.2014)
      */
     public JavaGeneratorWrapper() throws UnknownExpressionException, UnknownContextVariableException,
-        GeneratorProjectNotExistentException, CoreException, IOException, InvalidConfigurationException {
+        GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException {
 
         cobiGen = initializeGenerator();
     }
@@ -144,8 +139,6 @@ public class JavaGeneratorWrapper {
      * Initializes the {@link CobiGen} with the correct configuration
      *
      * @return the configured{@link CobiGen}
-     * @throws IOException
-     *             if the {@link IFile} could not be accessed
      * @throws InvalidConfigurationException
      *             if the given configuration does not match the templates.xsd
      * @throws UnknownContextVariableException
@@ -159,8 +152,7 @@ public class JavaGeneratorWrapper {
      * @author mbrunnli (05.02.2013)
      */
     private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
-        UnknownExpressionException, UnknownContextVariableException, IOException,
-        InvalidConfigurationException {
+        UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         IProject generatorProj = ConfigResources.getGeneratorConfigurationProject();
         return new CobiGen(generatorProj.getLocation().toFile());
@@ -304,10 +296,6 @@ public class JavaGeneratorWrapper {
      *             any exception of the FreeMarker engine
      * @throws IOException
      *             if the specified template could not be found
-     * @throws TransformerException
-     *             if an unrecoverable error occurs during the course of the transformation.
-     * @throws SAXException
-     *             if any parse errors occur.
      * @throws MergeException
      *             if there are some problems while merging
      * @throws CoreException
@@ -317,7 +305,7 @@ public class JavaGeneratorWrapper {
      * @author mbrunnli (14.02.2013)
      */
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        SAXException, TransformerException, MergeException, CoreException, NotYetSupportedException {
+        MergeException, CoreException, NotYetSupportedException {
 
         if (packageFolder != null) {
             IProject proj = getGenerationTargetProject();
@@ -575,11 +563,9 @@ public class JavaGeneratorWrapper {
      * Returns project dependent paths of all possible generated resources
      *
      * @return project dependent paths of all possible generated resources
-     * @throws JavaModelException
-     *             if an internal eclipse exception occurred during finding a package's child type
      * @author mbrunnli (26.04.2013)
      */
-    public Set<IFile> getAllTargetFiles() throws JavaModelException {
+    public Set<IFile> getAllTargetFiles() {
 
         Set<IFile> files = new HashSet<>();
         for (TemplateTo t : getAllTemplates()) {

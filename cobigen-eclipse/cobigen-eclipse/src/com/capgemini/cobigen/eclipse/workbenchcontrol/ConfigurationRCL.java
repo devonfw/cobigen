@@ -94,8 +94,6 @@ public class ConfigurationRCL implements IResourceChangeListener {
                         try {
                             generator.reloadContextConfigurationFromFile();
                             LOG.info("The CobiGen context.xml has been changed and reloaded.");
-                        } catch (IOException e) {
-                            LOG.error("Could not read the context.xml.", e);
                         } catch (InvalidConfigurationException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
                                 "The context.xml of the generator configuration was changed into an invalid state.\n"
