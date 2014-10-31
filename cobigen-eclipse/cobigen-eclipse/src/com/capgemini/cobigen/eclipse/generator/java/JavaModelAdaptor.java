@@ -128,8 +128,10 @@ public class JavaModelAdaptor {
         if (range != null) {
             String javaDoc =
                 member.getCompilationUnit().getBuffer().getText(range.getOffset(), range.getLength());
-            // Replace JavaDoc Syntax: [^\\S\\r\\n] means 'all white spaces besides new lines'
-            javaDoc = javaDoc.replaceAll("/\\*|\\s*\\*/|[^\\S\\r\\n]*\\*[^\\S\\r\\n]*", "").trim();
+            if (!onlyText) {
+                // Replace JavaDoc Syntax: [^\\S\\r\\n] means 'all white spaces besides new lines'
+                javaDoc = javaDoc.replaceAll("/\\*|\\s*\\*/|[^\\S\\r\\n]*\\*[^\\S\\r\\n]*", "").trim();
+            }
             return javaDoc;
         }
         return null;

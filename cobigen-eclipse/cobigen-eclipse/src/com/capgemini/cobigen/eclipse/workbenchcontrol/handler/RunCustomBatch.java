@@ -3,8 +3,6 @@
  */
 package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
-import java.io.IOException;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -30,7 +28,7 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 
 /**
- * 
+ *
  * @author mbrunnli (21.03.2014)
  */
 public class RunCustomBatch extends AbstractHandler {
@@ -85,8 +83,6 @@ public class RunCustomBatch extends AbstractHandler {
                     LOG.error("The generator configuration project does not exist", e);
                 } catch (CoreException e) {
                     LOG.error("An Eclipse internal exception occurred", e);
-                } catch (IOException e) {
-                    LOG.error("An exception occured while accessing or writing files", e);
                 } catch (InvalidConfigurationException e) {
                     LOG.error("The Generator's configuration is invalid", e);
                 }

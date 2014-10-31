@@ -79,8 +79,6 @@ public class GenerateCustomBatchWizard extends Wizard {
      *            target path for generation to be matched against the batch root
      * @throws InvalidConfigurationException
      *             if the given configuration does not match the templates.xsd
-     * @throws IOException
-     *             if the generator project "RF-Generation" could not be accessed
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
@@ -93,7 +91,7 @@ public class GenerateCustomBatchWizard extends Wizard {
      */
     public GenerateCustomBatchWizard(IProject targetProject, IPath targetPath)
         throws UnknownExpressionException, UnknownContextVariableException,
-        GeneratorProjectNotExistentException, CoreException, IOException, InvalidConfigurationException {
+        GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException {
         customBatchIds = loadCustomBatches(targetPath);
         page1 = new CustomBatchSeletionPage("Select Batch Runner", customBatchIds.keySet());
 
@@ -161,8 +159,8 @@ public class GenerateCustomBatchWizard extends Wizard {
                     try {
                         javaGenerator.setInputType(inputTypes.get(0));
                         GenerateBatchSelectionProcess bp =
-                            new GenerateBatchSelectionProcess(getShell(), javaGenerator, getTemplatesToGenerate(javaGenerator,
-                                batch.getTrigger(), m), inputTypes);
+                            new GenerateBatchSelectionProcess(getShell(), javaGenerator,
+                                getTemplatesToGenerate(javaGenerator, batch.getTrigger(), m), inputTypes);
 
                         dialog.run(false, false, bp);
                     } catch (ClassNotFoundException e) {
@@ -274,7 +272,7 @@ public class GenerateCustomBatchWizard extends Wizard {
     }
 
     /**
-     * 
+     *
      * {@inheritDoc}
      * @author mbrunnli (20.03.2014)
      */
