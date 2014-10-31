@@ -100,8 +100,8 @@ public class CobiGen {
     }
 
     /**
-     * Generates code for the given input with the given increment to the destination specified by the
-     * templates configuration. API to trigger generation for a whole increment
+     * Runs a generation for each template within the given increment to the destination specified by each
+     * template according to its configuration.
      * @param input
      *            generator input object
      * @param increment
