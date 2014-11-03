@@ -189,9 +189,7 @@ public class JavaInputReader implements IInputReader {
         // find corresponding ClassLoader dependent on input type
         if (isValidInput(input)) {
 
-            if (input instanceof Class<?>) {
-                classloader = ((Class<?>) input).getClassLoader();
-            } else if (input instanceof JavaClass) {
+            if (input instanceof JavaClass) {
                 // currently it is not possible to access the classloader of an instance of JavaClass,
                 // therefore we pass the dafault classloader here.
                 classloader = getClass().getClassLoader();
@@ -202,11 +200,13 @@ public class JavaInputReader implements IInputReader {
                 }
             } else if (input instanceof Object[]) {
                 Object[] inputArr = (Object[]) input;
-                if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    ((Class<?>) inputArr[1]).getClassLoader();
-                } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    ((Class<?>) inputArr[0]).getClassLoader();
+                if ((inputArr[0] instanceof JavaClass) && (inputArr[1] instanceof Class<?>)) {
+                    classloader = ((Class<?>) inputArr[1]).getClassLoader();
+                } else if ((inputArr[0] instanceof Class<?>) && (inputArr[1] instanceof JavaClass)) {
+                    classloader = ((Class<?>) inputArr[0]).getClassLoader();
                 }
+            } else if (input instanceof Class<?>) {
+                classloader = ((Class<?>) input).getClassLoader();
             }
         }
 

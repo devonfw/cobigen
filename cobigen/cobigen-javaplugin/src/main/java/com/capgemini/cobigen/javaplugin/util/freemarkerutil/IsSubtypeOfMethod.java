@@ -2,6 +2,7 @@ package com.capgemini.cobigen.javaplugin.util.freemarkerutil;
 
 import java.util.List;
 
+import freemarker.ext.dom.NodeModel;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateMethodModelEx;
@@ -51,10 +52,31 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
         if (args.size() != 2) {
             throw new TemplateModelException("Wrong number of arguments. 2 arguments are expected.");
         }
+        String subType;
+        String superType;
+
+        // get 1st argument as String if possible
+        if (args.get(0) instanceof NodeModel) {
+            subType = ((NodeModel) args.get(0)).getNode().getTextContent();
+        } else if (args.get(0) instanceof SimpleScalar) {
+            subType = ((SimpleScalar) args.get(0)).getAsString();
+        } else {
+            throw new TemplateModelException(
+                "The passed arguments have unexpected types. Two String values are expected");
+        }
+
+        // get 2nd argument as String if possible
+        if (args.get(1) instanceof NodeModel) {
+            superType = ((NodeModel) args.get(1)).getNode().getTextContent();
+        } else if (args.get(1) instanceof SimpleScalar) {
+            superType = ((SimpleScalar) args.get(1)).getAsString();
+        } else {
+            throw new TemplateModelException(
+                "The passed arguments have unexpected types. Two String values are expected");
+        }
+
         try {
-            boolean isSubtypeOf =
-                isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(),
-                    ((SimpleScalar) args.get(1)).getAsString());
+            boolean isSubtypeOf = isSubtypeOf(subType, superType);
             if (isSubtypeOf) {
                 return TemplateBooleanModel.TRUE;
             } else {
