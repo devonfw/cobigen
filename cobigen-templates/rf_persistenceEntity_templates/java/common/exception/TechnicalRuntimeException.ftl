@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.common.exception;
 
 import de.bund.bva.pliscommon.exception.FehlertextProvider;

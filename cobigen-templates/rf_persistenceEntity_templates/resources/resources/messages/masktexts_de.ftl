@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 ##############################################################################################
 # Maskentexte von Web-Austausch-Plattform
 ##############################################################################################
@@ -51,7 +50,7 @@ MEL_Action = Aktion
 ##############################################################################################
 
 MEL_Create_${pojo.name}_Titleline=Create ${pojo.name}
-<#list pojo.attributes as attr>    
+<#list pojo.attributes as attr>
 MEL_${pojo.name}_${attr.name?cap_first}=${attr.name?cap_first}
 </#list>
 

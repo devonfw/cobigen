@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.gui.${variables.component}.common;
 
 import ${variables.rootPackage}.gui.common.AbstractController;

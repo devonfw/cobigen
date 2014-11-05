@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.gui.${variables.component}.corewrapper;
 
@@ -19,7 +18,7 @@ public interface ${pojo.name}ManagementCoreWrapper {
      * @return boolean true if the creation was successful, otherwise false
      */
     public boolean create${pojo.name}(${pojo.name} ${pojo.name?uncap_first});
-    
+
     /**
      * Updates the given ${pojo.name}
      * @param ${pojo.name?uncap_first}
@@ -37,7 +36,7 @@ public interface ${pojo.name}ManagementCoreWrapper {
 
     /**
      * Returns a list of all existing ${pojo.name}s.
-     * @return List<${pojo.name}> 
+     * @return List<${pojo.name}>
      *            list with all existing ${pojo.name} objects
      */
     public List<${pojo.name}> getAll${pojo.name}s();

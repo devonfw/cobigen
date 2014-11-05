@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.common.exception;
 
 /**
@@ -9,7 +8,7 @@ public class ValidationException extends TechnicalRuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param exceptionId
      *            {@link String} The exception Key defined by the ExceptionKey-Class
      * @param parameter

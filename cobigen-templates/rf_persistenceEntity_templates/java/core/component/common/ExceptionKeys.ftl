@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.core.${variables.component}.common;
 
 /**
@@ -8,12 +7,12 @@ public class ExceptionKeys extends ${variables.rootPackage}.common.constants.Exc
 
     /**
      * No such ${pojo.name} exception
-     */ 
+     */
     public static final String NO_SUCH_${pojo.name?upper_case} = "${pojo.name?upper_case}00001";
 
     /**
      * ${pojo.name} already exists exception
-     */ 
+     */
     public static final String ${pojo.name?upper_case}_ALREADY_EXISTS = "${pojo.name?upper_case}00002";
 
     /**

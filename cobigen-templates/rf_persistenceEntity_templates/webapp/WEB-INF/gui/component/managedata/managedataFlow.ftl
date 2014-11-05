@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- @generated -->
 <flow xmlns="http://www.springframework.org/schema/webflow"
@@ -6,7 +5,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd"
 	parent="plisParentFlow">
-	
+
 	<var name="manage${pojo.name}Model"
     class="${variables.rootPackage}.gui.${variables.component}.manage${pojo.name?lower_case}.Manage${pojo.name}Model" />
 

@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.gui.${variables.component}.manage${pojo.name?lower_case};
 
@@ -12,7 +11,7 @@ import ${variables.rootPackage}.core.${variables.component}.entity.${pojo.name};
 public class Manage${pojo.name}Model implements Serializable {
 
     private ${pojo.name} selected${pojo.name};
-    
+
     /**
      * Returns the field 'selected${pojo.name}'.
      * @return Value of selected${pojo.name}

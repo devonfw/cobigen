@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.gui.common;
 
 import javax.faces.application.FacesMessage;
@@ -17,7 +16,7 @@ public abstract class AbstractController {
 
     /**
      * Displays a faces message 'msg' with severity 'severity'.
-     * 
+     *
      * @param severity
      *            Severity The severity of the message 'msg'.
      * @param msg

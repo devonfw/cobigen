@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.gui.${variables.component}.${pojo.name?lower_case}overview;
 

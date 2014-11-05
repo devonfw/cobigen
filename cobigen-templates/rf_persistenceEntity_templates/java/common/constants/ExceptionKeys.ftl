@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.common.constants;
 
 /**
@@ -8,7 +7,7 @@ package ${variables.rootPackage}.common.constants;
 public class ExceptionKeys {
 
     /**
-     * Generic Technical Exception 
+     * Generic Technical Exception
      */
     public static final String GENERAL_TECHNICAL_EXCEPTION = "00000001";
 

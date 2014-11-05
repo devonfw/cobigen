@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <!-- @generated -->
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
@@ -22,9 +21,9 @@
 					<!-- row record -->
 					${r"#{"}${pojo.name?uncap_first}.${attr.name}}
 				</h:column>
-				
+
 			</#list>
-			
+
 			<h:column>
         <f:facet name="header">${r"#{msg.MEL_Action}"}</f:facet>
         <h:commandButton id="delete${pojo.name}"

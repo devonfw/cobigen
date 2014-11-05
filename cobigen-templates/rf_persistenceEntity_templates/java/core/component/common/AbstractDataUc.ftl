@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.core.${variables.component}.common;
 
 import ${variables.rootPackage}.core.common.AbstractUc;

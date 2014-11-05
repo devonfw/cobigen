@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.gui.${variables.component}.${pojo.name?lower_case}overview;
 
@@ -24,7 +23,7 @@ public class ${pojo.name}OverviewController extends Abstract${pojo.name}Controll
 
     /**
      * Deletes a ${pojo.name}.
-     * 
+     *
      * @param model
      *            The {@link ${pojo.name}OverviewModel} .
      * @return {@link Boolean#TRUE} if the deleting the object was successful. {@link Boolean#FALSE}

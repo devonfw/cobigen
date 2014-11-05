@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright © Capgemini 2013. All rights reserved.
--->
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">	
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
 		<template id="java_common_constants_exceptionKeys" destinationPath="src/main/java/${variables.rootPackage}/common/constants/ExceptionKeys.java" templateFile="java/common/constants/ExceptionKeys.ftl" mergeStrategy="javamerge" />
 		<template id="java_common_constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/common/constants/NamedQueries.java" templateFile="java/common/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
@@ -51,7 +48,7 @@
 		<template id="resources_resources_spring_gui_gui-core-wrapper" destinationPath="src/main/resources/resources/spring/gui/gui-core-wrapper.xml" templateFile="resources/resources/spring/gui/gui-core-wrapper.ftl" mergeStrategy="xmlmerge" />
 		<template id="resources_resources_spring_persistence_jpa" destinationPath="src/main/resources/resources/spring/persistence/jpa.xml" templateFile="resources/resources/spring/persistence/jpa.ftl" mergeStrategy="xmlmerge" />
 		<template id="resources_resources_messages_masktexts_de" destinationPath="src/main/resources/resources/messages/masktexts_de.properties" templateFile="resources/resources/messages/masktexts_de.ftl" mergeStrategy="propertymerge" targetCharset="ISO-8859-1" />
-		
+
 
 		<template id="webapp_WEB-INF_gui_component_createdata_createdataButtonline" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Buttonline.xhtml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataButtonline.ftl" />
 		<template id="webapp_WEB-INF_gui_component_createdata_createdataFlow" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Flow.xml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataFlow.ftl" />

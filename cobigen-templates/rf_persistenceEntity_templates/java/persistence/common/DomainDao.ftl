@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.persistence.common;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ public interface DomainDao<T, ID extends Serializable> {
 
     /**
      * Stores an entity to the database.
-     * 
+     *
      * @param entity
      *            entity to save
      */
@@ -19,7 +18,7 @@ public interface DomainDao<T, ID extends Serializable> {
 
     /**
      * Deletes an entity from the database.
-     * 
+     *
      * @param entity
      *            entity to delete
      */
@@ -27,7 +26,7 @@ public interface DomainDao<T, ID extends Serializable> {
 
     /**
      * Fetches an entity from the database by its id.
-     * 
+     *
      * @param id
      *            identifier of the searched entity
      * @return T searched entity

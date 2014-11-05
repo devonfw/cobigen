@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
@@ -11,7 +10,7 @@
 	<import resource="../common.xml" />
 	<context:component-scan
 		base-package="com.capgemini.gastronomy.restaurant.persistence" />
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		By this bean an EntityManagerFactory is created. ====================================================================== -->
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -34,7 +33,7 @@
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">false</prop>
 				<prop key="hibernate.default_schema">${r"${database.schema.default}"}</prop>
-				<!-- Hibernate-Mappings und Lazy-Loading per Default werden hibernate.cfg.xml 
+				<!-- Hibernate-Mappings und Lazy-Loading per Default werden hibernate.cfg.xml
 					konfiguriert -->
 				<prop key="hibernate.ejb.cfgfile">/resources/persistence/hibernate.cfg.xml</prop>
 				<prop key="hibernate.ejb.metamodel.generation">enabled</prop>
@@ -48,15 +47,15 @@
 		<property name="password" value="${r"${database.password}"}" />
 	</bean>
 
-	<!-- <bean id="appDataSource" class="oracle.jdbc.pool.OracleDataSource" 
-		destroy-method="close"> <property name="URL" value="${r"${database.url}"}" /> <property 
-		name="user" value="${r"${database.username}"}" /> <property name="password" value="${r"${database.password}"}" 
-		/> <property name="connectionCachingEnabled" value="true" /> <property name="connectionProperties"> 
-		<props> <prop key="MinLimit">${r"${database.connections.max.active}"}</prop> <prop 
-		key="MaxLimit">${r"${database.connections.max.active}"}</prop> </props> </property> 
+	<!-- <bean id="appDataSource" class="oracle.jdbc.pool.OracleDataSource"
+		destroy-method="close"> <property name="URL" value="${r"${database.url}"}" /> <property
+		name="user" value="${r"${database.username}"}" /> <property name="password" value="${r"${database.password}"}"
+		/> <property name="connectionCachingEnabled" value="true" /> <property name="connectionProperties">
+		<props> <prop key="MinLimit">${r"${database.connections.max.active}"}</prop> <prop
+		key="MaxLimit">${r"${database.connections.max.active}"}</prop> </props> </property>
 		</bean> -->
 
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		The Transaction-Manager to be used. ====================================================================== -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory">
@@ -67,7 +66,7 @@
 	<!-- Transaction handling by annotations -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<!-- This bean ensures, that JPA-Exceptions of DAOs, declared with "@Repository", 
+	<!-- This bean ensures, that JPA-Exceptions of DAOs, declared with "@Repository",
 		will be mapped to more treatable Spring-Persistence-Excetions. -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
@@ -77,9 +76,9 @@
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		DAO bean declaration. ====================================================================== -->
-		
+
 	<bean id="abstractDomainDao" abstract="true"
 		class="${variables.rootPackage}.persistence.common.AbstractDomainDao">
 		<property name="entityManager" ref="entityManagerFactoryBean" />

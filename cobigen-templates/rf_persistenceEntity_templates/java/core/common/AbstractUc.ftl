@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.core.common;
 
 import org.apache.log4j.Logger;
@@ -6,7 +5,7 @@ import org.apache.log4j.Logger;
 import ${variables.rootPackage}.common.exception.ValidationException;
 
 /**
- * Abstract Uc providing a logger instance and a basic validation logic. 
+ * Abstract Uc providing a logger instance and a basic validation logic.
  * @generated
  */
 public abstract class AbstractUc {
@@ -21,7 +20,7 @@ public abstract class AbstractUc {
      * <ul>
      * <li>entity == null</li>
      * </ul>
-     * 
+     *
      * @param entity
      *            The entity to validate
      * @param exceptionKey

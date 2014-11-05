@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <!-- @generated -->
 <div class="onecol" xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -13,17 +12,17 @@
 
         <!-- Angebotname -->
         <div class="form_field">
-        
+
         <#list pojo.attributes as attr>
-          
+
           <t:outputLabel for="${attr.name}" value="${r"#{msg.MEL_"}${pojo.name}_${attr.name?cap_first}}" />
           <t:message for="${attr.name}" showDetail="false"
             errorClass="fehler_icon_validierung" />
           <h:inputText id="${attr.name}" forceId="true"
             value="${r"#{"}manage${pojo.name}Model.getSelected${pojo.name}().${attr.name}}" styleClass="textfield_full" />
-        
+
         </#list>
-            
+
         </div>
       </div>
     </div>

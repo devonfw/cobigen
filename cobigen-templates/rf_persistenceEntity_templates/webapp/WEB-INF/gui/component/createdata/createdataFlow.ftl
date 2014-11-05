@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- @generated -->
 <flow xmlns="http://www.springframework.org/schema/webflow"
@@ -10,7 +9,7 @@
 	<var name="create${pojo.name}Model"
 		class="${variables.rootPackage}.gui.${variables.component}.create${pojo.name?lower_case}.Create${pojo.name}Model" />
 
-	<view-state id="create${pojo.name?lower_case}ViewState" model="create${pojo.name}Model">		
+	<view-state id="create${pojo.name?lower_case}ViewState" model="create${pojo.name}Model">
 		<transition on="create" to="end">
 			<evaluate expression="create${pojo.name}Controller.create${pojo.name}(create${pojo.name}Model)" />
 		</transition>

@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#macro callNotNullPropertyWithDefaultValue attr>
 <#compress>
 <#if attr.type = "String">

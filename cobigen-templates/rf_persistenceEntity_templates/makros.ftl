@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#macro insertIdParameter>
 <#compress>
 <#assign ids=doc["/doc/pojo/attributes[isId='true']"]>
@@ -37,7 +36,7 @@
 <#if ids[0]??>
 <#list ids as idAttr>
 	 * @param ${idAttr.name}
-     *            The ${idAttr.name} of the ${pojo.name}.	 
+     *            The ${idAttr.name} of the ${pojo.name}.
 </#list>
 </#if>
 </#macro>

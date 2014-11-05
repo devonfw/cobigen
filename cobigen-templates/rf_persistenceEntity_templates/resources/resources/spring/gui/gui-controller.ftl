@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
@@ -8,7 +7,7 @@
                     http://www.springframework.org/schema/webflow-config
             http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.1.xsd">
 
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		General-Controller ====================================================================== -->
 	<bean id="abstractController" abstract="true"
 		class="${variables.rootPackage}.gui.common.AbstractController">
@@ -22,7 +21,7 @@
 	<bean id="buttonActionListener"
 		class="de.bund.bva.pliscommon.plisweb.trefferliste.actionlistener.ButtonActionListener" />
 
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		Controller for ${variables.component} ====================================================================== -->
 	<bean id="abstract${pojo.name}Controller" parent="abstractController"
 		abstract="true"
@@ -39,7 +38,7 @@
 		class="${variables.rootPackage}.gui.${variables.component}.${pojo.name?lower_case}overview.${pojo.name}OverviewController">
 	</bean>
 
-	<!-- ====================================================================== 
+	<!-- ======================================================================
 		Webflow-Validator for ${variables.component} ====================================================================== -->
 	<bean id="create${pojo.name}ModelValidator"
 		class="${variables.rootPackage}.gui.${variables.component}.create${pojo.name?lower_case}.Create${pojo.name}ModelValidator" />

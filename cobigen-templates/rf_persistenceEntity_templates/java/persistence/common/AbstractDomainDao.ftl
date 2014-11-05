@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.persistence.common;
 
 import java.io.Serializable;
@@ -57,7 +56,7 @@ public abstract class AbstractDomainDao<T, ID extends Serializable> extends Abst
     /**
      * This method is not supported. Use "{@link #delete(object)}" instead. An UnsupportedOperationException
      * will be thrown.
-     * 
+     *
      * @throws UnsupportedOperationException
      *             This exception will be thrown, if this method is called.
      */
@@ -71,7 +70,7 @@ public abstract class AbstractDomainDao<T, ID extends Serializable> extends Abst
     /**
      * This method is not supported. Use "{@link #searchById(id)}" instead. An UnsupportedOperationException
      * will be thrown.
-     * 
+     *
      * @throws UnsupportedOperationException
      *             This exception will be thrown, if this method is called.
      */
@@ -85,7 +84,7 @@ public abstract class AbstractDomainDao<T, ID extends Serializable> extends Abst
     /**
      * This method is not supported. Use "{@link #save()}" instead. An UnsupportedOperationException will be
      * thrown.
-     * 
+     *
      * @throws UnsupportedOperationException
      *             This exception will be thrown, if this method is called.
      */

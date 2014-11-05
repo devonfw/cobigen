@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 package ${variables.rootPackage}.common;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class AbstractLayerImpl {
 
     /**
      * Maps an initial layer entity to a target layer entity. The resulting entity type has to be given.
-     * 
+     *
      * @param entity
      *            The initial layer entity
      * @param outputEntityType
@@ -61,7 +60,7 @@ public class AbstractLayerImpl {
     /**
      * Maps a list of initial layer entities to a list of target layer entities. The resulting entity type has
      * to be given. The given type MUST be the resulting list type.
-     * 
+     *
      * @param entities
      *            The list of initial layer entities
      * @param outputEntityType
@@ -90,12 +89,12 @@ public class AbstractLayerImpl {
      * Determines the sub type for a given super entity (both at the initial layer) and maps this casted sub
      * type to the targets layer equivalent type. If there is no 'super <-> sub' relationship, this method
      * returns null.
-     * 
+     *
      * This method has to be chosen if a mapping should be done via dozer. The 'sub <-> super' relationship
      * won't be established by that mapping.
-     * 
+     *
      * This method preserves this relationship.
-     * 
+     *
      * @param initialLayerSuperClassEntity
      *            The initial layers super entity (e.g. persistence super type)
      * @param initialLayerSubClassType
@@ -109,7 +108,7 @@ public class AbstractLayerImpl {
      *            Initials layers super entity to cast and to map (e.g. Persistence super entity)
      * @param <C>
      *            Target layer sub type (e.g. core layer, mapping-equivalent to persistence sub type)
-     * 
+     *
      * @return A mapped target layer sub entity of a given initial layer superClassEntity. <code>NULL</code>,
      *         if there is no 'super <-> sub'
      */
@@ -126,7 +125,7 @@ public class AbstractLayerImpl {
 
             /*
              * True: 'super <-> sub' relationship exists.
-             * 
+             *
              * Initial Layer [next step]: Cast the super entity to the sub type
              */
             P castedEntity = initialLayerSubClassType.cast(initialLayerSuperClassEntity);

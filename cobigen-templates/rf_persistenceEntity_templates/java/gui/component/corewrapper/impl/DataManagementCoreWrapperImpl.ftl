@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.gui.${variables.component}.corewrapper.impl;
 
@@ -15,7 +14,7 @@ import ${variables.rootPackage}.gui.${variables.component}.corewrapper.${pojo.na
 /**
  * Implementation of the ${variables.component} wrapper interface. This class communications this the application
  * core component '${variables.component}'.
- * 
+ *
  * @generated
  */
 @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
@@ -33,7 +32,7 @@ public class ${pojo.name}ManagementCoreWrapperImpl implements ${pojo.name}Manage
     public void set${pojo.name}Management(${pojo.name}Management ${pojo.name?lower_case}Management) {
         this.${pojo.name?uncap_first}Management = ${pojo.name?lower_case}Management;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -44,7 +43,7 @@ public class ${pojo.name}ManagementCoreWrapperImpl implements ${pojo.name}Manage
         LOG.debug("${pojo.name} with id(s) '" + <@insertIdParameterValuesAsStringList/> + "' will be created.");
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */

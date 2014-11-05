@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- @generated -->
 <flow xmlns="http://www.springframework.org/schema/webflow"

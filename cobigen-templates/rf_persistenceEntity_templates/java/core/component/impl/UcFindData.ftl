@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.core.${variables.component}.impl;
 
@@ -14,7 +13,7 @@ public class UcFind${pojo.name} extends Abstract${pojo.name}Uc {
 
     /**
      * Returns a ${pojo.name} by its it
-     * 
+     *
 	   <@insertIdParameterAsJavaDoc/>
      * @return The {@link ${pojo.name}} with the given parameters
      */
@@ -25,7 +24,7 @@ public class UcFind${pojo.name} extends Abstract${pojo.name}Uc {
 
     /**
      * Returns a list of all existing ${pojo.name}s.
-     * 
+     *
      * @return {@link List} of all existing {@link ${pojo.name}}s
      */
     public List<${pojo.name}> getAll${pojo.name}s() {

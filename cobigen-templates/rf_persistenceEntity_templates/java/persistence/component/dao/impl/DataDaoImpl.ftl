@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.persistence.${variables.component}.dao.impl;
 
@@ -22,7 +21,7 @@ public class ${pojo.name}DaoImpl extends AbstractDomainDao<${pojo.name}, <@inser
      */
     @Override
     public void save(${pojo.name} ${pojo.name?uncap_first}) {
-  
+
       ${pojo.name} persistent${pojo.name} = getEntityManager().merge(${pojo.name?uncap_first});
       super.save(persistent${pojo.name});
     }
@@ -32,7 +31,7 @@ public class ${pojo.name}DaoImpl extends AbstractDomainDao<${pojo.name}, <@inser
      */
     @Override
     public void delete(${pojo.name} ${pojo.name?uncap_first}) {
-  
+
       <@defineAndRetrieveAllIds/>
       ${pojo.name} persistent${pojo.name} = searchById(<@insertIdParameterValues/>);
       super.delete(persistent${pojo.name});

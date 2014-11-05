@@ -1,4 +1,3 @@
-<#-- Copyright � Capgemini 2013. All rights reserved. -->
 <#macro insertMethodsJavaDoc>
 <#compress>
 <#list doc.pojo.methods as method><#if method.annotations.org_junit_Test?has_content && method.javaDoc?has_content><#assign cellWithNewLines=method.javaDoc?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}";</#if></#list>

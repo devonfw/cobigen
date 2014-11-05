@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <!-- @generated -->
 <div class="buttonline" xmlns:t="http://myfaces.apache.org/tomahawk"
 	xmlns:h="http://java.sun.com/jsf/html"

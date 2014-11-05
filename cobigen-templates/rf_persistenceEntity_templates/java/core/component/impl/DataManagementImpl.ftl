@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.core.${variables.component}.impl;
 
@@ -42,7 +41,7 @@ public class ${pojo.name}ManagementImpl extends AbstractLayerImpl implements ${p
     public void setUcManage${pojo.name}(UcManage${pojo.name} ucManage${pojo.name}) {
         this.ucManage${pojo.name} = ucManage${pojo.name};
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -85,7 +84,7 @@ public class ${pojo.name}ManagementImpl extends AbstractLayerImpl implements ${p
                 ${variables.rootPackage}.persistence.${variables.component}.entity.${pojo.name}.class);
         return this.ucManage${pojo.name}.create${pojo.name}(persistence${pojo.name});
     }
-    
+
     /**
      * {@inheritDoc}
      */

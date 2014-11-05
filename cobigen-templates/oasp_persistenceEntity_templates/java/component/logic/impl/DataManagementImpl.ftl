@@ -7,7 +7,6 @@ import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind$
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 

@@ -1,4 +1,3 @@
-<#-- Copyright © Capgemini 2013. All rights reserved. -->
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.core.${variables.component}.impl;
 
@@ -15,7 +14,7 @@ public class UcManage${pojo.name} extends Abstract${pojo.name}Uc {
 
     /**
      * Creates a new ${pojo.name}
-     * 
+     *
      * @param ${pojo.name?uncap_first} ${pojo.name} to create
      * @return boolean {@link Boolean#TRUE} if the creation was successful, {@link Boolean#FALSE} if a ${pojo.name}
      *         with this number already exists or if the given id is not allowed
@@ -38,10 +37,10 @@ public class UcManage${pojo.name} extends Abstract${pojo.name}Uc {
         // ${pojo.name} already exists
         throw new ValidationException(ExceptionKeys.${pojo.name?upper_case}_ALREADY_EXISTS, <@insertIdParameterAsListOfStrings/>);
     }
-    
+
     /**
      * Updates a new ${pojo.name}
-     * 
+     *
      * @param ${pojo.name?uncap_first} ${pojo.name} to be updated
      * @return boolean {@link Boolean#TRUE} if the update was successful, {@link Boolean#FALSE} if a ${pojo.name}
      *        already exists or if the given id is not allowed
@@ -58,7 +57,7 @@ public class UcManage${pojo.name} extends Abstract${pojo.name}Uc {
 
     /**
      * Deletes a ${pojo.name} from the database by its id(s) <@insertIdParameter/>.
-     * 
+     *
      * @param ${pojo.name?uncap_first} ${pojo.name} to delete
      * @return boolean {@link Boolean#TRUE} if the ${pojo.name?lower_case} can be deleted, {@link Boolean#FALSE} otherwise
      * @throws ValidationException The {@link ${pojo.name}} is unknown to the database (id unknown or ${pojo.name?lower_case}
