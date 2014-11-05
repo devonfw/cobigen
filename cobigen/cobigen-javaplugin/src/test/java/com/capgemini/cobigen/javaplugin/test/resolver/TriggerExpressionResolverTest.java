@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.javaplugin.test.resolver;
 
 import org.junit.Assert;
@@ -11,7 +8,7 @@ import com.capgemini.cobigen.javaplugin.resover.TriggerExpressionResolver;
 /**
  * The class <code>TriggerExpressionResolverTest</code> contains tests for the class
  * {@link TriggerExpressionResolver}
- * 
+ *
  * @author mbrunnli (05.04.2013)
  */
 public class TriggerExpressionResolverTest {

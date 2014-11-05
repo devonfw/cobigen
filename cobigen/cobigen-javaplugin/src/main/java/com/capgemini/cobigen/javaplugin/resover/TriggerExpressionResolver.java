@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.javaplugin.resover;
 
 import java.util.regex.Matcher;
@@ -14,7 +11,7 @@ import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 
 /**
  * The {@link TriggerExpressionResolver} resolves expressions for {@link Trigger} objects.
- * 
+ *
  * @author mbrunnli (05.04.2013)
  */
 public class TriggerExpressionResolver {
@@ -36,7 +33,7 @@ public class TriggerExpressionResolver {
 
     /**
      * Creates a new {@link TriggerExpressionResolver} for the given pojo with its {@link ClassLoader}
-     * 
+     *
      * @param pojo
      *            current triggered POJO {@link Class}
      * @author mbrunnli (15.04.2013)
@@ -47,7 +44,7 @@ public class TriggerExpressionResolver {
 
     /**
      * Evaluates the given expression
-     * 
+     *
      * @param expression
      *            to be evaluated
      * @return <code>true</code> if the expression is valid,<br>

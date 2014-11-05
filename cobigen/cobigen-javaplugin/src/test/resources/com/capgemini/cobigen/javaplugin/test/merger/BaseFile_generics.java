@@ -1,10 +1,7 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini;
 
 public abstract class Clazz<T extends Object> extends Map<String, T> {
-    
+
     private T t;
 
     public void set(T t) {

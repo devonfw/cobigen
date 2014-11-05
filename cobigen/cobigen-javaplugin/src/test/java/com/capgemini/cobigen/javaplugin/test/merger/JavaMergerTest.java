@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.javaplugin.test.merger;
 
 import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;

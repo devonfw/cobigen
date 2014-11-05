@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
 import java.io.File;
@@ -34,7 +31,7 @@ import com.thoughtworks.qdox.parser.impl.Parser;
  * {@link SourceLibrary} parsing inputs into the {@link JavaSource} representation by using a
  * {@link ModifyableModelBuilder} in order to get the internal representation of {@link JavaClass}es as
  * {@link ModifyableJavaClass} es
- * 
+ *
  * @author mbrunnli (04.04.2013)
  */
 public class ModifyableSourceLibrary extends SourceLibrary {
@@ -51,7 +48,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Creates a new {@link ModifyableJavaClass}
-     * 
+     *
      * @param parent
      *            {@link ClassLibrary}
      * @author mbrunnli (04.04.2013)
@@ -62,7 +59,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Adds a source to the source repository and returns it representative {@link JavaSource}
-     * 
+     *
      * @param source
      *            to be parsed
      * @return the created {@link JavaSource}
@@ -82,7 +79,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Parses the given source using the given {@link ModelBuilder}
-     * 
+     *
      * @param modelBuilder
      *            {@link ModelBuilder} to be used to build the {@link JavaSource}
      * @param source
@@ -122,7 +119,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Parses the given stream contents and closes the stream if any exception occurs
-     * 
+     *
      * @param stream
      *            to be parsed
      * @param url
@@ -148,7 +145,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Parses the given reader contents and closes the reader if any exception occurs
-     * 
+     *
      * @param reader
      *            to be parsed
      * @param url
@@ -174,7 +171,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * Parses the given reader contents and closes the reader if any exception occurs
-     * 
+     *
      * @param lexer
      *            to be parsed
      * @param url
@@ -214,7 +211,7 @@ public class ModifyableSourceLibrary extends SourceLibrary {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (04.04.2013)
      */
     @Override
