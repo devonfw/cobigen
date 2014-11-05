@@ -48,12 +48,12 @@ public class ParsedJavaModelBuilder {
      */
     Map<String, Object> createModel(final JavaClass javaClass) {
 
-        if (this.cachedPojo != null && this.cachedPojo.equals(javaClass)) {
-            return new HashMap<>(this.cachedModel);
+        if (cachedPojo != null && cachedPojo.equals(javaClass)) {
+            return new HashMap<>(cachedModel);
         }
-        this.cachedPojo = javaClass;
+        cachedPojo = javaClass;
 
-        this.cachedModel = new HashMap<>();
+        cachedModel = new HashMap<>();
         Map<String, Object> pojoModel = new HashMap<>();
         pojoModel.put(ModelConstant.NAME, javaClass.getName());
         if (javaClass.getPackage() != null) {
@@ -79,9 +79,9 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
-        this.cachedModel.put(ModelConstant.ROOT, pojoModel);
+        cachedModel.put(ModelConstant.ROOT, pojoModel);
 
-        return new HashMap<>(this.cachedModel);
+        return new HashMap<>(cachedModel);
     }
 
     /**
@@ -98,8 +98,9 @@ public class ParsedJavaModelBuilder {
         for (JavaMethod method : javaClass.getMethods()) {
             Map<String, Object> methodAttributes = new HashMap<>();
             methodAttributes.put(ModelConstant.NAME, method.getName());
-            if (method.getComment() != null)
+            if (method.getComment() != null) {
                 methodAttributes.put(ModelConstant.JAVADOC, method.getComment());
+            }
             Map<String, Object> annotations = new HashMap<>();
             extractAnnotationsRecursively(annotations, method.getAnnotations());
             methodAttributes.put(ModelConstant.ANNOTATIONS, annotations);
@@ -205,21 +206,24 @@ public class ParsedJavaModelBuilder {
             JavaMethod getter =
                 javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (getter != null)
+            if (getter != null) {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
+            }
 
             getter =
                 javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (getter != null)
+            if (getter != null) {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
+            }
 
             // TODO bugfixing: setter has to have some parameters
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     null, false);
-            if (setter != null)
+            if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
+            }
         }
     }
 
@@ -288,8 +292,9 @@ public class ParsedJavaModelBuilder {
                     javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)),
                         null, false);
             }
-            if (getter == null)
+            if (getter == null) {
                 return;
+            }
 
             List<JavaAnnotation> annotations = getter.getAnnotations();
             for (JavaAnnotation a : annotations) {

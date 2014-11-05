@@ -59,6 +59,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeSource(JavaSource source) {
         // package statement
         writePackage(source.getPackage());
@@ -86,6 +87,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writePackage(JavaPackage pckg) {
         if (pckg != null) {
             commentHeader(pckg);
@@ -99,6 +101,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeClass(JavaClass cls) {
         commentHeader(cls);
 
@@ -186,6 +189,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeInitializer(JavaInitializer init) {
         if (init.isStatic()) {
             buffer.write("static ");
@@ -204,6 +208,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeField(JavaField field) {
         commentHeader(field);
 
@@ -249,6 +254,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeConstructor(JavaConstructor constructor) {
         commentHeader(constructor);
         writeAllModifiers(constructor.getModifiers());
@@ -285,6 +291,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeMethod(JavaMethod method) {
         commentHeader(method);
         writeAccessibilityModifier(method.getModifiers());
@@ -329,8 +336,9 @@ public class CustomModelWriter implements ModelWriter {
 
     private boolean writeTypeParameters(JavaGenericDeclaration decl) {
         List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = decl.getTypeParameters();
-        if (typeParameters.size() == 0)
+        if (typeParameters.size() == 0) {
             return false;
+        }
 
         buffer.write("<");
         boolean first = true;
@@ -373,6 +381,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeAnnotation(JavaAnnotation annotation) {
         buffer.write('@');
         buffer.write(annotation.getType().getGenericValue());
@@ -399,6 +408,7 @@ public class CustomModelWriter implements ModelWriter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelWriter writeParameter(JavaParameter parameter) {
         commentHeader(parameter);
         writeAllModifiers(((ExtendedJavaParameter) parameter).getModifiers());

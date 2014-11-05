@@ -50,7 +50,7 @@ public class ExtendedJavaParameter extends DefaultJavaParameter {
      * @author mbrunnli (10.04.2014)
      */
     public List<String> getModifiers() {
-        return this.modifiers;
+        return modifiers;
     }
 
 }

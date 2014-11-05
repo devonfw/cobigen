@@ -208,7 +208,7 @@ public class JavaMatcher implements IMatcher {
             if (m.matches()) {
                 try {
                     String value = m.group(Integer.parseInt(va.getValue()));
-                    if (value == null)
+                    if (value == null) {
                         throw new InvalidConfigurationException(
                             "The VariableAssignment '"
                                 + va.getType().toUpperCase()
@@ -216,6 +216,7 @@ public class JavaMatcher implements IMatcher {
                                 + matcherType.toString()
                                 + "' does not match a regular expression group of the matcher value.\nCurrent value: '"
                                 + va.getValue() + "'");
+                    }
                     return value;
                 } catch (NumberFormatException e) {
                     LOG.error(
