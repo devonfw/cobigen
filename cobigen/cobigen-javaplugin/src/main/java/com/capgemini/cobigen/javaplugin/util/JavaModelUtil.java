@@ -20,6 +20,7 @@ public class JavaModelUtil {
      */
     public static Map<String, Object> getRoot(Map<String, Object> model) {
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
         return pojoMap;
     }
@@ -33,6 +34,7 @@ public class JavaModelUtil {
      */
     public static Map<String, Object> getAnnotations(Map<String, Object> model) {
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> annotations = (Map<String, Object>) model.get(ModelConstant.ANNOTATIONS);
         return annotations;
     }
@@ -81,6 +83,7 @@ public class JavaModelUtil {
      * @return the model's supertype element
      */
     public static Map<String, Object> getExtendedType(Map<String, Object> model) {
+        @SuppressWarnings("unchecked")
         Map<String, Object> supertype = (Map<String, Object>) getRoot(model).get(ModelConstant.EXTENDED_TYPE);
         return supertype;
     }
@@ -93,6 +96,7 @@ public class JavaModelUtil {
      * @return the model's interfaces element
      */
     public static List<Map<String, Object>> getImplementedTypes(Map<String, Object> model) {
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> interfaces =
             (List<Map<String, Object>>) getRoot(model).get(ModelConstant.IMPLEMENTED_TYPES);
         return interfaces;
@@ -126,6 +130,7 @@ public class JavaModelUtil {
      * @return the model's methods element
      */
     public static List<Map<String, Object>> getMethods(Map<String, Object> model) {
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> methods =
             (List<Map<String, Object>>) getRoot(model).get(ModelConstant.METHODS);
         return methods;

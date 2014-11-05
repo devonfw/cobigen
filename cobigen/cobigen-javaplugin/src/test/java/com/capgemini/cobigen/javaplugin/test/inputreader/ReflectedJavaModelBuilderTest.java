@@ -92,7 +92,7 @@ public class ReflectedJavaModelBuilderTest {
      * @author mbrunnli (30.09.2014)
      */
     @Test
-    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
+    public void testCorrectlyExtractedInheritedType() {
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
 
