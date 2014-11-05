@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.common.constants;
 
 import org.eclipse.core.resources.IProject;
@@ -12,7 +9,7 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
 
 /**
  * This class encloses all relevant resource functionality for the generator configuration
- * 
+ *
  * @author mbrunnli (08.04.2013)
  */
 public class ConfigResources {

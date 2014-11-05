@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.common.tools;
 
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -8,7 +5,7 @@ import org.eclipse.jdt.core.IType;
 
 /**
  * Util functionality around the eclipse JavaModel
- * 
+ *
  * @author mbrunnli (08.04.2013)
  */
 public class JavaModelUtil {

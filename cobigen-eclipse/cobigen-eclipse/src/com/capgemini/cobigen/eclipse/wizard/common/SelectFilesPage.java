@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.wizard.common;
 
 import java.util.HashSet;
@@ -40,9 +37,9 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
 import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
-import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
 import com.capgemini.cobigen.extension.to.IncrementTo;
@@ -162,8 +159,7 @@ public class SelectFilesPage extends WizardPage {
         boolean initiallyCustomizable = false;
         buildResourceTreeViewer(initiallyCustomizable);
 
-        CheckStateListener checkListener =
-            new CheckStateListener(javaGeneratorWrapper, this, batch);
+        CheckStateListener checkListener = new CheckStateListener(javaGeneratorWrapper, this, batch);
         incrementSelector.addCheckStateListener(checkListener);
 
         sash.setWeights(new int[] { 1, 3 });
@@ -255,8 +251,7 @@ public class SelectFilesPage extends WizardPage {
 
         resourcesTree.setContentProvider(cp);
         resourcesTree.setLabelProvider(lp);
-        resourcesTree
-            .setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
+        resourcesTree.setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
         resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;

@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.wizard.common.model;
 
 import java.util.ArrayList;
@@ -391,8 +388,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     debugInfo = "Folder";
                 }
                 resourceStub.setFullPath(childPath);
-            }
-            else {
+            } else {
                 continue; // no child of parentPath
             }
 

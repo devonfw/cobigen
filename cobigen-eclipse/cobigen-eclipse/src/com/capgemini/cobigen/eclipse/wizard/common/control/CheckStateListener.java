@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.wizard.common.control;
 
 import java.util.Arrays;
@@ -22,9 +19,9 @@ import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
-import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.capgemini.cobigen.extension.to.IncrementTo;
@@ -142,7 +139,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
 
-        SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
+        SelectIncrementContentProvider cp =
+            (SelectIncrementContentProvider) packageSelector.getContentProvider();
         TreePath[] paths = cp.getAllPaths(event.getElement());
         for (TreePath path : paths) {
             packageSelector.setSubtreeChecked(path, event.getChecked());

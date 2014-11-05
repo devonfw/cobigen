@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.eclipse.wizard.generate.control;
 
 import java.util.List;
@@ -102,8 +99,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
                 monitor.beginTask("Generate files for " + container.getElementName() + "...",
                     templatesToBeGenerated.size());
                 for (TemplateTo temp : templatesToBeGenerated) {
-                    TemplateTo t =
-                        javaGeneratorWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
+                    TemplateTo t = javaGeneratorWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
                     if (t.getMergeStrategy() == null) {
                         javaGeneratorWrapper.generate(t, true);
                     } else {
@@ -112,8 +108,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
                 }
                 monitor.worked(1);
             } else {
-                LOG
-                    .error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
+                LOG.error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
             }
             return true;
         } else {
