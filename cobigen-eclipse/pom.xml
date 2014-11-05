@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capgemini</groupId>
   <artifactId>cobigen-eclipse-parent</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <name>CobiGen - Eclipse Plug-In - Parent</name>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-master-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
   </parent>
 
   <properties>
@@ -97,6 +97,61 @@
       </plugins>
     </pluginManagement>
   </build>
+  
+    <profiles>
+    <profile>
+      <id>uploadSnapshot</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-snapshot</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}</fromDir>
+                  <includes>cobigen-eclipse-*SNAPSHOT.zip</includes>
+                  <url>file://localhost///de-file10/ClientPE/OASP</url>
+                  <toDir>CobiGenerator/Releases/snapshot</toDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>uploadRelease</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-release</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}</fromDir>
+                  <includes>cobigen-eclipse-*.zip</includes>
+                  <url>file://localhost///de-file10/ClientPE/OASP</url>
+                  <toDir>CobiGenerator/Releases/stable</toDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <repositories>
     <repository>
