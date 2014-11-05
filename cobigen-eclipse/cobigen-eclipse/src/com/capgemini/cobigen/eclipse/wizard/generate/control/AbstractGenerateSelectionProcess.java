@@ -12,15 +12,13 @@ import javax.xml.transform.TransformerException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.actions.FormatAllAction;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
@@ -42,7 +41,7 @@ import freemarker.template.TemplateException;
 
 /**
  * Abstract implementation for processing generation
- * 
+ *
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
@@ -70,16 +69,16 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
     /**
      * Sets the given properties and make them accessible for sub types
-     * 
+     *
      * @param shell
-     *        on which to display error messages
+     *            on which to display error messages
      * @param javaGeneratorWrapper
-     *        with which to generate the contents
+     *            with which to generate the contents
      * @param templatesToBeGenerated
-     *        {@link Set} of template ids to be generated
+     *            {@link Set} of template ids to be generated
      */
     public AbstractGenerateSelectionProcess(Shell shell, JavaGeneratorWrapper javaGeneratorWrapper,
-            List<TemplateTo> templatesToBeGenerated) {
+        List<TemplateTo> templatesToBeGenerated) {
 
         this.shell = shell;
         this.javaGeneratorWrapper = javaGeneratorWrapper;
@@ -88,42 +87,49 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author trippl (22.04.2013) / mbrunnli (06.08.2014)
      */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 
-        if (templatesToBeGenerated.size() == 0)
+        if (templatesToBeGenerated.size() == 0) {
             return;
+        }
 
         try {
             boolean anyResults = performGeneration(monitor);
 
             if (anyResults) {
                 IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
-                if (proj != null)
+                if (proj != null) {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                }
+
+                final ICompilationUnit[] cus = getGeneratedCompilationUnits();
 
                 monitor.setTaskName("Organize Imports...");
-                organizeImports();
+                organizeImports(cus);
 
                 monitor.setTaskName("Format Source Code...");
-                formatSourceCode();
+                formatSourceCode(cus);
             }
 
             MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
-                    + " templates have been generated.");
+                + " templates have been generated.");
 
         } catch (MalformedURLException e) {
             // should not occur --> programmatical fault
             MessageDialog.openError(shell, "Malformed URL Exception", e.getMessage());
             LOG.error("Malformed URL Exception", e);
         } catch (CoreException e) {
-            MessageDialog.openError(shell, "Eclipse internal Exception", e.getMessage());
+            MessageDialog.openError(shell, "Eclipse internal Exception",
+                "An eclipse internal exception occurred during processing:\n" + e.getMessage()
+                    + "\n If this problem persists please report it to the CobiGen developers.");
             LOG.error("Eclipse internal Exception", e);
         } catch (TemplateException e) {
-            MessageDialog.openError(shell, "Template Exception", e.getMessage() + "\n" + e.getFTLInstructionStack());
+            MessageDialog.openError(shell, "Template Exception",
+                e.getMessage() + "\n" + e.getFTLInstructionStack());
             LOG.error("Template Exception", e);
         } catch (IOException e) {
             MessageDialog.openError(shell, "IO Exception", e.getMessage());
@@ -135,9 +141,12 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             MessageDialog.openError(shell, "SAX Exception", e.getMessage());
             LOG.error("SAX Exception", e);
         } catch (PluginProcessingException e) {
-            MessageDialog.openError(shell, "Plug-in Processing Exception", "A plug-in caused an unhandled exception:\n"
-                    + e.getMessage());
-            LOG.error("A plug-in caused an unhandled exception:\n" + e.getMessage(), e);
+            MessageDialog.openError(shell, "Plug-in Processing Exception",
+                "A plug-in caused an unhandled exception:\n" + e.getMessage());
+            LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
+        } catch (NotYetSupportedException e) {
+            MessageDialog.openInformation(shell, "Not yet supported operation!", e.getMessage());
+            LOG.warn("An unsupported operation has been triggered:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             MessageDialog.openError(shell, "Unknown Exception", e.getMessage());
             LOG.error("Unknown Exception", e);
@@ -146,27 +155,29 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     }
 
     /**
-     * Performs the individual generation logic. The boolean return type should indicate whether the generation causes
-     * any results, such that post processing like project refresh / organize imports / format source code can be
-     * applied.
-     * 
+     * Performs the individual generation logic. The boolean return type should indicate whether the
+     * generation causes any results, such that post processing like project refresh / organize imports /
+     * format source code can be applied.
+     *
      * @param monitor
-     *        {@link IProgressMonitor} for tracking current work. The monitor should NOT be set to
-     *        {@link IProgressMonitor#done()}, because post processing will do that!
+     *            {@link IProgressMonitor} for tracking current work. The monitor should NOT be set to
+     *            {@link IProgressMonitor#done()}, because post processing will do that!
      * @return <code>true</code>, if generation causes results, which should be post processed<br>
      *         <code>false</code> , otherwise
      * @throws Exception
+     *             if the generation results in any exceptional case
      */
     protected abstract boolean performGeneration(IProgressMonitor monitor) throws Exception;
 
     /**
      * Organizes the imports by calling the {@link OrganizeImportsAction}
-     * 
+     *
+     * @param cus
+     *            {@link CompilationUnit}s to be organized
      * @author mbrunnli (12.03.2013)
      */
-    private void organizeImports() {
+    private void organizeImports(final ICompilationUnit[] cus) {
 
-        final ICompilationUnit[] cus = getGeneratedCompilationUnits();
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
@@ -180,12 +191,13 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
     /**
      * Formats source code of all java files which have been generated or merged
-     * 
+     *
+     * @param cus
+     *            {@link CompilationUnit}s to be formatted
      * @author mbrunnli (27.03.2013)
      */
-    private void formatSourceCode() {
+    private void formatSourceCode(final ICompilationUnit[] cus) {
 
-        final ICompilationUnit[] cus = getGeneratedCompilationUnits();
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -199,7 +211,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
     /**
      * Retrieves all {@link ICompilationUnit}s targeted by the generated paths
-     * 
+     *
      * @return an array of {@link ICompilationUnit}s, which are targeted by the generated paths
      * @author mbrunnli (04.06.2014)
      */
@@ -207,10 +219,8 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
 
         IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
         if (proj != null) {
-            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-            List<ICompilationUnit> cus = new LinkedList<ICompilationUnit>();
-            for (TemplateTo template : templatesToBeGenerated) {
-                IFile file = root.getFile(proj.getFullPath().append(new Path(template.getDestinationPath())));
+            List<ICompilationUnit> cus = new LinkedList<>();
+            for (IFile file : javaGeneratorWrapper.getAllTargetFiles()) {
                 if (file.exists()) {
                     IJavaElement elem = JavaCore.create(file);
                     if (elem instanceof ICompilationUnit) {

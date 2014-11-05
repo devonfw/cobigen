@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -39,22 +40,20 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
 import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
-import com.capgemini.cobigen.eclipse.wizard.common.model.PackagesContentProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
-import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
-import com.capgemini.cobigen.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation process
- * 
+ * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation
+ * process
+ *
  * @author mbrunnli (14.02.2013)
  */
 public class SelectFilesPage extends WizardPage {
@@ -67,7 +66,7 @@ public class SelectFilesPage extends WizardPage {
     /**
      * List of generation packages
      */
-    private CheckboxTreeViewer packageSelector;
+    private CheckboxTreeViewer incrementSelector;
 
     /**
      * Container holding the right site of the UI, containing a label and the resources tree
@@ -109,18 +108,16 @@ public class SelectFilesPage extends WizardPage {
     private final static Logger LOG = LoggerFactory.getLogger(SelectFilesPage.class);
 
     /**
-     * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be change by the
-     * generation process
-     * 
-     * @param javaGeneratorWrapper the {@link JavaGeneratorWrapper} instance
-     * @param batch states whether the generation will run in batch mode
-     * @throws UnknownExpressionException
-     * @throws UnknownContextVariableException
-     * @throws UnknownTemplateException
+     * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be
+     * change by the generation process
+     *
+     * @param javaGeneratorWrapper
+     *            the {@link JavaGeneratorWrapper} instance
+     * @param batch
+     *            states whether the generation will run in batch mode
      * @author mbrunnli (14.02.2013)
      */
-    public SelectFilesPage(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) throws UnknownTemplateException,
-            UnknownContextVariableException, UnknownExpressionException {
+    public SelectFilesPage(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) {
 
         super("Generate");
         setTitle("Select the Resources, which should be generated.");
@@ -130,7 +127,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (14.02.2013)
      */
     @Override
@@ -151,13 +148,13 @@ public class SelectFilesPage extends WizardPage {
         Label label = new Label(containerLeft, SWT.NONE);
         label.setText("Filter (generation packages):");
 
-        packageSelector = new CustomizedCheckboxTreeViewer(containerLeft);
-        packageSelector.setContentProvider(new PackagesContentProvider());
-        packageSelector.setInput(javaGeneratorWrapper.getAllIncrements());
+        incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
+        incrementSelector.setContentProvider(new SelectIncrementContentProvider());
+        incrementSelector.setInput(javaGeneratorWrapper.getAllIncrements());
         gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
-        packageSelector.getTree().setLayoutData(gd);
-        packageSelector.expandAll();
+        incrementSelector.getTree().setLayoutData(gd);
+        incrementSelector.expandAll();
 
         containerRight = new Composite(sash, SWT.FILL);
         containerRight.setLayout(new GridLayout(1, false));
@@ -165,8 +162,9 @@ public class SelectFilesPage extends WizardPage {
         boolean initiallyCustomizable = false;
         buildResourceTreeViewer(initiallyCustomizable);
 
-        CheckStateListener checkListener = new CheckStateListener(javaGeneratorWrapper, this, batch);
-        packageSelector.addCheckStateListener(checkListener);
+        CheckStateListener checkListener =
+            new CheckStateListener(javaGeneratorWrapper, this, batch);
+        incrementSelector.addCheckStateListener(checkListener);
 
         sash.setWeights(new int[] { 1, 3 });
 
@@ -190,7 +188,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the resources tree
-     * 
+     *
      * @return current {@link CheckboxTreeViewer} instance
      * @author mbrunnli (12.03.2013)
      */
@@ -201,18 +199,18 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the package selector
-     * 
+     *
      * @return current {@link CheckboxTableViewer} instance
      * @author mbrunnli (12.03.2013)
      */
     public CheckboxTreeViewer getPackageSelector() {
 
-        return packageSelector;
+        return incrementSelector;
     }
 
     /**
      * Disposes all children of the container control which holds the resource tree
-     * 
+     *
      * @author mbrunnli (12.03.2013)
      */
     private void disposeContainerRightChildren() {
@@ -224,8 +222,9 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Builds the {@link TreeViewer} providing the tree of resources to be generated
-     * 
-     * @param customizable states whether the checkboxes of the tree should be displayed or not
+     *
+     * @param customizable
+     *            states whether the checkboxes of the tree should be displayed or not
      * @author mbrunnli (12.03.2013)
      */
     public void buildResourceTreeViewer(boolean customizable) {
@@ -256,8 +255,9 @@ public class SelectFilesPage extends WizardPage {
 
         resourcesTree.setContentProvider(cp);
         resourcesTree.setLabelProvider(lp);
-        resourcesTree.setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
-        resourcesTree.expandToLevel(TreeViewer.ALL_LEVELS);
+        resourcesTree
+            .setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
+        resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;
         gd.grabExcessVerticalSpace = true;
@@ -272,7 +272,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (28.04.2013)
      */
     @Override
@@ -283,13 +283,13 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the set of all paths to files which should be generated
-     * 
+     *
      * @return the set of all paths to files which should be generated
      * @author mbrunnli (14.02.2013)
      */
     public Set<String> getFilePathsToBeGenerated() {
 
-        Set<String> filesToBeGenerated = new HashSet<String>();
+        Set<String> filesToBeGenerated = new HashSet<>();
         Object[] checkedElements = resourcesTree.getCheckedElements();
         for (Object e : checkedElements) {
             if (e instanceof IJavaElement) {
@@ -304,16 +304,17 @@ public class SelectFilesPage extends WizardPage {
     /**
      * Returns a {@link Set} containing the {@link Template}s, that are included in the selected
      * {@link ComparableIncrement}s
-     * 
+     *
      * @return the {@link Set} of {@link Template}s
      * @author trippl (24.04.2013)
      */
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
         Set<IncrementTo> selectedIncrements = Sets.newHashSet();
-        for (Object checkedElement : packageSelector.getCheckedElements()) {
-            if (checkedElement instanceof IncrementTo)
+        for (Object checkedElement : incrementSelector.getCheckedElements()) {
+            if (checkedElement instanceof IncrementTo) {
                 selectedIncrements.add((IncrementTo) checkedElement);
+            }
         }
 
         List<TemplateTo> templates = Lists.newLinkedList();
@@ -325,13 +326,13 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns all selected {@link IResource}s of the {@link TreeViewer}
-     * 
+     *
      * @return all selected {@link IResource}s of the {@link TreeViewer}
      * @author mbrunnli (18.02.2013)
      */
     public List<Object> getSelectedResources() {
 
-        List<Object> selectedResources = new LinkedList<Object>();
+        List<Object> selectedResources = new LinkedList<>();
         Object[] checkedElements = resourcesTree.getCheckedElements();
         for (Object e : checkedElements) {
             if (e instanceof IJavaElement || e instanceof IResource) {
@@ -343,7 +344,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Loads the last package selection
-     * 
+     *
      * @author trippl (18.04.2013)
      */
     private void loadSelection() {
@@ -351,19 +352,19 @@ public class SelectFilesPage extends WizardPage {
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = packageSelector.getTree().getItems();
+        TreeItem[] items = incrementSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
                 String value =
-                        selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
+                    selection.node(element.getTriggerId()).get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    packageSelector.setChecked(element, true);
+                    incrementSelector.setChecked(element, true);
                 }
             } else if (element.getId().equals("all")) {
                 String value = selection.node("All").get(element.getId(), CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
-                    packageSelector.setChecked(element, true);
+                    incrementSelector.setChecked(element, true);
                 }
             }
         }
@@ -371,17 +372,18 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Saves the current package selection
-     * 
+     *
      * @author trippl (18.04.2013)
      */
     public void saveSelection() {
 
-        if (!rememberSelection.getSelection()) // only save Selection if intended
+        if (!rememberSelection.getSelection()) {
             return;
+        }
         IEclipsePreferences preferences = ConfigurationScope.INSTANCE.getNode(Activator.PLUGIN_ID);
         Preferences selection = preferences.node("selection");
 
-        TreeItem[] items = packageSelector.getTree().getItems();
+        TreeItem[] items = incrementSelector.getTree().getItems();
         for (int i = 0; i < items.length; i++) {
             ComparableIncrement element = (ComparableIncrement) items[i].getData();
             if (element.getTriggerId() != null) {
@@ -408,7 +410,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Checks whether the "rememberSelection" box is checked
-     * 
+     *
      * @return <code>true</code> if "rememberSelection" is enabled<br>
      *         <code>false</code> otherwise
      * @author mbrunnli (28.04.2013)

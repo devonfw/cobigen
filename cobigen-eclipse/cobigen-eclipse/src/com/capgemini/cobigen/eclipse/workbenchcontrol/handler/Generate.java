@@ -119,7 +119,7 @@ public class Generate extends AbstractHandler {
                     ConfigResources.CONFIG_PROJECT_NAME, e);
             } catch (Throwable e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Exception",
-                    e.getLocalizedMessage());
+                    e.getMessage());
                 LOG.error("Unknown Exception", e);
             }
         }

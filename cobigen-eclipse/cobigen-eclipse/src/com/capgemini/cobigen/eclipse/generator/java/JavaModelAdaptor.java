@@ -43,6 +43,7 @@ public class JavaModelAdaptor {
      * @param type
      *            source {@link IType} from which the javaDoc should be retrieved
      * @throws JavaModelException
+     *             if an internal exception occurs while accessing the eclipse jdt java model
      * @author mbrunnli (13.02.2013)
      */
     public void addAttributesDescription(IType type) throws JavaModelException {
@@ -75,10 +76,10 @@ public class JavaModelAdaptor {
      * @author mbrunnli (13.02.2013)
      */
     public void addMethods(IType type) throws JavaModelException {
-        List<Map<String, String>> methods = new LinkedList<Map<String, String>>();
+        List<Map<String, String>> methods = new LinkedList<>();
 
         for (IMethod method : type.getMethods()) {
-            Map<String, String> methodData = new HashMap<String, String>();
+            Map<String, String> methodData = new HashMap<>();
             methodData.put("name", method.getElementName());
             String doc = getJavaDoc(method, false);
             String docText = getJavaDoc(method, true);
@@ -127,8 +128,10 @@ public class JavaModelAdaptor {
         if (range != null) {
             String javaDoc =
                 member.getCompilationUnit().getBuffer().getText(range.getOffset(), range.getLength());
-            // Replace JavaDoc Syntax: [^\\S\\r\\n] means 'all white spaces besides new lines'
-            javaDoc = javaDoc.replaceAll("/\\*|\\s*\\*/|[^\\S\\r\\n]*\\*[^\\S\\r\\n]*", "").trim();
+            if (!onlyText) {
+                // Replace JavaDoc Syntax: [^\\S\\r\\n] means 'all white spaces besides new lines'
+                javaDoc = javaDoc.replaceAll("/\\*|\\s*\\*/|[^\\S\\r\\n]*\\*[^\\S\\r\\n]*", "").trim();
+            }
             return javaDoc;
         }
         return null;

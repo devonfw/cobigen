@@ -67,6 +67,7 @@ public class Activator extends AbstractUIPlugin {
      * {@inheritDoc}
      * @author mbrunnli (14.02.2013)
      */
+    @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
@@ -81,7 +82,7 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Starts the ResourceChangeListener
-     * 
+     *
      * @author mbrunnli (08.04.2013)
      */
     private void startResourceChangeListener() {
@@ -96,11 +97,12 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Starts the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     * @author mbrunnli (08.04.2013)
+     * @author mbrunnli (08.04.2013), adapted by sbasnet(30.10.2014)
      */
     public void startSelectionServiceListener() {
-        if (selectionServiceListenerStarted)
+        if (selectionServiceListenerStarted) {
             return;
+        }
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -108,6 +110,8 @@ public class Activator extends AbstractUIPlugin {
                     selectionServiceListener = new SelectionServiceListener();
                     PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
                         "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
+                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
+                        "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
                     selectionServiceListenerStarted = true;
                 } catch (InvalidConfigurationException e) {
                     if (initialized) {
@@ -135,17 +139,20 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Stops the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     * 
+     *
      * @author mbrunnli (08.04.2013)
      */
     public void stopSelectionServiceListener() {
-        if (!selectionServiceListenerStarted)
+        if (!selectionServiceListenerStarted) {
             return;
+        }
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
                 PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
                     "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
+                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
+                    "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
                 selectionServiceListenerStarted = false;
             }
         });
@@ -155,6 +162,7 @@ public class Activator extends AbstractUIPlugin {
      * {@inheritDoc}
      * @author mbrunnli (14.02.2013)
      */
+    @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;
         super.stop(context);
@@ -162,7 +170,7 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance
-     * 
+     *
      * @return the shared instance
      */
     public static Activator getDefault() {

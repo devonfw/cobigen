@@ -18,8 +18,7 @@ public class SourceProvider extends AbstractSourceProvider {
      * Source Variable stating if the currently selected resources are valid input POJOs for the generation
      * process
      */
-    public static final String VALID_INPUT =
-        "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
+    public static final String VALID_INPUT = "com.capgemini.cobigen.eclipseplugin.variables.validInputPojos";
 
     /**
      * Creates the SourceProvider and initiates all states with false
@@ -32,7 +31,7 @@ public class SourceProvider extends AbstractSourceProvider {
     /**
      * Map of variable value mappings
      */
-    private final HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+    private final HashMap<String, Boolean> map = new HashMap<>();
 
     /**
      * {@inheritDoc}

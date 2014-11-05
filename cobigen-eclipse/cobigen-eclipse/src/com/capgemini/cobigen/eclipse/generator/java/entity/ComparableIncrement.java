@@ -99,27 +99,31 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
+        }
         if (obj instanceof ComparableIncrement) {
             String objId = ((ComparableIncrement) obj).getId();
             String objTriggerId = ((ComparableIncrement) obj).getTriggerId();
-            if ((objId == null ^ getId() == null))
+            if ((objId == null ^ getId() == null)) {
                 return false;
-            else if (objId != null && getId() != null) {
+            } else if (objId != null && getId() != null) {
                 if (objId.equals("all") && objId.equals(getId())) {
                     // Exception "all" increment
                     return true;
-                } else if (objTriggerId == null ^ getTriggerId() == null)
+                } else if (objTriggerId == null ^ getTriggerId() == null) {
                     return false;
-                if (objTriggerId != null && getTriggerId() != null)
+                }
+                if (objTriggerId != null && getTriggerId() != null) {
                     return getTriggerId().equals(objTriggerId) && getId().equals(objId);
-                else
+                } else {
                     getId().equals(objId);
-            } else if (objTriggerId != null && getTriggerId() != null)
+                }
+            } else if (objTriggerId != null && getTriggerId() != null) {
                 return getTriggerId().equals(objTriggerId);
-            else
+            } else {
                 return true;
+            }
 
         }
         return false;

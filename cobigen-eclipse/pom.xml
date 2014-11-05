@@ -18,7 +18,7 @@
 	</parent>
 
 	<properties>
-		<eclipse-repo.url>http://download.eclipse.org/releases/juno</eclipse-repo.url>
+		<eclipse-repo.url>http://download.eclipse.org/releases/juno</eclipse-repo.url>		
 		<tycho.version>0.20.0</tycho.version>
 		<tycho-extras.version>0.20.0</tycho-extras.version>
 		<tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
@@ -106,7 +106,7 @@
 			<id>eclipse platform</id>
 			<layout>p2</layout>
 			<url>${eclipse-repo.url}</url>
-		</repository>
+		</repository>		
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>

@@ -12,6 +12,8 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -35,7 +37,7 @@ import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
- * 
+ *
  * @author mbrunnli (15.02.2013)
  */
 public abstract class AbstractGenerateWizard extends Wizard {
@@ -48,7 +50,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     /**
      * Wrapper for the {@link CobiGen}
      */
-    protected JavaGeneratorWrapper g;
+    protected JavaGeneratorWrapper javaGeneratorWrapper;
 
     /**
      * Assigning logger to AbstractGenerateWizard
@@ -57,46 +59,71 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
     /**
      * Initializes the {@link JavaGeneratorWrapper}
-     * 
-     * @param inputType type which should be the source of all information retrieved for the code generation
-     * @throws InvalidConfigurationException if the given configuration does not match the templates.xsd
-     * @throws IOException if the generator project "RF-Generation" could not be accessed
-     * @throws UnknownTemplateException if there is no template with the given name
-     * @throws UnknownContextVariableException if the destination path contains an undefined context variable
-     * @throws UnknownExpressionException if there is an unknown variable modifier
-     * @throws CoreException if any internal eclipse exception occurs while creating the temporary simulated resources
-     *         or the generation configuration project could not be opened
-     * @throws ClassNotFoundException if the given type could not be found by the project {@link ClassLoader}
-     * @throws GeneratorProjectNotExistentException if the generator configuration project "RF-Generation" is not
-     *         existent
+     *
+     * @param input
+     *            type which should be the source of all information retrieved for the code generation
+     * @throws InvalidConfigurationException
+     *             if the given configuration does not match the templates.xsd
+     * @throws IOException
+     *             if the generator project "RF-Generation" could not be accessed
+     * @throws UnknownTemplateException
+     *             if there is no template with the given name
+     * @throws UnknownContextVariableException
+     *             if the destination path contains an undefined context variable
+     * @throws UnknownExpressionException
+     *             if there is an unknown variable modifier
+     * @throws CoreException
+     *             if any internal eclipse exception occurs while creating the temporary simulated resources
+     *             or the generation configuration project could not be opened
+     * @throws ClassNotFoundException
+     *             if the given type could not be found by the project {@link ClassLoader}
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
-    protected void initializeWizard(IType inputType) throws IOException, InvalidConfigurationException,
-            UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
-            ClassNotFoundException, GeneratorProjectNotExistentException {
+    protected void initializeWizard(Object input) throws IOException, InvalidConfigurationException,
+        UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
+        ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        g = new JavaGeneratorWrapper(inputType);
-        g.setGenerationTargetProject(inputType.getJavaProject().getProject());
+        javaGeneratorWrapper = new JavaGeneratorWrapper();
+
+        IJavaProject javaProject = null;
+        if (input instanceof IType) {
+            javaGeneratorWrapper.setInputType((IType) input);
+            javaProject = ((IType) input).getJavaProject();
+        } else if (input instanceof IPackageFragment) {
+            javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
+            javaProject = ((IPackageFragment) input).getJavaProject();
+        } else {
+            @SuppressWarnings("unchecked")
+            List<IType> inputList = (List<IType>) input;
+            javaGeneratorWrapper.setInputTypes(inputList);
+            javaProject = inputList.get(0).getJavaProject();
+        }
+
+        javaGeneratorWrapper.setGenerationTargetProject(javaProject.getProject());
+
+        page1 = new SelectFilesPage(javaGeneratorWrapper, false);
     }
 
     /**
      * Returns the set of all destination paths for the templates
-     * 
+     *
      * @return the set of all destination paths for the templates
      * @author mbrunnli (11.03.2013)
      */
     public Set<String> getAllGenerationPaths() {
 
-        Set<String> paths = new HashSet<String>();
-        for (TemplateTo tmp : g.getAllTemplates()) {
-            paths.add(tmp.getDestinationPath());
+        Set<String> paths = new HashSet<>();
+        for (TemplateTo tmp : javaGeneratorWrapper.getAllTemplates()) {
+            paths.add(tmp.resolveDestinationPath(javaGeneratorWrapper.getCurrentRepresentingInput()));
         }
         return paths;
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @author mbrunnli (15.02.2013)
      */
     @Override
@@ -116,16 +143,17 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
     /**
      * Generates the contents to be generated and reports the progress to the user
-     * 
-     * @param dialog {@link ProgressMonitorDialog} which should be used for reporting the progress
+     *
+     * @param dialog
+     *            {@link ProgressMonitorDialog} which should be used for reporting the progress
      * @author mbrunnli (11.04.2014)
      */
     protected abstract void generateContents(ProgressMonitorDialog dialog);
 
     /**
-     * Checks whether files will be overwritten by the generation process and whether the user is aware of this behavior
-     * and confirms it
-     * 
+     * Checks whether files will be overwritten by the generation process and whether the user is aware of
+     * this behavior and confirms it
+     *
      * @return true, if the user confirms the changes beeing made or no files will be overwritten<br>
      *         false, otherwise
      * @author mbrunnli (18.02.2013)
@@ -143,7 +171,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             }
         }
         // Delete mergable files
-        Set<IFile> mergableFiles = g.getMergeableFiles();
+        Set<IFile> mergableFiles = javaGeneratorWrapper.getMergeableFiles();
         it = diff.iterator();
         while (it.hasNext()) {
             Object r = it.next();
@@ -153,8 +181,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
                     iResource = ((IJavaElement) r).getCorrespondingResource();
                 } catch (JavaModelException e) {
                     LOG.error(
-                            "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
-                            e);
+                        "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
+                        e);
                 }
             } else {
                 iResource = r;
@@ -166,12 +194,12 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
         if (!diff.isEmpty()) {
             MessageDialog dialog =
-                    new MessageDialog(
-                            getShell(),
-                            "Warning!",
-                            null,
-                            "You have selected resources that are already existent and will be overwritten when proceeding.\nDo you really want to replace the existing files by newly generated ones?",
-                            MessageDialog.WARNING, new String[] { "Yes", "No" }, 1);
+                new MessageDialog(
+                    getShell(),
+                    "Warning!",
+                    null,
+                    "You have selected resources that are already existent and will be overwritten when proceeding.\nDo you really want to replace the existing files by newly generated ones?",
+                    MessageDialog.WARNING, new String[] { "Yes", "No" }, 1);
             int result = dialog.open();
             if (result == 1 || result == SWT.DEFAULT) {
                 return false;

@@ -18,7 +18,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 
 /**
  * Util functionality for {@link ClassLoader} issues
- * 
+ *
  * @author mbrunnli (08.04.2013)
  */
 public class ClassLoaderUtil {
@@ -38,7 +38,7 @@ public class ClassLoaderUtil {
         MalformedURLException {
         IClasspathEntry[] classPathEntries = proj.getResolvedClasspath(true);
 
-        List<URL> urlList = new ArrayList<URL>();
+        List<URL> urlList = new ArrayList<>();
         for (IClasspathEntry entry : classPathEntries) {
             IPath path = entry.getPath();
             if (entry.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
@@ -52,7 +52,7 @@ public class ClassLoaderUtil {
         }
 
         ClassLoader parentClassLoader = proj.getClass().getClassLoader();
-        URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
+        URL[] urls = urlList.toArray(new URL[urlList.size()]);
         return new URLClassLoader(urls, parentClassLoader);
     }
 }

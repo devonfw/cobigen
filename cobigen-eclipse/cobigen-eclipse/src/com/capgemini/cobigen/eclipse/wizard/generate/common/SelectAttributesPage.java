@@ -39,6 +39,7 @@ public class SelectAttributesPage extends WizardPage {
     /**
      * Creates a new page for selecting mandatory attributes
      * @param attributes
+     *            to be displayed
      * @author mbrunnli (12.03.2013)
      */
     public SelectAttributesPage(Map<String, String> attributes) {
@@ -94,7 +95,7 @@ public class SelectAttributesPage extends WizardPage {
      * @author mbrunnli (21.03.2013)
      */
     public Set<String> getUncheckedAttributes() {
-        Set<String> uncheckedAttributes = new HashSet<String>();
+        Set<String> uncheckedAttributes = new HashSet<>();
         for (Entry<String, String> attr : attributes.entrySet()) {
             if (!tableAttributes.getChecked(attr)) {
                 uncheckedAttributes.add(attr.getKey());

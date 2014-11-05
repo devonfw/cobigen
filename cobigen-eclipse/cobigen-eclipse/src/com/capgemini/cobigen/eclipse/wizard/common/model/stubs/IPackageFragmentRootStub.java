@@ -208,7 +208,7 @@ public class IPackageFragmentRootStub implements IPackageFragmentRoot {
      * @author mbrunnli (06.04.2014)
      */
     @Override
-    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+    public Object getAdapter(Class adapter) {
         return null;
     }
 

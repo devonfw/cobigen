@@ -56,8 +56,9 @@ public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
     @Override
     public boolean setChecked(Object element, boolean value) {
         boolean returnValue = super.setChecked(element, value);
-        if (returnValue)
+        if (returnValue) {
             fireCheckStateChanged(new CheckStateChangedEvent(this, element, value));
+        }
         return returnValue;
     }
 
