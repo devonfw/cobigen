@@ -3,6 +3,7 @@
   version="1.0">
   <triggers>
     <trigger id="rf_persistenceEntity" type="java" templateFolder="rf_persistenceEntity_templates">
+      <containerMatcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity"/>
       <matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="component" value="2"/>
@@ -10,7 +11,8 @@
       </matcher>
     </trigger>
     <trigger id="oasp_persistenceEntity" type="java" templateFolder="oasp_persistenceEntity_templates">
-      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api\.([^\.]+)Entity">
+      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api"/>
+      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api\.([^\.]+Entity)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="domain" value="3"/>
         <variableAssignment type="regex" key="component" value="4"/>
@@ -18,6 +20,7 @@
       </matcher>
     </trigger>
     <trigger id="rf_testdataFramework" type="java" templateFolder="rf_testdata_framework">
+      <containerMatcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity"/>
       <matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="component" value="2"/>
@@ -25,6 +28,7 @@
       </matcher>
     </trigger>
     <trigger id="oasp_testdataFramework" type="java" templateFolder="oasp_testdata_framework">
+      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api"/>
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api\.([^\.]+Entity)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="domain" value="3"/>
