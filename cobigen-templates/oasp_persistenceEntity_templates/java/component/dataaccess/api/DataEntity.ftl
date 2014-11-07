@@ -3,7 +3,7 @@ package ${variables.rootPackage}.${variables.component}.dataaccess.api;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
 
-import javax.dataaccess.Entity;
+import javax.persistence.Entity;
 
 /**
  * Data access object for ${variables.entityName} entities

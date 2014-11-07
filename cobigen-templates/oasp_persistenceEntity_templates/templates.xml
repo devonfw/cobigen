@@ -3,7 +3,7 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
 		<!-- Infrastructure -->
-		<template id="dataaccess_applicationdataaccessEntity" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/ApplicationdataaccessEntity.java" templateFile="java/general/dataaccess/api/ApplicationdataaccessEntity.ftl" />
+		<template id="dataaccess_applicationPersistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/ApplicationPersistenceEntity.java" templateFile="java/general/dataaccess/api/ApplicationPersistenceEntity.ftl" />
 		<template id="common_applicationEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/ApplicationEntity.java" templateFile="java/general/common/api/ApplicationEntity.ftl" />
 
 		<!-- daos static -->
@@ -75,7 +75,7 @@
 		</increment>
      -->
 		<increment id="dataaccess_infrastructure" description="Entity infrastructure">
-			<templateRef idref="dataaccess_applicationdataaccessEntity" />
+			<templateRef idref="dataaccess_applicationPersistenceEntity" />
 			<templateRef idref="common_applicationEntity" />
 			<templateRef idref="dataaccess_dataEntity" />
 			<templateRef idref="common_data" />

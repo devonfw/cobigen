@@ -32,9 +32,9 @@ public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupp
      * {@inheritDoc}
      */
     @Override
-    public ${variables.entityName}Eto get${variables.entityName}(Long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(Long id) {
 
-      return this.ucFind${variables.entityName}.get${variables.entityName}(id);
+      return this.ucFind${variables.entityName}.find${variables.entityName}(id);
     }
 
     /**
