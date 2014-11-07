@@ -7,6 +7,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -26,6 +27,8 @@ import org.xml.sax.SAXParseException;
 import com.capgemini.IncrementRef;
 import com.capgemini.Increments;
 import com.capgemini.TemplateRef;
+import com.capgemini.TemplateScan;
+import com.capgemini.TemplateScans;
 import com.capgemini.TemplatesConfiguration;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
@@ -44,6 +47,9 @@ import com.capgemini.cobigen.util.ExceptionUtil;
  * @author mbrunnli (11.03.2013)
  */
 public class TemplatesConfigurationReader {
+
+    /** The file extension of the template files. */
+    private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
      * XML Node 'configuration' of the configuration.xml
@@ -165,7 +171,85 @@ public class TemplatesConfigurationReader {
                 new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
                     .getTargetCharset(), trigger, triggerInterpreter));
         }
+        TemplateScans templateScans = configNode.getTemplateScans();
+        if (templateScans != null) {
+            List<TemplateScan> scans = templateScans.getTemplateScan();
+            if (scans != null) {
+                for (TemplateScan scan : scans) {
+                    scanTemplates(scan, templates, trigger, triggerInterpreter);
+                }
+            }
+        }
         return templates;
+    }
+
+    /**
+     * Scans the templates specified by the given {@link TemplateScan} and adds them to the given
+     * <code>templates</code> {@link Map}.
+     *
+     * @param scan
+     *            is the {@link TemplateScan} configuration.
+     * @param templates
+     *            is the {@link Map} where to add the templates.
+     */
+    private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) {
+
+        String templateFolder = scan.getTemplatePath();
+        String path = configFile.getParent() + "/" + templateFolder;
+        File folder = new File(path);
+        if (!folder.isDirectory()) {
+            throw new IllegalArgumentException("Folder does not exist: " + path);
+        }
+        scanTemplates(folder, "", scan, templates, trigger, triggerInterpreter);
+    }
+
+    /**
+     * Recursively scans the templates specified by the given {@link TemplateScan} and adds them to the given
+     * <code>templates</code> {@link Map}.
+     *
+     * @param currentDirectory
+     *            the {@link File} pointing to the current directory to scan.
+     * @param currentPath
+     *            the current path relative to the top-level directory where we started the scan.
+     * @param scan
+     *            is the {@link TemplateScan} configuration.
+     * @param templates
+     *            is the {@link Map} where to add the templates.
+     */
+    private void scanTemplates(File currentDirectory, String currentPath, TemplateScan scan,
+        Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter) {
+
+        String currentPathWithSlash = currentPath;
+        if (!currentPathWithSlash.isEmpty()) {
+            currentPathWithSlash = currentPathWithSlash + "/";
+        }
+        for (File child : currentDirectory.listFiles()) {
+            if (child.isDirectory()) {
+                scanTemplates(child, currentPathWithSlash + child.getName(), scan, templates, trigger,
+                    triggerInterpreter);
+            } else {
+                String templateName = child.getName();
+                if (templateName.endsWith(TEMPLATE_EXTENSION)) {
+                    String templateNameWithoutExtension =
+                        templateName.substring(0, templateName.length() - 4);
+                    String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
+                    if (!templates.containsKey(templateId)) {
+                        String destinationPath =
+                            scan.getDestinationPath() + "/" + currentPathWithSlash
+                                + templateNameWithoutExtension + "." + scan.getDestinationExtension();
+                        String templateFile =
+                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
+                        String mergeStratgey = scan.getMergeStrategy();
+                        String outputCharset = "UTF-8";
+                        Template template =
+                            new Template(templateId, destinationPath, templateFile, mergeStratgey,
+                                outputCharset, trigger, triggerInterpreter);
+                        templates.put(templateId, template);
+                    }
+                }
+            }
+        }
     }
 
     /**
