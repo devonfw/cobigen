@@ -1,10 +1,10 @@
-package ${variables.rootPackage}.general.persistence.api;
+package ${variables.rootPackage}.general.dataaccess.api;
 
-import javax.persistence.MappedSuperclass;
+import javax.dataaccess.MappedSuperclass;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 
-import io.oasp.module.jpa.persistence.api.AbstractPersistenceEntity;
+import io.oasp.module.jpa.dataaccess.api.AbstractPersistenceEntity;
 
 /**
  * Abstract Entity for all Entities with an id and a version field.

@@ -1,6 +1,6 @@
-package ${variables.rootPackage}.general.persistence.api.dao;
+package ${variables.rootPackage}.general.dataaccess.api.dao;
 
-import io.oasp.module.jpa.persistence.api.Dao;
+import io.oasp.module.jpa.dataaccess.api.Dao;
 
 import net.sf.mmm.util.entity.api.PersistenceEntity;
 

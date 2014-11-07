@@ -11,8 +11,8 @@
       </matcher>
     </trigger>
     <trigger id="oasp_persistenceEntity" type="java" templateFolder="oasp_persistenceEntity_templates">
-      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api"/>
-      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api\.([^\.]+Entity)">
+      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"/>
+      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+Entity)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="domain" value="3"/>
         <variableAssignment type="regex" key="component" value="4"/>

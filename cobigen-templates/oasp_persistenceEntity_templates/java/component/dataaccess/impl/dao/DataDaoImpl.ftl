@@ -1,13 +1,13 @@
-package ${variables.rootPackage}.${variables.component}.persistence.impl.dao;
+package ${variables.rootPackage}.${variables.component}.dataaccess.impl.dao;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.dataaccess.Query;
 
 import ${variables.rootPackage}.general.common.api.constants.NamedQueries;
-import ${variables.rootPackage}.general.persistence.base.dao.ApplicationDaoImpl;
-import ${variables.rootPackage}.${variables.component}.persistence.api.dao.${variables.entityName}Dao;
-import ${variables.rootPackage}.${variables.component}.persistence.api.${pojo.name};
+import ${variables.rootPackage}.general.dataaccess.base.dao.ApplicationDaoImpl;
+import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
+import ${variables.rootPackage}.${variables.component}.dataaccess.api.${pojo.name};
 
 /**
  * This is the implementation of {@link ${variables.entityName}Dao}.

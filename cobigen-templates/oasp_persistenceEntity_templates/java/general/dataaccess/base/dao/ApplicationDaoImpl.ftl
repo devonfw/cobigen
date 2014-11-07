@@ -1,9 +1,9 @@
-package ${variables.rootPackage}.general.persistence.base.dao;
+package ${variables.rootPackage}.general.dataaccess.base.dao;
 
-import ${variables.rootPackage}.general.persistence.api.dao.ApplicationDao;
-import ${variables.rootPackage}.general.persistence.base.RestaurantPersistenceEntity;
+import ${variables.rootPackage}.general.dataaccess.api.dao.ApplicationDao;
+import ${variables.rootPackage}.general.dataaccess.base.RestaurantPersistenceEntity;
 
-import io.oasp.module.jpa.persistence.base.AbstractDao;
+import io.oasp.module.jpa.dataaccess.base.AbstractDao;
 
 import net.sf.mmm.util.entity.api.PersistenceEntity;
 

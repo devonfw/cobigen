@@ -3,18 +3,18 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
 		<!-- Infrastructure -->
-		<template id="persistence_applicationPersistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/ApplicationPersistenceEntity.java" templateFile="java/general/persistence/api/ApplicationPersistenceEntity.ftl" />
+		<template id="dataaccess_applicationdataaccessEntity" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/ApplicationdataaccessEntity.java" templateFile="java/general/dataaccess/api/ApplicationdataaccessEntity.ftl" />
 		<template id="common_applicationEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/ApplicationEntity.java" templateFile="java/general/common/api/ApplicationEntity.ftl" />
 
 		<!-- daos static -->
-		<template id="persistence_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/api/dao/ApplicationDao.java" templateFile="java/general/persistence/api/dao/ApplicationDao.ftl" />
-		<template id="persistence_applicationDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/persistence/base/dao/ApplicationDaoImpl.java" templateFile="java/general/persistence/base/dao/ApplicationDaoImpl.ftl" />
+		<template id="dataaccess_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/dao/ApplicationDao.java" templateFile="java/general/dataaccess/api/dao/ApplicationDao.ftl" />
+		<template id="dataaccess_applicationDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/base/dao/ApplicationDaoImpl.java" templateFile="java/general/dataaccess/base/dao/ApplicationDaoImpl.ftl" />
 
 		<!-- daos dynamic -->
 		<template id="constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="java/general/common/api/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
-		<template id="persistence_dataDao" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/api/dao/${variables.entityName}Dao.java" templateFile="java/component/persistence/api/dao/DataDao.ftl"/>
-		<template id="persistence_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/impl/dao/${variables.entityName}DaoImpl.java" templateFile="java/component/persistence/impl/dao/DataDaoImpl.ftl"/>
-		<template id="namedQueries" destinationPath="src/main/resources/config/app/persistence/NamedQueries.hbm.xml" templateFile="resources/config/app/persistence/NamedQueries.hbm.xml.ftl" mergeStrategy="xmlmerge" />
+		<template id="dataaccess_dataDao" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/dao/${variables.entityName}Dao.java" templateFile="java/component/dataaccess/api/dao/DataDao.ftl"/>
+		<template id="dataaccess_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/impl/dao/${variables.entityName}DaoImpl.java" templateFile="java/component/dataaccess/impl/dao/DataDaoImpl.ftl"/>
+		<template id="namedQueries" destinationPath="src/main/resources/config/app/dataaccess/NamedQueries.xml" templateFile="resources/config/app/dataaccess/NamedQueries.xml.ftl" mergeStrategy="xmlmerge" />
 
 		<!-- logic layer static -->
 		<template id="common_abstractBeanMapperSupport" destinationPath="src/main/java/${variables.rootPackage}/general/common/base/AbstractBeanMapperSupport.java" templateFile="java/general/common/base/AbstractBeanMapperSupport.ftl" />
@@ -38,17 +38,17 @@
 		<template id="logic_cto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Cto.java" templateFile="java/component/logic/api/to/DataCto.ftl"/>
 
 		<!-- Entity Infrastructure -->
-		<template id="persistence_dataEntity" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/persistence/api/${variables.entityName}Entity.java" templateFile="java/component/persistence/api/DataEntity.ftl" mergeStrategy="javamerge" />
+		<template id="dataaccess_dataEntity" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/${variables.entityName}Entity.java" templateFile="java/component/dataaccess/api/DataEntity.ftl" mergeStrategy="javamerge" />
 		<template id="common_data" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/common/api/${variables.entityName}.java" templateFile="java/component/common/api/Data.ftl" mergeStrategy="javamerge" />
 	</templates>
 
 	<increments>
 		<increment id="daos" description="DAO's">
-			<templateRef idref="persistence_applicationDao"/>
-			<templateRef idref="persistence_applicationDaoImpl"/>
+			<templateRef idref="dataaccess_applicationDao"/>
+			<templateRef idref="dataaccess_applicationDaoImpl"/>
 			<templateRef idref="constants_namedQueries"/>
-			<templateRef idref="persistence_dataDao"/>
-			<templateRef idref="persistence_dataDaoImpl"/>
+			<templateRef idref="dataaccess_dataDao"/>
+			<templateRef idref="dataaccess_dataDaoImpl"/>
 			<templateRef idref="namedQueries" />
 		</increment>
 		<increment id="tos" description="TO's">
@@ -74,10 +74,10 @@
 			<incrementRef idref="logic_impl"/>
 		</increment>
      -->
-		<increment id="persistence_infrastructure" description="Entity infrastructure">
-			<templateRef idref="persistence_applicationPersistenceEntity" />
+		<increment id="dataaccess_infrastructure" description="Entity infrastructure">
+			<templateRef idref="dataaccess_applicationdataaccessEntity" />
 			<templateRef idref="common_applicationEntity" />
-			<templateRef idref="persistence_dataEntity" />
+			<templateRef idref="dataaccess_dataEntity" />
 			<templateRef idref="common_data" />
 		</increment>
 	</increments>
