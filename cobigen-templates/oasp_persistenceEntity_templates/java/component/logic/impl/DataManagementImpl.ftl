@@ -7,6 +7,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind$
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -31,9 +32,9 @@ public class ${variables.component?cap_first}Impl extends AbstractBeanMapperSupp
      * {@inheritDoc}
      */
     @Override
-    public ${variables.entityName}Eto get${variables.entityName}(Long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(Long id) {
 
-      return this.ucFind${variables.entityName}.get${variables.entityName}(id);
+      return this.ucFind${variables.entityName}.find${variables.entityName}(id);
     }
 
     /**

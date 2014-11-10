@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
-import ${variables.rootPackage}.${variables.component}.service.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 
 import java.util.List;
 
@@ -12,6 +12,6 @@ public interface UcFind${variables.entityName} {
    * @param id The id 'id' of the ${variables.entityName}.
    * @return The {@link ${variables.entityName}Eto} with id 'id'
    */
-  ${variables.entityName}Eto get${variables.entityName}(Long id);
+  ${variables.entityName}Eto find${variables.entityName}(Long id);
 
 }

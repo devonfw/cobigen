@@ -1,7 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.base.usecase;
 
 import ${variables.rootPackage}.general.logic.base.AbstractUc;
-import ${variables.rootPackage}.${variables.component}.persistence.api.dao.${variables.entityName}Dao;
+import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
 
 /**
  * Abstract use case for ${variables.entityName}s, which provides access to the commonly necessary data access objects.
