@@ -1,5 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+
 /**
  * Interface of UcManage${variables.entityName} to centralize documentation and signatures of methods.
  */

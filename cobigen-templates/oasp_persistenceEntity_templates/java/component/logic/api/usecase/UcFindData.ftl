@@ -1,5 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+
 import java.util.List;
 
 public interface UcFind${variables.entityName} {
