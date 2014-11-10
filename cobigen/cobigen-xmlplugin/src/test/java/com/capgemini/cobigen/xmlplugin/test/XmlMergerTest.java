@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin;
+package com.capgemini.cobigen.xmlplugin.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +12,7 @@ import org.junit.Test;
 import ch.elca.el4j.services.xmlmerge.AbstractXmlMergeException;
 
 import com.capgemini.cobigen.exceptions.MergeException;
+import com.capgemini.cobigen.xmlplugin.XmlMerger;
 import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
 
 /**

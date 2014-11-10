@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.merge;
+package com.capgemini.cobigen.xmlplugin.test.merge;
 
 import java.io.File;
 
@@ -15,6 +15,7 @@ import ch.elca.el4j.services.xmlmerge.mapper.IdentityMapper;
 import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
 import com.capgemini.cobigen.xmlplugin.action.OverrideMergeAction;
 import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
+import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
 
 /**
  * TestCase testing {@link BasicXmlMerge}
