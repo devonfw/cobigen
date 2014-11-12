@@ -191,6 +191,10 @@ public class TemplatesConfigurationReader {
      *            is the {@link TemplateScan} configuration.
      * @param templates
      *            is the {@link Map} where to add the templates.
+     * @param trigger
+     *            the templates are from
+     * @param triggerInterpreter
+     *            of the {@link Trigger}
      */
     private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
         ITriggerInterpreter triggerInterpreter) {
@@ -216,6 +220,10 @@ public class TemplatesConfigurationReader {
      *            is the {@link TemplateScan} configuration.
      * @param templates
      *            is the {@link Map} where to add the templates.
+     * @param trigger
+     *            the templates are from
+     * @param triggerInterpreter
+     *            of the {@link Trigger}
      */
     private void scanTemplates(File currentDirectory, String currentPath, TemplateScan scan,
         Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter) {
@@ -232,7 +240,7 @@ public class TemplatesConfigurationReader {
                 String templateName = child.getName();
                 if (templateName.endsWith(TEMPLATE_EXTENSION)) {
                     String templateNameWithoutExtension =
-                        templateName.substring(0, templateName.length() - 4);
+                        templateName.substring(0, TEMPLATE_EXTENSION.length());
                     String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
                     if (!templates.containsKey(templateId)) {
                         String destinationPath =
