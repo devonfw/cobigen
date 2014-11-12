@@ -249,10 +249,9 @@ public class TemplatesConfigurationReader {
                         String templateFile =
                             scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
                         String mergeStratgey = scan.getMergeStrategy();
-                        String outputCharset = "UTF-8";
                         Template template =
                             new Template(templateId, destinationPath, templateFile, mergeStratgey,
-                                outputCharset, trigger, triggerInterpreter);
+                                scan.getTargetCharset(), trigger, triggerInterpreter);
                         templates.put(templateId, template);
                     }
                 }
