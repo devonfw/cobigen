@@ -5,9 +5,7 @@
 <templatesConfiguration xmlns="http://capgemini.com"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
-		<template id="resources_resources_spring_common"
-			destinationPath="src/main/resources/resources/spring/common.xml"
-			templateFile="resources/resources/spring/common.ftl" />
+		<template id="resources_resources_spring_common" destinationPath="src/main/resources/resources/spring/common.xml"	templateFile="resources/resources/spring/common.ftl" />
     <template id="prefix_Foo2Class" templateFile="foo/Foo2Class.ftl" destinationPath="src/main/java/foo/Foo2Class${variable}.java" mergeStrategy="javaMerge"/>
 	</templates>
 
