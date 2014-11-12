@@ -3,8 +3,6 @@
  ******************************************************************************/
 package com.capgemini.cobigen.config.reader;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
@@ -16,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
-import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
@@ -50,13 +47,11 @@ public class TemplatesConfigurationReaderTest extends Assert {
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
                 new LinkedList<ContainerMatcher>());
-        Template templateMock = mock(Template.class);
         ITriggerInterpreter triggerInterpreter = null;
         String templateIdSpringCommon = "resources_resources_spring_common";
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
-        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
 
         // then
         assertNotNull(templates);

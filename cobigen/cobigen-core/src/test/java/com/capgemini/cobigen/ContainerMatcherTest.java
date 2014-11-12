@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -52,12 +51,9 @@ public class ContainerMatcherTest {
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
-     * @throws IOException
-     *             test fails
-     * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws IOException {
+    public void testContainerMatcherDoesNotMatchWithoutMatcher() {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(false);
@@ -75,12 +71,10 @@ public class ContainerMatcherTest {
 
     /**
      * Tests whether a container matcher will match iff there are matchers matching the child resources
-     * @throws IOException
-     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContainerMatcherMatches() throws IOException {
+    public void testContainerMatcherMatches() {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
@@ -99,12 +93,10 @@ public class ContainerMatcherTest {
     /**
      * Tests whether variable resolving works for a container's children as the container itself does not
      * include any variable resolving
-     * @throws IOException
-     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContextVariableResolving() throws IOException {
+    public void testContextVariableResolving() {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
@@ -143,8 +135,12 @@ public class ContainerMatcherTest {
         target.generate(containerInput, templates.get(0), false);
     }
 
+    /**
+     * Tests whether the increments can be correctly retrieved for container matchers
+     * @author mbrunnli (16.10.2014)
+     */
     @Test
-    public void testGetAllIncrements() throws Exception {
+    public void testGetAllIncrements() {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true, true);
 
