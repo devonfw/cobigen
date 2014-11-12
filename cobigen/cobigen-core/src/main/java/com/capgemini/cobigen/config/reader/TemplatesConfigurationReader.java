@@ -240,7 +240,7 @@ public class TemplatesConfigurationReader {
                 String templateName = child.getName();
                 if (templateName.endsWith(TEMPLATE_EXTENSION)) {
                     String templateNameWithoutExtension =
-                        templateName.substring(0, TEMPLATE_EXTENSION.length());
+                        templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
                     String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
                     if (!templates.containsKey(templateId)) {
                         String destinationPath =
