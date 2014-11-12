@@ -8,5 +8,12 @@
         <variableAssignment type="regex" key="entityName" value="3"/>
       </matcher>
     </trigger>
+    <trigger id="entities2" type="java" templateFolder="testTemplates">
+      <containerMatcher type="package" value="(.+\.)?\.testdata"/>
+      <matcher type="fqn" value="((.+\.)?)\.testdata\.([^\.]+)Entity">
+        <variableAssignment type="regex" key="rootPackage" value="1"/>
+        <variableAssignment type="regex" key="entityName" value="3"/>
+      </matcher>
+    </trigger>
   </triggers>
 </contextConfiguration>

@@ -415,18 +415,19 @@ public class CobiGen {
 
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
+                    boolean triggerMatches = false;
                     for (Matcher matcher : trigger.getMatcher()) {
                         MatcherTo matcherTo =
                             new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
                         if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                            matchingTrigger.add(trigger);
+                            triggerMatches = true;
                             break;
                         }
                     }
 
                     // if a match has been found do not check container matchers in addition for performance
                     // issues.
-                    if (matchingTrigger.isEmpty()) {
+                    if (!triggerMatches) {
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
                             MatcherTo matcherTo =
@@ -450,6 +451,9 @@ public class CobiGen {
                                 }
                             }
                         }
+                    }
+                    if (triggerMatches) {
+                        matchingTrigger.add(trigger);
                     }
                 }
             } catch (Throwable e) {

@@ -86,7 +86,7 @@ public class ContainerMatcherTest {
 
         // Verification
         Assert.assertNotNull(matchingTriggerIds);
-        Assert.assertEquals(1, matchingTriggerIds.size());
+        Assert.assertTrue(matchingTriggerIds.size() > 0);
 
     }
 
@@ -108,7 +108,6 @@ public class ContainerMatcherTest {
 
         // Verification
         Assert.assertNotNull(matchingTemplates);
-        Assert.assertEquals(1, matchingTemplates.size());
     }
 
     /**
@@ -153,7 +152,29 @@ public class ContainerMatcherTest {
 
         // Verification
         Assert.assertNotNull(increments);
-        Assert.assertEquals(1, increments.size());
+        Assert.assertTrue(increments.size() > 0);
+    }
+
+    /**
+     * Tests whether multiple triggers will be activated if their container matcher matches a given input.<br/>
+     * <a href="https://github.com/oasp/tools-cobigen/issues/57">(Bug #57)</a>
+     * @author mbrunnli (12.11.2014)
+     */
+    @Test
+    public void testMultipleTriggerWithContainerMatchers() {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true, false);
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+
+        // Execution
+        List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
+
+        // Verification
+        Assert.assertNotNull(triggerIds);
+        Assert.assertEquals(2, triggerIds.size());
     }
 
     // ######################### PRIVATE ##############################
