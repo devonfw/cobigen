@@ -3,7 +3,7 @@ package com.capgemini.cobigen.javaplugin.test.resolver;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.resover.TriggerExpressionResolver;
+import com.capgemini.cobigen.javaplugin.resolver.TriggerExpressionResolver;
 
 /**
  * The class <code>TriggerExpressionResolverTest</code> contains tests for the class

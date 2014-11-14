@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.resover;
+package com.capgemini.cobigen.javaplugin.resolver;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
