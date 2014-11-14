@@ -1,9 +1,9 @@
-package com.capgemini.cobigen.javaplugin.test.resolver;
+package com.capgemini.cobigen.javaplugin.test.matcher.resolver;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.resolver.TriggerExpressionResolver;
+import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
 
 /**
  * The class <code>TriggerExpressionResolverTest</code> contains tests for the class
