@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.action;
+package com.capgemini.cobigen.xmlplugin.merger.action;
 
 import java.util.List;
 

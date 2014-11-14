@@ -12,8 +12,8 @@ import org.junit.Test;
 import ch.elca.el4j.services.xmlmerge.AbstractXmlMergeException;
 
 import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.xmlplugin.XmlMerger;
-import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
+import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
 
 /**
  * Test suite for {@link XmlMerger} class
@@ -28,7 +28,7 @@ public class XmlMergerTest {
 
     /**
      * Test Issue https://github.com/oasp/tools-cobigen/issues/31 Test method for
-     * {@link com.capgemini.cobigen.xmlplugin.XmlMerger#merge(java.io.File, java.lang.String, java.lang.String)}
+     * {@link com.capgemini.cobigen.xmlplugin.merger.XmlMerger#merge(java.io.File, java.lang.String, java.lang.String)}
      * .
      * @throws Exception
      *             test fails

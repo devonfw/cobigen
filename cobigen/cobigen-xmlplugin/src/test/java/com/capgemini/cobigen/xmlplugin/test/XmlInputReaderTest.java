@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.dom4j.dom.DOMDocument;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
@@ -38,6 +39,7 @@ public class XmlInputReaderTest {
     /**
      * Test method for {@link XmlInputReader#createModel(java.lang.Object)}.
      */
+    @Ignore("not Not yet implemented")
     @Test
     public void testCreateModel() {
         fail("Not yet implemented");

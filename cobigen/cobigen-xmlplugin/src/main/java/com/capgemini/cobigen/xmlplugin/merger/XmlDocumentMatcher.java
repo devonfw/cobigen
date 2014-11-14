@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.matcher;
+package com.capgemini.cobigen.xmlplugin.merger;
 
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -7,11 +7,11 @@ import ch.elca.el4j.services.xmlmerge.Matcher;
 
 /**
  * Used by an {@link ch.elca.el4j.services.xmlmerge.XmlMerge} instance to evaluate whether two elements match,
- * by calling the Matcher's {@link XmlMatcher#matches} method.
+ * by calling the Matcher's {@link XmlDocumentMatcher#matches} method.
  * @author trippl (12.03.2013)
  *
  */
-public class XmlMatcher implements Matcher {
+public class XmlDocumentMatcher implements Matcher {
 
     /**
      * Evaluates whether the two given elements match, by doing the following:
