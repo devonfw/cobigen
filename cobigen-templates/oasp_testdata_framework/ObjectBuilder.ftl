@@ -1,11 +1,11 @@
 <#include '/makros.ftl'>
-package ${variables.rootPackage}.${variables.component}.common.builders;
+package ${variables.rootPackage}.common.builders;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import ${pojo.package}.${pojo.name};
-import ${variables.rootPackage}.${variables.component}.common.builders.P;
+import ${variables.rootPackage}.common.builders.P;
 
 public class ${pojo.name}Builder {
 
@@ -17,12 +17,12 @@ public class ${pojo.name}Builder {
 		fillMandatoryFields_custom();
 	}
     
-    <#list pojo.attributes as attr>
-	public ${pojo.name}Builder ${attr.name}(final ${attr.type} ${attr.name}) {
+    <#list pojo.methodAccessibleFields as field>
+	public ${pojo.name}Builder ${field.name}(final ${field.type} ${field.name}) {
         parameterToBeApplied.add(new P<${pojo.name}>() {
             @Override
             public void apply(${pojo.name} target) {
-                target.set${attr.name?cap_first}(${attr.name});
+                target.set${field.name?cap_first}(${field.name});
             }
         });
         return this;

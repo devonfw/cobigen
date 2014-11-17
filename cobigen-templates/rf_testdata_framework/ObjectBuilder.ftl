@@ -17,12 +17,12 @@ public class ${pojo.name}Builder {
 		fillMandatoryFields_custom();
 	}
     
-    <#list pojo.attributes as attr>
-	public ${pojo.name}Builder ${attr.name}(final ${attr.type} ${attr.name}) {
+    <#list pojo.methodAccessibleFields as field>
+	public ${pojo.name}Builder ${field.name}(final ${field.type} ${field.name}) {
         parameterToBeApplied.add(new P<${pojo.name}>() {
             @Override
             public void apply(${pojo.name} target) {
-                target.set${attr.name?cap_first}(${attr.name});
+                target.set${field.name?cap_first}(${field.name});
             }
         });
         return this;
