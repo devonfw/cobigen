@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.test;
+package com.capgemini.cobigen.xmlplugin.test.merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +24,8 @@ public class XmlMergerTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
+    private static String testFileRootPath =
+        "src/test/resources/com/capgemini/cobigen/xmlplugin/test/merger/XmlMergerTest/";
 
     /**
      * Test Issue https://github.com/oasp/tools-cobigen/issues/31 Test method for

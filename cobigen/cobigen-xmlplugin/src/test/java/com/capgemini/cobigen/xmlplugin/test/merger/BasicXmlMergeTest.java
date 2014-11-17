@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.test.merge;
+package com.capgemini.cobigen.xmlplugin.test.merger;
 
 import java.io.File;
 
@@ -27,7 +27,8 @@ public class BasicXmlMergeTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
+    private static String testFileRootPath =
+        "src/test/resources/com/capgemini/cobigen/xmlplugin/test/merger/XmlMergerTest/";
 
     /**
      * Creates a {@link Document} out of the given {@link File}

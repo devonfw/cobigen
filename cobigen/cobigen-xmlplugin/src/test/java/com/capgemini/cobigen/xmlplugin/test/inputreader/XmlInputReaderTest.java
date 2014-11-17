@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.test;
+package com.capgemini.cobigen.xmlplugin.test.inputreader;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
