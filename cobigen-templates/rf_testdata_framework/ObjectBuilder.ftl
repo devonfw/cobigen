@@ -10,14 +10,15 @@ import ${variables.rootPackage}.common.builders.P;
 public class ${pojo.name}Builder {
 
     private List<P<${pojo.name}>> parameterToBeApplied;
-    
+
     public ${pojo.name}Builder() {
 		parameterToBeApplied = new LinkedList<P<${pojo.name}>>();
 		fillMandatoryFields();
 		fillMandatoryFields_custom();
 	}
-    
+
     <#list pojo.methodAccessibleFields as field>
+    <#if field.name != "id" && field.name != "version">
 	public ${pojo.name}Builder ${field.name}(final ${field.type} ${field.name}) {
         parameterToBeApplied.add(new P<${pojo.name}>() {
             @Override
@@ -27,8 +28,9 @@ public class ${pojo.name}Builder {
         });
         return this;
     }
+    </#if>
     </#list>
-    
+
     public ${pojo.name} createNew() {
         ${pojo.name} ${pojo.name?lower_case} = new ${pojo.name}();
         for (P<${pojo.name}> parameter : parameterToBeApplied) {
