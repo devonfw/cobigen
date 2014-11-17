@@ -83,4 +83,9 @@ public class ModelConstant {
      * JavaDoc of a method or a field ({@link String})
      */
     public static final String JAVADOC = "javaDoc";
+
+    /**
+     * A list of all visible fields accessible via setter and getter methods including inherited fields.
+     */
+    public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";
 }

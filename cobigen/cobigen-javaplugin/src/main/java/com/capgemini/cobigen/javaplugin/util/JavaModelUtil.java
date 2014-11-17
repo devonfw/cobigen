@@ -41,17 +41,15 @@ public class JavaModelUtil {
 
     /**
      * Returns the list of all field models ({@link ModelConstant#FIELDS})
-     *
      * @param model
      *            raw model
      * @return the list of all field models
      */
-    @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> getFields(Map<String, Object> model) {
-
-        List<Map<String, Object>> attributes =
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> fields =
             (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
-        return attributes;
+        return fields;
     }
 
     /**
@@ -65,22 +63,58 @@ public class JavaModelUtil {
      */
     public static Map<String, Object> getField(Map<String, Object> model, String fieldName) {
 
-        Map<String, Object> field = null;
-        for (Map<String, Object> attr : getFields(model)) {
-            if (fieldName.equals(attr.get(ModelConstant.NAME))) {
-                field = attr;
+        Map<String, Object> targetField = null;
+        for (Map<String, Object> field : getFields(model)) {
+            if (fieldName.equals(field.get(ModelConstant.NAME))) {
+                targetField = field;
                 break;
             }
         }
-        return field;
+        return targetField;
     }
 
     /**
-     * Returns the model's supertype element
+     * Returns the list of all field models ({@link ModelConstant#METHOD_ACCESSIBLE_FIELDS})
+     * @param model
+     *            raw model
+     * @return the list of all field models
+     * @author mbrunnli (17.11.2014)
+     */
+    public static List<Map<String, Object>> getMethodAccessibleFields(Map<String, Object> model) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> fields =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.METHOD_ACCESSIBLE_FIELDS);
+        return fields;
+    }
+
+    /**
+     * Returns the field model with the given field name from model
      *
      * @param model
      *            raw model
-     * @return the model's supertype element
+     * @param fieldName
+     *            field name to be retrieved
+     * @return the field model for the given field name if such a field exists, otherwise null.
+     * @author mbrunnli (17.11.2014)
+     */
+    public static Map<String, Object> getMethodAccessibleField(Map<String, Object> model, String fieldName) {
+
+        Map<String, Object> targetField = null;
+        for (Map<String, Object> field : getMethodAccessibleFields(model)) {
+            if (fieldName.equals(field.get(ModelConstant.NAME))) {
+                targetField = field;
+                break;
+            }
+        }
+        return targetField;
+    }
+
+    /**
+     * Returns the model's super type element
+     *
+     * @param model
+     *            raw model
+     * @return the model's super type element
      */
     public static Map<String, Object> getExtendedType(Map<String, Object> model) {
         @SuppressWarnings("unchecked")
@@ -159,5 +193,4 @@ public class JavaModelUtil {
         String cName = (String) getRoot(model).get(ModelConstant.CANONICAL_NAME);
         return cName;
     }
-
 }

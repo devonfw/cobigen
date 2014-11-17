@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.javaplugin.test.inputreader;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.junit.Test;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.RootClass;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
@@ -57,12 +57,9 @@ public class ReflectedJavaModelBuilderTest {
 
     /**
      * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
-     *
-     * @throws FileNotFoundException
-     *             test fails
      */
     @Test
-    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedImplementedTypes() {
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
@@ -87,8 +84,6 @@ public class ReflectedJavaModelBuilderTest {
 
     /**
      * Tests whether the inherited type will be correctly extracted and put into the model
-     * @throws FileNotFoundException
-     *             test fails
      * @author mbrunnli (30.09.2014)
      */
     @Test
@@ -104,4 +99,30 @@ public class ReflectedJavaModelBuilderTest {
             .getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
+    /**
+     * Tests the inclusion of all fields accessible by setter and getter methods into the model. This also
+     * includes inherited accessible fields.
+     * @author mbrunnli (17.11.2014)
+     */
+    @Test
+    public void testExtractionOfMethodAccessibleFields() {
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model = javaInputReader.createModel(RootClass.class);
+
+        Assert.assertNotNull(JavaModelUtil.getMethodAccessibleFields(model));
+        Assert.assertEquals(2, JavaModelUtil.getMethodAccessibleFields(model).size());
+
+        Map<String, Object> setterVisibleByteField =
+            JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");
+        Assert.assertNotNull(setterVisibleByteField);
+        Assert.assertEquals("setterVisibleByte", setterVisibleByteField.get(ModelConstant.NAME));
+        Assert.assertEquals("byte", setterVisibleByteField.get(ModelConstant.TYPE));
+        Assert.assertEquals("byte", setterVisibleByteField.get(ModelConstant.CANONICAL_TYPE));
+
+        Map<String, Object> valueField = JavaModelUtil.getMethodAccessibleField(model, "value");
+        Assert.assertNotNull(valueField);
+        Assert.assertEquals("value", valueField.get(ModelConstant.NAME));
+        Assert.assertEquals("String", valueField.get(ModelConstant.TYPE));
+        Assert.assertEquals("java.lang.String", valueField.get(ModelConstant.CANONICAL_TYPE));
+    }
 }

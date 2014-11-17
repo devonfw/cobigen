@@ -6,11 +6,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.mmm.util.pojo.descriptor.api.PojoDescriptor;
+import net.sf.mmm.util.pojo.descriptor.api.PojoDescriptorBuilder;
+import net.sf.mmm.util.pojo.descriptor.api.PojoPropertyDescriptor;
+import net.sf.mmm.util.pojo.descriptor.api.accessor.PojoPropertyAccessor;
+import net.sf.mmm.util.pojo.descriptor.api.accessor.PojoPropertyAccessorNonArgMode;
+import net.sf.mmm.util.pojo.descriptor.api.accessor.PojoPropertyAccessorOneArgMode;
+import net.sf.mmm.util.pojo.descriptor.impl.PojoDescriptorBuilderFactoryImpl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * The {@link ReflectedJavaModelBuilder} creates a new model for a given input pojo class
@@ -72,10 +83,13 @@ public class ReflectedJavaModelBuilder {
         extractAnnotationsRecursively(annotations, pojo.getAnnotations());
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
-        List<Map<String, Object>> attributes = extractAttributes(pojo);
+        List<Map<String, Object>> attributes = extractFields(pojo);
         pojoModel.put(ModelConstant.FIELDS, attributes);
         determinePojoIds(pojo, attributes);
         collectAnnotations(pojo, attributes);
+
+        List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(pojo);
+        pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
 
         Map<String, Object> superclass = extractSuperclass(pojo);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -90,6 +104,50 @@ public class ReflectedJavaModelBuilder {
     }
 
     /**
+     * Extracts all fields from the given pojo, which are visible by using setter and getter methods
+     * @param pojo
+     *            source {@link Class} to determine all fields accessible via methods from
+     * @return a list of field properties equivalently to {@link #extractFields(Class)}
+     * @author mbrunnli (14.11.2014)
+     */
+    private List<Map<String, Object>> extractMethodAccessibleFields(Class<?> pojo) {
+        PojoDescriptorBuilder pojoFieldDescriptorBuilder =
+            PojoDescriptorBuilderFactoryImpl.getInstance().createPrivateFieldDescriptorBuilder();
+        PojoDescriptor<?> pojoFieldDescriptor = pojoFieldDescriptorBuilder.getDescriptor(pojo);
+        Collection<? extends PojoPropertyDescriptor> propertyFieldDescriptors =
+            pojoFieldDescriptor.getPropertyDescriptors();
+        Iterator<?> it = propertyFieldDescriptors.iterator();
+        Map<String, Field> existingFields = Maps.newHashMap();
+        while (it.hasNext()) {
+            PojoPropertyDescriptor fieldDescriptor = (PojoPropertyDescriptor) it.next();
+            if (!fieldDescriptor.getAccessors().isEmpty()) {
+                existingFields.put(fieldDescriptor.getName(), (Field) fieldDescriptor.getAccessors()
+                    .iterator().next().getAccessibleObject());
+            }
+        }
+
+        PojoDescriptorBuilder pojoMethodDescriptorBuilder =
+            PojoDescriptorBuilderFactoryImpl.getInstance().createPublicMethodDescriptorBuilder();
+        PojoDescriptor<?> pojoMethodDescriptor = pojoMethodDescriptorBuilder.getDescriptor(pojo);
+        Collection<? extends PojoPropertyDescriptor> propertyMethodDescriptors =
+            pojoMethodDescriptor.getPropertyDescriptors();
+        it = propertyMethodDescriptors.iterator();
+
+        List<Map<String, Object>> fields = new LinkedList<>();
+        while (it.hasNext()) {
+            PojoPropertyDescriptor methodDescriptor = (PojoPropertyDescriptor) it.next();
+            PojoPropertyAccessor getter = methodDescriptor.getAccessor(PojoPropertyAccessorNonArgMode.GET);
+            PojoPropertyAccessor setter = methodDescriptor.getAccessor(PojoPropertyAccessorOneArgMode.SET);
+            if (getter != null && setter != null) {
+                if (existingFields.containsKey(getter.getName())) {
+                    fields.add(extractFieldProperties(existingFields.get(getter.getName())));
+                }
+            }
+        }
+        return fields;
+    }
+
+    /**
      * Extracts the attributes from the given POJO
      *
      * @param pojo
@@ -98,33 +156,44 @@ public class ReflectedJavaModelBuilder {
      *         {@link String} key to the corresponding {@link String} value of meta information
      * @author mbrunnli (06.02.2013)
      */
-    private List<Map<String, Object>> extractAttributes(Class<?> pojo) {
+    private List<Map<String, Object>> extractFields(Class<?> pojo) {
 
-        List<Map<String, Object>> attributes = new LinkedList<>();
-        for (Field f : pojo.getDeclaredFields()) {
-            if (Modifier.isStatic(f.getModifiers())) {
+        List<Map<String, Object>> fields = new LinkedList<>();
+        for (Field field : pojo.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
-            Map<String, Object> attrValues = new HashMap<>();
-            attrValues.put(ModelConstant.NAME, f.getName());
-            // build type name with type parameters (parameter types cannot be retrieved, so use generic
-            // parameter '?'
-            String type = f.getType().getSimpleName();
-            if (f.getType().getTypeParameters().length > 0) {
-                type += "<";
-                for (int i = 0; i < f.getType().getTypeParameters().length; i++) {
-                    if (!type.endsWith("<")) {
-                        type += ",";
-                    }
-                    type += "?";
-                }
-                type += ">";
-            }
-            attrValues.put(ModelConstant.TYPE, type);
-            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getCanonicalName());
-            attributes.add(attrValues);
+            fields.add(extractFieldProperties(field));
         }
-        return attributes;
+        return fields;
+    }
+
+    /**
+     * Extracts all properties needed for model building from a given field
+     * @param field
+     *            the values should be extracted for
+     * @return the mapping of property names to their values
+     * @author mbrunnli (17.11.2014)
+     */
+    private Map<String, Object> extractFieldProperties(Field field) {
+        Map<String, Object> fieldValues = new HashMap<>();
+        fieldValues.put(ModelConstant.NAME, field.getName());
+        // build type name with type parameters (parameter types cannot be retrieved, so use generic
+        // parameter '?'
+        String type = field.getType().getSimpleName();
+        if (field.getType().getTypeParameters().length > 0) {
+            type += "<";
+            for (int i = 0; i < field.getType().getTypeParameters().length; i++) {
+                if (!type.endsWith("<")) {
+                    type += ",";
+                }
+                type += "?";
+            }
+            type += ">";
+        }
+        fieldValues.put(ModelConstant.TYPE, type);
+        fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getType().getCanonicalName());
+        return fieldValues;
     }
 
     /**
