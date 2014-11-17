@@ -6,7 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dom4j.dom.DOMDocument;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import com.capgemini.cobigen.extension.IInputReader;
 
@@ -22,8 +25,8 @@ public class XmlInputReader implements IInputReader {
      */
     @Override
     public boolean isValidInput(Object input) {
-        // TODO should DOMElement also be provieded?
-        if (input instanceof DOMDocument) {
+        // TODO should Element or other inputs also be provided?
+        if (input instanceof Document) {
             return true;
         } else {
             return false;
@@ -37,8 +40,16 @@ public class XmlInputReader implements IInputReader {
      */
     @Override
     public Map<String, Object> createModel(Object input) {
-        // TODO Auto-generated method stub
-        return null;
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            Element rootElement = doc.getDocumentElement();
+            Map<String, Object> model = new HashMap<>();
+            model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
+            return new HashMap<>(model);
+        } else {
+            return null; // TODO?
+        }
+
     }
 
     /**
@@ -77,6 +88,35 @@ public class XmlInputReader implements IInputReader {
     public Map<String, Object> getTemplateMethods(Object input) {
         Map<String, Object> emptyMap = new HashMap<>();
         return emptyMap;
+    }
+
+    /**
+     * @param input
+     *            the element the model should derived from
+     * @return derived sub model
+     * @author fkreis (17.11.2014)
+     */
+    private Map<String, Object> deriveSubModel(Element input) {
+        // prepare result object
+        Map<String, Object> submodel = new HashMap<>();
+
+        // put element's attributes into a list and as single attributes into the model
+        NamedNodeMap attributeNodes = input.getAttributes();
+        List<Map<String, Object>> attrList = new LinkedList<>();
+        for (int i = 0; i < attributeNodes.getLength(); i++) {
+            Map<String, Object> att = new HashMap<>();
+            Node currentAttrNode = attributeNodes.item(i);
+            String attrName = currentAttrNode.getNodeName();
+            String attrValue = currentAttrNode.getNodeValue();
+            // as list
+            att.put(attrName, attrValue);
+            attrList.add(att);
+            // as single attributes
+            submodel.put(ModelConstant.SINGLE_ATTRIBUTE + attrName, attrValue);
+        }
+        submodel.put(ModelConstant.ATTRIBUTES, attrList);
+
+        return new HashMap<>(submodel);
     }
 
 }
