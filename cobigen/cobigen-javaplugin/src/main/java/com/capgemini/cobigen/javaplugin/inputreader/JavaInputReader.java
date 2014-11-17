@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,9 @@ import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -70,6 +75,7 @@ public class JavaInputReader implements IInputReader {
      *
      * @author mbrunnli (15.10.2013)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> createModel(Object o) {
 
@@ -80,14 +86,17 @@ public class JavaInputReader implements IInputReader {
             return new ParsedJavaModelBuilder().createModel((JavaClass) o);
         }
         if (o instanceof Object[] && isValidInput(o)) {
-            Map<String, Object> model;
             Object[] inputArr = (Object[]) o;
+            Object parsedModel;
+            Object reflectionModel;
             if (inputArr[0] instanceof JavaClass) {
-                model = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[0]);
+                parsedModel = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[0]);
+                reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[1]);
             } else {
-                model = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
+                parsedModel = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
+                reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
-            return model;
+            return (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
         }
         return null;
     }
@@ -215,5 +224,111 @@ public class JavaInputReader implements IInputReader {
         methodMap.put("isAbstract", new IsAbstractMethod(classloader));
         methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(classloader));
         return methodMap;
+    }
+
+    /**
+     * Merges two models recursively. The current implementation only merges Lists and Maps recursively.
+     * Structures will be merged as follows:<br>
+     * <table>
+     * <tr>
+     * <td>Maps:</td>
+     * <td>equal map entries will be discovered and the values will be merged recursively</td>
+     * </tr>
+     * <tr>
+     * <td>Lists:</td>
+     * <td>Lists will only be handled if their elements are {@link Map Maps}. If so, the {@link Map Maps} will
+     * be compared due to their {@link ModelConstant#NAME} value. If equal, the elements will be recursively
+     * merged.</td>
+     * </tr>
+     * </table>
+     *
+     * @param model1
+     *            first model to be merged and preferred in case of conflicts
+     * @param model2
+     *            second model to be merged
+     * @return the merged model. Due to implementation restrictions a {@link Map} of {@link String} to
+     *         {@link Object}
+     * @author mbrunnli (17.11.2014)
+     */
+    @SuppressWarnings("unchecked")
+    private Object mergeModelsRecursively(Object model1, Object model2) {
+
+        if (model1 == null && model2 == null) {
+            return null;
+        } else if (model1 == null) {
+            return model2;
+        } else if (model2 == null) {
+            return model1;
+        } else if (model1.equals(model2)) {
+            return model1;
+        }
+
+        if (model1.getClass().equals(model2.getClass())) {
+            if (model1 instanceof Map && model2 instanceof Map) {
+                Map<String, Object> mergedModel = Maps.newHashMap();
+                Map<String, Object> model1Map = (Map<String, Object>) model1;
+                Map<String, Object> model2Map = (Map<String, Object>) model2;
+
+                Set<String> union = Sets.newHashSet(model1Map.keySet());
+                union.addAll(model2Map.keySet());
+                for (String unionKey : union) {
+                    if (model1Map.containsKey(unionKey) && model2Map.containsKey(unionKey)) {
+                        // Recursively merge equal keys
+                        mergedModel.put(unionKey,
+                            mergeModelsRecursively(model1Map.get(unionKey), model2Map.get(unionKey)));
+                    } else if (model1Map.containsKey(unionKey)) {
+                        mergedModel.put(unionKey, model1Map.get(unionKey));
+                    } else {
+                        mergedModel.put(unionKey, model2Map.get(unionKey));
+                    }
+                }
+                return mergedModel;
+            } else if (model1 instanceof List && model2 instanceof List) {
+                if (!((List<?>) model1).isEmpty() && ((List<?>) model1).get(0) instanceof Map) {
+                    List<Map<String, Object>> model1List =
+                        Lists.newLinkedList((List<Map<String, Object>>) model1);
+                    List<Map<String, Object>> model2List =
+                        Lists.newLinkedList((List<Map<String, Object>>) model2);
+                    List<Object> mergedModel = Lists.newLinkedList();
+
+                    // recursively merge list entries. Match them by name attribute. This is currently valid
+                    // and might be adapted if there are greater model changes in future
+                    Iterator<Map<String, Object>> model1ListIt = model1List.iterator();
+                    while (model1ListIt.hasNext()) {
+                        Map<String, Object> model1Entry = model1ListIt.next();
+                        Iterator<Map<String, Object>> model2ListIt = model2List.iterator();
+                        while (model2ListIt.hasNext()) {
+                            Map<String, Object> model2Entry = model2ListIt.next();
+                            if (model1Entry.get(ModelConstant.NAME) != null) {
+                                if (model1Entry.get(ModelConstant.NAME).equals(
+                                    model2Entry.get(ModelConstant.NAME))) {
+                                    mergedModel.add(mergeModelsRecursively(model1Entry, model2Entry));
+
+                                    // remove both entries as they have been matched and recursively merged
+                                    model1ListIt.remove();
+                                    model2ListIt.remove();
+                                    break;
+                                }
+                            } else {
+                                throw new IllegalStateException("Programmer fault... ");
+                            }
+                        }
+                    }
+
+                    // append not matched entries from list1 and list2
+                    mergedModel.addAll(model1List);
+                    mergedModel.addAll(model2List);
+                    return mergedModel;
+                } else {
+                    throw new IllegalStateException("Programmer fault... ");
+                }
+            } else {
+                // any other type might not be merged. As the values are not equal, this might be a conflict,
+                // so take model1 as documented
+                return model1;
+            }
+        } else {
+            throw new IllegalStateException("Programmer fault... ");
+        }
     }
 }
