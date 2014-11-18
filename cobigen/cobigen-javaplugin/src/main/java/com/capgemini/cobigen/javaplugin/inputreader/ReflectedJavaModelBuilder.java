@@ -84,6 +84,7 @@ public class ReflectedJavaModelBuilder {
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
         List<Map<String, Object>> attributes = extractFields(pojo);
+        pojoModel.put(ModelConstant.FIELDS_DEPRECATED, attributes);
         pojoModel.put(ModelConstant.FIELDS, attributes);
         determinePojoIds(pojo, attributes);
         collectAnnotations(pojo, attributes);

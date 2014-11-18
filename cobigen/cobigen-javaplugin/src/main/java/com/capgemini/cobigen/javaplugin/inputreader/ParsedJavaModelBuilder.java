@@ -65,6 +65,7 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
         List<Map<String, Object>> attributes = extractAttributes(javaClass);
+        pojoModel.put(ModelConstant.FIELDS_DEPRECATED, attributes);
         pojoModel.put(ModelConstant.FIELDS, attributes);
         determinePojoIds(javaClass, attributes);
         collectAnnotations(javaClass, attributes);
