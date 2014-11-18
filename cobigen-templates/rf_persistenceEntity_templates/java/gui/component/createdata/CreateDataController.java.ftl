@@ -24,7 +24,7 @@ public class Create${pojo.name}Controller extends Abstract${pojo.name}Controller
     public boolean create${pojo.name}(Create${pojo.name}Model model) {
 
 	      ${pojo.name} ${pojo.name?uncap_first} = new ${pojo.name}();
-		    <#list doc["/doc/pojo/attributes"] as attr>
+		    <#list doc["/doc/pojo/fields"] as attr>
         ${pojo.name?uncap_first}.set${attr.name?cap_first}(model.get${attr.name?cap_first}());
         </#list>
         this.coreWrapper.create${pojo.name}(${pojo.name?uncap_first});

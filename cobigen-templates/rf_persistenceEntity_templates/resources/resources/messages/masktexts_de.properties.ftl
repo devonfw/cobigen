@@ -50,7 +50,7 @@ MEL_Action = Aktion
 ##############################################################################################
 
 MEL_Create_${pojo.name}_Titleline=Create ${pojo.name}
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
 MEL_${pojo.name}_${attr.name?cap_first}=${attr.name?cap_first}
 </#list>
 

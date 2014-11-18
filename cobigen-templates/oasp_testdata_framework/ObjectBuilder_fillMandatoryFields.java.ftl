@@ -7,7 +7,7 @@ public class ${pojo.name}Builder {
 	 * Fills all mandatory fields by default. (will be overwritten on re-generation)
 	 */
     private void fillMandatoryFields() {
-	    <#list pojo.attributes as attr>
+	    <#list pojo.fields as attr>
 		<#if (attr.annotations.javax_validation_constraints_NotNull)?has_content>
 		<@callNotNullPropertyWithDefaultValue attr=attr/>
 		

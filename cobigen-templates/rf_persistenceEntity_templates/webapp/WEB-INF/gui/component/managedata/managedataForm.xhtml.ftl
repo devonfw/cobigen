@@ -13,7 +13,7 @@
         <!-- Angebotname -->
         <div class="form_field">
 
-        <#list pojo.attributes as attr>
+        <#list pojo.fields as attr>
 
           <t:outputLabel for="${attr.name}" value="${r"#{msg.MEL_"}${pojo.name}_${attr.name?cap_first}}" />
           <t:message for="${attr.name}" showDetail="false"

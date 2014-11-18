@@ -16,7 +16,7 @@ public class ${variables.entityName}Cto extends AbstractCto {
 
 	private ${variables.entityName}Eto ${variables.entityName?uncap_first};
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
 <#if attr.type?contains("Entity")>
    	private ${attr.type?replace("Entity","Eto")} ${attr.name};
 </#if>
@@ -30,7 +30,7 @@ public class ${variables.entityName}Cto extends AbstractCto {
 		this.${variables.entityName?uncap_first} = ${variables.entityName?uncap_first};
 	}
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
 <#if attr.type?contains("Entity")>
 	<#assign attrCapName=attr.name?cap_first>
 

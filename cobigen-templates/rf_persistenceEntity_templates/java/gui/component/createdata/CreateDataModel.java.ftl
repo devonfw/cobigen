@@ -8,14 +8,14 @@ import java.io.Serializable;
  */
 public class Create${pojo.name}Model implements Serializable {
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
 	<#if attr.javaDoc[0]??>
     ${attr.javaDoc}
     </#if>
 	private ${attr.type} ${attr.name};
 </#list>
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
 	<#assign attrCapName=attr.name?cap_first>
 	<#assign getter='get'+$attrCapName>
 	<#assign getterBool='is'+$attrCapName>

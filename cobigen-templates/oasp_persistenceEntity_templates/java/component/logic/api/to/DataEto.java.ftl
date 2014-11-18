@@ -14,11 +14,11 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 
 	private static final long serialVersionUID = 1L;
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
    	private ${attr.type?replace("[^<>,]+Entity","Long","r")} ${attr.name};
 </#list>
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
   <#compress>
   <#assign newAttrType=attr.type?replace("[^<>,]+Entity","Long","r")>
 	<#assign attrCapName=attr.name?cap_first>
@@ -59,8 +59,8 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        <#if pojo.attributes?has_content>
-        	<#list pojo.attributes as attr>
+        <#if pojo.fields?has_content>
+        	<#list pojo.fields as attr>
         		<#if equalsJavaPrimitive(attr.type)>
         result = prime * result + <@boxJavaPrimitive attr.type attr.name/>.hashCode();
         		<#else>
@@ -90,7 +90,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
       return false;
     }
     ${variables.entityName}Eto other = (${variables.entityName}Eto) obj;
-    <#list pojo.attributes as attr>
+    <#list pojo.fields as attr>
     <#if equalsJavaPrimitive(attr.type)>
 	if(this.${attr.name} != other.${attr.name}) {
 		return false;
