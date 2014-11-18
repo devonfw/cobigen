@@ -245,7 +245,7 @@ public class TemplatesConfigurationReader {
                     if (!templates.containsKey(templateId)) {
                         String destinationPath =
                             scan.getDestinationPath() + "/" + currentPathWithSlash
-                                + templateNameWithoutExtension + "." + scan.getDestinationExtension();
+                                + templateNameWithoutExtension;
                         String templateFile =
                             scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
                         String mergeStratgey = scan.getMergeStrategy();
