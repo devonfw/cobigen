@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
-		<template id="csvList" destinationPath="TestDokumentation.csv" templateFile="TestDokumentation.ftl" mergeStrategy="textmerge_appendWithNewLine" targetCharset="ISO-8859-1" />
+		<template id="csvList" destinationPath="TestDokumentation.csv" templateFile="TestDokumentation.csv.ftl" mergeStrategy="textmerge_appendWithNewLine" targetCharset="ISO-8859-1" />
 	</templates>
 
 	<increments>
