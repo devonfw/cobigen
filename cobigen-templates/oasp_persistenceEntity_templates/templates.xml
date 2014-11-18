@@ -3,43 +3,43 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>
 		<!-- Infrastructure -->
-		<template id="dataaccess_applicationPersistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/ApplicationPersistenceEntity.java" templateFile="java/general/dataaccess/api/ApplicationPersistenceEntity.ftl" />
-		<template id="common_applicationEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/ApplicationEntity.java" templateFile="java/general/common/api/ApplicationEntity.ftl" />
+		<template id="dataaccess_applicationPersistenceEntity" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/ApplicationPersistenceEntity.java" templateFile="java/general/dataaccess/api/ApplicationPersistenceEntity.java.ftl" />
+		<template id="common_applicationEntity" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/ApplicationEntity.java" templateFile="java/general/common/api/ApplicationEntity.java.ftl" />
 
 		<!-- daos static -->
-		<template id="dataaccess_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/dao/ApplicationDao.java" templateFile="java/general/dataaccess/api/dao/ApplicationDao.ftl" />
-		<template id="dataaccess_applicationDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/base/dao/ApplicationDaoImpl.java" templateFile="java/general/dataaccess/base/dao/ApplicationDaoImpl.ftl" />
+		<template id="dataaccess_applicationDao" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/api/dao/ApplicationDao.java" templateFile="java/general/dataaccess/api/dao/ApplicationDao.java.ftl" />
+		<template id="dataaccess_applicationDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/general/dataaccess/base/dao/ApplicationDaoImpl.java" templateFile="java/general/dataaccess/base/dao/ApplicationDaoImpl.java.ftl" />
 
 		<!-- daos dynamic -->
-		<template id="constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="java/general/common/api/constants/NamedQueries.ftl" mergeStrategy="javamerge" />
-		<template id="dataaccess_dataDao" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/dao/${variables.entityName}Dao.java" templateFile="java/component/dataaccess/api/dao/DataDao.ftl"/>
-		<template id="dataaccess_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/impl/dao/${variables.entityName}DaoImpl.java" templateFile="java/component/dataaccess/impl/dao/DataDaoImpl.ftl"/>
+		<template id="constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="java/general/common/api/constants/NamedQueries.java.ftl" mergeStrategy="javamerge" />
+		<template id="dataaccess_dataDao" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/dao/${variables.entityName}Dao.java" templateFile="java/component/dataaccess/api/dao/DataDao.java.ftl"/>
+		<template id="dataaccess_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/impl/dao/${variables.entityName}DaoImpl.java" templateFile="java/component/dataaccess/impl/dao/DataDaoImpl.java.ftl"/>
 		<template id="namedQueries" destinationPath="src/main/resources/config/app/dataaccess/NamedQueries.xml" templateFile="resources/config/app/dataaccess/NamedQueries.xml.ftl" mergeStrategy="xmlmerge" />
 
 		<!-- logic layer static -->
-		<template id="common_abstractBeanMapperSupport" destinationPath="src/main/java/${variables.rootPackage}/general/common/base/AbstractBeanMapperSupport.java" templateFile="java/general/common/base/AbstractBeanMapperSupport.ftl" />
-		<template id="logic_abstractUc" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractUc.java" templateFile="java/general/logic/base/AbstractUc.ftl" />
+		<template id="common_abstractBeanMapperSupport" destinationPath="src/main/java/${variables.rootPackage}/general/common/base/AbstractBeanMapperSupport.java" templateFile="java/general/common/base/AbstractBeanMapperSupport.java.ftl" />
+		<template id="logic_abstractUc" destinationPath="src/main/java/${variables.rootPackage}/general/logic/base/AbstractUc.java" templateFile="java/general/logic/base/AbstractUc.java.ftl" />
 
 		<!-- logic layer dynamic -->
-		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component?cap_first}.java" templateFile="java/component/logic/api/DataManagement.ftl" mergeStrategy="javamerge" />
-		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/usecase/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/usecase/AbstractDataUc.ftl" />
-		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcFind${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcFindData.ftl" />
-		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcManage${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcManageData.ftl" />
-		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component?cap_first}Impl.java" templateFile="java/component/logic/impl/DataManagementImpl.ftl" mergeStrategy="javamerge" />
-		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcFindDataImpl.ftl" />
-		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcManageDataImpl.ftl" />
+		<template id="logic_componentInterface" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component?cap_first}.java" templateFile="java/component/logic/api/DataManagement.java.ftl" mergeStrategy="javamerge" />
+		<template id="logic_AbstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/base/usecase/Abstract${variables.entityName}Uc.java" templateFile="java/component/logic/base/usecase/AbstractDataUc.java.ftl" />
+		<template id="logic_UcFindData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcFind${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcFindData.java.ftl" />
+		<template id="logic_UcManageData" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcManage${variables.entityName}.java" templateFile="java/component/logic/api/usecase/UcManageData.java.ftl" />
+		<template id="logic_componentInterfaceImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component?cap_first}Impl.java" templateFile="java/component/logic/impl/DataManagementImpl.java.ftl" mergeStrategy="javamerge" />
+		<template id="logic_ucFindDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcFind${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcFindDataImpl.java.ftl" />
+		<template id="logic_ucManageDataImpl" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcManage${variables.entityName}Impl.java" templateFile="java/component/logic/impl/usecase/UcManageDataImpl.java.ftl" />
 
 		<!-- TOs static -->
-		<template id="logic_abstractCto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractCto.java" templateFile="java/general/common/api/to/AbstractCto.ftl" />
-		<template id="logic_abstractEto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractEto.java" templateFile="java/general/common/api/to/AbstractEto.ftl" />
+		<template id="logic_abstractCto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractCto.java" templateFile="java/general/common/api/to/AbstractCto.java.ftl" />
+		<template id="logic_abstractEto" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/to/AbstractEto.java" templateFile="java/general/common/api/to/AbstractEto.java.ftl" />
 
 		<!-- TOs dynamic -->
-		<template id="logic_eto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Eto.java" templateFile="java/component/logic/api/to/DataEto.ftl" />
-		<template id="logic_cto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Cto.java" templateFile="java/component/logic/api/to/DataCto.ftl"/>
+		<template id="logic_eto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Eto.java" templateFile="java/component/logic/api/to/DataEto.java.ftl" />
+		<template id="logic_cto" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/to/${variables.entityName}Cto.java" templateFile="java/component/logic/api/to/DataCto.java.ftl"/>
 
 		<!-- Entity Infrastructure -->
-		<template id="dataaccess_dataEntity" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/${variables.entityName}Entity.java" templateFile="java/component/dataaccess/api/DataEntity.ftl" mergeStrategy="javamerge" />
-		<template id="common_data" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/common/api/${variables.entityName}.java" templateFile="java/component/common/api/Data.ftl" mergeStrategy="javamerge" />
+		<template id="dataaccess_dataEntity" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/dataaccess/api/${variables.entityName}Entity.java" templateFile="java/component/dataaccess/api/DataEntity.java.ftl" mergeStrategy="javamerge" />
+		<template id="common_data" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/common/api/${variables.entityName}.java" templateFile="java/component/common/api/Data.java.ftl" mergeStrategy="javamerge" />
 	</templates>
 
 	<increments>
