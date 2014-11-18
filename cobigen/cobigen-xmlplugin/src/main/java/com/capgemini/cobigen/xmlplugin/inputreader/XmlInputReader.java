@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.extension.IInputReader;
 
@@ -100,6 +101,9 @@ public class XmlInputReader implements IInputReader {
         // prepare result object
         Map<String, Object> submodel = new HashMap<>();
 
+        // get all child nodes
+        NodeList childList = input.getChildNodes();
+
         // put element's attributes into a list and as single attributes into the model
         NamedNodeMap attributeNodes = input.getAttributes();
         List<Map<String, Object>> attrList = new LinkedList<>();
@@ -116,7 +120,48 @@ public class XmlInputReader implements IInputReader {
         }
         submodel.put(ModelConstant.ATTRIBUTES, attrList);
 
+        // put text nodes (pcdata) into the model
+        String textcontent = "";
+        for (int i = 0; i < childList.getLength(); i++) {
+            Node currentChild = childList.item(i);
+            if (currentChild.getNodeType() == Node.TEXT_NODE) {
+                textcontent += currentChild.getTextContent().replaceAll("\n", "").replaceAll(" ", "");
+                // textcontent += currentChild.getTextContent(); // TODO .replaceAll("\n", ""); how to deal
+                // with
+                // spaces linebreaks...
+            }
+        }
+        submodel.put(ModelConstant.TEXT_CONTENT, textcontent);
+
+        // put element child nodes into the model as list (call method recursively)
+        List<Map<String, Object>> modelChildList = new LinkedList<>();
+        List<String> blackList = new LinkedList<>();
+        for (int i = 0; i < childList.getLength(); i++) {
+            Node currentChild = childList.item(i);
+            if (currentChild.getNodeType() == Node.ELEMENT_NODE) {
+                Map<String, Object> currentChildModel = new HashMap<>();
+                Map<String, Object> currentChildSubModel = deriveSubModel((Element) currentChild);
+                String childname = currentChild.getNodeName();
+
+                // as list
+                currentChildModel.put(childname, currentChildSubModel);
+                modelChildList.add(currentChildModel);
+
+                // as single child, only add if its name is unique, otherwise it just can be provided via
+                // CHILDREN list
+                if (blackList.contains(childname)) {
+                    break;
+                } else if (submodel.containsKey(childname)) {
+                    submodel.remove(childname);
+                    blackList.add(childname);
+                } else {
+                    submodel.put(childname, currentChildSubModel);
+                }
+
+            }
+        }
+        submodel.put(ModelConstant.CHILDREN, modelChildList);
+
         return new HashMap<>(submodel);
     }
-
 }
