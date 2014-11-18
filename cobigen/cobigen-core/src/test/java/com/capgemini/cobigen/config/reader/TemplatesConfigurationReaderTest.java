@@ -80,16 +80,16 @@ public class TemplatesConfigurationReaderTest extends Assert {
         Template templateSpringCommon = templates.get(templateIdSpringCommon);
         assertNotNull(templateSpringCommon);
         assertEquals(templateIdSpringCommon, templateSpringCommon.getId());
-        assertEquals("resources/resources/spring/common.ftl", templateSpringCommon.getTemplateFile());
+        assertEquals("resources/resources/spring/common.xml.ftl", templateSpringCommon.getTemplateFile());
         assertEquals("src/main/resources/resources/spring/common.xml",
             templateSpringCommon.getUnresolvedDestinationPath());
         assertNull(templateSpringCommon.getMergeStrategy());
 
-        String templateIdFooClass = "prefix_FooClass";
+        String templateIdFooClass = "prefix_FooClass.java";
         Template templateFooClass = templates.get(templateIdFooClass);
         assertNotNull(templateFooClass);
         assertEquals(templateIdFooClass, templateFooClass.getId());
-        assertEquals("foo/FooClass.ftl", templateFooClass.getTemplateFile());
+        assertEquals("foo/FooClass.java.ftl", templateFooClass.getTemplateFile());
         assertEquals("src/main/java/foo/FooClass.java", templateFooClass.getUnresolvedDestinationPath());
         assertNull(templateFooClass.getMergeStrategy());
     }
@@ -118,16 +118,16 @@ public class TemplatesConfigurationReaderTest extends Assert {
         Template templateFoo2Class = templates.get(templateIdFoo2Class);
         assertNotNull(templateFoo2Class);
         assertEquals(templateIdFoo2Class, templateFoo2Class.getId());
-        assertEquals("foo/Foo2Class.ftl", templateFoo2Class.getTemplateFile());
+        assertEquals("foo/Foo2Class.java.ftl", templateFoo2Class.getTemplateFile());
         assertEquals("src/main/java/foo/Foo2Class${variable}.java",
             templateFoo2Class.getUnresolvedDestinationPath());
         assertEquals("javaMerge", templateFoo2Class.getMergeStrategy());
 
-        String templateIdBarClass = "prefix_BarClass";
+        String templateIdBarClass = "prefix_BarClass.java";
         Template templateBarClass = templates.get(templateIdBarClass);
         assertNotNull(templateBarClass);
         assertEquals(templateIdBarClass, templateBarClass.getId());
-        assertEquals("foo/bar/BarClass.ftl", templateBarClass.getTemplateFile());
+        assertEquals("foo/bar/BarClass.java.ftl", templateBarClass.getTemplateFile());
         assertEquals("src/main/java/foo/bar/BarClass.java", templateBarClass.getUnresolvedDestinationPath());
         assertNull(templateBarClass.getMergeStrategy());
     }
