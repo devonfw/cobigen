@@ -56,6 +56,7 @@ public class XmlMatcher implements IMatcher {
                 // TODO
                 // String fqn = ""; // ???;
                 // return fqn != null && fqn.matches(matcher.getValue());
+                return false;
             case TEST:
                 return true;
             }

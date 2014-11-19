@@ -61,7 +61,8 @@ public class XmlPluginIntegrationTest {
         CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
         // TODO can later be used
         // File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        File tmpFolderCobiGen = new File("src/test/resources/com/capgemini/cobigen/xmlplugin/ouput");
+        File tmpFolderCobiGen =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
@@ -72,13 +73,15 @@ public class XmlPluginIntegrationTest {
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document inputDocument = dBuilder.parse(inputXmlFile);
 
+        // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-
         boolean templateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("xmlTestTemplate")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput.txt");
+
+                // validate results
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("truetruetrue", FileUtils.readFileToString(expectedFile));
                 templateFound = true;
@@ -87,7 +90,7 @@ public class XmlPluginIntegrationTest {
         }
 
         if (!templateFound) {
-            new AssertionFailedError("Test template not found");
+            throw new AssertionFailedError("Test template not found");
         }
     }
 }
