@@ -34,7 +34,7 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
      */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return null;
+        return Lists.<ITriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
     }
 
 }
