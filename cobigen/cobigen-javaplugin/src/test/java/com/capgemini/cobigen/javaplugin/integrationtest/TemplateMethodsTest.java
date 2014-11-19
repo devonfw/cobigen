@@ -76,7 +76,7 @@ public class TemplateMethodsTest {
         }
 
         if (!methodTemplateFound) {
-            new AssertionFailedError("Test template not found");
+            throw new AssertionFailedError("Test template not found");
         }
     }
 
@@ -111,7 +111,7 @@ public class TemplateMethodsTest {
         }
 
         if (!methodTemplateFound) {
-            new AssertionFailedError("Test template not found");
+            throw new AssertionFailedError("Test template not found");
         }
     }
 
@@ -151,7 +151,7 @@ public class TemplateMethodsTest {
         }
 
         if (!methodTemplateFound) {
-            new AssertionFailedError("No template found");
+            throw new AssertionFailedError("No template found");
         }
     }
 }
