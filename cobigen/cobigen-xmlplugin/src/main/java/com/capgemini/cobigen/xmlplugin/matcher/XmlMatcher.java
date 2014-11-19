@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.xmlplugin.matcher;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,8 @@ public class XmlMatcher implements IMatcher {
     public Map<String, String> resolveVariables(MatcherTo matcher,
         List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
         // TODO currently no variables supported
-        return null;
+        HashMap<String, String> result = new HashMap<>();
+        return result;
     }
 
 }
