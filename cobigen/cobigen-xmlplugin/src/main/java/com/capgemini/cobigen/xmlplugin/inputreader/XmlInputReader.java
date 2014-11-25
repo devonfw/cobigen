@@ -111,9 +111,12 @@ public class XmlInputReader implements IInputReader {
             Node currentAttrNode = attributeNodes.item(i);
             String attrName = currentAttrNode.getNodeName();
             String attrValue = currentAttrNode.getNodeValue();
+
             // as list
-            att.put(attrName, attrValue);
+            att.put(ModelConstant.ATTRIBUTE_NAME, attrName);
+            att.put(ModelConstant.ATTRIBUTE_VALUE, attrValue);
             attrList.add(att);
+
             // as single attributes
             submodel.put(ModelConstant.SINGLE_ATTRIBUTE + attrName, attrValue);
         }

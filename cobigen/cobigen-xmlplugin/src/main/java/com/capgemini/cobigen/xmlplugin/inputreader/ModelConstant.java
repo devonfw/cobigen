@@ -41,9 +41,20 @@ public class ModelConstant {
     public static final String ATTRIBUTES = "Attributes";
 
     /**
-     * name of a single child node. An child node will be represented by mapping from the child's name to its
-     * model ({@link Map}&lt;{@link String}, {@link Object}&gt;). If two ore more children have the same name
-     * they will not provided here as SINGLE_CHILD, but in the list CHILDREN, like all die other children.
+     * The attribute's name represented as {@link String}.
+     */
+    public static final String ATTRIBUTE_NAME = "_attName_";
+
+    /**
+     * The attribute's value represented as {@link String}.
+     */
+    public static final String ATTRIBUTE_VALUE = "_attValue_";
+
+    /**
+     * prefix for a single child node. An child node will be represented by mapping from the child's name to
+     * its model ({@link Map}&lt;{@link String}, {@link Object}&gt;). If two ore more children have the same
+     * name they will not provided here as SINGLE_CHILD, but in the list CHILDREN, like all die other
+     * children.
      */
     public static final String SINGLE_CHILD = "";
 
