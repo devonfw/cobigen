@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.extension.IMatcher;
 import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.google.common.collect.Maps;
 
 /**
  *
@@ -29,10 +31,8 @@ public class XmlMatcher implements IMatcher {
      * @author fkreis (18.11.2014)
      */
     private enum MatcherType {
-        /** Full Qualified Name Matching */
-        FQN,
-        /** Integration Test Matching */
-        TEST
+        /** Document's root name */
+        NODENAME,
     }
 
     /**
@@ -41,6 +41,10 @@ public class XmlMatcher implements IMatcher {
      * @author fkreis (18.11.2014)
      */
     private enum VariableType {
+        /** Constant variable assignment */
+        CONSTANT,
+        /** Regular expression group assignment */
+        REGEX
     }
 
     /**
@@ -52,13 +56,14 @@ public class XmlMatcher implements IMatcher {
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
             switch (matcherType) {
-            case FQN:
-                // TODO
-                // String fqn = ""; // ???;
-                // return fqn != null && fqn.matches(matcher.getValue());
-                return false;
-            case TEST:
-                return true;
+            case NODENAME:
+                Object target = matcher.getTarget();
+                if (target instanceof Document) {
+                    String documentRootName = ((Document) target).getDocumentElement().getNodeName();
+                    // return documentRootName.equals(matcher.getValue());
+                    return documentRootName != null && !documentRootName.equals("")
+                        && matcher.getValue().matches(documentRootName);
+                }
             }
         } catch (IllegalArgumentException e) {
             LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
@@ -73,9 +78,30 @@ public class XmlMatcher implements IMatcher {
     @Override
     public Map<String, String> resolveVariables(MatcherTo matcher,
         List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
-        // TODO currently no variables supported
-        HashMap<String, String> result = new HashMap<>();
-        return result;
+
+        try {
+            MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
+            switch (matcherType) {
+            case NODENAME:
+                Map<String, String> resolvedVariables = new HashMap<>();
+                for (VariableAssignmentTo va : variableAssignments) {
+                    VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+                    switch (variableType) {
+                    case CONSTANT:
+                        resolvedVariables.put(va.getVarName(), va.getValue());
+                        break;
+                    case REGEX:
+                        // TODO
+                    }
+                }
+                return resolvedVariables;
+            default:
+                break;
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Matcher type '{}' not registered --> no match!", matcher.getType());
+        }
+        return Maps.newHashMap();
     }
 
 }
