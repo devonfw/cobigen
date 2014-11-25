@@ -26,7 +26,6 @@ public class XmlInputReader implements IInputReader {
      */
     @Override
     public boolean isValidInput(Object input) {
-        // TODO should Element or other inputs also be provided?
         if (input instanceof Document) {
             return true;
         } else {
@@ -41,14 +40,14 @@ public class XmlInputReader implements IInputReader {
      */
     @Override
     public Map<String, Object> createModel(Object input) {
-        if (input instanceof Document) {
+        if (isValidInput(input)) {
             Document doc = (Document) input;
             Element rootElement = doc.getDocumentElement();
             Map<String, Object> model = new HashMap<>();
             model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
             return new HashMap<>(model);
         } else {
-            return null; // TODO?
+            return null;
         }
 
     }
@@ -121,16 +120,18 @@ public class XmlInputReader implements IInputReader {
         submodel.put(ModelConstant.ATTRIBUTES, attrList);
 
         // put text nodes (pcdata) into the model
+        List<String> textNodeList = new LinkedList<>();
         String textcontent = "";
         for (int i = 0; i < childList.getLength(); i++) {
             Node currentChild = childList.item(i);
             if (currentChild.getNodeType() == Node.TEXT_NODE) {
-                textcontent += currentChild.getTextContent().replaceAll("\n", "").replaceAll(" ", "");
-                // textcontent += currentChild.getTextContent(); // TODO .replaceAll("\n", ""); how to deal
-                // with
-                // spaces linebreaks...
+                // as String List
+                textNodeList.add(currentChild.getTextContent());
+                // as concatenated String
+                textcontent += currentChild.getTextContent().trim();
             }
         }
+        submodel.put(ModelConstant.TEXT_NODES, textNodeList);
         submodel.put(ModelConstant.TEXT_CONTENT, textcontent);
 
         // put element child nodes into the model as list (call method recursively)

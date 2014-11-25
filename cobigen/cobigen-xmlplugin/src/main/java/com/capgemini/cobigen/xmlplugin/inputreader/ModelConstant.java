@@ -19,15 +19,20 @@ public class ModelConstant {
     public static final String ROOT = "root";
 
     /**
-     * Node for the text content of a xml node (PCDATA)
+     * Node for the concatenated text content of a xml node (PCDATA)
      */
-    public static final String TEXT_CONTENT = "text";
+    public static final String TEXT_CONTENT = "_text_";
+
+    /**
+     * A List of all children of type {@code TEXT_NODE}.
+     */
+    public static final String TEXT_NODES = "TextNodes";
 
     /**
      * prefix for a single attribute. An attribute will be represented by mapping from the attribute's name to
      * its value ({@link Map}&lt;{@link String}, {@link Object}&gt;)
      */
-    public static final String SINGLE_ATTRIBUTE = "att";
+    public static final String SINGLE_ATTRIBUTE = "_at_";
 
     /**
      * A list of all attributes. Each of the SINGLE_ATTRIBUTEs will be provided here as a reference (
