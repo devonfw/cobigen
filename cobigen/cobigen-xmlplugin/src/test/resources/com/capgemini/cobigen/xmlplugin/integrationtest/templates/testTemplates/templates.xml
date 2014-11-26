@@ -9,6 +9,7 @@
     <template id="xmlTestTemplate_TextNodes" destinationPath="xmlTestOutput_TextNodes.txt" templateFile="xmlTestTemplate_TextNodes.ftl" />
      <template id="xmlTestTemplate_SingleChild" destinationPath="xmlTestOutput_SingleChild.txt" templateFile="xmlTestTemplate_SingleChild.ftl" />
      <template id="xmlTestTemplate_ChildList" destinationPath="xmlTestOutput_ChildList.txt" templateFile="xmlTestTemplate_ChildList.ftl" />
+     <template id="xmlTestTemplate_VariablesConstant" destinationPath="xmlTestOutput_VariablesConstant.txt" templateFile="xmlTestTemplate_VariablesConstant.ftl" />
   </templates>
 
 </templatesConfiguration>

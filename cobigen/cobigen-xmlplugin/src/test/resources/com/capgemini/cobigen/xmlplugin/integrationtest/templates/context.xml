@@ -3,6 +3,7 @@
   <triggers>
     <trigger id="testTemplates" type="xml" templateFolder="testTemplates">
       <matcher type="nodename" value="root">
+        <variableAssignment type="constant" key="testConstantKey" value="testConstantValue" />
       </matcher>
     </trigger>
   </triggers>

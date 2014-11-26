@@ -312,4 +312,47 @@ public class XmlPluginIntegrationTest {
             throw new AssertionFailedError("Test template not found");
         }
     }
+
+    /**
+     * Tests the xml reader integration for text nodes
+     * @throws Exception
+     *             test fails
+     * @author fkreis (26.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_VariablesConstant() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_VariablesConstant")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_VariablesConstant.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals("testConstantValue", FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
 }
