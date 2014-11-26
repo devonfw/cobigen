@@ -2,7 +2,7 @@
 <contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
   <triggers>
     <trigger id="testTemplates" type="xml" templateFolder="testTemplates">
-      <matcher type="test" value=".*">
+      <matcher type="nodename" value="root">
       </matcher>
     </trigger>
   </triggers>

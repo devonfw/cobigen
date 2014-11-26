@@ -1,0 +1,1 @@
+<#list root.Attributes as at>${at._attName_}${at._attValue_}</#list>

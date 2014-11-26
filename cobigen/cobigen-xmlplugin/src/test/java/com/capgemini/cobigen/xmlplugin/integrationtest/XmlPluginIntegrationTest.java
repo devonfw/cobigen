@@ -50,19 +50,16 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
-     * Tests the xml reader integration
+     * Tests the xml reader integration for single attributes
      * @throws Exception
      *             test fails
      * @author fkreis (19.11.2014)
      */
     @Test
-    public void testXmlReaderIntegration() throws Exception {
+    public void testXmlReaderIntegration_SingleAttribute() throws Exception {
 
         CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        // TODO can later be used
-        // File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        File tmpFolderCobiGen =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/output");
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
@@ -77,13 +74,235 @@ public class XmlPluginIntegrationTest {
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
         boolean templateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate")) {
+            if (template.getId().equals("xmlTestTemplate_SingleAttribute")) {
                 cobiGen.generate(inputDocument, template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_SingleAttribute.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("truetruetrue", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("rootAttr1ContentrootAttr2ContentrootAttr3Content",
+                    FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests the xml reader integration for attribute list
+     * @throws Exception
+     *             test fails
+     * @author fkreis (25.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_AttributeList() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_AttributeList")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_AttributeList.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals(
+                    "rootAttr1rootAttr1ContentrootAttr2rootAttr2ContentrootAttr3rootAttr3Content",
+                    FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests the xml reader integration for text content
+     * @throws Exception
+     *             test fails
+     * @author fkreis (25.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_TextContent() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_TextContent")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_TextContent.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals("rootTextContent1rootTextContent2",
+                    FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests the xml reader integration for text nodes
+     * @throws Exception
+     *             test fails
+     * @author fkreis (26.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_TextNodes() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_TextNodes")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_TextNodes.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals("rootTextContent1 rootTextContent2 ",
+                    FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests the xml reader integration for text nodes
+     * @throws Exception
+     *             test fails
+     * @author fkreis (26.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_SingleChild() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_SingleChild")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_SingleChild.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals("child1", FileUtils.readFileToString(expectedFile));
+                templateFound = true;
+                break;
+            }
+        }
+
+        if (!templateFound) {
+            throw new AssertionFailedError("Test template not found");
+        }
+    }
+
+    /**
+     * Tests the xml reader integration for text nodes
+     * @throws Exception
+     *             test fails
+     * @author fkreis (26.11.2014)
+     */
+    @Test
+    public void testXmlReaderIntegration_ChildList() throws Exception {
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        cobiGen
+            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+
+        // read xml File as Document
+        File inputXmlFile =
+            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document inputDocument = dBuilder.parse(inputXmlFile);
+
+        // find matching templates and use testtemplate for generation
+        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
+        boolean templateFound = false;
+        for (TemplateTo template : templates) {
+            if (template.getId().equals("xmlTestTemplate_ChildList")) {
+                cobiGen.generate(inputDocument, template, false);
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_ChildList.txt");
+
+                // validate results
+                Assert.assertTrue(expectedFile.exists());
+                Assert.assertEquals("child1childdublicatechilddublicate",
+                    FileUtils.readFileToString(expectedFile));
                 templateFound = true;
                 break;
             }
