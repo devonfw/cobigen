@@ -19,6 +19,11 @@ public class ModelConstant {
     public static final String ROOT = "root";
 
     /**
+     * The node's name represented as {@link String}.
+     */
+    public static final String NODE_NAME = "_nodeName_";
+
+    /**
      * Node for the concatenated text content of a xml node (PCDATA)
      */
     public static final String TEXT_CONTENT = "_text_";
