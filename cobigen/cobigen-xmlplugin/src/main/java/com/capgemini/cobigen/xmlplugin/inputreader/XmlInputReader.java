@@ -158,7 +158,7 @@ public class XmlInputReader implements IInputReader {
                 // CHILDREN list
                 String childname = currentChild.getNodeName();
                 if (blackList.contains(childname)) {
-                    break;
+
                 } else if (submodel.containsKey(childname)) {
                     submodel.remove(childname);
                     blackList.add(childname);
