@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,7 +78,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_SingleAttribute")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_SingleAttribute.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_SingleAttribute.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -121,7 +123,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_AttributeList")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_AttributeList.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_AttributeList.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -166,7 +169,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_TextContent")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_TextContent.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_TextContent.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -210,7 +214,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_TextNodes")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_TextNodes.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_TextNodes.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -254,7 +259,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_SingleChild")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_SingleChild.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_SingleChild.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -297,7 +303,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_ChildList")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_ChildList.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_ChildList.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
@@ -341,7 +348,8 @@ public class XmlPluginIntegrationTest {
             if (template.getId().equals("xmlTestTemplate_VariablesConstant")) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + "\\xmlTestOutput_VariablesConstant.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "xmlTestOutput_VariablesConstant.txt");
 
                 // validate results
                 Assert.assertTrue(expectedFile.exists());
