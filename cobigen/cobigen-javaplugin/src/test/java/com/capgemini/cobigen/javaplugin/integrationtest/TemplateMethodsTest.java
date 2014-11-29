@@ -7,6 +7,7 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,7 +68,9 @@ public class TemplateMethodsTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isAbstractTemplate")) {
                 cobiGen.generate(getClass(), template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isAbstractOutput.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "isAbstractOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("falsetruetrue", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
@@ -102,7 +105,9 @@ public class TemplateMethodsTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isSubtypeOfTemplate")) {
                 cobiGen.generate(getClass(), template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\isSubtypeOfOutput.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "isSubtypeOfOutput.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("truetruefalsefalsefalse", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
@@ -132,7 +137,8 @@ public class TemplateMethodsTest {
 
         Object[] inputArr = new Object[2];
         File thisClassFile =
-            new File("src/test/java/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/"
+            new File("src/test/java/"
+                + getClass().getPackage().getName().replaceAll(SystemUtils.FILE_SEPARATOR + ".", "/") + "/"
                 + getClass().getSimpleName() + ".java");
         inputArr[0] = JavaParserUtil.getFirstJavaClass(new FileReader(thisClassFile));
         inputArr[1] = getClass();
@@ -143,7 +149,9 @@ public class TemplateMethodsTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("emptyTemplate")) {
                 cobiGen.generate(inputArr, template, false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + "\\emptyTemplate.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
+                        + "emptyTemplate.txt");
                 Assert.assertTrue(expectedFile.exists());
                 methodTemplateFound = true;
                 break;
