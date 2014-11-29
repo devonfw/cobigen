@@ -137,8 +137,7 @@ public class TemplateMethodsTest {
 
         Object[] inputArr = new Object[2];
         File thisClassFile =
-            new File("src/test/java/"
-                + getClass().getPackage().getName().replaceAll(SystemUtils.FILE_SEPARATOR + ".", "/") + "/"
+            new File("src/test/java/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/"
                 + getClass().getSimpleName() + ".java");
         inputArr[0] = JavaParserUtil.getFirstJavaClass(new FileReader(thisClassFile));
         inputArr[1] = getClass();
