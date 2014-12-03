@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
-import com.capgemini.cobigen.eclipse.generator.CobiGenInputHolder;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
@@ -36,7 +36,7 @@ import freemarker.template.TemplateException;
  *
  * @author mbrunnli (13.02.2013)
  */
-public class JavaGeneratorWrapper extends CobiGenInputHolder {
+public class JavaGeneratorWrapper extends CobiGenWrapper {
 
     /**
      * Current input types

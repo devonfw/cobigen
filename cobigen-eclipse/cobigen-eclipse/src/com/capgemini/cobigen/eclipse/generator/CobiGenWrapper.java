@@ -28,42 +28,54 @@ import freemarker.template.TemplateException;
  *
  * @author mbrunnli (02.12.2014)
  */
-public abstract class CobiGenInputHolder extends AbstractCobiGenWrapper {
+public class CobiGenWrapper extends AbstractCobiGenWrapper {
 
+    /**
+     * States whether at least one input object has been set
+     */
     private boolean initialized;
 
+    /**
+     * Current registered input objects
+     */
     private List<Object> inputs;
 
     /**
-     * All matching templates for the currently configured {@link #inputTypes input types}
+     * All matching templates for the currently configured {@link #inputs input objects}
      */
     private List<TemplateTo> matchingTemplates = Lists.newLinkedList();
 
     /**
-     *
-     * @throws GeneratorProjectNotExistentException
+     * Creates a new {@link CobiGenWrapper}
      * @throws CoreException
+     *             if an internal eclipse exception occurs
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration folder does not exist
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenInputHolder() throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException {
         super();
     }
 
     /**
-     *
+     * Creates a new {@link CobiGenWrapper} and sets the given input objects
      * @param inputs
-     * @throws GeneratorProjectNotExistentException
+     *            for generation
      * @throws CoreException
+     *             if an internal eclipse exception occurs
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration folder does not exist
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenInputHolder(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException {
         super();
         setInputs(inputs);
     }
 
     /**
-     *
+     * Sets the given input objects for generation
      * @param inputs
+     *            input objects for generation
      * @author mbrunnli (03.12.2014)
      */
     public void setInputs(List<Object> inputs) {
