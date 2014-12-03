@@ -758,6 +758,23 @@ public class CobiGen {
     }
 
     /**
+     * Checks whether there is at least one input reader, which interprets the given input as combined input.
+     * @param input
+     *            object
+     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
+     *         combined input,<code>false</code>, otherwise
+     * @author mbrunnli (03.12.2014)
+     */
+    public boolean combinesMultipleInputs(Object input) {
+        List<Trigger> matchingTriggers = getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
+        }
+        return false;
+    }
+
+    /**
      * Reloads the configuration from source. This function might be called if the configuration file has
      * changed in a running system
      *
