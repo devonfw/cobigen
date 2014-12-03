@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.generator;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,18 +14,21 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
-import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
+import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import freemarker.template.TemplateException;
+
 /**
  *
  * @author mbrunnli (02.12.2014)
  */
-public abstract class CobiGenInputHolder extends CobiGenWrapper {
+public abstract class CobiGenInputHolder extends AbstractCobiGenWrapper {
 
     private boolean initialized;
 
@@ -35,15 +39,33 @@ public abstract class CobiGenInputHolder extends CobiGenWrapper {
      */
     private List<TemplateTo> matchingTemplates = Lists.newLinkedList();
 
+    /**
+     *
+     * @throws GeneratorProjectNotExistentException
+     * @throws CoreException
+     * @author mbrunnli (03.12.2014)
+     */
     public CobiGenInputHolder() throws GeneratorProjectNotExistentException, CoreException {
         super();
     }
 
+    /**
+     *
+     * @param inputs
+     * @throws GeneratorProjectNotExistentException
+     * @throws CoreException
+     * @author mbrunnli (03.12.2014)
+     */
     public CobiGenInputHolder(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException {
         super();
         setInputs(inputs);
     }
 
+    /**
+     *
+     * @param inputs
+     * @author mbrunnli (03.12.2014)
+     */
     public void setInputs(List<Object> inputs) {
         this.inputs = inputs;
         initialized = this.inputs != null && this.inputs.size() > 0;
@@ -55,6 +77,32 @@ public abstract class CobiGenInputHolder extends CobiGenWrapper {
             }
         } else {
             matchingTemplates = null;
+        }
+    }
+
+    /**
+     * Generates the given template for all inputs set
+     *
+     * @param template
+     *            {@link TemplateTo} to be generated
+     * @param forceOverride
+     *            forces the generator to override the maybe existing target file of the template
+     * @throws TemplateException
+     *             any exception of the FreeMarker engine
+     * @throws IOException
+     *             if the specified template could not be found
+     * @throws MergeException
+     *             if there are some problems while merging
+     * @throws CoreException
+     *             if an internal eclipse exception occurs
+     * @author mbrunnli (14.02.2013)
+     */
+    @SuppressWarnings("unused")
+    public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
+        MergeException, CoreException {
+
+        for (Object input : inputs) {
+            cobiGen.generate(input, template, forceOverride);
         }
     }
 

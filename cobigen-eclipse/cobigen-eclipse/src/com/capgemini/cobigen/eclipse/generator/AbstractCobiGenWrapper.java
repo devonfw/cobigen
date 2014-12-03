@@ -12,13 +12,16 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
  *
  * @author mbrunnli (02.12.2014)
  */
-public abstract class CobiGenWrapper {
+public abstract class AbstractCobiGenWrapper {
 
     /**
      * Target Project for the generation
      */
     private IProject targetProject;
 
+    /**
+     * Referenz to native {@link CobiGen} API
+     */
     protected CobiGen cobiGen;
 
     /**
@@ -30,7 +33,7 @@ public abstract class CobiGenWrapper {
      *             if the generator configuration project could not be opened
      * @author mbrunnli (21.03.2014)
      */
-    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException {
+    public AbstractCobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException {
         cobiGen = initializeGenerator();
     }
 

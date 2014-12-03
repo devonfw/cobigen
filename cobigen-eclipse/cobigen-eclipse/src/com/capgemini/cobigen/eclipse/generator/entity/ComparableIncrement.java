@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.generator.java.entity;
+package com.capgemini.cobigen.eclipse.generator.entity;
 
 import java.util.List;
 

@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.eclipse.Activator;
+import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
-import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
 import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;

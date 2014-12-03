@@ -170,22 +170,10 @@ public class JavaGeneratorWrapper extends CobiGenInputHolder {
     }
 
     /**
-     * Generates the given template for all inputs set
-     *
-     * @param template
-     *            {@link TemplateTo} to be generated
-     * @param forceOverride
-     *            forces the generator to override the maybe existing target file of the template
-     * @throws TemplateException
-     *             any exception of the FreeMarker engine
-     * @throws IOException
-     *             if the specified template could not be found
-     * @throws MergeException
-     *             if there are some problems while merging
-     * @throws CoreException
-     *             if an internal eclipse exception occurs
-     * @author mbrunnli (14.02.2013)
+     * {@inheritDoc}
+     * @author mbrunnli (03.12.2014)
      */
+    @Override
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
         MergeException, CoreException {
 

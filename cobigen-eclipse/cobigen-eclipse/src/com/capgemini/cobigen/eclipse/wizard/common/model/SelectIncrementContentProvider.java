@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ITreePathContentProvider;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
+import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 
 /**
  * {@link ITreeContentProvider} for displaying an hierarchical tree of dependent generation packages.
