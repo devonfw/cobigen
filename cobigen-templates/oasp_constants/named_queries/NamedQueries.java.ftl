@@ -12,7 +12,6 @@ public abstract class NamedQueries {
 
 <#list .vars['entity-mappings'].Children as namedQuery>
 <#if namedQuery._nodeName_ == "named-query">
-/** @see ${variables.pathprefix}.${variables.pathappl}.XXXX.dataaccess.impl.dao.XXXX#<@toCamelCase points=namedQuery._at_name/>() */
 public static final String <@toUnderScore points=namedQuery._at_name/> = "${namedQuery._at_name}";
 
 </#if>
