@@ -1,5 +1,5 @@
 <#macro toUnderScore camelCase>
-${camelCase?replace("[A-Z]", "_$0", 'r')?upper_case?replace('_', '', 'f')}</#macro>
+${camelCase?cap_first?replace("[A-Z]", "_$0", 'r')?upper_case?replace('_', '', 'f')}</#macro>
 <#macro toComment camelCase>
 ${camelCase?replace("[A-Z]", "_$0", 'r')?upper_case?replace('_', ' ')?lower_case}</#macro>
 <#assign pathtoAccessControlPermission = variables.pathprefix+".module.security.common.api.accesscontrol.AccessControlPermission">
