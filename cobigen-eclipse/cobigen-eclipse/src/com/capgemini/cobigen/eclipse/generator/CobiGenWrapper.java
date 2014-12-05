@@ -20,7 +20,6 @@ import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import freemarker.template.TemplateException;
 
@@ -318,7 +317,7 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public Set<IFile> getAllTargetFiles() {
         if (!initialized) {
-            return Sets.newLinkedHashSetWithExpectedSize(0);
+            return new HashSet<>(0);
         }
 
         Set<IFile> files = new HashSet<>();
