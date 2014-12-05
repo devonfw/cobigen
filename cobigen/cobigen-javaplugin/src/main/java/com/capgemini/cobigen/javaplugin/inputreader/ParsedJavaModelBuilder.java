@@ -64,11 +64,11 @@ public class ParsedJavaModelBuilder {
         extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
-        List<Map<String, Object>> attributes = extractAttributes(javaClass);
-        pojoModel.put(ModelConstant.FIELDS_DEPRECATED, attributes);
-        pojoModel.put(ModelConstant.FIELDS, attributes);
-        determinePojoIds(javaClass, attributes);
-        collectAnnotations(javaClass, attributes);
+        List<Map<String, Object>> fields = extractFields(javaClass);
+        pojoModel.put(ModelConstant.FIELDS_DEPRECATED, fields);
+        pojoModel.put(ModelConstant.FIELDS, fields);
+        determinePojoIds(javaClass, fields);
+        collectAnnotations(javaClass, fields);
 
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -116,20 +116,20 @@ public class ParsedJavaModelBuilder {
      *         {@link String} key to the corresponding {@link String} value of meta information
      * @author mbrunnli (06.02.2013)
      */
-    private List<Map<String, Object>> extractAttributes(JavaClass pojo) {
+    private List<Map<String, Object>> extractFields(JavaClass pojo) {
 
-        List<Map<String, Object>> attributes = new LinkedList<>();
+        List<Map<String, Object>> fields = new LinkedList<>();
         for (JavaField f : pojo.getFields()) {
             if (f.isStatic()) {
                 continue;
             }
-            Map<String, Object> attrValues = new HashMap<>();
-            attrValues.put(ModelConstant.NAME, f.getName());
-            attrValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
-            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
-            attributes.add(attrValues);
+            Map<String, Object> fieldValues = new HashMap<>();
+            fieldValues.put(ModelConstant.NAME, f.getName());
+            fieldValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
+            fieldValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
+            fields.add(fieldValues);
         }
-        return attributes;
+        return fields;
     }
 
     /**
@@ -244,7 +244,7 @@ public class ParsedJavaModelBuilder {
                 annotationParameters);
 
             for (String propertyName : annotation.getPropertyMap().keySet()) {
-                Object value = annotation.getPropertyMap().get(propertyName).getParameterValue();
+                Object value = annotation.getNamedParameter(propertyName);
                 if (value instanceof JavaAnnotation[]) {
                     Map<String, Object> annotationParameterParameters = new HashMap<>();
                     annotationParameters.put(propertyName, annotationParameterParameters);
@@ -261,7 +261,12 @@ public class ParsedJavaModelBuilder {
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
                 } else {
-                    annotationParameters.put(propertyName, value);
+                    // TODO remove workaround due to a bug in QDox (reported on mailing list)
+                    if (value instanceof String && ("true".equals(value) || "false".equals(value))) {
+                        annotationParameters.put(propertyName, new Boolean((String) value));
+                    } else {
+                        annotationParameters.put(propertyName, value);
+                    }
                 }
             }
         }

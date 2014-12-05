@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithAnnotations;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -57,7 +58,8 @@ public class JavaInputReaderTest {
     }
 
     /**
-     * Tests whether both features can be used when providing parsed and reflected inputs for one java class
+     * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
+     * whereas one model does not provide any fields and/or methods
      *
      * @throws FileNotFoundException
      *             test fails
@@ -67,6 +69,27 @@ public class JavaInputReaderTest {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass_empty.java");
         Class<?> javaClass = TestClass.class;
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model =
+            javaInputReader.createModel(new Object[] {
+                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Assert.assertNotNull("No model has been created!", model);
+
+    }
+
+    /**
+     * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
+     * whereas the models are equal and contain boolean values within annotations
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void provideParsingAndReflectionModelFeatures_withAnnotations() throws FileNotFoundException {
+
+        File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotations.java");
+        Class<?> javaClass = TestClassWithAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =
