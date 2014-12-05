@@ -57,6 +57,26 @@ public class JavaInputReaderTest {
     }
 
     /**
+     * Tests whether both features can be used when providing parsed and reflected inputs for one java class
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws FileNotFoundException {
+
+        File javaSourceFile = new File(testFileRootPath + "TestClass_empty.java");
+        Class<?> javaClass = TestClass.class;
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model =
+            javaInputReader.createModel(new Object[] {
+                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Assert.assertNotNull("No model has been created!", model);
+
+    }
+
+    /**
      * Test method for {@link JavaInputReader#getTemplateMethods(Object)}. Checks whether the returning Map
      * contains isSubtypeOf and isAstract as template methods.
      */

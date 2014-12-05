@@ -284,7 +284,8 @@ public class JavaInputReader implements IInputReader {
                 }
                 return mergedModel;
             } else if (model1 instanceof List && model2 instanceof List) {
-                if (!((List<?>) model1).isEmpty() && ((List<?>) model1).get(0) instanceof Map) {
+                if (!((List<?>) model1).isEmpty() && ((List<?>) model1).get(0) instanceof Map
+                    || !((List<?>) model2).isEmpty() && ((List<?>) model2).get(0) instanceof Map) {
                     List<Map<String, Object>> model1List =
                         Lists.newLinkedList((List<Map<String, Object>>) model1);
                     List<Map<String, Object>> model2List =
