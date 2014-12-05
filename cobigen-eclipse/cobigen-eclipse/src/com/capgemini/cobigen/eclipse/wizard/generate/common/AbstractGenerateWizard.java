@@ -9,9 +9,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -22,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
@@ -47,12 +45,16 @@ public abstract class AbstractGenerateWizard extends Wizard {
     /**
      * Wrapper for the {@link CobiGen}
      */
-    protected JavaGeneratorWrapper javaGeneratorWrapper;
+    protected CobiGenWrapper cobigenWrapper;
 
     /**
      * Assigning logger to AbstractGenerateWizard
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractGenerateWizard.class);
+
+    public AbstractGenerateWizard(CobiGenWrapper generator) {
+        cobigenWrapper = generator;
+    }
 
     /**
      * Initializes the {@link JavaGeneratorWrapper}
@@ -78,29 +80,9 @@ public abstract class AbstractGenerateWizard extends Wizard {
      *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
-    protected void initializeWizard(Object input) throws IOException, InvalidConfigurationException,
-        UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
-        ClassNotFoundException, GeneratorProjectNotExistentException {
+    protected void initializeWizard() {
 
-        javaGeneratorWrapper = new JavaGeneratorWrapper();
-
-        IJavaProject javaProject = null;
-        if (input instanceof IType) {
-            javaGeneratorWrapper.setInputType((IType) input);
-            javaProject = ((IType) input).getJavaProject();
-        } else if (input instanceof IPackageFragment) {
-            javaGeneratorWrapper.setInputPackage((IPackageFragment) input);
-            javaProject = ((IPackageFragment) input).getJavaProject();
-        } else {
-            @SuppressWarnings("unchecked")
-            List<IType> inputList = (List<IType>) input;
-            javaGeneratorWrapper.setInputTypes(inputList);
-            javaProject = inputList.get(0).getJavaProject();
-        }
-
-        javaGeneratorWrapper.setGenerationTargetProject(javaProject.getProject());
-
-        page1 = new SelectFilesPage(javaGeneratorWrapper, false);
+        page1 = new SelectFilesPage(cobigenWrapper, false);
     }
 
     /**
@@ -112,8 +94,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
     public Set<String> getAllGenerationPaths() {
 
         Set<String> paths = new HashSet<>();
-        for (TemplateTo tmp : javaGeneratorWrapper.getAllTemplates()) {
-            paths.add(tmp.resolveDestinationPath(javaGeneratorWrapper.getCurrentRepresentingInput()));
+        for (TemplateTo tmp : cobigenWrapper.getAllTemplates()) {
+            paths.add(tmp.resolveDestinationPath(cobigenWrapper.getCurrentRepresentingInput()));
         }
         return paths;
     }
@@ -168,7 +150,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             }
         }
         // Delete mergable files
-        Set<IFile> mergableFiles = javaGeneratorWrapper.getMergeableFiles();
+        Set<IFile> mergableFiles = cobigenWrapper.getMergeableFiles();
         it = diff.iterator();
         while (it.hasNext()) {
             Object r = it.next();

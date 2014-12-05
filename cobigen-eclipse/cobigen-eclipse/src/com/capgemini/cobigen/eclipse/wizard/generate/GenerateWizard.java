@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.SelectAttributesPage;
@@ -60,13 +61,13 @@ public class GenerateWizard extends AbstractGenerateWizard {
      *             if the generator configuration folder does not exists
      * @author mbrunnli (15.02.2013)
      */
-    public GenerateWizard(IType inputType) throws CoreException, UnknownTemplateException,
+    public GenerateWizard(CobiGenWrapper generator) throws CoreException, UnknownTemplateException,
         UnknownContextVariableException, IOException, InvalidConfigurationException,
         UnknownExpressionException, ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        super();
+        super(generator);
         setWindowTitle("CobiGen");
-        initializeWizard(inputType);
+        initializeWizard();
     }
 
     /**
@@ -74,13 +75,15 @@ public class GenerateWizard extends AbstractGenerateWizard {
      * @author mbrunnli (18.02.2013)
      */
     @Override
-    protected void initializeWizard(Object input) throws IOException, InvalidConfigurationException,
-        UnknownTemplateException, UnknownContextVariableException, UnknownExpressionException, CoreException,
-        ClassNotFoundException, GeneratorProjectNotExistentException {
+    protected void initializeWizard() {
 
-        super.initializeWizard(input);
+        super.initializeWizard();
 
-        page2 = new SelectAttributesPage(javaGeneratorWrapper.getAttributesToTypeMapOfFirstInput());
+        if (cobigenWrapper instanceof JavaGeneratorWrapper) {
+            page2 =
+                new SelectAttributesPage(
+                    ((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
+        }
     }
 
     /**
@@ -105,12 +108,14 @@ public class GenerateWizard extends AbstractGenerateWizard {
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
 
-        for (String attr : page2.getUncheckedAttributes()) {
-            javaGeneratorWrapper.removeFieldFromModel(attr);
+        if (cobigenWrapper instanceof JavaGeneratorWrapper) {
+            for (String attr : page2.getUncheckedAttributes()) {
+                ((JavaGeneratorWrapper) cobigenWrapper).removeFieldFromModel(attr);
+            }
         }
 
         GenerateSelectionProcess job =
-            new GenerateSelectionProcess(getShell(), javaGeneratorWrapper, page1.getTemplatesToBeGenerated());
+            new GenerateSelectionProcess(getShell(), cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(false, false, job);
         } catch (InvocationTargetException e) {

@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.eclipse.Activator;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
 import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
@@ -76,12 +76,12 @@ public class SelectFilesPage extends WizardPage {
     private Button rememberSelection;
 
     /**
-     * Current used {@link JavaGeneratorWrapper} instance
+     * Current used {@link CobiGenWrapper} instance
      */
-    private JavaGeneratorWrapper javaGeneratorWrapper;
+    private CobiGenWrapper cobigenWrapper;
 
     /**
-     * Defines whether the {@link JavaGeneratorWrapper} is in batch mode.
+     * Defines whether the {@link CobiGenWrapper} is in batch mode.
      */
     private boolean batch;
 
@@ -108,17 +108,17 @@ public class SelectFilesPage extends WizardPage {
      * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be
      * change by the generation process
      *
-     * @param javaGeneratorWrapper
-     *            the {@link JavaGeneratorWrapper} instance
+     * @param cobigenWrapper
+     *            the {@link CobiGenWrapper} instance
      * @param batch
      *            states whether the generation will run in batch mode
      * @author mbrunnli (14.02.2013)
      */
-    public SelectFilesPage(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) {
+    public SelectFilesPage(CobiGenWrapper cobigenWrapper, boolean batch) {
 
         super("Generate");
         setTitle("Select the Resources, which should be generated.");
-        this.javaGeneratorWrapper = javaGeneratorWrapper;
+        this.cobigenWrapper = cobigenWrapper;
         this.batch = batch;
     }
 
@@ -147,7 +147,7 @@ public class SelectFilesPage extends WizardPage {
 
         incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
         incrementSelector.setContentProvider(new SelectIncrementContentProvider());
-        incrementSelector.setInput(javaGeneratorWrapper.getAllIncrements());
+        incrementSelector.setInput(cobigenWrapper.getAllIncrements());
         gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessVerticalSpace = true;
         incrementSelector.getTree().setLayoutData(gd);
@@ -159,7 +159,7 @@ public class SelectFilesPage extends WizardPage {
         boolean initiallyCustomizable = false;
         buildResourceTreeViewer(initiallyCustomizable);
 
-        CheckStateListener checkListener = new CheckStateListener(javaGeneratorWrapper, this, batch);
+        CheckStateListener checkListener = new CheckStateListener(cobigenWrapper, this, batch);
         incrementSelector.addCheckStateListener(checkListener);
 
         sash.setWeights(new int[] { 1, 3 });
@@ -234,7 +234,7 @@ public class SelectFilesPage extends WizardPage {
             checkedElements = resourcesTree.getCheckedElements();
         } else {
             cp = new SelectFileContentProvider();
-            lp = new SelectFileLabelProvider(javaGeneratorWrapper, batch);
+            lp = new SelectFileLabelProvider(cobigenWrapper, batch);
             checkedElements = new Object[0];
         }
 
@@ -251,14 +251,14 @@ public class SelectFilesPage extends WizardPage {
 
         resourcesTree.setContentProvider(cp);
         resourcesTree.setLabelProvider(lp);
-        resourcesTree.setInput(new IProject[] { javaGeneratorWrapper.getGenerationTargetProject() });
+        resourcesTree.setInput(new IProject[] { cobigenWrapper.getGenerationTargetProject() });
         resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;
         gd.grabExcessVerticalSpace = true;
         resourcesTree.getTree().setLayoutData(gd);
 
-        CheckStateListener listener = new CheckStateListener(javaGeneratorWrapper, this, batch);
+        CheckStateListener listener = new CheckStateListener(cobigenWrapper, this, batch);
         resourcesTree.addCheckStateListener(listener);
         resourcesTree.setCheckedElements(checkedElements);
 
@@ -314,7 +314,7 @@ public class SelectFilesPage extends WizardPage {
 
         List<TemplateTo> templates = Lists.newLinkedList();
         for (String path : getFilePathsToBeGenerated()) {
-            templates.addAll(javaGeneratorWrapper.getTemplatesForFilePath(path, selectedIncrements));
+            templates.addAll(cobigenWrapper.getTemplatesForFilePath(path, selectedIncrements));
         }
         return templates;
     }

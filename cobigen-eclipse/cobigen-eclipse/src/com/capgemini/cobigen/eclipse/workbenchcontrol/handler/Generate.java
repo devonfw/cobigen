@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
@@ -50,13 +52,18 @@ public class Generate extends AbstractHandler {
         ISelection sel = HandlerUtil.getCurrentSelection(event);
         if (sel instanceof ITreeSelection) {
 
+            // when this handler is executed, we should we should be sure, that the selection is currently
+            // supported by the following implementation
+
             try {
+                CobiGenWrapper generator =
+                    GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
 
                 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
                     && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
                     WizardDialog wiz =
-                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(
-                            (IStructuredSelection) sel));
+                        new WizardDialog(HandlerUtil.getActiveShell(event),
+                            new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
                 } else if (((IStructuredSelection) sel).size() == 1) {
@@ -64,7 +71,7 @@ public class Generate extends AbstractHandler {
                     if (obj instanceof ICompilationUnit) {
                         IType type = JavaModelUtil.getJavaClassType((ICompilationUnit) obj);
                         WizardDialog wiz =
-                            new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(type));
+                            new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
                         wiz.setPageSize(new Point(800, 500));
                         wiz.open();
                     }

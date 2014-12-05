@@ -73,6 +73,25 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Sets the given input object for generation
+     * @param input
+     *            input object for generation
+     * @author mbrunnli (03.12.2014)
+     */
+    public void setInput(Object input) {
+        if (input != null) {
+            initialized = true;
+            inputs = Lists.newArrayList(input);
+            matchingTemplates = cobiGen.getMatchingTemplates(input);
+        } else {
+            initialized = false;
+            inputs = null;
+            matchingTemplates = null;
+        }
+
+    }
+
+    /**
      * Sets the given input objects for generation
      * @param inputs
      *            input objects for generation
@@ -88,6 +107,7 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
                 matchingTemplates.addAll(cobiGen.getMatchingTemplates(input));
             }
         } else {
+            inputs = null;
             matchingTemplates = null;
         }
     }
@@ -327,8 +347,10 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
             return null;
         }
 
+        // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> packageChildren = new JavaInputReader().getInputObjects(inputs, Charsets.UTF_8);
+            List<Object> packageChildren =
+                new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return packageChildren.get(0);
         } else {

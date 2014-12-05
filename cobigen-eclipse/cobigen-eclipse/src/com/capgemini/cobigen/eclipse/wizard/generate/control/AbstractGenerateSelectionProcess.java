@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
@@ -60,7 +60,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     /**
      * Generator instance with which to generate the contents
      */
-    protected JavaGeneratorWrapper javaGeneratorWrapper;
+    protected CobiGenWrapper cobigenWrapper;
 
     /**
      * The {@link Set} of paths to be generated
@@ -72,16 +72,16 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      *
      * @param shell
      *            on which to display error messages
-     * @param javaGeneratorWrapper
+     * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionProcess(Shell shell, JavaGeneratorWrapper javaGeneratorWrapper,
+    public AbstractGenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
         List<TemplateTo> templatesToBeGenerated) {
 
         this.shell = shell;
-        this.javaGeneratorWrapper = javaGeneratorWrapper;
+        this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
     }
 
@@ -101,7 +101,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             boolean anyResults = performGeneration(monitor);
 
             if (anyResults) {
-                IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
+                IProject proj = cobigenWrapper.getGenerationTargetProject();
                 if (proj != null) {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 }
@@ -217,10 +217,10 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      */
     private ICompilationUnit[] getGeneratedCompilationUnits() {
 
-        IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
+        IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             List<ICompilationUnit> cus = new LinkedList<>();
-            for (IFile file : javaGeneratorWrapper.getAllTargetFiles()) {
+            for (IFile file : cobigenWrapper.getAllTargetFiles()) {
                 if (file.exists()) {
                     IJavaElement elem = JavaCore.create(file);
                     if (elem instanceof ICompilationUnit) {

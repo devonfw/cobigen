@@ -4,7 +4,7 @@ package com.capgemini.cobigen.eclipse.common.exceptions;
  * States that any logic has been triggered, which is currently not supported
  * @author mbrunnli (17.10.2014)
  */
-public class NotYetSupportedException extends Exception {
+public class NotYetSupportedException extends RuntimeException {
 
     /**
      * Default serial version UID

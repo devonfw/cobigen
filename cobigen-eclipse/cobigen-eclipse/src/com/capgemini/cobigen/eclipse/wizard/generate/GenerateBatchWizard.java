@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateBatchSelectionProcess;
@@ -77,14 +78,12 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      *             if the generator configuration project "RF-Generation" is not existent
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchWizard(IStructuredSelection selection) throws CoreException,
-        UnknownTemplateException, UnknownContextVariableException, IOException,
-        InvalidConfigurationException, UnknownExpressionException, ClassNotFoundException,
-        GeneratorProjectNotExistentException {
+    public GenerateBatchWizard(CobiGenWrapper generator) throws CoreException, UnknownTemplateException,
+        UnknownContextVariableException, IOException, InvalidConfigurationException,
+        UnknownExpressionException, ClassNotFoundException, GeneratorProjectNotExistentException {
 
-        super();
-        javaGeneratorWrapper = new JavaGeneratorWrapper();
-        extractInput(selection);
+        super(generator);
+        // extractInput(selection);
         initializeWizard();
         setWindowTitle("CobiGen (batch mode)");
     }
@@ -111,16 +110,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      *             if the generator configuration project "RF-Generation" is not existent
      * @author trippl (22.04.2013)
      */
-    private void initializeWizard() throws UnknownContextVariableException, UnknownExpressionException,
-        InvalidConfigurationException, UnknownTemplateException, ClassNotFoundException, IOException,
-        CoreException, GeneratorProjectNotExistentException {
-
-        if (inputTypes != null) {
-            super.initializeWizard(inputTypes);
-        } else {
-            super.initializeWizard(container);
-        }
-
+    @Override
+    protected void initializeWizard() {
+        super.initializeWizard();
         page1
             .setMessage(
                 "You are running a generation in batch mode!\n"
@@ -163,9 +155,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             }
         }
         if (inputTypes != null) {
-            javaGeneratorWrapper.setInputTypes(inputTypes);
+            cobigenWrapper.setInput(inputTypes);
         } else if (container != null) {
-            javaGeneratorWrapper.setInputPackage(container);
+            cobigenWrapper.setInput(container);
         } else if (container != null && inputTypes != null || container == null && inputTypes == null) {
             throw new NotImplementedException(
                 "If you see this message please contact one of the developers of CobiGen.");
@@ -202,12 +194,12 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         GenerateBatchSelectionProcess job;
         if (container == null) {
             job =
-                new GenerateBatchSelectionProcess(getShell(), javaGeneratorWrapper,
-                    javaGeneratorWrapper.getTemplates(templateIds), inputTypes);
+                new GenerateBatchSelectionProcess(getShell(), cobigenWrapper,
+                    cobigenWrapper.getTemplates(templateIds), inputTypes);
         } else {
             job =
-                new GenerateBatchSelectionProcess(getShell(), javaGeneratorWrapper,
-                    javaGeneratorWrapper.getTemplates(templateIds), container);
+                new GenerateBatchSelectionProcess(getShell(), cobigenWrapper,
+                    cobigenWrapper.getTemplates(templateIds), container);
         }
         try {
             dialog.run(false, false, job);

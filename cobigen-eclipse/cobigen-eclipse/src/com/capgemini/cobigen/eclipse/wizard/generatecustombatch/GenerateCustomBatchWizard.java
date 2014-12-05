@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.eclipse.wizard.generatecustombatch;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
@@ -154,25 +153,16 @@ public class GenerateCustomBatchWizard extends Wizard {
                 List<IType> inputTypes = getInputTypesToGenerate(javaGenerator, batch, m);
                 if (inputTypes.size() > 0) {
                     try {
-                        javaGenerator.setInputType(inputTypes.get(0));
+                        javaGenerator.setInput(inputTypes.get(0));
                         GenerateBatchSelectionProcess bp =
                             new GenerateBatchSelectionProcess(getShell(), javaGenerator,
                                 getTemplatesToGenerate(javaGenerator, batch.getTrigger(), m), inputTypes);
 
                         dialog.run(false, false, bp);
-                    } catch (ClassNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        LOG.error(e.toString());
                     } catch (UnknownExpressionException e) {
                         // TODO Auto-generated catch block
                         LOG.error(e.toString());
                     } catch (UnknownContextVariableException e) {
-                        // TODO Auto-generated catch block
-                        LOG.error(e.toString());
-                    } catch (CoreException e) {
-                        // TODO Auto-generated catch block
-                        LOG.error(e.toString());
-                    } catch (IOException e) {
                         // TODO Auto-generated catch block
                         LOG.error(e.toString());
                     } catch (InvocationTargetException e) {
