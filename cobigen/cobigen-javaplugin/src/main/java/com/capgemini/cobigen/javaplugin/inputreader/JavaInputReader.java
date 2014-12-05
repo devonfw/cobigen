@@ -242,32 +242,32 @@ public class JavaInputReader implements IInputReader {
      * </tr>
      * </table>
      *
-     * @param model1
-     *            first model to be merged and preferred in case of conflicts
-     * @param model2
-     *            second model to be merged
+     * @param parsedModel
+     *            model created by parsing to be merged and preferred in case of conflicts
+     * @param reflectionModel
+     *            model created by reflection to be merged
      * @return the merged model. Due to implementation restrictions a {@link Map} of {@link String} to
      *         {@link Object}
      * @author mbrunnli (17.11.2014)
      */
     @SuppressWarnings("unchecked")
-    private Object mergeModelsRecursively(Object model1, Object model2) {
+    private Object mergeModelsRecursively(Object parsedModel, Object reflectionModel) {
 
-        if (model1 == null && model2 == null) {
+        if (parsedModel == null && reflectionModel == null) {
             return null;
-        } else if (model1 == null) {
-            return model2;
-        } else if (model2 == null) {
-            return model1;
-        } else if (model1.equals(model2)) {
-            return model1;
+        } else if (parsedModel == null) {
+            return reflectionModel;
+        } else if (reflectionModel == null) {
+            return parsedModel;
+        } else if (parsedModel.equals(reflectionModel)) {
+            return parsedModel;
         }
 
-        if (model1.getClass().equals(model2.getClass())) {
-            if (model1 instanceof Map && model2 instanceof Map) {
+        if (parsedModel.getClass().equals(reflectionModel.getClass())) {
+            if (parsedModel instanceof Map && reflectionModel instanceof Map) {
                 Map<String, Object> mergedModel = Maps.newHashMap();
-                Map<String, Object> model1Map = (Map<String, Object>) model1;
-                Map<String, Object> model2Map = (Map<String, Object>) model2;
+                Map<String, Object> model1Map = (Map<String, Object>) parsedModel;
+                Map<String, Object> model2Map = (Map<String, Object>) reflectionModel;
 
                 Set<String> union = Sets.newHashSet(model1Map.keySet());
                 union.addAll(model2Map.keySet());
@@ -283,13 +283,14 @@ public class JavaInputReader implements IInputReader {
                     }
                 }
                 return mergedModel;
-            } else if (model1 instanceof List && model2 instanceof List) {
-                if (!((List<?>) model1).isEmpty() && ((List<?>) model1).get(0) instanceof Map
-                    || !((List<?>) model2).isEmpty() && ((List<?>) model2).get(0) instanceof Map) {
+            } else if (parsedModel instanceof List && reflectionModel instanceof List) {
+                if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
+                    || !((List<?>) reflectionModel).isEmpty()
+                    && ((List<?>) reflectionModel).get(0) instanceof Map) {
                     List<Map<String, Object>> model1List =
-                        Lists.newLinkedList((List<Map<String, Object>>) model1);
+                        Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
                     List<Map<String, Object>> model2List =
-                        Lists.newLinkedList((List<Map<String, Object>>) model2);
+                        Lists.newLinkedList((List<Map<String, Object>>) reflectionModel);
                     List<Object> mergedModel = Lists.newLinkedList();
 
                     // recursively merge list entries. Match them by name attribute. This is currently valid
@@ -300,6 +301,7 @@ public class JavaInputReader implements IInputReader {
                         Iterator<Map<String, Object>> model2ListIt = model2List.iterator();
                         while (model2ListIt.hasNext()) {
                             Map<String, Object> model2Entry = model2ListIt.next();
+                            // valid merging for fields and methods
                             if (model1Entry.get(ModelConstant.NAME) != null) {
                                 if (model1Entry.get(ModelConstant.NAME).equals(
                                     model2Entry.get(ModelConstant.NAME))) {
@@ -310,8 +312,15 @@ public class JavaInputReader implements IInputReader {
                                     model2ListIt.remove();
                                     break;
                                 }
+                            } else
+                            // this is the case for merging recursive annotation arrays
+                            if (model1Entry.size() == 1 && model2Entry.size() == 1) {
+                                mergeModelsRecursively(
+                                    model1Entry.get(model1Entry.keySet().iterator().next()),
+                                    model2Entry.get(model2Entry.keySet().iterator().next()));
                             } else {
-                                throw new IllegalStateException("Programmer fault... ");
+                                throw new IllegalStateException(
+                                    "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");
                             }
                         }
                     }
@@ -321,15 +330,22 @@ public class JavaInputReader implements IInputReader {
                     mergedModel.addAll(model2List);
                     return mergedModel;
                 } else {
-                    throw new IllegalStateException("Programmer fault... ");
+                    throw new IllegalStateException(
+                        "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");
                 }
             } else {
                 // any other type might not be merged. As the values are not equal, this might be a conflict,
                 // so take model1 as documented
-                return model1;
+                return parsedModel;
             }
+        } else
+        // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
+        // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
+        if (parsedModel instanceof String) {
+            return parsedModel;
         } else {
-            throw new IllegalStateException("Programmer fault... ");
+            throw new IllegalStateException(
+                "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");
         }
     }
 }

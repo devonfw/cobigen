@@ -235,6 +235,7 @@ public class ParsedJavaModelBuilder {
      *            to be analysed
      * @author mbrunnli (01.04.2014)
      */
+    @SuppressWarnings("unchecked")
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap,
         List<JavaAnnotation> annotations) {
 
@@ -245,11 +246,15 @@ public class ParsedJavaModelBuilder {
 
             for (String propertyName : annotation.getPropertyMap().keySet()) {
                 Object value = annotation.getNamedParameter(propertyName);
-                if (value instanceof JavaAnnotation[]) {
-                    Map<String, Object> annotationParameterParameters = new HashMap<>();
-                    annotationParameters.put(propertyName, annotationParameterParameters);
-                    extractAnnotationsRecursively(annotationParameterParameters,
-                        Arrays.asList((JavaAnnotation[]) value));
+                if (value instanceof List<?> && ((List<?>) value).size() > 0
+                    && ((List<?>) value).get(0) instanceof JavaAnnotation) {
+                    List<Map<String, Object>> recursiveAnnotationList = Lists.newLinkedList();
+                    annotationParameters.put(propertyName, recursiveAnnotationList);
+                    for (JavaAnnotation a : (List<JavaAnnotation>) value) {
+                        Map<String, Object> annotationParameterParameters = new HashMap<>();
+                        extractAnnotationsRecursively(annotationParameterParameters, Lists.newArrayList(a));
+                        recursiveAnnotationList.add(annotationParameterParameters);
+                    }
                 } else if (value instanceof Enum<?>[]) {
                     List<String> enumValues = Lists.newLinkedList();
                     for (Enum<?> e : ((Enum<?>[]) value)) {
@@ -261,12 +266,9 @@ public class ParsedJavaModelBuilder {
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
                 } else {
-                    // TODO remove workaround due to a bug in QDox (reported on mailing list)
-                    if (value instanceof String && ("true".equals(value) || "false".equals(value))) {
-                        annotationParameters.put(propertyName, new Boolean((String) value));
-                    } else {
-                        annotationParameters.put(propertyName, value);
-                    }
+                    // currently QDox only returns the expression stated in the code as value, but not
+                    // resolves it.
+                    annotationParameters.put(propertyName, value);
                 }
             }
         }

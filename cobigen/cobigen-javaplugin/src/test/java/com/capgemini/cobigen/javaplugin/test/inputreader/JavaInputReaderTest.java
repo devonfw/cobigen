@@ -13,6 +13,7 @@ import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithAnnotations;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithRecursiveAnnotations;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -90,6 +91,28 @@ public class JavaInputReaderTest {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotations.java");
         Class<?> javaClass = TestClassWithAnnotations.class;
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model =
+            javaInputReader.createModel(new Object[] {
+                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Assert.assertNotNull("No model has been created!", model);
+
+    }
+
+    /**
+     * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
+     * whereas the models are equal and contain recursive annotations
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations()
+        throws FileNotFoundException {
+
+        File javaSourceFile = new File(testFileRootPath + "TestClassWithRecursiveAnnotations.java");
+        Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =

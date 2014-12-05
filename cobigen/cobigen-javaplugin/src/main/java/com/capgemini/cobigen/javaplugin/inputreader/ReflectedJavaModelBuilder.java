@@ -344,9 +344,14 @@ public class ReflectedJavaModelBuilder {
                 try {
                     Object value = getter.invoke(annotation);
                     if (value instanceof Annotation[]) {
-                        Map<String, Object> annotationParameterParameters = new HashMap<>();
-                        annotationParameters.put(getter.getName(), annotationParameterParameters);
-                        extractAnnotationsRecursively(annotationParameterParameters, (Annotation[]) value);
+                        List<Map<String, Object>> recursiveAnnotationList = Lists.newLinkedList();
+                        for (Annotation a : (Annotation[]) value) {
+                            Map<String, Object> annotationParameterParameters = Maps.newHashMap();
+                            extractAnnotationsRecursively(annotationParameterParameters,
+                                new Annotation[] { a });
+                            recursiveAnnotationList.add(annotationParameterParameters);
+                        }
+                        annotationParameters.put(getter.getName(), recursiveAnnotationList);
                     } else if (value instanceof Enum<?>[]) {
                         List<String> enumValues = Lists.newLinkedList();
                         for (Enum<?> e : ((Enum<?>[]) value)) {
