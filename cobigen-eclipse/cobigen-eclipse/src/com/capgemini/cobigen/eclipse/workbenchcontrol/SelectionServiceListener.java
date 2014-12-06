@@ -126,12 +126,12 @@ public class SelectionServiceListener implements ISelectionListener {
         Iterator<?> it = selection.iterator();
         List<String> firstTriggers = null;
 
-        boolean packageFragmentSelected = false;
+        boolean uniqueSourceSelected = false;
 
         while (it.hasNext()) {
             Object tmp = it.next();
-            if (packageFragmentSelected) {
-                // It is only possible to select one IPackageFragment
+            if (uniqueSourceSelected) {
+                // Currently it is only possible to select one IPackageFragment or IFile
                 return false;
             } else if (tmp instanceof ICompilationUnit) {
                 if (firstTriggers == null) {
@@ -142,16 +142,17 @@ public class SelectionServiceListener implements ISelectionListener {
                     }
                 }
             } else if (tmp instanceof IPackageFragment) {
+                uniqueSourceSelected = true;
                 if (firstTriggers == null) {
                     firstTriggers =
                         cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
                             .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
-                    packageFragmentSelected = true;
                 } else {
                     // It is only possible to select one IPackageFragment
                     return false;
                 }
             } else if (tmp instanceof IFile) {
+                uniqueSourceSelected = true;
                 if (firstTriggers == null) {
                     InputStream stream;
                     try {
