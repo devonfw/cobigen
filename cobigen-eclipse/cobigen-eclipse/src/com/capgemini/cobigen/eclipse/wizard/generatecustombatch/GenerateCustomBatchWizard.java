@@ -164,12 +164,6 @@ public class GenerateCustomBatchWizard extends Wizard {
                         LOG.error(e.toString(), e);
                     } catch (InterruptedException e) {
                         LOG.error(e.toString(), e);
-                        // } catch (ClassNotFoundException e) {
-                        // LOG.error(e.toString(), e);
-                        // } catch (CoreException e) {
-                        // LOG.error(e.toString(), e);
-                        // } catch (IOException e) {
-                        // LOG.error(e.toString(), e);
                     }
                 }
             }
