@@ -8,7 +8,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
@@ -69,7 +67,6 @@ public class Generate extends AbstractHandler {
                 } else if (((IStructuredSelection) sel).size() == 1) {
                     Object obj = ((IStructuredSelection) sel).getFirstElement();
                     if (obj instanceof ICompilationUnit) {
-                        IType type = JavaModelUtil.getJavaClassType((ICompilationUnit) obj);
                         WizardDialog wiz =
                             new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
                         wiz.setPageSize(new Point(800, 500));

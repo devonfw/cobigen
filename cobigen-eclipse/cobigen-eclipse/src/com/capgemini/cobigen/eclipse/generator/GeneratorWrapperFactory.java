@@ -19,19 +19,26 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
 import com.google.common.collect.Lists;
 
 /**
- *
+ * Generator creation factory, which creates a specific generator instance dependent on the current selection
+ * within the eclipse IDE
  * @author mbrunnli (03.12.2014)
  */
 public class GeneratorWrapperFactory {
 
     /**
-     *
+     * Creates a generator dependent on the input of the selection
      * @param selection
-     * @return
+     *            current {@link IStructuredSelection} treated as input for generation
+     * @return a specific {@link CobiGenWrapper} instance
      * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
+     *             if the generator configuration project could not be opened
      * @throws ClassNotFoundException
+     *             if the given type could not be found by the project {@link ClassLoader}
      * @throws MalformedURLException
+     *             if an eclipse internal exception occurs while retrieving the class loader of the
+     *             corresponding java project
      * @author mbrunnli (04.12.2014)
      */
     public static CobiGenWrapper createGenerator(IStructuredSelection selection)
@@ -60,9 +67,16 @@ public class GeneratorWrapperFactory {
     }
 
     /**
-     *
+     * Extracts a list of valid eclipse inputs. Therefore this method will throw an
+     * {@link NotYetSupportedException},whenever<br>
+     * <ul>
+     * <li>the selection contains different content types</li>
+     * <li>the selection contains a content type, which is currently not supported</li>
+     * </ul>
      * @param selection
-     * @return
+     *            current {@link IStructuredSelection selection} of within the IDE
+     * @return the {@link List} of selected objects, whereas all elements of the list are of the same content
+     *         type
      * @author mbrunnli (04.12.2014)
      */
     public static List<Object> extractValidEclipseInputs(IStructuredSelection selection) {

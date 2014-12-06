@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.Charsets;
@@ -27,12 +28,17 @@ import freemarker.template.TemplateException;
  *
  * @author mbrunnli (02.12.2014)
  */
-public class CobiGenWrapper extends AbstractCobiGenWrapper {
+public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * States whether at least one input object has been set
      */
     private boolean initialized;
+
+    /**
+     * States, whether the input is unique and a container
+     */
+    private boolean singleNonContainerInput;
 
     /**
      * Current registered input objects
@@ -82,12 +88,13 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
             initialized = true;
             inputs = Lists.newArrayList(input);
             matchingTemplates = cobiGen.getMatchingTemplates(input);
+            singleNonContainerInput = !cobiGen.combinesMultipleInputs(input);
         } else {
             initialized = false;
             inputs = null;
             matchingTemplates = null;
+            singleNonContainerInput = false;
         }
-
     }
 
     /**
@@ -105,9 +112,11 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
             for (Object input : this.inputs) {
                 matchingTemplates.addAll(cobiGen.getMatchingTemplates(input));
             }
+            singleNonContainerInput = inputs.size() == 1 && !cobiGen.combinesMultipleInputs(inputs.get(0));
         } else {
             inputs = null;
             matchingTemplates = null;
+            singleNonContainerInput = false;
         }
     }
 
@@ -132,10 +141,28 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
         MergeException, CoreException {
 
-        for (Object input : inputs) {
-            cobiGen.generate(input, template, forceOverride);
+        if (singleNonContainerInput) {
+            // if we only consider one input, we want to allow some customizations of the generation
+            Map<String, Object> model =
+                cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
+            adaptModel(model);
+            cobiGen.generate(inputs.get(0), template, model, forceOverride);
+        } else {
+            for (Object input : inputs) {
+                cobiGen.generate(input, template, forceOverride);
+            }
         }
     }
+
+    /**
+     * This method should be implemented if you want to provide any model modifications before generation.
+     * This method will only be called, if the generation has been triggered for exactly one input, which is
+     * not a container.
+     * @param model
+     *            template model
+     * @author mbrunnli (06.12.2014)
+     */
+    public abstract void adaptModel(Map<String, Object> model);
 
     /**
      * Returns all matching trigger ids for the currently stored input
@@ -348,12 +375,12 @@ public class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> packageChildren =
-                new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
+            List<Object> children = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
-            return packageChildren.get(0);
+            return children.get(0);
         } else {
             return inputs.get(0);
         }
     }
+
 }

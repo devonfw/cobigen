@@ -8,12 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
@@ -184,26 +183,12 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
     // }
 
     /**
-     * Builds an adapted model for the generation process containing javadoc
-     *
-     * @param inputType
-     *            input {@link IType}
-     * @param origModel
-     *            the original model
-     * @return the adapted model
-     * @throws JavaModelException
-     *             if the given type does not exist or if an exception occurs while accessing its
-     *             corresponding resource
-     * @author mbrunnli (05.04.2013)
+     * {@inheritDoc}
+     * @author mbrunnli (06.12.2014)
      */
-    private Map<String, Object> adaptModel(Map<String, Object> origModel, IType inputType)
-        throws JavaModelException {
-
-        Map<String, Object> newModel = new HashMap<>(origModel);
-        JavaModelAdaptor javaModelAdaptor = new JavaModelAdaptor(newModel);
-        javaModelAdaptor.addAttributesDescription(inputType);
-        javaModelAdaptor.addMethods(inputType);
-        return newModel;
+    @Override
+    public void adaptModel(Map<String, Object> model) {
+        removeIgnoredFieldsFromModel(model);
     }
 
     /**
@@ -225,7 +210,7 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
 
         List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
         for (Map<String, Object> attr : attributes) {
-            result.put((String) attr.get("name"), (String) attr.get("type"));
+            result.put((String) attr.get(ModelConstant.NAME), (String) attr.get(ModelConstant.TYPE));
         }
         return result;
     }
@@ -251,21 +236,15 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      */
     private void removeIgnoredFieldsFromModel(Map<String, Object> model) {
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> pojoModel = (Map<String, Object>) model.get("pojo");
-        if (pojoModel != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> fields = (List<Map<String, String>>) pojoModel.get("attributes");
-            for (Iterator<Map<String, String>> it = fields.iterator(); it.hasNext();) {
-                Map<String, String> next = it.next();
-                for (String ignoredField : ignoreFields) {
-                    if (next.get("name").equals(ignoredField)) {
-                        it.remove();
-                        break;
-                    }
+        List<Map<String, Object>> fields = JavaModelUtil.getFields(model);
+        for (Iterator<Map<String, Object>> it = fields.iterator(); it.hasNext();) {
+            Map<String, Object> next = it.next();
+            for (String ignoredField : ignoreFields) {
+                if (next.get(ModelConstant.NAME).equals(ignoredField)) {
+                    it.remove();
+                    break;
                 }
             }
         }
     }
-
 }

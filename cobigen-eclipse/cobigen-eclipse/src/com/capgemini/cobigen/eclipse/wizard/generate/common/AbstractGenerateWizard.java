@@ -1,13 +1,11 @@
 package com.capgemini.cobigen.eclipse.wizard.generate.common;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -18,16 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
-import com.capgemini.cobigen.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
@@ -52,32 +45,18 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractGenerateWizard.class);
 
+    /**
+     * Initializes the {@link CobiGenWrapper generator} instance
+     * @param generator
+     *            {@link CobiGenWrapper generator} to be used for generation
+     * @author mbrunnli (06.12.2014)
+     */
     public AbstractGenerateWizard(CobiGenWrapper generator) {
         cobigenWrapper = generator;
     }
 
     /**
      * Initializes the {@link JavaGeneratorWrapper}
-     *
-     * @param input
-     *            type which should be the source of all information retrieved for the code generation
-     * @throws InvalidConfigurationException
-     *             if the given configuration does not match the templates.xsd
-     * @throws IOException
-     *             if the generator project "RF-Generation" could not be accessed
-     * @throws UnknownTemplateException
-     *             if there is no template with the given name
-     * @throws UnknownContextVariableException
-     *             if the destination path contains an undefined context variable
-     * @throws UnknownExpressionException
-     *             if there is an unknown variable modifier
-     * @throws CoreException
-     *             if any internal eclipse exception occurs while creating the temporary simulated resources
-     *             or the generation configuration project could not be opened
-     * @throws ClassNotFoundException
-     *             if the given type could not be found by the project {@link ClassLoader}
-     * @throws GeneratorProjectNotExistentException
-     *             if the generator configuration project "RF-Generation" is not existent
      * @author mbrunnli (18.02.2013)
      */
     protected void initializeWizard() {
