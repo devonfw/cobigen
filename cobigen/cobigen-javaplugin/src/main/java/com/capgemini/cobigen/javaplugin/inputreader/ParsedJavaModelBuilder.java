@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -262,7 +261,8 @@ public class ParsedJavaModelBuilder {
                     }
                     annotationParameters.put(propertyName, enumValues);
                 } else if (value instanceof Object[]) {
-                    annotationParameters.put(propertyName, Arrays.asList(value));
+                    annotationParameters.put(propertyName, value);
+                    // annotationParameters.put(propertyName, Lists.newLinkedList(Arrays.asList(value)));
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
                 } else {

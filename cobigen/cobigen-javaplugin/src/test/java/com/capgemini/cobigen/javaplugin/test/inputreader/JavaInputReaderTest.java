@@ -13,6 +13,7 @@ import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithAnnotations;
+import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithRecursiveAnnotations;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
@@ -113,6 +114,29 @@ public class JavaInputReaderTest {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithRecursiveAnnotations.java");
         Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model =
+            javaInputReader.createModel(new Object[] {
+                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Assert.assertNotNull("No model has been created!", model);
+
+    }
+
+    /**
+     * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
+     * whereas the models are equal and an annotation contains an object array as property value
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays()
+        throws FileNotFoundException {
+
+        File javaSourceFile =
+            new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
+        Class<?> javaClass = TestClassWithAnnotationsContainingObjectArrays.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model =

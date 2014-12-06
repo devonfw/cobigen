@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -283,7 +284,9 @@ public class JavaInputReader implements IInputReader {
                     }
                 }
                 return mergedModel;
-            } else if (parsedModel instanceof List && reflectionModel instanceof List) {
+            }
+            // Case: List<Map<String, Object>> available in attributes and methods
+            else if (parsedModel instanceof List && reflectionModel instanceof List) {
                 if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
                     || !((List<?>) reflectionModel).isEmpty()
                     && ((List<?>) reflectionModel).get(0) instanceof Map) {
@@ -329,9 +332,19 @@ public class JavaInputReader implements IInputReader {
                     mergedModel.addAll(model1List);
                     mergedModel.addAll(model2List);
                     return mergedModel;
+                }
+                // we will prefer parsed model if the values of the parsed result list are of type String.
+                // This is the case for annotation values. QDox will always return the expression,
+                // which is a assigned to the annotation's value, as a string.
+                else if (!((List<?>) parsedModel).isEmpty()
+                    && ((List<?>) parsedModel).get(0) instanceof String) {
+                    return parsedModel;
                 } else {
-                    throw new IllegalStateException(
-                        "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");
+                    if (reflectionModel instanceof Object[]) {
+                        return Lists.newLinkedList(Arrays.asList(reflectionModel));
+                    } else {
+                        return reflectionModel;
+                    }
                 }
             } else {
                 // any other type might not be merged. As the values are not equal, this might be a conflict,
@@ -343,6 +356,8 @@ public class JavaInputReader implements IInputReader {
         // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
         if (parsedModel instanceof String) {
             return parsedModel;
+        } else if (parsedModel instanceof String[]) {
+            return Lists.newLinkedList(Arrays.asList(parsedModel));
         } else {
             throw new IllegalStateException(
                 "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");

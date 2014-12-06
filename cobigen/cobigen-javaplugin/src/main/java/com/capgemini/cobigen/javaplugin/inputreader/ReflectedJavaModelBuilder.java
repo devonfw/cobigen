@@ -359,7 +359,9 @@ public class ReflectedJavaModelBuilder {
                         }
                         annotationParameters.put(getter.getName(), enumValues);
                     } else if (value instanceof Object[]) {
-                        annotationParameters.put(getter.getName(), Arrays.asList(value));
+                        // annotationParameters.put(getter.getName(), value);
+                        annotationParameters.put(getter.getName(),
+                            Lists.newLinkedList(Arrays.asList((Object[]) value)));
                     } else if (value instanceof Enum<?>) {
                         annotationParameters.put(getter.getName(), ((Enum<?>) value).name());
                     } else {

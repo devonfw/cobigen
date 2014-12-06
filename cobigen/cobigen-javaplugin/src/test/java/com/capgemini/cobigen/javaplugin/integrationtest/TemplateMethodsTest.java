@@ -9,44 +9,19 @@ import junit.framework.AssertionFailedError;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
+import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 /**
  * Test suite for testing the provided template methods correctly integrated with cobigen-core
  * @author mbrunnli (25.10.2014)
  */
-public class TemplateMethodsTest {
-
-    /**
-     * Test configuration to CobiGen
-     */
-    private File cobigenConfigFolder = new File(
-        "src/test/resources/com/capgemini/cobigen/javaplugin/integrationtest/templates");
-
-    /**
-     * Temporary folder interface
-     */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
-
-    /**
-     * Common test setup
-     * @author mbrunnli (25.10.2014)
-     */
-    @Before
-    public void setup() {
-        PluginRegistry.loadPlugin(JavaPluginActivator.class);
-    }
+public class TemplateMethodsTest extends AbstractIntegrationTest {
 
     /**
      * Tests the isAbstract template method integration
