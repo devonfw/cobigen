@@ -160,13 +160,16 @@ public class SelectionServiceListener implements ISelectionListener {
                         firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
                     } catch (CoreException e) {
                         LOG.error("An eclipse internal exception occured", e);
-                    } catch (SAXException e) {
-                        LOG.error("The file could not be parsed, because it is not a valid xml document", e);
                     } catch (IOException e) {
-                        LOG.error("The file could not be parsed.", e);
+                        LOG.error("The file {} could not be read.", ((IFile) tmp).getName(), e);
                     } catch (ParserConfigurationException e) {
                         LOG.error(
-                            "The file could not be parsed, because of an internal configuration error.", e);
+                            "The file {} could not be parsed, because of an internal configuration error.",
+                            ((IFile) tmp).getName(), e);
+                    } catch (SAXException e) {
+                        LOG.warn(
+                            "Checking for valid input: The file {} could not be parsed, because it is not a valid xml document",
+                            ((IFile) tmp).getName());
                     }
                 } else {
                     // It is only possible to select one file

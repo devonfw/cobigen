@@ -56,6 +56,11 @@ public class Generate extends AbstractHandler {
             try {
                 CobiGenWrapper generator =
                     GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
+                if (generator == null) {
+                    MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
+                        "The selection is currently not supported as valid input.");
+                    return null;
+                }
 
                 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
                     && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
