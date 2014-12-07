@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.templatemethods;
+package com.capgemini.cobigen.api.testdata;
 
 import java.util.List;
 

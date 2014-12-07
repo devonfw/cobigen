@@ -21,7 +21,8 @@ public class ContextConfigurationReaderTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/ContextConfigurationReaderTest/";
+    private static String testFileRootPath =
+        "src/test/resources/testdata/config/reader/ContextConfigurationReaderTest/";
 
     /**
      * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}

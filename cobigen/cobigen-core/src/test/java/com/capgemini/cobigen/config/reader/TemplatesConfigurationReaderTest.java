@@ -33,7 +33,8 @@ public class TemplatesConfigurationReaderTest extends Assert {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/TemplatesConfigurationReaderTest/";
+    private static String testFileRootPath =
+        "src/test/resources/testdata/config/reader/TemplatesConfigurationReaderTest/";
 
     /**
      * Tests whether all templates of a template package could be retrieved successfully

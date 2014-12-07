@@ -1,4 +1,4 @@
-package com.capgemini.cobigen;
+package com.capgemini.cobigen.api;
 
 import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
@@ -40,7 +41,7 @@ public class ContainerMatcherTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/ContainerMatcherTest/";
+    private static String testFileRootPath = "src/test/resources/testdata/api/ContainerMatcherTest/";
 
     /**
      * JUnit Rule to temporarily create files and folders, which will be automatically removed after test
