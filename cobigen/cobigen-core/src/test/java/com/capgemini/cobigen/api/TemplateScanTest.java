@@ -54,7 +54,7 @@ public class TemplateScanTest extends AbstractApiTest {
         // File generationRootFolder = new File(testFileRootPath + "generates");
 
         // pre-processing
-        File templatesFolder = new File(testFileRootPath + "templates");
+        File templatesFolder = new File(testFileRootPath);
         CobiGen target = new CobiGen(templatesFolder);
         target.setContextSetting(ContextSetting.GenerationTargetRootPath,
             generationRootFolder.getAbsolutePath());

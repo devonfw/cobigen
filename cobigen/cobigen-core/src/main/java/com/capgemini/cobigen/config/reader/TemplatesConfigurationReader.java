@@ -185,23 +185,25 @@ public class TemplatesConfigurationReader {
         }
 
         // override existing templates with extension definitions
-        for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
-            if (templates.containsKey(ext.getIdref())) {
-                Template template = templates.get(ext.getIdref());
-                if (ext.getDestinationPath() != null) {
-                    template.setUnresolvedDestinationPath(ext.getDestinationPath());
+        if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
+            for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
+                if (templates.containsKey(ext.getIdref())) {
+                    Template template = templates.get(ext.getIdref());
+                    if (ext.getDestinationPath() != null) {
+                        template.setUnresolvedDestinationPath(ext.getDestinationPath());
+                    }
+                    if (ext.getMergeStrategy() != null) {
+                        template.setMergeStrategy(ext.getMergeStrategy());
+                    }
+                    if (ext.getTargetCharset() != null) {
+                        template.setTargetCharset(ext.getTargetCharset());
+                    }
+                } else {
+                    LOG.error("The templateExtension with idref='{}' does not reference any template!",
+                        ext.getIdref());
+                    throw new InvalidConfigurationException("The templateExtension with idref='"
+                        + ext.getIdref() + "' does not reference any template!");
                 }
-                if (ext.getMergeStrategy() != null) {
-                    template.setMergeStrategy(ext.getMergeStrategy());
-                }
-                if (ext.getTargetCharset() != null) {
-                    template.setTargetCharset(ext.getTargetCharset());
-                }
-            } else {
-                LOG.error("The templateExtension with idref='{}' does not reference any template!",
-                    ext.getIdref());
-                throw new InvalidConfigurationException("The templateExtension with idref='" + ext.getIdref()
-                    + "' does not reference any template!");
             }
         }
         return templates;
