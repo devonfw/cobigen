@@ -115,14 +115,14 @@ public class TemplatesConfigurationReaderTest extends Assert {
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
 
         // this one is a predefined template and shall not be overwritten by scan...
-        String templateIdFoo2Class = "prefix_Foo2Class";
+        String templateIdFoo2Class = "prefix_Foo2Class.java";
         Template templateFoo2Class = templates.get(templateIdFoo2Class);
         assertNotNull(templateFoo2Class);
         assertEquals(templateIdFoo2Class, templateFoo2Class.getId());
         assertEquals("foo/Foo2Class.java.ftl", templateFoo2Class.getTemplateFile());
         assertEquals("src/main/java/foo/Foo2Class${variable}.java",
             templateFoo2Class.getUnresolvedDestinationPath());
-        assertEquals("javaMerge", templateFoo2Class.getMergeStrategy());
+        assertEquals("javamerge", templateFoo2Class.getMergeStrategy());
 
         String templateIdBarClass = "prefix_BarClass.java";
         Template templateBarClass = templates.get(templateIdBarClass);
@@ -131,6 +131,81 @@ public class TemplatesConfigurationReaderTest extends Assert {
         assertEquals("foo/bar/BarClass.java.ftl", templateBarClass.getTemplateFile());
         assertEquals("src/main/java/foo/bar/BarClass.java", templateBarClass.getUnresolvedDestinationPath());
         assertNull(templateBarClass.getMergeStrategy());
+    }
+
+    /**
+     * Tests the overriding of all possible attributes by templateExtensions
+     * @author mbrunnli (12.11.2014)
+     */
+    @Test
+    public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() {
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+
+        Trigger trigger =
+            new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+                new LinkedList<ContainerMatcher>());
+        ITriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+
+        // validation
+
+        // check scan default as precondition for this test. If they change, this test might be worth to be
+        // adapted
+        String templateIdBarClass = "prefix2_BarClass.java";
+        Template templateBarClass = templates.get(templateIdBarClass);
+        assertNotNull(templateBarClass);
+        // template-scan defaults
+        assertEquals(templateIdBarClass, templateBarClass.getId());
+        assertEquals("bar/BarClass.java.ftl", templateBarClass.getTemplateFile());
+        assertEquals("src/main/java/bar/BarClass.java", templateBarClass.getUnresolvedDestinationPath());
+        assertNull(templateBarClass.getMergeStrategy());
+        assertEquals("UTF-8", templateBarClass.getTargetCharset());
+
+        // check defaults overwriting by templateExtensions
+        String templateIdFooClass = "prefix2_FooClass.java";
+        Template templateFooClass = templates.get(templateIdFooClass);
+        assertNotNull(templateFooClass);
+        // template-scan defaults
+        assertEquals(templateIdFooClass, templateFooClass.getId());
+        assertEquals("bar/FooClass.java.ftl", templateFooClass.getTemplateFile());
+        // overwritten by templateExtension
+        assertEquals("adapted/path/FooClass.java", templateFooClass.getUnresolvedDestinationPath());
+        assertEquals("javamerge", templateFooClass.getMergeStrategy());
+        assertEquals("ISO-8859-1", templateFooClass.getTargetCharset());
+    }
+
+    /**
+     * Tests an empty templateExtensions does not override any defaults
+     * @author mbrunnli (12.11.2014)
+     */
+    @Test
+    public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() {
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+
+        Trigger trigger =
+            new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+                new LinkedList<ContainerMatcher>());
+        ITriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+
+        // validation
+        String templateIdFooClass = "prefix2_Foo2Class.java";
+        Template templateFooClass = templates.get(templateIdFooClass);
+        assertNotNull(templateFooClass);
+        // template-scan defaults
+        assertEquals(templateIdFooClass, templateFooClass.getId());
+        assertEquals("bar/Foo2Class.java.ftl", templateFooClass.getTemplateFile());
+        assertEquals("src/main/java/bar/Foo2Class.java", templateFooClass.getUnresolvedDestinationPath());
+        assertNull(templateFooClass.getMergeStrategy());
+        assertEquals("UTF-8", templateFooClass.getTargetCharset());
     }
 
     /**

@@ -86,11 +86,31 @@ public class Template extends AbstractTemplateResolver {
     }
 
     /**
+     * Sets the {@link #mergeStrategy} for the {@link Template}
+     * @param mergeStrategy
+     *            the {@link #mergeStrategy} for the {@link Template}
+     * @author mbrunnli (07.12.2014)
+     */
+    public void setMergeStrategy(String mergeStrategy) {
+        this.mergeStrategy = mergeStrategy;
+    }
+
+    /**
      * Returns the output charset for this template
      * @return the output charset for this template
      * @author mbrunnli (26.03.2013)
      */
     public String getTargetCharset() {
         return targetCharset;
+    }
+
+    /**
+     * Sets the output charset for this template
+     * @param targetCharset
+     *            the output charset for this template
+     * @author mbrunnli (07.12.2014)
+     */
+    public void setTargetCharset(String targetCharset) {
+        this.targetCharset = targetCharset;
     }
 }

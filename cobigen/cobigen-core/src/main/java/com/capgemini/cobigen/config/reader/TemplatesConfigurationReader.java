@@ -26,6 +26,7 @@ import org.xml.sax.SAXParseException;
 
 import com.capgemini.IncrementRef;
 import com.capgemini.Increments;
+import com.capgemini.TemplateExtension;
 import com.capgemini.TemplateRef;
 import com.capgemini.TemplateScan;
 import com.capgemini.TemplateScans;
@@ -182,6 +183,27 @@ public class TemplatesConfigurationReader {
                 }
             }
         }
+
+        // override existing templates with extension definitions
+        for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
+            if (templates.containsKey(ext.getIdref())) {
+                Template template = templates.get(ext.getIdref());
+                if (ext.getDestinationPath() != null) {
+                    template.setUnresolvedDestinationPath(ext.getDestinationPath());
+                }
+                if (ext.getMergeStrategy() != null) {
+                    template.setMergeStrategy(ext.getMergeStrategy());
+                }
+                if (ext.getTargetCharset() != null) {
+                    template.setTargetCharset(ext.getTargetCharset());
+                }
+            } else {
+                LOG.error("The templateExtension with idref='{}' does not reference any template!",
+                    ext.getIdref());
+                throw new InvalidConfigurationException("The templateExtension with idref='" + ext.getIdref()
+                    + "' does not reference any template!");
+            }
+        }
         return templates;
     }
 
@@ -240,22 +262,21 @@ public class TemplatesConfigurationReader {
                     triggerInterpreter);
             } else {
                 String templateName = child.getName();
+                String templateNameWithoutExtension = templateName;
                 if (templateName.endsWith(TEMPLATE_EXTENSION)) {
-                    String templateNameWithoutExtension =
+                    templateNameWithoutExtension =
                         templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
-                    String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
-                    if (!templates.containsKey(templateId)) {
-                        String destinationPath =
-                            scan.getDestinationPath() + "/" + currentPathWithSlash
-                                + templateNameWithoutExtension;
-                        String templateFile =
-                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
-                        String mergeStratgey = scan.getMergeStrategy();
-                        Template template =
-                            new Template(templateId, destinationPath, templateFile, mergeStratgey,
-                                scan.getTargetCharset(), trigger, triggerInterpreter);
-                        templates.put(templateId, template);
-                    }
+                }
+                String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
+                if (!templates.containsKey(templateId)) {
+                    String destinationPath =
+                        scan.getDestinationPath() + "/" + currentPathWithSlash + templateNameWithoutExtension;
+                    String templateFile = scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
+                    String mergeStratgey = scan.getMergeStrategy();
+                    Template template =
+                        new Template(templateId, destinationPath, templateFile, mergeStratgey,
+                            scan.getTargetCharset(), trigger, triggerInterpreter);
+                    templates.put(templateId, template);
                 }
             }
         }
