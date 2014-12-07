@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- Copyright © Capgemini 2013. All rights reserved.
--->
 <templatesConfiguration xmlns="http://capgemini.com"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<templates>

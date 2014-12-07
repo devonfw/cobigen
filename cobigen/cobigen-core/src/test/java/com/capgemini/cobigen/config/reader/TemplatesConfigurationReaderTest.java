@@ -217,4 +217,30 @@ public class TemplatesConfigurationReaderTest extends Assert {
         new TemplatesConfigurationReader(new File(testFileRootPath + "templates_faulty.xml"));
     }
 
+    /**
+     * Tests whether a duplicate template extension declaration will result in an
+     * {@link InvalidConfigurationException}
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnDuplicateTemplateExtensionDeclaration() {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath
+                + "templates_faulty_duplicate_templateExtension.xml"));
+        reader.loadTemplates(null, null);
+    }
+
+    /**
+     * Tests whether a template extension with an id-reference, which does not point on any template, will
+     * cause an {@link InvalidConfigurationException}
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnUnhookedTemplateExtensionDeclaration() {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath
+                + "templates_faulty_unhooked_templateExtension.xml"));
+        reader.loadTemplates(null, null);
+    }
+
 }

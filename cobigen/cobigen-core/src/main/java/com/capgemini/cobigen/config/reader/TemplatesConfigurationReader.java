@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -41,6 +42,7 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.util.ExceptionUtil;
+import com.google.common.collect.Sets;
 
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and
@@ -185,8 +187,18 @@ public class TemplatesConfigurationReader {
         }
 
         // override existing templates with extension definitions
+        Set<String> observedExtensionIds = Sets.newHashSet();
         if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
             for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
+                // detection of duplicate templateExtensions
+                if (observedExtensionIds.contains(ext.getIdref())) {
+                    LOG.error("Two templateExtensions declared for idref='{}'.", ext.getIdref());
+                    throw new InvalidConfigurationException("Two templateExtensions declared for idref='"
+                        + ext.getIdref() + "'. Don't know what to do.");
+                }
+                observedExtensionIds.add(ext.getIdref());
+
+                // overriding properties if defined
                 if (templates.containsKey(ext.getIdref())) {
                     Template template = templates.get(ext.getIdref());
                     if (ext.getDestinationPath() != null) {
