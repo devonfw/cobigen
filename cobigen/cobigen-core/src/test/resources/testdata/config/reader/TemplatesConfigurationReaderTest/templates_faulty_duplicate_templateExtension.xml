@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templatesConfiguration xmlns="http://capgemini.com"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
 	<templates>
     <template id="FooClass.java" templateFile="foo/FooClass.java.ftl" destinationPath="src/main/java/FooClass.java"/>
 		<templateExtension idref="FooClass.java" />

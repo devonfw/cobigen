@@ -26,21 +26,41 @@ public class VersionValidator {
     private static final Logger LOG = LoggerFactory.getLogger(VersionValidator.class);
 
     /**
-     * Lower boundaries for templates configuration versions. Mapping from templates configuration version to
-     * the first compatible CobiGen version.
+     * Lower boundaries for compatible templates configuration versions. Mapping from templates configuration
+     * version to the first compatible CobiGen version.
+     */
+    private static final Map<BigDecimal, BigDecimal> templatesConfig_compatibleVersionSteps = Maps
+        .newLinkedHashMap();
+
+    /**
+     * Lower boundaries for incompatible templates configuration versions. Mapping from templates
+     * configuration version to the first compatible CobiGen version.
      */
     private static final Map<BigDecimal, BigDecimal> templatesConfig_incompatibleVersionSteps = Maps
         .newLinkedHashMap();
 
     /**
-     * Lower boundaries for context configuration versions. Mapping from context configuration version to the
-     * first compatible CobiGen version.
+     * Lower boundaries for compatible context configuration versions. Mapping from context configuration
+     * version to the first compatible CobiGen version.
+     */
+    private static final Map<BigDecimal, BigDecimal> contextConfig_compatibleVersionSteps = Maps
+        .newLinkedHashMap();
+
+    /**
+     * Lower boundaries for incompatible context configuration versions. Mapping from context configuration
+     * version to the first compatible CobiGen version.
      */
     private static final Map<BigDecimal, BigDecimal> contextConfig_incompatibleVersionSteps = Maps
         .newLinkedHashMap();
 
     static {
+        templatesConfig_compatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
+        templatesConfig_compatibleVersionSteps.put(new BigDecimal("1.2"), new BigDecimal("1.2"));
+
         templatesConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
+
+        contextConfig_compatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
+
         contextConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
     }
 
@@ -52,7 +72,8 @@ public class VersionValidator {
      */
     public static void validateTemplatesConfig(BigDecimal templatesVersion) {
 
-        validateVersion(templatesVersion, templatesConfig_incompatibleVersionSteps, "templates configuration");
+        validateVersion(templatesVersion, templatesConfig_compatibleVersionSteps,
+            templatesConfig_incompatibleVersionSteps, "templates configuration");
 
     }
 
@@ -64,7 +85,8 @@ public class VersionValidator {
      */
     public static void validateContextConfig(BigDecimal contextVersion) {
 
-        validateVersion(contextVersion, templatesConfig_incompatibleVersionSteps, "context configuration");
+        validateVersion(contextVersion, contextConfig_compatibleVersionSteps,
+            contextConfig_incompatibleVersionSteps, "context configuration");
     }
 
     /**
@@ -72,12 +94,15 @@ public class VersionValidator {
      *
      * @param configVersion
      *            version to be validated
+     * @param compatibleVersionSteps
+     *            Mapping of compatible configuration versions to their first compatible CobiGen version
      * @param incompatibleVersionSteps
-     *            Mapping of configuration versions to their first compatible CobiGen version
+     *            Mapping of incompatible configuration versions to their first compatible CobiGen version
      * @param configName
      *            configuration name to be validated. Will be used in log entries and error messages.
      */
     private static void validateVersion(BigDecimal configVersion,
+        Map<BigDecimal, BigDecimal> compatibleVersionSteps,
         Map<BigDecimal, BigDecimal> incompatibleVersionSteps, String configName) {
 
         BigDecimal currentCobiGenVersion;
@@ -86,7 +111,7 @@ public class VersionValidator {
             currentCobiGenVersionStr.substring(0, currentCobiGenVersionStr.lastIndexOf("."));
         currentCobiGenVersion = new BigDecimal(currentCobiGenVersionStr);
 
-        if (!incompatibleVersionSteps.keySet().contains(configVersion)) {
+        if (!compatibleVersionSteps.keySet().contains(configVersion)) {
             LOG.error("CobiGen version to old for {} version. CobiGen: {} / {}: {}", configName,
                 currentCobiGenVersionStr, configName, configVersion.toString());
             throw new InvalidConfigurationException(
@@ -99,7 +124,7 @@ public class VersionValidator {
                     + "'. No automatic upgrade could be started. Please check your configuration or upgrade CobiGen first.");
         }
 
-        BigDecimal firstCompatibleCobiGenVersion = incompatibleVersionSteps.get(configVersion);
+        BigDecimal firstCompatibleCobiGenVersion = compatibleVersionSteps.get(configVersion);
         if (currentCobiGenVersion.equals(firstCompatibleCobiGenVersion)) {
             // valid -> first version of CobiGen supporting this configuration
             LOG.debug("Compatible {} due to version declaration. CobiGen: {} / {}: {}", configName,
