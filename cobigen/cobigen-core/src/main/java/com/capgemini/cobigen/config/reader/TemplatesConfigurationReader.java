@@ -29,6 +29,7 @@ import com.capgemini.Increments;
 import com.capgemini.TemplateRef;
 import com.capgemini.TemplateScan;
 import com.capgemini.TemplateScans;
+import com.capgemini.Templates;
 import com.capgemini.TemplatesConfiguration;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
@@ -161,15 +162,16 @@ public class TemplatesConfigurationReader {
         throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         Map<String, Template> templates = new HashMap<>();
-        for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
-            if (templates.get(t.getId()) != null) {
-                throw new InvalidConfigurationException(configFile,
-                    "Multiple template definitions found for idRef='" + t.getId() + "'");
+        Templates templatesNode = configNode.getTemplates();
+        if (templatesNode != null) {
+            for (com.capgemini.Template t : templatesNode.getTemplate()) {
+                if (templates.get(t.getId()) != null) {
+                    throw new InvalidConfigurationException(configFile,
+                        "Multiple template definitions found for idRef='" + t.getId() + "'");
+                }
+                templates.put(t.getId(), new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(),
+                    t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
-            templates.put(
-                t.getId(),
-                new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
-                    .getTargetCharset(), trigger, triggerInterpreter));
         }
         TemplateScans templateScans = configNode.getTemplateScans();
         if (templateScans != null) {

@@ -15,11 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.common.AbstractApiTest;
 import com.capgemini.cobigen.api.testdata.IsSubtypeOfMethod;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
@@ -36,19 +35,12 @@ import com.google.common.collect.Lists;
  * TestCase testing the FreeMarker template methods provided by the InputReader.
  * @author fkreis (23.10.2014)
  */
-public class TemplateMethodsTest {
+public class TemplateMethodsTest extends AbstractApiTest {
 
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/testdata/api/TemplateMethodsTest/";
-
-    /**
-     * JUnit Rule to temporarily create files and folders, which will be automatically removed after test
-     * execution
-     */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    private static String testFileRootPath = apiTestsRootPath + "TemplateMethodsTest/";
 
     /**
      * Tests whether the call of a template method is possible.

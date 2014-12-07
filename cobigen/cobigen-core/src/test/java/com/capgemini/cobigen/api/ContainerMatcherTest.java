@@ -14,11 +14,10 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.common.AbstractApiTest;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
@@ -36,19 +35,12 @@ import com.google.common.collect.Lists;
  * This test suite concentrates on the {@link ContainerMatcher} support and semantics
  * @author mbrunnli (13.10.2014)
  */
-public class ContainerMatcherTest {
+public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/testdata/api/ContainerMatcherTest/";
-
-    /**
-     * JUnit Rule to temporarily create files and folders, which will be automatically removed after test
-     * execution
-     */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    private static String testFileRootPath = apiTestsRootPath + "ContainerMatcherTest/";
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
