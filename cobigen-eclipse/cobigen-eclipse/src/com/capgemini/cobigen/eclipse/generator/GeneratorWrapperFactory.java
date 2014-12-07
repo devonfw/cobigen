@@ -1,21 +1,24 @@
 package com.capgemini.cobigen.eclipse.generator;
 
-import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
+import com.capgemini.cobigen.eclipse.generator.xml.XmlGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.xml.XmlInputConverter;
 import com.google.common.collect.Lists;
 
 /**
@@ -25,42 +28,42 @@ import com.google.common.collect.Lists;
  */
 public class GeneratorWrapperFactory {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(GeneratorWrapperFactory.class);
+
     /**
      * Creates a generator dependent on the input of the selection
      * @param selection
      *            current {@link IStructuredSelection} treated as input for generation
      * @return a specific {@link CobiGenWrapper} instance
+     * @throws GeneratorCreationException
+     *             if any exception occurred during converting the inputs or creating the generator
      * @throws GeneratorProjectNotExistentException
-     *             if the generator configuration project "RF-Generation" is not existent
-     * @throws CoreException
-     *             if the generator configuration project could not be opened
-     * @throws ClassNotFoundException
-     *             if the given type could not be found by the project {@link ClassLoader}
-     * @throws MalformedURLException
-     *             if an eclipse internal exception occurs while retrieving the class loader of the
-     *             corresponding java project
+     *             if the generator configuration project does not exist
      * @author mbrunnli (04.12.2014)
      */
     public static CobiGenWrapper createGenerator(IStructuredSelection selection)
-        throws GeneratorProjectNotExistentException, CoreException, MalformedURLException,
-        ClassNotFoundException {
+        throws GeneratorCreationException, GeneratorProjectNotExistentException {
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
         if (extractedInputs.size() > 0) {
-            Object firstElement = extractedInputs.get(0);
-            if (firstElement instanceof IJavaElement) {
-                JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
-                if (extractedInputs.size() == 1) {
-                    generator.setInput(firstElement);
-                } else {
-                    generator.setInput(extractedInputs);
+            try {
+                Object firstElement = extractedInputs.get(0);
+                if (firstElement instanceof IJavaElement) {
+                    JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
+                    generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject()
+                        .getProject());
+                    generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
+                    return generator;
+                } else if (firstElement instanceof IFile) {
+                    XmlGeneratorWrapper generator = new XmlGeneratorWrapper();
+                    generator.setGenerationTargetProject(((IFile) firstElement).getProject());
+                    generator.setInputs(XmlInputConverter.convertInput(extractedInputs));
+                    return generator;
                 }
-                generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject()
-                    .getProject());
-                generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
-                return generator;
-            } else if (firstElement instanceof IResource) {
-                // TODO XML?
+            } catch (CoreException e) {
+                LOG.error("An eclipse internal exception occurred", e);
+                throw new GeneratorCreationException("An eclipse internal exception occurred", e);
             }
         }
         return null;

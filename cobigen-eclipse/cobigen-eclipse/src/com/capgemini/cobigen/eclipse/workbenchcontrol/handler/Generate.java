@@ -1,12 +1,8 @@
 package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
-import java.io.IOException;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -19,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
@@ -70,59 +67,43 @@ public class Generate extends AbstractHandler {
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
                 } else if (((IStructuredSelection) sel).size() == 1) {
-                    Object obj = ((IStructuredSelection) sel).getFirstElement();
-                    if (obj instanceof ICompilationUnit) {
-                        WizardDialog wiz =
-                            new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
-                        wiz.setPageSize(new Point(800, 500));
-                        wiz.open();
-                    }
+                    WizardDialog wiz =
+                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
+                    wiz.setPageSize(new Point(800, 500));
+                    wiz.open();
                 }
 
-            } catch (CoreException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Eclipse internal Exception",
-                    e.getLocalizedMessage());
-                LOG.error("Eclipse internal Exception", e);
             } catch (UnknownContextVariableException e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Context Variable",
-                    e.getLocalizedMessage());
+                    e.getMessage());
                 LOG.error("Unknown Context Variable", e);
-            } catch (IOException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "IO Exception",
-                    e.getLocalizedMessage());
-                LOG.error("An IO Exception occurred", e);
             } catch (UnknownTemplateException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Template",
-                    e.getLocalizedMessage());
+                MessageDialog
+                    .openError(HandlerUtil.getActiveShell(event), "Unknown Template", e.getMessage());
                 LOG.error("Unknown Template", e);
             } catch (UnknownExpressionException e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Expression",
-                    e.getLocalizedMessage());
+                    e.getMessage());
                 LOG.error("Unknown Expression", e);
             } catch (InvalidConfigurationException e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Invalid Configuration",
-                    e.getLocalizedMessage());
+                    e.getMessage());
                 LOG.error("Invalid Configuration", e);
-            } catch (ClassNotFoundException e) {
-                MessageDialog
-                    .openError(
-                        HandlerUtil.getActiveShell(event),
-                        "Class not found",
-                        "The class of one of the selected input POJOs could not be loaded. The project class loader does not know this class.");
-                LOG.error(
-                    "The class of one of the selected input POJOs could not be loaded. The project class loader does not know this class.",
-                    e);
             } catch (GeneratorProjectNotExistentException e) {
                 MessageDialog
                     .openError(
                         HandlerUtil.getActiveShell(event),
-                        "Error",
+                        "Generator configuration project not found!",
                         "The project '"
                             + ConfigResources.CONFIG_PROJECT_NAME
                             + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
                 LOG.error(
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
                     ConfigResources.CONFIG_PROJECT_NAME, e);
+            } catch (GeneratorCreationException e) {
+                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator creation error",
+                    e.getMessage());
+                LOG.error(e.getMessage(), e);
             } catch (Throwable e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Exception",
                     e.getMessage());
