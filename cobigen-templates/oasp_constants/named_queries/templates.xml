@@ -3,7 +3,7 @@
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 
   <templates>
-      <template id="named_queries" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/general/common/api/constants/NamedQueries.java" templateFile="NamedQueries.java.ftl" />
+      <template id="named_queries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="NamedQueries.java.ftl" />
   </templates>
 
 </templatesConfiguration>
