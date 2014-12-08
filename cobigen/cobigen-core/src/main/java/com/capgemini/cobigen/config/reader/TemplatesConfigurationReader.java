@@ -6,6 +6,7 @@ package com.capgemini.cobigen.config.reader;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +244,7 @@ public class TemplatesConfigurationReader {
         if (!folder.isDirectory()) {
             throw new IllegalArgumentException("Folder does not exist: " + path);
         }
-        scanTemplates(folder, "", scan, templates, trigger, triggerInterpreter);
+        scanTemplates(folder, "", scan, templates, trigger, triggerInterpreter, Sets.<String> newHashSet());
     }
 
     /**
@@ -262,9 +263,12 @@ public class TemplatesConfigurationReader {
      *            the templates are from
      * @param triggerInterpreter
      *            of the {@link Trigger}
+     * @param observedTemplateIds
+     *            observed template ids during template scan. Needed for conflict detection
      */
     private void scanTemplates(File currentDirectory, String currentPath, TemplateScan scan,
-        Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter) {
+        Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter,
+        HashSet<String> observedTemplateIds) {
 
         String currentPathWithSlash = currentPath;
         if (!currentPathWithSlash.isEmpty()) {
@@ -273,7 +277,7 @@ public class TemplatesConfigurationReader {
         for (File child : currentDirectory.listFiles()) {
             if (child.isDirectory()) {
                 scanTemplates(child, currentPathWithSlash + child.getName(), scan, templates, trigger,
-                    triggerInterpreter);
+                    triggerInterpreter, observedTemplateIds);
             } else {
                 String templateName = child.getName();
                 String templateNameWithoutExtension = templateName;
@@ -282,6 +286,14 @@ public class TemplatesConfigurationReader {
                         templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
                 }
                 String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
+                if (observedTemplateIds.contains(templateId)) {
+                    throw new InvalidConfigurationException(
+                        "Template-scan has detected two files with the same file name and thus with the same "
+                            + "template id. Continuing would result in an indeterministic behavior.\n"
+                            + "For now, multiple files with the same name are not supported to be automatically "
+                            + "configured with template-scans.");
+                }
+                observedTemplateIds.add(templateId);
                 if (!templates.containsKey(templateId)) {
                     String destinationPath =
                         scan.getDestinationPath() + "/" + currentPathWithSlash + templateNameWithoutExtension;

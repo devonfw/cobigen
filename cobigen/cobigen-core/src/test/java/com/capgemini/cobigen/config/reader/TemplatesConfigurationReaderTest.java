@@ -243,4 +243,16 @@ public class TemplatesConfigurationReaderTest extends Assert {
         reader.loadTemplates(null, null);
     }
 
+    /**
+     * Tests whether a two equally named files will result in an {@link InvalidConfigurationException} if they
+     * are scanned with the same prefix
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnDuplicateScannedIds() {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath
+                + "templates_faulty_duplicate_scanned_id.xml"));
+        reader.loadTemplates(null, null);
+    }
 }
