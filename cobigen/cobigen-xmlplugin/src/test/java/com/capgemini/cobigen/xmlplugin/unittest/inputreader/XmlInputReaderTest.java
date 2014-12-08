@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.test.inputreader;
+package com.capgemini.cobigen.xmlplugin.unittest.inputreader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,8 +33,7 @@ public class XmlInputReaderTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath =
-        "src/test/resources/com/capgemini/cobigen/xmlplugin/test/inputreader/";
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
 
     /**
      * Test method for {@link XmlInputReader#isValidInput(java.lang.Object)} in case of a valid input.

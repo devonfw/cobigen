@@ -32,8 +32,12 @@ public class XmlPluginIntegrationTest {
     /**
      * Test configuration to CobiGen
      */
-    private File cobigenConfigFolder = new File(
-        "src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/templates");
+    private File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
+
+    /**
+     * Test input file
+     */
+    private File testinput = new File("src/test/resources/testdata/integrationtest/testInput.xml");
 
     /**
      * Temporary folder interface
@@ -65,11 +69,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -110,11 +112,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -156,11 +156,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -201,11 +199,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -246,11 +242,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -290,11 +284,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
@@ -335,11 +327,9 @@ public class XmlPluginIntegrationTest {
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
-        File inputXmlFile =
-            new File("src/test/resources/com/capgemini/cobigen/xmlplugin/integrationtest/testInput.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(inputXmlFile);
+        Document inputDocument = dBuilder.parse(testinput);
 
         // find matching templates and use testtemplate for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
