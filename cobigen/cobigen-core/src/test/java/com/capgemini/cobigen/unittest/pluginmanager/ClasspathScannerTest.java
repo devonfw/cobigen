@@ -1,8 +1,11 @@
-package com.capgemini.cobigen.pluginmanager;
+package com.capgemini.cobigen.unittest.pluginmanager;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.capgemini.cobigen.pluginmanager.ClasspathScanner;
+import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 public class ClasspathScannerTest {
 

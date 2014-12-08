@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright © Capgemini 2013. All rights reserved.
  ******************************************************************************/
-package com.capgemini.cobigen.config.reader;
+package com.capgemini.cobigen.unittest.config.reader;
 
 import static org.mockito.Mockito.mock;
 
@@ -20,6 +20,7 @@ import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.config.reader.TemplatesConfigurationReader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
 
@@ -34,7 +35,7 @@ public class TemplatesConfigurationReaderTest extends Assert {
      * Root path to all resources used in this test case
      */
     private static String testFileRootPath =
-        "src/test/resources/testdata/config/reader/TemplatesConfigurationReaderTest/";
+        "src/test/resources/testdata/unittest/config/reader/TemplatesConfigurationReaderTest/";
 
     /**
      * Tests whether all templates of a template package could be retrieved successfully

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.api.testdata;
+package com.capgemini.cobigen.systemtest.testdata;
 
 import java.util.List;
 

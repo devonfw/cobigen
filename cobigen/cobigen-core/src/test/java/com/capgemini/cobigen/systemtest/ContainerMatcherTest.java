@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.api;
+package com.capgemini.cobigen.systemtest;
 
-import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static com.capgemini.cobigen.unittest.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.mockito.Matchers.any;
@@ -11,51 +11,109 @@ import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.api.common.AbstractApiTest;
-import com.capgemini.cobigen.api.testdata.IsSubtypeOfMethod;
-import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
-import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
+import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
+import com.capgemini.cobigen.unittest.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.unittest.common.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
- * TestCase testing the FreeMarker template methods provided by the InputReader.
- * @author fkreis (23.10.2014)
+ * This test suite concentrates on the {@link ContainerMatcher} support and semantics
+ * @author mbrunnli (13.10.2014)
  */
-public class TemplateMethodsTest extends AbstractApiTest {
+public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = apiTestsRootPath + "TemplateMethodsTest/";
+    private static String testFileRootPath = apiTestsRootPath + "ContainerMatcherTest/";
 
     /**
-     * Tests whether the call of a template method is possible.
-     * @author fkreis (23.10.2014)
-     * @throws Exception
-     *             test fails
+     * Tests whether a container matcher will not match iff there are no other matchers
      */
     @Test
-    public void callTemplateMethodTest() throws Exception {
+    public void testContainerMatcherDoesNotMatchWithoutMatcher() {
 
         // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true, false);
+        Object containerInput = createTestDataAndConfigureMock(false);
+
+        // Execution
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
+
+        // Verification
+        Assert.assertNotNull(matchingTriggerIds);
+        Assert.assertEquals(0, matchingTriggerIds.size());
+
+    }
+
+    /**
+     * Tests whether a container matcher will match iff there are matchers matching the child resources
+     * @author mbrunnli (13.10.2014)
+     */
+    @Test
+    public void testContainerMatcherMatches() {
+
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
+
+        // Execution
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
+
+        // Verification
+        Assert.assertNotNull(matchingTriggerIds);
+        Assert.assertTrue(matchingTriggerIds.size() > 0);
+
+    }
+
+    /**
+     * Tests whether variable resolving works for a container's children as the container itself does not
+     * include any variable resolving
+     * @author mbrunnli (13.10.2014)
+     */
+    @Test
+    public void testContextVariableResolving() {
+
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
+
+        // Execution
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+        List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
+
+        // Verification
+        Assert.assertNotNull(matchingTemplates);
+    }
+
+    /**
+     * Tests whether variable resolving works for a contains's children during generation
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (16.10.2014)
+     */
+    @Test
+    public void testContextVariableResolvingOnGeneration() throws Exception {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true);
         File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
-        // Useful to see generates if necessary, comment the generationRootFolder above then
-        // File generationRootFolder = new File(testFileRootPath + "generates");
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
@@ -65,8 +123,63 @@ public class TemplateMethodsTest extends AbstractApiTest {
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
-        // should not throw any Exceptions
+        // should not throw any UnknownContextVariableException
         target.generate(containerInput, templates.get(0), false);
+    }
+
+    /**
+     * Tests whether the increments can be correctly retrieved for container matchers
+     * @author mbrunnli (16.10.2014)
+     */
+    @Test
+    public void testGetAllIncrements() {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true, true);
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+
+        // Execution
+        List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
+
+        // Verification
+        Assert.assertNotNull(increments);
+        Assert.assertTrue(increments.size() > 0);
+    }
+
+    /**
+     * Tests whether multiple triggers will be activated if their container matcher matches a given input.<br/>
+     * <a href="https://github.com/oasp/tools-cobigen/issues/57">(Bug #57)</a>
+     * @author mbrunnli (12.11.2014)
+     */
+    @Test
+    public void testMultipleTriggerWithContainerMatchers() {
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock(true, false);
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = new CobiGen(templatesFolder);
+
+        // Execution
+        List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
+
+        // Verification
+        Assert.assertNotNull(triggerIds);
+        Assert.assertEquals(2, triggerIds.size());
+    }
+
+    // ######################### PRIVATE ##############################
+
+    /**
+     * calls {@link #createTestDataAndConfigureMock(boolean, boolean)
+     * createTestDataAndConfigureMock(containerChildMatchesTrigger, false)}
+     * @author mbrunnli (16.10.2014)
+     */
+    @SuppressWarnings("javadoc")
+    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
+        return createTestDataAndConfigureMock(containerChildMatchesTrigger, false);
     }
 
     /**
@@ -129,11 +242,6 @@ public class TemplateMethodsTest extends AbstractApiTest {
             when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
                 Lists.newArrayList(firstChildResource));
         }
-
-        // simulate return of method map
-        Map<String, Object> methodMap = new HashMap<>();
-        methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(this.getClass().getClassLoader()));
-        when(inputReader.getTemplateMethods(any())).thenReturn(methodMap);
 
         when(
             matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,

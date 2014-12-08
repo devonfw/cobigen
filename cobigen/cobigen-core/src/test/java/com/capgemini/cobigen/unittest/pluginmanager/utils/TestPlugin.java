@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.pluginmanager.utils;
+package com.capgemini.cobigen.unittest.pluginmanager.utils;
 
 import java.util.List;
 

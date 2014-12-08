@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.api.common;
+package com.capgemini.cobigen.systemtest.common;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -12,7 +12,7 @@ public class AbstractApiTest {
     /**
      * Root path to all resources used in this test case
      */
-    protected static String apiTestsRootPath = "src/test/resources/testdata/api/";
+    protected static String apiTestsRootPath = "src/test/resources/testdata/systemtest/";
 
     /**
      * JUnit Rule to temporarily create files and folders, which will be automatically removed after test

@@ -1,10 +1,11 @@
-package com.capgemini.cobigen.config.resolver;
+package com.capgemini.cobigen.unittest.config.resolver;
 
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
 import com.google.common.collect.Maps;
 
 /**
