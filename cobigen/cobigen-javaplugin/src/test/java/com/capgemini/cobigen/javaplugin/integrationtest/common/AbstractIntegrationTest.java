@@ -18,8 +18,7 @@ public abstract class AbstractIntegrationTest {
     /**
      * Test configuration to CobiGen
      */
-    protected File cobigenConfigFolder = new File(
-        "src/test/resources/com/capgemini/cobigen/javaplugin/integrationtest/templates");
+    protected File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
 
     /**
      * Temporary folder interface

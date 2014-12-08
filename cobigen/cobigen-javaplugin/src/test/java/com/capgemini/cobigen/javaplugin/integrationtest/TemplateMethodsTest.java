@@ -67,9 +67,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
     @Test
     public void testIsSubtypeOfMethod() throws Exception {
 
-        File configFolder =
-            new File("src/test/resources/com/capgemini/cobigen/javaplugin/integrationtest/templates");
-        CobiGen cobiGen = new CobiGen(configFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
@@ -103,9 +101,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
      */
     @Test
     public void testCorrectClassLoaderForMethods() throws Exception {
-        File configFolder =
-            new File("src/test/resources/com/capgemini/cobigen/javaplugin/integrationtest/templates");
-        CobiGen cobiGen = new CobiGen(configFolder);
+
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());

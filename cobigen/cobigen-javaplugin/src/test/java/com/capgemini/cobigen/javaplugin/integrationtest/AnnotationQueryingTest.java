@@ -15,7 +15,7 @@ import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.capgemini.cobigen.javaplugin.test.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
+import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 /**
@@ -37,7 +37,7 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
-        String testFileRootPath = "src/test/resources/com/capgemini/cobigen/javaplugin/test/inputreader/";
+        String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
         File javaSourceFile =
             new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Object[] input =
