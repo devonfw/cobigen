@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,10 +63,11 @@ public class ParsedJavaModelBuilder {
         extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
-        List<Map<String, Object>> attributes = extractAttributes(javaClass);
-        pojoModel.put(ModelConstant.FIELDS, attributes);
-        determinePojoIds(javaClass, attributes);
-        collectAnnotations(javaClass, attributes);
+        List<Map<String, Object>> fields = extractFields(javaClass);
+        pojoModel.put(ModelConstant.FIELDS_DEPRECATED, fields);
+        pojoModel.put(ModelConstant.FIELDS, fields);
+        determinePojoIds(javaClass, fields);
+        collectAnnotations(javaClass, fields);
 
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -115,20 +115,20 @@ public class ParsedJavaModelBuilder {
      *         {@link String} key to the corresponding {@link String} value of meta information
      * @author mbrunnli (06.02.2013)
      */
-    private List<Map<String, Object>> extractAttributes(JavaClass pojo) {
+    private List<Map<String, Object>> extractFields(JavaClass pojo) {
 
-        List<Map<String, Object>> attributes = new LinkedList<>();
+        List<Map<String, Object>> fields = new LinkedList<>();
         for (JavaField f : pojo.getFields()) {
             if (f.isStatic()) {
                 continue;
             }
-            Map<String, Object> attrValues = new HashMap<>();
-            attrValues.put(ModelConstant.NAME, f.getName());
-            attrValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
-            attrValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
-            attributes.add(attrValues);
+            Map<String, Object> fieldValues = new HashMap<>();
+            fieldValues.put(ModelConstant.NAME, f.getName());
+            fieldValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
+            fieldValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
+            fields.add(fieldValues);
         }
-        return attributes;
+        return fields;
     }
 
     /**
@@ -234,6 +234,7 @@ public class ParsedJavaModelBuilder {
      *            to be analysed
      * @author mbrunnli (01.04.2014)
      */
+    @SuppressWarnings("unchecked")
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap,
         List<JavaAnnotation> annotations) {
 
@@ -243,12 +244,16 @@ public class ParsedJavaModelBuilder {
                 annotationParameters);
 
             for (String propertyName : annotation.getPropertyMap().keySet()) {
-                Object value = annotation.getPropertyMap().get(propertyName).getParameterValue();
-                if (value instanceof JavaAnnotation[]) {
-                    Map<String, Object> annotationParameterParameters = new HashMap<>();
-                    annotationParameters.put(propertyName, annotationParameterParameters);
-                    extractAnnotationsRecursively(annotationParameterParameters,
-                        Arrays.asList((JavaAnnotation[]) value));
+                Object value = annotation.getNamedParameter(propertyName);
+                if (value instanceof List<?> && ((List<?>) value).size() > 0
+                    && ((List<?>) value).get(0) instanceof JavaAnnotation) {
+                    List<Map<String, Object>> recursiveAnnotationList = Lists.newLinkedList();
+                    annotationParameters.put(propertyName, recursiveAnnotationList);
+                    for (JavaAnnotation a : (List<JavaAnnotation>) value) {
+                        Map<String, Object> annotationParameterParameters = new HashMap<>();
+                        extractAnnotationsRecursively(annotationParameterParameters, Lists.newArrayList(a));
+                        recursiveAnnotationList.add(annotationParameterParameters);
+                    }
                 } else if (value instanceof Enum<?>[]) {
                     List<String> enumValues = Lists.newLinkedList();
                     for (Enum<?> e : ((Enum<?>[]) value)) {
@@ -256,10 +261,13 @@ public class ParsedJavaModelBuilder {
                     }
                     annotationParameters.put(propertyName, enumValues);
                 } else if (value instanceof Object[]) {
-                    annotationParameters.put(propertyName, Arrays.asList(value));
+                    annotationParameters.put(propertyName, value);
+                    // annotationParameters.put(propertyName, Lists.newLinkedList(Arrays.asList(value)));
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
                 } else {
+                    // currently QDox only returns the expression stated in the code as value, but not
+                    // resolves it.
                     annotationParameters.put(propertyName, value);
                 }
             }

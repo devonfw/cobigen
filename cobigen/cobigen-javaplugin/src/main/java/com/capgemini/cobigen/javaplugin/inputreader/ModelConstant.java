@@ -59,10 +59,19 @@ public class ModelConstant {
     public static final String CANONICAL_TYPE = "canonicalType";
 
     /**
+     * @see #FIELDS
+     * @deprecated this is the deprecated accessor for the list of Java fields named 'attributes'. Please use
+     *             {@link #FIELDS} for new features. This accessor value for the model will be removed at the
+     *             next major release.
+     */
+    @Deprecated
+    public static final String FIELDS_DEPRECATED = "attributes";
+
+    /**
      * A list of all fields, whereas one field will be represented by a set of attribute mappings (
      * {@link List}&lt; {@link Map}&lt;{@link String}, {@link Object}&gt;&gt;)
      */
-    public static final String FIELDS = "attributes";
+    public static final String FIELDS = "fields";
 
     /**
      * A list of all methods, whereas one method will be represented by a set of attribute mappings (
@@ -83,4 +92,9 @@ public class ModelConstant {
      * JavaDoc of a method or a field ({@link String})
      */
     public static final String JAVADOC = "javaDoc";
+
+    /**
+     * A list of all visible fields accessible via setter and getter methods including inherited fields.
+     */
+    public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";
 }
