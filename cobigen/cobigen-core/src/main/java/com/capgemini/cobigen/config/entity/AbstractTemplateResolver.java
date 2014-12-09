@@ -54,6 +54,16 @@ public abstract class AbstractTemplateResolver {
     }
 
     /**
+     * Sets the unresolved destination path defined in the templates configuration
+     * @param unresolvedDestinationPath
+     *            the unresolved destination path
+     * @author mbrunnli (07.12.2014)
+     */
+    public void setUnresolvedDestinationPath(String unresolvedDestinationPath) {
+        this.unresolvedDestinationPath = unresolvedDestinationPath;
+    }
+
+    /**
      * Returns the destination path the generated resources should be generated to
      * @return the destination path
      * @param input

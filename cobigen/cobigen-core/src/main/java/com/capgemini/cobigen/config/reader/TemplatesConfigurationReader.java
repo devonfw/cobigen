@@ -6,8 +6,11 @@ package com.capgemini.cobigen.config.reader;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -25,7 +28,11 @@ import org.xml.sax.SAXParseException;
 
 import com.capgemini.IncrementRef;
 import com.capgemini.Increments;
+import com.capgemini.TemplateExtension;
 import com.capgemini.TemplateRef;
+import com.capgemini.TemplateScan;
+import com.capgemini.TemplateScans;
+import com.capgemini.Templates;
 import com.capgemini.TemplatesConfiguration;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
@@ -36,6 +43,7 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.util.ExceptionUtil;
+import com.google.common.collect.Sets;
 
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and
@@ -44,6 +52,9 @@ import com.capgemini.cobigen.util.ExceptionUtil;
  * @author mbrunnli (11.03.2013)
  */
 public class TemplatesConfigurationReader {
+
+    /** The file extension of the template files. */
+    private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
      * XML Node 'configuration' of the configuration.xml
@@ -155,17 +166,146 @@ public class TemplatesConfigurationReader {
         throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         Map<String, Template> templates = new HashMap<>();
-        for (com.capgemini.Template t : configNode.getTemplates().getTemplate()) {
-            if (templates.get(t.getId()) != null) {
-                throw new InvalidConfigurationException(configFile,
-                    "Multiple template definitions found for idRef='" + t.getId() + "'");
+        Templates templatesNode = configNode.getTemplates();
+        if (templatesNode != null) {
+            for (com.capgemini.Template t : templatesNode.getTemplate()) {
+                if (templates.get(t.getId()) != null) {
+                    throw new InvalidConfigurationException(configFile,
+                        "Multiple template definitions found for idRef='" + t.getId() + "'");
+                }
+                templates.put(t.getId(), new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(),
+                    t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
-            templates.put(
-                t.getId(),
-                new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(), t
-                    .getTargetCharset(), trigger, triggerInterpreter));
+        }
+        TemplateScans templateScans = configNode.getTemplateScans();
+        if (templateScans != null) {
+            List<TemplateScan> scans = templateScans.getTemplateScan();
+            if (scans != null) {
+                for (TemplateScan scan : scans) {
+                    scanTemplates(scan, templates, trigger, triggerInterpreter);
+                }
+            }
+        }
+
+        // override existing templates with extension definitions
+        Set<String> observedExtensionIds = Sets.newHashSet();
+        if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
+            for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
+                // detection of duplicate templateExtensions
+                if (observedExtensionIds.contains(ext.getIdref())) {
+                    LOG.error("Two templateExtensions declared for idref='{}'.", ext.getIdref());
+                    throw new InvalidConfigurationException("Two templateExtensions declared for idref='"
+                        + ext.getIdref() + "'. Don't know what to do.");
+                }
+                observedExtensionIds.add(ext.getIdref());
+
+                // overriding properties if defined
+                if (templates.containsKey(ext.getIdref())) {
+                    Template template = templates.get(ext.getIdref());
+                    if (ext.getDestinationPath() != null) {
+                        template.setUnresolvedDestinationPath(ext.getDestinationPath());
+                    }
+                    if (ext.getMergeStrategy() != null) {
+                        template.setMergeStrategy(ext.getMergeStrategy());
+                    }
+                    if (ext.getTargetCharset() != null) {
+                        template.setTargetCharset(ext.getTargetCharset());
+                    }
+                } else {
+                    LOG.error("The templateExtension with idref='{}' does not reference any template!",
+                        ext.getIdref());
+                    throw new InvalidConfigurationException("The templateExtension with idref='"
+                        + ext.getIdref() + "' does not reference any template!");
+                }
+            }
         }
         return templates;
+    }
+
+    /**
+     * Scans the templates specified by the given {@link TemplateScan} and adds them to the given
+     * <code>templates</code> {@link Map}.
+     *
+     * @param scan
+     *            is the {@link TemplateScan} configuration.
+     * @param templates
+     *            is the {@link Map} where to add the templates.
+     * @param trigger
+     *            the templates are from
+     * @param triggerInterpreter
+     *            of the {@link Trigger}
+     */
+    private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) {
+
+        String templateFolder = scan.getTemplatePath();
+        String path = configFile.getParent() + "/" + templateFolder;
+        File folder = new File(path);
+        if (!folder.isDirectory()) {
+            throw new IllegalArgumentException("Folder does not exist: " + path);
+        }
+        scanTemplates(folder, "", scan, templates, trigger, triggerInterpreter, Sets.<String> newHashSet());
+    }
+
+    /**
+     * Recursively scans the templates specified by the given {@link TemplateScan} and adds them to the given
+     * <code>templates</code> {@link Map}.
+     *
+     * @param currentDirectory
+     *            the {@link File} pointing to the current directory to scan.
+     * @param currentPath
+     *            the current path relative to the top-level directory where we started the scan.
+     * @param scan
+     *            is the {@link TemplateScan} configuration.
+     * @param templates
+     *            is the {@link Map} where to add the templates.
+     * @param trigger
+     *            the templates are from
+     * @param triggerInterpreter
+     *            of the {@link Trigger}
+     * @param observedTemplateIds
+     *            observed template ids during template scan. Needed for conflict detection
+     */
+    private void scanTemplates(File currentDirectory, String currentPath, TemplateScan scan,
+        Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter,
+        HashSet<String> observedTemplateIds) {
+
+        String currentPathWithSlash = currentPath;
+        if (!currentPathWithSlash.isEmpty()) {
+            currentPathWithSlash = currentPathWithSlash + "/";
+        }
+        for (File child : currentDirectory.listFiles()) {
+            if (child.isDirectory()) {
+                scanTemplates(child, currentPathWithSlash + child.getName(), scan, templates, trigger,
+                    triggerInterpreter, observedTemplateIds);
+            } else {
+                String templateName = child.getName();
+                String templateNameWithoutExtension = templateName;
+                if (templateName.endsWith(TEMPLATE_EXTENSION)) {
+                    templateNameWithoutExtension =
+                        templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
+                }
+                String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
+                if (observedTemplateIds.contains(templateId)) {
+                    throw new InvalidConfigurationException(
+                        "Template-scan has detected two files with the same file name and thus with the same "
+                            + "template id. Continuing would result in an indeterministic behavior.\n"
+                            + "For now, multiple files with the same name are not supported to be automatically "
+                            + "configured with template-scans.");
+                }
+                observedTemplateIds.add(templateId);
+                if (!templates.containsKey(templateId)) {
+                    String destinationPath =
+                        scan.getDestinationPath() + "/" + currentPathWithSlash + templateNameWithoutExtension;
+                    String templateFile = scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
+                    String mergeStratgey = scan.getMergeStrategy();
+                    Template template =
+                        new Template(templateId, destinationPath, templateFile, mergeStratgey,
+                            scan.getTargetCharset(), trigger, triggerInterpreter);
+                    templates.put(templateId, template);
+                }
+            }
+        }
     }
 
     /**

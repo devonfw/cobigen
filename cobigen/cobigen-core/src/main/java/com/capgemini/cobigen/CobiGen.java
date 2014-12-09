@@ -67,7 +67,7 @@ public class CobiGen {
     /**
      * Current version of the generation, needed for configuration file validation
      */
-    public static final String CURRENT_VERSION = "1.0.0";
+    public static final String CURRENT_VERSION = "1.2.0";
 
     /**
      * The {@link ContextConfiguration} for this instance
@@ -415,18 +415,19 @@ public class CobiGen {
 
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
+                    boolean triggerMatches = false;
                     for (Matcher matcher : trigger.getMatcher()) {
                         MatcherTo matcherTo =
                             new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
                         if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                            matchingTrigger.add(trigger);
+                            triggerMatches = true;
                             break;
                         }
                     }
 
                     // if a match has been found do not check container matchers in addition for performance
                     // issues.
-                    if (matchingTrigger.isEmpty()) {
+                    if (!triggerMatches) {
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
                             MatcherTo matcherTo =
@@ -450,6 +451,9 @@ public class CobiGen {
                                 }
                             }
                         }
+                    }
+                    if (triggerMatches) {
+                        matchingTrigger.add(trigger);
                     }
                 }
             } catch (Throwable e) {
@@ -751,6 +755,23 @@ public class CobiGen {
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         }
         return new ModelBuilder(generatorInput, trigger, matcherInput);
+    }
+
+    /**
+     * Checks whether there is at least one input reader, which interprets the given input as combined input.
+     * @param input
+     *            object
+     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
+     *         combined input,<code>false</code>, otherwise
+     * @author mbrunnli (03.12.2014)
+     */
+    public boolean combinesMultipleInputs(Object input) {
+        List<Trigger> matchingTriggers = getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
+        }
+        return false;
     }
 
     /**

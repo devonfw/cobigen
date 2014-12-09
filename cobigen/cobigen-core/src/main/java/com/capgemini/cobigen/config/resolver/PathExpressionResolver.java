@@ -90,7 +90,7 @@ public class PathExpressionResolver {
         if (in == null) {
             return null;
         }
-        Pattern p = Pattern.compile("\\$\\{([^?}]+)((\\?[^}?]+)*)\\}");
+        Pattern p = Pattern.compile("\\$\\{([^?#}]+)(((\\?|#)[^}?#]+)*)\\}");
         Matcher m = p.matcher(in);
         StringBuffer out = new StringBuffer();
         while (m.find()) {
@@ -100,7 +100,7 @@ public class PathExpressionResolver {
             if (m.group(2) != null) {
                 boolean first = true;
                 String modifiedValue = variables.get(m.group(1));
-                for (String modifier : m.group(2).split("\\?")) {
+                for (String modifier : m.group(2).split("(\\?|#)")) {
                     if (first) {
                         first = false;
                         continue; // ignore first as always empty due to beginning '?'
