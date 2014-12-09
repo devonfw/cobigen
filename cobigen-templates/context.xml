@@ -56,5 +56,15 @@
         <variableAssignment type="regex" key="unterbereich" value="3"/>
       </matcher>
     </trigger>
+    <trigger id="oasp_constants_permission_constants" type="xml" templateFolder="oasp_constants/permission_constants">
+      <matcher type="nodename" value="access-control-schema">
+        <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
+      </matcher>
+    </trigger>
+    <trigger id="oasp_constants_named_queries" type="xml" templateFolder="oasp_constants/named_queries">
+      <matcher type="nodename" value="entity-mappings">
+        <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
+      </matcher>
+    </trigger>
   </triggers>
 </contextConfiguration>

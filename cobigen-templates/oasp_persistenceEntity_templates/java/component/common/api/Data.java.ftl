@@ -5,7 +5,7 @@ import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 
 public interface ${variables.entityName} extends ApplicationEntity {
 
-<#list pojo.attributes as attr>
+<#list pojo.fields as attr>
    	${attr.type} get${attr.name?cap_first}();
 
    	void set${attr.name?cap_first}(${attr.type} ${attr.name});

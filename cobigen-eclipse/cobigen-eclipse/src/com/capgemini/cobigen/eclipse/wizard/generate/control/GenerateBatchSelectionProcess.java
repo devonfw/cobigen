@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
@@ -45,7 +45,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
      *
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchSelectionProcess(Shell shell, JavaGeneratorWrapper javaGeneratorWrapper,
+    public GenerateBatchSelectionProcess(Shell shell, CobiGenWrapper javaGeneratorWrapper,
         List<TemplateTo> templatesToBeGenerated, List<IType> inputTypes) {
 
         super(shell, javaGeneratorWrapper, templatesToBeGenerated);
@@ -65,7 +65,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
      *            selected {@link IPackageFragment} for the generation
      * @author mbrunnli (04.06.2014)
      */
-    public GenerateBatchSelectionProcess(Shell shell, JavaGeneratorWrapper javaGeneratorWrapper,
+    public GenerateBatchSelectionProcess(Shell shell, CobiGenWrapper javaGeneratorWrapper,
         List<TemplateTo> templatesToBeGenerated, IPackageFragment container) {
 
         super(shell, javaGeneratorWrapper, templatesToBeGenerated);
@@ -82,33 +82,41 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
             return false;
         }
 
-        final IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
+        final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
-            if (inputTypes != null) {
-                monitor.beginTask("Generate files ", templatesToBeGenerated.size());
-                for (TemplateTo temp : templatesToBeGenerated) {
-                    if (temp.getMergeStrategy() == null) {
-                        javaGeneratorWrapper.generate(temp, true);
-                    } else {
-                        javaGeneratorWrapper.generate(temp, false);
-                    }
-                    monitor.worked(1);
-                }
-            } else if (container != null) {
-                javaGeneratorWrapper.setInputPackage(container);
-                monitor.beginTask("Generate files for " + container.getElementName() + "...",
-                    templatesToBeGenerated.size());
-                for (TemplateTo temp : templatesToBeGenerated) {
-                    TemplateTo t = javaGeneratorWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
-                    if (t.getMergeStrategy() == null) {
-                        javaGeneratorWrapper.generate(t, true);
-                    } else {
-                        javaGeneratorWrapper.generate(t, false);
-                    }
+            // if (inputTypes != null) {
+            // monitor.beginTask("Generate files ", templatesToBeGenerated.size());
+            // for (TemplateTo temp : templatesToBeGenerated) {
+            // if (temp.getMergeStrategy() == null) {
+            // cobigenWrapper.generate(temp, true);
+            // } else {
+            // cobigenWrapper.generate(temp, false);
+            // }
+            // monitor.worked(1);
+            // }
+            // } else if (container != null) {
+            // cobigenWrapper.setInput(container);
+            // monitor.beginTask("Generate files for " + container.getElementName() + "...",
+            // templatesToBeGenerated.size());
+            // for (TemplateTo temp : templatesToBeGenerated) {
+            // TemplateTo t = cobigenWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
+            // if (t.getMergeStrategy() == null) {
+            // cobigenWrapper.generate(t, true);
+            // } else {
+            // cobigenWrapper.generate(t, false);
+            // }
+            // }
+            // monitor.worked(1);
+            // } else {
+            // LOG.error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
+            // }
+            for (TemplateTo temp : templatesToBeGenerated) {
+                if (temp.getMergeStrategy() == null) {
+                    cobigenWrapper.generate(temp, true);
+                } else {
+                    cobigenWrapper.generate(temp, false);
                 }
                 monitor.worked(1);
-            } else {
-                LOG.error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
             }
             return true;
         } else {

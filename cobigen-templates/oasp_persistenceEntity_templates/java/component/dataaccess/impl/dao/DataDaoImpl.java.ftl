@@ -2,8 +2,6 @@ package ${variables.rootPackage}.${variables.component}.dataaccess.impl.dao;
 
 import java.util.List;
 
-import javax.dataaccess.Query;
-
 import ${variables.rootPackage}.general.common.api.constants.NamedQueries;
 import ${variables.rootPackage}.general.dataaccess.base.dao.ApplicationDaoImpl;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;

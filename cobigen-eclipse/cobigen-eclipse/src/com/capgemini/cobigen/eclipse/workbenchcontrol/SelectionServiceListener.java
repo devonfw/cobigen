@@ -1,10 +1,15 @@
 package com.capgemini.cobigen.eclipse.workbenchcontrol;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -23,6 +28,8 @@ import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.entity.Trigger;
@@ -33,6 +40,7 @@ import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
 import com.google.common.collect.Lists;
 
 /**
@@ -118,12 +126,12 @@ public class SelectionServiceListener implements ISelectionListener {
         Iterator<?> it = selection.iterator();
         List<String> firstTriggers = null;
 
-        boolean packageFragmentSelected = false;
+        boolean uniqueSourceSelected = false;
 
         while (it.hasNext()) {
             Object tmp = it.next();
-            if (packageFragmentSelected) {
-                // It is only possible to select one IPackageFragment
+            if (uniqueSourceSelected) {
+                // Currently it is only possible to select one IPackageFragment or IFile
                 return false;
             } else if (tmp instanceof ICompilationUnit) {
                 if (firstTriggers == null) {
@@ -134,13 +142,38 @@ public class SelectionServiceListener implements ISelectionListener {
                     }
                 }
             } else if (tmp instanceof IPackageFragment) {
+                uniqueSourceSelected = true;
                 if (firstTriggers == null) {
                     firstTriggers =
                         cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
                             .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
-                    packageFragmentSelected = true;
                 } else {
                     // It is only possible to select one IPackageFragment
+                    return false;
+                }
+            } else if (tmp instanceof IFile) {
+                uniqueSourceSelected = true;
+                if (firstTriggers == null) {
+                    InputStream stream;
+                    try {
+                        stream = ((IFile) tmp).getContents();
+                        Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
+                        firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
+                    } catch (CoreException e) {
+                        LOG.error("An eclipse internal exception occured", e);
+                    } catch (IOException e) {
+                        LOG.error("The file {} could not be read.", ((IFile) tmp).getName(), e);
+                    } catch (ParserConfigurationException e) {
+                        LOG.error(
+                            "The file {} could not be parsed, because of an internal configuration error.",
+                            ((IFile) tmp).getName(), e);
+                    } catch (SAXException e) {
+                        LOG.warn(
+                            "Checking for valid input: The file {} could not be parsed, because it is not a valid xml document",
+                            ((IFile) tmp).getName());
+                    }
+                } else {
+                    // It is only possible to select one file
                     return false;
                 }
             } else {

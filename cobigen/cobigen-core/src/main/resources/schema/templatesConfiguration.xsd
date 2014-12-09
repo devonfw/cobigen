@@ -6,7 +6,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="templates" minOccurs="0" type="tns:templates"/>
-        <xs:element name="template-scans" minOccurs="0"  type="tns:template-scans"/>
+        <xs:element name="template-scans" minOccurs="0" type="tns:template-scans"/>
         <xs:element name="increments" minOccurs="0" type="tns:increments"/>
       </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal"/>

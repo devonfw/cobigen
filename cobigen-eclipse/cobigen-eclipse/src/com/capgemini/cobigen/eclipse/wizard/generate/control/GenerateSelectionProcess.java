@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
@@ -26,16 +26,16 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
      *
      * @param shell
      *            on which to display error messages
-     * @param javaGeneratorWrapper
+     * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of templates to be generated
      * @author mbrunnli (12.03.2013)
      */
-    public GenerateSelectionProcess(Shell shell, JavaGeneratorWrapper javaGeneratorWrapper,
+    public GenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
         List<TemplateTo> templatesToBeGenerated) {
 
-        super(shell, javaGeneratorWrapper, templatesToBeGenerated);
+        super(shell, cobigenWrapper, templatesToBeGenerated);
     }
 
     /**
@@ -46,14 +46,14 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
 
-        final IProject proj = javaGeneratorWrapper.getGenerationTargetProject();
+        final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             monitor.beginTask("Generate files...", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
                 if (template.getMergeStrategy() == null) {
-                    javaGeneratorWrapper.generate(template, true);
+                    cobigenWrapper.generate(template, true);
                 } else {
-                    javaGeneratorWrapper.generate(template, false);
+                    cobigenWrapper.generate(template, false);
                 }
                 monitor.worked(1);
             }

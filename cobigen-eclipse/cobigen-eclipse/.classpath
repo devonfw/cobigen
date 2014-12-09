@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-5.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.20.jar"/>

@@ -29,7 +29,7 @@ import org.eclipse.ui.ide.IDE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -51,12 +51,12 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     private Set<Object> checkedResources = new HashSet<>();
 
     /**
-     * The current {@link JavaGeneratorWrapper} instance
+     * The current {@link CobiGenWrapper} instance
      */
-    private JavaGeneratorWrapper javaGeneratorWrapper;
+    private CobiGenWrapper cobigenWrapper;
 
     /**
-     * Defines whether the {@link JavaGeneratorWrapper} is in batch mode.
+     * Defines whether the {@link CobiGenWrapper} is in batch mode.
      */
     private boolean batch;
 
@@ -64,15 +64,15 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to
      * the simulated resources
      *
-     * @param javaGeneratorWrapper
-     *            the currently used {@link JavaGeneratorWrapper} instance
+     * @param cobigenWrapper
+     *            the currently used {@link CobiGenWrapper} instance
      * @param batch
      *            states whether the generation process is running in batch mode
      * @author mbrunnli (14.02.2013)
      */
-    public SelectFileLabelProvider(JavaGeneratorWrapper javaGeneratorWrapper, boolean batch) {
+    public SelectFileLabelProvider(CobiGenWrapper cobigenWrapper, boolean batch) {
 
-        this.javaGeneratorWrapper = javaGeneratorWrapper;
+        this.cobigenWrapper = cobigenWrapper;
         this.batch = batch;
     }
 
@@ -185,7 +185,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         }
 
         // boundary case: multiple templates target one path, which are not mergable... does not make sense
-        List<TemplateTo> templates = javaGeneratorWrapper.getTemplatesForFilePath(path, null);
+        List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
             if (path != null && template.getMergeStrategy() != null) {
                 return true;

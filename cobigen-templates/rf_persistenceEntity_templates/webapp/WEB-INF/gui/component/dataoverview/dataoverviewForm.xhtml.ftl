@@ -13,7 +13,7 @@
 			styleClass="order-table" headerClass="order-table-header"
 			rowClasses="order-table-odd-row,order-table-even-row">
 
-			<#list pojo.attributes as attr>
+			<#list pojo.fields as attr>
 
 				<h:column>
 					<!-- column header -->

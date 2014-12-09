@@ -16,8 +16,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
-import com.capgemini.cobigen.eclipse.generator.java.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
@@ -37,9 +38,9 @@ import com.google.common.collect.Lists;
 public class CheckStateListener implements ICheckStateListener, SelectionListener {
 
     /**
-     * Currently used {@link JavaGeneratorWrapper} instance
+     * Currently used {@link CobiGenWrapper} instance
      */
-    private JavaGeneratorWrapper javaGeneratorWrapper;
+    private CobiGenWrapper javaGeneratorWrapper;
 
     /**
      * The {@link SelectFilesPage} of the wizard providing the different viewer
@@ -52,14 +53,14 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private Set<Object> lastCheckedIncrements = new HashSet<>();
 
     /**
-     * Defines whether the {@link JavaGeneratorWrapper} is in batch mode.
+     * Defines whether the {@link CobiGenWrapper} is in batch mode.
      */
     private boolean batch;
 
     /**
      * Creates a new {@link CheckStateListener} instance
      *
-     * @param javaGeneratorWrapper
+     * @param cobigenWrapper
      *            currently used {@link JavaGeneratorWrapper} instance
      * @param page
      *            current {@link SelectFilesPage} reference
@@ -67,9 +68,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      *            states whether the check state listener should run in batch mode
      * @author mbrunnli (25.02.2013)
      */
-    public CheckStateListener(JavaGeneratorWrapper javaGeneratorWrapper, SelectFilesPage page, boolean batch) {
+    public CheckStateListener(CobiGenWrapper cobigenWrapper, SelectFilesPage page, boolean batch) {
 
-        this.javaGeneratorWrapper = javaGeneratorWrapper;
+        this.javaGeneratorWrapper = cobigenWrapper;
         this.page = page;
         this.batch = batch;
     }
@@ -339,7 +340,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     private void setAllResourcesChecked() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (IFile f : javaGeneratorWrapper.getAllTargetFilesForOneInput()) {
+        for (IFile f : javaGeneratorWrapper.getAllTargetFilesOfFirstInput()) {
             Object treeObject =
                 ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(f
                     .getFullPath().toString());
