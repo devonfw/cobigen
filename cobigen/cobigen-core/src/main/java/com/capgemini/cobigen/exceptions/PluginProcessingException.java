@@ -1,10 +1,7 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.exceptions;
 
 /**
- * 
+ *
  * @author mbrunnli (10.04.2014)
  */
 public class PluginProcessingException extends RuntimeException {
@@ -16,7 +13,7 @@ public class PluginProcessingException extends RuntimeException {
 
     /**
      * Creates a new {@link PluginProcessingException} with the given message
-     * 
+     *
      * @param msg
      *            error message
      * @author mbrunnli (10.04.2014)
@@ -28,7 +25,7 @@ public class PluginProcessingException extends RuntimeException {
 
     /**
      * Creates a new {@link PluginProcessingException} with the given message and the given cause
-     * 
+     *
      * @param msg
      *            error message
      * @param cause

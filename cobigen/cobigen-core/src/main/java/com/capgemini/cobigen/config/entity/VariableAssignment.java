@@ -1,12 +1,9 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.config.entity;
 
 /**
  * A {@link VariableAssignment} key value pair, which will be interpreted by any plug-in declaring the
  * {@link #type}
- * 
+ *
  * @author mbrunnli (15.04.2013)
  */
 public class VariableAssignment {

@@ -1,6 +1,3 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.validator;
 
 import java.util.Map;

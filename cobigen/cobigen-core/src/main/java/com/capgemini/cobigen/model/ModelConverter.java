@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.model;
 
 import java.util.List;
@@ -17,7 +14,7 @@ import org.w3c.dom.Element;
 
 /**
  * Converts the an FreeMarker object model into a DOM xml model
- * 
+ *
  * @author mbrunnli (19.02.2013)
  */
 public class ModelConverter {
@@ -39,7 +36,7 @@ public class ModelConverter {
 
     /**
      * Creates a new {@link ModelConverter} for the given object model
-     * 
+     *
      * @param model
      *            (object) model as defined by the FreeMarker documentation
      * @author mbrunnli (19.02.2013)
@@ -60,7 +57,7 @@ public class ModelConverter {
 
     /**
      * Converts the model passed in the constructor to a DOM representation
-     * 
+     *
      * @return the {@link Document} of the DOM representation
      * @author mbrunnli (19.02.2013)
      */
@@ -76,7 +73,7 @@ public class ModelConverter {
      * the design of the object model when using {@link List}s, there is the parameter nodeName. The nodeName
      * is a workaround to bridge one level of recursion without losing the meta information of the current
      * node name the list of items is attached to in the model.
-     * 
+     *
      * @param parent
      *            {@link Element} parent object (DOM xml representation)
      * @param object

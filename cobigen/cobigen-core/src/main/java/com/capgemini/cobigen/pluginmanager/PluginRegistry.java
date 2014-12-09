@@ -1,6 +1,3 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.pluginmanager;
 
 import java.util.Collections;
@@ -17,7 +14,7 @@ import com.google.common.collect.Maps;
 
 /**
  * The {@link PluginRegistry} manages registrations of {@link IMerger}s and {@link ITriggerInterpreter}s
- * 
+ *
  * @author mbrunnli (06.04.2014)
  */
 public class PluginRegistry {
@@ -42,7 +39,7 @@ public class PluginRegistry {
     /***
      * Loads the given plug-in and registers all {@link IMerger}s and {@link ITriggerInterpreter}s bound by
      * the given plug-in
-     * 
+     *
      * @param generatorPlugin
      *            plug-in to be loaded
      * @param <T>
@@ -77,7 +74,7 @@ public class PluginRegistry {
 
     /**
      * Registers the given {@link IMerger}
-     * 
+     *
      * @param merger
      *            to be registered
      * @author mbrunnli (07.04.2014)
@@ -95,7 +92,7 @@ public class PluginRegistry {
 
     /**
      * Reigsters the given {@link ITriggerInterpreter}
-     * 
+     *
      * @param triggerInterpreter
      *            to be registered
      * @author mbrunnli (07.04.2014)
@@ -113,7 +110,7 @@ public class PluginRegistry {
 
     /**
      * Returns the {@link IMerger} for the given mergerType
-     * 
+     *
      * @param mergerType
      *            the {@link IMerger} should be able to interpret
      * @return the {@link IMerger} for the given mergerType or <code>null</code> if there is no
@@ -130,7 +127,7 @@ public class PluginRegistry {
 
     /**
      * Returns the {@link ITriggerInterpreter} for the given triggerType
-     * 
+     *
      * @param triggerType
      *            the {@link ITriggerInterpreter} should be able to interpret
      * @return the {@link ITriggerInterpreter} for the given triggerType of <code>null</code> if there is no

@@ -1,6 +1,3 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.pluginmanager;
 
 import java.util.Set;
@@ -16,7 +13,7 @@ import com.capgemini.cobigen.extension.IMerger;
 /**
  * The ClasspathScanner scans the current classpath for sub classes of {@link IGeneratorPluginActivator}. All
  * plugins will be called to bind their defined {@link IMerger}s and {@link IInputReader}s
- * 
+ *
  * @author mbrunnli (06.04.2014)
  */
 public class ClasspathScanner {
@@ -24,7 +21,7 @@ public class ClasspathScanner {
     /**
      * Scans the classpath for {@link IGeneratorPluginActivator}s and registers {@link IMerger} and
      * {@link IInputReader}
-     * 
+     *
      * @author mbrunnli (06.04.2014)
      */
     public static void scanClasspathAndRegisterPlugins() {

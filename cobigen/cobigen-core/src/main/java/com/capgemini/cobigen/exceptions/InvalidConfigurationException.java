@@ -1,13 +1,10 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.exceptions;
 
 import java.io.File;
 
 /**
  * Occurs if the configuration xml could not be parsed successfully
- * 
+ *
  * @author mbrunnli (19.02.2013)
  */
 public class InvalidConfigurationException extends RuntimeException {
@@ -19,7 +16,7 @@ public class InvalidConfigurationException extends RuntimeException {
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
-     * 
+     *
      * @param file
      *            {@link File} causing the InvalidConfigurationException
      * @param msg
@@ -35,7 +32,7 @@ public class InvalidConfigurationException extends RuntimeException {
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
-     * 
+     *
      * @param file
      *            {@link File} causing the InvalidConfigurationException
      * @param msg
@@ -49,7 +46,7 @@ public class InvalidConfigurationException extends RuntimeException {
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
-     * 
+     *
      * @param msg
      *            error message
      * @author mbrunnli (08.04.2014)
