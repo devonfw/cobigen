@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.merge;
+package com.capgemini.cobigen.xmlplugin.unittest.merger;
 
 import java.io.File;
 
@@ -12,9 +12,10 @@ import org.w3c.dom.Element;
 
 import ch.elca.el4j.services.xmlmerge.mapper.IdentityMapper;
 
-import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
-import com.capgemini.cobigen.xmlplugin.action.OverrideMergeAction;
-import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
+import com.capgemini.cobigen.xmlplugin.merger.BasicXmlMerge;
+import com.capgemini.cobigen.xmlplugin.merger.XmlDocumentMatcher;
+import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.action.OverrideMergeAction;
 
 /**
  * TestCase testing {@link BasicXmlMerge}
@@ -26,7 +27,7 @@ public class BasicXmlMergeTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
     /**
      * Creates a {@link Document} out of the given {@link File}
@@ -64,7 +65,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("flow").getLength());
@@ -92,7 +93,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("ui:composition").getLength());
@@ -121,7 +122,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("hibernate-mapping").getLength());
@@ -141,7 +142,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(baseDoc.getDocumentElement().getLocalName(), mergeDoc.getDocumentElement()
@@ -165,7 +166,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new CompleteMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(baseDoc.getDocumentElement().getLocalName(), mergeDoc.getDocumentElement()
@@ -192,7 +193,7 @@ public class BasicXmlMergeTest {
         Document[] toMerge = { baseDoc, patchDoc };
 
         Document mergeDoc =
-            new BasicXmlMerge(new OverrideMergeAction(), new IdentityMapper(), new XmlMatcher())
+            new BasicXmlMerge(new OverrideMergeAction(), new IdentityMapper(), new XmlDocumentMatcher())
                 .merge(toMerge);
 
         Assert.assertEquals(baseDoc.getDocumentElement().getLocalName(), mergeDoc.getDocumentElement()

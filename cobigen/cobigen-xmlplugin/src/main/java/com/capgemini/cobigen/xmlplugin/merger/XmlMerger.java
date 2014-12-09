@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin;
+package com.capgemini.cobigen.xmlplugin.merger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +37,7 @@ import ch.elca.el4j.services.xmlmerge.mapper.IdentityMapper;
 
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.xmlplugin.action.BasicMergeAction;
-import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
-import com.capgemini.cobigen.xmlplugin.merge.BasicXmlMerge;
+import com.capgemini.cobigen.xmlplugin.merger.action.BasicMergeAction;
 
 /**
  * The {@link XmlMerger} combines all functionality for merging XML structures
@@ -73,7 +71,7 @@ public class XmlMerger implements IMerger {
      * @author mbrunnli (08.04.2014)
      */
     public XmlMerger(String type, BasicMergeAction action) {
-        xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlMatcher());
+        xmlMerge = new BasicXmlMerge(action, new IdentityMapper(), new XmlDocumentMatcher());
         this.type = type;
     }
 

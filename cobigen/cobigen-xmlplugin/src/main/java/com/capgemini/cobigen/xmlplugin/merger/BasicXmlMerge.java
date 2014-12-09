@@ -14,7 +14,7 @@
  *
  * For alternative licensing, please contact info@elca.ch
  */
-package com.capgemini.cobigen.xmlplugin.merge;
+package com.capgemini.cobigen.xmlplugin.merger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,7 +49,7 @@ import ch.elca.el4j.services.xmlmerge.matcher.TagMatcher;
 import ch.elca.el4j.services.xmlmerge.merge.DefaultXmlMerge;
 
 import com.capgemini.cobigen.util.SystemUtil;
-import com.capgemini.cobigen.xmlplugin.action.BasicMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.action.BasicMergeAction;
 
 /**
  * This class is basically the same as the {@link DefaultXmlMerge} class. The only difference is, that

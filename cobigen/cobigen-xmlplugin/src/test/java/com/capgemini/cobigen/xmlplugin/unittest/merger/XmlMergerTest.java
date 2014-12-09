@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin;
+package com.capgemini.cobigen.xmlplugin.unittest.merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,10 +9,9 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.elca.el4j.services.xmlmerge.AbstractXmlMergeException;
-
 import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
+import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
 
 /**
  * Test suite for {@link XmlMerger} class
@@ -23,11 +22,11 @@ public class XmlMergerTest {
     /**
      * Root path to all resources used in this test case
      */
-    private static String testFileRootPath = "src/test/resources/XmlMergerTest/";
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
     /**
      * Test Issue https://github.com/oasp/tools-cobigen/issues/31 Test method for
-     * {@link com.capgemini.cobigen.xmlplugin.XmlMerger#merge(java.io.File, java.lang.String, java.lang.String)}
+     * {@link com.capgemini.cobigen.xmlplugin.merger.XmlMerger#merge(java.io.File, java.lang.String, java.lang.String)}
      * .
      * @throws Exception
      *             test fails
@@ -50,19 +49,12 @@ public class XmlMergerTest {
      * This test tests, whether the schema location definition (xsi:schemaLocation) is not destroyed. One bug
      * occured which removes the xsi namespace from the schemaLocation definition
      *
-     * @throws AbstractXmlMergeException
-     *             test fails
-     * @throws IOException
-     *             test fails
-     * @throws FileNotFoundException
-     *             test fails
-     * @throws MergeException
+     * @throws Exception
      *             test fails
      * @author mbrunnli (21.06.2013)
      */
     @Test
-    public void testMergeDoesNotDestroySchemaLocation() throws AbstractXmlMergeException,
-        FileNotFoundException, IOException, MergeException {
+    public void testMergeDoesNotDestroySchemaLocation() throws Exception {
 
         File base = new File(testFileRootPath + "BaseFile_namespaces.xml");
 

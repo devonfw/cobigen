@@ -1,0 +1,1 @@
+<#list root.TextNodes as txt>${txt} </#list>
