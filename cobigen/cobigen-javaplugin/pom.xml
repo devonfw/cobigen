@@ -1,32 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.capgemini</groupId>
-	<artifactId>cobigen-javaplugin</artifactId>
-	<name>CobiGen - Java Plug-in</name>
-	<version>1.1.1</version>
-	<packaging>jar</packaging>
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.capgemini</groupId>
+  <artifactId>cobigen-javaplugin</artifactId>
+  <name>CobiGen - Java Plug-in</name>
+  <version>1.2.0</version>
+  <packaging>jar</packaging>
 
-	<parent>
-		<groupId>com.capgemini</groupId>
-		<artifactId>cobigen-parent</artifactId>
-		<version>1.1.0</version>
-	</parent>
+  <parent>
+    <groupId>com.capgemini</groupId>
+    <artifactId>cobigen-parent</artifactId>
+    <version>1.1.1</version>
+  </parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.capgemini</groupId>
-			<artifactId>cobigen-core</artifactId>
-			<version>1.1.0</version>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core</artifactId>
+      <version>1.2.0</version>
+    </dependency>
 
-		<!-- QDox for Java parsing-->
-		<dependency>
-			<groupId>com.thoughtworks.qdox</groupId>
-			<artifactId>qdox</artifactId>
-			<version>2.0-M2</version>
-		</dependency>
-	</dependencies>
+    <!-- QDox for Java parsing -->
+    <dependency>
+      <groupId>com.thoughtworks.qdox</groupId>
+      <artifactId>qdox</artifactId>
+      <version>2.0-M2</version>
+    </dependency>
+
+    <!-- for advanced introspection-->
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-util-core</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+  </dependencies>
 
 </project>

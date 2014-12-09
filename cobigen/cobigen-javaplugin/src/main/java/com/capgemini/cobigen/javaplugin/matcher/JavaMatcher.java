@@ -14,7 +14,7 @@ import com.capgemini.cobigen.extension.IMatcher;
 import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.javaplugin.resover.TriggerExpressionResolver;
+import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.JavaClass;
 

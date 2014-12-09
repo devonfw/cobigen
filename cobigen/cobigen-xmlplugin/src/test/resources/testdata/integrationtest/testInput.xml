@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root rootAttr1="rootAttr1Content" rootAttr2="rootAttr2Content" rootAttr3="rootAttr3Content">
+<!-- comment -->
+  rootTextContent1
+  <child1 child1Attr1="child1Attr1Content" child1Attr2="child1Attr2Content" child1Attr3="child1Attr3Content">
+    child1TextContent
+    <!-- comment -->
+  </child1>
+  <childdublicate childdublicateAttr1="childdublicateAttr1Content-first" childdublicateAttr2="childdublicateAttr2Content-first"
+    childdublicateAttr3="childdublicateAttr3Content-first">
+    childdublicateTextContent-first
+  </childdublicate>
+  <!-- comment -->
+  <childdublicate childdublicateAttr1="childdublicateAttr1Content-2nd" childdublicateAttr2="childdublicateAttr2Content-2nd"
+    childdublicateAttr3="childdublicateAttr3Content-2nd">
+    childdublicateTextContent-2nd
+  </childdublicate>
+  rootTextContent2
+</root>

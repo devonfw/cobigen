@@ -5,8 +5,9 @@ import java.util.List;
 import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.xmlplugin.action.CompleteMergeAction;
-import com.capgemini.cobigen.xmlplugin.action.OverrideMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
+import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.action.OverrideMergeAction;
 import com.google.common.collect.Lists;
 
 /**
@@ -33,7 +34,7 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
      */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return null;
+        return Lists.<ITriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
     }
 
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<library libAttr1="1" libAttr2="2" libAttr3="3" >
+     libTextContent
+     <city>city</city>
+     <book bookAttr3="3" bookAttr4="4" bookAttr5="5">
+          <author>author1</author>
+          <author>author2</author>
+          <bookname>book1</bookname>
+     </book>
+</library>
