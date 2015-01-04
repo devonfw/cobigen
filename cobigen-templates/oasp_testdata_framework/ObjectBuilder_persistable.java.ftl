@@ -7,7 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import ${pojo.package}.${pojo.name};
-import ${variables.rootPackage}.${variables.component}.common.builders.P;
+import ${variables.rootPackage}.common.builders.P;
 
 public class ${pojo.name}Builder {
 
