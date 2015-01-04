@@ -24,6 +24,7 @@ public class TestClassWithRecursiveAnnotations {
      *            new value of boolvalue
      * @author mbrunnli (05.12.2014)
      */
+    @Action(fault =  @FaultAction(className = NullPointerException.class))
     public void setBoolvalue(boolean boolvalue) {
         this.boolvalue = boolvalue;
     }
