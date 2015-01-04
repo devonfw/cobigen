@@ -351,16 +351,13 @@ public class JavaInputReader implements IInputReader {
                 // so take model1 as documented
                 return parsedModel;
             }
-        } else
-        // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
-        // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
-        if (parsedModel instanceof String) {
-            return parsedModel;
         } else if (parsedModel instanceof String[]) {
             return Lists.newLinkedList(Arrays.asList(parsedModel));
-        } else {
-            throw new IllegalStateException(
-                "Anything unintended happened. Please state an issue at GitHub or mail one of the developers");
+        }
+        // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
+        // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
+        else {
+            return parsedModel;
         }
     }
 }
