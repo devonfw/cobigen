@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.common.builders;
+package ${variables.rootPackage}.common.builders;
 
 public interface P<T> {
 

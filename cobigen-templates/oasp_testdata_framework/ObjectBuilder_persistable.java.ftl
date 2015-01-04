@@ -1,5 +1,5 @@
 <#include '/makros.ftl'>
-package ${variables.rootPackage}.${variables.component}.common.builders;
+package ${variables.rootPackage}.common.builders;
 
 import java.util.LinkedList;
 import java.util.List;
