@@ -2,7 +2,7 @@
 <feature
       id="cobigen-eclipse-feature"
       label="CobiGen Eclipse Plug-in"
-      version="1.2.0"
+      version="1.2.1"
       provider-name="Capgemini">
 
    <description>

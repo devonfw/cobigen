@@ -5,7 +5,7 @@
   <groupId>com.capgemini</groupId>
   <artifactId>cobigen-eclipse-updatesite</artifactId>
   <name>CobiGen - Eclipse Plug-In UpdateSite</name>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <packaging>eclipse-repository</packaging>
 
   <parent>

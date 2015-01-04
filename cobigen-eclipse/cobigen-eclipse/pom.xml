@@ -6,7 +6,7 @@
   <artifactId>cobigen-eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In</name>
   <packaging>eclipse-plugin</packaging>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-javaplugin</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
