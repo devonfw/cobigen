@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.extension.IInputReader;
+import com.capgemini.cobigen.extension.InputReaderV13;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -34,7 +35,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  *
  * @author mbrunnli (15.10.2013)
  */
-public class JavaInputReader implements IInputReader {
+public class JavaInputReader implements InputReaderV13 {
 
     /**
      * Logger instance
@@ -123,11 +124,19 @@ public class JavaInputReader implements IInputReader {
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        return getInputObjects(input, inputCharset, false);
+    }
 
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (18.01.2015)
+     */
+    @Override
+    public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
         List<Object> javaClasses = new LinkedList<>();
         if (input instanceof PackageFolder) {
             File packageFolder = new File(((PackageFolder) input).getLocation());
-            List<File> files = retrieveAllJavaSourceFiles(packageFolder);
+            List<File> files = retrieveAllJavaSourceFiles(packageFolder, recursively);
             for (File f : files) {
 
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
@@ -166,15 +175,19 @@ public class JavaInputReader implements IInputReader {
      *
      * @param packageFolder
      *            the package's folder
+     * @param recursively
+     *            states whether the java source files should be retrieved recursively
      * @return the list of files contained in the package's folder
      * @author mbrunnli (03.06.2014)
      */
-    private List<File> retrieveAllJavaSourceFiles(File packageFolder) {
+    private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 
         List<File> files = new LinkedList<>();
         if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
-                if (!f.isDirectory() && f.getName().endsWith(".java")) {
+                if (f.isDirectory() && recursively) {
+                    files.addAll(retrieveAllJavaSourceFiles(f, recursively));
+                } else if (f.isFile() && f.getName().endsWith(".java")) {
                     files.add(f);
                 }
             }
@@ -360,4 +373,5 @@ public class JavaInputReader implements IInputReader {
             return parsedModel;
         }
     }
+
 }
