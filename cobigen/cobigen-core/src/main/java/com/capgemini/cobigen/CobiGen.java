@@ -32,6 +32,7 @@ import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.IModelBuilder;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.extension.InputReaderV13;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -226,7 +227,28 @@ public class CobiGen {
         IInputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
         if (inputReader.combinesMultipleInputObjects(input)) {
-            inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+
+            // check whether the inputs should be retieved recursively
+            if (inputReader instanceof InputReaderV13) {
+                boolean retrieveInputsRecursively = false;
+                for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+                    MatcherTo matcherTo =
+                        new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+                    if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                        if (!retrieveInputsRecursively) {
+                            retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                inputObjects =
+                    ((InputReaderV13) inputReader).getInputObjects(input, trigger.getInputCharset(),
+                        retrieveInputsRecursively);
+            } else {
+                inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+            }
+
             Iterator<Object> it = inputObjects.iterator();
             InputObjectsLoop:
             while (it.hasNext()) {
@@ -431,11 +453,21 @@ public class CobiGen {
                                 new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
                                     matcherInput);
                             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                                // the charset does not matter as we only want to see whether there is one
-                                // matcher for one of the container resources
-                                List<Object> containerResources =
-                                    triggerInterpreter.getInputReader().getInputObjects(matcherInput,
-                                        Charsets.UTF_8);
+                                // keep backward-compatibility
+                                List<Object> containerResources;
+                                if (triggerInterpreter.getInputReader() instanceof InputReaderV13) {
+                                    containerResources =
+                                        ((InputReaderV13) triggerInterpreter.getInputReader())
+                                            .getInputObjects(matcherInput, Charsets.UTF_8,
+                                                containerMatcher.isRetrieveObjectsRecursively());
+                                } else {
+                                    // the charset does not matter as we only want to see whether there is one
+                                    // matcher for one of the container resources
+                                    containerResources =
+                                        triggerInterpreter.getInputReader().getInputObjects(matcherInput,
+                                            Charsets.UTF_8);
+                                }
+
                                 for (Matcher matcher : trigger.getMatcher()) {
                                     for (Object resource : containerResources) {
                                         matcherTo =

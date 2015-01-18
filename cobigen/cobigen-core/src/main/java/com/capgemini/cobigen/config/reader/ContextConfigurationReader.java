@@ -163,7 +163,8 @@ public class ContextConfigurationReader {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
         for (com.capgemini.ContainerMatcher cm : trigger.getContainerMatcher()) {
-            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue()));
+            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm
+                .isRetrieveObjectsRecursively()));
         }
         return containerMatchers;
     }
