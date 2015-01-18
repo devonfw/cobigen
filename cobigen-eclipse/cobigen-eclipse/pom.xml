@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core</artifactId>
-      <version>1.2.0</version>
+      <version>1.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-javaplugin</artifactId>
-      <version>1.2.1</version>
+      <version>1.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
