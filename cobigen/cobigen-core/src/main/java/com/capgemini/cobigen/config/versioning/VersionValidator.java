@@ -60,6 +60,7 @@ public class VersionValidator {
         templatesConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
 
         contextConfig_compatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
+        contextConfig_compatibleVersionSteps.put(new BigDecimal("1.3"), new BigDecimal("1.3"));
 
         contextConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
     }
