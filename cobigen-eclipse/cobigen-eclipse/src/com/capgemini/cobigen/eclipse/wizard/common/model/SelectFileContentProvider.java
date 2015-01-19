@@ -176,6 +176,13 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 } else if (parentElement instanceof IParent && !(parentElement instanceof ICompilationUnit)) {
                     IJavaElement[] jChildren = ((IParent) parentElement).getChildren();
                     children = new ArrayList<Object>(Arrays.asList(jChildren));
+                    // a IJavaProject is the only IParent, which might also include non-java resources,
+                    // thus add all stubbedChildren, no matter if IJavaElement or IResource
+                    if (parentElement instanceof IJavaProject) {
+                        for (Object stub : stubbedChildren) {
+                            children.add(stub);
+                        }
+                    }
                 }
                 if (!(parentElement instanceof ICompilationUnit)) {
                     children.addAll(getNonPackageChildren((IParent) parentElement));
