@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  version="1.0">
+  version="1.3">
   <triggers>
     <trigger id="rf_persistenceEntity" type="java" templateFolder="rf_persistenceEntity_templates">
       <containerMatcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity"/>
@@ -43,17 +43,10 @@
       </matcher>
     </trigger>
     <trigger id="rf_testDocumentation" type="java" templateFolder="rf_testDocumentation">
-      <!-- <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivetest\.systemtest" /> -->
-      <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivetest\.awltest"/>
-      <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivega\.test\.komptest"/>
-      <containerMatcher type="package" value="de\.bund\.bva\.visa\.vivega\.test\.kompinttest"/>
-      <matcher type="fqn" value="de\.bund\.bva\.visa\.vivetest\.(systemtest|awltest)\.([^\.]+)\.([^\.]+)\.[^\.]+">
-        <variableAssignment type="regex" key="bereich" value="2"/>
-        <variableAssignment type="regex" key="unterbereich" value="3"/>
-      </matcher>
-      <matcher type="fqn" value="de\.bund\.bva\.visa\.vivega\.test\.(komptest|kompinttest)\.([^\.]+)\.([^\.]+)\.[^\.]+">
-        <variableAssignment type="regex" key="bereich" value="2"/>
-        <variableAssignment type="regex" key="unterbereich" value="3"/>
+      <containerMatcher type="package" value=".+\.(systemtest|awltest|komptest|kompinttest)" retrieveObjectsRecursively="true" />
+      <matcher type="fqn" value=".+\.(systemtest|awltest|komptest|kompinttest)\.([^\.]+\.)?([^\.]+)\.([^\.]+)\.[^\.]+">
+        <variableAssignment type="regex" key="bereich" value="3"/>
+        <variableAssignment type="regex" key="unterbereich" value="4"/>
       </matcher>
     </trigger>
     <trigger id="oasp_constants_permission_constants" type="xml" templateFolder="oasp_constants/permission_constants">
