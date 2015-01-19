@@ -17,11 +17,9 @@ public interface InputReaderV13 extends IInputReader {
      *            the combined input object
      * @param inputCharset
      *            to be used for reading new inputs
-     * @param recursive
-     *            states, whether the input objects will be retrieved in a recursive manner
      * @return a list of input objects, the generation should be triggered for each.
      * @author mbrunnli (03.06.2014)
      */
-    public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursive);
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset);
 
 }

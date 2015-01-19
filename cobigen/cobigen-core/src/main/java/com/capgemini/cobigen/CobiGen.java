@@ -229,8 +229,8 @@ public class CobiGen {
         if (inputReader.combinesMultipleInputObjects(input)) {
 
             // check whether the inputs should be retieved recursively
+            boolean retrieveInputsRecursively = false;
             if (inputReader instanceof InputReaderV13) {
-                boolean retrieveInputsRecursively = false;
                 for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
                     MatcherTo matcherTo =
                         new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
@@ -242,9 +242,12 @@ public class CobiGen {
                         }
                     }
                 }
+            }
+            if (retrieveInputsRecursively) {
                 inputObjects =
-                    ((InputReaderV13) inputReader).getInputObjects(input, trigger.getInputCharset(),
-                        retrieveInputsRecursively);
+                    ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
+                        trigger.getInputCharset());
+
             } else {
                 inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
             }
@@ -455,11 +458,11 @@ public class CobiGen {
                             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                                 // keep backward-compatibility
                                 List<Object> containerResources;
-                                if (triggerInterpreter.getInputReader() instanceof InputReaderV13) {
+                                if (triggerInterpreter.getInputReader() instanceof InputReaderV13
+                                    && containerMatcher.isRetrieveObjectsRecursively()) {
                                     containerResources =
                                         ((InputReaderV13) triggerInterpreter.getInputReader())
-                                            .getInputObjects(matcherInput, Charsets.UTF_8,
-                                                containerMatcher.isRetrieveObjectsRecursively());
+                                            .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
                                 } else {
                                     // the charset does not matter as we only want to see whether there is one
                                     // matcher for one of the container resources
