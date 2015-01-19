@@ -119,7 +119,6 @@ public class JavaInputReader implements InputReaderV13 {
 
     /**
      * {@inheritDoc}
-     *
      * @author mbrunnli (03.06.2014)
      */
     @Override
@@ -129,9 +128,24 @@ public class JavaInputReader implements InputReaderV13 {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (18.01.2015)
+     * @author mbrunnli (19.01.2015)
      */
     @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        return getInputObjects(input, inputCharset, true);
+    }
+
+    /**
+     * Returns all input objects for the given container input.
+     * @param input
+     *            container input (only {@link PackageFolder} instances will be supported)
+     * @param inputCharset
+     *            {@link Charset} to be used to read the children
+     * @param recursively
+     *            states, whether the children should be retrieved recursively
+     * @return the list of children. In this case {@link File} objects
+     * @author mbrunnli (18.01.2015)
+     */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
         List<Object> javaClasses = new LinkedList<>();
         if (input instanceof PackageFolder) {
