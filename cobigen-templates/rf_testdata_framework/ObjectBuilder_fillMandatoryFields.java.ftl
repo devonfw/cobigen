@@ -1,5 +1,5 @@
 <#include '/makros.ftl'>
-package ${variables.rootPackage}.common.builders;
+package ${variables.rootPackage}.common.builders.${variables.subPackage};
 
 public class ${pojo.name}Builder {
 

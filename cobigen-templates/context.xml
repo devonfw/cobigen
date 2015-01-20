@@ -20,11 +20,12 @@
       </matcher>
     </trigger>
     <trigger id="rf_testdataFramework" type="java" templateFolder="rf_testdata_framework">
-      <containerMatcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity"/>
-      <matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
+      <containerMatcher type="package" value=".+\.(service|core|batch|persistence)\.[^\.]+\.(.+\.)?[^\.]+"/>
+      <matcher type="fqn" value="(.+)\.(service|core|batch|persistence)\.(([^\.]+)\.(.+)?)\.([^\.]+)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
-        <variableAssignment type="regex" key="component" value="2"/>
-        <variableAssignment type="regex" key="pojoName" value="3"/>
+        <variableAssignment type="regex" key="component" value="4"/>
+        <variableAssignment type="regex" key="pojoName" value="6"/>
+        <variableAssignment type="regex" key="subPackage" value="3"/>
       </matcher>
     </trigger>
     <trigger id="oasp_testdataFramework" type="java" templateFolder="oasp_testdata_framework">
