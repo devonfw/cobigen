@@ -41,11 +41,11 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("isAbstractTemplate")) {
+            if (template.getId().equals("isAbstract.txt")) {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "isAbstractOutput.txt");
+                        + "isAbstract.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("falsetruetrue", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
@@ -76,11 +76,11 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("isSubtypeOfTemplate")) {
+            if (template.getId().equals("isSubtypeOf.txt")) {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "isSubtypeOfOutput.txt");
+                        + "isSubtypeOf.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("truetruefalsefalsefalse", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
@@ -118,7 +118,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("emptyTemplate")) {
+            if (template.getId().equals("emptyTemplate.txt")) {
                 cobiGen.generate(inputArr, template, false);
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
