@@ -153,14 +153,14 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
 
             try {
-                List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
-
                 List<Object> children = new ArrayList<>();
                 if (parentElement instanceof IPackageFragmentRoot) {
+                    List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
                     children =
                         HierarchicalTreeOperator.getPackageChildren((IPackageFragmentRoot) parentElement,
                             stubbedChildren);
                 } else if (parentElement instanceof IPackageFragment) {
+                    List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
                     if (!((IPackageFragment) parentElement).isDefaultPackage()) {
                         children.clear();
                         // add package children
@@ -174,14 +174,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                         }
                     }
                 } else if (parentElement instanceof IParent && !(parentElement instanceof ICompilationUnit)) {
+                    List<Object> stubbedChildren = stubNonExistentChildren(parentElement, false);
                     IJavaElement[] jChildren = ((IParent) parentElement).getChildren();
                     children = new ArrayList<Object>(Arrays.asList(jChildren));
-                    // a IJavaProject is the only IParent, which might also include non-java resources,
-                    // thus add all stubbedChildren, no matter if IJavaElement or IResource
-                    if (parentElement instanceof IJavaProject) {
-                        for (Object stub : stubbedChildren) {
-                            children.add(stub);
-                        }
+                    // add non-package children
+                    for (Object stub : stubbedChildren) {
+                        children.add(stub);
                     }
                 }
                 if (!(parentElement instanceof ICompilationUnit)) {
