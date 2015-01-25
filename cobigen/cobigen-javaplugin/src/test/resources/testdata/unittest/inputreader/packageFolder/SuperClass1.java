@@ -1,7 +1,5 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.subpackage.SuperClass2;
-
 /**
  *
  * @author mbrunnli (14.11.2014)

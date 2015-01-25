@@ -22,7 +22,7 @@ import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
  *
  * @author mbrunnli (22.01.2015)
  */
-public class GenerationTest extends AbstractIntegrationTest {
+public class ModelCreationTest extends AbstractIntegrationTest {
 
     private List<String> testField;
 

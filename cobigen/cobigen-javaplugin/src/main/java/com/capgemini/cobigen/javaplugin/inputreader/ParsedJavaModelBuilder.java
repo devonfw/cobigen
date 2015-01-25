@@ -10,10 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
+import com.thoughtworks.qdox.model.BeanProperty;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser
@@ -69,6 +71,9 @@ public class ParsedJavaModelBuilder {
         determinePojoIds(javaClass, fields);
         collectAnnotations(javaClass, fields);
 
+        List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
+        pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
+
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
 
@@ -79,6 +84,25 @@ public class ParsedJavaModelBuilder {
         cachedModel.put(ModelConstant.ROOT, pojoModel);
 
         return new HashMap<>(cachedModel);
+    }
+
+    /**
+     * Extracts all fields from the given pojo, which are visible by using setter and getter methods
+     * @param javaClass
+     *            source {@link JavaClass} to determine all fields accessible via methods from
+     * @return a list of field properties equivalently to {@link #extractFields(JavaClass)}
+     * @author mbrunnli (25.01.2015)
+     */
+    private List<Map<String, Object>> extractMethodAccessibleFields(JavaClass javaClass) {
+        List<Map<String, Object>> fields = Lists.newLinkedList();
+
+        List<BeanProperty> beanProperties = javaClass.getBeanProperties(true);
+        for (BeanProperty property : beanProperties) {
+            if (property.getAccessor() != null && property.getMutator() != null) {
+                fields.add(extractField(property.getName(), property.getType()));
+            }
+        }
+        return fields;
     }
 
     /**
@@ -122,13 +146,26 @@ public class ParsedJavaModelBuilder {
             if (f.isStatic()) {
                 continue;
             }
-            Map<String, Object> fieldValues = new HashMap<>();
-            fieldValues.put(ModelConstant.NAME, f.getName());
-            fieldValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
-            fieldValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
-            fields.add(fieldValues);
+            fields.add(extractField(f.getName(), f.getType()));
         }
         return fields;
+    }
+
+    /**
+     * Extracts all properties needed for model building from a given field
+     * @param fieldName
+     *            the field's name
+     * @param field
+     *            the values should be extracted for
+     * @return the mapping of property names to their values
+     * @author mbrunnli (25.01.2015)
+     */
+    private Map<String, Object> extractField(String fieldName, JavaType field) {
+        Map<String, Object> fieldValues = new HashMap<>();
+        fieldValues.put(ModelConstant.NAME, fieldName);
+        fieldValues.put(ModelConstant.TYPE, field.getGenericValue());
+        fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
+        return fieldValues;
     }
 
     /**

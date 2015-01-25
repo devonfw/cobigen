@@ -12,8 +12,11 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.google.common.base.Charsets;
 
 /**
  * Tests for Class {@link ParsedJavaModelBuilderTest}
@@ -151,6 +154,61 @@ public class ParsedJavaModelBuilderTest {
         Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
         Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType",
             customTypeField.get(ModelConstant.CANONICAL_TYPE));
+    }
+
+    /**
+     * Tests the correct extraction of 'methodAccessibleFields' for {@link PackageFolder} as input.
+     * @author mbrunnli (25.01.2015)
+     */
+    @Test
+    public void testCorrectExtractionOfInheritedFields_input_packageFolder() {
+        File packageFolderFile = new File(testFileRootPath + "packageFolder");
+        PackageFolder packageFolder =
+            new PackageFolder(packageFolderFile.toURI(), RootClass.class.getPackage().getName());
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        List<Object> objects = javaInputReader.getInputObjects(packageFolder, Charsets.UTF_8);
+
+        Assert.assertNotNull("The package folder does not contain any java sources!", objects);
+        Assert.assertEquals(2, objects.size());
+
+        boolean found = false;
+        for (Object o : objects) {
+            Map<String, Object> model = javaInputReader.createModel(o);
+            Assert.assertNotNull("No model has been created!", model);
+            if (RootClass.class.getSimpleName().equals(JavaModelUtil.getName(model))) {
+                List<Map<String, Object>> methodAccessibleFields =
+                    JavaModelUtil.getMethodAccessibleFields(model);
+                Assert.assertNotNull(methodAccessibleFields);
+                Assert.assertEquals(3, methodAccessibleFields.size());
+
+                Map<String, Object> field = JavaModelUtil.getMethodAccessibleField(model, "value");
+                Assert.assertNotNull("Field 'value' not found!", field);
+                Assert.assertEquals("value", field.get(ModelConstant.NAME));
+                Assert.assertEquals("String", field.get(ModelConstant.TYPE));
+                Assert.assertEquals("java.lang.String", field.get(ModelConstant.CANONICAL_TYPE));
+
+                field = JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");
+                Assert.assertNotNull("Field 'setterVisibleByte' not found!", field);
+                Assert.assertEquals("setterVisibleByte", field.get(ModelConstant.NAME));
+                Assert.assertEquals("byte", field.get(ModelConstant.TYPE));
+                Assert.assertEquals("byte", field.get(ModelConstant.CANONICAL_TYPE));
+
+                field = JavaModelUtil.getMethodAccessibleField(model, "genericAccessible");
+                Assert.assertNotNull("Field 'genericAccessible' not found!", field);
+                Assert.assertEquals("genericAccessible", field.get(ModelConstant.NAME));
+                // TODO: Known Issue, this is not possible as the SuperClass2 is not in the same folder and
+                // thus not parsed. Thus, due to type erasure the parametric type will be lost.
+                // Assert.assertEquals("List<RootClass>", field.get(ModelConstant.TYPE));
+                // Assert.assertEquals("java.util.List<RootClass>", field.get(ModelConstant.CANONICAL_TYPE));
+                Assert.assertEquals("java.util.List", field.get(ModelConstant.TYPE));
+                Assert.assertEquals("java.util.List", field.get(ModelConstant.CANONICAL_TYPE));
+
+                found = true;
+            }
+        }
+        Assert.assertTrue("Class " + RootClass.class.getName()
+            + "could not be found as child of the package folder.", found);
     }
 
     /**

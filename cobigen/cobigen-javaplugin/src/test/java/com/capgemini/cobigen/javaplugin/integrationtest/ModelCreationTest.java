@@ -18,10 +18,12 @@ import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrati
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 /**
- *
+ * This test suite includes all tests, which focus on the correct model creation including correct extraction
+ * of Java inheritance, generic type resolving etc.
  * @author mbrunnli (22.01.2015)
  */
-public class GenerationTest extends AbstractIntegrationTest {
+public class ModelCreationTest extends AbstractIntegrationTest {
+
     /**
      * Field for testing purposes
      */
@@ -45,7 +47,7 @@ public class GenerationTest extends AbstractIntegrationTest {
             new Object[] {
                 this.getClass(),
                 JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                    "src/test/resources/testdata/integrationtest/javaSources/GenerationTest.java"))) };
+                    "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -66,4 +68,5 @@ public class GenerationTest extends AbstractIntegrationTest {
             throw new AssertionFailedError("Test template not found");
         }
     }
+
 }
