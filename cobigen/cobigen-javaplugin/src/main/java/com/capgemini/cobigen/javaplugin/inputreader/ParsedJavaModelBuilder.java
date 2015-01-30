@@ -10,7 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.BeanProperty;
+import com.thoughtworks.qdox.model.DocletTag;
+import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -61,6 +64,11 @@ public class ParsedJavaModelBuilder {
         }
         pojoModel.put(ModelConstant.CANONICAL_NAME, javaClass.getCanonicalName());
 
+        Map<String, String> javaDoc = extractJavaDoc(javaClass);
+        if (javaDoc != null) {
+            pojoModel.put(ModelConstant.JAVADOC, javaDoc);
+        }
+
         Map<String, Object> annotations = new HashMap<>();
         extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
@@ -99,7 +107,7 @@ public class ParsedJavaModelBuilder {
         List<BeanProperty> beanProperties = javaClass.getBeanProperties(true);
         for (BeanProperty property : beanProperties) {
             if (property.getAccessor() != null && property.getMutator() != null) {
-                fields.add(extractField(property.getName(), property.getType()));
+                fields.add(extractField(property.getName(), property.getType(), null));
             }
         }
         return fields;
@@ -120,7 +128,10 @@ public class ParsedJavaModelBuilder {
             Map<String, Object> methodAttributes = new HashMap<>();
             methodAttributes.put(ModelConstant.NAME, method.getName());
             if (method.getComment() != null) {
-                methodAttributes.put(ModelConstant.JAVADOC, method.getComment());
+                Map<String, String> javaDoc = extractJavaDoc(method);
+                if (javaDoc != null) {
+                    methodAttributes.put(ModelConstant.JAVADOC, javaDoc);
+                }
             }
             Map<String, Object> annotations = new HashMap<>();
             extractAnnotationsRecursively(annotations, method.getAnnotations());
@@ -146,7 +157,7 @@ public class ParsedJavaModelBuilder {
             if (f.isStatic()) {
                 continue;
             }
-            fields.add(extractField(f.getName(), f.getType()));
+            fields.add(extractField(f.getName(), f.getType(), f));
         }
         return fields;
     }
@@ -157,14 +168,25 @@ public class ParsedJavaModelBuilder {
      *            the field's name
      * @param field
      *            the values should be extracted for
+     * @param annotatedElement
+     *            Annotated Element the field type is source of
      * @return the mapping of property names to their values
      * @author mbrunnli (25.01.2015)
      */
-    private Map<String, Object> extractField(String fieldName, JavaType field) {
+    private Map<String, Object> extractField(String fieldName, JavaType field,
+        JavaAnnotatedElement annotatedElement) {
         Map<String, Object> fieldValues = new HashMap<>();
         fieldValues.put(ModelConstant.NAME, fieldName);
         fieldValues.put(ModelConstant.TYPE, field.getGenericValue());
         fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
+
+        if (annotatedElement != null) {
+            Map<String, String> javaDoc = extractJavaDoc(annotatedElement);
+            if (javaDoc != null) {
+                fieldValues.put(ModelConstant.JAVADOC, javaDoc);
+            }
+        }
+
         return fieldValues;
     }
 
@@ -189,6 +211,12 @@ public class ParsedJavaModelBuilder {
         } else {
             superclassModel.put(ModelConstant.PACKAGE, "");
         }
+
+        Map<String, String> javaDoc = extractJavaDoc(superclass);
+        if (javaDoc != null) {
+            superclassModel.put(ModelConstant.JAVADOC, javaDoc);
+        }
+
         return superclassModel;
     }
 
@@ -214,6 +242,10 @@ public class ParsedJavaModelBuilder {
                 interfaceModel.put(ModelConstant.PACKAGE, "");
             }
 
+            Map<String, String> javaDoc = extractJavaDoc(c);
+            if (javaDoc != null) {
+                interfaceModel.put(ModelConstant.JAVADOC, javaDoc);
+            }
             interfaceList.add(interfaceModel);
         }
 
@@ -312,6 +344,29 @@ public class ParsedJavaModelBuilder {
     }
 
     /**
+     * Builds the model for javaDoc. This includes extraction of the comment (without doclets) as well as a
+     * mapping of docletTags to its values.
+     * @param annotatedElement
+     *            Annotated element, which javaDoc should be parsed
+     * @return the mapping of javaDoc elements to its values or <code>null</code> if the element does not
+     *         declare javaDoc
+     * @author mbrunnli (30.01.2015)
+     */
+    private Map<String, String> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
+        if (annotatedElement.getComment() == null) {
+            return null;
+        }
+        Map<String, String> javaDocModel = Maps.newHashMap();
+        javaDocModel.put(ModelConstant.COMMENT, annotatedElement.getComment());
+        for (DocletTag tag : annotatedElement.getTags()) {
+            // currently conflicting tag names like @param or @throws are simply not in scope.
+            // what we want to get is a simple way of addressing custom docletTags and its values
+            javaDocModel.put(tag.getName(), tag.getValue());
+        }
+        return javaDocModel;
+    }
+
+    /**
      * Determines whether the given attributes behaving as IDs on the persistence layer. The information will
      * be integrated into the default model as stated in {@link #createModel(JavaClass)}
      *
@@ -321,6 +376,7 @@ public class ParsedJavaModelBuilder {
      *            a {@link List} of all attributes and their properties
      * @author mbrunnli (12.02.2013)
      */
+    @Deprecated
     private void determinePojoIds(JavaClass javaClass, List<Map<String, Object>> attributes) {
 
         for (Map<String, Object> attr : attributes) {

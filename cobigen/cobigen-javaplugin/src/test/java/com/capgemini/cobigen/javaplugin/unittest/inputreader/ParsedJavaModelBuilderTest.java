@@ -1,5 +1,13 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
+import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getField;
+import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getJavaDocModel;
+import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getMethod;
+import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getRoot;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -53,8 +61,8 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        Assert.assertEquals("List<String>", customList.get(ModelConstant.TYPE));
-        Assert.assertEquals("java.util.List<java.lang.String>", customList.get(ModelConstant.CANONICAL_TYPE));
+        assertEquals("List<String>", customList.get(ModelConstant.TYPE));
+        assertEquals("java.util.List<java.lang.String>", customList.get(ModelConstant.CANONICAL_TYPE));
     }
 
     /**
@@ -76,17 +84,17 @@ public class ParsedJavaModelBuilderTest {
         List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
 
         // interface1
-        Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1",
+        assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1",
             interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
             interfaces.get(0).get(ModelConstant.PACKAGE));
 
         // interface2
-        Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2",
+        assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2",
             interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
             interfaces.get(1).get(ModelConstant.PACKAGE));
     }
 
@@ -108,7 +116,7 @@ public class ParsedJavaModelBuilderTest {
         // debug nullPointerException in case of superclass without package
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
-        Assert.assertEquals(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE), "");
+        assertEquals(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE), "");
     }
 
     /**
@@ -127,10 +135,9 @@ public class ParsedJavaModelBuilderTest {
 
         Assert
             .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        Assert.assertEquals(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass", JavaModelUtil
-                .getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata", JavaModelUtil
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass",
+            JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata", JavaModelUtil
             .getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
@@ -151,8 +158,8 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        Assert.assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType",
+        assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType",
             customTypeField.get(ModelConstant.CANONICAL_TYPE));
     }
 
@@ -169,46 +176,78 @@ public class ParsedJavaModelBuilderTest {
         JavaInputReader javaInputReader = new JavaInputReader();
         List<Object> objects = javaInputReader.getInputObjects(packageFolder, Charsets.UTF_8);
 
-        Assert.assertNotNull("The package folder does not contain any java sources!", objects);
-        Assert.assertEquals(2, objects.size());
+        assertNotNull("The package folder does not contain any java sources!", objects);
+        assertEquals(2, objects.size());
 
         boolean found = false;
         for (Object o : objects) {
             Map<String, Object> model = javaInputReader.createModel(o);
-            Assert.assertNotNull("No model has been created!", model);
+            assertNotNull("No model has been created!", model);
             if (RootClass.class.getSimpleName().equals(JavaModelUtil.getName(model))) {
                 List<Map<String, Object>> methodAccessibleFields =
                     JavaModelUtil.getMethodAccessibleFields(model);
-                Assert.assertNotNull(methodAccessibleFields);
-                Assert.assertEquals(3, methodAccessibleFields.size());
+                assertNotNull(methodAccessibleFields);
+                assertEquals(3, methodAccessibleFields.size());
 
                 Map<String, Object> field = JavaModelUtil.getMethodAccessibleField(model, "value");
-                Assert.assertNotNull("Field 'value' not found!", field);
-                Assert.assertEquals("value", field.get(ModelConstant.NAME));
-                Assert.assertEquals("String", field.get(ModelConstant.TYPE));
-                Assert.assertEquals("java.lang.String", field.get(ModelConstant.CANONICAL_TYPE));
+                assertNotNull("Field 'value' not found!", field);
+                assertEquals("value", field.get(ModelConstant.NAME));
+                assertEquals("String", field.get(ModelConstant.TYPE));
+                assertEquals("java.lang.String", field.get(ModelConstant.CANONICAL_TYPE));
 
                 field = JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");
-                Assert.assertNotNull("Field 'setterVisibleByte' not found!", field);
-                Assert.assertEquals("setterVisibleByte", field.get(ModelConstant.NAME));
-                Assert.assertEquals("byte", field.get(ModelConstant.TYPE));
-                Assert.assertEquals("byte", field.get(ModelConstant.CANONICAL_TYPE));
+                assertNotNull("Field 'setterVisibleByte' not found!", field);
+                assertEquals("setterVisibleByte", field.get(ModelConstant.NAME));
+                assertEquals("byte", field.get(ModelConstant.TYPE));
+                assertEquals("byte", field.get(ModelConstant.CANONICAL_TYPE));
 
                 field = JavaModelUtil.getMethodAccessibleField(model, "genericAccessible");
-                Assert.assertNotNull("Field 'genericAccessible' not found!", field);
-                Assert.assertEquals("genericAccessible", field.get(ModelConstant.NAME));
+                assertNotNull("Field 'genericAccessible' not found!", field);
+                assertEquals("genericAccessible", field.get(ModelConstant.NAME));
                 // TODO: Known Issue, this is not possible as the SuperClass2 is not in the same folder and
                 // thus not parsed. Thus, due to type erasure the parametric type will be lost.
-                // Assert.assertEquals("List<RootClass>", field.get(ModelConstant.TYPE));
-                // Assert.assertEquals("java.util.List<RootClass>", field.get(ModelConstant.CANONICAL_TYPE));
-                Assert.assertEquals("java.util.List", field.get(ModelConstant.TYPE));
-                Assert.assertEquals("java.util.List", field.get(ModelConstant.CANONICAL_TYPE));
+                // assertEquals("List<RootClass>", field.get(ModelConstant.TYPE));
+                // assertEquals("java.util.List<RootClass>", field.get(ModelConstant.CANONICAL_TYPE));
+                assertEquals("java.util.List", field.get(ModelConstant.TYPE));
+                assertEquals("java.util.List", field.get(ModelConstant.CANONICAL_TYPE));
 
                 found = true;
             }
         }
-        Assert.assertTrue("Class " + RootClass.class.getName()
+        assertTrue("Class " + RootClass.class.getName()
             + "could not be found as child of the package folder.", found);
+    }
+
+    /**
+     * Tests the correct extraction of the JavaDoc properties.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (30.01.2015)
+     */
+    @Test
+    public void testCorrectExtractionOfJavaDoc() throws Exception {
+        File classFile = new File(testFileRootPath + "DocumentedClass.java");
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        Map<String, Object> model =
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
+
+        Map<String, String> javaDocModel = getJavaDocModel(getRoot(model));
+        assertEquals("Class Doc.", javaDocModel.get(ModelConstant.COMMENT));
+        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
+
+        javaDocModel = getJavaDocModel(getField(model, "field"));
+        assertEquals("Field Doc.", javaDocModel.get(ModelConstant.COMMENT));
+
+        javaDocModel = getJavaDocModel(getMethod(model, "getField"));
+        assertEquals("Returns the field 'field'.", javaDocModel.get(ModelConstant.COMMENT));
+        assertEquals("value of field", javaDocModel.get("return"));
+        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
+
+        javaDocModel = getJavaDocModel(getMethod(model, "setField"));
+        assertEquals("Sets the field 'field'.", javaDocModel.get(ModelConstant.COMMENT));
+        assertEquals("field\r\n           new value of field", javaDocModel.get("param"));
+        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
     }
 
     /**
@@ -229,9 +268,9 @@ public class ParsedJavaModelBuilderTest {
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(subClass),
                 new FileReader(superClass)));
 
-        Assert.assertEquals(2, JavaModelUtil.getFields(model).size());
-        Assert.assertNotNull(JavaModelUtil.getField(model, "id"));
-        Assert.assertNotNull(JavaModelUtil.getField(model, "customList"));
+        assertEquals(2, JavaModelUtil.getFields(model).size());
+        assertNotNull(JavaModelUtil.getField(model, "id"));
+        assertNotNull(JavaModelUtil.getField(model, "customList"));
     }
 
 }
