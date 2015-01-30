@@ -1,2 +1,2 @@
 <#include '/macros.ftl'>
-${variables.bereich};${variables.unterbereich};<@insertCategory/>;${pojo.name};<@insertMethodsJavaDoc/>
+${variables.bereich};${variables.unterbereich};${variables.testname};<@insertCategory/>;<@insertFirstMethodDocletValueTestziel/>;<@insertFirstMethodDocletValueBeschreibung/>

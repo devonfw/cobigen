@@ -44,9 +44,11 @@
     </trigger>
     <trigger id="rf_testDocumentation" type="java" templateFolder="rf_testDocumentation">
       <containerMatcher type="package" value=".+\.(systemtest|awltest|komptest|kompinttest)" retrieveObjectsRecursively="true" />
-      <matcher type="fqn" value=".+\.(systemtest|awltest|komptest|kompinttest)\.([^\.]+\.)?([^\.]+)\.([^\.]+)\.[^\.]+">
+      <containerMatcher type="package" value=".+\.testfaelle" retrieveObjectsRecursively="true" />
+      <matcher type="fqn" value=".+\.(systemtest|awltest|komptest|kompinttest)\.([^\.]+\.)?([^\.]+)\.([^\.]+)\.([^\.]+)">
         <variableAssignment type="regex" key="bereich" value="3"/>
         <variableAssignment type="regex" key="unterbereich" value="4"/>
+        <variableAssignment type="regex" key="testname" value="5"/>
       </matcher>
     </trigger>
     <trigger id="oasp_constants_permission_constants" type="xml" templateFolder="oasp_constants/permission_constants">
