@@ -11,14 +11,14 @@
 </#compress>
 </#macro>
 
-<#macro insertFirstMethodDocletValueTestziel>
+<#macro insertFirstMethodDocletValueTestziel method>
 <#compress>
-<#if pojo.methods[0]?has_content && pojo.methods[0].javaDoc?has_content && pojo.methods[0].javaDoc.Testziel?has_content><#assign cellWithNewLines=pojo.methods[0].javaDoc.Testziel?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
+<#if method?has_content && method.javaDoc?has_content && method.javaDoc.Testziel?has_content><#assign cellWithNewLines=method.javaDoc.Testziel?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
 </#compress>
 </#macro>
 
-<#macro insertFirstMethodDocletValueBeschreibung>
+<#macro insertFirstMethodDocletValueBeschreibung method>
 <#compress>
-<#if pojo.methods[0]?has_content && pojo.methods[0].javaDoc?has_content && pojo.methods[0].javaDoc.Beschreibung?has_content><#assign cellWithNewLines=pojo.methods[0].javaDoc.Beschreibung?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
+<#if method?has_content && method.javaDoc?has_content && method.javaDoc.Beschreibung?has_content><#assign cellWithNewLines=method.javaDoc.Beschreibung?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
 </#compress>
 </#macro>
