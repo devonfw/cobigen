@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
@@ -246,31 +245,9 @@ public class ParsedJavaModelBuilderTest {
 
         javaDocModel = getJavaDocModel(getMethod(model, "setField"));
         assertEquals("Sets the field 'field'.", javaDocModel.get(ModelConstant.COMMENT));
-        assertEquals("field\r\n           new value of field", javaDocModel.get("param"));
+        assertEquals("field" + System.getProperty("line.separator") + "           new value of field",
+            javaDocModel.get("param"));
         assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
-    }
-
-    /**
-     * Tests whether inherited fields will also be included in the model
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     */
-    @Test
-    @Ignore("Logic not implemented. Has to be discussed whether this logic is intended as default.")
-    public void testModelBuildingWithInheritance() throws FileNotFoundException {
-
-        File subClass = new File(testFileRootPath + "TestClass.java");
-        File superClass = new File(testFileRootPath + "AbstractTestClass.java");
-
-        JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(subClass),
-                new FileReader(superClass)));
-
-        assertEquals(2, JavaModelUtil.getFields(model).size());
-        assertNotNull(JavaModelUtil.getField(model, "id"));
-        assertNotNull(JavaModelUtil.getField(model, "customList"));
     }
 
 }
