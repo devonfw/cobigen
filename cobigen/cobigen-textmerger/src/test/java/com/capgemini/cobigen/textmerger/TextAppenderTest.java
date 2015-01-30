@@ -9,10 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.textmerger.TextAppender;
-
 /**
- * 
+ *
  * @author mbrunnli (03.06.2014)
  */
 public class TextAppenderTest {
@@ -25,6 +23,7 @@ public class TextAppenderTest {
     /**
      * Tests a merge without adding a new line before appending the patch
      * @throws Exception
+     *             if errors occured while merging
      * @author mbrunnli (03.06.2014)
      */
     @Test
@@ -38,6 +37,7 @@ public class TextAppenderTest {
     /**
      * Tests a merge with adding a new line before appending the patch
      * @throws Exception
+     *             if errors occured while merging
      * @author mbrunnli (03.06.2014)
      */
     @Test
@@ -46,6 +46,20 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
         Assert.assertEquals(
             FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")),
+            mergedString);
+    }
+
+    /**
+     * Tests a merge with adding a new line before appending the patch
+     * @throws Exception
+     *             if errors occured while merging
+     * @author mbrunnli (03.06.2014)
+     */
+    @Test
+    public void testMerge_appendWithNewLine_onlyIfPathIsNotEmpty() throws Exception {
+        TextAppender appender = new TextAppender("", true);
+        String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "", "UTF-8");
+        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")),
             mergedString);
     }
 }
