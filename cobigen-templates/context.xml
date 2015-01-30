@@ -47,6 +47,7 @@
       <containerMatcher type="package" value=".+\.(systemtest|awltest|komptest|kompinttest)" retrieveObjectsRecursively="true" />
       <containerMatcher type="package" value=".+\.testfaelle" retrieveObjectsRecursively="true" />
       <matcher type="fqn" value=".+\.(systemtest|awltest|komptest|kompinttest)\.([^\.]+)\.([^\.]+)\.([^\.]+\.)*([^\.]+)">
+        <variableAssignment type="regex" key="category" value="1"/>
         <variableAssignment type="regex" key="bereich" value="2"/>
         <variableAssignment type="regex" key="unterbereich" value="3"/>
         <variableAssignment type="regex" key="testname" value="5"/>
