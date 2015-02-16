@@ -50,6 +50,22 @@
 					<groupId>org.hibernate.javax.persistence</groupId>
 					<artifactId>hibernate-jpa-2.0-api</artifactId>
 				</exclusion>
+        <exclusion>
+          <groupId>net.java.dev.which4j</groupId>
+          <artifactId>which4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.aspectj</groupId>
+          <artifactId>aspectjmatcher</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.bcel</groupId>
+          <artifactId>bcel</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>cglib</groupId>
+          <artifactId>cglib-nodep</artifactId>
+        </exclusion>
 			</exclusions>
 		</dependency>
 
