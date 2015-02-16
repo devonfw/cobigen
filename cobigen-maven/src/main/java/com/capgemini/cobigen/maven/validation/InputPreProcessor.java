@@ -8,12 +8,12 @@ import java.io.InputStreamReader;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.Charsets;
 import org.apache.maven.plugin.MojoFailureException;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
+import com.google.common.base.Charsets;
 import com.thoughtworks.qdox.parser.ParseException;
 
 /**
