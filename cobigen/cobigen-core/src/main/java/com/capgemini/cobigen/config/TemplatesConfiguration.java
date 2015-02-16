@@ -1,6 +1,6 @@
 package com.capgemini.cobigen.config;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +15,6 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.util.SystemUtil;
 
 /**
  * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about
@@ -54,8 +53,8 @@ public class TemplatesConfiguration {
      * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
      * reference
      *
-     * @param file
-     *            template folder for this context
+     * @param configRoot
+     *            templates configuration root path
      * @param trigger
      *            {@link Trigger} of this {@link TemplatesConfiguration}
      * @param triggerInterpreter
@@ -68,13 +67,12 @@ public class TemplatesConfiguration {
      *             if the given templates.xml is not valid
      * @author trippl (04.04.2013)
      */
-    public TemplatesConfiguration(File file, Trigger trigger, ITriggerInterpreter triggerInterpreter)
+    public TemplatesConfiguration(Path configRoot, Trigger trigger, ITriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(file.getAbsolutePath() + SystemUtil.FILE_SEPARATOR
-                + "templates.xml"));
-        templatesFolderName = file.getName();
+            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
+        templatesFolderName = configRoot.getFileName().toString();
         templates = reader.loadTemplates(trigger, triggerInterpreter);
         increments = reader.loadIncrements(templates, trigger);
         this.trigger = trigger;

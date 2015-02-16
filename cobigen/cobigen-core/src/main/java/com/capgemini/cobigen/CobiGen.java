@@ -5,6 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +32,7 @@ import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
@@ -40,7 +48,6 @@ import com.capgemini.cobigen.model.JaxenXPathSupportNodeModel;
 import com.capgemini.cobigen.model.ModelBuilder;
 import com.capgemini.cobigen.model.ModelConverter;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
-import com.capgemini.cobigen.util.SystemUtil;
 import com.capgemini.cobigen.validator.InputValidator;
 import com.google.common.collect.Lists;
 
@@ -78,23 +85,65 @@ public class CobiGen {
     private Configuration freeMarkerConfig;
 
     /**
-     * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}. Beside the
-     * {@link ContextSetting#GeneratorProjectRootPath} all context variables can be changed during runtime
-     * affecting the generation mechanisms.
+     * Configuration folder of CobiGen.
+     */
+    private Path configFolder;
+
+    /**
+     * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
-     * @param rootConfigFolder
+     * @param configFileOrFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
+     * @throws IOException
+     *             if the {@link URI} points to a new {@link FileSystem} to be created (e.g. zip/jar)
+     * @throws InvalidConfigurationException
+     *             if the context configuration could not be read properly.
      * @author mbrunnli (05.02.2013)
      */
-    public CobiGen(File rootConfigFolder) {
+    public CobiGen(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
+        if (configFileOrFolder == null) {
+            throw new IllegalArgumentException("The configuration file could not be null");
+        }
 
-        contextConfiguration = new ContextConfiguration(rootConfigFolder);
+        FileSystem configFileSystem;
+        if ("file".equals(configFileOrFolder.getScheme())) {
+            // Windows file system provider only allows "/" as URI to create a new file system... crap...
+            configFolder = Paths.get(configFileOrFolder);
+        } else {
+            configFileSystem = getFileSystem(configFileOrFolder);
+            configFolder = configFileSystem.getPath("/");
+        }
+
+        contextConfiguration = new ContextConfiguration(configFolder);
         freeMarkerConfig = new Configuration();
         freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
+        freeMarkerConfig.setLocalizedLookup(false);
+        freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
+    }
 
-        // ClasspathScanner.scanClasspathAndRegisterPlugins(); //TODO implement
+    /**
+     * Creates a new {@link FileSystem} if necessary or retrieves an already opened one for the given
+     * {@link URI}
+     * @param fileSystemUri
+     *            {@link URI} of the {@link FileSystem} to be retrieved/created
+     * @return the {@link FileSystem} of the given {@link URI}
+     * @throws IOException
+     *             if the {@link FileSystem} could not be created.
+     * @author mbrunnli (16.02.2015)
+     */
+    private FileSystem getFileSystem(URI fileSystemUri) throws IOException {
+        FileSystem configFileSystem;
+        try {
+            configFileSystem = FileSystems.getFileSystem(fileSystemUri);
+            if (!configFileSystem.isOpen()) {
+                throw new FileSystemNotFoundException();
+            }
+        } catch (FileSystemNotFoundException e) {
+            configFileSystem = FileSystems.newFileSystem(fileSystemUri, Collections.EMPTY_MAP);
+        }
+        return configFileSystem;
     }
 
     /**
@@ -219,10 +268,8 @@ public class CobiGen {
         MergeException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
-        freeMarkerConfig.setDirectoryForTemplateLoading(new File(contextConfiguration
-            .get(ContextSetting.GeneratorProjectRootPath)
-            + SystemUtil.FILE_SEPARATOR
-            + trigger.getTemplateFolder()));
+        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(configFolder
+            .resolve(trigger.getTemplateFolder()));
 
         IInputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
@@ -376,9 +423,11 @@ public class CobiGen {
      * @param matcherInput
      *            object
      * @return this {@link List} of matching increments
+     * @throws InvalidConfigurationException
+     *             if the configuration of CobiGen is not valid
      * @author mbrunnli (09.04.2014)
      */
-    public List<IncrementTo> getMatchingIncrements(Object matcherInput) {
+    public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
@@ -503,9 +552,11 @@ public class CobiGen {
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching templates
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (09.04.2014)
      */
-    public List<TemplateTo> getMatchingTemplates(Object matcherInput) {
+    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
@@ -525,9 +576,12 @@ public class CobiGen {
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching {@link TemplatesConfiguration}s
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (09.04.2014)
      */
-    private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput) {
+    private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput)
+        throws InvalidConfigurationException {
 
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
@@ -553,14 +607,13 @@ public class CobiGen {
      *            to get the matcher implementation from
      * @return the {@link ContextConfiguration} for the given input or <code>null</code> if the context
      *         variables could not be resolved.
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (14.10.2014)
      */
     private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger,
-        ITriggerInterpreter triggerInterpreter) {
-        File templatesConfigurationFolder =
-            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-        return new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
+        ITriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
+        return new TemplatesConfiguration(configFolder, trigger, triggerInterpreter);
     }
 
     /**
@@ -579,12 +632,7 @@ public class CobiGen {
         throws InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
-        File templatesConfigurationFolder =
-            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-
-        TemplatesConfiguration tConfig =
-            new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
+        TemplatesConfiguration tConfig = createTemplatesConfiguration(trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
             throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
@@ -816,7 +864,7 @@ public class CobiGen {
      */
     public void reloadContextConfigurationFromFile() throws InvalidConfigurationException {
 
-        contextConfiguration.reloadConfigurationFromFile();
+        contextConfiguration.reloadConfigurationFromFile(configFolder);
     }
 
 }

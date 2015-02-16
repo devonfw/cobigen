@@ -1,6 +1,8 @@
 package com.capgemini.cobigen.unittest.config.reader;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 import junit.framework.TestCase;
 
@@ -24,11 +26,15 @@ public class ContextConfigurationReaderTest {
 
     /**
      * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
+     * @throws IOException
+     *             test fails
+     * @throws InvalidConfigurationException
+     *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnInvalidConfiguration() {
+    public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException, IOException {
 
-        new ContextConfigurationReader(new File(testFileRootPath + "context_faulty.xml"));
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
     }
 
 }

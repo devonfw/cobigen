@@ -59,7 +59,7 @@ public class TemplateMethodsTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         target.setContextSetting(ContextSetting.GenerationTargetRootPath,
             generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);

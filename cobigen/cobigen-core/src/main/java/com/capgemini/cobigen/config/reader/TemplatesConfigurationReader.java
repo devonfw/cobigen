@@ -1,7 +1,11 @@
 package com.capgemini.cobigen.config.reader;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +58,11 @@ public class TemplatesConfigurationReader {
     private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
+     * Templates configuration file name
+     */
+    private static final String CONFIG_FILENAME = "templates.xml";
+
+    /**
      * XML Node 'configuration' of the configuration.xml
      */
     private TemplatesConfiguration configNode;
@@ -61,7 +70,7 @@ public class TemplatesConfigurationReader {
     /**
      * Configuration file
      */
-    private File configFile;
+    private Path configFilePath;
 
     /**
      * {@link JXPathContext} for the configNode
@@ -77,33 +86,40 @@ public class TemplatesConfigurationReader {
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
      * configuration file
      *
-     * @param file
-     *            configuration file
+     * @param templatesRoot
+     *            root path for the template configuration and templates
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      * @author mbrunnli (11.03.2013)
      */
-    public TemplatesConfigurationReader(File file) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        configFile = file;
+        configFilePath = templatesRoot.resolve(CONFIG_FILENAME);
+        readConfiguration();
+    }
 
+    /**
+     * Reads the templates configuration.
+     * @author mbrunnli (12.02.2015)
+     */
+    private void readConfiguration() {
         try {
             Unmarshaller unmarschaller =
                 JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(file);
+            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(configFilePath));
             if (rootNode instanceof TemplatesConfiguration) {
                 BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
                 if (configVersion == null) {
-                    throw new InvalidConfigurationException(file,
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
                 } else {
                     VersionValidator.validateTemplatesConfig(configVersion);
                 }
             } else {
-                throw new InvalidConfigurationException(file,
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                     "Unknown Root Node. Use \"templatesConfiguration\" as root Node");
             }
 
@@ -116,18 +132,18 @@ public class TemplatesConfigurationReader {
                 schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
                     "/schema/templatesConfiguration.xsd")));
             unmarschaller.setSchema(schema);
-            rootNode = unmarschaller.unmarshal(file);
+            rootNode = unmarschaller.unmarshal(Files.newInputStream(configFilePath));
             configNode = (TemplatesConfiguration) rootNode;
         } catch (JAXBException e) {
-            LOG.error("Could not parse configuration file {}", file.getPath(), e);
+            LOG.error("Could not parse configuration file {}", configFilePath.toUri().toString(), e);
             // try getting SAXParseException for better error handling and user support
             SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
             String message = null;
             if (parseCause != null) {
                 message = parseCause.getMessage();
             }
-            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message,
-                e);
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             LOG.error("Could not parse templates configuration schema.", e);
@@ -138,9 +154,14 @@ public class TemplatesConfigurationReader {
             // So provide help
             LOG.error("Invalid version number for templates configuration defined.", e);
             throw new InvalidConfigurationException(
-                "Invalid version number defined. The version of the templates configuration should consist of 'major.minor' version.");
+                configFilePath.toUri().toString(),
+                "Invalid version number defined. The version of the templates configuration should consist of 'major.minor' version.",
+                e);
+        } catch (IOException e) {
+            LOG.error("Could not read templates configuration file {}", configFilePath.toUri().toString(), e);
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "Could not read templates configuration file.", e);
         }
-
     }
 
     /**
@@ -167,7 +188,7 @@ public class TemplatesConfigurationReader {
         if (templatesNode != null) {
             for (com.capgemini.Template t : templatesNode.getTemplate()) {
                 if (templates.get(t.getId()) != null) {
-                    throw new InvalidConfigurationException(configFile,
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for idRef='" + t.getId() + "'");
                 }
                 templates.put(t.getId(), new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(),
@@ -235,13 +256,13 @@ public class TemplatesConfigurationReader {
     private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
         ITriggerInterpreter triggerInterpreter) {
 
-        String templateFolder = scan.getTemplatePath();
-        String path = configFile.getParent() + "/" + templateFolder;
-        File folder = new File(path);
-        if (!folder.isDirectory()) {
-            throw new IllegalArgumentException("Folder does not exist: " + path);
+        Path templateFolderPath = configFilePath.getParent().resolve(scan.getTemplatePath());
+        if (!Files.isDirectory(templateFolderPath)) {
+            throw new IllegalArgumentException("The path '" + templateFolderPath
+                + "' does not describe a directory.");
         }
-        scanTemplates(folder, "", scan, templates, trigger, triggerInterpreter, Sets.<String> newHashSet());
+        scanTemplates(templateFolderPath, "", scan, templates, trigger, triggerInterpreter,
+            Sets.<String> newHashSet());
     }
 
     /**
@@ -263,7 +284,7 @@ public class TemplatesConfigurationReader {
      * @param observedTemplateIds
      *            observed template ids during template scan. Needed for conflict detection
      */
-    private void scanTemplates(File currentDirectory, String currentPath, TemplateScan scan,
+    private void scanTemplates(Path currentDirectory, String currentPath, TemplateScan scan,
         Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter,
         HashSet<String> observedTemplateIds) {
 
@@ -271,37 +292,47 @@ public class TemplatesConfigurationReader {
         if (!currentPathWithSlash.isEmpty()) {
             currentPathWithSlash = currentPathWithSlash + "/";
         }
-        for (File child : currentDirectory.listFiles()) {
-            if (child.isDirectory()) {
-                scanTemplates(child, currentPathWithSlash + child.getName(), scan, templates, trigger,
-                    triggerInterpreter, observedTemplateIds);
-            } else {
-                String templateName = child.getName();
-                String templateNameWithoutExtension = templateName;
-                if (templateName.endsWith(TEMPLATE_EXTENSION)) {
-                    templateNameWithoutExtension =
-                        templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
-                }
-                String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
-                if (observedTemplateIds.contains(templateId)) {
-                    throw new InvalidConfigurationException(
-                        "Template-scan has detected two files with the same file name and thus with the same "
-                            + "template id. Continuing would result in an indeterministic behavior.\n"
-                            + "For now, multiple files with the same name are not supported to be automatically "
-                            + "configured with template-scans.");
-                }
-                observedTemplateIds.add(templateId);
-                if (!templates.containsKey(templateId)) {
-                    String destinationPath =
-                        scan.getDestinationPath() + "/" + currentPathWithSlash + templateNameWithoutExtension;
-                    String templateFile = scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
-                    String mergeStratgey = scan.getMergeStrategy();
-                    Template template =
-                        new Template(templateId, destinationPath, templateFile, mergeStratgey,
-                            scan.getTargetCharset(), trigger, triggerInterpreter);
-                    templates.put(templateId, template);
+
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(currentDirectory)) {
+            Iterator<Path> it = dirStream.iterator();
+            while (it.hasNext()) {
+                Path next = it.next();
+                if (Files.isDirectory(next)) {
+                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan,
+                        templates, trigger, triggerInterpreter, observedTemplateIds);
+                } else {
+                    String templateName = next.getFileName().toString();
+                    String templateNameWithoutExtension = templateName;
+                    if (templateName.endsWith(TEMPLATE_EXTENSION)) {
+                        templateNameWithoutExtension =
+                            templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
+                    }
+                    String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
+                    if (observedTemplateIds.contains(templateId)) {
+                        throw new InvalidConfigurationException(
+                            "Template-scan has detected two files with the same file name and thus with the same "
+                                + "template id. Continuing would result in an indeterministic behavior.\n"
+                                + "For now, multiple files with the same name are not supported to be automatically "
+                                + "configured with template-scans.");
+                    }
+                    observedTemplateIds.add(templateId);
+                    if (!templates.containsKey(templateId)) {
+                        String destinationPath =
+                            scan.getDestinationPath() + "/" + currentPathWithSlash
+                                + templateNameWithoutExtension;
+                        String templateFile =
+                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
+                        String mergeStratgey = scan.getMergeStrategy();
+                        Template template =
+                            new Template(templateId, destinationPath, templateFile, mergeStratgey,
+                                scan.getTargetCharset(), trigger, triggerInterpreter);
+                        templates.put(templateId, template);
+                    }
                 }
             }
+        } catch (IOException e) {
+            LOG.error("Could not create directory stream for path '" + currentDirectory.toUri().toString()
+                + "'. Continuing template scanning...");
         }
     }
 
@@ -361,8 +392,8 @@ public class TemplatesConfigurationReader {
                 TemplateRef tRef = (TemplateRef) ref;
                 Template temp = templates.get(tRef.getIdref());
                 if (temp == null) {
-                    throw new InvalidConfigurationException(configFile, "No Template found for idRef='"
-                        + tRef.getIdref() + "'");
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "No Template found for idRef='" + tRef.getIdref() + "'");
                 }
                 rootTarget.addTemplate(temp);
             }
@@ -409,35 +440,14 @@ public class TemplatesConfigurationReader {
 
         switch (count) {
         case 0:
-            throw new InvalidConfigurationException(configFile, "No increment definition found for idRef='"
-                + source.getIdref() + "'");
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "No increment definition found for idRef='" + source.getIdref() + "'");
         case 1:
             return p;
         default:
-            throw new InvalidConfigurationException(configFile,
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "Multiple increment definitions found for idRef='" + source.getIdref() + "'");
         }
 
-        // XmlCursor cursor = source.newCursor();
-        // cursor
-        // .selectPath("declare namespace s='http://capgemini.com'; /s:templatesConfiguration/s:increments/s:increment[@id='"
-        // + source.getIdref() + "']");
-        //
-        // if (cursor.getSelectionCount() == 0) {
-        // throw new InvalidConfigurationException(configFile,
-        // "No increment definition found for idRef='"
-        // + source.getIdref() + "'");
-        // } else if (cursor.getSelectionCount() > 1) {
-        // throw new InvalidConfigurationException(configFile,
-        // "Multiple increment definitions found for idRef='" +
-        // source.getIdref() + "'");
-        // }
-        //
-        // if (cursor.toNextSelection()) {
-        // XmlObject node = cursor.getObject();
-        // if (node instanceof com.capgemini.Increment) {
-        // return (com.capgemini.Increment) node;
-        // }
-        // }
     }
 }

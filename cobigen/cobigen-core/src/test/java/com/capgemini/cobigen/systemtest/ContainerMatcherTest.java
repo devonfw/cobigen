@@ -44,16 +44,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
+     * @throws Exception
+     *             test fails
      */
     @Test
-    public void testContainerMatcherDoesNotMatchWithoutMatcher() {
+    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(false);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -64,17 +66,19 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether a container matcher will match iff there are matchers matching the child resources
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContainerMatcherMatches() {
+    public void testContainerMatcherMatches() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -86,17 +90,19 @@ public class ContainerMatcherTest extends AbstractApiTest {
     /**
      * Tests whether variable resolving works for a container's children as the container itself does not
      * include any variable resolving
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContextVariableResolving() {
+    public void testContextVariableResolving() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
 
         // Verification
@@ -117,7 +123,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         target.setContextSetting(ContextSetting.GenerationTargetRootPath,
             generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
@@ -129,16 +135,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether the increments can be correctly retrieved for container matchers
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (16.10.2014)
      */
     @Test
-    public void testGetAllIncrements() {
+    public void testGetAllIncrements() throws Exception {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true, true);
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
 
         // Execution
         List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
@@ -151,16 +159,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
     /**
      * Tests whether multiple triggers will be activated if their container matcher matches a given input.<br/>
      * <a href="https://github.com/oasp/tools-cobigen/issues/57">(Bug #57)</a>
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testMultipleTriggerWithContainerMatchers() {
+    public void testMultipleTriggerWithContainerMatchers() throws Exception {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true, false);
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
 
         // Execution
         List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
