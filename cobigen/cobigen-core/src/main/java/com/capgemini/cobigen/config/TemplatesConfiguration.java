@@ -54,7 +54,7 @@ public class TemplatesConfiguration {
      * reference
      *
      * @param configRoot
-     *            templates configuration root path
+     *            configuration root path
      * @param trigger
      *            {@link Trigger} of this {@link TemplatesConfiguration}
      * @param triggerInterpreter
@@ -72,7 +72,7 @@ public class TemplatesConfiguration {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
-        templatesFolderName = configRoot.getFileName().toString();
+        templatesFolderName = trigger.getTemplateFolder();
         templates = reader.loadTemplates(trigger, triggerInterpreter);
         increments = reader.loadIncrements(templates, trigger);
         this.trigger = trigger;

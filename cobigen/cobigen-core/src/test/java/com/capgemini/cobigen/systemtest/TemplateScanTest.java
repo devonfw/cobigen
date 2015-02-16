@@ -2,7 +2,9 @@ package com.capgemini.cobigen.systemtest;
 
 import static com.capgemini.cobigen.unittest.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -70,6 +72,27 @@ public class TemplateScanTest extends AbstractApiTest {
             + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
             + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")
             .exists());
+    }
+
+    /**
+     *
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (16.02.2015)
+     */
+    @Test
+    public void testScanTemplatesFromArchivFile() throws Exception {
+
+        // pre-processing: mocking
+        Object input = createTestInputAndConfigureMock();
+
+        // test processing
+        CobiGen cobigen = new CobiGen(new File(testFileRootPath + "valid.zip").toURI());
+        List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+
+        // checking
+        assertThat(templates, notNullValue());
+        assertThat(templates.size(), equalTo(7));
     }
 
     /**

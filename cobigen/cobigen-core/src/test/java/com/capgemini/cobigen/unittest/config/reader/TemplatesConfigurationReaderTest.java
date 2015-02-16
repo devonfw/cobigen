@@ -1,9 +1,9 @@
 package com.capgemini.cobigen.unittest.config.reader;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -80,6 +80,7 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
         // then
         assertNotNull(templates);
+        assertThat(templates.size(), equalTo(7));
         Template templateSpringCommon = templates.get(templateIdSpringCommon);
         assertNotNull(templateSpringCommon);
         assertEquals(templateIdSpringCommon, templateSpringCommon.getId());
@@ -218,13 +219,11 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
     /**
      * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
-     * @throws IOException
-     *             test fails
      * @throws InvalidConfigurationException
      *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException, IOException {
+    public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
         new TemplatesConfigurationReader(new File(testFileRootPath + "faulty").toPath());
     }
@@ -232,14 +231,11 @@ public class TemplatesConfigurationReaderTest extends Assert {
     /**
      * Tests whether a duplicate template extension declaration will result in an
      * {@link InvalidConfigurationException}
-     * @throws IOException
-     *             test fails
      * @throws InvalidConfigurationException
      *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnDuplicateTemplateExtensionDeclaration() throws InvalidConfigurationException,
-        IOException {
+    public void testErrorOnDuplicateTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(new File(testFileRootPath
@@ -250,14 +246,11 @@ public class TemplatesConfigurationReaderTest extends Assert {
     /**
      * Tests whether a template extension with an id-reference, which does not point on any template, will
      * cause an {@link InvalidConfigurationException}
-     * @throws IOException
-     *             test fails
      * @throws InvalidConfigurationException
      *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnUnhookedTemplateExtensionDeclaration() throws InvalidConfigurationException,
-        IOException {
+    public void testErrorOnUnhookedTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(
@@ -268,17 +261,16 @@ public class TemplatesConfigurationReaderTest extends Assert {
     /**
      * Tests whether a two equally named files will result in an {@link InvalidConfigurationException} if they
      * are scanned with the same prefix
-     * @throws IOException
-     *             test fails
      * @throws InvalidConfigurationException
      *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException, IOException {
+    public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(
                 new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
         reader.loadTemplates(null, null);
     }
+
 }

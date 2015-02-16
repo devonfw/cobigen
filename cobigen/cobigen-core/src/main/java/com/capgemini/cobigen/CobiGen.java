@@ -7,11 +7,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +44,7 @@ import com.capgemini.cobigen.model.JaxenXPathSupportNodeModel;
 import com.capgemini.cobigen.model.ModelBuilder;
 import com.capgemini.cobigen.model.ModelConverter;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.capgemini.cobigen.util.FileSystemUtil;
 import com.capgemini.cobigen.validator.InputValidator;
 import com.google.common.collect.Lists;
 
@@ -105,15 +102,7 @@ public class CobiGen {
             throw new IllegalArgumentException("The configuration file could not be null");
         }
 
-        FileSystem configFileSystem;
-        if ("file".equals(configFileOrFolder.getScheme())) {
-            // Windows file system provider only allows "/" as URI to create a new file system... crap...
-            configFolder = Paths.get(configFileOrFolder);
-        } else {
-            configFileSystem = getFileSystem(configFileOrFolder);
-            configFolder = configFileSystem.getPath("/");
-        }
-
+        configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
         contextConfiguration = new ContextConfiguration(configFolder);
         freeMarkerConfig = new Configuration();
         freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
@@ -121,29 +110,6 @@ public class CobiGen {
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);
         freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
-    }
-
-    /**
-     * Creates a new {@link FileSystem} if necessary or retrieves an already opened one for the given
-     * {@link URI}
-     * @param fileSystemUri
-     *            {@link URI} of the {@link FileSystem} to be retrieved/created
-     * @return the {@link FileSystem} of the given {@link URI}
-     * @throws IOException
-     *             if the {@link FileSystem} could not be created.
-     * @author mbrunnli (16.02.2015)
-     */
-    private FileSystem getFileSystem(URI fileSystemUri) throws IOException {
-        FileSystem configFileSystem;
-        try {
-            configFileSystem = FileSystems.getFileSystem(fileSystemUri);
-            if (!configFileSystem.isOpen()) {
-                throw new FileSystemNotFoundException();
-            }
-        } catch (FileSystemNotFoundException e) {
-            configFileSystem = FileSystems.newFileSystem(fileSystemUri, Collections.EMPTY_MAP);
-        }
-        return configFileSystem;
     }
 
     /**
