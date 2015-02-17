@@ -50,7 +50,7 @@ public class PluginRegistry {
 
         try {
             Object plugin = generatorPlugin.newInstance();
-            LOG.info("Register CobiGen Plug-in '{}'", generatorPlugin.getCanonicalName());
+            LOG.info("Register CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName());
             if (plugin instanceof IGeneratorPluginActivator) {
                 // Collect IMerger
                 if (((IGeneratorPluginActivator) plugin).bindMerger() != null) {
@@ -67,7 +67,7 @@ public class PluginRegistry {
                 }
             }
         } catch (InstantiationException | IllegalAccessException e) {
-            LOG.error("Could not intantiate CobiGen Plug-in '{}'", generatorPlugin.getCanonicalName(), e);
+            LOG.error("Could not intantiate CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.debug("Merger for type '{}' registered ({})", merger.getType(), merger.getClass()
+        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass()
             .getCanonicalName());
     }
 
@@ -103,7 +103,7 @@ public class PluginRegistry {
                 "You cannot register a new TriggerInterpreter with triggerInterpreter==null or type==null or empty!");
         }
         registeredTriggerInterpreter.put(triggerInterpreter.getType(), triggerInterpreter);
-        LOG.debug("TriggerInterpreter for type '{}' registered ({})", triggerInterpreter.getType(),
+        LOG.debug("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
     }
 

@@ -313,19 +313,19 @@ public class CobiGen {
                                     + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
-                            LOG.error("An error occured while merging the file {}", originalFile.getName(), e);
+                            LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
                             throw new MergeException("An error occured while merging the file "
-                                + originalFile.getName() + ":\n" + e.getMessage());
+                                + originalFile.toURI() + ":\n" + e.getMessage());
                         }
 
                         if (result != null) {
-                            LOG.debug("Merge {} with charset {}", originalFile.getName(), targetCharset);
+                            LOG.debug("Merge {} with charset {}.", originalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(originalFile, result, targetCharset);
                         }
                     }
                 }
             } else {
-                LOG.info("Create new File {} with charset {}", originalFile.getName(), targetCharset);
+                LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
                 generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
                     input);
             }
@@ -504,7 +504,7 @@ public class CobiGen {
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly",
+                LOG.error("The TriggerInterpreter for type '{}' exited abruptly!",
                     triggerInterpreter.getType(), e);
             }
         }
@@ -698,7 +698,7 @@ public class CobiGen {
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getTemplateFile());
         } catch (IOException e) {
-            LOG.error("Error while retrieving template with id '{}'", template.getId(), e);
+            LOG.error("Error while retrieving template with id '{}'.", template.getId(), e);
             throw new IOException("Template " + template.getId() + ":\n" + e.getMessage(), e);
         }
 
