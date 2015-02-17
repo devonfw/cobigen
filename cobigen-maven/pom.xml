@@ -100,8 +100,8 @@
           </execution>
         </executions>
         <configuration>
-          <goalPrefix>plugin</goalPrefix>
-          <outputDirectory>src/test/resources/META-INF/maven</outputDirectory>
+          <goalPrefix>cobigen</goalPrefix>
+          <outputDirectory>src/main/resources/META-INF/maven</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

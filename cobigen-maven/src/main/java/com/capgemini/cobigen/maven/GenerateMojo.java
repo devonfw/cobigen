@@ -1,13 +1,19 @@
 package com.capgemini.cobigen.maven;
 
+import static java.nio.file.Files.exists;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isReadable;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -23,6 +29,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
@@ -83,10 +90,10 @@ public class GenerateMojo extends AbstractMojo {
     private List<String> templates;
 
     /**
-     * Input package
+     * Input packages
      */
     @Parameter
-    private Map<String, File> inputPackageFolders;
+    private List<String> inputPackages;
 
     /**
      * Input files
@@ -99,6 +106,12 @@ public class GenerateMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     private boolean forceOverride;
+
+    /**
+     * Destination root path the relative paths of templates will be resolved with.
+     */
+    @Parameter(required = true)
+    private File destinationRoot;
 
     /**
      * {@inheritDoc}
@@ -133,6 +146,8 @@ public class GenerateMojo extends AbstractMojo {
                             + " or inject an archive as plugin dependency.");
                 }
             }
+            cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
+                destinationRoot.getAbsolutePath());
 
             generateFromIncrements(cobiGen, inputs);
             generateFromTemplates(cobiGen, inputs);
@@ -143,7 +158,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     /**
-     * Collects/Converts all inputs from {@link #inputPackageFolders} and {@link #inputFiles} into CobiGen
+     * Collects/Converts all inputs from {@link #inputPackages} and {@link #inputFiles} into CobiGen
      * compatible formats
      * @return the list of CobiGen compatible inputs
      * @throws MojoFailureException
@@ -151,19 +166,48 @@ public class GenerateMojo extends AbstractMojo {
      * @author mbrunnli (16.02.2015)
      */
     private List<Object> collectInputs() throws MojoFailureException {
+        getLog().debug("Collect inputs...");
         List<Object> inputs = Lists.newLinkedList();
 
         ClassLoader cl = getProjectClassLoader();
-        if (inputPackageFolders != null && !inputPackageFolders.isEmpty()) {
-            for (Map.Entry<String, File> inputPackage : inputPackageFolders.entrySet()) {
-                PackageFolder packageFolder =
-                    new PackageFolder(inputPackage.getValue().toURI(), inputPackage.getKey(), cl);
-                inputs.add(packageFolder);
+        if (inputPackages != null && !inputPackages.isEmpty()) {
+            for (String inputPackage : inputPackages) {
+                getLog().debug("Resolve package '" + inputPackage + "'");
+
+                // collect all source roots to resolve input paths
+                List<String> sourceRoots = Lists.newLinkedList();
+                sourceRoots.addAll(project.getCompileSourceRoots());
+                sourceRoots.addAll(project.getTestCompileSourceRoots());
+
+                boolean sourceFound = false;
+                List<Path> sourcePathsObserved = Lists.newLinkedList();
+                for (String sourceRoot : sourceRoots) {
+                    String packagePath =
+                        inputPackage.replaceAll("\\.",
+                            Matcher.quoteReplacement(System.getProperty("file.separator")));
+                    Path sourcePath = Paths.get(sourceRoot, packagePath);
+                    getLog().debug("Checking source path " + sourcePath);
+                    if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
+                        PackageFolder packageFolder = new PackageFolder(sourcePath.toUri(), inputPackage, cl);
+                        inputs.add(packageFolder);
+                        sourceFound = true;
+                    } else {
+                        sourcePathsObserved.add(sourcePath);
+                    }
+                }
+
+                if (!sourceFound) {
+                    throw new MojoFailureException(
+                        "Currently, packages as inputs are only supported "
+                            + "if defined as sources in the current project to be build. Having searched for sources at paths: "
+                            + sourcePathsObserved);
+                }
             }
         }
 
         if (inputFiles != null && !inputFiles.isEmpty()) {
             for (File file : inputFiles) {
+                getLog().debug("Resolve file '" + file.toURI().toString() + "'");
                 Object input = InputPreProcessor.process(file, cl);
                 inputs.add(input);
             }

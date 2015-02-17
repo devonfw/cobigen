@@ -21,6 +21,9 @@
           </execution>
         </executions>
         <configuration>
+          <inputPackages>
+              <inputPackage>test.package</inputPackage>
+          </inputPackages>
         </configuration>
         <dependencies>
           <dependency>
