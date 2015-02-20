@@ -46,7 +46,16 @@
 		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="required" />
     <xs:attribute name="retrieveObjectsRecursively" type="xs:boolean" use="optional" default="false" />
+    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR" />
 	</xs:complexType>
+
+  <xs:simpleType name="accumulationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AND" />
+      <xs:enumeration value="OR" />
+      <xs:enumeration value="NOT" />
+    </xs:restriction>
+  </xs:simpleType>
 
 	<xs:complexType name="variableAssignment">
 		<xs:attribute name="type" use="required" type="xs:string" />

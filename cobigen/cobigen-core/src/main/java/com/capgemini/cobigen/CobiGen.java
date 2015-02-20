@@ -69,7 +69,7 @@ public class CobiGen {
     /**
      * Current version of the generation, needed for configuration file validation
      */
-    public static final String CURRENT_VERSION = "1.3.0";
+    public static final String CURRENT_VERSION = "2.0.0";
 
     /**
      * The {@link ContextConfiguration} for this instance
