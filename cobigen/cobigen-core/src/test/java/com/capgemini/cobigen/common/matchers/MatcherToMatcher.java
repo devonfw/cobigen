@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.unittest.common.matchers;
+package com.capgemini.cobigen.common.matchers;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

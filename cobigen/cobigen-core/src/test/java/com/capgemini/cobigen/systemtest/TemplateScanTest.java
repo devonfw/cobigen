@@ -1,6 +1,6 @@
 package com.capgemini.cobigen.systemtest;
 
-import static com.capgemini.cobigen.unittest.common.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -19,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
@@ -26,8 +28,6 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
-import com.capgemini.cobigen.unittest.common.matchers.MatcherToMatcher;
-import com.capgemini.cobigen.unittest.common.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 
 /**

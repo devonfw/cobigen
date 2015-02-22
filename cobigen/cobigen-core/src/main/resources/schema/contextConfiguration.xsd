@@ -40,13 +40,13 @@
 		</xs:sequence>
 		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="required" />
+    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR" />
 	</xs:complexType>
 
 	<xs:complexType name="containerMatcher">
 		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="required" />
     <xs:attribute name="retrieveObjectsRecursively" type="xs:boolean" use="optional" default="false" />
-    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR" />
 	</xs:complexType>
 
   <xs:simpleType name="accumulationType">

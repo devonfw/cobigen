@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.capgemini.AccumulationType;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
@@ -452,25 +453,17 @@ public class CobiGen {
 
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
-                    boolean triggerMatches = false;
-                    for (Matcher matcher : trigger.getMatcher()) {
-                        MatcherTo matcherTo =
-                            new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
-                        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                            triggerMatches = true;
-                            break;
-                        }
-                    }
+                    boolean triggerMatches = matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
 
                     // if a match has been found do not check container matchers in addition for performance
                     // issues.
                     if (!triggerMatches) {
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo matcherTo =
+                            MatcherTo containerMatcherTo =
                                 new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
                                     matcherInput);
-                            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                            if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
                                 // keep backward-compatibility
                                 List<Object> containerResources;
                                 if (triggerInterpreter.getInputReader() instanceof InputReaderV13
@@ -486,14 +479,10 @@ public class CobiGen {
                                             Charsets.UTF_8);
                                 }
 
-                                for (Matcher matcher : trigger.getMatcher()) {
-                                    for (Object resource : containerResources) {
-                                        matcherTo =
-                                            new MatcherTo(matcher.getType(), matcher.getValue(), resource);
-                                        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                                            matchingTrigger.add(trigger);
-                                            break FOR_CONTAINERMATCHER;
-                                        }
+                                for (Object resource : containerResources) {
+                                    if (matches(resource, trigger.getMatcher(), triggerInterpreter)) {
+                                        triggerMatches = true;
+                                        break FOR_CONTAINERMATCHER;
                                     }
                                 }
                             }
@@ -509,6 +498,47 @@ public class CobiGen {
             }
         }
         return matchingTrigger;
+    }
+
+    /**
+     * Checks whether the list of matches matches the matcher input according to the given trigger
+     * interpreter.
+     * @param matcherInput
+     *            input for the matcher
+     * @param matcherList
+     *            list of matchers to be checked
+     * @param triggerInterpreter
+     *            to called for checking retrieving the matchers matching result
+     * @return <code>true</code> if the given matcher input matches the matcher list<br>
+     *         <code>false</code>, otherwise
+     * @author mbrunnli (22.02.2015)
+     */
+    private boolean matches(Object matcherInput, List<Matcher> matcherList,
+        ITriggerInterpreter triggerInterpreter) {
+        boolean triggerMatches = true;
+        MATCHER_LOOP:
+        for (Matcher matcher : matcherList) {
+            MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
+            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                switch (matcher.getAccumulationType()) {
+                case NOT:
+                    triggerMatches = false;
+                    break MATCHER_LOOP;
+                case OR:
+                    // triggerMatches = true; due to initialization
+                    triggerMatches = true;
+                    break;
+                default:
+                }
+            } else {
+                // if there is an AND matcher, which does not match -> fail
+                if (matcher.getAccumulationType() == AccumulationType.AND) {
+                    triggerMatches = false;
+                    break MATCHER_LOOP;
+                }
+            }
+        }
+        return triggerMatches;
     }
 
     /**

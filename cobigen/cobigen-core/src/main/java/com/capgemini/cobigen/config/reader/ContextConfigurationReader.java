@@ -159,7 +159,8 @@ public class ContextConfigurationReader {
 
         List<Matcher> matcher = new LinkedList<>();
         for (com.capgemini.Matcher m : trigger.getMatcher()) {
-            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m)));
+            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m
+                .getAccumulationType()));
         }
         return matcher;
     }

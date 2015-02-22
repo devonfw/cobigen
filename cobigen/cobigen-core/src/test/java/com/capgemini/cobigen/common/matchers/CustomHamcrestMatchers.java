@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.unittest.common.matchers;
+package com.capgemini.cobigen.common.matchers;
 
 import static org.hamcrest.core.AllOf.allOf;
 
