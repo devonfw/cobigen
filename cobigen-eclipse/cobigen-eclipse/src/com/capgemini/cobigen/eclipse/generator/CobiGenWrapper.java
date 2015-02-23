@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
+import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -56,9 +57,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
+     * @throws IOException
+     *             if the generator project could not be found or read
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         super();
     }
 
@@ -70,9 +76,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
+     * @throws IOException
+     *             if the generator project could not be found or read
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         super();
         setInputs(inputs);
     }

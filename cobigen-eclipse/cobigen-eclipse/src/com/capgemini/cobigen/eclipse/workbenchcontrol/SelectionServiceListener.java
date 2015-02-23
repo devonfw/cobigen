@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
@@ -71,15 +72,17 @@ public class SelectionServiceListener implements ISelectionListener {
      * Creates a new instance of the {@link SelectionServiceListener}
      *
      * @throws CoreException
-     *             if an internal eclipse exception occured
+     *             if an internal eclipse exception occurred
      * @throws GeneratorProjectNotExistentException
      *             if the generation configuration folder does not exist
      * @throws InvalidConfigurationException
      *             if the configuration is invalid
+     * @throws GeneratorCreationException
+     *             if the generator could not be created
      * @author mbrunnli (15.02.2013)
      */
     public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException {
+        InvalidConfigurationException, GeneratorCreationException {
 
         ISourceProviderService isps =
             (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
@@ -87,7 +90,12 @@ public class SelectionServiceListener implements ISelectionListener {
         sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
         IProject generatorConfProj = ConfigResources.getGeneratorConfigurationProject();
-        cobiGen = new CobiGen(generatorConfProj.getLocation().toFile());
+        try {
+            cobiGen = new CobiGen(generatorConfProj.getLocationURI());
+        } catch (IOException e) {
+            LOG.error("Configuration source could not be read", e);
+            throw new GeneratorCreationException("Configuration source could not be read", e);
+        }
         // TODO check if needed as every time there will be a new instance of the generator
         ResourcesPlugin.getWorkspace().addResourceChangeListener(
             new ConfigurationRCL(generatorConfProj, cobiGen), IResourceChangeEvent.POST_CHANGE);

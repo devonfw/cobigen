@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.generator;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +65,9 @@ public class GeneratorWrapperFactory {
             } catch (CoreException e) {
                 LOG.error("An eclipse internal exception occurred", e);
                 throw new GeneratorCreationException("An eclipse internal exception occurred", e);
+            } catch (IOException e) {
+                LOG.error("Configuration source could not be read", e);
+                throw new GeneratorCreationException("Configuration source could not be read", e);
             }
         }
         return null;
