@@ -516,10 +516,12 @@ public class CobiGen {
     private boolean matches(Object matcherInput, List<Matcher> matcherList,
         ITriggerInterpreter triggerInterpreter) {
         boolean triggerMatches = true;
+        boolean anyMatcherMatches = false;
         MATCHER_LOOP:
         for (Matcher matcher : matcherList) {
             MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                anyMatcherMatches = true;
                 switch (matcher.getAccumulationType()) {
                 case NOT:
                     triggerMatches = false;
@@ -538,7 +540,7 @@ public class CobiGen {
                 }
             }
         }
-        return triggerMatches;
+        return triggerMatches && anyMatcherMatches;
     }
 
     /**
