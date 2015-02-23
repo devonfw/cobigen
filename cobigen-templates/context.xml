@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  version="1.3">
+  version="2.0">
   <triggers>
     <trigger id="rf_persistenceEntity" type="java" templateFolder="rf_persistenceEntity_templates">
       <containerMatcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity"/>
@@ -26,6 +26,10 @@
         <variableAssignment type="regex" key="component" value="4"/>
         <variableAssignment type="regex" key="pojoName" value="6"/>
         <variableAssignment type="regex" key="subPackage" value="3"/>
+      </matcher>
+      <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT">
+      </matcher>
+      <matcher type="expression" value="isAbstract" accumulationType="NOT">
       </matcher>
     </trigger>
     <trigger id="oasp_testdataFramework" type="java" templateFolder="oasp_testdata_framework">
