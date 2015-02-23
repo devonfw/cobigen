@@ -7,10 +7,6 @@
             id="com.capgemini.cobigen.eclipseplugin.generate"
             name="Generate">
       </command>
-      <command
-            id="com.capgemini.cobigen.eclipseplugin.runCustomBatch"
-            name="Run Custom Batch">
-      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -24,18 +20,6 @@
                      value="true">
                </equals>
             </with></enabledWhen>
-      </handler>
-      <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.RunCustomBatch"
-            commandId="com.capgemini.cobigen.eclipseplugin.runCustomBatch">
-         <enabledWhen>
-            <with
-                  variable="com.capgemini.cobigen.eclipseplugin.variables.validInputPojos">
-               <equals
-                     value="true">
-               </equals>
-            </with>
-         </enabledWhen>
       </handler>
    </extension>
    <extension
