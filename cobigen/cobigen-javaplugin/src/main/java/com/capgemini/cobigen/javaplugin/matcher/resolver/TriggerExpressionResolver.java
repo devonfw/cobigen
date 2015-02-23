@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.javaplugin.matcher.resolver;
 
+import java.lang.reflect.Modifier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,9 +28,14 @@ public class TriggerExpressionResolver {
     private static final Logger LOG = LoggerFactory.getLogger(TriggerExpressionResolver.class);
 
     /**
-     * Pattern for 'instanceof' expression ("instanceof p.a.c.k.a.g.e.ClassName")
+     * Pattern for 'instanceof' expression; syntax: "instanceof p.a.c.k.a.g.e.ClassName"
      */
     private static Pattern instanceOfPattern = Pattern.compile("\\s*instanceof\\s+([^\\s]+)");
+
+    /**
+     * Pattern for 'isAbstract' expression
+     */
+    private static Pattern isAbstractPattern = Pattern.compile("\\s*isAbstract\\s*");
 
     /**
      * Creates a new {@link TriggerExpressionResolver} for the given pojo with its {@link ClassLoader}
@@ -63,7 +69,12 @@ public class TriggerExpressionResolver {
                     e);
             }
         } else {
-            throw new UnknownExpressionException("Unknown trigger expression: '" + expression + "'");
+            m = isAbstractPattern.matcher(expression);
+            if (m.matches()) {
+                return Modifier.isAbstract(pojo.getModifiers());
+            } else {
+                throw new UnknownExpressionException("Unknown trigger expression: '" + expression + "'");
+            }
         }
         return false;
     }
