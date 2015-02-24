@@ -267,18 +267,12 @@ public class CobiGen {
             }
 
             Iterator<Object> it = inputObjects.iterator();
-            InputObjectsLoop:
             while (it.hasNext()) {
                 Object next = it.next();
                 trigger = contextConfiguration.getTrigger(template.getTriggerId());
-                for (Matcher m : trigger.getMatcher()) {
-                    if (triggerInterpreter.getMatcher().matches(
-                        new MatcherTo(m.getType(), m.getValue(), next))) {
-                        continue InputObjectsLoop;
-                    }
+                if (!matches(next, trigger.getMatcher(), triggerInterpreter)) {
+                    it.remove();
                 }
-                // InputObjectsLoop has not been continued --> object does not match (remove it)
-                it.remove();
             }
         }
 

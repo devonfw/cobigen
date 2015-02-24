@@ -3,7 +3,10 @@ package com.capgemini.cobigen.systemtest;
 import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -178,6 +181,92 @@ public class ContainerMatcherTest extends AbstractApiTest {
         // Verification
         Assert.assertNotNull(triggerIds);
         Assert.assertEquals(2, triggerIds.size());
+    }
+
+    @Test
+    public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
+
+        Object container = new Object() {
+            @Override
+            public String toString() {
+                return "container";
+            }
+        };
+        Object child1 = new Object() {
+            @Override
+            public String toString() {
+                return "child1";
+            }
+        };
+        Object child2 = new Object() {
+            @Override
+            public String toString() {
+                return "child2";
+            }
+        };
+
+        // Pre-processing: Mocking
+        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
+        IMatcher matcher = mock(IMatcher.class);
+        IInputReader inputReader = mock(IInputReader.class);
+
+        when(triggerInterpreter.getType()).thenReturn("test");
+        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
+        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+
+        when(inputReader.isValidInput(any())).thenReturn(true);
+
+        // Simulate container children resolution of any plug-in
+        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
+        when(
+            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
+                anyList())).thenReturn(
+            ImmutableMap.<String, String> builder().put("variable", "child1").build());
+        when(
+            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
+                anyList())).thenReturn(
+            ImmutableMap.<String, String> builder().put("variable", "child2").build());
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
+            Lists.newArrayList(child1, child2));
+
+        // match container
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(container)))))
+            .thenReturn(false);
+
+        // do not match first child
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
+            .thenReturn(true);
+
+        // match second child
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
+            .thenReturn(false);
+
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+
+        TemplateTo templateTo = mock(TemplateTo.class);
+        when(templateTo.getTriggerId()).thenReturn("trigger1");
+        when(templateTo.getId()).thenReturn("t1");
+
+        // create CobiGen instance
+        File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
+        CobiGen target = new CobiGen(templatesFolder.toURI());
+        File folder = tmpFolder.newFolder();
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, folder.getAbsolutePath());
+
+        // Execution
+        target.generate(container, templateTo, false);
+
+        // Verification
+        assertNotNull(folder.list());
+        assertEquals(1, folder.list().length);
+        assertEquals("child2.txt", folder.list()[0]);
+
     }
 
     // ######################### PRIVATE ##############################
