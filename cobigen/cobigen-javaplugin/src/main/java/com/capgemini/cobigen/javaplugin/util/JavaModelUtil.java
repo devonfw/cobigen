@@ -171,6 +171,26 @@ public class JavaModelUtil {
     }
 
     /**
+     * Returns the method model of the model with the given methodName.
+     * @param model
+     *            raw model
+     * @param methodName
+     *            method name to search for
+     * @return method model for the method with the given name or <code>null</code> if no method with the
+     *         given name found.
+     * @author mbrunnli (30.01.2015)
+     */
+    public static Map<String, Object> getMethod(Map<String, Object> model, String methodName) {
+        List<Map<String, Object>> methods = getMethods(model);
+        for (Map<String, Object> method : methods) {
+            if (methodName.equals(method.get(ModelConstant.NAME))) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the model's name element, which is the simple name of the input class
      *
      * @param model
@@ -192,5 +212,23 @@ public class JavaModelUtil {
     public static String getCanonicalName(Map<String, Object> model) {
         String cName = (String) getRoot(model).get(ModelConstant.CANONICAL_NAME);
         return cName;
+    }
+
+    /**
+     * Returns the JavaDoc model of the documented element model passed.
+     * @param documentedElementModel
+     *            element model, from which the javaDoc model should be retrieved.
+     * @return the JavaDoc model or <code>null</code> if not available.
+     * @author mbrunnli (30.01.2015)
+     */
+    public static Map<String, String> getJavaDocModel(Map<String, Object> documentedElementModel) {
+        Object o = documentedElementModel.get(ModelConstant.JAVADOC);
+        if (o != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, String> javaDocModel = (Map<String, String>) o;
+            return javaDocModel;
+        } else {
+            return null;
+        }
     }
 }

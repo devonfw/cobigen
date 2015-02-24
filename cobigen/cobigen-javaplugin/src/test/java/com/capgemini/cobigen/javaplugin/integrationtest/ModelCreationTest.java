@@ -15,47 +15,50 @@ import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 /**
- *
- * @author mbrunnli (06.12.2014)
+ * This test suite includes all tests, which focus on the correct model creation including correct extraction
+ * of Java inheritance, generic type resolving etc.
+ * @author mbrunnli (22.01.2015)
  */
-public class AnnotationQueryingTest extends AbstractIntegrationTest {
+public class ModelCreationTest extends AbstractIntegrationTest {
 
     /**
-     * Tests whether annotations with object array values are correctly accessible within the templates
+     * Field for testing purposes
+     */
+    @SuppressWarnings("unused")
+    private List<String> testField;
+
+    /**
+     * Tests the correct reading and writing of parametric types as found in the input sources.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (06.12.2014)
+     * @author mbrunnli (22.01.2015)
      */
     @Test
-    public void testAnnotationWithObjectArraysAsValues() throws Exception {
+    public void testCorrectGenericTypeExtraction() throws Exception {
         CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
-        String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
-        File javaSourceFile =
-            new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Object[] input =
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)),
-                TestClassWithAnnotationsContainingObjectArrays.class };
+            new Object[] {
+                this.getClass(),
+                JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
+                    "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("annotationQuerying.txt")) {
+            if (template.getId().equals("genericTypes.txt")) {
                 cobiGen.generate(input, template, false);
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "annotationQuerying.txt");
+                        + "genericTypes.txt");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals(
-                    "TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,",
-                    FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("List<String> testField", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
@@ -65,4 +68,5 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
             throw new AssertionFailedError("Test template not found");
         }
     }
+
 }

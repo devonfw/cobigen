@@ -111,7 +111,7 @@ public class ReflectedJavaModelBuilderTest {
         Map<String, Object> model = javaInputReader.createModel(RootClass.class);
 
         Assert.assertNotNull(JavaModelUtil.getMethodAccessibleFields(model));
-        Assert.assertEquals(2, JavaModelUtil.getMethodAccessibleFields(model).size());
+        Assert.assertEquals(3, JavaModelUtil.getMethodAccessibleFields(model).size());
 
         Map<String, Object> setterVisibleByteField =
             JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");

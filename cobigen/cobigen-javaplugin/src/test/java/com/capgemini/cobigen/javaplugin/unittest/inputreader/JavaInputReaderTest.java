@@ -164,4 +164,5 @@ public class JavaInputReaderTest {
         Assert.assertTrue(methods.get("isSubtypeOf") instanceof IsSubtypeOfMethod);
         Assert.assertTrue(methods.get("isAbstract") instanceof IsAbstractMethod);
     }
+
 }
