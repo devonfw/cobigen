@@ -26,7 +26,7 @@
 	<xs:complexType name="trigger">
 		<xs:sequence>
 			<xs:element name="containerMatcher" type="tns:containerMatcher"  minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="matcher" type="tns:matcher"  minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="matcher" type="tns:matcher" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="id" use="required" type="xs:NCName" />
 		<xs:attribute name="type" use="required" type="xs:string" />
@@ -40,15 +40,22 @@
 		</xs:sequence>
 		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="required" />
+    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR" />
 	</xs:complexType>
 
 	<xs:complexType name="containerMatcher">
-		<!--<xs:sequence>
-			<xs:element name="variableAssignment" type="tns:variableAssignment"  minOccurs="0" maxOccurs="unbounded" />
-		</xs:sequence>-->
 		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="required" />
+    <xs:attribute name="retrieveObjectsRecursively" type="xs:boolean" use="optional" default="false" />
 	</xs:complexType>
+
+  <xs:simpleType name="accumulationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AND" />
+      <xs:enumeration value="OR" />
+      <xs:enumeration value="NOT" />
+    </xs:restriction>
+  </xs:simpleType>
 
 	<xs:complexType name="variableAssignment">
 		<xs:attribute name="type" use="required" type="xs:string" />

@@ -1,8 +1,10 @@
 package com.capgemini.cobigen.config.reader;
 
-import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,11 @@ import com.google.common.collect.Maps;
 public class ContextConfigurationReader {
 
     /**
+     * Context configuration file name
+     */
+    private static final String CONFIG_FILENAME = "context.xml";
+
+    /**
      * XML Node 'context' of the context.xml
      */
     private ContextConfiguration contextNode;
@@ -52,13 +59,16 @@ public class ContextConfigurationReader {
      * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
      * context file
      *
-     * @param file
-     *            context file
+     * @param configRoot
+     *            root directory of the configuration
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      * @author trippl (04.04.2013)
      */
-    public ContextConfigurationReader(File file) throws InvalidConfigurationException {
+    public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
+
+        Path contextFile = configRoot.resolve(CONFIG_FILENAME);
+        String filePath = contextFile.toAbsolutePath().toString();
 
         try {
             Unmarshaller unmarschaller =
@@ -66,41 +76,40 @@ public class ContextConfigurationReader {
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(file);
+            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
             if (rootNode instanceof ContextConfiguration) {
                 BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
                 if (configVersion == null) {
-                    throw new InvalidConfigurationException(file,
+                    throw new InvalidConfigurationException(filePath,
                         "The required 'version' attribute of node \"contextConfiguration\" has not been set");
                 } else {
                     VersionValidator.validateContextConfig(configVersion);
                 }
             } else {
-                throw new InvalidConfigurationException(file,
+                throw new InvalidConfigurationException(filePath,
                     "Unknown Root Node. Use \"contextConfiguration\" as root Node");
             }
 
             // If we reach this point, the configuration version and root node has been validated.
             // Unmarshal with schema checks for checking the correctness and give the user more hints to
-            // correct his
-            // failures
+            // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema =
                 schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
                     "/schema/contextConfiguration.xsd")));
             unmarschaller.setSchema(schema);
-            rootNode = unmarschaller.unmarshal(file);
+            rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
             contextNode = (ContextConfiguration) rootNode;
         } catch (JAXBException e) {
-            LOG.error("Could not parse configuration file {}", file.getPath(), e);
+            LOG.error("Could not parse configuration file {}", filePath, e);
             // try getting SAXParseException for better error handling and user support
             SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
             String message = null;
             if (parseCause != null) {
                 message = parseCause.getMessage();
             }
-            throw new InvalidConfigurationException(file, "Could not parse configuration file:\n" + message,
-                e);
+            throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n"
+                + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             LOG.error("Could not parse context configuration schema.", e);
@@ -112,6 +121,10 @@ public class ContextConfigurationReader {
             LOG.error("Invalid version number for context configuration defined.", e);
             throw new InvalidConfigurationException(
                 "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
+        } catch (IOException e) {
+            LOG.error("Could not read context configuration file {}", contextFile.toUri().toString(), e);
+            throw new InvalidConfigurationException(contextFile.toUri().toString(),
+                "Could not read context configuration file.", e);
         }
 
     }
@@ -146,7 +159,8 @@ public class ContextConfigurationReader {
 
         List<Matcher> matcher = new LinkedList<>();
         for (com.capgemini.Matcher m : trigger.getMatcher()) {
-            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m)));
+            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m
+                .getAccumulationType()));
         }
         return matcher;
     }
@@ -163,7 +177,8 @@ public class ContextConfigurationReader {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
         for (com.capgemini.ContainerMatcher cm : trigger.getContainerMatcher()) {
-            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue()));
+            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm
+                .isRetrieveObjectsRecursively()));
         }
         return containerMatchers;
     }

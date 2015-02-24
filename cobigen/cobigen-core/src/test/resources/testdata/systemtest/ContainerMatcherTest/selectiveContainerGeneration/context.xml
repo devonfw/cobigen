@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0">
+  <triggers>
+    <trigger id="trigger1" type="test" templateFolder="templates">
+      <containerMatcher type="or" value="?"/>
+      <matcher type="or" value="?" accumulationType="OR">
+      </matcher>
+      <matcher type="not" value="?" accumulationType="NOT">
+      </matcher>
+    </trigger>
+  </triggers>
+</contextConfiguration>

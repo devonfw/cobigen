@@ -1,8 +1,10 @@
 package com.capgemini.cobigen.systemtest;
 
-import static com.capgemini.cobigen.unittest.common.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -17,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMatcher;
@@ -24,8 +28,6 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
-import com.capgemini.cobigen.unittest.common.matchers.MatcherToMatcher;
-import com.capgemini.cobigen.unittest.common.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -55,7 +57,7 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         target.setContextSetting(ContextSetting.GenerationTargetRootPath,
             generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
@@ -70,6 +72,27 @@ public class TemplateScanTest extends AbstractApiTest {
             + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
             + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")
             .exists());
+    }
+
+    /**
+     *
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (16.02.2015)
+     */
+    @Test
+    public void testScanTemplatesFromArchivFile() throws Exception {
+
+        // pre-processing: mocking
+        Object input = createTestInputAndConfigureMock();
+
+        // test processing
+        CobiGen cobigen = new CobiGen(new File(testFileRootPath + "valid.zip").toURI());
+        List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+
+        // checking
+        assertThat(templates, notNullValue());
+        assertThat(templates.size(), equalTo(7));
     }
 
     /**

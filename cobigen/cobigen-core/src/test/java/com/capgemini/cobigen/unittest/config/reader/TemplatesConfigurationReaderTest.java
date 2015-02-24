@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.unittest.config.reader;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -35,15 +36,16 @@ public class TemplatesConfigurationReaderTest extends Assert {
         "src/test/resources/testdata/unittest/config/reader/TemplatesConfigurationReaderTest/";
 
     /**
-     * Tests whether all templates of a template package could be retrieved successfully
-     *
+     * Tests whether all templates of a template package could be retrieved successfully.
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (18.06.2013)
      */
     @Test
-    public void testTemplatesOfAPackageRetrieval() {
+    public void testTemplatesOfAPackageRetrieval() throws Exception {
 
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
 
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -55,15 +57,17 @@ public class TemplatesConfigurationReaderTest extends Assert {
     }
 
     /**
-     * Tests that templates will be correctly resolved by the template-scan mechanism
+     * Tests that templates will be correctly resolved by the template-scan mechanism.
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testTemplateScan() {
+    public void testTemplateScan() throws Exception {
 
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
 
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -76,6 +80,7 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
         // then
         assertNotNull(templates);
+        assertThat(templates.size(), equalTo(7));
         Template templateSpringCommon = templates.get(templateIdSpringCommon);
         assertNotNull(templateSpringCommon);
         assertEquals(templateIdSpringCommon, templateSpringCommon.getId());
@@ -96,13 +101,15 @@ public class TemplatesConfigurationReaderTest extends Assert {
     /**
      * Tests that the template-scan mechanism does not overwrite an explicit template declaration with the
      * defaults
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() {
+    public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
 
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -133,13 +140,15 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
     /**
      * Tests the overriding of all possible attributes by templateExtensions
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() {
+    public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
 
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -178,13 +187,15 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
     /**
      * Tests an empty templateExtensions does not override any defaults
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() {
+    public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "templates.xml"));
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
 
         Trigger trigger =
             new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -208,49 +219,58 @@ public class TemplatesConfigurationReaderTest extends Assert {
 
     /**
      * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
+     * @throws InvalidConfigurationException
+     *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnInvalidConfiguration() {
+    public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-        new TemplatesConfigurationReader(new File(testFileRootPath + "templates_faulty.xml"));
+        new TemplatesConfigurationReader(new File(testFileRootPath + "faulty").toPath());
     }
 
     /**
      * Tests whether a duplicate template extension declaration will result in an
      * {@link InvalidConfigurationException}
+     * @throws InvalidConfigurationException
+     *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnDuplicateTemplateExtensionDeclaration() {
+    public void testErrorOnDuplicateTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(new File(testFileRootPath
-                + "templates_faulty_duplicate_templateExtension.xml"));
+                + "faulty_duplicate_template_extension").toPath());
         reader.loadTemplates(null, null);
     }
 
     /**
      * Tests whether a template extension with an id-reference, which does not point on any template, will
      * cause an {@link InvalidConfigurationException}
+     * @throws InvalidConfigurationException
+     *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnUnhookedTemplateExtensionDeclaration() {
+    public void testErrorOnUnhookedTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(testFileRootPath
-                + "templates_faulty_unhooked_templateExtension.xml"));
+            new TemplatesConfigurationReader(
+                new File(testFileRootPath + "faulty_unhooked_template_extension").toPath());
         reader.loadTemplates(null, null);
     }
 
     /**
      * Tests whether a two equally named files will result in an {@link InvalidConfigurationException} if they
      * are scanned with the same prefix
+     * @throws InvalidConfigurationException
+     *             expected
      */
     @Test(expected = InvalidConfigurationException.class)
-    public void testErrorOnDuplicateScannedIds() {
+    public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(testFileRootPath
-                + "templates_faulty_duplicate_scanned_id.xml"));
+            new TemplatesConfigurationReader(
+                new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
         reader.loadTemplates(null, null);
     }
+
 }

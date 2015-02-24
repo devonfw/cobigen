@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0">
+  <triggers>
+    <trigger id="triggerId" type="test" templateFolder="*">
+      <matcher type="and1" value="*" accumulationType="AND">
+      </matcher>
+      <matcher type="and2" value="*" accumulationType="AND">
+      </matcher>
+      <matcher type="or" value="*"><!-- default accumulationType="OR" -->
+      </matcher>
+      <matcher type="not" value="*" accumulationType="NOT">
+      </matcher>
+    </trigger>
+    <trigger id="triggerId2" type="test" templateFolder="*">
+      <matcher type="or" value="*"><!-- default accumulationType="OR" -->
+      </matcher>
+      <matcher type="not" value="*" accumulationType="NOT">
+      </matcher>
+    </trigger>
+  </triggers>
+</contextConfiguration>

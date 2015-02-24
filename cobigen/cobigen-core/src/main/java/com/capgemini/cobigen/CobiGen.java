@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.capgemini.AccumulationType;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
@@ -25,6 +29,7 @@ import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
@@ -32,6 +37,7 @@ import com.capgemini.cobigen.extension.IInputReader;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.IModelBuilder;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.extension.InputReaderV13;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -39,7 +45,7 @@ import com.capgemini.cobigen.model.JaxenXPathSupportNodeModel;
 import com.capgemini.cobigen.model.ModelBuilder;
 import com.capgemini.cobigen.model.ModelConverter;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
-import com.capgemini.cobigen.util.SystemUtil;
+import com.capgemini.cobigen.util.FileSystemUtil;
 import com.capgemini.cobigen.validator.InputValidator;
 import com.google.common.collect.Lists;
 
@@ -64,7 +70,7 @@ public class CobiGen {
     /**
      * Current version of the generation, needed for configuration file validation
      */
-    public static final String CURRENT_VERSION = "1.2.0";
+    public static final String CURRENT_VERSION = "2.0.0";
 
     /**
      * The {@link ContextConfiguration} for this instance
@@ -77,23 +83,34 @@ public class CobiGen {
     private Configuration freeMarkerConfig;
 
     /**
-     * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}. Beside the
-     * {@link ContextSetting#GeneratorProjectRootPath} all context variables can be changed during runtime
-     * affecting the generation mechanisms.
+     * Configuration folder of CobiGen.
+     */
+    private Path configFolder;
+
+    /**
+     * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
-     * @param rootConfigFolder
+     * @param configFileOrFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
+     * @throws IOException
+     *             if the {@link URI} points to a new {@link FileSystem} to be created (e.g. zip/jar)
+     * @throws InvalidConfigurationException
+     *             if the context configuration could not be read properly.
      * @author mbrunnli (05.02.2013)
      */
-    public CobiGen(File rootConfigFolder) {
+    public CobiGen(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
+        if (configFileOrFolder == null) {
+            throw new IllegalArgumentException("The configuration file could not be null");
+        }
 
-        contextConfiguration = new ContextConfiguration(rootConfigFolder);
+        configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
+        contextConfiguration = new ContextConfiguration(configFolder);
         freeMarkerConfig = new Configuration();
         freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
-
-        // ClasspathScanner.scanClasspathAndRegisterPlugins(); //TODO implement
+        freeMarkerConfig.setLocalizedLookup(false);
+        freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
     }
 
     /**
@@ -218,28 +235,44 @@ public class CobiGen {
         MergeException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
-        freeMarkerConfig.setDirectoryForTemplateLoading(new File(contextConfiguration
-            .get(ContextSetting.GeneratorProjectRootPath)
-            + SystemUtil.FILE_SEPARATOR
-            + trigger.getTemplateFolder()));
+        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(configFolder
+            .resolve(trigger.getTemplateFolder()));
 
         IInputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
         if (inputReader.combinesMultipleInputObjects(input)) {
-            inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+
+            // check whether the inputs should be retieved recursively
+            boolean retrieveInputsRecursively = false;
+            if (inputReader instanceof InputReaderV13) {
+                for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+                    MatcherTo matcherTo =
+                        new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+                    if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                        if (!retrieveInputsRecursively) {
+                            retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (retrieveInputsRecursively) {
+                inputObjects =
+                    ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
+                        trigger.getInputCharset());
+
+            } else {
+                inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+            }
+
             Iterator<Object> it = inputObjects.iterator();
-            InputObjectsLoop:
             while (it.hasNext()) {
                 Object next = it.next();
                 trigger = contextConfiguration.getTrigger(template.getTriggerId());
-                for (Matcher m : trigger.getMatcher()) {
-                    if (triggerInterpreter.getMatcher().matches(
-                        new MatcherTo(m.getType(), m.getValue(), next))) {
-                        continue InputObjectsLoop;
-                    }
+                if (!matches(next, trigger.getMatcher(), triggerInterpreter)) {
+                    it.remove();
                 }
-                // InputObjectsLoop has not been continued --> object does not match (remove it)
-                it.remove();
             }
         }
 
@@ -275,19 +308,19 @@ public class CobiGen {
                                     + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
-                            LOG.error("An error occured while merging the file {}", originalFile.getName(), e);
+                            LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
                             throw new MergeException("An error occured while merging the file "
-                                + originalFile.getName() + ":\n" + e.getMessage());
+                                + originalFile.toURI() + ":\n" + e.getMessage());
                         }
 
                         if (result != null) {
-                            LOG.debug("Merge {} with charset {}", originalFile.getName(), targetCharset);
+                            LOG.debug("Merge {} with charset {}.", originalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(originalFile, result, targetCharset);
                         }
                     }
                 }
             } else {
-                LOG.info("Create new File {} with charset {}", originalFile.getName(), targetCharset);
+                LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
                 generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
                     input);
             }
@@ -351,9 +384,11 @@ public class CobiGen {
      * @param matcherInput
      *            object
      * @return this {@link List} of matching increments
+     * @throws InvalidConfigurationException
+     *             if the configuration of CobiGen is not valid
      * @author mbrunnli (09.04.2014)
      */
-    public List<IncrementTo> getMatchingIncrements(Object matcherInput) {
+    public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
@@ -412,38 +447,36 @@ public class CobiGen {
 
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
-                    boolean triggerMatches = false;
-                    for (Matcher matcher : trigger.getMatcher()) {
-                        MatcherTo matcherTo =
-                            new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
-                        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                            triggerMatches = true;
-                            break;
-                        }
-                    }
+                    boolean triggerMatches = matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
 
                     // if a match has been found do not check container matchers in addition for performance
                     // issues.
                     if (!triggerMatches) {
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo matcherTo =
+                            MatcherTo containerMatcherTo =
                                 new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
                                     matcherInput);
-                            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                                // the charset does not matter as we only want to see whether there is one
-                                // matcher for one of the container resources
-                                List<Object> containerResources =
-                                    triggerInterpreter.getInputReader().getInputObjects(matcherInput,
-                                        Charsets.UTF_8);
-                                for (Matcher matcher : trigger.getMatcher()) {
-                                    for (Object resource : containerResources) {
-                                        matcherTo =
-                                            new MatcherTo(matcher.getType(), matcher.getValue(), resource);
-                                        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                                            matchingTrigger.add(trigger);
-                                            break FOR_CONTAINERMATCHER;
-                                        }
+                            if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
+                                // keep backward-compatibility
+                                List<Object> containerResources;
+                                if (triggerInterpreter.getInputReader() instanceof InputReaderV13
+                                    && containerMatcher.isRetrieveObjectsRecursively()) {
+                                    containerResources =
+                                        ((InputReaderV13) triggerInterpreter.getInputReader())
+                                            .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
+                                } else {
+                                    // the charset does not matter as we only want to see whether there is one
+                                    // matcher for one of the container resources
+                                    containerResources =
+                                        triggerInterpreter.getInputReader().getInputObjects(matcherInput,
+                                            Charsets.UTF_8);
+                                }
+
+                                for (Object resource : containerResources) {
+                                    if (matches(resource, trigger.getMatcher(), triggerInterpreter)) {
+                                        triggerMatches = true;
+                                        break FOR_CONTAINERMATCHER;
                                     }
                                 }
                             }
@@ -454,11 +487,54 @@ public class CobiGen {
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly",
+                LOG.error("The TriggerInterpreter for type '{}' exited abruptly!",
                     triggerInterpreter.getType(), e);
             }
         }
         return matchingTrigger;
+    }
+
+    /**
+     * Checks whether the list of matches matches the matcher input according to the given trigger
+     * interpreter.
+     * @param matcherInput
+     *            input for the matcher
+     * @param matcherList
+     *            list of matchers to be checked
+     * @param triggerInterpreter
+     *            to called for checking retrieving the matchers matching result
+     * @return <code>true</code> if the given matcher input matches the matcher list<br>
+     *         <code>false</code>, otherwise
+     * @author mbrunnli (22.02.2015)
+     */
+    private boolean matches(Object matcherInput, List<Matcher> matcherList,
+        ITriggerInterpreter triggerInterpreter) {
+        boolean triggerMatches = true;
+        boolean anyMatcherMatches = false;
+        MATCHER_LOOP:
+        for (Matcher matcher : matcherList) {
+            MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
+            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                anyMatcherMatches = true;
+                switch (matcher.getAccumulationType()) {
+                case NOT:
+                    triggerMatches = false;
+                    break MATCHER_LOOP;
+                case OR:
+                    // triggerMatches = true; due to initialization
+                    triggerMatches = true;
+                    break;
+                default:
+                }
+            } else {
+                // if there is an AND matcher, which does not match -> fail
+                if (matcher.getAccumulationType() == AccumulationType.AND) {
+                    triggerMatches = false;
+                    break MATCHER_LOOP;
+                }
+            }
+        }
+        return triggerMatches && anyMatcherMatches;
     }
 
     /**
@@ -468,9 +544,11 @@ public class CobiGen {
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching templates
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (09.04.2014)
      */
-    public List<TemplateTo> getMatchingTemplates(Object matcherInput) {
+    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
@@ -490,9 +568,12 @@ public class CobiGen {
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
      * @return the {@link List} of matching {@link TemplatesConfiguration}s
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (09.04.2014)
      */
-    private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput) {
+    private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput)
+        throws InvalidConfigurationException {
 
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
@@ -518,14 +599,13 @@ public class CobiGen {
      *            to get the matcher implementation from
      * @return the {@link ContextConfiguration} for the given input or <code>null</code> if the context
      *         variables could not be resolved.
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
      * @author mbrunnli (14.10.2014)
      */
     private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger,
-        ITriggerInterpreter triggerInterpreter) {
-        File templatesConfigurationFolder =
-            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-        return new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
+        ITriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
+        return new TemplatesConfiguration(configFolder, trigger, triggerInterpreter);
     }
 
     /**
@@ -544,12 +624,7 @@ public class CobiGen {
         throws InvalidConfigurationException {
 
         Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
-        File templatesConfigurationFolder =
-            new File(contextConfiguration.get(ContextSetting.GeneratorProjectRootPath)
-                + SystemUtil.FILE_SEPARATOR + trigger.getTemplateFolder());
-
-        TemplatesConfiguration tConfig =
-            new TemplatesConfiguration(templatesConfigurationFolder, trigger, triggerInterpreter);
+        TemplatesConfiguration tConfig = createTemplatesConfiguration(trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
             throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
@@ -649,7 +724,7 @@ public class CobiGen {
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getTemplateFile());
         } catch (IOException e) {
-            LOG.error("Error while retrieving template with id '{}'", template.getId(), e);
+            LOG.error("Error while retrieving template with id '{}'.", template.getId(), e);
             throw new IOException("Template " + template.getId() + ":\n" + e.getMessage(), e);
         }
 
@@ -781,7 +856,7 @@ public class CobiGen {
      */
     public void reloadContextConfigurationFromFile() throws InvalidConfigurationException {
 
-        contextConfiguration.reloadConfigurationFromFile();
+        contextConfiguration.reloadConfigurationFromFile(configFolder);
     }
 
 }
