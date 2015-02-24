@@ -89,6 +89,10 @@ public class JavaMatcher implements IMatcher {
                     TriggerExpressionResolver resolver = new TriggerExpressionResolver((Class<?>) target);
                     return resolver.evaluateExpression(matcher.getValue());
                 }
+                if (target instanceof JavaClass) {
+                    TriggerExpressionResolver resolver = new TriggerExpressionResolver((JavaClass) target);
+                    return resolver.evaluateExpression(matcher.getValue());
+                }
             }
         } catch (IllegalArgumentException e) {
             LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());

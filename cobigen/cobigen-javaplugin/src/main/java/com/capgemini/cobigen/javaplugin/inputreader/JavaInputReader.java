@@ -155,8 +155,9 @@ public class JavaInputReader implements InputReaderV13 {
 
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
                 classLibraryBuilder.appendDefaultClassLoaders();
-                if (((PackageFolder) input).getClassLoader() != null) {
-                    classLibraryBuilder.appendClassLoader(((PackageFolder) input).getClassLoader());
+                ClassLoader containerClassloader = ((PackageFolder) input).getClassLoader();
+                if (containerClassloader != null) {
+                    classLibraryBuilder.appendClassLoader(containerClassloader);
                 }
                 try {
                     classLibraryBuilder
@@ -171,7 +172,21 @@ public class JavaInputReader implements InputReaderV13 {
                         // save cast as given by the customized builder
                         if (source.getClasses().size() > 0) {
                             JavaClass javaClass = source.getClasses().get(0);
-                            javaClasses.add(javaClass);
+
+                            // try loading class
+                            if (containerClassloader != null) {
+                                try {
+                                    Class<?> loadedClass =
+                                        containerClassloader.loadClass(javaClass.getCanonicalName());
+                                    javaClasses.add(new Object[] { javaClass, loadedClass });
+                                } catch (ClassNotFoundException e) {
+                                    LOG.info(
+                                        "Could not load Java type '{}' with the containers class loader. "
+                                            + "Just returning the parsed Java model.",
+                                        javaClass.getCanonicalName());
+                                    javaClasses.add(javaClass);
+                                }
+                            }
                         }
                     }
                 } catch (IOException e) {
