@@ -186,6 +186,8 @@ public class JavaInputReader implements InputReaderV13 {
                                         javaClass.getCanonicalName());
                                     javaClasses.add(javaClass);
                                 }
+                            } else {
+                                javaClasses.add(javaClass);
                             }
                         }
                     }
