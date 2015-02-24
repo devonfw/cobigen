@@ -32,7 +32,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
     @Test
     public void testIsAbstractMethod() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
@@ -67,7 +67,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
     @Test
     public void testIsSubtypeOfMethod() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
@@ -102,7 +102,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
     @Test
     public void testCorrectClassLoaderForMethods() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());

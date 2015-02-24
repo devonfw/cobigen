@@ -32,7 +32,7 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
      */
     @Test
     public void testAnnotationWithObjectArraysAsValues() throws Exception {
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
