@@ -1,4 +1,5 @@
 <#include '/makros.ftl'>
+<#include '/functions.ftl'>
 package ${variables.rootPackage}.common.builders.${variables.subPackage};
 
 import java.util.LinkedList;
@@ -6,6 +7,12 @@ import java.util.List;
 
 import ${pojo.package}.${pojo.name};
 import ${variables.rootPackage}.common.builders.P;
+
+<#list pojo.methodAccessibleFields as field>
+  <#if field.canonicalType?has_content && !equalsJavaPrimitive(field.type)>
+import ${getComponentType(field.canonicalType)};
+  </#if>
+</#list>
 
 public class ${pojo.name}Builder {
 

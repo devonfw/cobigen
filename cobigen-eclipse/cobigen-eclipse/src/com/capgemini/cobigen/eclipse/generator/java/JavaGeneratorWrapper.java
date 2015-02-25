@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.generator.java;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,9 +35,14 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
      *             if the generator configuration project could not be opened
+     * @throws IOException
+     *             if the generator project could not be found or read
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
      * @author mbrunnli (21.03.2014)
      */
-    public JavaGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException {
+    public JavaGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         super();
     }
 

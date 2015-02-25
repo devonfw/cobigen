@@ -55,7 +55,9 @@ public class JavaInputConverter {
                         .setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
-
+                    LOG.error("An internal exception occurred while building the project class loader.", e);
+                    throw new GeneratorCreationException(
+                        "An internal exception occurred while building the project class loader.", e);
                 } catch (CoreException e) {
                     LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
