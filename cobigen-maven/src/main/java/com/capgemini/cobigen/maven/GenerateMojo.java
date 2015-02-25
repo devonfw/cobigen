@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -33,6 +34,7 @@ import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
+import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
@@ -110,7 +112,7 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Destination root path the relative paths of templates will be resolved with.
      */
-    @Parameter(required = true)
+    @Parameter(defaultValue = "${basedir}")
     private File destinationRoot;
 
     /**
@@ -229,6 +231,7 @@ public class GenerateMojo extends AbstractMojo {
         if (increments != null && !increments.isEmpty()) {
             for (Object input : inputs) {
                 List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
+                List<String> configuredIncrements = new LinkedList<>(increments);
                 for (IncrementTo increment : matchingIncrements) {
                     if (increments.contains(increment.getId())) {
                         try {
@@ -249,6 +252,18 @@ public class GenerateMojo extends AbstractMojo {
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
                         }
+                        configuredIncrements.remove(increment.getId());
+                    }
+                }
+                // error handling for increments not found
+                if (!configuredIncrements.isEmpty()) {
+                    if (input instanceof PackageFolder) {
+                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
+                            + "' not matched for input '" + ((PackageFolder) input).getLocation()
+                            + "' by provided CobiGen configuration.");
+                    } else {
+                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
+                            + "' not matched for input '" + input + "' by provided CobiGen configuration.");
                     }
                 }
             }
@@ -268,9 +283,10 @@ public class GenerateMojo extends AbstractMojo {
     private void generateFromTemplates(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
         if (inputFiles != null && !inputFiles.isEmpty()) {
             for (Object input : inputs) {
-                List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
-                for (IncrementTo template : matchingIncrements) {
-                    if (increments.contains(template.getId())) {
+                List<TemplateTo> matchingTemplates = cobiGen.getMatchingTemplates(input);
+                List<String> configuredTemplates = new LinkedList<>(templates);
+                for (TemplateTo template : matchingTemplates) {
+                    if (templates.contains(template.getId())) {
                         try {
                             cobiGen.generate(input, template, forceOverride);
                         } catch (IOException | TemplateException | MergeException e) {
@@ -289,6 +305,20 @@ public class GenerateMojo extends AbstractMojo {
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
                         }
+                    } else {
+                        throw new MojoFailureException("Increment with id '" + template.getId()
+                            + "' not found in provided CobiGen configuration.");
+                    }
+                }
+                // error handling for increments not found
+                if (!configuredTemplates.isEmpty()) {
+                    if (input instanceof PackageFolder) {
+                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
+                            + "' not matched for package folder '" + ((PackageFolder) input).getLocation()
+                            + "' by provided CobiGen configuration.");
+                    } else {
+                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
+                            + "' not matched for input '" + input + "' by provided CobiGen configuration.");
                     }
                 }
             }
