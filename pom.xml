@@ -15,6 +15,7 @@
   <modules>
     <module>cobigen</module>
     <module>cobigen-eclipse</module>
+	<module>cobigen-maven</module>
   </modules>
 
   <url>https://github.com/oasp-ip/tools-cobigen</url>
