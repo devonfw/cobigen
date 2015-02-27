@@ -33,7 +33,7 @@
       </matcher>
     </trigger>
     <trigger id="oasp_testdataFramework" type="java" templateFolder="oasp_testdata_framework">
-      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.persistence\.api"/>
+      <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"/>
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+Entity)">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
         <variableAssignment type="regex" key="domain" value="3"/>
@@ -46,10 +46,15 @@
         <variableAssignment type="regex" key="component" value="4"/>
         <variableAssignment type="regex" key="pojoName" value="5"/>
       </matcher>
+      <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT">
+        </matcher>
+        <matcher type="expression" value="isAbstract" accumulationType="NOT">
+        </matcher>
     </trigger>
     <trigger id="rf_testDocumentation" type="java" templateFolder="rf_testDocumentation">
-      <containerMatcher type="package" value=".+\.(systemtest|awltest|komptest|kompinttest)" retrieveObjectsRecursively="true" />
-      <containerMatcher type="package" value=".+\.testfaelle" retrieveObjectsRecursively="true" />
+      <containerMatcher type="package" value=".+\.(systemtest|awltest|komptest|kompinttest)"
+        retrieveObjectsRecursively="true"/>
+      <containerMatcher type="package" value=".+\.testfaelle" retrieveObjectsRecursively="true"/>
       <matcher type="fqn" value=".+\.(systemtest|awltest|komptest|kompinttest)\.([^\.]+)\.([^\.]+)\.([^\.]+\.)*([^\.]+)">
         <variableAssignment type="regex" key="category" value="1"/>
         <variableAssignment type="regex" key="bereich" value="2"/>
