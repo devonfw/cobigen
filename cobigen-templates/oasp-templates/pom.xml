@@ -26,6 +26,7 @@
         <includes>
           <include>**/*.ftl</include>
           <include>**/*.xml</include>
+		  <include>**/LICENSE.CobiGen</include>
         </includes>
         <excludes>
           <exclude>pom.xml</exclude>
