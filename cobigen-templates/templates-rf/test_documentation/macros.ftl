@@ -22,3 +22,9 @@
 <#if method?has_content && method.javaDoc?has_content && method.javaDoc.Beschreibung?has_content><#assign cellWithNewLines=method.javaDoc.Beschreibung?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
 </#compress>
 </#macro>
+
+<#macro insertFirstMethodDocletValueRueckbezug method>
+<#compress>
+<#if method?has_content && method.javaDoc?has_content && method.javaDoc.Rueckbezug?has_content><#assign cellWithNewLines=method.javaDoc.Rueckbezug?replace("\\r\\n|\\r","\n", "r")><#assign cellWithNewQuotes=cellWithNewLines?replace('\\"',"'","r")>"${cellWithNewQuotes}"</#if>
+</#compress>
+</#macro>
