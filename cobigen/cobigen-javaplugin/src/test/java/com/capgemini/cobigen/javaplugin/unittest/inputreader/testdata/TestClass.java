@@ -1,16 +1,29 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 public class TestClass extends AbstractTestClass implements TestInterface1, TestInterface2 {
 
+    /**
+     * Example JavaDoc
+     */
+    @MyFieldAnnotation
     private List<String> customList;
 
+    @MyGetterAnnotation
     public List<String> getCustomList() {
 
         return customList;
     }
 
+    @MyIsAnnotation
+    public boolean isCustomList() {
+        return true;
+    }
+
+    @MySetterAnnotation
     public void setCustomList(List<String> customList) {
 
         this.customList = customList;
@@ -25,4 +38,21 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
         return;
     }
 
+}
+
+// simple annotation types which are still available at runtime
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyFieldAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyGetterAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MySetterAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyIsAnnotation {
 }

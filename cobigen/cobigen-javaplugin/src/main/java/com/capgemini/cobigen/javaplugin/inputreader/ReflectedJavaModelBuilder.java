@@ -290,7 +290,7 @@ public class ReflectedJavaModelBuilder {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
             try {
-                Field field = pojo.getField((String) attr.get(ModelConstant.NAME));
+                Field field = pojo.getDeclaredField((String) attr.get(ModelConstant.NAME));
                 extractAnnotationsRecursively(annotations, field.getAnnotations());
             } catch (NoSuchFieldException e) {
                 // Do nothing if the method does not exist

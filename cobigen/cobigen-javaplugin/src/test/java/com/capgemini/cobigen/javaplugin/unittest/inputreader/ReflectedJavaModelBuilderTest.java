@@ -1,5 +1,10 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -125,5 +130,41 @@ public class ReflectedJavaModelBuilderTest {
         Assert.assertEquals("value", valueField.get(ModelConstant.NAME));
         Assert.assertEquals("String", valueField.get(ModelConstant.TYPE));
         Assert.assertEquals("java.lang.String", valueField.get(ModelConstant.CANONICAL_TYPE));
+    }
+
+    /**
+     * Tests whether the input type's fields are extracted correctly (including annotations and javaDoc)
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyExtractedFields() throws FileNotFoundException {
+
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
+
+        Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
+
+        assertNotNull(classField);
+        assertEquals("customList", classField.get(ModelConstant.NAME));
+        assertEquals("List<?>", classField.get(ModelConstant.TYPE));
+        assertEquals("java.util.List", classField.get(ModelConstant.CANONICAL_TYPE));
+        assertEquals("false", classField.get("isId"));
+
+        // test annotations for attribute, getter, setter, is-method
+        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        // getter
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        // is-method
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        // attribute
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        // Setter
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
     }
 }
