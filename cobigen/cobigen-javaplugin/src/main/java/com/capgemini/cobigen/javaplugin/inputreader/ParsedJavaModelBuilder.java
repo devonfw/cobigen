@@ -269,6 +269,11 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
+            JavaField classField = javaClass.getFieldByName((String) attr.get(ModelConstant.NAME));
+
+            if (classField != null) {
+                extractAnnotationsRecursively(annotations, classField.getAnnotations());
+            }
 
             JavaMethod getter =
                 javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
@@ -284,9 +289,12 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
 
-            JavaType attrType = javaClass.getFieldByName((String) attr.get(ModelConstant.NAME)).getType();
-            List<JavaType> paramList = new ArrayList<>();
-            paramList.add(attrType);
+            List<JavaType> paramList = null;
+            if (classField != null) {
+                JavaType attrType = classField.getType();
+                paramList = new ArrayList<>();
+                paramList.add(attrType);
+            }
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
                     paramList, false);
