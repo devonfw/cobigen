@@ -289,8 +289,9 @@ public class ReflectedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
+            Field field = null;
             try {
-                Field field = pojo.getDeclaredField((String) attr.get(ModelConstant.NAME));
+                field = pojo.getDeclaredField((String) attr.get(ModelConstant.NAME));
                 extractAnnotationsRecursively(annotations, field.getAnnotations());
             } catch (NoSuchFieldException e) {
                 // Do nothing if the method does not exist
@@ -310,8 +311,14 @@ public class ReflectedJavaModelBuilder {
                 // Do nothing if the method does not exist
             }
             try {
+                Class<?>[] paramList = new Class<?>[1];
+                if (field != null) {
+                    Class<?> attrClass = field.getType();
+                    paramList[0] = attrClass;
+                }
                 Method setter =
-                    pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
+                    pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
+                        paramList);
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
