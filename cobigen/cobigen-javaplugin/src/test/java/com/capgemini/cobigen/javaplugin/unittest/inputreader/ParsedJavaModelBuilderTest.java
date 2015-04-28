@@ -267,8 +267,6 @@ public class ParsedJavaModelBuilderTest {
 
         Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
 
-        System.out.println(model);
-        System.out.println(classField);
         assertNotNull(classField);
         assertEquals("customList", classField.get(ModelConstant.NAME));
         assertEquals("List<String>", classField.get(ModelConstant.TYPE));
