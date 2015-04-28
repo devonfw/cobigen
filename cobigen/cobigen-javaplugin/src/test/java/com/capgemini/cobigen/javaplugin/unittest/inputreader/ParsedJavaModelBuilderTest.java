@@ -250,4 +250,42 @@ public class ParsedJavaModelBuilderTest {
         assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
     }
 
+    /**
+     * Tests whether the input type's fields are extracted correctly (including annotations and javaDoc)
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyExtractedFields() throws FileNotFoundException {
+
+        File file = new File(testFileRootPath + "TestClass.java");
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        Map<String, Object> model =
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+
+        Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
+
+        System.out.println(model);
+        System.out.println(classField);
+        assertNotNull(classField);
+        assertEquals("customList", classField.get(ModelConstant.NAME));
+        assertEquals("List<String>", classField.get(ModelConstant.TYPE));
+        assertEquals("java.util.List<java.lang.String>", classField.get(ModelConstant.CANONICAL_TYPE));
+        assertNotNull(classField.get(ModelConstant.JAVADOC));
+        assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(classField).get("comment"));
+        assertEquals("false", classField.get("isId"));
+        // test annotations for attribute, getter, setter, is-method
+        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        // getter
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey("javax_annotation_Generated"));
+        // Setter
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey("javax_xml_ws_Action"));
+        // is-method
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey("java_lang_SafeVarargs"));
+        // attribute
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey("java_lang_Deprecated"));
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -283,10 +284,12 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
 
-            // TODO bugfixing: setter has to have some parameters
+            JavaType attrType = javaClass.getFieldByName((String) attr.get(ModelConstant.NAME)).getType();
+            List<JavaType> paramList = new ArrayList<>();
+            paramList.add(attrType);
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
-                    null, false);
+                    paramList, false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
