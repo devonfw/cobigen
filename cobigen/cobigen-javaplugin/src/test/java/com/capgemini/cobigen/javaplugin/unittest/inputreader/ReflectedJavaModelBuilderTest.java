@@ -139,7 +139,7 @@ public class ReflectedJavaModelBuilderTest {
      *             test fails
      */
     @Test
-    public void testCorrectlyExtractedFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws FileNotFoundException {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);

@@ -257,7 +257,7 @@ public class ParsedJavaModelBuilderTest {
      *             test fails
      */
     @Test
-    public void testCorrectlyExtractedFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws FileNotFoundException {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
