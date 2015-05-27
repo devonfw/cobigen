@@ -82,6 +82,8 @@ public class ParsedJavaModelBuilder {
 
         List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
         pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
+        determinePojoIds(javaClass, accessibleAttributes);
+        collectAnnotations(javaClass, accessibleAttributes);
 
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);

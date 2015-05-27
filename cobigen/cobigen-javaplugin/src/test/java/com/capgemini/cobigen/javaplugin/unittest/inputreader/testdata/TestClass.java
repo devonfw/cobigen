@@ -20,7 +20,7 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
 
     @MyIsAnnotation
     public boolean isCustomList() {
-        return true;
+        return false;
     }
 
     @MySetterAnnotation

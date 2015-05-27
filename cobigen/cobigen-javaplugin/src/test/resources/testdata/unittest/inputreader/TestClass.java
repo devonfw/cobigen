@@ -1,34 +1,58 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import java.io.FileNotFoundException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-import javax.annotation.Generated;
-import javax.xml.ws.Action;
-
-public class TestClass extends AbstractTestClass implements TestInterface1, TestInterface2{
+public class TestClass extends AbstractTestClass implements TestInterface1, TestInterface2 {
 
     /**
      * Example JavaDoc
      */
-    @Deprecated
+    @MyFieldAnnotation
     private List<String> customList;
 
-    @Generated
+    @MyGetterAnnotation
     public List<String> getCustomList() {
 
         return customList;
     }
 
-    @SafeVarargs
-    public boolean isCustomList(){
+    @MyIsAnnotation
+    public boolean isCustomList() {
         return true;
     }
 
-    @Action
+    @MySetterAnnotation
     public void setCustomList(List<String> customList) {
 
         this.customList = customList;
     }
 
+    /**
+     * {@inheritDoc}
+     * @author fkreis (25.09.2014)
+     */
+    @Override
+    public void interface1Method() {
+        return;
+    }
+
+}
+
+// simple annotation types which are still available at runtime
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyFieldAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyGetterAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MySetterAnnotation {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyIsAnnotation {
 }
