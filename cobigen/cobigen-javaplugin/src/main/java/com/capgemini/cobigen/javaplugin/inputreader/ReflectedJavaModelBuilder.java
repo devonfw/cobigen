@@ -91,6 +91,8 @@ public class ReflectedJavaModelBuilder {
 
         List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(pojo);
         pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
+        determinePojoIds(pojo, accessibleAttributes);
+        collectAnnotations(pojo, accessibleAttributes);
 
         Map<String, Object> superclass = extractSuperclass(pojo);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -296,6 +298,17 @@ public class ReflectedJavaModelBuilder {
             } catch (NoSuchFieldException e) {
                 // Do nothing if the method does not exist
             }
+
+            // if field was not found locally it should be a superclass field
+            if (field == null) {
+                try {
+                    field = pojo.getSuperclass().getDeclaredField((String) attr.get(ModelConstant.NAME));
+                    extractAnnotationsRecursively(annotations, field.getAnnotations());
+                } catch (NoSuchFieldException e) {
+                    // Do nothing if the method does not exist
+                }
+            }
+
             try {
                 Method getter =
                     pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
