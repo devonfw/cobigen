@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="1.0">
+  <templates>
+    <!-- general -->
+    <template id="general_config" destinationPath="javascript/config.json" templateFile="javascript/config.json.ftl"/>
+    <template id="general_bower" destinationPath="javascript/bower.json" templateFile="javascript/bower.json.ftl"/>
+    <template id="general_gulpfile" destinationPath="javascript/gulpfile.js" templateFile="javascript/gulpfile.js.ftl"/>
+    <template id="general_jenkins-build-sonar" destinationPath="javascript/jenkins-build-sonar.sh"
+      templateFile="javascript/jenkins-build-sonar.sh.ftl"/>
+    <template id="general_jenkins-build" destinationPath="javascript/jenkins-build.sh" templateFile="javascript/jenkins-build.sh.ftl"/>
+    <template id="general_karma.conf" destinationPath="javascript/karma.conf.js" templateFile="javascript/karma.conf.js.ftl"/>
+    <template id="general_package" destinationPath="javascript/package.json" templateFile="javascript/package.json.ftl"/>
+    <template id="general_README" destinationPath="javascript/README.md" templateFile="javascript/README.md.ftl"/>
+    <template id="general_bowerrc" destinationPath="javascript/.bowerrc" templateFile="/javascript/.bowerrc.ftl"/>
+
+    <!-- java -->
+    <template id="java_pom" destinationPath="javascript/java/pom.xml" templateFile="javascript/java/pom.xml.ftl"/>
+    <template id="java_web" destinationPath="javascript/java/src/assembly/web.xml" templateFile="javascript/java/src/assembly/web.xml.ftl"/>
+
+    <!-- gulp covered by template-scans
+      <template id="gulp_build-lib" destinationPath="javascript/gulp/build-lib.js" templateFile="javascript/gulp/build-lib.js.ftl"/>
+      <template id="gulp_build" destinationPath="javascript/gulp/build.js" templateFile="javascript/gulp/build.js.ftl"/>
+      <template id="gulp_configFactory" destinationPath="javascript/gulp/configFactory.js" templateFile="javascript/gulp/configFactory.js.ftl"/>
+      <template id="gulp_proxy" destinationPath="javascript/gulp/proxy.js" templateFile="javascript/gulp/proxy.js.ftl"/>
+      <template id="gulp_server" destinationPath="javascript/gulp/server.js" templateFile="javascript/gulp/server.js.ftl"/>
+      <template id="gulp_sonar" destinationPath="javascript/gulp/sonar.js" templateFile="javascript/gulp/sonar.js.ftl"/>
+      <template id="gulp_unit-tests" destinationPath="javascript/gulp/unit-tests.js" templateFile="javascript/gulp/unit-tests.js.ftl"/>
+      <template id="gulp_watch" destinationPath="javascript/gulp/watch.js" templateFile="javascript/gulp/watch.js.ftl"/>
+      <template id="gulp_wiredep" destinationPath="javascript/gulp/wiredep.js" templateFile="javascript/gulp/wiredep.js.ftl"/>
+      <template id="gulp_build-app-template" destinationPath="javascript/gulp/app-template/build-app-template.js"
+      templateFile="javascript/gulp/app-template/build-app-template.js.ftl"/>
+      <template id="gulp_release-app-template" destinationPath="javascript/gulp/app-template/release-app-template.js"
+      templateFile="javascript/gulp/app-template/release-app-template.js.ftl"/>
+      <template id="gulp_bower" destinationPath="javascript/gulp/oasp/bower.json" templateFile="javascript/gulp/oasp/bower.json.ftl"/>
+      <template id="gulp_build-oasp" destinationPath="javascript/gulp/oasp/build-oasp.js" templateFile="javascript/gulp/oasp/build-oasp.js.ftl"/>
+      <template id="gulp_oasp-config" destinationPath="javascript/gulp/oasp/oasp-config.json" templateFile="javascript/gulp/oasp/oasp-config.json.ftl"/>
+      <template id="gulp_README" destinationPath="javascript/gulp/oasp/README.md" templateFile="javascript/gulp/oasp/README.md.ftl"/>
+      <template id="gulp_release-oasp" destinationPath="javascript/gulp/oasp/release-oasp.js" templateFile="javascript/gulp/oasp/release-oasp.js.ftl"/> -->
+
+
+    <!-- app -->
+    <!-- ignore bower_components, can be done outside of cobigen with 'bower install -F' -->
+    <!-- ${variables.component} -->
+    <!-- ${variables.entityName} -->
+    <template id="app_index" destinationPath="javascript/app/index.html" templateFile="javascript/app/index.html.ftl"/>
+    <template id="app_app.module" destinationPath="javascript/app/app.module.js" templateFile="javascript/app/app.module.js.ftl"/>
+    <template id="app_app.module.spec" destinationPath="javascript/app/app.module.spec.js" templateFile="javascript/app/app.module.spec.js.ftl"/>
+    <!-- covered by template-scans for oasp and oasp-mock
+      <template id="app__oasp-mock_js_oasp.mock" destinationPath="javascript/app/oasp-mock/js/oasp.mock.js"
+      templateFile="javascript/app/oasp-mock/js/oasp.mock.js.ftl"/>
+      <template id="app_oasp_js_oasp.module" destinationPath="javascript/app/oasp/js/oasp.module.js"
+      templateFile="javascript/app/oasp/js/oasp.module.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_css_oasp-i18n" destinationPath="javascript/app/oasp/oasp-i18n/css/oasp-i18n.less"
+      templateFile="javascript/app/oasp/oasp-i18n/css/oasp-i18n.less.ftl"/>
+      <template id="app_oasp_oasp-i18n_html_cached_language-change" destinationPath="javascript/app/oasp/oasp-i18n/html/cached/language-change.html"
+      templateFile="javascript/app/oasp/oasp-i18n/html/cached/language-change.html.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_oasp-i18n.module" destinationPath="javascript/app/oasp/oasp-i18n/js/oasp-i18n.module.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/oasp-i18n.module.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_oasp-i18n.module.spec" destinationPath="javascript/app/oasp/oasp-i18n/js/oasp-i18n.module.spec.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/oasp-i18n.module.spec.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_oasp-translation.provider" destinationPath="javascript/app/oasp/oasp-i18n/js/oasp-translation.provider.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/oasp-translation.provider.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_oasp-translation.provider.spec" destinationPath="javascript/app/oasp/oasp-i18n/js/oasp-translation.provider.spec.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/oasp-translation.provider.spec.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_template-load-translation-interceptor.service" destinationPath="javascript/app/oasp/oasp-i18n/js/template-load-translation-interceptor.service.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/template-load-translation-interceptor.service.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_language-change_language-change.controller" destinationPath="javascript/app/oasp/oasp-i18n/js/language-change/language-change.controller.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/language-change/language-change.controller.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_language-change_language-change.controller.spec" destinationPath="javascript/app/oasp/oasp-i18n/js/language-change/language-change.controller.spec.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/language-change/language-change.controller.spec.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_language-change_language-change.directive" destinationPath="javascript/app/oasp/oasp-i18n/js/language-change/language-change.directive.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/language-change/language-change.directive.js.ftl"/>
+      <template id="app_oasp_oasp-i18n_js_language-change_language-change.directive.spec" destinationPath="javascript/app/oasp/oasp-i18n/js/language-change/language-change.directive.spec.js"
+      templateFile="javascript/app/oasp/oasp-i18n/js/language-change/language-change.directive.spec.js.ftl"/> -->
+
+    <!-- COMPONENT -->
+    <template id="component_html_entityname" destinationPath="javascript/app/${variables.component}/html/${variables.entityName}.html"
+      templateFile="javascript/app/${variables.component}/html/${variables.entityName}.html.ftl"/>
+      <template id="component_i18n_locale-de" destinationPath="javascript/app/${variables.component}/i18n/locale-de.json"
+      templateFile="javascript/app/${variables.component}/i18n/locale-de.json.ftl"/>
+      <template id="component_i18n_locale-en" destinationPath="javascript/app/${variables.component}/i18n/locale-en.json"
+      templateFile="javascript/app/${variables.component}/i18n/locale-en.json.ftl"/>
+    <template id="component_js_component_module" destinationPath="javascript/app/${variables.component}/js/${variables.component}.module.js"
+      templateFile="javascript/app/${variables.component}/js/${variables.component}.module.js.ftl"/>
+    <template id="component_js_entityname_controller" destinationPath="javascript/app/${variables.component}/js/${variables.entityName}.controller.js"
+      templateFile="javascript/app/${variables.component}/js/${variables.entityName}.controller.js.ftl"/>
+    <template id="component_js_entityname_rest_service" destinationPath="javascript/app/${variables.component}/js/${variables.entityName}.rest.service.js"
+      templateFile="javascript/app/${variables.component}/js/${variables.entityName}.rest.service.js.ftl"/>
+    <template id="component_js_entityname_service" destinationPath="javascript/app/${variables.component}/js/${variables.entityName}.service.js"
+      templateFile="javascript/app/${variables.component}/js/${variables.entityName}.service.js.ftl"/>
+
+  </templates>
+
+  <template-scans>
+  <!-- TODO, not includent in an increment, see cobigen issue #118 -->
+    <template-scan templatePath="javascript/app/oasp-mock" templateIdPrefix="" destinationPath="javascript/app/oasp-mock"/>
+    <template-scan templatePath="javascript/gulp" templateIdPrefix="" destinationPath="javascript/gulp"/>
+    <template-scan templatePath="javascript/app/oasp" templateIdPrefix="" destinationPath="javascript/app/oasp"/>
+    <template-scan templatePath="javascript/app/main/css" templateIdPrefix="" destinationPath="javascript/app/main/css"/>
+    <template-scan templatePath="javascript/app/main/html" templateIdPrefix="" destinationPath="javascript/app/main/html"/>
+    <template-scan templatePath="javascript/app/main/i18n" templateIdPrefix="" destinationPath="javascript/app/main/i18n"/>
+    <template-scan templatePath="javascript/app/main/js" templateIdPrefix="" destinationPath="javascript/app/main/js"/>
+  </template-scans>
+
+  <increments>
+    <increment id="client_general" description="Client, general files">
+      <templateRef idref="general_config"/>
+      <templateRef idref="general_bower"/>
+      <templateRef idref="general_gulpfile"/>
+      <templateRef idref="general_jenkins-build-sonar"/>
+      <templateRef idref="general_jenkins-build"/>
+      <templateRef idref="general_karma.conf"/>
+      <templateRef idref="general_package"/>
+      <templateRef idref="general_README"/>
+      <templateRef idref="general_bowerrc"/>
+    </increment>
+    <increment id="client_java" description="Client, java deployment files">
+      <templateRef idref="java_pom"/>
+      <templateRef idref="java_web"/>
+    </increment>
+    <increment id="client_app_component" description="Client, app component files">
+      <templateRef idref="component_html_entityname"/>
+      <templateRef idref="component_i18n_locale-de"/>
+      <templateRef idref="component_i18n_locale-en"/>
+      <templateRef idref="component_js_component_module"/>
+      <templateRef idref="component_js_entityname_controller"/>
+      <templateRef idref="component_js_entityname_rest_service"/>
+      <templateRef idref="component_js_entityname_service"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
