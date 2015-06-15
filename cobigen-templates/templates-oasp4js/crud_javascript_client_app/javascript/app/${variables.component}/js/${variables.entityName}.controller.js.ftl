@@ -1,49 +1,30 @@
-/*jslint todo: true */
 angular.module('app.${variables.component}')
-    .controller('${variables.entityName}Cntl', function ($scope, ${variables.entityName}, initial${variables.entityName}Entries, globalSpinner) {
+    .controller('${variables.entityName}Cntl', function ($scope, ${variables.entityName?lower_case}s, paginated${variables.entityName}List, globalSpinner) {
         'use strict';
-        var selectedLogEntry = function () {
+        var selected${variables.entityName}s = function () {
             return $scope.selectedItems && $scope.selectedItems.length ? $scope.selectedItems[0] : undefined;
         };
-        
+
         $scope.selectedItems = [];
+        $scope.maxSize = 4;
+        $scope.totalItems = paginated${variables.entityName}List.pagination.total;
+        $scope.numPerPage = paginated${variables.entityName}List.pagination.size;
+        $scope.currentPage = paginated${variables.entityName}List.pagination.page;
+
         $scope.gridOptions = {
-            data: initial${variables.entityName}Entries,
-            multiSelect: false
+            data: paginated${variables.entityName}List.result
         };
-        /* do we need this for the generic case, or just use the angular-js filter option?
-        $scope.buttonDefs = [  
-            {
-                label: 'Filtern',
-                onClick: function () {
-                    globalSpinner.decorateCallOfFunctionReturningPromise(function () {
-                    	$scope.selectedItems = [];
-                        return syslog.filter($scope.fehlerlabel, $scope.fehlerartOption);
-                    });
-                },
-                isActive: function () {
-                    return true;
-                }
-            }
-        ];
 
-        $scope.fehlerartOptionen = [ // only necessary if we keep the filter
-                        	    {
-                        	        "id": "alle",
-                        	        "label": "alle"
-                        	    },
-                        	    {
-                        	        "id": "Nutzer gesperrt",
-                        	        "label": "Nutzer gesperrt"
-                        	    },
-                        	    {
-                        	        "id": "Signaturfehler",
-                        	        "label": "Signaturfehler"
-                        	    },
-                        	    {
-                        	        "id": "Verbindungsfehler",
-                        	        "label": "Verbindungsfehler"
-                        	    }
-                        	];*/
+        $scope.reloadEntries = function () {
+            ${variables.entityName?lower_case}s.getPaginated${variables.entityName}s($scope.currentPage, $scope.numPerPage).then(function (paginated${variables.entityName}s) {
+                return paginated${variables.entityName}s;
+            }).then(function (res) {
+                paginated${variables.entityName}List = res;
+                $scope.gridOptions.data = paginated${variables.entityName}List.result;
+            });
+        };
 
+        $scope.$watch('currentPage', function () {
+            $scope.reloadEntries();
+        });
     });

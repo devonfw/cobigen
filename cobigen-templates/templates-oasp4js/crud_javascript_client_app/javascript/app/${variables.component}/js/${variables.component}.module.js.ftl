@@ -6,8 +6,10 @@ angular.module('app.${variables.component}', ['app.main'], function ($routeProvi
         templateUrl: '${variables.component}/html/${variables.entityName}.html',
         controller: '${variables.entityName}Cntl',
         resolve: {
-        	initial${variables.entityName}Entries: ['${variables.entityName}', function (${variables.entityName}) {
-                return ${variables.entityName}.get${variables.entityName}();
+        	paginated${variables.entityName}List: ['${variables.entityName?lower_case}s', function (${variables.entityName?lower_case}s) {
+                return ${variables.entityName?lower_case}s.getPaginated${variables.entityName}s(1, 4).then(function(paginated${variables.entityName}s) {
+                    return paginated${variables.entityName}s;
+                });
             }]
         }
     });
