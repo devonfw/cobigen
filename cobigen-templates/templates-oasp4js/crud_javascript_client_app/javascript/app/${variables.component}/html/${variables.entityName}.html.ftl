@@ -45,7 +45,7 @@
 
       	  <div style="visibility: visible;" id="u205" class="ax_horizontal_line b">
           </div>
-					
+
           <div style="visibility: visible;" id="u166" class="ax_paragraph b" data-label="${variables.entityName}description">
               <div ng-show="selectedItems && selectedItems.length" id="${variables.entityName}Details" class="text b">
                 <p class="b">
@@ -94,7 +94,7 @@
         	</thead>
         </table>
       </div>
-      
+
               <div style="visibility: visible;" id="u166" class="ax_paragraph b" data-label="${variables.entityName}description">
               <div ng-show="selectedItems && selectedItems.length" id="${variables.entityName}Details" class="text b">
                 <h3>Details</h3>
@@ -109,6 +109,11 @@
                   <span class="b">Select row to show more details here</span>
                 </p>
           	  </div>
+
+       <br>
+       <br>
+       <br>
+       <pagination total-items="totalItems" items-per-page="numPerPage" ng-model="currentPage" num-pages="numPages" class="pagination-sm" boundary-links="true" rotate="false" max-size="maxSize"></pagination>
     </div>
 </div>
 </body>
