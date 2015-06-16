@@ -1,6 +1,8 @@
 package com.capgemini.cobigen.javaplugin.unittest.merger;
 
 import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
+import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
@@ -24,6 +27,14 @@ public class BugOneOEight {
      */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
+    /**
+     * Tests the behavior if one file uses an import of a type while the other uses an explicit type.
+     * @throws IOException
+     *             shouldn't happen
+     * @throws MergeException
+     *             shoudln't happen either
+     * @author sholzer (Jun 16, 2015)
+     */
     @Test
     public void test() throws IOException, MergeException {
 
@@ -31,8 +42,12 @@ public class BugOneOEight {
         File patch = new File(testFileRootPath + "PatchFile_QualType.java");
 
         JavaSource mergedSource = getMergedSource(base, patch, true);
-
-        System.out.print(mergedSource.toString());
+        assertFalse(mergedSource.getClasses().isEmpty());
+        JavaClass mergedClass = mergedSource.getClasses().get(0);
+        // System.out.print(mergedSource.toString());
+        assertEquals("Too much fields", 1, mergedClass.getFields().size());
+        assertEquals("Too much methods:\n" + mergedClass.getMethods().toString(), 1, mergedClass.getMethods()
+            .size());
 
     }
 
