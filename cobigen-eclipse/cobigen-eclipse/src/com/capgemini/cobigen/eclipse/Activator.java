@@ -2,8 +2,10 @@ package com.capgemini.cobigen.eclipse;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -107,10 +109,10 @@ public class Activator extends AbstractUIPlugin {
             public void run() {
                 try {
                     selectionServiceListener = new SelectionServiceListener();
-                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
-                        "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
-                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
-                        "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
+                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
+                        selectionServiceListener);
+                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
+                        selectionServiceListener);
                     selectionServiceListenerStarted = true;
                 } catch (InvalidConfigurationException e) {
                     if (initialized) {
@@ -145,10 +147,10 @@ public class Activator extends AbstractUIPlugin {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
-                    "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
-                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
-                    "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
+                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(JavaUI.ID_PACKAGES,
+                    selectionServiceListener);
+                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
+                    selectionServiceListener);
                 selectionServiceListenerStarted = false;
             }
         });
