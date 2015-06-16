@@ -82,7 +82,7 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     private void startResourceChangeListener() {
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 ConfigurationProjectRCL resourceChangeListener = new ConfigurationProjectRCL();
@@ -102,7 +102,7 @@ public class Activator extends AbstractUIPlugin {
         if (selectionServiceListenerStarted) {
             return;
         }
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 try {

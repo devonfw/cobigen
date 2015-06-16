@@ -162,9 +162,7 @@ public class SelectionServiceListener implements ISelectionListener {
             } else if (tmp instanceof IFile) {
                 uniqueSourceSelected = true;
                 if (firstTriggers == null) {
-                    InputStream stream;
-                    try {
-                        stream = ((IFile) tmp).getContents();
+                    try (InputStream stream = ((IFile) tmp).getContents()) {
                         Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                         firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
                     } catch (CoreException e) {
