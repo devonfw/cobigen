@@ -117,16 +117,13 @@ public class Activator extends AbstractUIPlugin {
                         MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
                             "The context.xml of the generator configuration was changed into an invalid state.\n"
                                 + "The generator might not behave as intended:\n" + e.getMessage());
-                        LOG.error(
-                            "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
-                            e);
                     }
                     e.printStackTrace();
                 } catch (Exception e) {
                     if (initialized) {
-                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Error",
-                            "Internal error: " + e.getMessage());
-                        LOG.error("Internal error", e);
+                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", e.getClass()
+                            .getSimpleName() + ": " + e.getMessage());
+                        LOG.error("An error occured!", e);
                     }
 
                 } finally {

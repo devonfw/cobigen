@@ -93,8 +93,7 @@ public class SelectionServiceListener implements ISelectionListener {
         try {
             cobiGen = new CobiGen(generatorConfProj.getLocationURI());
         } catch (IOException e) {
-            LOG.error("Configuration source could not be read", e);
-            throw new GeneratorCreationException("Configuration source could not be read", e);
+            throw new GeneratorCreationException("Configuration source could not be read!", e);
         }
         // TODO check if needed as every time there will be a new instance of the generator
         ResourcesPlugin.getWorkspace().addResourceChangeListener(
@@ -166,12 +165,12 @@ public class SelectionServiceListener implements ISelectionListener {
                         Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                         firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
                     } catch (CoreException e) {
-                        LOG.error("An eclipse internal exception occured", e);
+                        LOG.error("An eclipse internal exception occured!", e);
                     } catch (IOException e) {
-                        LOG.error("The file {} could not be read.", ((IFile) tmp).getName(), e);
+                        LOG.error("The file {} could not be read!", ((IFile) tmp).getName(), e);
                     } catch (ParserConfigurationException e) {
                         LOG.error(
-                            "The file {} could not be parsed, because of an internal configuration error.",
+                            "The file {} could not be parsed, because of an internal configuration error!",
                             ((IFile) tmp).getName(), e);
                     } catch (SAXException e) {
                         LOG.warn(
