@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -41,7 +42,7 @@ public class Activator extends AbstractUIPlugin {
     /**
      * Current state of the {@link SelectionServiceListener}
      */
-    private boolean selectionServiceListenerStarted = false;
+    private volatile boolean selectionServiceListenerStarted = false;
 
     /**
      * Checks whether the workbench has been initialized (workaround for better user notification about
@@ -74,20 +75,21 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
         startSelectionServiceListener();
         startResourceChangeListener();
-
     }
 
     /**
      * Starts the ResourceChangeListener
-     *
      * @author mbrunnli (08.04.2013)
      */
     private void startResourceChangeListener() {
-        Display.getDefault().asyncExec(new Runnable() {
+        Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
                 ConfigurationProjectRCL resourceChangeListener = new ConfigurationProjectRCL();
-                ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                    resourceChangeListener,
+                    IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
+                        | IResourceChangeEvent.POST_CHANGE);
             }
         });
     }
@@ -100,7 +102,7 @@ public class Activator extends AbstractUIPlugin {
         if (selectionServiceListenerStarted) {
             return;
         }
-        Display.getDefault().asyncExec(new Runnable() {
+        Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
                 try {
