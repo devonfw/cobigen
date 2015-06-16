@@ -60,7 +60,7 @@ public class TemplatesConfigurationReader {
     /**
      * Templates configuration file name
      */
-    private static final String CONFIG_FILENAME = "templates.xml";
+    public static final String CONFIG_FILENAME = "templates.xml";
 
     /**
      * XML Node 'configuration' of the configuration.xml

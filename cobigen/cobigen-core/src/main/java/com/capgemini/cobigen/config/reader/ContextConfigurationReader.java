@@ -43,7 +43,7 @@ public class ContextConfigurationReader {
     /**
      * Context configuration file name
      */
-    private static final String CONFIG_FILENAME = "context.xml";
+    public static final String CONFIG_FILENAME = "context.xml";
 
     /**
      * XML Node 'context' of the context.xml
