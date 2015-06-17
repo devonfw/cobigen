@@ -371,12 +371,13 @@ public class CobiGen {
      */
     public List<String> getMatchingTriggerIds(Object matcherInput) {
 
-        LOG.debug("Matching trigger IDs requested.");
-        List<String> matchingTrigger = Lists.newLinkedList();
+        LOG.info("Matching trigger IDs requested.");
+        List<String> matchingTriggerIds = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
-            matchingTrigger.add(trigger.getId());
+            matchingTriggerIds.add(trigger.getId());
         }
-        return matchingTrigger;
+        LOG.info("{} matching trigger IDs found.", matchingTriggerIds.size());
+        return matchingTriggerIds;
     }
 
     /**
@@ -391,12 +392,13 @@ public class CobiGen {
      */
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.debug("Matching increments requested.");
+        LOG.info("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
+        LOG.info("{} matching increments found.", increments.size());
         return increments;
     }
 
@@ -492,7 +494,7 @@ public class CobiGen {
                             }
                         }
                     }
-                    LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
+                    LOG.info("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
                     if (triggerMatches) {
                         matchingTrigger.add(trigger);
                     }
@@ -521,7 +523,7 @@ public class CobiGen {
     private boolean matches(Object matcherInput, List<Matcher> matcherList,
         ITriggerInterpreter triggerInterpreter) {
         boolean matcherSetMatches = false;
-        LOG.debug("Check matchers ...");
+        LOG.info("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
         MATCHER_LOOP:
         for (Matcher matcher : matcherList) {
             MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
@@ -547,7 +549,7 @@ public class CobiGen {
                 }
             }
         }
-        LOG.debug("Matcher declarations "
+        LOG.info("Matcher declarations "
             + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
@@ -565,7 +567,7 @@ public class CobiGen {
      */
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.debug("Matching templates requested.");
+        LOG.info("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
@@ -574,7 +576,7 @@ public class CobiGen {
                         .getTriggerInterpreter()));
             }
         }
-        LOG.debug("Found templates: {}", templates);
+        LOG.info("{} matching templates found.", templates.size());
         return templates;
     }
 
