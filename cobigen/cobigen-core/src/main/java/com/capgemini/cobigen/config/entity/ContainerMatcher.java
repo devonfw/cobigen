@@ -35,4 +35,12 @@ public class ContainerMatcher extends AbstractMatcher {
         return retrieveObjectsRecursively;
     }
 
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 17, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "']";
+    }
 }

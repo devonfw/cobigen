@@ -288,7 +288,7 @@ public class CobiGen {
             }
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
-            LOG.info("Generating template '{}' with input '{}' ...", templateIntern.getId(), targetInput);
+            LOG.info("Generating template '{}' ...", templateIntern.getId(), targetInput);
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
@@ -371,6 +371,7 @@ public class CobiGen {
      */
     public List<String> getMatchingTriggerIds(Object matcherInput) {
 
+        LOG.debug("Matching trigger IDs requested.");
         List<String> matchingTrigger = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             matchingTrigger.add(trigger.getId());
@@ -390,6 +391,7 @@ public class CobiGen {
      */
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
+        LOG.debug("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
@@ -440,24 +442,30 @@ public class CobiGen {
      */
     private List<Trigger> getMatchingTriggers(Object matcherInput) {
 
+        LOG.debug("Retrieve matching triggers.");
         List<Trigger> matchingTrigger = Lists.newLinkedList();
         for (Trigger trigger : contextConfiguration.getTriggers()) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
+            LOG.debug("Check {} to match the input.", trigger);
 
             try {
                 if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
+                    LOG.debug("Matcher input is marked as valid.");
                     boolean triggerMatches = matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
 
                     // if a match has been found do not check container matchers in addition for performance
                     // issues.
                     if (!triggerMatches) {
+                        LOG.debug("Check container matchers ...");
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
                             MatcherTo containerMatcherTo =
                                 new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
                                     matcherInput);
+                            LOG.debug("Check {} ...", containerMatcherTo);
                             if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
+                                LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
                                 // keep backward-compatibility
                                 List<Object> containerResources;
                                 if (triggerInterpreter.getInputReader() instanceof InputReaderV13
@@ -466,15 +474,17 @@ public class CobiGen {
                                         ((InputReaderV13) triggerInterpreter.getInputReader())
                                             .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
                                 } else {
-                                    // the charset does not matter as we only want to see whether there is one
+                                    // the charset does not matter as we just want to see whether there is one
                                     // matcher for one of the container resources
                                     containerResources =
                                         triggerInterpreter.getInputReader().getInputObjects(matcherInput,
                                             Charsets.UTF_8);
                                 }
+                                LOG.debug("{} objects retrieved.", containerResources.size());
 
                                 for (Object resource : containerResources) {
                                     if (matches(resource, trigger.getMatcher(), triggerInterpreter)) {
+                                        LOG.debug("At least one object from container matches.");
                                         triggerMatches = true;
                                         break FOR_CONTAINERMATCHER;
                                     }
@@ -482,13 +492,14 @@ public class CobiGen {
                             }
                         }
                     }
+                    LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
                     if (triggerMatches) {
                         matchingTrigger.add(trigger);
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter for type '{}' exited abruptly!",
-                    triggerInterpreter.getType(), e);
+                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(),
+                    e);
             }
         }
         return matchingTrigger;
@@ -509,32 +520,36 @@ public class CobiGen {
      */
     private boolean matches(Object matcherInput, List<Matcher> matcherList,
         ITriggerInterpreter triggerInterpreter) {
-        boolean triggerMatches = true;
-        boolean anyMatcherMatches = false;
+        boolean matcherSetMatches = false;
+        LOG.debug("Check matchers ...");
         MATCHER_LOOP:
         for (Matcher matcher : matcherList) {
             MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
+            LOG.debug("Check {} ...", matcherTo);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                anyMatcherMatches = true;
                 switch (matcher.getAccumulationType()) {
                 case NOT:
-                    triggerMatches = false;
+                    LOG.debug("NOT Matcher matches -> trigger match fails.");
+                    matcherSetMatches = false;
                     break MATCHER_LOOP;
                 case OR:
-                    // triggerMatches = true; due to initialization
-                    triggerMatches = true;
+                case AND:
+                    LOG.debug("Matcher matches.");
+                    matcherSetMatches = true;
                     break;
                 default:
                 }
             } else {
-                // if there is an AND matcher, which does not match -> fail
                 if (matcher.getAccumulationType() == AccumulationType.AND) {
-                    triggerMatches = false;
+                    LOG.debug("AND Matcher does not match -> trigger match fails.");
+                    matcherSetMatches = false;
                     break MATCHER_LOOP;
                 }
             }
         }
-        return triggerMatches && anyMatcherMatches;
+        LOG.debug("Matcher declarations "
+            + (matcherSetMatches ? "match the input." : "do not match the input."));
+        return matcherSetMatches;
     }
 
     /**
@@ -550,6 +565,7 @@ public class CobiGen {
      */
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
+        LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
@@ -558,6 +574,7 @@ public class CobiGen {
                         .getTriggerInterpreter()));
             }
         }
+        LOG.debug("Found templates: {}", templates);
         return templates;
     }
 
@@ -575,6 +592,7 @@ public class CobiGen {
     private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput)
         throws InvalidConfigurationException {
 
+        LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());

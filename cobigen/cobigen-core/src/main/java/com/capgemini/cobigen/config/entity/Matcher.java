@@ -59,4 +59,14 @@ public class Matcher extends AbstractMatcher {
     public AccumulationType getAccumulationType() {
         return accumulationType;
     }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 17, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "'/accuType='"
+            + accumulationType.name() + "']";
+    }
 }
