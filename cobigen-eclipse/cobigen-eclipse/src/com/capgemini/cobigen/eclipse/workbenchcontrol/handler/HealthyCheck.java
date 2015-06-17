@@ -56,9 +56,7 @@ public class HealthyCheck extends AbstractHandler {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "INVALID!\n=> " + e.getLocalizedMessage();
         } catch (Throwable e) {
-            healthyCheckMessage =
-                "\n=> An unexpected error occurred while loading CobiGen! "
-                    + "Please raise an issue on GitHub attaching the stacktrace.";
+            healthyCheckMessage = "An unexpected error occurred while loading CobiGen! ";
             MultiStatus status = createMultiStatus(e);
             ErrorDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
                 healthyCheckMessage, status);
@@ -95,9 +93,7 @@ public class HealthyCheck extends AbstractHandler {
                             healthyCheckMessage);
                     }
                 } catch (Throwable e) {
-                    healthyCheckMessage +=
-                        "\n=> An unexpected error occurred while loading CobiGen! "
-                            + "Please raise an issue on GitHub attaching the stacktrace.";
+                    healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
                     MultiStatus status = createMultiStatus(e);
                     ErrorDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
                         healthyCheckMessage, status);

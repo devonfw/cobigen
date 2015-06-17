@@ -145,11 +145,7 @@ public class SelectionServiceListener implements ISelectionListener {
 
         while (it.hasNext()) {
             Object tmp = it.next();
-            if (uniqueSourceSelected) {
-                throw new InvalidInputException(
-                    "You selected at least two inputs, which type is currently not supported for batch processing. "
-                        + "Please select one input at a time.");
-            } else if (tmp instanceof ICompilationUnit) {
+            if (tmp instanceof ICompilationUnit) {
                 if (firstTriggers == null) {
                     firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
                 } else {
@@ -171,15 +167,13 @@ public class SelectionServiceListener implements ISelectionListener {
                     Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                     firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
                 } catch (CoreException e) {
-                    throw new InvalidInputException("An eclipse internal exception occured! "
-                        + "Please raise an issue on GitHub attaching the stacktrace.", e);
+                    throw new InvalidInputException("An eclipse internal exception occured! ", e);
                 } catch (IOException e) {
                     throw new InvalidInputException("The file " + ((IFile) tmp).getName()
                         + " could not be read!", e);
                 } catch (ParserConfigurationException e) {
                     throw new InvalidInputException("The file " + ((IFile) tmp).getName()
-                        + " could not be parsed, because of an internal configuration error! "
-                        + "Please raise an issue on GitHub attaching the stacktrace.", e);
+                        + " could not be parsed, because of an internal configuration error!", e);
                 } catch (SAXException e) {
                     throw new InvalidInputException("The contents of the file " + ((IFile) tmp).getName()
                         + " could not be detected as an instance of any CobiGen supported input language.");
@@ -188,6 +182,13 @@ public class SelectionServiceListener implements ISelectionListener {
                 throw new InvalidInputException(
                     "You selected at least one input, which type is currently not supported as input for generation. "
                         + "Please choose a different one or read the CobiGen documentation for more details.");
+            }
+
+            if (uniqueSourceSelected && selection.size() > 1) {
+                throw new InvalidInputException(
+                    "You selected at least one input in a mass-selection,"
+                        + " which type is currently not supported for batch processing. "
+                        + "Please just select multiple inputs only if batch processing is supported for all inputs.");
             }
         }
         return firstTriggers != null && !firstTriggers.isEmpty();
@@ -213,11 +214,9 @@ public class SelectionServiceListener implements ISelectionListener {
             return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
             throw new InvalidInputException("Error while retrieving the project's ('"
-                + cu.getJavaProject().getElementName() + "') classloader. "
-                + "Please raise an issue on GitHub attaching the stacktrace.", e);
+                + cu.getJavaProject().getElementName() + "') classloader.", e);
         } catch (CoreException e) {
-            throw new InvalidInputException("An eclipse internal exception occured! "
-                + "Please raise an issue on GitHub attaching the stacktrace.", e);
+            throw new InvalidInputException("An eclipse internal exception occured!", e);
         } catch (ClassNotFoundException e) {
             throw new InvalidInputException("The class '" + type.getFullyQualifiedName()
                 + "' could not be found. "
