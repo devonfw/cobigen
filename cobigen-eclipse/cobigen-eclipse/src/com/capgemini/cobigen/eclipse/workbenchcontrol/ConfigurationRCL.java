@@ -2,7 +2,9 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -19,6 +21,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
@@ -82,6 +85,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
      */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
         IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
         for (IResourceDelta projDelta : affectedProjects) {
@@ -125,6 +129,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
                 }
             }
         }
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**

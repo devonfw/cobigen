@@ -12,17 +12,12 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
  *
  * @author mbrunnli (08.04.2013)
  */
-public class ConfigResources {
+public class ResourceConstants {
 
     /**
      * Generator Configuration Project Name
      */
     public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
-
-    /**
-     * Custom Batches configuration file
-     */
-    public static final String CUSTOM_BATCHES_ROOT_CONFIG = "customBatches.xml";
 
     /**
      * Returns the generator configuration project if it exists. If the project is closed, the project will be
@@ -38,7 +33,7 @@ public class ConfigResources {
         CoreException {
 
         IProject generatorProj =
-            ResourcesPlugin.getWorkspace().getRoot().getProject(ConfigResources.CONFIG_PROJECT_NAME);
+            ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
         if (!generatorProj.exists()) {
             throw new GeneratorProjectNotExistentException();
         }

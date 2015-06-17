@@ -1,7 +1,9 @@
 package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -17,7 +19,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
 import com.capgemini.cobigen.eclipse.Activator;
-import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
@@ -37,9 +40,10 @@ public class HealthCheck extends AbstractHandler {
      */
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
         String firstStep =
-            "1. CobiGen configuration project '" + ConfigResources.CONFIG_PROJECT_NAME + "'... ";
+            "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
         String secondStep =
             "\n2. CobiGen context configuration '" + ContextConfigurationReader.CONFIG_FILENAME + "'... ";
 
@@ -101,6 +105,7 @@ public class HealthCheck extends AbstractHandler {
             }
         }
 
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return null;
     }
 

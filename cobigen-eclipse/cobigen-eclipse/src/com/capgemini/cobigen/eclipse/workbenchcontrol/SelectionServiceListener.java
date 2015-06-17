@@ -6,9 +6,11 @@ import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -31,7 +33,8 @@ import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -87,7 +90,7 @@ public class SelectionServiceListener implements ISelectionListener {
                 ISourceProviderService.class);
         sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
-        IProject generatorConfProj = ConfigResources.getGeneratorConfigurationProject();
+        IProject generatorConfProj = ResourceConstants.getGeneratorConfigurationProject();
         try {
             cobiGen = new CobiGen(generatorConfProj.getLocationURI());
         } catch (IOException e) {
@@ -106,6 +109,8 @@ public class SelectionServiceListener implements ISelectionListener {
      */
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+
         if (part instanceof PackageExplorerPart || part instanceof ProjectExplorer
             && selection instanceof IStructuredSelection) {
             boolean validInput = false;
@@ -122,6 +127,8 @@ public class SelectionServiceListener implements ISelectionListener {
             }
             sp.setVariable(SourceProvider.VALID_INPUT, validInput);
         }
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**

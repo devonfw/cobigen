@@ -1,5 +1,8 @@
 package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
+import java.util.UUID;
+
+import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -14,7 +17,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -43,6 +47,8 @@ public class Generate extends AbstractHandler {
      */
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);
         if (sel instanceof ITreeSelection) {
@@ -95,11 +101,11 @@ public class Generate extends AbstractHandler {
                         HandlerUtil.getActiveShell(event),
                         "Generator configuration project not found!",
                         "The project '"
-                            + ConfigResources.CONFIG_PROJECT_NAME
+                            + ResourceConstants.CONFIG_PROJECT_NAME
                             + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
                 LOG.error(
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
-                    ConfigResources.CONFIG_PROJECT_NAME, e);
+                    ResourceConstants.CONFIG_PROJECT_NAME, e);
             } catch (GeneratorCreationException e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator creation error",
                     e.getMessage());
@@ -110,6 +116,8 @@ public class Generate extends AbstractHandler {
                 LOG.error("Unknown Exception", e);
             }
         }
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return null;
     }
 }

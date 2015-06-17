@@ -6,9 +6,11 @@ import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -92,6 +95,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
         if (templatesToBeGenerated.size() == 0) {
             return;
@@ -152,6 +156,8 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             LOG.error("Unknown Exception", e);
         }
         monitor.done();
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
