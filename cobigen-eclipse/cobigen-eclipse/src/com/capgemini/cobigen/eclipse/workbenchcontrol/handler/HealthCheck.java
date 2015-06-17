@@ -25,11 +25,11 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.google.common.collect.Lists;
 
 /**
- * This handler implements the healthy check to provide more information about the current status of CobiGen
+ * This handler implements the Health Check to provide more information about the current status of CobiGen
  * and potentially why it cannot be used with the current selection.
  * @author mbrunnli (Jun 16, 2015)
  */
-public class HealthyCheck extends AbstractHandler {
+public class HealthCheck extends AbstractHandler {
 
     /**
      * {@inheritDoc}
@@ -58,13 +58,13 @@ public class HealthyCheck extends AbstractHandler {
         } catch (Throwable e) {
             healthyCheckMessage = "An unexpected error occurred while loading CobiGen! ";
             MultiStatus status = createMultiStatus(e);
-            ErrorDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
-                healthyCheckMessage, status);
+            ErrorDialog.openError(Display.getDefault().getActiveShell(), "Health Check", healthyCheckMessage,
+                status);
             return null;
         }
 
         if (selectionServiceListener == null) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
+            MessageDialog.openError(Display.getDefault().getActiveShell(), "Health Check",
                 healthyCheckMessage);
         } else {
             healthyCheckMessage = firstStep + "OK.";
@@ -75,27 +75,27 @@ public class HealthyCheck extends AbstractHandler {
                 try {
                     if (selectionServiceListener.isValidInput((IStructuredSelection) sel)) {
                         healthyCheckMessage += "OK.";
-                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Healthy Check",
+                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Health Check",
                             healthyCheckMessage);
                     } else {
                         healthyCheckMessage += "NO MATCHING TRIGGER.";
-                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
+                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Health Check",
                             healthyCheckMessage);
                     }
                 } catch (InvalidInputException e) {
                     healthyCheckMessage += "invalid!\n=> CAUSE: " + e.getLocalizedMessage();
                     if (e.hasRootCause()) {
                         MultiStatus status = createMultiStatus(e);
-                        ErrorDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
+                        ErrorDialog.openError(Display.getDefault().getActiveShell(), "Health Check",
                             healthyCheckMessage, status);
                     } else {
-                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
+                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Health Check",
                             healthyCheckMessage);
                     }
                 } catch (Throwable e) {
                     healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
                     MultiStatus status = createMultiStatus(e);
-                    ErrorDialog.openError(Display.getDefault().getActiveShell(), "Healthy Check",
+                    ErrorDialog.openError(Display.getDefault().getActiveShell(), "Health Check",
                         healthyCheckMessage, status);
                 }
             }

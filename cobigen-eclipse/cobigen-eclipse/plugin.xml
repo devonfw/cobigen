@@ -26,8 +26,8 @@
             </with></enabledWhen>
       </handler>
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthyCheck"
-            commandId="com.capgemini.cobigen.eclipseplugin.healthy_check">
+            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthCheck"
+            commandId="com.capgemini.cobigen.eclipseplugin.health_check">
       </handler>
    </extension>
    <extension
@@ -47,8 +47,8 @@
                   style="push">
             </command>
             <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.healthy_check"
-                  label="Healthy Check..."
+                  commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                  label="Health Check..."
                   style="push">
             </command>
          </menu>
@@ -72,8 +72,8 @@
                   style="push">
             </command>
             <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.healthy_check"
-                  label="Healthy Check..."
+                  commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                  label="Health Check..."
                   style="push">
             </command>
          </menu>
