@@ -7,6 +7,10 @@
             id="com.capgemini.cobigen.eclipseplugin.generate"
             name="Generate">
       </command>
+      <command
+            id="com.capgemini.cobigen.eclipseplugin.healthy_check"
+            name="Healthy Check">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -20,6 +24,10 @@
                      value="true">
                </equals>
             </with></enabledWhen>
+      </handler>
+      <handler
+            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthyCheck"
+            commandId="com.capgemini.cobigen.eclipseplugin.healthy_check">
       </handler>
    </extension>
    <extension
@@ -36,6 +44,11 @@
             <command
                   commandId="com.capgemini.cobigen.eclipseplugin.generate"
                   label="Generate..."
+                  style="push">
+            </command>
+            <command
+                  commandId="com.capgemini.cobigen.eclipseplugin.healthy_check"
+                  label="Healthy Check..."
                   style="push">
             </command>
          </menu>
@@ -56,6 +69,11 @@
             <command
                   commandId="com.capgemini.cobigen.eclipseplugin.generate"
                   label="Generate..."
+                  style="push">
+            </command>
+            <command
+                  commandId="com.capgemini.cobigen.eclipseplugin.healthy_check"
+                  label="Healthy Check..."
                   style="push">
             </command>
          </menu>

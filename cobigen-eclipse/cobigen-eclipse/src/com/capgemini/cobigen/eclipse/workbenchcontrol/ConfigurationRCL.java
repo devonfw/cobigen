@@ -18,6 +18,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
@@ -65,7 +66,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
 
         this.generatorConfProj = generatorConfProj;
         this.generator = generator;
-        contextXmlFile = generatorConfProj.getFile("context.xml");
+        contextXmlFile = generatorConfProj.getFile(ContextConfigurationReader.CONFIG_FILENAME);
         logbackXmlFile = generatorConfProj.getFile("logback.xml");
         try {
             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
@@ -90,13 +91,17 @@ public class ConfigurationRCL implements IResourceChangeListener {
                     if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
                             generator.reloadContextConfigurationFromFile();
-                            LOG.info("The CobiGen context.xml has been changed and reloaded.");
+                            LOG.info("The CobiGen " + ContextConfigurationReader.CONFIG_FILENAME
+                                + " has been changed and reloaded.");
                         } catch (InvalidConfigurationException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                "The " + ContextConfigurationReader.CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.warn(
-                                "The context.xml of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
+                                "The "
+                                    + ContextConfigurationReader.CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
                                 e);
                         }
                     } else if (fileDelta.getResource().equals(logbackXmlFile)) {
@@ -107,10 +112,13 @@ public class ConfigurationRCL implements IResourceChangeListener {
                             LOG.error("Unable to read config file", e);
                         } catch (JoranException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                "The " + ContextConfigurationReader.CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.error(
-                                "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                "The "
+                                    + ContextConfigurationReader.CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
                                 e);
                         }
                     }
