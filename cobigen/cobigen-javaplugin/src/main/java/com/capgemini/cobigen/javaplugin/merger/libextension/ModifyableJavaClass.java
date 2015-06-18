@@ -371,6 +371,9 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         String result = // getParent().resolveFullyQualifiedName(name); //replaced since getParent() is
                         // deprecated
             getParentSource().resolveFullyQualifiedName(name);
+        if (result != null) { // by sholzer 18-06-15 to fix issue #108
+            result = result.replace('$', '.');
+        }
         return result;
     }
 
