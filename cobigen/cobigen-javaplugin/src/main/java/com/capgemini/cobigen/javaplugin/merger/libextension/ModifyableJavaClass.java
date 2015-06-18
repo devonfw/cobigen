@@ -336,13 +336,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     /** {@inheritDoc} */
     @Override
     public String resolveType(String typeName) {
+        // since this method is deprecated but still called from other structures it's simply a wrap around
+        // for the proposed method
         String result;
-        JavaClass resolvedClass = getNestedClassByName(typeName);
-        if (resolvedClass != null) {
-            result = resolvedClass.getFullyQualifiedName();
-        } else {
-            result = getParent().resolveType(typeName);
-        }
+        /*
+         * JavaClass resolvedClass = getNestedClassByName(typeName); if (resolvedClass != null) { result =
+         * resolvedClass.getFullyQualifiedName(); } else { result = getParent().resolveType(typeName); }
+         */
+        result = resolveFullyQualifiedName(typeName);
         return result;
     }
 
@@ -367,7 +368,10 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
                 return innerClass.getFullyQualifiedName();
             }
         }
-        return getParent().resolveFullyQualifiedName(name);
+        String result = // getParent().resolveFullyQualifiedName(name); //replaced since getParent() is
+                        // deprecated
+            getParentSource().resolveFullyQualifiedName(name);
+        return result;
     }
 
     /** {@inheritDoc} */
