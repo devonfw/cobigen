@@ -1,3 +1,0 @@
-<#include '/macros.ftl'>
-<#assign first=true/><#list pojo.methods as method><#if method.annotations?has_content && method.annotations.org_junit_Test?has_content><#if first>${variables.category};${variables.bereich};${variables.unterbereich};${variables.testname};<@insertFirstMethodDocletValueTestziel method/>;<@insertFirstMethodDocletValueBeschreibung method/><#assign first=false/><#else>
-${variables.category};${variables.bereich};${variables.unterbereich};${variables.testname};<@insertFirstMethodDocletValueTestziel method/>;<@insertFirstMethodDocletValueBeschreibung method/></#if></#if></#list>
