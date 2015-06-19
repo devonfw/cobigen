@@ -385,7 +385,7 @@ public class ReflectedJavaModelBuilder {
                     } else if (value instanceof Enum<?>) {
                         annotationParameters.put(getter.getName(), ((Enum<?>) value).name());
                     } else {
-                        annotationParameters.put(getter.getName(), value);
+                        annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     LOG.error("An error occured while retrieving value '{}' from annotation '{}'.",

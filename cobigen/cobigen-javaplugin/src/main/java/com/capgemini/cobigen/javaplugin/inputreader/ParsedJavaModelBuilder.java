@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -347,10 +348,12 @@ public class ParsedJavaModelBuilder {
                     // annotationParameters.put(propertyName, Lists.newLinkedList(Arrays.asList(value)));
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
+                } else if (value instanceof Collection<?>) {
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
                     // resolves it.
-                    annotationParameters.put(propertyName, value);
+                    annotationParameters.put(propertyName, value != null ? value.toString() : null);
                 }
             }
         }
