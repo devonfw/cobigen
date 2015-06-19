@@ -3,7 +3,7 @@ package com.capgemini.cobigen.config.entity;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.capgemini.AccumulationType;
+import com.capgemini.cobigen.entity.io.AccumulationType;
 
 /**
  * The {@link Matcher} type corresponds to the &lt;matcher&gt; xml node

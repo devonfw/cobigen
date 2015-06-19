@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.capgemini.AccumulationType;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
@@ -30,6 +29,7 @@ import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.nio.NioFileSystemTemplateLoader;
+import com.capgemini.cobigen.entity.io.AccumulationType;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;

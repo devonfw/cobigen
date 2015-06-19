@@ -27,18 +27,19 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.IncrementRef;
-import com.capgemini.Increments;
-import com.capgemini.TemplateExtension;
-import com.capgemini.TemplateRef;
-import com.capgemini.TemplateScan;
-import com.capgemini.TemplateScans;
-import com.capgemini.Templates;
-import com.capgemini.TemplatesConfiguration;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
+import com.capgemini.cobigen.entity.io.IncrementRef;
+import com.capgemini.cobigen.entity.io.Increments;
+import com.capgemini.cobigen.entity.io.TemplateExtension;
+import com.capgemini.cobigen.entity.io.TemplateRef;
+import com.capgemini.cobigen.entity.io.TemplateScan;
+import com.capgemini.cobigen.entity.io.TemplateScanRef;
+import com.capgemini.cobigen.entity.io.TemplateScans;
+import com.capgemini.cobigen.entity.io.Templates;
+import com.capgemini.cobigen.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
@@ -186,7 +187,7 @@ public class TemplatesConfigurationReader {
         Map<String, Template> templates = new HashMap<>();
         Templates templatesNode = configNode.getTemplates();
         if (templatesNode != null) {
-            for (com.capgemini.Template t : templatesNode.getTemplate()) {
+            for (com.capgemini.cobigen.entity.io.Template t : templatesNode.getTemplate()) {
                 if (templates.get(t.getId()) != null) {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for idRef='" + t.getId() + "'");
@@ -337,7 +338,7 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * Loads all increments of the static configuration into the local representation
+     * Loads all increments of the static configuration into the local representation.
      *
      * @return the mapping of increment id's to the corresponding {@link Increment}
      * @param templates
@@ -352,28 +353,30 @@ public class TemplatesConfigurationReader {
     public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
         throws InvalidConfigurationException {
 
-        Map<String, Increment> generationIncrements = new HashMap<>();
-        Increments increments = configNode.getIncrements();
-        if (increments != null) {
-            for (com.capgemini.Increment source : increments.getIncrement()) {
-                generationIncrements.put(source.getId(),
+        Map<String, Increment> increments = new HashMap<>();
+        Increments incrementsNode = configNode.getIncrements();
+        if (incrementsNode != null) {
+            // Add first all increments informally be able to resolve recursive increment references
+            for (com.capgemini.cobigen.entity.io.Increment source : incrementsNode.getIncrement()) {
+                increments.put(source.getId(),
                     new Increment(source.getId(), source.getDescription(), trigger));
             }
-            for (com.capgemini.Increment p : configNode.getIncrements().getIncrement()) {
-                Increment target = generationIncrements.get(p.getId());
-                addAllTemplatesRecursively(target, p, templates, generationIncrements);
+            // Collect templates
+            for (com.capgemini.cobigen.entity.io.Increment p : configNode.getIncrements().getIncrement()) {
+                Increment target = increments.get(p.getId());
+                addAllTemplatesRecursively(target, p, templates, increments);
             }
         }
-        return generationIncrements;
+        return increments;
     }
 
     /**
-     * Adds all templates defined within the increment and sub increments recursively
+     * Adds all templates defined within the increment and sub increments recursively.
      *
      * @param rootTarget
      *            the {@link Increment} on which the templates should be added
      * @param current
-     *            the source {@link com.capgemini.Increment} from which to retrieve the data
+     *            the source {@link com.capgemini.cobigen.entity.io.Increment} from which to retrieve the data
      * @param templates
      *            {@link Map} of all templates (see
      *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
@@ -383,56 +386,56 @@ public class TemplatesConfigurationReader {
      *             if there is an invalid idref attribute
      * @author mbrunnli (07.03.2013)
      */
-    private void addAllTemplatesRecursively(Increment rootTarget, com.capgemini.Increment current,
-        Map<String, Template> templates, Map<String, Increment> generationIncrements)
-        throws InvalidConfigurationException {
+    private void addAllTemplatesRecursively(Increment rootTarget,
+        com.capgemini.cobigen.entity.io.Increment current, Map<String, Template> templates,
+        Map<String, Increment> generationIncrements) throws InvalidConfigurationException {
 
-        for (Object ref : current.getTemplateRefOrIncrementRef()) {
-            if (ref instanceof TemplateRef) {
-                TemplateRef tRef = (TemplateRef) ref;
-                Template temp = templates.get(tRef.getIdref());
-                if (temp == null) {
-                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                        "No Template found for idRef='" + tRef.getIdref() + "'");
-                }
-                rootTarget.addTemplate(temp);
+        for (TemplateRef ref : current.getTemplateRef()) {
+            Template temp = templates.get(ref.getIdref());
+            if (temp == null) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "No template found for idref='" + ref.getIdref() + "'!");
             }
+            rootTarget.addTemplate(temp);
         }
-        for (Object ref : current.getTemplateRefOrIncrementRef()) {
-            if (ref instanceof IncrementRef) {
-                IncrementRef pRef = (IncrementRef) ref;
-                Increment parentPkg = generationIncrements.get(current.getId());
-                Increment childPkg = generationIncrements.get(pRef.getIdref());
-                parentPkg.addIncrementDependency(childPkg);
 
-                com.capgemini.Increment pkg = getIncrementDeclaration(pRef);
-                addAllTemplatesRecursively(rootTarget, pkg, templates, generationIncrements);
+        for (IncrementRef pRef : current.getIncrementRef()) {
+            Increment parentPkg = generationIncrements.get(current.getId());
+            Increment childPkg = generationIncrements.get(pRef.getIdref());
+            if (childPkg == null) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "No increment found for idref='" + pRef.getIdref() + "'!");
             }
+            parentPkg.addIncrementDependency(childPkg);
+
+            com.capgemini.cobigen.entity.io.Increment pkg = getIncrementDeclaration(pRef);
+            addAllTemplatesRecursively(rootTarget, pkg, templates, generationIncrements);
         }
+
     }
 
     /**
-     * Returns the {@link com.capgemini.Increment} for the given {@link IncrementRef}
+     * Returns the {@link com.capgemini.cobigen.entity.io.Increment} for the given {@link IncrementRef}
      *
      * @param source
      *            {@link IncrementRef}
-     * @return the referenced {@link com.capgemini.Increment}
+     * @return the referenced {@link com.capgemini.cobigen.entity.io.Increment}
      * @throws InvalidConfigurationException
      *             if there is an invalid increment idref
      * @author mbrunnli (11.03.2013)
      */
-    private com.capgemini.Increment getIncrementDeclaration(IncrementRef source)
+    private com.capgemini.cobigen.entity.io.Increment getIncrementDeclaration(IncrementRef source)
         throws InvalidConfigurationException {
 
         if (xPathContext == null) {
             xPathContext = JXPathContext.newContext(configNode);
         }
         // declare namespace s='http://capgemini.com';
-        Iterator<com.capgemini.Increment> it =
+        Iterator<com.capgemini.cobigen.entity.io.Increment> it =
             xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
 
         int count = 0;
-        com.capgemini.Increment p = null;
+        com.capgemini.cobigen.entity.io.Increment p = null;
         while (it.hasNext()) {
             p = it.next();
             count++;

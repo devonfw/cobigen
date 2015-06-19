@@ -22,12 +22,12 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.ContextConfiguration;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
+import com.capgemini.cobigen.entity.io.ContextConfiguration;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
 import com.google.common.collect.Lists;
@@ -138,7 +138,7 @@ public class ContextConfigurationReader {
     public Map<String, Trigger> loadTriggers() {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
-        for (com.capgemini.Trigger t : contextNode.getTriggers().getTrigger()) {
+        for (com.capgemini.cobigen.entity.io.Trigger t : contextNode.getTriggers().getTrigger()) {
             triggers.put(
                 t.getId(),
                 new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t
@@ -148,17 +148,17 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link Matcher}s of a given {@link com.capgemini.Trigger}
+     * Loads all {@link Matcher}s of a given {@link com.capgemini.cobigen.entity.io.Trigger}
      *
      * @param trigger
-     *            {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
+     *            {@link com.capgemini.cobigen.entity.io.Trigger} to retrieve the {@link Matcher}s from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
-    private List<Matcher> loadMatchers(com.capgemini.Trigger trigger) {
+    private List<Matcher> loadMatchers(com.capgemini.cobigen.entity.io.Trigger trigger) {
 
         List<Matcher> matcher = new LinkedList<>();
-        for (com.capgemini.Matcher m : trigger.getMatcher()) {
+        for (com.capgemini.cobigen.entity.io.Matcher m : trigger.getMatcher()) {
             matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m
                 .getAccumulationType()));
         }
@@ -166,17 +166,17 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link ContainerMatcher}s of a given {@link com.capgemini.Trigger}
+     * Loads all {@link ContainerMatcher}s of a given {@link com.capgemini.cobigen.entity.io.Trigger}
      *
      * @param trigger
-     *            {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
+     *            {@link com.capgemini.cobigen.entity.io.Trigger} to retrieve the {@link Matcher}s from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (13.10.2014)
      */
-    private List<ContainerMatcher> loadContainerMatchers(com.capgemini.Trigger trigger) {
+    private List<ContainerMatcher> loadContainerMatchers(com.capgemini.cobigen.entity.io.Trigger trigger) {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
-        for (com.capgemini.ContainerMatcher cm : trigger.getContainerMatcher()) {
+        for (com.capgemini.cobigen.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
             containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm
                 .isRetrieveObjectsRecursively()));
         }
@@ -184,17 +184,18 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link VariableAssignment}s from a given {@link com.capgemini.Matcher}
+     * Loads all {@link VariableAssignment}s from a given {@link com.capgemini.cobigen.entity.io.Matcher}
      *
      * @param matcher
-     *            {@link com.capgemini.Matcher} to retrieve the {@link VariableAssignment} from
+     *            {@link com.capgemini.cobigen.entity.io.Matcher} to retrieve the {@link VariableAssignment}
+     *            from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
-    private List<VariableAssignment> loadVariableAssignments(com.capgemini.Matcher matcher) {
+    private List<VariableAssignment> loadVariableAssignments(com.capgemini.cobigen.entity.io.Matcher matcher) {
 
         List<VariableAssignment> variableAssignments = new LinkedList<>();
-        for (com.capgemini.VariableAssignment va : matcher.getVariableAssignment()) {
+        for (com.capgemini.cobigen.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
             variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
         }
         return variableAssignments;
