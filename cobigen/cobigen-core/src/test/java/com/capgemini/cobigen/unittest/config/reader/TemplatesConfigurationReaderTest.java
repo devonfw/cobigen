@@ -87,7 +87,7 @@ public class TemplatesConfigurationReaderTest {
             "resources/resources/spring/common.xml.ftl");
         assertThat(templateSpringCommon.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/resources/resources/spring/common.xml");
-        assertThat(templateSpringCommon.getMergeStrategy()).isNotNull();
+        assertThat(templateSpringCommon.getMergeStrategy()).isNull();
 
         String templateIdFooClass = "prefix_FooClass.java";
         Template templateFooClass = templates.get(templateIdFooClass);
@@ -306,6 +306,36 @@ public class TemplatesConfigurationReaderTest {
         assertThat(increments).containsOnlyKeys("test");
         assertThat(increments.get("test").getTemplates()).extracting("id").containsOnly(
             "prefix_foo_BarClass.java", "prefix_foo_FooClass.java");
+    }
+
+    /**
+     * Tests the correct detection of duplicate template scan names.
+     * @throws InvalidConfigurationException
+     *             expected
+     * @author mbrunnli (Jun 19, 2015)
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnDuplicateTemplateScanNames() throws InvalidConfigurationException {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath
+                + "faulty_duplicate_template_scan_name").toPath());
+        reader.loadTemplates(null, null);
+    }
+
+    /**
+     * Tests the correct detection of invalid template scan references.
+     * @throws InvalidConfigurationException
+     *             expected
+     * @author mbrunnli (Jun 19, 2015)
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(
+                new File(testFileRootPath + "faulty_invalid_template_scan_ref").toPath());
+        reader.loadTemplates(null, null);
     }
 
 }
