@@ -1,0 +1,2 @@
+<#include '/macros.ftl'>
+<#list pojo.methods as method><#if method.annotations?has_content && method.annotations.org_junit_Test?has_content>${variables.category};${variables.bereich};${variables.unterbereich};${variables.testname};<@insertFirstMethodDocletValueTestziel method/>;<@insertFirstMethodDocletValueBeschreibung method/>;<@insertFirstMethodDocletValueRueckbezug method/></#if></#list>
