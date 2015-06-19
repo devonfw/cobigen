@@ -383,7 +383,7 @@ public class TemplatesConfigurationReader {
     /**
      * Adds all templates defined within the increment and sub increments recursively.
      *
-     * @param rootTarget
+     * @param rootIncrement
      *            the {@link Increment} on which the templates should be added
      * @param current
      *            the source {@link com.capgemini.cobigen.entity.io.Increment} from which to retrieve the data
@@ -396,7 +396,7 @@ public class TemplatesConfigurationReader {
      *             if there is an invalid idref attribute
      * @author mbrunnli (07.03.2013)
      */
-    private void addAllTemplatesRecursively(Increment rootTarget,
+    private void addAllTemplatesRecursively(Increment rootIncrement,
         com.capgemini.cobigen.entity.io.Increment current, Map<String, Template> templates,
         Map<String, Increment> generationIncrements) throws InvalidConfigurationException {
 
@@ -406,7 +406,7 @@ public class TemplatesConfigurationReader {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                     "No template found for idref='" + ref.getIdref() + "'!");
             }
-            rootTarget.addTemplate(temp);
+            rootIncrement.addTemplate(temp);
         }
 
         for (IncrementRef pRef : current.getIncrementRef()) {
@@ -419,7 +419,7 @@ public class TemplatesConfigurationReader {
             parentPkg.addIncrementDependency(childPkg);
 
             com.capgemini.cobigen.entity.io.Increment pkg = getIncrementDeclaration(pRef);
-            addAllTemplatesRecursively(rootTarget, pkg, templates, generationIncrements);
+            addAllTemplatesRecursively(rootIncrement, pkg, templates, generationIncrements);
         }
 
         for (TemplateScanRef tsRef : current.getTemplateScanRef()) {
@@ -430,7 +430,7 @@ public class TemplatesConfigurationReader {
             }
 
             for (String scanTemplateId : scanTemplateIds) {
-                templates.put(scanTemplateId, templates.get(scanTemplateId));
+                rootIncrement.addTemplate(templates.get(scanTemplateId));
             }
         }
     }
