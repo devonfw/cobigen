@@ -45,6 +45,8 @@ import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.util.ExceptionUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -55,33 +57,26 @@ import com.google.common.collect.Sets;
  */
 public class TemplatesConfigurationReader {
 
+    /** Assigning logger to TemplatesConfigurationReader */
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
+
     /** The file extension of the template files. */
     private static final String TEMPLATE_EXTENSION = ".ftl";
 
-    /**
-     * Templates configuration file name
-     */
+    /** Templates configuration file name */
     public static final String CONFIG_FILENAME = "templates.xml";
 
-    /**
-     * XML Node 'configuration' of the configuration.xml
-     */
+    /** XML Node 'configuration' of the configuration.xml */
     private TemplatesConfiguration configNode;
 
-    /**
-     * Configuration file
-     */
+    /** Configuration file */
     private Path configFilePath;
 
-    /**
-     * {@link JXPathContext} for the configNode
-     */
+    /** {@link JXPathContext} for the configNode */
     private JXPathContext xPathContext;
 
-    /**
-     * Assigning logger to TemplatesConfigurationReader
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
+    /** Cache to find all templates by name for each template scan */
+    private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -196,6 +191,7 @@ public class TemplatesConfigurationReader {
                     t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
         }
+
         TemplateScans templateScans = configNode.getTemplateScans();
         if (templateScans != null) {
             List<TemplateScan> scans = templateScans.getTemplateScan();
@@ -262,6 +258,16 @@ public class TemplatesConfigurationReader {
             throw new IllegalArgumentException("The path '" + templateFolderPath
                 + "' does not describe a directory.");
         }
+
+        if (scan.getName() != null) {
+            if (templateScanTemplates.containsKey(scan.getName())) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "Two template-scan nodes have been defined with the same @name by mistake.");
+            } else {
+                templateScanTemplates.put(scan.getName(), Lists.<String> newArrayList());
+            }
+        }
+
         scanTemplates(templateFolderPath, "", scan, templates, trigger, triggerInterpreter,
             Sets.<String> newHashSet());
     }
@@ -328,6 +334,10 @@ public class TemplatesConfigurationReader {
                             new Template(templateId, destinationPath, templateFile, mergeStratgey,
                                 scan.getTargetCharset(), trigger, triggerInterpreter);
                         templates.put(templateId, template);
+
+                        if (templateScanTemplates.get(scan.getName()) != null) {
+                            templateScanTemplates.get(scan.getName()).add(templateId);
+                        }
                     }
                 }
             }
@@ -412,6 +422,17 @@ public class TemplatesConfigurationReader {
             addAllTemplatesRecursively(rootTarget, pkg, templates, generationIncrements);
         }
 
+        for (TemplateScanRef tsRef : current.getTemplateScanRef()) {
+            List<String> scanTemplateIds = templateScanTemplates.get(tsRef.getRef());
+            if (scanTemplateIds == null) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "No template-scan found for ref='" + tsRef.getRef() + "'!");
+            }
+
+            for (String scanTemplateId : scanTemplateIds) {
+                templates.put(scanTemplateId, templates.get(scanTemplateId));
+            }
+        }
     }
 
     /**

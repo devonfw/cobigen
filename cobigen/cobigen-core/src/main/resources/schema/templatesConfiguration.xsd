@@ -60,6 +60,7 @@
   </xs:complexType>
 
   <xs:complexType name="template-scan">
+    <xs:attribute name="name" use="optional" type="xs:string"/>
     <xs:attribute name="templateIdPrefix" use="optional" type="xs:string"/>
     <xs:attribute name="templatePath" use="required" type="xs:string"/>
     <xs:attribute name="destinationPath" use="required" type="xs:string"/>
@@ -75,8 +76,14 @@
 
   <xs:complexType name="increment">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:annotation>
+        <xs:appinfo>
+          <simplify:as-element-property/>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:element name="templateRef" type="tns:templateRef"/>
       <xs:element name="incrementRef" type="tns:incrementRef"/>
+      <xs:element name="templateScanRef" type="tns:templateScanRef"/>
     </xs:choice>
     <xs:attribute name="id" use="required" type="xs:NCName"/>
     <xs:attribute name="description" use="required" type="xs:string"/>
@@ -88,6 +95,10 @@
 
   <xs:complexType name="incrementRef">
     <xs:attribute name="idref" use="required" type="xs:NCName"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateScanRef">
+    <xs:attribute name="ref" use="required" type="xs:string"/>
   </xs:complexType>
 
 </xs:schema>

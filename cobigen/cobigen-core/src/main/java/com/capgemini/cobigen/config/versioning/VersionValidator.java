@@ -56,6 +56,7 @@ public class VersionValidator {
     static {
         templatesConfig_compatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
         templatesConfig_compatibleVersionSteps.put(new BigDecimal("1.2"), new BigDecimal("1.2"));
+        templatesConfig_compatibleVersionSteps.put(new BigDecimal("2.1"), new BigDecimal("2.1"));
 
         templatesConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
 
