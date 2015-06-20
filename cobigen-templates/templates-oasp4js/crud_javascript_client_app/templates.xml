@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  version="1.0">
+  version="2.1">
   <templates>
     <!-- general -->
     <template id="general_config" destinationPath="javascript/config.json" templateFile="javascript/config.json.ftl"/>
