@@ -3,7 +3,7 @@ package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class AbstractTestClass {
+public class AbstractTestClass extends SuperSuperTestClass {
 
     /**
      * Example JavaDoc

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
@@ -305,15 +306,16 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
 
-        // test inherited field
+        // test inherited field of direct superclass named "id"
         Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
         assertNotNull(inheritedField);
         assertEquals("id", inheritedField.get(ModelConstant.NAME));
 
         // TODO qDox library returns full qualified names for the superclass' fields
-        /*
-         * assertEquals("Long", inheritedField.get(ModelConstant.TYPE));
-         */
+        // actually the expected result of ModelConstant.Type is "Long" here, but we insert this test case
+        // here with "java.lang.Long" so that the test turns into red if there changes anything in qDox
+        assertEquals("java.lang.Long", inheritedField.get(ModelConstant.TYPE));
+
         assertEquals("java.lang.Long", inheritedField.get(ModelConstant.CANONICAL_TYPE));
 
         // is deprecated, so its not necessary to test here
@@ -334,6 +336,58 @@ public class ParsedJavaModelBuilderTest {
          * assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeIsAnnotation")); //
          * attribute
          * assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeFieldAnnotation"));
+         */
+    }
+
+    /**
+     * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     * @author fkreis (08.05.2015)
+     */
+    @Test
+    @Ignore(value = "This test case is not successfull due to boundaries of qDox")
+    public void testExtractionOfMethodAccessibleFields_inheritedInherited() throws FileNotFoundException {
+        File file = new File(testFileRootPath + "TestClass.java");
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        Map<String, Object> model =
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+
+        // test inherited field of direct superclass named "id"
+        System.out.println(model);
+        Map<String, Object> inheritedField =
+            JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        assertNotNull(inheritedField);
+        assertEquals("superSuperString", inheritedField.get(ModelConstant.NAME));
+
+        // TODO qDox library returns full qualified names for the superclass' fields
+        // actually the expected result of ModelConstant.Type is "String" here, but we insert this test case
+        // here with "java.lang.String" so that the test turns into red if there changes anything in qDox
+        assertEquals("java.lang.String", inheritedField.get(ModelConstant.TYPE));
+
+        assertEquals("java.lang.String", inheritedField.get(ModelConstant.CANONICAL_TYPE));
+
+        // is deprecated, so its not necessary to test here
+        // assertEquals("false", inheritedField.get("isId"));
+
+        // currently no javadoc provided
+        // assertNotNull(inheritedField.get(ModelConstant.JAVADOC));
+        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(inheritedField).get("comment"));
+
+        // TODO Currently qDox library does not return the superclass' annotations
+        /*
+         * // test annotations for attribute, getter, setter, is-method
+         * assertNotNull(inheritedField.get(ModelConstant.ANNOTATIONS)); // getter
+         * assertTrue(JavaModelUtil.getAnnotations
+         * (inheritedField).containsKey("MySuperSuperTypeGetterAnnotation")); // Setter
+         * assertTrue(JavaModelUtil.getAnnotations
+         * (inheritedField).containsKey("MySuperSuperTypeSetterAnnotation")); // is-method
+         * assertTrue(JavaModelUtil
+         * .getAnnotations(inheritedField).containsKey("MySuperSuperTypeIsAnnotation")); // attribute
+         * assertTrue
+         * (JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperSuperTypeFieldAnnotation"));
          */
     }
 
