@@ -12,18 +12,18 @@ public class SuperSuperTestClass {
     private String superSuperString;
 
     @MySuperSuperTypeGetterAnnotation
-    public String getsuperSuperString() {
+    public String getSuperSuperString() {
 
         return superSuperString;
     }
 
     @MySuperSuperTypeIsAnnotation
-    public String issuperSuperString() {
+    public String isSuperSuperString() {
         return superSuperString;
     }
 
     @MySuperSuperTypeSetterAnnotation
-    public void setsuperSuperString(String superSuperString) {
+    public void setSuperSuperString(String superSuperString) {
 
         this.superSuperString = superSuperString;
     }

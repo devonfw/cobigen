@@ -292,23 +292,38 @@ public class ReflectedJavaModelBuilder {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
             Field field = null;
+
+            // try to find field locally
             try {
                 field = pojo.getDeclaredField((String) attr.get(ModelConstant.NAME));
-                extractAnnotationsRecursively(annotations, field.getAnnotations());
             } catch (NoSuchFieldException e) {
                 // Do nothing if the method does not exist
             }
 
             // if field was not found locally it should be a superclass field
             if (field == null) {
-                try {
-                    field = pojo.getSuperclass().getDeclaredField((String) attr.get(ModelConstant.NAME));
-                    extractAnnotationsRecursively(annotations, field.getAnnotations());
-                } catch (NoSuchFieldException e) {
-                    // Do nothing if the method does not exist
+                boolean fieldNotFound = true;
+                Class<?> actualClass = pojo.getSuperclass();
+                while (fieldNotFound) {
+                    try {
+                        field = actualClass.getDeclaredField((String) attr.get(ModelConstant.NAME));
+                        if (field != null || actualClass == Object.class) {
+                            fieldNotFound = false;
+                        }
+                    } catch (NoSuchFieldException e) {
+                        // check next super class if the method does not exist
+                        actualClass = actualClass.getSuperclass();
+                    }
                 }
+
             }
 
+            // collect field Annotations
+            if (field != null) {
+                extractAnnotationsRecursively(annotations, field.getAnnotations());
+            }
+
+            // collect getter Annotations
             try {
                 Method getter =
                     pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
@@ -316,6 +331,8 @@ public class ReflectedJavaModelBuilder {
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
             }
+
+            // collect is Annotations
             try {
                 Method getter =
                     pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
@@ -323,6 +340,8 @@ public class ReflectedJavaModelBuilder {
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
             }
+
+            // collect setter Annotations
             try {
                 Class<?>[] paramList = new Class<?>[1];
                 if (field != null) {

@@ -294,4 +294,39 @@ public class ReflectedJavaModelBuilderTest {
         assertEquals("TestString", annotation.get("str"));
     }
 
+    /**
+     * Tests whether the annotation of super super types are available
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     * @author fkreis (21.06.2015)
+     */
+    @Test
+    public void testAnnotationExtractionOfSuperSuperTypes() throws FileNotFoundException {
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
+
+        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        assertNotNull(classField);
+
+        // test annotations for attribute, getter, setter, is-method
+        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        // getter
+        assertTrue(JavaModelUtil
+            .getAnnotations(classField)
+            .containsKey(
+                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation"));
+        // Setter
+        assertTrue(JavaModelUtil
+            .getAnnotations(classField)
+            .containsKey(
+                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation"));
+        // is-method
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation"));
+        // attribute
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation"));
+    }
+
 }
