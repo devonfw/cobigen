@@ -307,12 +307,15 @@ public class ReflectedJavaModelBuilder {
                 while (fieldNotFound) {
                     try {
                         field = actualClass.getDeclaredField((String) attr.get(ModelConstant.NAME));
-                        if (field != null || actualClass == Object.class) {
+                        if (field != null) {
                             fieldNotFound = false;
                         }
                     } catch (NoSuchFieldException e) {
                         // check next super class if the method does not exist
                         actualClass = actualClass.getSuperclass();
+                        if (actualClass == Object.class) {
+                            fieldNotFound = false;
+                        }
                     }
                 }
 
