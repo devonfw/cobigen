@@ -8,7 +8,8 @@ public class SuperSuperTestClass {
     /**
      * Example JavaDoc
      */
-    @MySuperSuperTypeFieldAnnotation
+    @MySuperSuperTypeFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c',
+        bool = true, str = "TestString")
     private String superSuperString;
 
     @MySuperSuperTypeGetterAnnotation
@@ -31,9 +32,7 @@ public class SuperSuperTestClass {
 }
 
 // simple annotation types which are still available at runtime
-@Retention(RetentionPolicy.RUNTIME)
-@interface MySuperSuperTypeFieldAnnotation {
-}
+// the punblic @interface MySuperSuperTypeFieldAnnotation has its own file now
 
 @Retention(RetentionPolicy.RUNTIME)
 @interface MySuperSuperTypeGetterAnnotation {

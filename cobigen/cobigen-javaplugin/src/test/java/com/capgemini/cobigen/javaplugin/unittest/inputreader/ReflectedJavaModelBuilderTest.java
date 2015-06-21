@@ -327,6 +327,31 @@ public class ReflectedJavaModelBuilderTest {
         // attribute
         assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation"));
+        Map<String, Object> annotation =
+            (Map<String, Object>) JavaModelUtil
+                .getAnnotations(classField)
+                .get(
+                    "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+        assertNotNull(annotation);
+        assertTrue(annotation.get("b") instanceof Byte);
+        assertEquals((byte) 0, annotation.get("b"));
+        assertTrue(annotation.get("s") instanceof Short);
+        assertEquals((short) 1, annotation.get("s"));
+        assertTrue(annotation.get("i") instanceof Integer);
+        assertEquals(2, annotation.get("i"));
+        assertTrue(annotation.get("l") instanceof Long);
+        assertEquals(3L, annotation.get("l"));
+        assertTrue(annotation.get("f") instanceof Float);
+        assertEquals(4F, annotation.get("f"));
+        assertTrue(annotation.get("d") instanceof Double);
+        assertEquals(5D, annotation.get("d"));
+        assertTrue(annotation.get("c") instanceof Character);
+        assertEquals('c', annotation.get("c"));
+        assertTrue(annotation.get("bool") instanceof Boolean);
+        assertEquals(true, annotation.get("bool"));
+        assertTrue(annotation.get("str") instanceof String);
+        assertEquals("TestString", annotation.get("str"));
+        System.out.println(annotation);
     }
 
 }
