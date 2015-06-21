@@ -9,7 +9,8 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
     /**
      * Example JavaDoc
      */
-    @MyFieldAnnotation
+    @MyFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true,
+        str = "TestString")
     private List<String> customList;
 
     @MyGetterAnnotation
@@ -40,10 +41,7 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
 
 }
 
-// simple annotation types which are still available at runtime
-@Retention(RetentionPolicy.RUNTIME)
-@interface MyFieldAnnotation {
-}
+// Field Annotation see own file, because its a public annotation
 
 @Retention(RetentionPolicy.RUNTIME)
 @interface MyGetterAnnotation {

@@ -350,9 +350,14 @@ public class ParsedJavaModelBuilder {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
                 } else if (value instanceof Collection<?>) {
                     annotationParameters.put(propertyName, value);
+                } else if (value instanceof Byte || value instanceof Short || value instanceof Integer
+                    || value instanceof Long || value instanceof Float || value instanceof Double
+                    || value instanceof Boolean || value instanceof Character) {
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
-                    // resolves it.
+                    // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we
+                    // always come into the else-part
                     annotationParameters.put(propertyName, value != null ? value.toString() : null);
                 }
             }

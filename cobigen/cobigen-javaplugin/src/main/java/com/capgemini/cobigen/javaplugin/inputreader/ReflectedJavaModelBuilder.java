@@ -357,6 +357,7 @@ public class ReflectedJavaModelBuilder {
                 annotationParameters);
 
             for (Method getter : annotation.annotationType().getMethods()) {
+
                 if (getter.getParameterTypes().length > 0 || getter.getName().equals("hashCode")
                     || getter.getName().equals("annotationType") || getter.getName().equals("toString")) {
                     continue;
@@ -384,6 +385,12 @@ public class ReflectedJavaModelBuilder {
                             Lists.newLinkedList(Arrays.asList((Object[]) value)));
                     } else if (value instanceof Enum<?>) {
                         annotationParameters.put(getter.getName(), ((Enum<?>) value).name());
+
+                        // check whether the value is a wrapper of a primitive type
+                    } else if (value instanceof Byte || value instanceof Short || value instanceof Integer
+                        || value instanceof Long || value instanceof Float || value instanceof Double
+                        || value instanceof Boolean || value instanceof Character) {
+                        annotationParameters.put(getter.getName(), value);
                     } else {
                         annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }
