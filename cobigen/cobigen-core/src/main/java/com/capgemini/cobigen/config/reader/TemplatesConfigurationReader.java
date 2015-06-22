@@ -27,19 +27,20 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.config.entity.io.IncrementRef;
+import com.capgemini.cobigen.config.entity.io.Increments;
+import com.capgemini.cobigen.config.entity.io.TemplateExtension;
+import com.capgemini.cobigen.config.entity.io.TemplateRef;
+import com.capgemini.cobigen.config.entity.io.TemplateScan;
+import com.capgemini.cobigen.config.entity.io.TemplateScanRef;
+import com.capgemini.cobigen.config.entity.io.TemplateScans;
+import com.capgemini.cobigen.config.entity.io.Templates;
+import com.capgemini.cobigen.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
-import com.capgemini.cobigen.entity.io.IncrementRef;
-import com.capgemini.cobigen.entity.io.Increments;
-import com.capgemini.cobigen.entity.io.TemplateExtension;
-import com.capgemini.cobigen.entity.io.TemplateRef;
-import com.capgemini.cobigen.entity.io.TemplateScan;
-import com.capgemini.cobigen.entity.io.TemplateScanRef;
-import com.capgemini.cobigen.entity.io.TemplateScans;
-import com.capgemini.cobigen.entity.io.Templates;
-import com.capgemini.cobigen.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
@@ -59,12 +60,6 @@ public class TemplatesConfigurationReader {
 
     /** Assigning logger to TemplatesConfigurationReader */
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
-
-    /** The file extension of the template files. */
-    private static final String TEMPLATE_EXTENSION = ".ftl";
-
-    /** Templates configuration file name */
-    public static final String CONFIG_FILENAME = "templates.xml";
 
     /** XML Node 'configuration' of the configuration.xml */
     private TemplatesConfiguration configNode;
@@ -90,7 +85,7 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        configFilePath = templatesRoot.resolve(CONFIG_FILENAME);
+        configFilePath = templatesRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         readConfiguration();
     }
 
@@ -182,7 +177,7 @@ public class TemplatesConfigurationReader {
         Map<String, Template> templates = new HashMap<>();
         Templates templatesNode = configNode.getTemplates();
         if (templatesNode != null) {
-            for (com.capgemini.cobigen.entity.io.Template t : templatesNode.getTemplate()) {
+            for (com.capgemini.cobigen.config.entity.io.Template t : templatesNode.getTemplate()) {
                 if (templates.get(t.getId()) != null) {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for idRef='" + t.getId() + "'");
@@ -310,9 +305,10 @@ public class TemplatesConfigurationReader {
                 } else {
                     String templateName = next.getFileName().toString();
                     String templateNameWithoutExtension = templateName;
-                    if (templateName.endsWith(TEMPLATE_EXTENSION)) {
+                    if (templateName.endsWith(ConfigurationConstants.TEMPLATE_EXTENSION)) {
                         templateNameWithoutExtension =
-                            templateName.substring(0, templateName.length() - TEMPLATE_EXTENSION.length());
+                            templateName.substring(0, templateName.length()
+                                - ConfigurationConstants.TEMPLATE_EXTENSION.length());
                     }
                     String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
                     if (observedTemplateIds.contains(templateId)) {
@@ -367,12 +363,13 @@ public class TemplatesConfigurationReader {
         Increments incrementsNode = configNode.getIncrements();
         if (incrementsNode != null) {
             // Add first all increments informally be able to resolve recursive increment references
-            for (com.capgemini.cobigen.entity.io.Increment source : incrementsNode.getIncrement()) {
+            for (com.capgemini.cobigen.config.entity.io.Increment source : incrementsNode.getIncrement()) {
                 increments.put(source.getId(),
                     new Increment(source.getId(), source.getDescription(), trigger));
             }
             // Collect templates
-            for (com.capgemini.cobigen.entity.io.Increment p : configNode.getIncrements().getIncrement()) {
+            for (com.capgemini.cobigen.config.entity.io.Increment p : configNode.getIncrements()
+                .getIncrement()) {
                 Increment target = increments.get(p.getId());
                 addAllTemplatesRecursively(target, p, templates, increments);
             }
@@ -386,7 +383,8 @@ public class TemplatesConfigurationReader {
      * @param rootIncrement
      *            the {@link Increment} on which the templates should be added
      * @param current
-     *            the source {@link com.capgemini.cobigen.entity.io.Increment} from which to retrieve the data
+     *            the source {@link com.capgemini.cobigen.config.entity.io.Increment} from which to retrieve
+     *            the data
      * @param templates
      *            {@link Map} of all templates (see
      *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
@@ -397,7 +395,7 @@ public class TemplatesConfigurationReader {
      * @author mbrunnli (07.03.2013)
      */
     private void addAllTemplatesRecursively(Increment rootIncrement,
-        com.capgemini.cobigen.entity.io.Increment current, Map<String, Template> templates,
+        com.capgemini.cobigen.config.entity.io.Increment current, Map<String, Template> templates,
         Map<String, Increment> generationIncrements) throws InvalidConfigurationException {
 
         for (TemplateRef ref : current.getTemplateRef()) {
@@ -418,7 +416,7 @@ public class TemplatesConfigurationReader {
             }
             parentPkg.addIncrementDependency(childPkg);
 
-            com.capgemini.cobigen.entity.io.Increment pkg = getIncrementDeclaration(pRef);
+            com.capgemini.cobigen.config.entity.io.Increment pkg = getIncrementDeclaration(pRef);
             addAllTemplatesRecursively(rootIncrement, pkg, templates, generationIncrements);
         }
 
@@ -436,27 +434,27 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * Returns the {@link com.capgemini.cobigen.entity.io.Increment} for the given {@link IncrementRef}
+     * Returns the {@link com.capgemini.cobigen.config.entity.io.Increment} for the given {@link IncrementRef}
      *
      * @param source
      *            {@link IncrementRef}
-     * @return the referenced {@link com.capgemini.cobigen.entity.io.Increment}
+     * @return the referenced {@link com.capgemini.cobigen.config.entity.io.Increment}
      * @throws InvalidConfigurationException
      *             if there is an invalid increment idref
      * @author mbrunnli (11.03.2013)
      */
-    private com.capgemini.cobigen.entity.io.Increment getIncrementDeclaration(IncrementRef source)
+    private com.capgemini.cobigen.config.entity.io.Increment getIncrementDeclaration(IncrementRef source)
         throws InvalidConfigurationException {
 
         if (xPathContext == null) {
             xPathContext = JXPathContext.newContext(configNode);
         }
         // declare namespace s='http://capgemini.com';
-        Iterator<com.capgemini.cobigen.entity.io.Increment> it =
+        Iterator<com.capgemini.cobigen.config.entity.io.Increment> it =
             xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
 
         int count = 0;
-        com.capgemini.cobigen.entity.io.Increment p = null;
+        com.capgemini.cobigen.config.entity.io.Increment p = null;
         while (it.hasNext()) {
             p = it.next();
             count++;

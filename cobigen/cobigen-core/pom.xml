@@ -93,43 +93,64 @@
           </excludes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.4</version>
-        <executions>
-          <execution>
-            <id>add-jaxb-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${basedir}/src/generated/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
         <version>0.12.3</version>
         <executions>
           <execution>
+            <id>generate-v1.0-configuration</id>
             <goals>
               <goal>generate</goal>
             </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.config.entity.io.v1_0</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v1.0</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v1.0</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v1.2-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.config.entity.io.v1_2</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v1.2</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v1.2</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v2.0-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.config.entity.io.v2_0</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v2.0</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.0</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-current-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.config.entity.io</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/current</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
+            </configuration>
           </execution>
         </executions>
         <configuration>
-          <generatePackage>com.capgemini.cobigen.entity.io</generatePackage>
-          <generateDirectory>${basedir}/src/generated/java</generateDirectory>
-          <schemaDirectory>${basedir}/src/main/resources/schema</schemaDirectory>
+          <removeOldOutput>true</removeOldOutput>
           <extension>true</extension>
+          <bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>
           <args>
             <arg>-Xsimplify</arg>
+            <arg>-npa</arg>
           </args>
           <plugins>
             <plugin>
