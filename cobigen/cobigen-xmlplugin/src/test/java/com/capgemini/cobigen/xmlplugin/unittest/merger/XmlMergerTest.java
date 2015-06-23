@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
 import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.action.OverrideMergeAction;
 
 /**
  * Test suite for {@link XmlMerger} class
@@ -65,6 +66,26 @@ public class XmlMergerTest {
 
         System.out.println(mergedDoc);
         assertEquals("To many jaxrs:server elements", mergedDoc.split("<jaxrs:server").length - 1, 1);
+    }
+
+    /**
+     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * @throws Exception
+     *             when something goes wrong
+     * @author sholzer (Jun 23, 2015)
+     */
+    @Test
+    public void testMergeDozerMapping() throws Exception {
+
+        // Copy pasted from testMergeAlsoMergesSchemaLocations()
+        File base = new File(testFileRootPath + "BaseFile_OneOneNine_dozer.xml");
+        File patch = new File(testFileRootPath + "PatchFile_OneOneNine_dozer.xml");
+
+        XmlMerger merger = new XmlMerger("", new OverrideMergeAction());
+        String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(patch)), "UTF-8");
+
+        assertEquals("not the expected amount of mappings", 5, mergedDoc.split("<mapping").length - 1);
+
     }
 
     /**
