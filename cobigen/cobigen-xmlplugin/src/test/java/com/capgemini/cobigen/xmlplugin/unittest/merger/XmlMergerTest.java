@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.xmlplugin.unittest.merger;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -43,6 +45,26 @@ public class XmlMergerTest {
                 "Original unspecific xml parser message occured, which should be handled.",
                 "The processing instruction target matching \"[xX][mM][lL]\" is not allowed", e.getMessage());
         }
+    }
+
+    /**
+     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * @throws Exception
+     *             when something goes wrong
+     * @author sholzer (Jun 23, 2015)
+     */
+    @Test
+    public void testMergeJaxrsServiceBeans() throws Exception {
+
+        // Copy pasted from testMergeAlsoMergesSchemaLocations()
+        File base = new File(testFileRootPath + "BaseFile_OneOneNine.xml");
+        File patch = new File(testFileRootPath + "PatchFile_OneOneNine.xml");
+
+        XmlMerger merger = new XmlMerger("", new CompleteMergeAction());
+        String mergedDoc = merger.merge(base, IOUtils.toString(new FileReader(patch)), "UTF-8");
+
+        System.out.println(mergedDoc);
+        assertEquals("To many jaxrs:server elements", mergedDoc.split("<jaxrs:server").length - 1, 1);
     }
 
     /**
