@@ -43,17 +43,17 @@ public class TemplateConfigurationUpgraderTest {
         File sourceTestdata = new File(testFileRootPath + "valid-v1.2/templates.xml");
         Files.copy(sourceTestdata, tmpTargetConfig);
 
+        TemplateConfigurationUpgrader sut = new TemplateConfigurationUpgrader();
+
         TemplatesConfigurationVersion version =
-            TemplateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
+            sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(TemplatesConfigurationVersion.v1_2);
 
-        TemplateConfigurationUpgrader.upgradeTemplatesConfigurationToLatestVersion(tempFolder.getRoot()
-            .toPath(), false);
+        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
         assertThat(tmpTargetConfig.toPath().resolveSibling("templates.bak.xml").toFile()).exists()
             .hasSameContentAs(sourceTestdata);
 
-        version =
-            TemplateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
+        version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Target version").isEqualTo(TemplatesConfigurationVersion.v2_1);
 
         XMLUnit.setIgnoreWhitespace(true);
@@ -75,7 +75,7 @@ public class TemplateConfigurationUpgraderTest {
         File targetConfig = new File(testFileRootPath + "valid-v2.1");
 
         TemplatesConfigurationVersion version =
-            TemplateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
+            new TemplateConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
         assertThat(version).isEqualTo(TemplatesConfigurationVersion.v2_1);
     }
 }
