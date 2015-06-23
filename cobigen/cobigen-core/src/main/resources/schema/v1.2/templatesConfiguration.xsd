@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://capgemini.com" xmlns:tns="http://capgemini.com"
-  elementFormDefault="qualified" version="1.2">
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:simplify="http://jaxb2-commons.dev.java.net/basic/simplify"
+  jaxb:extensionBindingPrefixes="simplify" elementFormDefault="qualified" version="1.2">
 
   <xs:element name="templatesConfiguration">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="templates" minOccurs="0" type="tns:templates"/>
-        <xs:element name="template-scans" minOccurs="0"  type="tns:template-scans"/>
+        <xs:element name="template-scans" minOccurs="0" type="tns:template-scans"/>
         <xs:element name="increments" minOccurs="0" type="tns:increments"/>
       </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal"/>
@@ -74,6 +75,11 @@
 
   <xs:complexType name="increment">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:annotation>
+        <xs:appinfo>
+          <simplify:as-element-property/>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:element name="templateRef" type="tns:templateRef"/>
       <xs:element name="incrementRef" type="tns:incrementRef"/>
     </xs:choice>

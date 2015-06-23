@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.config.constant;
+package com.capgemini.cobigen.config.upgrade.version;
 
 /**
  * Version steps of the templates configuration.
