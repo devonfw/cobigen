@@ -134,7 +134,7 @@ public class ContextConfigurationReader {
     public Map<String, Trigger> loadTriggers() {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
-        for (com.capgemini.cobigen.config.entity.io.Trigger t : contextNode.getTriggers().getTrigger()) {
+        for (com.capgemini.cobigen.config.entity.io.Trigger t : contextNode.getTrigger()) {
             triggers.put(
                 t.getId(),
                 new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t

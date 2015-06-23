@@ -1,5 +1,10 @@
 package com.capgemini.cobigen.config.upgrade;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+
+import org.dozer.DozerBeanMapper;
+
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
@@ -34,6 +39,18 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         switch (source) {
         case v2_0:
             // to v2.1
+
+            DozerBeanMapper mapper = new DozerBeanMapper();
+            try (InputStream stream =
+                getClass().getResourceAsStream("/dozer/config/upgrade/contextConfiguration-v2.0-v2.1.xml")) {
+                mapper.addMapping(stream);
+            }
+            com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration upgradedConfig =
+                mapper.map(previousConfigurationRootNode,
+                    com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration.class);
+            upgradedConfig.setVersion(new BigDecimal("2.1"));
+
+            result.setResultConfigurationJaxbRootNode(upgradedConfig);
 
             break;
         default:

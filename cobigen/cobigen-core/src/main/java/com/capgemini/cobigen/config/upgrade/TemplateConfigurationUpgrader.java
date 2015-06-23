@@ -42,8 +42,7 @@ public class TemplateConfigurationUpgrader extends
 
             DozerBeanMapper mapper = new DozerBeanMapper();
             try (InputStream stream =
-                TemplateConfigurationUpgrader.class
-                    .getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
+                getClass().getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
                 mapper.addMapping(stream);
             }
             com.capgemini.cobigen.config.entity.io.v2_1.TemplatesConfiguration upgradedConfig =

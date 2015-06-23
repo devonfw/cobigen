@@ -96,6 +96,18 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     }
 
     /**
+     * Checks, whether the configuration is compliant to the latest supported version.
+     * @param configurationRoot
+     *            the root folder containing the configuration
+     * @return <code>true</code> if the configuration is up-to-date, <br>
+     *         otherwise <code>false</code>
+     * @author mbrunnli (Jun 23, 2015)
+     */
+    public boolean isCompliantToLatestSupportedVersion(Path configurationRoot) {
+        return resolveLatestCompatibleSchemaVersion(configurationRoot, true) != null;
+    }
+
+    /**
      * Checks, whether the configuration can be read with an old schema version.
      * @param configurationRoot
      *            the root folder containing the configuration
@@ -104,6 +116,21 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * @author mbrunnli (Jun 22, 2015)
      */
     public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
+        return resolveLatestCompatibleSchemaVersion(configurationRoot, false);
+    }
+
+    /**
+     * Checks, whether the configuration can be read with an old schema version.
+     * @param configurationRoot
+     *            the root folder containing the configuration
+     * @param justCheckLatestVersion
+     *            just checks latest supported version and returns
+     * @return the newest schema version, the configuration is compliant with or <code>null</code> if the
+     *         configuration is not compliant to any.
+     * @author mbrunnli (Jun 22, 2015)
+     */
+    private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot,
+        boolean justCheckLatestVersion) {
         LOG.debug("Try reading {} (including trails with legacy schema).", configurationName);
 
         Path configurationFile = configurationRoot.resolve(configurationFilename);
@@ -119,7 +146,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
                     LOG.debug("It was not possible to read {} with schema '{}' .", configurationName,
                         lv.toString());
-                    continue;
                 } else {
                     LOG.debug("It was possible to read {} with schema '{}' .", configurationName,
                         lv.toString());
@@ -127,6 +153,10 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 }
             } catch (Throwable e) {
                 LOG.debug("Not able to read template configuration with schema '{}' .", lv.toString(), e);
+            }
+
+            if (justCheckLatestVersion) {
+                return null;
             }
         }
         return null;

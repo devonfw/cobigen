@@ -12,19 +12,20 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
-import com.capgemini.cobigen.config.upgrade.version.TemplatesConfigurationVersion;
+import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.google.common.io.Files;
 
 /**
  * Test suite for {@link TemplateConfigurationUpgrader}
  * @author mbrunnli (Jun 22, 2015)
  */
-public class TemplateConfigurationUpgraderTest {
+public class ContextConfigurationUpgraderTest {
 
     /** Root path to all resources used in this test case */
     private static String testFileRootPath =
-        "src/test/resources/testdata/unittest/config/upgrade/TemplatesConfigurationUpgraderTest/";
+        "src/test/resources/testdata/unittest/config/upgrade/ContextConfigurationUpgraderTest/";
 
     /** JUnit Rule to create and automatically cleanup temporarily files/folders */
     @Rule
@@ -37,31 +38,31 @@ public class TemplateConfigurationUpgraderTest {
      * @author mbrunnli (Jun 22, 2015)
      */
     @Test
-    public void testCorrectUpgrade_v1_2_TO_v2_1() throws Exception {
+    public void testCorrectUpgrade_v2_0_TO_v2_1() throws Exception {
 
         // preparation
-        File tmpTargetConfig = tempFolder.newFile(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        File tmpTargetConfig = tempFolder.newFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         File sourceTestdata =
-            new File(testFileRootPath + "valid-v1.2/" + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            new File(testFileRootPath + "valid-v2.0/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         Files.copy(sourceTestdata, tmpTargetConfig);
 
-        TemplateConfigurationUpgrader sut = new TemplateConfigurationUpgrader();
+        ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
 
-        TemplatesConfigurationVersion version =
+        ContextConfigurationVersion version =
             sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
-        assertThat(version).as("Source Version").isEqualTo(TemplatesConfigurationVersion.v1_2);
+        assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
 
         sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
-        assertThat(tmpTargetConfig.toPath().resolveSibling("templates.bak.xml").toFile()).exists()
+        assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
             .hasSameContentAs(sourceTestdata);
 
         version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
-        assertThat(version).as("Target version").isEqualTo(TemplatesConfigurationVersion.v2_1);
+        assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.v2_1);
 
         XMLUnit.setIgnoreWhitespace(true);
         new XMLTestCase() {
         }.assertXMLEqual(new FileReader(testFileRootPath + "valid-v2.1/"
-            + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
+            + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
     }
 
     /**
@@ -76,8 +77,8 @@ public class TemplateConfigurationUpgraderTest {
         // preparation
         File targetConfig = new File(testFileRootPath + "valid-v2.1");
 
-        TemplatesConfigurationVersion version =
-            new TemplateConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
-        assertThat(version).isEqualTo(TemplatesConfigurationVersion.v2_1);
+        ContextConfigurationVersion version =
+            new ContextConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
+        assertThat(version).isEqualTo(ContextConfigurationVersion.v2_1);
     }
 }

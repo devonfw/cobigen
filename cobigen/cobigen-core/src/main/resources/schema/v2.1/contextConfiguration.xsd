@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  targetNamespace="http://capgemini.com" elementFormDefault="qualified" version="2.1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  targetNamespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration" elementFormDefault="qualified" version="2.1">
 
   <xs:element name="contextConfiguration">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="tns:triggers"/>
-      </xs:sequence>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="trigger" type="tns:trigger"/>
+    </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal"/>
     </xs:complexType>
   </xs:element>
-
-  <xs:element name="triggers" type="tns:triggers"/>
-  <xs:element name="trigger" type="tns:trigger"/>
-
-  <xs:complexType name="triggers">
-    <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element ref="tns:trigger"/>
-    </xs:sequence>
-  </xs:complexType>
 
   <xs:complexType name="trigger">
     <xs:sequence>
