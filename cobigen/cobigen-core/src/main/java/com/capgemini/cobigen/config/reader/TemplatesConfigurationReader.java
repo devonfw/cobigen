@@ -162,13 +162,13 @@ public class TemplatesConfigurationReader {
      *            {@link Trigger} for which the templates should be loaded
      * @param triggerInterpreter
      *            {@link ITriggerInterpreter} the trigger has been interpreted with
-     * @return the mapping of template id's to the corresponding {@link Template}
+     * @return the mapping of template names to the corresponding {@link Template}
      * @throws UnknownContextVariableException
      *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
      *             if there is an unknown variable modifier
      * @throws InvalidConfigurationException
-     *             if there are multiple templates with the same id
+     *             if there are multiple templates with the same name
      * @author mbrunnli (06.02.2013) edited by trippl (07.03.2013)
      */
     public Map<String, Template> loadTemplates(Trigger trigger, ITriggerInterpreter triggerInterpreter)
@@ -178,12 +178,14 @@ public class TemplatesConfigurationReader {
         Templates templatesNode = configNode.getTemplates();
         if (templatesNode != null) {
             for (com.capgemini.cobigen.config.entity.io.Template t : templatesNode.getTemplate()) {
-                if (templates.get(t.getId()) != null) {
+                if (templates.get(t.getName()) != null) {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                        "Multiple template definitions found for idRef='" + t.getId() + "'");
+                        "Multiple template definitions found for ref='" + t.getName() + "'");
                 }
-                templates.put(t.getId(), new Template(t.getId(), t.getDestinationPath(), t.getTemplateFile(),
-                    t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
+                templates.put(
+                    t.getName(),
+                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(), t
+                        .getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
         }
 
@@ -198,20 +200,20 @@ public class TemplatesConfigurationReader {
         }
 
         // override existing templates with extension definitions
-        Set<String> observedExtensionIds = Sets.newHashSet();
+        Set<String> observedExtensionNames = Sets.newHashSet();
         if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
             for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
                 // detection of duplicate templateExtensions
-                if (observedExtensionIds.contains(ext.getIdref())) {
-                    LOG.error("Two templateExtensions declared for idref='{}'.", ext.getIdref());
-                    throw new InvalidConfigurationException("Two templateExtensions declared for idref='"
-                        + ext.getIdref() + "'. Don't know what to do.");
+                if (observedExtensionNames.contains(ext.getRef())) {
+                    LOG.error("Two templateExtensions declared for ref='{}'.", ext.getRef());
+                    throw new InvalidConfigurationException("Two templateExtensions declared for ref='"
+                        + ext.getRef() + "'. Don't know what to do.");
                 }
-                observedExtensionIds.add(ext.getIdref());
+                observedExtensionNames.add(ext.getRef());
 
                 // overriding properties if defined
-                if (templates.containsKey(ext.getIdref())) {
-                    Template template = templates.get(ext.getIdref());
+                if (templates.containsKey(ext.getRef())) {
+                    Template template = templates.get(ext.getRef());
                     if (ext.getDestinationPath() != null) {
                         template.setUnresolvedDestinationPath(ext.getDestinationPath());
                     }
@@ -222,10 +224,10 @@ public class TemplatesConfigurationReader {
                         template.setTargetCharset(ext.getTargetCharset());
                     }
                 } else {
-                    LOG.error("The templateExtension with idref='{}' does not reference any template!",
-                        ext.getIdref());
-                    throw new InvalidConfigurationException("The templateExtension with idref='"
-                        + ext.getIdref() + "' does not reference any template!");
+                    LOG.error("The templateExtension with ref='{}' does not reference any template!",
+                        ext.getRef());
+                    throw new InvalidConfigurationException("The templateExtension with ref='" + ext.getRef()
+                        + "' does not reference any template!");
                 }
             }
         }
@@ -257,7 +259,7 @@ public class TemplatesConfigurationReader {
         if (scan.getName() != null) {
             if (templateScanTemplates.containsKey(scan.getName())) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "Two template-scan nodes have been defined with the same @name by mistake.");
+                    "Two templateScan nodes have been defined with the same @name by mistake.");
             } else {
                 templateScanTemplates.put(scan.getName(), Lists.<String> newArrayList());
             }
@@ -283,12 +285,12 @@ public class TemplatesConfigurationReader {
      *            the templates are from
      * @param triggerInterpreter
      *            of the {@link Trigger}
-     * @param observedTemplateIds
-     *            observed template ids during template scan. Needed for conflict detection
+     * @param observedTemplateNames
+     *            observed template name during template scan. Needed for conflict detection
      */
     private void scanTemplates(Path currentDirectory, String currentPath, TemplateScan scan,
         Map<String, Template> templates, Trigger trigger, ITriggerInterpreter triggerInterpreter,
-        HashSet<String> observedTemplateIds) {
+        HashSet<String> observedTemplateNames) {
 
         String currentPathWithSlash = currentPath;
         if (!currentPathWithSlash.isEmpty()) {
@@ -301,38 +303,38 @@ public class TemplatesConfigurationReader {
                 Path next = it.next();
                 if (Files.isDirectory(next)) {
                     scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan,
-                        templates, trigger, triggerInterpreter, observedTemplateIds);
+                        templates, trigger, triggerInterpreter, observedTemplateNames);
                 } else {
-                    String templateName = next.getFileName().toString();
-                    String templateNameWithoutExtension = templateName;
-                    if (templateName.endsWith(ConfigurationConstants.TEMPLATE_EXTENSION)) {
+                    String templateFileName = next.getFileName().toString();
+                    String templateNameWithoutExtension = templateFileName;
+                    if (templateFileName.endsWith(ConfigurationConstants.TEMPLATE_EXTENSION)) {
                         templateNameWithoutExtension =
-                            templateName.substring(0, templateName.length()
+                            templateFileName.substring(0, templateFileName.length()
                                 - ConfigurationConstants.TEMPLATE_EXTENSION.length());
                     }
-                    String templateId = scan.getTemplateIdPrefix() + templateNameWithoutExtension;
-                    if (observedTemplateIds.contains(templateId)) {
+                    String templateName = scan.getTemplateNamePrefix() + templateNameWithoutExtension;
+                    if (observedTemplateNames.contains(templateName)) {
                         throw new InvalidConfigurationException(
-                            "Template-scan has detected two files with the same file name and thus with the same "
-                                + "template id. Continuing would result in an indeterministic behavior.\n"
+                            "TemplateScan has detected two files with the same file name and thus with the same "
+                                + "template name. Continuing would result in an indeterministic behavior.\n"
                                 + "For now, multiple files with the same name are not supported to be automatically "
-                                + "configured with template-scans.");
+                                + "configured with templateScans.");
                     }
-                    observedTemplateIds.add(templateId);
-                    if (!templates.containsKey(templateId)) {
+                    observedTemplateNames.add(templateName);
+                    if (!templates.containsKey(templateName)) {
                         String destinationPath =
                             scan.getDestinationPath() + "/" + currentPathWithSlash
                                 + templateNameWithoutExtension;
                         String templateFile =
-                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateName;
+                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateFileName;
                         String mergeStratgey = scan.getMergeStrategy();
                         Template template =
-                            new Template(templateId, destinationPath, templateFile, mergeStratgey,
+                            new Template(templateName, destinationPath, templateFile, mergeStratgey,
                                 scan.getTargetCharset(), trigger, triggerInterpreter);
-                        templates.put(templateId, template);
+                        templates.put(templateName, template);
 
                         if (templateScanTemplates.get(scan.getName()) != null) {
-                            templateScanTemplates.get(scan.getName()).add(templateId);
+                            templateScanTemplates.get(scan.getName()).add(templateName);
                         }
                     }
                 }
@@ -346,14 +348,14 @@ public class TemplatesConfigurationReader {
     /**
      * Loads all increments of the static configuration into the local representation.
      *
-     * @return the mapping of increment id's to the corresponding {@link Increment}
+     * @return the mapping of increment names to the corresponding {@link Increment}
      * @param templates
      *            {@link Map} of all templates (see
      *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
      * @param trigger
      *            {@link Trigger} for which the templates should be loaded
      * @throws InvalidConfigurationException
-     *             if there is an invalid idref attribute
+     *             if there is an invalid ref attribute
      * @author trippl (25.02.2013)
      */
     public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
@@ -364,13 +366,13 @@ public class TemplatesConfigurationReader {
         if (incrementsNode != null) {
             // Add first all increments informally be able to resolve recursive increment references
             for (com.capgemini.cobigen.config.entity.io.Increment source : incrementsNode.getIncrement()) {
-                increments.put(source.getId(),
-                    new Increment(source.getId(), source.getDescription(), trigger));
+                increments.put(source.getName(), new Increment(source.getName(), source.getDescription(),
+                    trigger));
             }
             // Collect templates
             for (com.capgemini.cobigen.config.entity.io.Increment p : configNode.getIncrements()
                 .getIncrement()) {
-                Increment target = increments.get(p.getId());
+                Increment target = increments.get(p.getName());
                 addAllTemplatesRecursively(target, p, templates, increments);
             }
         }
@@ -391,7 +393,7 @@ public class TemplatesConfigurationReader {
      * @param generationIncrements
      *            {@link Map} of all retrieved increments
      * @throws InvalidConfigurationException
-     *             if there is an invalid idref attribute
+     *             if there is an invalid ref attribute
      * @author mbrunnli (07.03.2013)
      */
     private void addAllTemplatesRecursively(Increment rootIncrement,
@@ -399,20 +401,20 @@ public class TemplatesConfigurationReader {
         Map<String, Increment> generationIncrements) throws InvalidConfigurationException {
 
         for (TemplateRef ref : current.getTemplateRef()) {
-            Template temp = templates.get(ref.getIdref());
+            Template temp = templates.get(ref.getRef());
             if (temp == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No template found for idref='" + ref.getIdref() + "'!");
+                    "No template found for ref='" + ref.getRef() + "'!");
             }
             rootIncrement.addTemplate(temp);
         }
 
         for (IncrementRef pRef : current.getIncrementRef()) {
-            Increment parentPkg = generationIncrements.get(current.getId());
-            Increment childPkg = generationIncrements.get(pRef.getIdref());
+            Increment parentPkg = generationIncrements.get(current.getName());
+            Increment childPkg = generationIncrements.get(pRef.getRef());
             if (childPkg == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No increment found for idref='" + pRef.getIdref() + "'!");
+                    "No increment found for ref='" + pRef.getRef() + "'!");
             }
             parentPkg.addIncrementDependency(childPkg);
 
@@ -421,14 +423,14 @@ public class TemplatesConfigurationReader {
         }
 
         for (TemplateScanRef tsRef : current.getTemplateScanRef()) {
-            List<String> scanTemplateIds = templateScanTemplates.get(tsRef.getRef());
-            if (scanTemplateIds == null) {
+            List<String> scannedTemplateNames = templateScanTemplates.get(tsRef.getRef());
+            if (scannedTemplateNames == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No template-scan found for ref='" + tsRef.getRef() + "'!");
+                    "No templateScan found for ref='" + tsRef.getRef() + "'!");
             }
 
-            for (String scanTemplateId : scanTemplateIds) {
-                rootIncrement.addTemplate(templates.get(scanTemplateId));
+            for (String scannedTemplateName : scannedTemplateNames) {
+                rootIncrement.addTemplate(templates.get(scannedTemplateName));
             }
         }
     }
@@ -440,7 +442,7 @@ public class TemplatesConfigurationReader {
      *            {@link IncrementRef}
      * @return the referenced {@link com.capgemini.cobigen.config.entity.io.Increment}
      * @throws InvalidConfigurationException
-     *             if there is an invalid increment idref
+     *             if there is an invalid increment ref
      * @author mbrunnli (11.03.2013)
      */
     private com.capgemini.cobigen.config.entity.io.Increment getIncrementDeclaration(IncrementRef source)
@@ -449,9 +451,9 @@ public class TemplatesConfigurationReader {
         if (xPathContext == null) {
             xPathContext = JXPathContext.newContext(configNode);
         }
-        // declare namespace s='http://capgemini.com';
+
         Iterator<com.capgemini.cobigen.config.entity.io.Increment> it =
-            xPathContext.iterate("increments/increment[@id='" + source.getIdref() + "']");
+            xPathContext.iterate("increments/increment[@name='" + source.getRef() + "']");
 
         int count = 0;
         com.capgemini.cobigen.config.entity.io.Increment p = null;
@@ -463,12 +465,12 @@ public class TemplatesConfigurationReader {
         switch (count) {
         case 0:
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                "No increment definition found for idRef='" + source.getIdref() + "'");
+                "No increment definition found for ref='" + source.getRef() + "'");
         case 1:
             return p;
         default:
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                "Multiple increment definitions found for idRef='" + source.getIdref() + "'");
+                "Multiple increment definitions found for ref='" + source.getRef() + "'");
         }
 
     }
