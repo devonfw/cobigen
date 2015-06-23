@@ -264,9 +264,13 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     }
 
     /**
+     * Determines and loads the class of the JAXB configuration root node with respect to a specific schema
+     * version.
      * @param lv
-     * @return
+     *            version to load class of the JAXB configuration root node for
+     * @return the class of the JAXB configuration root node with respect to the given schema version
      * @throws ClassNotFoundException
+     *             if the determined JAXB configuration root node class could not be found
      * @author mbrunnli (Jun 23, 2015)
      */
     private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
@@ -278,13 +282,20 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     }
 
     /**
+     * Unmarschalls the given configuration file with respect to the correct schema version.
      * @param configurationFile
+     *            configuration file to be unmarshalled
      * @param lv
+     *            schema version to be used for unmarschalling
      * @param jaxbConfigurationClass
-     * @return
+     *            see {@link #getJaxbConfigurationClass(Enum)}
+     * @return the unmarschalled JAXB object representation of the configuration
      * @throws JAXBException
+     *             if anything JAXB related happened
      * @throws SAXException
+     *             if the parser could not parse the schema
      * @throws IOException
+     *             if the configuration file could not be read
      * @author mbrunnli (Jun 23, 2015)
      */
     private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv,
