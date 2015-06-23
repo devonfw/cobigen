@@ -30,6 +30,13 @@ public class XmlDocumentMatcher implements Matcher {
     public boolean matches(Element originalElement, Element patchElement) {
         if (originalElement.getQualifiedName().equals(patchElement.getQualifiedName())) {
 
+            // added on 06.23.15 by sholzer to cover issue #119
+            // the server element is unique in every document. therefore they should match in every case
+            if (originalElement.getName().equals("server")
+                && originalElement.getNamespaceURI().equals("http://cxf.apache.org/jaxrs")) {
+                return true;
+            }
+
             if (originalElement.getAttribute("id") != null && patchElement.getAttribute("id") != null) {
                 return originalElement.getAttributeValue("id").equals(patchElement.getAttributeValue("id"));
             }
