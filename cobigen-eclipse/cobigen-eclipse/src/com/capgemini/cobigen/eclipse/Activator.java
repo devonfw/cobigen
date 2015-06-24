@@ -42,7 +42,12 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    private IResourceChangeListener resourceChangeListener = new ConfigurationProjectRCL();
+    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectRCL();
+
+    /**
+     * Current state of the {@link IResourceChangeListener} for the configuration project
+     */
+    private volatile Boolean configurationProjectListenerStarted = false;
 
     /**
      * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
@@ -85,7 +90,7 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
         startSelectionServiceListener();
-        startResourceChangeListener();
+        startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
@@ -93,15 +98,42 @@ public class Activator extends AbstractUIPlugin {
      * Starts the ResourceChangeListener
      * @author mbrunnli (08.04.2013)
      */
-    private void startResourceChangeListener() {
+    public void startConfigurationProjectListener() {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                ResourcesPlugin.getWorkspace().addResourceChangeListener(
-                    resourceChangeListener,
-                    IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
-                        | IResourceChangeEvent.POST_CHANGE);
-                LOG.info("ResourceChangeListener for configuration project startet.");
+                synchronized (configurationProjectListenerStarted) {
+                    if (configurationProjectListenerStarted) {
+                        return;
+                    }
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                        configurationProjectListener,
+                        IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
+                            | IResourceChangeEvent.POST_CHANGE);
+                    configurationProjectListenerStarted = true;
+                    LOG.info("ResourceChangeListener for configuration project startet.");
+                }
+            }
+        });
+    }
+
+    /**
+     *
+     *
+     * @author mbrunnli (Jun 24, 2015)
+     */
+    public void stopConfigurationListener() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (configurationProjectListenerStarted) {
+                    if (!configurationProjectListenerStarted) {
+                        return;
+                    }
+                    ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
+                    configurationProjectListenerStarted = false;
+                    LOG.info("ResourceChangeListener for configuration project stopped.");
+                }
             }
         });
     }
@@ -120,7 +152,9 @@ public class Activator extends AbstractUIPlugin {
                     }
                     LOG.info("Start SelectionServiceListener.");
                     try {
-                        selectionServiceListener = new SelectionServiceListener();
+                        if (selectionServiceListener == null) {
+                            selectionServiceListener = new SelectionServiceListener();
+                        }
                         PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
                             selectionServiceListener);
                         PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
@@ -166,6 +200,7 @@ public class Activator extends AbstractUIPlugin {
                         selectionServiceListener);
                     PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
                         selectionServiceListener);
+                    selectionServiceListener.stop();
                     selectionServiceListenerStarted = false;
                     LOG.info("SelectionServiceListener stopped.");
                 }
