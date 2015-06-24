@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.config.upgrade.version;
+package com.capgemini.cobigen.config.constant;
 
 /**
  * Version steps of the templates configuration.
@@ -36,4 +36,13 @@ public enum ContextConfigurationVersion {
     public String toString() {
         return name().replace("_", ".");
     };
+
+    /**
+     * Get latest context configuration version supported by this CobiGen release.
+     * @return latest context configuration version supported by this CobiGen release.
+     * @author mbrunnli (Jun 24, 2015)
+     */
+    public static ContextConfigurationVersion getLatest() {
+        return values()[values().length - 1];
+    }
 }

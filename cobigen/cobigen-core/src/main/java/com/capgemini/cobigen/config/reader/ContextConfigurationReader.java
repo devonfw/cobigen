@@ -25,12 +25,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
 import com.capgemini.cobigen.config.entity.io.ContextConfiguration;
-import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
@@ -93,8 +93,7 @@ public class ContextConfigurationReader {
             // Unmarshal with schema checks for checking the correctness and give the user more hints to
             // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ContextConfigurationVersion latestConfigurationVersion =
-                ContextConfigurationVersion.values()[ContextConfigurationVersion.values().length - 1];
+            ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
             try (InputStream schemaStream =
                 getClass().getResourceAsStream(
                     "/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");

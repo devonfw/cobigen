@@ -7,7 +7,7 @@ import org.dozer.DozerBeanMapper;
 
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
-import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
+import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 
 /**

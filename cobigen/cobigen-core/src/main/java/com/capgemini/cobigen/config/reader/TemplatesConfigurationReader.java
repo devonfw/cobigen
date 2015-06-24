@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
@@ -42,7 +43,6 @@ import com.capgemini.cobigen.config.entity.io.TemplateScanRef;
 import com.capgemini.cobigen.config.entity.io.TemplateScans;
 import com.capgemini.cobigen.config.entity.io.Templates;
 import com.capgemini.cobigen.config.entity.io.TemplatesConfiguration;
-import com.capgemini.cobigen.config.upgrade.version.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
@@ -123,7 +123,7 @@ public class TemplatesConfigurationReader {
             // failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             TemplatesConfigurationVersion latestConfigurationVersion =
-                TemplatesConfigurationVersion.values()[TemplatesConfigurationVersion.values().length - 1];
+                TemplatesConfigurationVersion.getLatest();
             try (InputStream schemaStream =
                 getClass().getResourceAsStream(
                     "/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");

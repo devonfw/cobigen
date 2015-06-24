@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
-import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.google.common.io.Files;
 
 /**
