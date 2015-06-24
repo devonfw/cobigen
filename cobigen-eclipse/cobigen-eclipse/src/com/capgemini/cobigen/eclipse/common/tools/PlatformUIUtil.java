@@ -89,7 +89,8 @@ public class PlatformUIUtil {
     public static MultiStatus createMultiStatus(Throwable t) {
 
         List<Status> childStatus = Lists.newArrayList();
-        StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
+
+        StackTraceElement[] stackTraces = t.getStackTrace();
 
         for (StackTraceElement stackTrace : stackTraces) {
             Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, stackTrace.toString());

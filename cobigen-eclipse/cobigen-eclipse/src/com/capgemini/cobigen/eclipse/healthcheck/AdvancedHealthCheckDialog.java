@@ -28,7 +28,6 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
-import com.google.common.collect.Maps;
 
 /**
  * Dialog to show the advanced health check results as well as performing the templates configuration
@@ -41,13 +40,13 @@ public class AdvancedHealthCheckDialog extends Dialog {
     private static final Logger LOG = LoggerFactory.getLogger(AdvancedHealthCheckDialog.class);
 
     /** Availability of templates configuration in the found folders */
-    private Map<String, Boolean> hasConfiguration = Maps.newTreeMap();
+    private Set<String> hasConfiguration;
 
     /** Accessibility of templates configuration for changes */
-    private Map<String, Boolean> isAccessible = Maps.newHashMap();
+    private Map<String, Boolean> isAccessible;
 
     /** Templates configurations, which can be upgraded */
-    private Map<String, Path> upgradeableConfigurations = Maps.newHashMap();
+    private Map<String, Path> upgradeableConfigurations;
 
     /** Templates configurations, which are already up to date */
     private Set<String> upToDateConfigurations;
@@ -64,7 +63,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
      *            Templates configurations, which are already up to date
      * @author mbrunnli (Jun 24, 2015)
      */
-    AdvancedHealthCheckDialog(Map<String, Boolean> hasConfiguration, Map<String, Boolean> isAccessible,
+    AdvancedHealthCheckDialog(Set<String> hasConfiguration, Map<String, Boolean> isAccessible,
         Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations) {
         super(Display.getDefault().getActiveShell());
         this.hasConfiguration = hasConfiguration;
@@ -101,7 +100,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
         GridData leftGridData = new GridData(GridData.BEGINNING, GridData.CENTER, true, false);
         GridData rightGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
-        for (final String key : hasConfiguration.keySet()) {
+        for (final String key : hasConfiguration) {
             Label label = new Label(contentParent, SWT.NONE);
             label.setText(key);
             label.setLayoutData(leftGridData);
