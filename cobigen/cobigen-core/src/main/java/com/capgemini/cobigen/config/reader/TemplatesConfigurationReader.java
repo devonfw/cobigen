@@ -2,6 +2,7 @@ package com.capgemini.cobigen.config.reader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -40,6 +41,7 @@ import com.capgemini.cobigen.config.entity.io.TemplateScanRef;
 import com.capgemini.cobigen.config.entity.io.TemplateScans;
 import com.capgemini.cobigen.config.entity.io.Templates;
 import com.capgemini.cobigen.config.entity.io.TemplatesConfiguration;
+import com.capgemini.cobigen.config.upgrade.version.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
@@ -61,7 +63,7 @@ public class TemplatesConfigurationReader {
     /** Assigning logger to TemplatesConfigurationReader */
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
-    /** XML Node 'configuration' of the configuration.xml */
+    /** JAXB root node of the configuration */
     private TemplatesConfiguration configNode;
 
     /** Configuration file */
@@ -85,7 +87,7 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        configFilePath = templatesRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         readConfiguration();
     }
 
@@ -119,12 +121,18 @@ public class TemplatesConfigurationReader {
             // correct his
             // failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema =
-                schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
-                    "/schema/templatesConfiguration.xsd")));
-            unmarschaller.setSchema(schema);
-            rootNode = unmarschaller.unmarshal(Files.newInputStream(configFilePath));
-            configNode = (TemplatesConfiguration) rootNode;
+            TemplatesConfigurationVersion latestConfigurationVersion =
+                TemplatesConfigurationVersion.values()[TemplatesConfigurationVersion.values().length - 1];
+            try (InputStream schemaStream =
+                getClass().getResourceAsStream(
+                    "/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");
+                InputStream configInputStream = Files.newInputStream(configFilePath)) {
+
+                Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+                unmarschaller.setSchema(schema);
+                rootNode = unmarschaller.unmarshal(configInputStream);
+                configNode = (TemplatesConfiguration) rootNode;
+            }
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", configFilePath.toUri().toString(), e);
             // try getting SAXParseException for better error handling and user support
@@ -366,8 +374,13 @@ public class TemplatesConfigurationReader {
         if (incrementsNode != null) {
             // Add first all increments informally be able to resolve recursive increment references
             for (com.capgemini.cobigen.config.entity.io.Increment source : incrementsNode.getIncrement()) {
-                increments.put(source.getName(), new Increment(source.getName(), source.getDescription(),
-                    trigger));
+                if (!increments.containsKey(source.getName())) {
+                    increments.put(source.getName(), new Increment(source.getName(), source.getDescription(),
+                        trigger));
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "Duplicate increment found with name='" + source.getName() + "'.");
+                }
             }
             // Collect templates
             for (com.capgemini.cobigen.config.entity.io.Increment p : configNode.getIncrements()
@@ -390,7 +403,7 @@ public class TemplatesConfigurationReader {
      * @param templates
      *            {@link Map} of all templates (see
      *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, ITriggerInterpreter)}
-     * @param generationIncrements
+     * @param increments
      *            {@link Map} of all retrieved increments
      * @throws InvalidConfigurationException
      *             if there is an invalid ref attribute
@@ -398,7 +411,7 @@ public class TemplatesConfigurationReader {
      */
     private void addAllTemplatesRecursively(Increment rootIncrement,
         com.capgemini.cobigen.config.entity.io.Increment current, Map<String, Template> templates,
-        Map<String, Increment> generationIncrements) throws InvalidConfigurationException {
+        Map<String, Increment> increments) throws InvalidConfigurationException {
 
         for (TemplateRef ref : current.getTemplateRef()) {
             Template temp = templates.get(ref.getRef());
@@ -409,24 +422,24 @@ public class TemplatesConfigurationReader {
             rootIncrement.addTemplate(temp);
         }
 
-        for (IncrementRef pRef : current.getIncrementRef()) {
-            Increment parentPkg = generationIncrements.get(current.getName());
-            Increment childPkg = generationIncrements.get(pRef.getRef());
+        for (IncrementRef ref : current.getIncrementRef()) {
+            Increment parentPkg = increments.get(current.getName());
+            Increment childPkg = increments.get(ref.getRef());
             if (childPkg == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No increment found for ref='" + pRef.getRef() + "'!");
+                    "No increment found for ref='" + ref.getRef() + "'!");
             }
             parentPkg.addIncrementDependency(childPkg);
 
-            com.capgemini.cobigen.config.entity.io.Increment pkg = getIncrementDeclaration(pRef);
-            addAllTemplatesRecursively(rootIncrement, pkg, templates, generationIncrements);
+            com.capgemini.cobigen.config.entity.io.Increment pkg = getIncrementDeclaration(ref);
+            addAllTemplatesRecursively(rootIncrement, pkg, templates, increments);
         }
 
-        for (TemplateScanRef tsRef : current.getTemplateScanRef()) {
-            List<String> scannedTemplateNames = templateScanTemplates.get(tsRef.getRef());
+        for (TemplateScanRef ref : current.getTemplateScanRef()) {
+            List<String> scannedTemplateNames = templateScanTemplates.get(ref.getRef());
             if (scannedTemplateNames == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No templateScan found for ref='" + tsRef.getRef() + "'!");
+                    "No templateScan found for ref='" + ref.getRef() + "'!");
             }
 
             for (String scannedTemplateName : scannedTemplateNames) {
@@ -452,26 +465,29 @@ public class TemplatesConfigurationReader {
             xPathContext = JXPathContext.newContext(configNode);
         }
 
-        Iterator<com.capgemini.cobigen.config.entity.io.Increment> it =
-            xPathContext.iterate("increments/increment[@name='" + source.getRef() + "']");
+        // does not work any longer as name is not a NCName type any more
+        // xPathContext.iterate("//increment[@name='" + source.getRef() + "']");
+        Iterator<com.capgemini.cobigen.config.entity.io.Increment> allNamedIncrementsIt =
+            xPathContext.iterate("//increment[@name]");
 
-        int count = 0;
-        com.capgemini.cobigen.config.entity.io.Increment p = null;
-        while (it.hasNext()) {
-            p = it.next();
-            count++;
+        com.capgemini.cobigen.config.entity.io.Increment result = null;
+        while (allNamedIncrementsIt.hasNext()) {
+            com.capgemini.cobigen.config.entity.io.Increment currentIncrement = allNamedIncrementsIt.next();
+            if (source.getRef().equals(currentIncrement.getName())) {
+                if (result == null) {
+                    result = currentIncrement;
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "Multiple increment definitions found for ref='" + source.getRef() + "'");
+                }
+            }
         }
 
-        switch (count) {
-        case 0:
+        if (result != null) {
+            return result;
+        } else {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "No increment definition found for ref='" + source.getRef() + "'");
-        case 1:
-            return p;
-        default:
-            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                "Multiple increment definitions found for ref='" + source.getRef() + "'");
         }
-
     }
 }

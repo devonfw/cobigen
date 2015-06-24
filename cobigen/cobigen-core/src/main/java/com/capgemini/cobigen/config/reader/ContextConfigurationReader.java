@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.config.reader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
 import com.capgemini.cobigen.config.entity.io.ContextConfiguration;
+import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
@@ -90,12 +92,18 @@ public class ContextConfigurationReader {
             // Unmarshal with schema checks for checking the correctness and give the user more hints to
             // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema =
-                schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
-                    "/schema/current/contextConfiguration.xsd")));
-            unmarschaller.setSchema(schema);
-            rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
-            contextNode = (ContextConfiguration) rootNode;
+            ContextConfigurationVersion latestConfigurationVersion =
+                ContextConfigurationVersion.values()[ContextConfigurationVersion.values().length - 1];
+            try (InputStream schemaStream =
+                getClass().getResourceAsStream(
+                    "/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
+                InputStream configInputStream = Files.newInputStream(contextFile)) {
+
+                Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+                unmarschaller.setSchema(schema);
+                rootNode = unmarschaller.unmarshal(configInputStream);
+                contextNode = (ContextConfiguration) rootNode;
+            }
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", filePath, e);
             // try getting SAXParseException for better error handling and user support

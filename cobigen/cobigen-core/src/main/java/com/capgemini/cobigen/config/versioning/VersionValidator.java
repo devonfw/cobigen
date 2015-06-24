@@ -62,6 +62,7 @@ public class VersionValidator {
 
         contextConfig_compatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
         contextConfig_compatibleVersionSteps.put(new BigDecimal("2.0"), new BigDecimal("2.0"));
+        contextConfig_compatibleVersionSteps.put(new BigDecimal("2.1"), new BigDecimal("2.1"));
 
         contextConfig_incompatibleVersionSteps.put(new BigDecimal("1.0"), new BigDecimal("1.0"));
     }
