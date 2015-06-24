@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.exceptions.TechnicalRuntimeException;
@@ -131,7 +132,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      */
     private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot,
         boolean justCheckLatestVersion) {
-        LOG.debug("Try reading {} (including trails with legacy schema).", configurationName);
+        LOG.info("Try reading {} (including trails with legacy schema).", configurationName);
 
         Path configurationFile = configurationRoot.resolve(configurationFilename);
 
@@ -156,9 +157,12 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
             }
 
             if (justCheckLatestVersion) {
+                LOG.info("Could not read configuration {} with schema {} (latest).", configurationName,
+                    versions[versions.length - 1]);
                 return null;
             }
         }
+        LOG.info("Could not read configuration {} (including trails with legacy schema).", configurationName);
         return null;
     }
 
@@ -172,6 +176,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            If is set to <code>true</code>, the backup will silently log a failed backup and return
      *            successfully. Otherwise it will throw a {@link TechnicalRuntimeException}.
      * @return if manual adoptions has to be performed after upgrading
+     * @throws BackupFailedException
+     *             if the backup could not be created
      * @author mbrunnli (Jun 22, 2015)
      */
     public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, boolean ignoreFailedBackup) {
@@ -213,7 +219,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                         // implicitly check upgrade step
                         currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
 
-                    } catch (NotYetSupportedException e) {
+                    } catch (NotYetSupportedException | BackupFailedException e) {
                         throw e;
                     } catch (Throwable e) {
                         throw new TechnicalRuntimeException(
@@ -261,9 +267,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * @param ignoreFailedBackup
      *            If is set to <code>true</code>, the backup will silently log a failed backup and return
      *            successfully. Otherwise it will throw a {@link TechnicalRuntimeException}.
+     * @throws BackupFailedException
+     *             if the backup could not be created
      * @author mbrunnli (Jun 22, 2015)
      */
-    private static void createBackup(Path file, boolean ignoreFailedBackup) {
+    private void createBackup(Path file, boolean ignoreFailedBackup) {
         for (int i = 0;; i++) {
             Pattern p = Pattern.compile("(.+\\.)([^\\.]+)");
             Matcher matcher = p.matcher(file.getFileName().toString());
@@ -282,11 +290,10 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 continue;
             } catch (UnsupportedOperationException | IOException | SecurityException e) {
                 if (ignoreFailedBackup) {
-                    LOG.info("Could not write backup of the configuration file ('{}').", backupPath.toUri());
+                    LOG.warn("Could not write backup of the configuration file ('{}').", backupPath.toUri());
                 } else {
-                    throw new TechnicalRuntimeException(
-                        "Upgrade failed. Not possible to create the backup in '" + backupPath.toUri()
-                            + "' before upgrading the configuration.", e);
+                    throw new BackupFailedException("Upgrade failed. Not possible to create the backup in '"
+                        + backupPath.toUri() + "' before upgrading the configuration.", e);
                 }
                 break;
             }
