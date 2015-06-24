@@ -85,7 +85,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             // if (inputTypes != null) {
-            // monitor.beginTask("Generate files ", templatesToBeGenerated.size());
+            // monitor.beginTask("GenerateHandler files ", templatesToBeGenerated.size());
             // for (TemplateTo temp : templatesToBeGenerated) {
             // if (temp.getMergeStrategy() == null) {
             // cobigenWrapper.generate(temp, true);
@@ -96,7 +96,7 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
             // }
             // } else if (container != null) {
             // cobigenWrapper.setInput(container);
-            // monitor.beginTask("Generate files for " + container.getElementName() + "...",
+            // monitor.beginTask("GenerateHandler files for " + container.getElementName() + "...",
             // templatesToBeGenerated.size());
             // for (TemplateTo temp : templatesToBeGenerated) {
             // TemplateTo t = cobigenWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());

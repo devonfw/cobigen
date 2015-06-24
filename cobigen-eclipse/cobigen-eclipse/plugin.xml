@@ -15,7 +15,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.Generate"
+            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.GenerateHandler"
             commandId="com.capgemini.cobigen.eclipseplugin.generate">
          <enabledWhen>
             <with
@@ -26,7 +26,7 @@
             </with></enabledWhen>
       </handler>
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthCheck"
+            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
             commandId="com.capgemini.cobigen.eclipseplugin.health_check">
       </handler>
    </extension>

@@ -34,12 +34,12 @@ import com.capgemini.cobigen.exceptions.UnknownTemplateException;
  * Handler for the Package-Explorer Event
  * @author mbrunnli (13.02.2013)
  */
-public class Generate extends AbstractHandler {
+public class GenerateHandler extends AbstractHandler {
 
     /**
-     * Assigning logger to Generate
+     * Assigning logger to GenerateHandler
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Generate.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateHandler.class);
 
     /**
      * {@inheritDoc}
