@@ -116,7 +116,7 @@ public class SelectFilesPage extends WizardPage {
      */
     public SelectFilesPage(CobiGenWrapper cobigenWrapper, boolean batch) {
 
-        super("Generate");
+        super("GenerateHandler");
         setTitle("Select the Resources, which should be generated.");
         this.cobigenWrapper = cobigenWrapper;
         this.batch = batch;

@@ -1,13 +1,8 @@
-package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
+package com.capgemini.cobigen.eclipse.healthcheck;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
 
-import org.apache.log4j.MDC;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -15,15 +10,11 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.capgemini.cobigen.eclipse.Activator;
-import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -34,25 +25,23 @@ import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
- * This handler implements the Health Check to provide more information about the current status of CobiGen
- * and potentially why it cannot be used with the current selection.
- * @author mbrunnli (Jun 16, 2015)
+ * This class implements the Health Check to provide more information about the current status of CobiGen and
+ * potentially why it cannot be used with the current selection.
+ * @author mbrunnli (Jun 24, 2015)
  */
-public class HealthCheck extends AbstractHandler {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(HealthCheck.class);
+public class HealthCheck {
 
     /** Dialog title of the Health Check */
     private static final String HEALTH_CHECK_DIALOG_TITLE = "Health Check";
 
     /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 16, 2015)
+     * Executes the simple health check, checking configuration project existence, validity of context
+     * configuration, as well as validity of the current workbench selection as generation input.
+     * @param selection
+     *            current selection in the workbench
+     * @author mbrunnli (Jun 24, 2015)
      */
-    @Override
-    public Object execute(final ExecutionEvent event) throws ExecutionException {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+    public void execute(final ISelection selection) {
 
         String firstStep =
             "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
@@ -92,14 +81,9 @@ public class HealthCheck extends AbstractHandler {
                     Display.getCurrent().asyncExec(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                execute(event);
-                            } catch (ExecutionException e) {
-                                LOG.warn("Unexpected exception occurred during re-run of Health Check after context configuration upgrade");
-                            }
+                            execute(selection);
                         }
                     });
-                    return null;
                 } else {
                     healthyCheckMessage +=
                         "\n\nNo automatic upgrade of the context configuration possible. "
@@ -118,10 +102,9 @@ public class HealthCheck extends AbstractHandler {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "OK.";
             healthyCheckMessage += "\n3. Check validity of current selection... ";
-            ISelection sel = HandlerUtil.getCurrentSelection(event);
-            if (sel instanceof IStructuredSelection) {
+            if (selection instanceof IStructuredSelection) {
                 try {
-                    if (selectionServiceListener.isValidInput((IStructuredSelection) sel)) {
+                    if (selectionServiceListener.isValidInput((IStructuredSelection) selection)) {
                         healthyCheckMessage += "OK.";
                         PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
                     } else {
@@ -139,11 +122,11 @@ public class HealthCheck extends AbstractHandler {
                     healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
                     PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
                 }
+            } else {
+                healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
+                PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
             }
         }
-
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return null;
     }
 
     /**
