@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
-	<templates>
-		<template id="csvList" destinationPath="TestDokumentation.csv" templateFile="TestDokumentation.csv.ftl" mergeStrategy="textmerge_appendWithNewLine" targetCharset="ISO-8859-1" />
-	</templates>
-
-	<increments>
-		<increment id="TestDokumentation" description="Test Dokumentation">
-			<templateRef idref="csvList"/>
-		</increment>
-	</increments>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <template name="csvList" destinationPath="TestDokumentation.csv" templateFile="TestDokumentation.csv.ftl" mergeStrategy="textmerge_appendWithNewLine" targetCharset="ISO-8859-1"/>
+    </templates>
+    <increments>
+        <increment name="TestDokumentation" description="Test Dokumentation">
+            <templateRef ref="csvList"/>
+        </increment>
+    </increments>
 </templatesConfiguration>
