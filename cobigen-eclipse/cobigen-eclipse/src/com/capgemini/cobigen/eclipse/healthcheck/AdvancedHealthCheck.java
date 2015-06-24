@@ -50,7 +50,7 @@ public class AdvancedHealthCheck {
 
             // 2. Determine current state
             TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-            Map<String, Boolean> hasConfiguration = Maps.newTreeMap();
+            Set<String> hasConfiguration = Sets.newTreeSet();
             Map<String, Boolean> isAccessible = Maps.newHashMap();
             Map<String, Path> upgradeableConfigurations = Maps.newHashMap();
             Set<String> upToDateConfigurations = Sets.newHashSet();
@@ -63,7 +63,7 @@ public class AdvancedHealthCheck {
                     templatesConfigurationPath.subpath(templatesConfigurationPath.getNameCount() - 2,
                         templatesConfigurationPath.getNameCount()).toString();
                 if (templatesConfigurationFile.exists()) {
-                    hasConfiguration.put(key, true);
+                    hasConfiguration.add(key);
                     if (templatesConfigurationFile.canWrite()) {
                         isAccessible.put(key, true);
 
@@ -79,8 +79,6 @@ public class AdvancedHealthCheck {
                     } else {
                         isAccessible.put(key, false);
                     }
-                } else {
-                    hasConfiguration.put(key, false);
                 }
             }
 
