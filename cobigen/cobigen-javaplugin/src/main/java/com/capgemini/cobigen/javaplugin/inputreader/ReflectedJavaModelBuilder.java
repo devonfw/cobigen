@@ -412,7 +412,7 @@ public class ReflectedJavaModelBuilder {
                     } else if (value instanceof Byte || value instanceof Short || value instanceof Integer
                         || value instanceof Long || value instanceof Float || value instanceof Double
                         || value instanceof Boolean || value instanceof Character) {
-                        annotationParameters.put(getter.getName(), value);
+                        annotationParameters.put(getter.getName(), value.toString());
                     } else {
                         annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }

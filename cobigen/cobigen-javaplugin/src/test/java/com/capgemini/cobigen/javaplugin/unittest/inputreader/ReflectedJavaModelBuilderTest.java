@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
@@ -274,6 +275,38 @@ public class ReflectedJavaModelBuilderTest {
             (Map<String, Object>) JavaModelUtil.getAnnotations(classField).get(
                 "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
         assertNotNull(annotation);
+        // currently all values are provided as Strings
+        assertEquals("0", annotation.get("b"));
+        assertEquals("1", annotation.get("s"));
+        assertEquals("2", annotation.get("i"));
+        assertEquals("3", annotation.get("l"));
+        assertEquals("4.0", annotation.get("f"));
+        assertEquals("5.0", annotation.get("d"));
+        assertEquals("c", annotation.get("c"));
+        assertEquals("true", annotation.get("bool"));
+        assertEquals("TestString", annotation.get("str"));
+    }
+
+    /**
+     * Tests whether the the input type's annotations are available and whether the annotation parameters have
+     * the correct type
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     * @author fkreis (24.06.2015)
+     */
+    @Test
+    @Ignore("Currently we provide all parameter values as Strings")
+    public void testAnnotationExtraction_Paramtypes() throws FileNotFoundException {
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
+
+        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
+        assertNotNull(classField);
+        Map<String, Object> annotation =
+            (Map<String, Object>) JavaModelUtil.getAnnotations(classField).get(
+                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        assertNotNull(annotation);
         assertTrue(annotation.get("b") instanceof Byte);
         assertEquals((byte) 0, annotation.get("b"));
         assertTrue(annotation.get("s") instanceof Short);
@@ -333,6 +366,59 @@ public class ReflectedJavaModelBuilderTest {
                 .get(
                     "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
         assertNotNull(annotation);
+        // currently all values are provided as Strings
+        assertEquals("0", annotation.get("b"));
+        assertEquals("1", annotation.get("s"));
+        assertEquals("2", annotation.get("i"));
+        assertEquals("3", annotation.get("l"));
+        assertEquals("4.0", annotation.get("f"));
+        assertEquals("5.0", annotation.get("d"));
+        assertEquals("c", annotation.get("c"));
+        assertEquals("true", annotation.get("bool"));
+        assertEquals("TestString", annotation.get("str"));
+    }
+
+    /**
+     * Tests whether the annotation of super super types are available and whether the annotation parameters
+     * have the correct type
+     *
+     * @throws FileNotFoundException
+     *             test fails
+     * @author fkreis (24.06.2015)
+     */
+    @Test
+    @Ignore("Currently we provide all parameter values as Strings")
+    public void testAnnotationExtractionOfSuperSuperTypes_Paramtypes() throws FileNotFoundException {
+        JavaInputReader javaInputReader = new JavaInputReader();
+        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
+
+        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        assertNotNull(classField);
+
+        // test annotations for attribute, getter, setter, is-method
+        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        // getter
+        assertTrue(JavaModelUtil
+            .getAnnotations(classField)
+            .containsKey(
+                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation"));
+        // Setter
+        assertTrue(JavaModelUtil
+            .getAnnotations(classField)
+            .containsKey(
+                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation"));
+        // is-method
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation"));
+        // attribute
+        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation"));
+        Map<String, Object> annotation =
+            (Map<String, Object>) JavaModelUtil
+                .getAnnotations(classField)
+                .get(
+                    "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+        assertNotNull(annotation);
         assertTrue(annotation.get("b") instanceof Byte);
         assertEquals((byte) 0, annotation.get("b"));
         assertTrue(annotation.get("s") instanceof Short);
@@ -351,7 +437,6 @@ public class ReflectedJavaModelBuilderTest {
         assertEquals(true, annotation.get("bool"));
         assertTrue(annotation.get("str") instanceof String);
         assertEquals("TestString", annotation.get("str"));
-        System.out.println(annotation);
     }
 
 }
