@@ -35,13 +35,13 @@ import org.xml.sax.SAXException;
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
@@ -94,7 +94,7 @@ public class SelectionServiceListener implements ISelectionListener {
                 ISourceProviderService.class);
         sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
-        IProject generatorConfProj = ResourceConstants.getGeneratorConfigurationProject();
+        IProject generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
         try {
             cobiGen = new CobiGen(generatorConfProj.getLocationURI());
         } catch (IOException e) {
