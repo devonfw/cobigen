@@ -2,7 +2,6 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.MDC;
@@ -10,13 +9,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -35,10 +27,11 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
+import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.google.common.collect.Lists;
 
 /**
  * This handler implements the Health Check to provide more information about the current status of CobiGen
@@ -51,7 +44,7 @@ public class HealthCheck extends AbstractHandler {
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheck.class);
 
     /** Dialog title of the Health Check */
-    private static final String DIALOG_TITLE = "Health Check";
+    private static final String HEALTH_CHECK_DIALOG_TITLE = "Health Check";
 
     /**
      * {@inheritDoc}
@@ -70,14 +63,14 @@ public class HealthCheck extends AbstractHandler {
         String healthyCheckMessage = "";
         IProject generatorConfProj = null;
         try {
-            generatorConfProj = ResourceConstants.getGeneratorConfigurationProject();
+            generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
             selectionServiceListener = new SelectionServiceListener();
         } catch (GeneratorProjectNotExistentException e) {
             healthyCheckMessage =
                 firstStep + "NOT FOUND IN WORKSPACE!\n"
                     + "=> Please import the configuration project as stated in the documentation of CobiGen"
                     + " or in the one of your project.";
-            openErrorDialog(healthyCheckMessage, null);
+            PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
         } catch (InvalidConfigurationException e) {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "INVALID!";
@@ -115,10 +108,10 @@ public class HealthCheck extends AbstractHandler {
                 }
 
             }
-            openErrorDialog(healthyCheckMessage, null);
+            PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
         } catch (Throwable e) {
             healthyCheckMessage = "An unexpected error occurred while loading CobiGen! ";
-            openErrorDialog(healthyCheckMessage, e);
+            PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
         }
 
         if (selectionServiceListener != null) {
@@ -130,7 +123,7 @@ public class HealthCheck extends AbstractHandler {
                 try {
                     if (selectionServiceListener.isValidInput((IStructuredSelection) sel)) {
                         healthyCheckMessage += "OK.";
-                        openErrorDialog(healthyCheckMessage, null);
+                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
                     } else {
                         healthyCheckMessage += "NO MATCHING TRIGGER.";
                         openSuccessDialog(healthyCheckMessage);
@@ -138,13 +131,13 @@ public class HealthCheck extends AbstractHandler {
                 } catch (InvalidInputException e) {
                     healthyCheckMessage += "invalid!\n=> CAUSE: " + e.getLocalizedMessage();
                     if (e.hasRootCause()) {
-                        openErrorDialog(healthyCheckMessage, e);
+                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
                     } else {
-                        openErrorDialog(healthyCheckMessage, null);
+                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
                     }
                 } catch (Throwable e) {
                     healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
-                    openErrorDialog(healthyCheckMessage, e);
+                    PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
                 }
             }
         }
@@ -188,52 +181,21 @@ public class HealthCheck extends AbstractHandler {
             contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, false);
         } catch (BackupFailedException e) {
             int continueResult =
-                ErrorDialog.openError(Display.getDefault().getActiveShell(), DIALOG_TITLE,
-                    "Backup failed while upgrading. Continue anyhow?", createMultiStatus(e));
+                ErrorDialog.openError(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE,
+                    "Backup failed while upgrading. Continue anyhow?", PlatformUIUtil.createMultiStatus(e));
 
             if (continueResult == Window.OK) {
                 contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, true);
             }
         } catch (Throwable e) {
-            openErrorDialog(
-                "Upgrade failed: An unexpected error occurred while upgrading the context configuration", e);
+            PlatformUIUtil.openErrorDialog("Upgrade failed",
+                "An unexpected error occurred while upgrading the context configuration", e);
         }
 
-        refreshConfigurationProject();
+        ResourcesPluginUtil.refreshConfigurationProject();
 
         Activator.getDefault().startSelectionServiceListener();
         Activator.getDefault().startConfigurationProjectListener();
-    }
-
-    /**
-     * Refreshes the configuration project from the file system.
-     * @author mbrunnli (Jun 24, 2015)
-     */
-    private void refreshConfigurationProject() {
-        try {
-            ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME)
-                .refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-        } catch (CoreException e) {
-            openErrorDialog("Could not refresh the CobiGen configuration project automatically. "
-                + "Please try it again manually", e);
-        }
-    }
-
-    /**
-     * Open up an error dialog, which shows the stack trace of the cause if not null.
-     * @param healthyCheckMessage
-     *            message to be shown to the user
-     * @param cause
-     *            of the error or <code>null</code> if the error was not caused by any {@link Throwable}
-     * @author mbrunnli (Jun 23, 2015)
-     */
-    private void openErrorDialog(String healthyCheckMessage, Throwable cause) {
-        if (cause == null) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(), DIALOG_TITLE, healthyCheckMessage);
-        } else {
-            ErrorDialog.openError(Display.getDefault().getActiveShell(), DIALOG_TITLE, healthyCheckMessage,
-                createMultiStatus(cause));
-        }
     }
 
     /**
@@ -245,36 +207,15 @@ public class HealthCheck extends AbstractHandler {
      */
     private void openSuccessDialog(String healthyCheckMessage) {
         MessageDialog dialog =
-            new MessageDialog(Display.getDefault().getActiveShell(), "Health Check", null,
-                healthyCheckMessage, MessageDialog.INFORMATION, new String[] { "Advanced Check", "OK" }, 0);
+            new MessageDialog(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE, null,
+                healthyCheckMessage, MessageDialog.INFORMATION,
+                new String[] { "Advanced Health Check", "OK" }, 0);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
-        if (result == 0) { // Advanced
-            // TODO do advanced check of templates
+        if (result == 0) {
+            new AdvancedHealthCheck().execute();
         }
     }
 
-    /**
-     * Creates a {@link MultiStatus} for the stack trace of the given exception.
-     * @param t
-     *            exception to format
-     * @return the {@link MultiStatus} containing an error {@link Status} for each stack trace entry.
-     * @author mbrunnli (Jun 17, 2015)
-     */
-    private static MultiStatus createMultiStatus(Throwable t) {
-
-        List<Status> childStatus = Lists.newArrayList();
-        StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
-
-        for (StackTraceElement stackTrace : stackTraces) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, stackTrace.toString());
-            childStatus.add(status);
-        }
-
-        MultiStatus ms =
-            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]),
-                t.toString(), t);
-        return ms;
-    }
 }
