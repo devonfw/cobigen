@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -107,11 +108,13 @@ public class ContextConfigurationReader {
         } catch (JAXBException e) {
             LOG.error("Could not parse configuration file {}", filePath, e);
             // try getting SAXParseException for better error handling and user support
-            SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
+            Throwable parseCause =
+                ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
             String message = null;
             if (parseCause != null) {
                 message = parseCause.getMessage();
             }
+
             throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n"
                 + message, e);
         } catch (SAXException e) {
