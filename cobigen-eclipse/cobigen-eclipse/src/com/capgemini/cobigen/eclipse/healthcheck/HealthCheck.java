@@ -4,16 +4,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
-import com.capgemini.cobigen.config.upgrade.version.ContextConfigurationVersion;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -70,11 +68,10 @@ public class HealthCheck {
                         .resolveLatestCompatibleSchemaVersion(configurationProject);
                 if (currentVersion != null) {
                     // upgrade possible
-                    ContextConfigurationVersion[] allVersions = ContextConfigurationVersion.values();
                     healthyCheckMessage +=
                         "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
                             + currentVersion + " / Currently Supported: "
-                            + allVersions[allVersions.length - 1];
+                            + ContextConfigurationVersion.getLatest();
                     openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
 
                     // re-run Health Check
@@ -106,17 +103,17 @@ public class HealthCheck {
                 try {
                     if (selectionServiceListener.isValidInput((IStructuredSelection) selection)) {
                         healthyCheckMessage += "OK.";
-                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
+                        openSuccessDialog(healthyCheckMessage, false);
                     } else {
                         healthyCheckMessage += "NO MATCHING TRIGGER.";
-                        openSuccessDialog(healthyCheckMessage);
+                        openSuccessDialog(healthyCheckMessage, true);
                     }
                 } catch (InvalidInputException e) {
-                    healthyCheckMessage += "invalid!\n=> CAUSE: " + e.getLocalizedMessage();
+                    healthyCheckMessage += "INVALID.\n=> Cause: " + e.getLocalizedMessage();
                     if (e.hasRootCause()) {
                         PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
                     } else {
-                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
+                        openSuccessDialog(healthyCheckMessage, true);
                     }
                 } catch (Throwable e) {
                     healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
@@ -141,7 +138,7 @@ public class HealthCheck {
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), "Health Check", null,
                 healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration",
-                    "Abort" }, 0);
+                    "Abort" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
@@ -161,14 +158,16 @@ public class HealthCheck {
         Activator.getDefault().stopConfigurationListener();
         ContextConfigurationUpgrader contextConfigurationUpgrader = new ContextConfigurationUpgrader();
         try {
-            contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, false);
-        } catch (BackupFailedException e) {
-            int continueResult =
-                ErrorDialog.openError(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE,
-                    "Backup failed while upgrading. Continue anyhow?", PlatformUIUtil.createMultiStatus(e));
-
-            if (continueResult == Window.OK) {
-                contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, true);
+            try {
+                contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, false);
+            } catch (BackupFailedException e) {
+                boolean continueUpgrade =
+                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(),
+                        HEALTH_CHECK_DIALOG_TITLE, "Backup failed while upgrading. Continue anyhow?");
+                if (continueUpgrade) {
+                    contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder,
+                        true);
+                }
             }
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Upgrade failed",
@@ -186,13 +185,15 @@ public class HealthCheck {
      * health check in addition.
      * @param healthyCheckMessage
      *            message to be shown to the user
+     * @param warn
+     *            if the message box should be displayed as a warning
      * @author mbrunnli (Jun 23, 2015)
      */
-    private void openSuccessDialog(String healthyCheckMessage) {
+    private void openSuccessDialog(String healthyCheckMessage, boolean warn) {
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE, null,
-                healthyCheckMessage, MessageDialog.INFORMATION,
-                new String[] { "Advanced Health Check", "OK" }, 0);
+                healthyCheckMessage, warn ? MessageDialog.WARNING : MessageDialog.INFORMATION, new String[] {
+                    "Advanced Health Check", "OK" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
