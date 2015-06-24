@@ -14,6 +14,7 @@ import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -69,6 +70,9 @@ public class SelectionServiceListener implements ISelectionListener {
      */
     private static final Logger LOG = LoggerFactory.getLogger(SelectionServiceListener.class);
 
+    /** {@link IResourceChangeListener} of the context configuration file */
+    private ConfigurationRCL resourceChangeListener;
+
     /**
      * Creates a new instance of the {@link SelectionServiceListener}
      *
@@ -97,8 +101,18 @@ public class SelectionServiceListener implements ISelectionListener {
             throw new GeneratorCreationException("Configuration source could not be read!", e);
         }
         // TODO check if needed as every time there will be a new instance of the generator
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(
-            new ConfigurationRCL(generatorConfProj, cobiGen), IResourceChangeEvent.POST_CHANGE);
+        resourceChangeListener = new ConfigurationRCL(generatorConfProj, cobiGen);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener,
+            IResourceChangeEvent.POST_CHANGE);
+    }
+
+    /**
+     *
+     *
+     * @author mbrunnli (Jun 24, 2015)
+     */
+    public void stop() {
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
     }
 
     /**
