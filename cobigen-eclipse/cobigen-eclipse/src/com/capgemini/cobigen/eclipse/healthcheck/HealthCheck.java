@@ -51,7 +51,7 @@ public class HealthCheck {
         IProject generatorConfProj = null;
         try {
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            selectionServiceListener = new SelectionServiceListener();
+            selectionServiceListener = new SelectionServiceListener(false);
         } catch (GeneratorProjectNotExistentException e) {
             healthyCheckMessage =
                 firstStep + "NOT FOUND IN WORKSPACE!\n"
@@ -81,6 +81,7 @@ public class HealthCheck {
                             execute(selection);
                         }
                     });
+                    return;
                 } else {
                     healthyCheckMessage +=
                         "\n\nNo automatic upgrade of the context configuration possible. "
