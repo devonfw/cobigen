@@ -47,17 +47,15 @@ public class Activator extends AbstractUIPlugin {
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
      */
-    private volatile Boolean configurationProjectListenerStarted = false;
+    private volatile boolean configurationProjectListenerStarted = false;
 
     /**
      * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
      */
     private SelectionServiceListener selectionServiceListener;
 
-    /**
-     * Current state of the {@link SelectionServiceListener}
-     */
-    private volatile Boolean selectionServiceListenerStarted = false;
+    /** Sync Object for (un-)registering the {@link SelectionServiceListener} */
+    private Object selectionServiceListenerSync = new Object();
 
     /**
      * Checks whether the workbench has been initialized (workaround for better user notification about
@@ -102,7 +100,7 @@ public class Activator extends AbstractUIPlugin {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                synchronized (configurationProjectListenerStarted) {
+                synchronized (configurationProjectListener) {
                     if (configurationProjectListenerStarted) {
                         return;
                     }
@@ -111,7 +109,7 @@ public class Activator extends AbstractUIPlugin {
                         IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
                             | IResourceChangeEvent.POST_CHANGE);
                     configurationProjectListenerStarted = true;
-                    LOG.info("ResourceChangeListener for configuration project startet.");
+                    LOG.info("ResourceChangeListener for configuration project started.");
                 }
             }
         });
@@ -126,7 +124,7 @@ public class Activator extends AbstractUIPlugin {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                synchronized (configurationProjectListenerStarted) {
+                synchronized (configurationProjectListener) {
                     if (!configurationProjectListenerStarted) {
                         return;
                     }
@@ -146,20 +144,17 @@ public class Activator extends AbstractUIPlugin {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                synchronized (selectionServiceListenerStarted) {
-                    if (selectionServiceListenerStarted) {
+                synchronized (selectionServiceListenerSync) {
+                    if (selectionServiceListener != null) {
                         return;
                     }
                     LOG.info("Start SelectionServiceListener.");
                     try {
-                        if (selectionServiceListener == null) {
-                            selectionServiceListener = new SelectionServiceListener();
-                        }
+                        selectionServiceListener = new SelectionServiceListener(true);
                         PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
                             selectionServiceListener);
                         PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
                             selectionServiceListener);
-                        selectionServiceListenerStarted = true;
                         LOG.info("SelectionServiceListener started.");
                     } catch (InvalidConfigurationException e) {
                         if (initialized) {
@@ -167,14 +162,17 @@ public class Activator extends AbstractUIPlugin {
                                 "The context.xml of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                         }
-                        e.printStackTrace();
-                    } catch (Exception e) {
+                        stopSelectionServiceListener();
+                    } catch (Throwable e) {
                         if (initialized) {
-                            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", e
-                                .getClass().getSimpleName() + ": " + e.getMessage());
-                            LOG.error("An error occured!", e);
+                            PlatformUIUtil
+                                .openErrorDialog(
+                                    "CobiGen does not work properly!",
+                                    "An error occurred while registering all necessary resource change listeners.",
+                                    e);
+                            LOG.error("Error during initialization:", e);
                         }
-
+                        stopSelectionServiceListener();
                     } finally {
                         initialized = true;
                     }
@@ -192,16 +190,16 @@ public class Activator extends AbstractUIPlugin {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                synchronized (selectionServiceListenerStarted) {
-                    if (!selectionServiceListenerStarted) {
+                synchronized (selectionServiceListenerSync) {
+                    if (selectionServiceListener == null) {
                         return;
                     }
                     PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(JavaUI.ID_PACKAGES,
                         selectionServiceListener);
                     PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
                         selectionServiceListener);
-                    selectionServiceListener.stop();
-                    selectionServiceListenerStarted = false;
+                    selectionServiceListener.stopConfigurationChangeListener();
+                    selectionServiceListener = null;
                     LOG.info("SelectionServiceListener stopped.");
                 }
             }

@@ -76,6 +76,9 @@ public class SelectionServiceListener implements ISelectionListener {
     /**
      * Creates a new instance of the {@link SelectionServiceListener}
      *
+     * @param registerConfigurationChangedListener
+     *            states if an {@link IResourceChangeListener} should be registered to track changes in the
+     *            configuration files.
      * @throws CoreException
      *             if an internal eclipse exception occurred
      * @throws GeneratorProjectNotExistentException
@@ -86,8 +89,9 @@ public class SelectionServiceListener implements ISelectionListener {
      *             if the generator could not be created
      * @author mbrunnli (15.02.2013)
      */
-    public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, GeneratorCreationException {
+    public SelectionServiceListener(boolean registerConfigurationChangedListener)
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException,
+        GeneratorCreationException {
 
         ISourceProviderService isps =
             (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
@@ -101,18 +105,24 @@ public class SelectionServiceListener implements ISelectionListener {
             throw new GeneratorCreationException("Configuration source could not be read!", e);
         }
         // TODO check if needed as every time there will be a new instance of the generator
-        resourceChangeListener = new ConfigurationRCL(generatorConfProj, cobiGen);
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener,
-            IResourceChangeEvent.POST_CHANGE);
+        if (registerConfigurationChangedListener) {
+            resourceChangeListener = new ConfigurationRCL(generatorConfProj, cobiGen);
+            ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener,
+                IResourceChangeEvent.POST_CHANGE);
+            LOG.info("ResourceChangeListener for configuration files started.");
+        }
     }
 
     /**
-     *
-     *
+     * Stops the {@link IResourceChangeListener} for the configuration if
+     * {@link #SelectionServiceListener(boolean)} was initialized with <code>true</code>.
      * @author mbrunnli (Jun 24, 2015)
      */
-    public void stop() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+    public void stopConfigurationChangeListener() {
+        if (resourceChangeListener != null) {
+            ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+            LOG.info("ResourceChangeListener for configuration files stopped.");
+        }
     }
 
     /**
