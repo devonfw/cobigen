@@ -35,26 +35,17 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 	</#if>
   </#compress>
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ${newAttrType} <#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>() {
 		return ${attr.name};
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void set${attrCapName}${suffix}(${newAttrType} ${attr.name}) {
 		this.${attr.name} = ${attr.name};
 	}
 </#list>
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -73,9 +64,6 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         return result;
     }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public boolean equals(Object obj) {
 
