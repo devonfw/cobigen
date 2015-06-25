@@ -309,7 +309,7 @@ public class CobiGen {
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
                             throw new MergeException("'An error occured while merging the file "
-                                + originalFile.toURI() + "'!");
+                                + originalFile.toURI() + "'!", e);
                         }
 
                         if (result != null) {
