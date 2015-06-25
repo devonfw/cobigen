@@ -84,32 +84,6 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
 
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
-            // if (inputTypes != null) {
-            // monitor.beginTask("GenerateHandler files ", templatesToBeGenerated.size());
-            // for (TemplateTo temp : templatesToBeGenerated) {
-            // if (temp.getMergeStrategy() == null) {
-            // cobigenWrapper.generate(temp, true);
-            // } else {
-            // cobigenWrapper.generate(temp, false);
-            // }
-            // monitor.worked(1);
-            // }
-            // } else if (container != null) {
-            // cobigenWrapper.setInput(container);
-            // monitor.beginTask("GenerateHandler files for " + container.getElementName() + "...",
-            // templatesToBeGenerated.size());
-            // for (TemplateTo temp : templatesToBeGenerated) {
-            // TemplateTo t = cobigenWrapper.getTemplateForId(temp.getId(), temp.getTriggerId());
-            // if (t.getMergeStrategy() == null) {
-            // cobigenWrapper.generate(t, true);
-            // } else {
-            // cobigenWrapper.generate(t, false);
-            // }
-            // }
-            // monitor.worked(1);
-            // } else {
-            // LOG.error("Programmer error: GenerateBatchSelectionProcess was instantiated with null resources");
-            // }
             for (TemplateTo temp : templatesToBeGenerated) {
                 if (temp.getMergeStrategy() == null) {
                     cobigenWrapper.generate(temp, true);
