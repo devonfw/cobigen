@@ -304,7 +304,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templates).containsOnlyKeys("prefix_foo_BarClass.java", "prefix_bar_Foo2Class.java",
             "prefix_foo_FooClass.java");
         assertThat(increments).containsOnlyKeys("test");
-        assertThat(increments.get("test").getTemplates()).extracting("id").containsOnly(
+        assertThat(increments.get("test").getTemplates()).extracting("name").containsOnly(
             "prefix_foo_BarClass.java", "prefix_foo_FooClass.java");
     }
 

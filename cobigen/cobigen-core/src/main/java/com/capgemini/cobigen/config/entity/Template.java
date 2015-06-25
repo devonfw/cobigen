@@ -120,19 +120,4 @@ public class Template extends AbstractTemplateResolver {
         return getClass().getSimpleName() + "[name='" + getName() + "]";
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 25, 2015)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj instanceof Template) {
-            return getName().equals(((Template) obj).getName());
-        } else {
-            return false;
-        }
-    }
 }
