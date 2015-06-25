@@ -322,7 +322,9 @@ public class TemplatesConfigurationReader {
                             templateFileName.substring(0, templateFileName.length()
                                 - ConfigurationConstants.TEMPLATE_EXTENSION.length());
                     }
-                    String templateName = scan.getTemplateNamePrefix() + templateNameWithoutExtension;
+                    String templateName =
+                        (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
+                            + templateNameWithoutExtension;
                     if (observedTemplateNames.contains(templateName)) {
                         throw new InvalidConfigurationException(
                             "TemplateScan has detected two files with the same file name and thus with the same "

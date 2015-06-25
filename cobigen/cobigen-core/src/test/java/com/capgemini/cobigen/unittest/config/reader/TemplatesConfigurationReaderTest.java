@@ -82,7 +82,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templates).isNotNull().hasSize(7);
         Template templateSpringCommon = templates.get(templateIdSpringCommon);
         assertThat(templateSpringCommon).isNotNull();
-        assertThat(templateSpringCommon.getId()).isEqualTo(templateIdSpringCommon);
+        assertThat(templateSpringCommon.getName()).isEqualTo(templateIdSpringCommon);
         assertThat(templateSpringCommon.getTemplateFile()).isEqualTo(
             "resources/resources/spring/common.xml.ftl");
         assertThat(templateSpringCommon.getUnresolvedDestinationPath()).isEqualTo(
@@ -92,7 +92,7 @@ public class TemplatesConfigurationReaderTest {
         String templateIdFooClass = "prefix_FooClass.java";
         Template templateFooClass = templates.get(templateIdFooClass);
         assertThat(templateFooClass).isNotNull();
-        assertThat(templateFooClass.getId()).isEqualTo(templateIdFooClass);
+        assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getTemplateFile()).isEqualTo("foo/FooClass.java.ftl");
         assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/java/foo/FooClass.java");
@@ -124,7 +124,7 @@ public class TemplatesConfigurationReaderTest {
         String templateIdFoo2Class = "prefix_Foo2Class.java";
         Template templateFoo2Class = templates.get(templateIdFoo2Class);
         assertThat(templateFoo2Class).isNotNull();
-        assertThat(templateFoo2Class.getId()).isEqualTo(templateIdFoo2Class);
+        assertThat(templateFoo2Class.getName()).isEqualTo(templateIdFoo2Class);
         assertThat(templateFoo2Class.getTemplateFile()).isEqualTo("foo/Foo2Class.java.ftl");
         assertThat(templateFoo2Class.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/java/foo/Foo2Class${variable}.java");
@@ -133,7 +133,7 @@ public class TemplatesConfigurationReaderTest {
         String templateIdBarClass = "prefix_BarClass.java";
         Template templateBarClass = templates.get(templateIdBarClass);
         assertThat(templateBarClass).isNotNull();
-        assertThat(templateBarClass.getId()).isEqualTo(templateIdBarClass);
+        assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getTemplateFile()).isEqualTo("foo/bar/BarClass.java.ftl");
         assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/java/foo/bar/BarClass.java");
@@ -168,7 +168,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateBarClass = templates.get(templateIdBarClass);
         assertThat(templateBarClass).isNotNull();
         // template-scan defaults
-        assertThat(templateBarClass.getId()).isEqualTo(templateIdBarClass);
+        assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getTemplateFile()).isEqualTo("bar/BarClass.java.ftl");
         assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/java/bar/BarClass.java");
@@ -180,7 +180,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateFooClass = templates.get(templateIdFooClass);
         assertThat(templateFooClass).isNotNull();
         // template-scan defaults
-        assertThat(templateFooClass.getId()).isEqualTo(templateIdFooClass);
+        assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getTemplateFile()).isEqualTo("bar/FooClass.java.ftl");
         // overwritten by templateExtension
         assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("adapted/path/FooClass.java");
@@ -213,7 +213,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateFooClass = templates.get(templateIdFooClass);
         assertThat(templateFooClass).isNotNull();
         // template-scan defaults
-        assertThat(templateFooClass.getId()).isEqualTo(templateIdFooClass);
+        assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getTemplateFile()).isEqualTo("bar/Foo2Class.java.ftl");
         assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo(
             "src/main/java/bar/Foo2Class.java");
@@ -338,4 +338,38 @@ public class TemplatesConfigurationReaderTest {
         reader.loadTemplates(null, null);
     }
 
+    /**
+     * Tests the correct resolution of references of templates / templateScans / increments.
+     * @author mbrunnli (Jun 25, 2015)
+     */
+    @Test
+    public void testIncrementComposition_combiningAllPossibleReferences() {
+
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(
+                new File(testFileRootPath + "valid_increment_composition").toPath());
+
+        Trigger trigger =
+            new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+                new LinkedList<ContainerMatcher>());
+        ITriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+
+        // validation
+
+        assertThat(templates).containsOnlyKeys("templateDecl", "prefix_scanned", "scanned",
+            "prefix_scanned2", "scanned2");
+        assertThat(increments).containsOnlyKeys("0", "1", "2");
+        assertThat(increments.values()).hasSize(3);
+        assertThat(increments.get("0").getTemplates()).extracting("name").containsOnly("templateDecl");
+        assertThat(increments.get("1").getTemplates()).extracting("name").containsOnly("templateDecl",
+            "prefix_scanned", "scanned", "scanned2");
+        assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl",
+            "prefix_scanned", "scanned", "prefix_scanned2");
+
+    }
 }

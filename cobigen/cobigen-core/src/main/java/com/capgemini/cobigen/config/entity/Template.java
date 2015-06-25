@@ -12,7 +12,7 @@ public class Template extends AbstractTemplateResolver {
     /**
      * Identifies the {@link Template}.
      */
-    private String id;
+    private String name;
 
     /**
      * Relative path to the template file.
@@ -31,8 +31,8 @@ public class Template extends AbstractTemplateResolver {
 
     /**
      * Creates a new {@link Template} for the given data
-     * @param id
-     *            template ID
+     * @param name
+     *            template name
      * @param destinationPath
      *            path of the destination file
      * @param templateFile
@@ -46,22 +46,22 @@ public class Template extends AbstractTemplateResolver {
      * @param triggerInterpreter
      *            {@link ITriggerInterpreter} the trigger has been interpreted with
      */
-    public Template(String id, String destinationPath, String templateFile, String mergeStrategy,
+    public Template(String name, String destinationPath, String templateFile, String mergeStrategy,
         String outputCharset, Trigger trigger, ITriggerInterpreter triggerInterpreter) {
         super(destinationPath, trigger, triggerInterpreter);
-        this.id = id;
+        this.name = name;
         this.templateFile = templateFile;
         this.mergeStrategy = mergeStrategy;
         targetCharset = outputCharset;
     }
 
     /**
-     * Returns the {@link Template}'s {@link #id}
-     * @return the template id
+     * Returns the {@link Template}'s {@link #name}
+     * @return the template name
      * @author trippl (07.03.2013)
      */
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -109,5 +109,30 @@ public class Template extends AbstractTemplateResolver {
      */
     public void setTargetCharset(String targetCharset) {
         this.targetCharset = targetCharset;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 25, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[name='" + getName() + "]";
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 25, 2015)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof Template) {
+            return getName().equals(((Template) obj).getName());
+        } else {
+            return false;
+        }
     }
 }

@@ -287,7 +287,7 @@ public class CobiGen {
             }
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
-            LOG.info("Generating template '{}' ...", templateIntern.getId(), targetInput);
+            LOG.info("Generating template '{}' ...", templateIntern.getName(), targetInput);
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
@@ -422,11 +422,11 @@ public class CobiGen {
         for (Increment increment : increments) {
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getId(), template.getUnresolvedDestinationPath(),
+                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
             incrementTos
-                .add(new IncrementTo(increment.getId(), increment.getDescription(), trigger.getId(),
+                .add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
                     templates, convertIncrements(increment.getDependentIncrements(), trigger,
                         triggerInterpreter)));
         }
@@ -570,7 +570,7 @@ public class CobiGen {
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
-                templates.add(new TemplateTo(template.getId(), template.getUnresolvedDestinationPath(),
+                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), templatesConfiguration.getTrigger(), templatesConfiguration
                         .getTriggerInterpreter()));
             }
@@ -743,8 +743,8 @@ public class CobiGen {
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getTemplateFile());
         } catch (IOException e) {
-            LOG.error("Error while retrieving template with id '{}'.", template.getId(), e);
-            throw new IOException("Template " + template.getId() + ":\n" + e.getMessage(), e);
+            LOG.error("Error while retrieving template with id '{}'.", template.getName(), e);
+            throw new IOException("Template " + template.getName() + ":\n" + e.getMessage(), e);
         }
 
         Environment env = fmTemplate.createProcessingEnvironment(model, out);
