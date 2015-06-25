@@ -26,9 +26,18 @@ public class JavaParserUtilTest {
         String testString3 = "java.util.HashMap<java.lang.String, java.util.List<java.lang.Integer>>";
         String expectedString3 = "HashMap<String, List<Integer>>";
 
+        String testString4 = "List<Map<Map<String, String>,List<String>>>";
+        String expectedString4 = "List<Map<Map<String, String>,List<String>>>";
+
+        String testString5 =
+            "java.util.List<java.util.Map<java.util.Map<java.lang.String, java.lang.String>,java.util.List<java.lang.String>>>";
+        String expectedString5 = "List<Map<Map<String, String>,List<String>>>";
+
         Assert.assertEquals(expectedString1, JavaParserUtil.resolveToSimpleType(testString1));
         Assert.assertEquals(expectedString2, JavaParserUtil.resolveToSimpleType(testString2));
         Assert.assertEquals(expectedString3, JavaParserUtil.resolveToSimpleType(testString3));
+        Assert.assertEquals(expectedString4, JavaParserUtil.resolveToSimpleType(testString4));
+        Assert.assertEquals(expectedString5, JavaParserUtil.resolveToSimpleType(testString5));
 
     }
 
