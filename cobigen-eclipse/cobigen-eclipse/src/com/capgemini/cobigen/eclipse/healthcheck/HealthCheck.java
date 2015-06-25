@@ -163,7 +163,9 @@ public class HealthCheck {
             } catch (BackupFailedException e) {
                 boolean continueUpgrade =
                     MessageDialog.openQuestion(Display.getDefault().getActiveShell(),
-                        HEALTH_CHECK_DIALOG_TITLE, "Backup failed while upgrading. Continue anyhow?");
+                        HEALTH_CHECK_DIALOG_TITLE, "Backup failed while upgrading. "
+                            + "An upgrade deletes all comments in the configuration file, "
+                            + "which will be gone without a backup. Continue anyhow?");
                 if (continueUpgrade) {
                     contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder,
                         true);
