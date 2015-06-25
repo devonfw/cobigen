@@ -1,3 +1,4 @@
+<#include '/functions.ftl'>
 package ${variables.rootPackage}.${variables.component}.dataaccess.impl.dao;
 
 import java.util.List;
@@ -46,22 +47,34 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     <#assign newAttrType=attr.type?replace("[^<>,]+Entity","Long","r")>
     <#assign attrCapName=attr.name?cap_first>
     <#assign suffix="">
-    <#if attr.type?contains("Entity") && (attr.canonicalType?contains("java.util.List") || attr.canonicalType?contains("java.util.Set"))>
-      <#assign suffix="Ids">
-      <#-- Handle the standard case. Due to no knowledge of the interface, we have no other possibility than guessing -->
-      <#-- Therefore remove (hopefully) plural 's' from attribute's name to attach it on the suffix -->
-      <#if attrCapName?ends_with("s")>
-         <#assign attrCapName=attrCapName?substring(0, attrCapName?length-1)>
-      </#if>
-    <#elseif attr.type?contains("Entity")>
-      <#assign suffix="Id">
-    </#if>
+	<#assign persistenceIdGetterSuffix="">
+	<#if attr.type?ends_with("Entity")>
+		<#if attr.canonicalType?starts_with("java.util.List") || attr.canonicalType?starts_with("java.util.Set")>
+		  <#assign suffix="Ids">
+		  <#-- Handle the standard case. Due to no knowledge of the interface, we have no other possibility than guessing -->
+		  <#-- Therefore remove (hopefully) plural 's' from attribute's name to attach it on the suffix -->
+		  <#if attrCapName?ends_with("s")>
+			 <#assign attrCapName=attrCapName?substring(0, attrCapName?length-1)>
+		  </#if>
+		<#else>
+		  <#assign suffix="Id">
+		</#if>
+		
+		<#if isEntityInComponent(attr.canonicalType, variables.component)>
+			<#assign persistenceIdGetterSuffix="().getId"><#-- direct references for Entities in same component, so get id of the object reference -->
+		<#else>
+			<#assign persistenceIdGetterSuffix=suffix>
+		</#if>
+	</#if>
     </#compress>
 
     ${newAttrType} ${attr.name} = criteria.<#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>();
-    if (${attr.name} != null) {
-      query.where(Alias.$(${variables.entityName?lower_case}.<#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>()).eq(${attr.name}));
-    }
+    <#compress>
+	<#if !equalsJavaPrimitive(attr.type)>if (${attr.name} != null) {</#if>
+      query.where(Alias.$(${variables.entityName?lower_case}.<#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${persistenceIdGetterSuffix}</#if>()).eq(${attr.name}));
+    <#if !equalsJavaPrimitive(attr.type)>}</#if>
+	</#compress>
+	
     </#list>
 
     return findPaginated(criteria, query, alias);
