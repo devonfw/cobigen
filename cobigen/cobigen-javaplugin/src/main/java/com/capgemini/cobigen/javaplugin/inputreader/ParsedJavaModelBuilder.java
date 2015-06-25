@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -181,7 +182,9 @@ public class ParsedJavaModelBuilder {
         JavaAnnotatedElement annotatedElement) {
         Map<String, Object> fieldValues = new HashMap<>();
         fieldValues.put(ModelConstant.NAME, fieldName);
-        fieldValues.put(ModelConstant.TYPE, field.getGenericValue());
+        // currently there is a problem with qDox. It provides the canonical type for supertype fields when
+        // calling "field.getGenericValue()". Thats why we need the JavaParserUtil here.
+        fieldValues.put(ModelConstant.TYPE, JavaParserUtil.resolveToSimpleType(field.getGenericValue()));
         fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
 
         if (annotatedElement != null) {

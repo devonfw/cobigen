@@ -208,7 +208,7 @@ public class ParsedJavaModelBuilderTest {
                 // thus not parsed. Thus, due to type erasure the parametric type will be lost.
                 // assertEquals("List<RootClass>", field.get(ModelConstant.TYPE));
                 // assertEquals("java.util.List<RootClass>", field.get(ModelConstant.CANONICAL_TYPE));
-                assertEquals("java.util.List", field.get(ModelConstant.TYPE));
+                assertEquals("List", field.get(ModelConstant.TYPE));
                 assertEquals("java.util.List", field.get(ModelConstant.CANONICAL_TYPE));
 
                 found = true;
@@ -311,10 +311,7 @@ public class ParsedJavaModelBuilderTest {
         assertNotNull(inheritedField);
         assertEquals("id", inheritedField.get(ModelConstant.NAME));
 
-        // TODO qDox library returns full qualified names for the superclass' fields
-        // actually the expected result of ModelConstant.Type is "Long" here, but we insert this test case
-        // here with "java.lang.Long" so that the test turns into red if there changes anything in qDox
-        assertEquals("java.lang.Long", inheritedField.get(ModelConstant.TYPE));
+        assertEquals("Long", inheritedField.get(ModelConstant.TYPE));
 
         assertEquals("java.lang.Long", inheritedField.get(ModelConstant.CANONICAL_TYPE));
 
