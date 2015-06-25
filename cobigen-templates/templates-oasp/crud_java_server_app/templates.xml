@@ -11,6 +11,11 @@
 
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+
+    <templateExtension ref="${variables.entityName}Dao.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}DaoImpl.java" mergeStrategy="javamerge"/>
+
+    <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
   </templates>
 
   <templateScans>
@@ -22,8 +27,8 @@
       <templateRef ref="ApplicationDao.java"/>
       <templateRef ref="ApplicationDaoImpl.java"/>
       <templateRef ref="NamedQueries.java"/>
-      <templateRef ref="Dao.java"/>
-      <templateRef ref="DaoImpl.java"/>
+      <templateRef ref="${variables.entityName}Dao.java"/>
+      <templateRef ref="${variables.entityName}DaoImpl.java"/>
       <templateRef ref="NamedQueries.xml"/>
     </increment>
     <increment name="tos" description="TO's">
@@ -31,23 +36,22 @@
       <templateRef ref="AbstractEto.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
+      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="logic_impl" description="Implementation">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
-      <templateRef ref="Abstract${variables.entityName}Uc.java"/>
-      <templateRef ref="AbstractUc.java"/>
-      <templateRef ref="UcFind${variables.entityName}.java"/>
-      <templateRef ref="UcManage${variables.entityName}.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
-      <templateRef ref="UcFind${variables.entityName}Impl.java"/>
-      <templateRef ref="UcManage${variables.entityName}Impl.java"/>
     </increment>
     <increment name="dataaccess_infrastructure" description="Entity infrastructure">
       <templateRef ref="ApplicationPersistenceEntity.java"/>
       <templateRef ref="ApplicationEntity.java"/>
       <templateRef ref="${variables.entityName}Entity.java"/>
       <templateRef ref="${variables.entityName}.java"/>
+    </increment>
+    <increment name="service_impl" description="REST service implementation">
+    	<templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
     </increment>
   </increments>
 </templatesConfiguration>
