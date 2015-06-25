@@ -17,10 +17,11 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
@@ -80,20 +81,16 @@ public class GenerateHandler extends AbstractHandler {
                 }
 
             } catch (UnknownContextVariableException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Context Variable",
-                    e.getMessage());
+                PlatformUIUtil.openErrorDialog("Error", "Unknown Context Variable: " + e.getMessage(), e);
                 LOG.error("Unknown Context Variable", e);
             } catch (UnknownTemplateException e) {
-                MessageDialog
-                    .openError(HandlerUtil.getActiveShell(event), "Unknown Template", e.getMessage());
+                PlatformUIUtil.openErrorDialog("Error", "Unknown Template: " + e.getMessage(), e);
                 LOG.error("Unknown Template", e);
             } catch (UnknownExpressionException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Expression",
-                    e.getMessage());
+                PlatformUIUtil.openErrorDialog("Error", "Unknown Expression: " + e.getMessage(), e);
                 LOG.error("Unknown Expression", e);
             } catch (InvalidConfigurationException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Invalid Configuration",
-                    e.getMessage());
+                PlatformUIUtil.openErrorDialog("Error", "Invalid Configuration: " + e.getMessage(), e);
                 LOG.error("Invalid Configuration", e);
             } catch (GeneratorProjectNotExistentException e) {
                 MessageDialog
@@ -107,13 +104,11 @@ public class GenerateHandler extends AbstractHandler {
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
                     ResourceConstants.CONFIG_PROJECT_NAME, e);
             } catch (GeneratorCreationException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator creation error",
-                    e.getMessage());
-                LOG.error(e.getMessage(), e);
+                PlatformUIUtil.openErrorDialog("Error", "Could not create an instance of the generator!", e);
+                LOG.error("Could not create an instance of the generator.", e);
             } catch (Throwable e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Unknown Exception",
-                    e.getMessage());
-                LOG.error("Unknown Exception", e);
+                PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
+                LOG.error("An unexpected exception occurred!", e);
             }
         }
 
