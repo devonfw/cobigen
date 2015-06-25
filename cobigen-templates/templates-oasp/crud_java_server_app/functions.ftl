@@ -1,5 +1,10 @@
 <#function equalsJavaPrimitive simpleType>
-<#return simpleType=="byte" || simpleType=="short" || simpleType=="int" || simpleType=="long" || simpleType=="float" || simpleType=="double" || simpleType=="boolean" || simpleType=="char"> 
+<#return simpleType=="byte" || simpleType=="short" || simpleType=="int" || simpleType=="long" || simpleType=="float" || simpleType=="double" || simpleType=="boolean" || simpleType=="char">
+</#function>
+
+<#function isEntityInComponent canonicalType component>
+<#assign regex =  ".+" + component + r"\.dataaccess\.api\.[A-Za-z0-9_]+Entity(<.*)?">
+<#return canonicalType?matches(regex)>
 </#function>
 
 <#macro boxJavaPrimitive simpleType varName>
