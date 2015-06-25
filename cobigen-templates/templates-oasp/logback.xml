@@ -2,7 +2,7 @@
 <!-- This file is for logback classic. The file contains the configuration for slf4j logging -->
 <configuration>
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file><!-- TODO choose your log file location --></file>
+		<file>D:\Diss\IDE\workspaces\CobiGen\tools-cobigen\cobigen-templates\templates-oasp\CobiGen.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>%n%date [%thread] [%X{correlationId}] %-5level %logger - %msg%n
 			</Pattern>
@@ -18,7 +18,7 @@
 
 	<root level="INFO">
 		<!-- TODO for appending output to the file -->
-		<!-- <appender-ref ref="FILE" /> -->
-		<!-- <appender-ref ref="STDOUT" /> -->
+		<appender-ref ref="FILE" />
+		<!--<appender-ref ref="STDOUT" />-->
 	</root>
 </configuration>

@@ -1,51 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
-	<templates>
-		<templateExtension idref="NamedQueries.java" mergeStrategy="javamerge" />
-		<templateExtension idref="NamedQueries.xml" mergeStrategy="xmlmerge" />
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
-		<templateExtension idref="${variables.component#cap_first}.java" mergeStrategy="javamerge" />
-		<templateExtension idref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge" />
+  <templates>
+    <templateExtension ref="NamedQueries.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="NamedQueries.xml" mergeStrategy="xmlmerge"/>
 
-		<templateExtension idref="${variables.entityName}Entity.java" mergeStrategy="javamerge" />
-		<templateExtension idref="${variables.entityName}.java" mergeStrategy="javamerge" />
-	</templates>
-  
-  <template-scans>
-    <template-scan templatePath="templates" />
-  </template-scans>
+    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
 
-	<increments>
-		<increment id="daos" description="DAO's">
-			<templateRef idref="ApplicationDao.java"/>
-			<templateRef idref="ApplicationDaoImpl.java"/>
-			<templateRef idref="NamedQueries.java"/>
-			<templateRef idref="Dao.java"/>
-			<templateRef idref="DaoImpl.java"/>
-			<templateRef idref="NamedQueries.xml" />
-		</increment>
-		<increment id="tos" description="TO's">
-			<templateRef idref="AbstractCto.java"/>
-			<templateRef idref="AbstractEto.java"/>
-			<templateRef idref="${variables.entityName}Eto.java"/>
-			<templateRef idref="${variables.entityName}Cto.java"/>
-		</increment>
-		<increment id="logic_impl" description="Implementation">
-			<templateRef idref="AbstractBeanMapperSupport.java"/>
-			<templateRef idref="${variables.component#cap_first}.java"/>
-			<templateRef idref="Abstract${variables.entityName}Uc.java"/>
-			<templateRef idref="AbstractUc.java"/>
-			<templateRef idref="UcFind${variables.entityName}.java"/>
-			<templateRef idref="UcManage${variables.entityName}.java"/>
-			<templateRef idref="${variables.component#cap_first}Impl.java"/>
-			<templateRef idref="UcFind${variables.entityName}Impl.java"/>
-			<templateRef idref="UcManage${variables.entityName}Impl.java"/>
-		</increment>
-		<increment id="dataaccess_infrastructure" description="Entity infrastructure">
-			<templateRef idref="ApplicationPersistenceEntity.java" />
-			<templateRef idref="ApplicationEntity.java" />
-			<templateRef idref="${variables.entityName}Entity.java" />
-			<templateRef idref="${variables.entityName}.java" />
-		</increment>
-	</increments>
+    <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+    <increment name="daos" description="DAO's">
+      <templateRef ref="ApplicationDao.java"/>
+      <templateRef ref="ApplicationDaoImpl.java"/>
+      <templateRef ref="NamedQueries.java"/>
+      <templateRef ref="Dao.java"/>
+      <templateRef ref="DaoImpl.java"/>
+      <templateRef ref="NamedQueries.xml"/>
+    </increment>
+    <increment name="tos" description="TO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractEto.java"/>
+      <templateRef ref="${variables.entityName}Eto.java"/>
+      <templateRef ref="${variables.entityName}Cto.java"/>
+    </increment>
+    <increment name="logic_impl" description="Implementation">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+      <templateRef ref="Abstract${variables.entityName}Uc.java"/>
+      <templateRef ref="AbstractUc.java"/>
+      <templateRef ref="UcFind${variables.entityName}.java"/>
+      <templateRef ref="UcManage${variables.entityName}.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="UcFind${variables.entityName}Impl.java"/>
+      <templateRef ref="UcManage${variables.entityName}Impl.java"/>
+    </increment>
+    <increment name="dataaccess_infrastructure" description="Entity infrastructure">
+      <templateRef ref="ApplicationPersistenceEntity.java"/>
+      <templateRef ref="ApplicationEntity.java"/>
+      <templateRef ref="${variables.entityName}Entity.java"/>
+      <templateRef ref="${variables.entityName}.java"/>
+    </increment>
+  </increments>
 </templatesConfiguration>
