@@ -231,8 +231,7 @@ public class CobiGen {
      * @author mbrunnli (10.04.2014)
      */
     private void generate(Object input, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-        boolean forceOverride, Map<String, Object> rawModel) throws IOException, TemplateException,
-        MergeException {
+        boolean forceOverride, Map<String, Object> rawModel) throws IOException, TemplateException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(configFolder
@@ -309,8 +308,8 @@ public class CobiGen {
                             }
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
-                            throw new MergeException("An error occured while merging the file "
-                                + originalFile.toURI() + ":\n" + e.getMessage());
+                            throw new MergeException("'An error occured while merging the file "
+                                + originalFile.toURI() + "'!");
                         }
 
                         if (result != null) {
