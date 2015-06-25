@@ -1,14 +1,10 @@
 package com.capgemini.cobigen.eclipse.wizard.generate.control;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
@@ -31,7 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
@@ -39,8 +34,6 @@ import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.extension.to.TemplateTo;
-
-import freemarker.template.TemplateException;
 
 /**
  * Abstract implementation for processing generation
@@ -122,38 +115,22 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
                 + " templates have been generated.");
 
-        } catch (MalformedURLException e) {
-            // should not occur --> programmatical fault
-            MessageDialog.openError(shell, "Malformed URL Exception", e.getMessage());
-            LOG.error("Malformed URL Exception", e);
         } catch (CoreException e) {
-            MessageDialog.openError(shell, "Eclipse internal Exception",
+            PlatformUIUtil.openErrorDialog("Eclipse internal Exception",
                 "An eclipse internal exception occurred during processing:\n" + e.getMessage()
-                    + "\n If this problem persists please report it to the CobiGen developers.");
+                    + "\n If this problem persists please report it to the CobiGen developers.", e);
             LOG.error("Eclipse internal Exception", e);
-        } catch (TemplateException e) {
-            MessageDialog.openError(shell, "Template Exception",
-                e.getMessage() + "\n" + e.getFTLInstructionStack());
-            LOG.error("Template Exception", e);
-        } catch (IOException e) {
-            MessageDialog.openError(shell, "IO Exception", e.getMessage());
-            LOG.error("IO Exception", e);
-        } catch (TransformerException e) {
-            MessageDialog.openError(shell, "Transformer Exception", e.getMessage());
-            LOG.error("Transforer Exception", e);
-        } catch (SAXException e) {
-            MessageDialog.openError(shell, "SAX Exception", e.getMessage());
-            LOG.error("SAX Exception", e);
         } catch (PluginProcessingException e) {
-            MessageDialog.openError(shell, "Plug-in Processing Exception",
-                "A plug-in caused an unhandled exception:\n" + e.getMessage());
+            PlatformUIUtil.openErrorDialog("Plug-in Processing Exception",
+                "A plug-in caused an unhandled exception:\n", e);
             LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
         } catch (NotYetSupportedException e) {
-            MessageDialog.openInformation(shell, "Not yet supported operation!", e.getMessage());
+            PlatformUIUtil.openErrorDialog("Not yet supported!",
+                "An unsupported operation has been triggered", e);
             LOG.warn("An unsupported operation has been triggered:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
-            MessageDialog.openError(shell, "Unknown Exception", e.getMessage());
-            LOG.error("Unknown Exception", e);
+            PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
+            LOG.error("An unexpected exception occurred!", e);
         }
         monitor.done();
 
