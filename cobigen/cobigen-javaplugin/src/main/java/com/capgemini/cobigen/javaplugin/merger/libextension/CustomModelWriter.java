@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +53,7 @@ public class CustomModelWriter implements ModelWriter {
 
     /**
      * All information is written to this buffer. When extending this class you should write to this buffer
-     * 
+     *
      * @return the buffer
      */
     protected final IndentBuffer getBuffer() {
@@ -388,12 +390,14 @@ public class CustomModelWriter implements ModelWriter {
         if (!annotation.getPropertyMap().isEmpty()) {
             buffer.indent();
             buffer.write('(');
-            Iterator<Map.Entry<String, AnnotationValue>> iterator =
-                annotation.getPropertyMap().entrySet().iterator();
+            Set<Entry<String, AnnotationValue>> annotationEntrySet = annotation.getPropertyMap().entrySet();
+            Iterator<Map.Entry<String, AnnotationValue>> iterator = annotationEntrySet.iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, AnnotationValue> entry = iterator.next();
-                buffer.write(entry.getKey());
-                buffer.write('=');
+                if (annotationEntrySet.size() != 1 && !"value".equals(entry.getKey())) {
+                    buffer.write(entry.getKey());
+                    buffer.write('=');
+                }
                 buffer.write(entry.getValue().toString());
                 if (iterator.hasNext()) {
                     buffer.write(',');
