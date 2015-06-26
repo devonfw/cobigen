@@ -3,9 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="NamedQueries.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="NamedQueries.xml" mergeStrategy="xmlmerge"/>
-
     <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
 
@@ -26,10 +23,8 @@
     <increment name="daos" description="CRUD DAO's">
       <templateRef ref="ApplicationDao.java"/>
       <templateRef ref="ApplicationDaoImpl.java"/>
-      <templateRef ref="NamedQueries.java"/>
       <templateRef ref="${variables.entityName}Dao.java"/>
       <templateRef ref="${variables.entityName}DaoImpl.java"/>
-      <templateRef ref="NamedQueries.xml"/>
     </increment>
     <increment name="tos" description="TO's">
       <templateRef ref="AbstractCto.java"/>
