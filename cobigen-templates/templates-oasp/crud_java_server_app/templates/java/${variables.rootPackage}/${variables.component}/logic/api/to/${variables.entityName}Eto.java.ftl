@@ -14,48 +14,23 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 
 	private static final long serialVersionUID = 1L;
 
-<#list pojo.fields as attr>
-   	private ${attr.type?replace("[^<>,]+Entity","Long","r")} ${attr.name};
-</#list>
+	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion/>
 
-<#list pojo.fields as attr>
-  <#compress>
-  <#assign newAttrType=attr.type?replace("[^<>,]+Entity","Long","r")>
-	<#assign attrCapName=attr.name?cap_first>
-	<#assign suffix="">
-	<#if attr.type?contains("Entity") && (attr.canonicalType?contains("java.util.List") || attr.canonicalType?contains("java.util.Set"))>
-	   <#assign suffix="Ids">
-	   <#-- Handle the standard case. Due to no knowledge of the interface, we have no other possibility than guessing -->
-	   <#-- Therefore remove (hopefully) plural 's' from attribute's name to attach it on the suffix -->
-	   <#if attrCapName?ends_with("s")>
-	     <#assign attrCapName=attrCapName?substring(0, attrCapName?length-1)>
-	   </#if>
-	<#elseif attr.type?contains("Entity")>
-	   <#assign suffix="Id">
-	</#if>
-  </#compress>
-
-	@Override
-	public ${newAttrType} <#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>() {
-		return ${attr.name};
-	}
-
-	@Override
-	public void set${attrCapName}${suffix}(${newAttrType} ${attr.name}) {
-		this.${attr.name} = ${attr.name};
-	}
-</#list>
+	<@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion/>
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         <#if pojo.fields?has_content>
-        	<#list pojo.fields as attr>
-        		<#if equalsJavaPrimitive(attr.type)>
-        result = prime * result + <@boxJavaPrimitive attr.type attr.name/>.hashCode();
+        	<#list pojo.fields as field>
+        		<#if equalsJavaPrimitive(field.type)>
+					result = prime * result + <@boxJavaPrimitive field.type field.name/>.hashCode();
+				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+					<#assign idVar = resolveIdVariableName(field)>
+					result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
         		<#else>
-        result = prime * result + ((this.${attr.name} == null) ? 0 : this.${attr.name}.hashCode());
+					result = prime * result + ((this.${field.name} == null) ? 0 : this.${field.name}.hashCode());
         		</#if>
         	</#list>
         <#else>
@@ -78,19 +53,28 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
       return false;
     }
     ${variables.entityName}Eto other = (${variables.entityName}Eto) obj;
-    <#list pojo.fields as attr>
-    <#if equalsJavaPrimitive(attr.type)>
-	if(this.${attr.name} != other.${attr.name}) {
-		return false;
-	}
-    <#else>
-    if (this.${attr.name} == null) {
-      if (other.${attr.name} != null) {
-        return false;
-      }
-    } else if(!this.${attr.name}.equals(other.${attr.name})){
-      return false;
-    }
+    <#list pojo.fields as field>
+    <#if equalsJavaPrimitive(field.type)>
+		if(this.${field.name} != other.${field.name}) {
+			return false;
+		}
+    <#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+		<#assign idVar = resolveIdVariableName(field)>
+		if (this.${idVar} == null) {
+		  if (other.${idVar} != null) {
+			return false;
+		  }
+		} else if(!this.${idVar}.equals(other.${idVar})){
+		  return false;
+		}
+	<#else>
+		if (this.${field.name} == null) {
+		  if (other.${field.name} != null) {
+			return false;
+		  }
+		} else if(!this.${field.name}.equals(other.${field.name})){
+		  return false;
+		}
     </#if>
     </#list>
     return true;
