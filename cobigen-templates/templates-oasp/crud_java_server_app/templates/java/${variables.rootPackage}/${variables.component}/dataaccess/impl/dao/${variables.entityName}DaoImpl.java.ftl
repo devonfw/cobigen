@@ -8,6 +8,7 @@ import ${variables.rootPackage}.general.dataaccess.base.dao.ApplicationDaoImpl;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+<#include '/functions.ftl'>
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 
 import javax.inject.Named;
@@ -42,37 +43,17 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     EntityPathBase<${variables.entityName}Entity> alias = Alias.$(${variables.entityName?lower_case});
     JPAQuery query = new JPAQuery(getEntityManager()).from(alias);
 
-    <#list pojo.fields as attr>
+    <#list pojo.fields as field>
     <#compress>
-    <#assign newAttrType=attr.type?replace("[^<>,]+Entity","Long","r")>
-    <#assign attrCapName=attr.name?cap_first>
-    <#assign suffix="">
-	<#assign persistenceIdGetterSuffix="">
-	<#if attr.type?ends_with("Entity")>
-		<#if attr.canonicalType?starts_with("java.util.List") || attr.canonicalType?starts_with("java.util.Set")>
-		  <#assign suffix="Ids">
-		  <#-- Handle the standard case. Due to no knowledge of the interface, we have no other possibility than guessing -->
-		  <#-- Therefore remove (hopefully) plural 's' from attribute's name to attach it on the suffix -->
-		  <#if attrCapName?ends_with("s")>
-			 <#assign attrCapName=attrCapName?substring(0, attrCapName?length-1)>
-		  </#if>
-		<#else>
-		  <#assign suffix="Id">
-		</#if>
-		
-		<#if isEntityInComponent(attr.canonicalType, variables.component)>
-			<#assign persistenceIdGetterSuffix="().getId"><#-- direct references for Entities in same component, so get id of the object reference -->
-		<#else>
-			<#assign persistenceIdGetterSuffix=suffix>
-		</#if>
-	</#if>
+    <#assign newFieldType=field.type?replace("[^<>,]+Entity","Long","r")>
+    <#assign fieldCapName=field.name?cap_first>
     </#compress>
 
-    ${newAttrType} ${attr.name} = criteria.<#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${suffix}</#if>();
+    ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
     <#compress>
-	<#if !equalsJavaPrimitive(attr.type)>if (${attr.name} != null) {</#if>
-      query.where(Alias.$(${variables.entityName?lower_case}.<#if attr.type=='boolean'>is${attrCapName}<#else>get${attrCapName}${persistenceIdGetterSuffix}</#if>()).eq(${attr.name}));
-    <#if !equalsJavaPrimitive(attr.type)>}</#if>
+	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
+      query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
+    <#if !equalsJavaPrimitive(field.type)>}</#if>
 	</#compress>
 	
     </#list>
