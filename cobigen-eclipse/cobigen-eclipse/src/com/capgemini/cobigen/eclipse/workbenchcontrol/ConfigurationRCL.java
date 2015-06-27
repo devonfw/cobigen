@@ -87,10 +87,10 @@ public class ConfigurationRCL implements IResourceChangeListener {
     public void resourceChanged(IResourceChangeEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
-        IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
+        IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren();
         for (IResourceDelta projDelta : affectedProjects) {
             if (projDelta.getResource().equals(generatorConfProj)) {
-                IResourceDelta[] affectedChildren = projDelta.getAffectedChildren(IResourceDelta.CHANGED);
+                IResourceDelta[] affectedChildren = projDelta.getAffectedChildren();
                 for (IResourceDelta fileDelta : affectedChildren) {
                     if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
