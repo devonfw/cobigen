@@ -31,16 +31,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ${variables.component?cap_first}RestServiceImpl {
 
-  private ${variables.component?cap_first} ${variables.entityName?lower_case}Management;
+  private ${variables.component?cap_first} ${variables.component?lower_case};
 
   /**
-   * This method sets the field <tt>${variables.entityName?lower_case}Management</tt>.
+   * This method sets the field <tt>${variables.component}</tt>.
    *
-   * @param ${variables.entityName?lower_case}Management the new value of the field ${variables.entityName?lower_case}Management
+   * @param ${variables.component} the new value of the field ${variables.component}
    */
   @Inject
-  public void set${variables.entityName}Management(${variables.component?cap_first} ${variables.entityName?lower_case}Management) {
-    this.${variables.entityName?lower_case}Management = ${variables.entityName?lower_case}Management;
+  public void set${variables.component?cap_first}(${variables.component?cap_first} ${variables.component}) {
+    this.${variables.component} = ${variables.component};
   }
 
   /**
@@ -64,7 +64,7 @@ public class ${variables.component?cap_first}RestServiceImpl {
     } catch (NotFoundException e) {
       throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    return this.${variables.entityName?lower_case}Management.find${variables.entityName}(idAsLong);
+    return this.${variables.component}.find${variables.entityName}(idAsLong);
   }
 
   /**
@@ -76,7 +76,7 @@ public class ${variables.component?cap_first}RestServiceImpl {
   @POST
   @Path("/${variables.entityName?lower_case}/")
   public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
-      return this.${variables.entityName?lower_case}Management.save${variables.entityName}(${variables.entityName?lower_case});
+      return this.${variables.component}.save${variables.entityName}(${variables.entityName?lower_case});
   }
 
 
@@ -99,7 +99,7 @@ public class ${variables.component?cap_first}RestServiceImpl {
     } catch (NotFoundException e) {
       throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    this.${variables.entityName?lower_case}Management.delete${variables.entityName}(idAsLong);
+    this.${variables.component}.delete${variables.entityName}(idAsLong);
   }
 
   /**
@@ -111,7 +111,7 @@ public class ${variables.component?cap_first}RestServiceImpl {
   @Path("/${variables.entityName?lower_case}/search")
   @POST
   public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
-    return this.${variables.entityName?lower_case}Management.find${variables.entityName}Etos(searchCriteriaTo);
+    return this.${variables.component}.find${variables.entityName}Etos(searchCriteriaTo);
   }
 
 }
