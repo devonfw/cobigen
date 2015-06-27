@@ -124,4 +124,17 @@ public class CustomModelWriterTest {
         String reprintedClass = target.toString();
         Assert.assertTrue(reprintedClass.contains("@SuppressWarnings(\"unchecked\")"));
     }
+
+    @Test
+    public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes()
+        throws FileNotFoundException {
+        File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        System.out.println(reprintedClass);
+        Assert.assertTrue(reprintedClass.contains("@Multipart(value=\"binaryObjectEto\""));
+    }
 }

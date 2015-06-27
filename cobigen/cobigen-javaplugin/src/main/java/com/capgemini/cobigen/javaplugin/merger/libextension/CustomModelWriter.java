@@ -394,7 +394,7 @@ public class CustomModelWriter implements ModelWriter {
             Iterator<Map.Entry<String, AnnotationValue>> iterator = annotationEntrySet.iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, AnnotationValue> entry = iterator.next();
-                if (annotationEntrySet.size() != 1 && !"value".equals(entry.getKey())) {
+                if (annotationEntrySet.size() != 1 || !"value".equals(entry.getKey())) {
                     buffer.write(entry.getKey());
                     buffer.write('=');
                 }
