@@ -135,31 +135,27 @@ public class TemplatesConfigurationReader {
                 configNode = (TemplatesConfiguration) rootNode;
             }
         } catch (JAXBException e) {
-            LOG.error("Could not parse configuration file {}", configFilePath.toUri().toString(), e);
             // try getting SAXParseException for better error handling and user support
             Throwable parseCause =
                 ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-            String message = null;
-            if (parseCause != null) {
+            String message = "";
+            if (parseCause != null && parseCause.getMessage() != null) {
                 message = parseCause.getMessage();
             }
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
-            LOG.error("Could not parse templates configuration schema.", e);
             throw new IllegalStateException(
                 "Could not parse templates configuration schema. Please state this as a bug.");
         } catch (NumberFormatException e) {
             // The version number is currently the only xml value which will be parsed to a number data type
             // So provide help
-            LOG.error("Invalid version number for templates configuration defined.", e);
             throw new InvalidConfigurationException(
                 configFilePath.toUri().toString(),
                 "Invalid version number defined. The version of the templates configuration should consist of 'major.minor' version.",
                 e);
         } catch (IOException e) {
-            LOG.error("Could not read templates configuration file {}", configFilePath.toUri().toString(), e);
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "Could not read templates configuration file.", e);
         }
@@ -215,7 +211,6 @@ public class TemplatesConfigurationReader {
             for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
                 // detection of duplicate templateExtensions
                 if (observedExtensionNames.contains(ext.getRef())) {
-                    LOG.error("Two templateExtensions declared for ref='{}'.", ext.getRef());
                     throw new InvalidConfigurationException("Two templateExtensions declared for ref='"
                         + ext.getRef() + "'. Don't know what to do.");
                 }
@@ -234,8 +229,6 @@ public class TemplatesConfigurationReader {
                         template.setTargetCharset(ext.getTargetCharset());
                     }
                 } else {
-                    LOG.error("The templateExtension with ref='{}' does not reference any template!",
-                        ext.getRef());
                     throw new InvalidConfigurationException("The templateExtension with ref='" + ext.getRef()
                         + "' does not reference any template!");
                 }

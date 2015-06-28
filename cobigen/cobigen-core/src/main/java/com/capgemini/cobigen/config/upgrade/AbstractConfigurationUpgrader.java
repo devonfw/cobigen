@@ -141,17 +141,17 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
         for (int i = versions.length - 1; i >= 0; i--) {
             VERSIONS_TYPE lv = versions[i];
-            LOG.debug("Try {} schema '{}'.", configurationName, lv.toString());
+            LOG.info("Try {} schema '{}'.", configurationName, lv.toString());
             try {
                 Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(lv);
                 Object rootNode = unmarshallConfiguration(configurationFile, lv, jaxbConfigurationClass);
 
                 // check, whether the read node can be casted to the correct configuration root node object
                 if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
-                    LOG.debug("It was not possible to read {} with schema '{}' .", configurationName,
+                    LOG.info("It was not possible to read {} with schema '{}' .", configurationName,
                         lv.toString());
                 } else {
-                    LOG.debug("It was possible to read {} with schema '{}' .", configurationName,
+                    LOG.info("It was possible to read {} with schema '{}' .", configurationName,
                         lv.toString());
                     return lv;
                 }
@@ -159,10 +159,10 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 Throwable cause =
                     ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
                 if (cause != null && cause.getMessage() != null) {
-                    LOG.debug("Not able to read template configuration with schema '{}': {}", lv.toString(),
+                    LOG.info("Not able to read template configuration with schema '{}': {}", lv.toString(),
                         cause.getMessage());
                 } else {
-                    LOG.debug("Not able to read template configuration with schema '{}' .", lv.toString(), e);
+                    LOG.warn("Not able to read template configuration with schema '{}' .", lv.toString(), e);
                 }
             }
 

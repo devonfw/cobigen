@@ -19,8 +19,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -43,11 +41,6 @@ import com.google.common.collect.Maps;
  * @author trippl (04.04.2013)
  */
 public class ContextConfigurationReader {
-
-    /**
-     * Assigning logger to ContextConfigurationReader
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
     /**
      * XML Node 'context' of the context.xml
@@ -105,12 +98,11 @@ public class ContextConfigurationReader {
                 contextNode = (ContextConfiguration) rootNode;
             }
         } catch (JAXBException e) {
-            LOG.error("Could not parse configuration file {}", filePath, e);
             // try getting SAXParseException for better error handling and user support
             Throwable parseCause =
                 ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-            String message = null;
-            if (parseCause != null) {
+            String message = "";
+            if (parseCause != null && parseCause.getMessage() != null) {
                 message = parseCause.getMessage();
             }
 
@@ -118,17 +110,14 @@ public class ContextConfigurationReader {
                 + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
-            LOG.error("Could not parse context configuration schema.", e);
             throw new IllegalStateException(
                 "Could not parse context configuration schema. Please state this as a bug.");
         } catch (NumberFormatException e) {
             // The version number is currently the only xml value which will be parsed to a number data type
             // So provide help
-            LOG.error("Invalid version number for context configuration defined.", e);
             throw new InvalidConfigurationException(
                 "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         } catch (IOException e) {
-            LOG.error("Could not read context configuration file {}", contextFile.toUri().toString(), e);
             throw new InvalidConfigurationException(contextFile.toUri().toString(),
                 "Could not read context configuration file.", e);
         }
