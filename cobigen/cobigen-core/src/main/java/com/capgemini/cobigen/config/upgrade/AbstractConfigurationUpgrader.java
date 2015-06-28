@@ -15,6 +15,7 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -24,12 +25,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.exceptions.TechnicalRuntimeException;
+import com.capgemini.cobigen.util.ExceptionUtil;
 
 /**
  * This class encompasses all logic for upgrading CobiGen configurations including
@@ -153,7 +156,14 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                     return lv;
                 }
             } catch (Throwable e) {
-                LOG.debug("Not able to read template configuration with schema '{}' .", lv.toString(), e);
+                Throwable cause =
+                    ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+                if (cause != null && cause.getMessage() != null) {
+                    LOG.debug("Not able to read template configuration with schema '{}': {}", lv.toString(),
+                        cause.getMessage());
+                } else {
+                    LOG.debug("Not able to read template configuration with schema '{}' .", lv.toString(), e);
+                }
             }
 
             if (justCheckLatestVersion) {

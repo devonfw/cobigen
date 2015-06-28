@@ -22,7 +22,7 @@ public class ExceptionUtil {
      *         otherwise <code>null</code>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Throwable> T getCause(Exception e, Class<T> cause) {
+    public static <T extends Throwable> T getCause(Throwable e, Class<T> cause) {
 
         Throwable curr = e;
         while (curr != null && !cause.equals(curr.getClass())) {
@@ -47,7 +47,7 @@ public class ExceptionUtil {
      * @return the cause with the given type if found<br>
      *         otherwise <code>null</code>
      */
-    public static Throwable getCause(Exception e, Class<?>... causes) {
+    public static Throwable getCause(Throwable e, Class<?>... causes) {
 
         for (Class<?> cause : causes) {
             Throwable curr = e;
