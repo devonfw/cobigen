@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 	<templates>
-		<templateExtension idref="aaa" />
+		<templateExtension ref="aaa" />
 	</templates>
 </templatesConfiguration>

@@ -3,7 +3,7 @@ package com.capgemini.cobigen.config.entity;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.capgemini.AccumulationType;
+import com.capgemini.cobigen.config.entity.io.AccumulationType;
 
 /**
  * The {@link Matcher} type corresponds to the &lt;matcher&gt; xml node
@@ -58,5 +58,15 @@ public class Matcher extends AbstractMatcher {
      */
     public AccumulationType getAccumulationType() {
         return accumulationType;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 17, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "'/accuType='"
+            + accumulationType.name() + "']";
     }
 }

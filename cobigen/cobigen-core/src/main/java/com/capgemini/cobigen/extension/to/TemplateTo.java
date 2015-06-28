@@ -128,12 +128,7 @@ public class TemplateTo extends AbstractTemplateResolver {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(this.getClass().getSimpleName() + " {");
-        result.append("id: " + getId());
-        result.append(" triggerId: " + getTriggerId());
-        result.append(" mergeStrategy: " + getMergeStrategy());
-        result.append("}");
-        return result.toString();
+        return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId()
+            + "'/mergeStrategy=" + getMergeStrategy() + "']";
     }
 }

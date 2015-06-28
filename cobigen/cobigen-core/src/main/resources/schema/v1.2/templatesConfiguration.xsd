@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://capgemini.com" xmlns:tns="http://capgemini.com"
-  elementFormDefault="qualified">
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:simplify="http://jaxb2-commons.dev.java.net/basic/simplify"
+  jaxb:extensionBindingPrefixes="simplify" elementFormDefault="qualified" version="1.2">
 
   <xs:element name="templatesConfiguration">
     <xs:complexType>
@@ -74,6 +75,11 @@
 
   <xs:complexType name="increment">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:annotation>
+        <xs:appinfo>
+          <simplify:as-element-property/>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:element name="templateRef" type="tns:templateRef"/>
       <xs:element name="incrementRef" type="tns:incrementRef"/>
     </xs:choice>
