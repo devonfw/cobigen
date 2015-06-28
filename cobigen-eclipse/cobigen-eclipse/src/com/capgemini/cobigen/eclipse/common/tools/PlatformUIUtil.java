@@ -1,9 +1,20 @@
 package com.capgemini.cobigen.eclipse.common.tools;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+
+import com.capgemini.cobigen.eclipse.Activator;
+import com.google.common.collect.Lists;
 
 /**
  * This class provides some helper functions in order to minimize code overhead
@@ -49,4 +60,46 @@ public class PlatformUIUtil {
         return page;
     }
 
+    /**
+     * Open up an error dialog, which shows the stack trace of the cause if not null.
+     * @param dialogTitle
+     *            title of the error dialog
+     * @param message
+     *            message to be shown to the user
+     * @param cause
+     *            of the error or <code>null</code> if the error was not caused by any {@link Throwable}
+     * @author mbrunnli (Jun 23, 2015)
+     */
+    public static void openErrorDialog(String dialogTitle, String message, Throwable cause) {
+        if (cause == null) {
+            MessageDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message);
+        } else {
+            ErrorDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message,
+                createMultiStatus(cause));
+        }
+    }
+
+    /**
+     * Creates a {@link MultiStatus} for the stack trace of the given exception.
+     * @param t
+     *            exception to format
+     * @return the {@link MultiStatus} containing an error {@link Status} for each stack trace entry.
+     * @author mbrunnli (Jun 17, 2015)
+     */
+    public static MultiStatus createMultiStatus(Throwable t) {
+
+        List<Status> childStatus = Lists.newArrayList();
+
+        StackTraceElement[] stackTraces = t.getStackTrace();
+
+        for (StackTraceElement stackTrace : stackTraces) {
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, stackTrace.toString());
+            childStatus.add(status);
+        }
+
+        MultiStatus ms =
+            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]),
+                t.toString(), t);
+        return ms;
+    }
 }

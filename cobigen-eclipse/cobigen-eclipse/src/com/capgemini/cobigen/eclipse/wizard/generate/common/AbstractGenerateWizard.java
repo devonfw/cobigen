@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
@@ -86,6 +89,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     @Override
     public boolean performFinish() {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 
@@ -96,6 +100,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
         page1.saveSelection();
         generateContents(dialog);
 
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return true;
     }
 
