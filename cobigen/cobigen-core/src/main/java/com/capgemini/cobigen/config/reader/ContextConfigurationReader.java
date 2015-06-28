@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.config.reader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -12,21 +13,22 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.ContextConfiguration;
+import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
+import com.capgemini.cobigen.config.entity.io.ContextConfiguration;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
@@ -41,19 +43,9 @@ import com.google.common.collect.Maps;
 public class ContextConfigurationReader {
 
     /**
-     * Context configuration file name
-     */
-    private static final String CONFIG_FILENAME = "context.xml";
-
-    /**
      * XML Node 'context' of the context.xml
      */
     private ContextConfiguration contextNode;
-
-    /**
-     * Assigning logger to ContextConfigurationReader
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
     /**
      * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
@@ -67,7 +59,7 @@ public class ContextConfigurationReader {
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
-        Path contextFile = configRoot.resolve(CONFIG_FILENAME);
+        Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         String filePath = contextFile.toAbsolutePath().toString();
 
         try {
@@ -94,35 +86,38 @@ public class ContextConfigurationReader {
             // Unmarshal with schema checks for checking the correctness and give the user more hints to
             // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema =
-                schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream(
-                    "/schema/contextConfiguration.xsd")));
-            unmarschaller.setSchema(schema);
-            rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
-            contextNode = (ContextConfiguration) rootNode;
+            ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
+            try (InputStream schemaStream =
+                getClass().getResourceAsStream(
+                    "/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
+                InputStream configInputStream = Files.newInputStream(contextFile)) {
+
+                Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+                unmarschaller.setSchema(schema);
+                rootNode = unmarschaller.unmarshal(configInputStream);
+                contextNode = (ContextConfiguration) rootNode;
+            }
         } catch (JAXBException e) {
-            LOG.error("Could not parse configuration file {}", filePath, e);
             // try getting SAXParseException for better error handling and user support
-            SAXParseException parseCause = ExceptionUtil.getCause(e, SAXParseException.class);
-            String message = null;
-            if (parseCause != null) {
+            Throwable parseCause =
+                ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+            String message = "";
+            if (parseCause != null && parseCause.getMessage() != null) {
                 message = parseCause.getMessage();
             }
+
             throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n"
                 + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
-            LOG.error("Could not parse context configuration schema.", e);
             throw new IllegalStateException(
                 "Could not parse context configuration schema. Please state this as a bug.");
         } catch (NumberFormatException e) {
             // The version number is currently the only xml value which will be parsed to a number data type
             // So provide help
-            LOG.error("Invalid version number for context configuration defined.", e);
             throw new InvalidConfigurationException(
                 "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         } catch (IOException e) {
-            LOG.error("Could not read context configuration file {}", contextFile.toUri().toString(), e);
             throw new InvalidConfigurationException(contextFile.toUri().toString(),
                 "Could not read context configuration file.", e);
         }
@@ -138,7 +133,7 @@ public class ContextConfigurationReader {
     public Map<String, Trigger> loadTriggers() {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
-        for (com.capgemini.Trigger t : contextNode.getTriggers().getTrigger()) {
+        for (com.capgemini.cobigen.config.entity.io.Trigger t : contextNode.getTrigger()) {
             triggers.put(
                 t.getId(),
                 new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t
@@ -148,17 +143,17 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link Matcher}s of a given {@link com.capgemini.Trigger}
+     * Loads all {@link Matcher}s of a given {@link com.capgemini.cobigen.config.entity.io.Trigger}
      *
      * @param trigger
-     *            {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
+     *            {@link com.capgemini.cobigen.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
-    private List<Matcher> loadMatchers(com.capgemini.Trigger trigger) {
+    private List<Matcher> loadMatchers(com.capgemini.cobigen.config.entity.io.Trigger trigger) {
 
         List<Matcher> matcher = new LinkedList<>();
-        for (com.capgemini.Matcher m : trigger.getMatcher()) {
+        for (com.capgemini.cobigen.config.entity.io.Matcher m : trigger.getMatcher()) {
             matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m
                 .getAccumulationType()));
         }
@@ -166,17 +161,18 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link ContainerMatcher}s of a given {@link com.capgemini.Trigger}
+     * Loads all {@link ContainerMatcher}s of a given {@link com.capgemini.cobigen.config.entity.io.Trigger}
      *
      * @param trigger
-     *            {@link com.capgemini.Trigger} to retrieve the {@link Matcher}s from
+     *            {@link com.capgemini.cobigen.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (13.10.2014)
      */
-    private List<ContainerMatcher> loadContainerMatchers(com.capgemini.Trigger trigger) {
+    private List<ContainerMatcher> loadContainerMatchers(
+        com.capgemini.cobigen.config.entity.io.Trigger trigger) {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
-        for (com.capgemini.ContainerMatcher cm : trigger.getContainerMatcher()) {
+        for (com.capgemini.cobigen.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
             containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm
                 .isRetrieveObjectsRecursively()));
         }
@@ -184,17 +180,20 @@ public class ContextConfigurationReader {
     }
 
     /**
-     * Loads all {@link VariableAssignment}s from a given {@link com.capgemini.Matcher}
+     * Loads all {@link VariableAssignment}s from a given
+     * {@link com.capgemini.cobigen.config.entity.io.Matcher}
      *
      * @param matcher
-     *            {@link com.capgemini.Matcher} to retrieve the {@link VariableAssignment} from
+     *            {@link com.capgemini.cobigen.config.entity.io.Matcher} to retrieve the
+     *            {@link VariableAssignment} from
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (08.04.2014)
      */
-    private List<VariableAssignment> loadVariableAssignments(com.capgemini.Matcher matcher) {
+    private List<VariableAssignment> loadVariableAssignments(
+        com.capgemini.cobigen.config.entity.io.Matcher matcher) {
 
         List<VariableAssignment> variableAssignments = new LinkedList<>();
-        for (com.capgemini.VariableAssignment va : matcher.getVariableAssignment()) {
+        for (com.capgemini.cobigen.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
             variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
         }
         return variableAssignments;
