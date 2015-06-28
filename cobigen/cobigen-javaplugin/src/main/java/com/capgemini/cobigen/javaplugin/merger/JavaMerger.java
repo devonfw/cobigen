@@ -4,20 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
-import com.thoughtworks.qdox.library.ClassLibraryBuilder;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * The {@link JavaMerger} merges a patch and the base file of the same class. This merge is a structural merge
@@ -77,8 +74,10 @@ public class JavaMerger implements IMerger {
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
 
         ModifyableJavaClass baseClass =
-            getJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
-        ModifyableJavaClass patchClass = getJavaClass(new StringReader(patch));
+            (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new InputStreamReader(new FileInputStream(
+                base), targetCharset));
+        ModifyableJavaClass patchClass =
+            (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
 
         if (baseClass == null) {
             throw new MergeException("The base file " + base.getAbsolutePath()
@@ -288,27 +287,6 @@ public class JavaMerger implements IMerger {
                 } // else do not override
             }
         }
-    }
-
-    /**
-     * Returns the {@link JavaClass} parsed by the given {@link Reader}
-     *
-     * @param reader
-     *            {@link Reader} which contents should be parsed
-     * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private ModifyableJavaClass getJavaClass(Reader reader) {
-
-        ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        classLibraryBuilder.appendDefaultClassLoaders();
-        JavaSource source = classLibraryBuilder.addSource(reader);
-        // save cast as given by the customized builder, only retrieve first class as we only consider one
-        // class per file
-        if (source.getClasses().size() < 1) {
-            return null;
-        }
-        return (ModifyableJavaClass) source.getClasses().get(0);
     }
 
 }

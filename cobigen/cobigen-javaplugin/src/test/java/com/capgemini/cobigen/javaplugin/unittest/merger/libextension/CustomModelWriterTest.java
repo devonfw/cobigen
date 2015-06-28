@@ -100,10 +100,41 @@ public class CustomModelWriterTest {
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeClass(parsedClass);
 
-        Assert.assertTrue(target.toString().contains("public final class FooBar"));
-        Assert.assertTrue(target.toString().contains("private static final volatile int baseFieldUndefined"));
-        Assert.assertTrue(target.toString().contains("public final void method1(String parameter)"));
-        Assert.assertTrue(target.toString().contains("method2(final String parameter)"));
+        String reprintedClass = target.toString();
+        Assert.assertTrue(reprintedClass.contains("public final class FooBar"));
+        Assert.assertTrue(reprintedClass.contains("private static final volatile int baseFieldUndefined"));
+        Assert.assertTrue(reprintedClass.contains("public final void method1(String parameter)"));
+        Assert.assertTrue(reprintedClass.contains("method2(final String parameter)"));
     }
 
+    /**
+     * Tests whether 'value=' is not written for annotation parameters, whereas value is the only parameter.
+     * See https://github.com/devonfw/tools-cobigen/issues/143
+     * @throws FileNotFoundException
+     *             test fails
+     * @author mbrunnli (Jun 26, 2015)
+     */
+    @Test
+    public void testDoNotWriteDefaultValueIdentifierOfAnnotations() throws FileNotFoundException {
+        File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        Assert.assertTrue(reprintedClass.contains("@SuppressWarnings(\"unchecked\")"));
+    }
+
+    @Test
+    public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes()
+        throws FileNotFoundException {
+        File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        System.out.println(reprintedClass);
+        Assert.assertTrue(reprintedClass.contains("@Multipart(value=\"binaryObjectEto\""));
+    }
 }
