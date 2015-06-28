@@ -2,7 +2,9 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -18,6 +20,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
@@ -65,7 +69,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
 
         this.generatorConfProj = generatorConfProj;
         this.generator = generator;
-        contextXmlFile = generatorConfProj.getFile("context.xml");
+        contextXmlFile = generatorConfProj.getFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         logbackXmlFile = generatorConfProj.getFile("logback.xml");
         try {
             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
@@ -81,22 +85,27 @@ public class ConfigurationRCL implements IResourceChangeListener {
      */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
 
-        IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
+        IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren();
         for (IResourceDelta projDelta : affectedProjects) {
             if (projDelta.getResource().equals(generatorConfProj)) {
-                IResourceDelta[] affectedChildren = projDelta.getAffectedChildren(IResourceDelta.CHANGED);
+                IResourceDelta[] affectedChildren = projDelta.getAffectedChildren();
                 for (IResourceDelta fileDelta : affectedChildren) {
                     if (fileDelta.getResource().equals(contextXmlFile)) {
                         try {
                             generator.reloadContextConfigurationFromFile();
-                            LOG.info("The CobiGen context.xml has been changed and reloaded.");
+                            LOG.info("The CobiGen " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                + " has been changed and reloaded.");
                         } catch (InvalidConfigurationException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                "The " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.warn(
-                                "The context.xml of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
+                                "The "
+                                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
                                 e);
                         }
                     } else if (fileDelta.getResource().equals(logbackXmlFile)) {
@@ -107,16 +116,20 @@ public class ConfigurationRCL implements IResourceChangeListener {
                             LOG.error("Unable to read config file", e);
                         } catch (JoranException e) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
+                                "The " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.error(
-                                "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                "The "
+                                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                    + " of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
                                 e);
                         }
                     }
                 }
             }
         }
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**

@@ -6,22 +6,23 @@ import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.navigator.resources.ProjectExplorer;
@@ -33,16 +34,17 @@ import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.JavaModelUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
-import com.google.common.collect.Lists;
 
 /**
  * The {@link SelectionServiceListener} listens on the selections of the jdt {@link PackageExplorerPart} and
@@ -68,9 +70,15 @@ public class SelectionServiceListener implements ISelectionListener {
      */
     private static final Logger LOG = LoggerFactory.getLogger(SelectionServiceListener.class);
 
+    /** {@link IResourceChangeListener} of the context configuration file */
+    private ConfigurationRCL resourceChangeListener;
+
     /**
      * Creates a new instance of the {@link SelectionServiceListener}
      *
+     * @param registerConfigurationChangedListener
+     *            states if an {@link IResourceChangeListener} should be registered to track changes in the
+     *            configuration files.
      * @throws CoreException
      *             if an internal eclipse exception occurred
      * @throws GeneratorProjectNotExistentException
@@ -81,24 +89,40 @@ public class SelectionServiceListener implements ISelectionListener {
      *             if the generator could not be created
      * @author mbrunnli (15.02.2013)
      */
-    public SelectionServiceListener() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, GeneratorCreationException {
+    public SelectionServiceListener(boolean registerConfigurationChangedListener)
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException,
+        GeneratorCreationException {
 
         ISourceProviderService isps =
             (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
                 ISourceProviderService.class);
         sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
 
-        IProject generatorConfProj = ConfigResources.getGeneratorConfigurationProject();
+        IProject generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
         try {
             cobiGen = new CobiGen(generatorConfProj.getLocationURI());
         } catch (IOException e) {
-            LOG.error("Configuration source could not be read", e);
-            throw new GeneratorCreationException("Configuration source could not be read", e);
+            throw new GeneratorCreationException("Configuration source could not be read!", e);
         }
         // TODO check if needed as every time there will be a new instance of the generator
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(
-            new ConfigurationRCL(generatorConfProj, cobiGen), IResourceChangeEvent.POST_CHANGE);
+        if (registerConfigurationChangedListener) {
+            resourceChangeListener = new ConfigurationRCL(generatorConfProj, cobiGen);
+            ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener,
+                IResourceChangeEvent.POST_CHANGE);
+            LOG.info("ResourceChangeListener for configuration files started.");
+        }
+    }
+
+    /**
+     * Stops the {@link IResourceChangeListener} for the configuration if
+     * {@link #SelectionServiceListener(boolean)} was initialized with <code>true</code>.
+     * @author mbrunnli (Jun 24, 2015)
+     */
+    public void stopConfigurationChangeListener() {
+        if (resourceChangeListener != null) {
+            ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+            LOG.info("ResourceChangeListener for configuration files stopped.");
+        }
     }
 
     /**
@@ -109,14 +133,26 @@ public class SelectionServiceListener implements ISelectionListener {
      */
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+
         if (part instanceof PackageExplorerPart || part instanceof ProjectExplorer
             && selection instanceof IStructuredSelection) {
-            if (isValidInput((IStructuredSelection) selection)) {
-                sp.setVariable(SourceProvider.VALID_INPUT, true);
-            } else {
-                sp.setVariable(SourceProvider.VALID_INPUT, false);
+            boolean validInput = false;
+            try {
+                validInput = isValidInput((IStructuredSelection) selection);
+            } catch (InvalidInputException e) {
+                if (e.hasRootCause()) {
+                    LOG.error(e.getMessage(), e);
+                } else {
+                    LOG.error(e.getMessage());
+                }
+            } catch (Throwable e) {
+                LOG.error("An unexpected exception occurred!", e);
             }
+            sp.setVariable(SourceProvider.VALID_INPUT, validInput);
         }
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
@@ -126,10 +162,12 @@ public class SelectionServiceListener implements ISelectionListener {
      * @param selection
      *            the selection made
      * @return true, if all items are supported by the same trigger(s)<br>
-     *         false, if they are not supported by any trigger at all, or the triggers are not the same
+     *         false, if they are not supported by any trigger at all
+     * @throws InvalidInputException
+     *             if the input could not be read as expected
      * @author trippl (22.04.2013)
      */
-    private boolean isValidInput(IStructuredSelection selection) {
+    public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
 
         Iterator<?> it = selection.iterator();
         List<String> firstTriggers = null;
@@ -138,54 +176,50 @@ public class SelectionServiceListener implements ISelectionListener {
 
         while (it.hasNext()) {
             Object tmp = it.next();
-            if (uniqueSourceSelected) {
-                // Currently it is only possible to select one IPackageFragment or IFile
-                return false;
-            } else if (tmp instanceof ICompilationUnit) {
+            if (tmp instanceof ICompilationUnit) {
                 if (firstTriggers == null) {
                     firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
                 } else {
                     if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
-                        return false;
+                        throw new InvalidInputException(
+                            "You selected at least two inputs, which are not matching the same triggers. "
+                                + "For batch processing all inputs have to match the same triggers.");
                     }
                 }
             } else if (tmp instanceof IPackageFragment) {
                 uniqueSourceSelected = true;
-                if (firstTriggers == null) {
-                    firstTriggers =
-                        cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
-                            .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
-                } else {
-                    // It is only possible to select one IPackageFragment
-                    return false;
-                }
+                firstTriggers =
+                    cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp).getResource()
+                        .getLocationURI(), ((IPackageFragment) tmp).getElementName()));
             } else if (tmp instanceof IFile) {
                 uniqueSourceSelected = true;
-                if (firstTriggers == null) {
-                    InputStream stream;
-                    try {
-                        stream = ((IFile) tmp).getContents();
-                        Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
-                        firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
-                    } catch (CoreException e) {
-                        LOG.error("An eclipse internal exception occured", e);
-                    } catch (IOException e) {
-                        LOG.error("The file {} could not be read.", ((IFile) tmp).getName(), e);
-                    } catch (ParserConfigurationException e) {
-                        LOG.error(
-                            "The file {} could not be parsed, because of an internal configuration error.",
-                            ((IFile) tmp).getName(), e);
-                    } catch (SAXException e) {
-                        LOG.warn(
-                            "Checking for valid input: The file {} could not be parsed, because it is not a valid xml document",
-                            ((IFile) tmp).getName());
-                    }
-                } else {
-                    // It is only possible to select one file
-                    return false;
+                try (InputStream stream = ((IFile) tmp).getContents()) {
+                    LOG.debug("Try parsing file {} as xml...", ((IFile) tmp).getName());
+                    Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
+                    firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
+                } catch (CoreException e) {
+                    throw new InvalidInputException("An eclipse internal exception occured! ", e);
+                } catch (IOException e) {
+                    throw new InvalidInputException("The file " + ((IFile) tmp).getName()
+                        + " could not be read!", e);
+                } catch (ParserConfigurationException e) {
+                    throw new InvalidInputException("The file " + ((IFile) tmp).getName()
+                        + " could not be parsed, because of an internal configuration error!", e);
+                } catch (SAXException e) {
+                    throw new InvalidInputException("The contents of the file " + ((IFile) tmp).getName()
+                        + " could not be detected as an instance of any CobiGen supported input language.");
                 }
             } else {
-                return false;
+                throw new InvalidInputException(
+                    "You selected at least one input, which type is currently not supported as input for generation. "
+                        + "Please choose a different one or read the CobiGen documentation for more details.");
+            }
+
+            if (uniqueSourceSelected && selection.size() > 1) {
+                throw new InvalidInputException(
+                    "You selected at least one input in a mass-selection,"
+                        + " which type is currently not supported for batch processing. "
+                        + "Please just select multiple inputs only if batch processing is supported for all inputs.");
             }
         }
         return firstTriggers != null && !firstTriggers.isEmpty();
@@ -197,9 +231,11 @@ public class SelectionServiceListener implements ISelectionListener {
      * @param cu
      *            {@link ICompilationUnit} to be checked
      * @return the {@link Set} of {@link Trigger}s
+     * @throws InvalidInputException
+     *             if the input could not be read as expected
      * @author trippl (22.04.2013)
      */
-    private List<String> findMatchingTriggers(ICompilationUnit cu) {
+    private List<String> findMatchingTriggers(ICompilationUnit cu) throws InvalidInputException {
 
         ClassLoader classLoader;
         IType type = null;
@@ -208,27 +244,20 @@ public class SelectionServiceListener implements ISelectionListener {
             type = JavaModelUtil.getJavaClassType(cu);
             return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
-            LOG.error("Error while retrieving the project's ('{}') classloader", cu.getJavaProject()
-                .getElementName(), e);
+            throw new InvalidInputException("Error while retrieving the project's ('"
+                + cu.getJavaProject().getElementName() + "') classloader.", e);
         } catch (CoreException e) {
-            LOG.error("An eclipse internal exception occured", e);
+            throw new InvalidInputException("An eclipse internal exception occured!", e);
         } catch (ClassNotFoundException e) {
-            LOG.error("The class '{}' could not be found.", type.getFullyQualifiedName(), e);
+            throw new InvalidInputException("The class '" + type.getFullyQualifiedName()
+                + "' could not be found. "
+                + "This may be cause of a non-compiling host project of the selected input.", e);
         } catch (UnsupportedClassVersionError e) {
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-
-                    MessageDialog
-                        .openError(
-                            Display.getDefault().getActiveShell(),
-                            "Incompatible Java version",
-                            "You have selected a java class, which Java version is higher than your current Java runtime, you are running eclipse with.\n"
-                                + "Please update your PATH variable to hold the latest Java runtime you are developing for and restart eclipse.");
-                }
-            });
-            LOG.error("Incompatible java version. Current runtime: {}", System.getProperty("java.version"), e);
+            throw new InvalidInputException(
+                "Incompatible java version: "
+                    + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+                    + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+                    + "Current runtime: " + System.getProperty("java.version"), e);
         }
-        return Lists.newLinkedList();
     }
 }
