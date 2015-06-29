@@ -13,7 +13,7 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 
   private static final long serialVersionUID = 1L;
 
-	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion/>
+	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion isSearchCriteria=true/>
 
   /**
    * The constructor.
@@ -23,6 +23,6 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
     super();
   }
 
-  <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=false/>
+  <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=false  implementsInterface=false isSearchCriteria=true/>
 
 }
