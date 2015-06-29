@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
+
+    <templateExtension ref="UcFind${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="UcManage${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="UcManage${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
+
+    <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+    <increment name="logic_impl_complex" description="CRUD logic layer (complex)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+      <templateRef ref="Abstract${variables.entityName}Uc.java"/>
+      <templateRef ref="AbstractUc.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="UcFind${variables.entityName}.java"/>
+      <templateRef ref="UcManage${variables.entityName}.java"/>
+      <templateRef ref="UcFind${variables.entityName}Impl.java"/>
+      <templateRef ref="UcManage${variables.entityName}Impl.java"/>
+    </increment>
+    <increment name="service_impl_complex" description="CRUD REST services (complex)">
+    	<templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
