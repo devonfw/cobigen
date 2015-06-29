@@ -16,9 +16,9 @@ public class ${variables.entityName}Cto extends AbstractCto {
 
 	private ${variables.entityName}Eto ${variables.entityName?uncap_first};
 
-<#list pojo.fields as attr>
-<#if attr.type?contains("Entity")>
-   	private ${attr.type?replace("Entity","Eto")} ${attr.name};
+<#list pojo.fields as field>
+<#if field.type?contains("Entity")>
+   	private ${field.type?replace("Entity|Embeddable","Eto","r")} ${field.name};
 </#if>
 </#list>
 
@@ -30,16 +30,17 @@ public class ${variables.entityName}Cto extends AbstractCto {
 		this.${variables.entityName?uncap_first} = ${variables.entityName?uncap_first};
 	}
 
-<#list pojo.fields as attr>
-<#if attr.type?contains("Entity")>
-	<#assign attrCapName=attr.name?cap_first>
-
-	public ${attr.type?replace("Entity","Eto")} <#if attr.type='boolean'>is${attrCapName}<#else>get${attrCapName}</#if>() {
-		return ${attr.name};
+<#list pojo.fields as field>
+<#if field.type?contains("Entity")>
+	<#assign fieldCapName=field.name?cap_first>
+	<#assign newType = field.type?replace("Entity|Embeddable","Eto","r")>
+	
+	public ${newType} <#if field.type='boolean'>is${fieldCapName}<#else>get${fieldCapName}</#if>() {
+		return ${field.name};
 	}
 
-	public void set${attrCapName}(${attr.type?replace("Entity","Eto")} ${attr.name}) {
-		this.${attr.name} = ${attr.name};
+	public void set${fieldCapName}(${newType} ${field.name}) {
+		this.${field.name} = ${field.name};
 	}
 </#if>
 </#list>
