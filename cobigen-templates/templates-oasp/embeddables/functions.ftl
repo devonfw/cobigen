@@ -39,8 +39,6 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${resolveIdVariableName(field)};
-<#elseif field.type?contains("Embeddable")>
-	private ${field.type?replace("Embeddable","Eto")} ${field.name};
 <#else>
 	private ${field.type} ${field.name};
 </#if>
@@ -69,15 +67,6 @@
 	@Override</#if>
 	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
-	}
-<#elseif field.type?contains("Embeddable")>
-	
-	public ${field.type?replace("Embeddable","Eto")} get${field.name?cap_first}() {
-		return ${field.name};
-	}
-	
-	public void set${field.name?cap_first}(${field.type?replace("Embeddable","Eto")} ${field.name}) {
-		this.${field.name} = ${field.name};
 	}
 <#else>
    	<#if implementsInterface>/**
