@@ -50,7 +50,7 @@
 <#-- 
 	Generates all setter and getter for the fields whereas for Entity fields it will generate setter and getter for id references 
 -->
-<#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true>
+<#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true, isInterface=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
@@ -59,42 +59,42 @@
    * {@inheritDoc}
    */
 	@Override</#if>
-	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
+	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} <#if isInterface>;<#else>{
 		return ${idVar};
-	}
+	}</#if>
 	
 	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
 		this.${idVar} = ${idVar};
-	}
+	}</#if>
 <#elseif field.type?contains("Embeddable")>
 	
-	public ${field.type?replace("Embeddable","Eto")} get${field.name?cap_first}() {
+	public ${field.type?replace("Embeddable","")} get${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
-	}
+	}</#if>
 	
-	public void set${field.name?cap_first}(${field.type?replace("Embeddable","Eto")} ${field.name}) {
+	public void set${field.name?cap_first}(${field.type?replace("Embeddable","")} ${field.name}) <#if isInterface>;<#else>{
 		this.${field.name} = ${field.name};
-	}
+	}</#if>
 <#else>
    	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public ${field.type} get${field.name?cap_first}() {
+	public ${field.type} get${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
-	}
+	}</#if>
 	
 	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public void set${field.name?cap_first}(${field.type} ${field.name}) {
+	public void set${field.name?cap_first}(${field.type} ${field.name}) <#if isInterface>;<#else>{
 		this.${field.name} = ${field.name};
-	}
+	}</#if>
 </#if>
 </#list>
 </#macro>
