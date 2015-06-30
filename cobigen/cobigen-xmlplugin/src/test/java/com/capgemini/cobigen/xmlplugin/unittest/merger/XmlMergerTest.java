@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.exceptions.MergeException;
@@ -75,6 +76,7 @@ public class XmlMergerTest {
      * @author sholzer (Jun 23, 2015)
      */
     @Test
+    @Ignore("See Issue #119")
     public void testMergeDozerMapping() throws Exception {
 
         // Copy pasted from testMergeAlsoMergesSchemaLocations()
