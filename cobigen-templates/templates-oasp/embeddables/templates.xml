@@ -14,10 +14,12 @@
   </templateScans>
 
   <increments>
-    <increment name="tos" description="TO's">
-      <templateRef ref="AbstractEto.java"/>
+    <increment name="entityInfrastructure>" description="Entity Infrastructure">
       <templateRef ref="${variables.entityName}.java"/>
       <templateRef ref="${variables.entityName}Embeddable.java"/>
+    </increment>
+    <increment name="tos" description="TO's">
+      <templateRef ref="AbstractEto.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
