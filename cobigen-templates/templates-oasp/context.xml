@@ -44,7 +44,7 @@
         <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT"/>
         <matcher type="expression" value="isAbstract" accumulationType="NOT"/>
     </trigger>
-    <trigger id="constants_security_permissions" type="xml" templateFolder="oasp_constants/security_permissions">
+    <trigger id="constants_security_permissions" type="xml" templateFolder="constants/security_permissions">
         <matcher type="nodename" value="access-control-schema">
             <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
         </matcher>
