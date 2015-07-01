@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
  * Use case implementation for searching, filtering and getting ${variables.entityName}s
  */
 @Named
+@UseCase
+@Validated
 public class UcFind${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcFind${variables.entityName} {
 
 	/** Logger instance. */
