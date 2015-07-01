@@ -60,6 +60,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
      *            New value for ucFind${variables.entityName}
      */
     @Inject
+	@UseCase
     public void setUcFind${variables.entityName}(UcFind${variables.entityName} ucFind${variables.entityName}) {
         this.ucFind${variables.entityName} = ucFind${variables.entityName};
     }
@@ -70,6 +71,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
      *            New value for ucManage${variables.entityName}
      */
     @Inject
+	@UseCase
     public void setUcManage${variables.entityName}(UcManage${variables.entityName} ucManage${variables.entityName}) {
         this.ucManage${variables.entityName} = ucManage${variables.entityName};
     }

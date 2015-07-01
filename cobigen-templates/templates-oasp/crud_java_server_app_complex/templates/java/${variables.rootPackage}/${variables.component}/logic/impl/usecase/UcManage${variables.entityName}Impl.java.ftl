@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
  * Use case implementation for modifying and deleting ${variables.entityName}s
  */
 @Named
+@UseCase
+@Validated
 public class UcManage${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcManage${variables.entityName} {
 
   /** Logger instance. */
