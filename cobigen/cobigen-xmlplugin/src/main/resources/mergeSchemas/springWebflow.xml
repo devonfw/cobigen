@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="flow" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://www.springframework.org/schema/webflow"/>
+  <ms:DefaultCriterion xpath="./@name"/>
+
+  <ms:Handling for="attribute">
+    <ms:Handling for="value" unique="true">
+      <ms:Criterion xpath="./"/>
+    </ms:Handling>
+  </ms:Handling>
+
+  <ms:Handling for="secured" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="persistence-context" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="transition">
+    <!-- Covers viewTransitions as well since the added attributes are handled via default -->
+    <ms:Criterion xpath="./@on"/>
+  </ms:Handling>
+
+  <ms:Handling for="global-transitions" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="exception-handler">
+    <ms:Criterion xpath="./@bean"/>
+  </ms:Handling>
+
+  <ms:Handling for="bean-import">
+    <ms:Criterion xpath="./@resource"/>
+  </ms:Handling>
+
+  <!-- Shared state elements -->
+
+  <ms:Handling for="on-start" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="on-entry" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="on-exit" unique="true">
+    <ms:Content xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="binder">
+    <!-- the binder itself works as a container for binding elements. I don't see any properties for a distinction -->
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="binding">
+    <ms:Criterion xpath="./@property"/>
+  </ms:Handling>
+
+  <ms:Handling for="on-render" unique="true">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="if">
+    <ms:Criterion xpath="./@test"/>
+  </ms:Handling>
+
+  <!-- States -->
+
+  <ms:Handling for="action-state">
+    <ms:Criterion xpath="./@id"/> <!-- TODO -->
+  </ms:Handling>
+
+  <ms:Handling for="view-state">
+    <ms:Criterion xpath="./@id"/>
+  </ms:Handling>
+
+  <ms:Handling for="decision-state">
+    <ms:Criterion xpath="./@id"/>
+  </ms:Handling>
+
+  <ms:Handling for="subflow-state">
+    <ms:Criterion xpath="./@id"/>
+  </ms:Handling>
+
+  <ms:Handling for="end-state">
+    <ms:Criterion xpath="./@id"/>
+  </ms:Handling>
+
+  <!-- Group actionTypes -->
+
+  <ms:Handling for="evaluate">
+    <ms:Criterion xpath="./@expression"/>
+  </ms:Handling>
+
+  <ms:Handling for="render">
+    <ms:Criterion xpath="./@fragments"/>
+  </ms:Handling>
+
+</ms:MergeSchema>

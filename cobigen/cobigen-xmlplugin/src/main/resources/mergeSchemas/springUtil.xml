@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="" root="false" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://www.springframework.org/schema/util"/>
+  <ms:DefaultCriterion xpath="./@id"/>
+
+  <!-- should be handled by defaults -->
+  <Handling for="list" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <Handling for="map" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <Handling for="properties" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <Handling for="set" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+
+</ms:MergeSchema>

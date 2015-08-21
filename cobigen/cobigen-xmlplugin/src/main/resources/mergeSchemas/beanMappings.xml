@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="mappings" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://dozer.sourceforge.net"/>
+
+  <ms:Handling for="configuration" unique="true">
+    <ms:Criterion xpath="true()"/>
+    <ms:Handling for="stop-on-errors" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="date-format" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="wildcard" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="trim-strings" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="map-null" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="map-empty-string" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="bean-factory" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="relationship-type" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="custom-converters" unique="true">
+      <ms:Criterion xpath="true()"/>
+      <ms:Handling for="converter"><ms:Criterion xpath="./class-a"/></ms:Handling>
+    </ms:Handling>
+    <ms:Handling for="copy-by-references" unique="true">
+      <ms:Criterion xpath="true()"/>
+      <ms:Handling for="copy-by-reference"><ms:Criterion xpath="./text()"/></ms:Handling>
+    </ms:Handling>
+    <ms:Handling for="allowed-exceptions" unique="true">
+      <ms:Criterion xpath="true()"/>
+      <ms:Handling for="exception"><ms:Criterion xpath="./text()"/></ms:Handling>
+    </ms:Handling>
+    <ms:Handling for="variables" unique="true">
+      <ms:Criterion xpath="true()"/>
+      <ms:Handling for="variable"><ms:Criterion xpath="./@name"/></ms:Handling>
+    </ms:Handling>
+  </ms:Handling>
+  <ms:Handling for="mapping">
+    <ms:Criterion xpath="./@map-id"/>
+    <ms:Handling for="field">
+      <ms:Criterion xpath="./@map-id"/>
+      <ms:Handling for="a-hint" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+      <ms:Handling for="b-hint" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+      <ms:Handling for="a-deep-index-hint" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+      <ms:Handling for="b-deep-index-hint" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    </ms:Handling>
+
+    <ms:Handling for="field-exclude"><ms:Criterion xpath="./*" ordered="false"/></ms:Handling>
+
+    <ms:Handling for="a" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="b" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+
+  </ms:Handling>
+
+
+  <ms:Handling for="class-a" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="class-b" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+
+</ms:MergeSchema>

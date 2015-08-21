@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="" root="false" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://www.springframework.org/schema/tx"/>
+
+  <ms:DefaultCriterion xpath="./@id"/>
+
+  <ms:Handling for="advice">
+    <ms:Handling for="attributes" type="unique">
+    <ms:Criterion xpath="true()"/>
+      <ms:Handling for="method">
+        <ms:Criterion xpath="./@name"/>
+        <ms:Attribute for="rollback-for" attachable="true" separationString=","/>
+        <ms:Attribute for="no-rollback-fot" attachable="true" separationString=","/>
+      </ms:Handling>
+    </ms:Handling>
+  </ms:Handling>
+
+  <ms:Handling for="annotation-driven">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+
+</ms:MergeSchema>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="beans" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+	<!-- MergeSchema for spring bean documents. Patch document will be favored over base document -->
+  <ms:Definition namespace="http://www.springframework.org/schema/beans"/>
+
+  <ms:DefaultCriterion xpath="true()"/>
+
+  <ms:Handling for="description" type="unique">
+  	<ms:Criterion xpath="true()"/>
+  </ms:Handling>
+  <ms:Handling for="import">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+  <ms:Handling for="alias">
+    <ms:Criterion xpath="true()"/>
+  </ms:Handling>
+
+  <ms:Handling for="bean" label="refListOrSetType">
+    <ms:Criterion xpath="./@name"/>
+  	<!-- Handling for description from the axis above -->
+  	<ms:Handling for="constructor-arg">
+      <ms:Criterion xpath="./@name"/>
+  	</ms:Handling>
+
+    <ms:Handling for="propertyType">
+      <ms:Criterion xpath="./@name"/>
+    </ms:Handling>
+
+    <ms:Handling for="qualifier">
+      <ms:Criterion xpath="./@type"/>
+    </ms:Handling>
+
+    <ms:Handling for="lookup-method">
+      <ms:Criterion xpath="./@name"/>
+    </ms:Handling>
+
+    <ms:Handling for="replaced-method">
+      <ms:Criterion xpath="./@name"/>
+      <ms:Handling for="arg-type">
+        <ms:Criterion xpath="./@match"/>
+      </ms:Handling>
+    </ms:Handling>
+
+    <!-- shared Handlings -->
+    <ms:Handling for="ref" type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="idref"  type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="value" type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="null"  type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="array" type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="list" type="unique">
+      <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="set" type="unique">
+    <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="map" type="unique">
+    <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+    <ms:Handling for="props" type="unique">
+    <ms:Criterion xpath="true()"/>
+    </ms:Handling>
+
+  </ms:Handling> <!-- End Handling for bean -->
+
+  <ms:Handling for="meta">
+  	<ms:Criterion xpath="./@key"/>
+  </ms:Handling>
+
+</ms:MergeSchema>

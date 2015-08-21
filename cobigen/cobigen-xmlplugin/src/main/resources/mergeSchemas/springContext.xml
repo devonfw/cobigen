@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="" root="false" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://www.springframework.org/schema/context"/>
+
+  <ms:DefaultCriterion xpath="true()"/>
+
+  <!-- annotation-config by default -->
+
+  <ms:Handling for="component-scan">
+    <ms:Attribute for="base-package" attachable="true" separationString=","/>
+  </ms:Handling>
+
+  <!-- load-time-weaver by default -->
+
+  <!-- mbean-export by default -->
+
+  <!-- mbean-server by default -->
+
+  <!-- everything by default -->
+</ms:MergeSchema>

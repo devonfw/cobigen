@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="" root = "false" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://www.springframework.org/schema/aop"/>
+
+  <ms:DefaultCriterion xpath="true()"/>
+
+  <ms:Handling for="aspectj-autoproxy">
+    <ms:Handling for="include">
+      <ms:Criterion xpath="./@name"/>
+    </ms:Handling>
+  </ms:Handling>
+
+  <ms:Handling for="config">
+    <ms:Handling for="pointcut">
+      <ms:Criterion xpath="./@id"/>
+    </ms:Handling>
+    <ms:Handling for="advisor">
+      <ms:Criterion xpath="./@id"/>
+    </ms:Handling>
+    <ms:Handling for="aspect">
+      <ms:Criterion xpath="./@id"/>
+      <ms:Handling for="declare-parents">
+        <ms:Criterion xpath="./@implement-interface"/>
+      </ms:Handling>
+      <ms:Handling for="before">
+        <ms:Criterion xpath="./@method"/>
+      </ms:Handling>
+      <ms:Handling for="after">
+        <ms:Criterion xpath="./@method"/>
+      </ms:Handling>
+      <ms:Handling for="around">
+        <ms:Criterion xpath="./@method"/>
+      </ms:Handling>
+      <ms:Handling for="after-returning">
+        <ms:Criterion xpath="./@method"/>
+      </ms:Handling>
+      <ms:Handling for="after-throwing">
+        <ms:Criterion xpath="./@method"/>
+      </ms:Handling>
+    </ms:Handling>
+  </ms:Handling>
+
+</ms:MergeSchema>
