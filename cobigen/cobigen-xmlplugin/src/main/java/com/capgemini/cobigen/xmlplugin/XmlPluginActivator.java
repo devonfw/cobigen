@@ -5,9 +5,8 @@ import java.util.List;
 import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
-import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
-import com.capgemini.cobigen.xmlplugin.merger.action.OverrideMergeAction;
+import com.capgemini.cobigen.xmlplugin.merger.XmlLawMergerContainer;
+import com.capgemini.xmllawmerger.ConflictHandlingType;
 import com.google.common.collect.Lists;
 
 /**
@@ -17,14 +16,37 @@ import com.google.common.collect.Lists;
 public class XmlPluginActivator implements IGeneratorPluginActivator {
 
     /**
+     * defining the default location of the merge schemas
+     */
+    static private String defaultMergeSchemaLocation = "src/main/resources/mergeSchemas";
+
+    /**
      * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
+     * @author mbrunnli (06.04.2014), edited by sholzer (20.08.15)
+     *
      */
     @Override
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
-        merger.add(new XmlMerger("xmlmerge", new CompleteMergeAction()));
-        merger.add(new XmlMerger("xmlmerge_override", new OverrideMergeAction()));
+        /*
+         * merger.add(new XmlMerger("xmlmerge", new CompleteMergeAction())); merger.add(new
+         * XmlMerger("xmlmerge_override", new OverrideMergeAction()));
+         */
+        merger.add(new XmlLawMergerContainer(defaultMergeSchemaLocation, ConflictHandlingType.BASEOVERWRITE)); // Corresponds
+                                                                                                               // with
+                                                                                                               // the
+                                                                                                               // old
+                                                                                                               // CompleteMergeAction
+        merger.add(new XmlLawMergerContainer(defaultMergeSchemaLocation,
+            ConflictHandlingType.BASEATTACHOROVERWRITE));
+        merger
+            .add(new XmlLawMergerContainer(defaultMergeSchemaLocation, ConflictHandlingType.PATCHOVERWRITE)); // Corresponds
+                                                                                                              // with
+                                                                                                              // the
+                                                                                                              // old
+                                                                                                              // OverrideMergeAction
+        merger.add(new XmlLawMergerContainer(defaultMergeSchemaLocation,
+            ConflictHandlingType.PATCHATTACHOROVERWRITE));
         return merger;
     }
 
