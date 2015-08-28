@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.xmlplugin.integrationtest.merger;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -12,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,34 +23,123 @@ import org.xml.sax.InputSource;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
 import com.capgemini.cobigen.xmlplugin.unittest.merger.BasicXmlMergeTest;
+import com.capgemini.cobigen.xmlplugin.unittest.merger.XmlMergerTest;
 import com.capgemini.xmllawmerger.ConflictHandlingType;
 
 /**
- * Tests if the used XML merger behaves as desired. The test cases are adapted from {@link BasicXmlMergeTest}
+ * Tests if the used XML patchPreferingMerger behaves as desired. The test cases are adapted from
+ * {@link BasicXmlMergeTest}
  * @author sholzer (Aug 27, 2015)
  */
 public class XmlPluginMergerIntergrationTest {
 
     /**
-     * The merger under test
+     * The merger under test, prefers patch values over base values
      */
-    private IMerger merger;
+    private IMerger patchPreferingMerger;
 
+    /**
+     * The merger under test, prefers base values over patch values
+     */
+    private IMerger basePreferingMerger;
+
+    /**
+     *
+     */
     private final String charset = StandardCharsets.UTF_8.name();
 
     /**
      * the path to the used resources
      */
-    private final String resourcesRoot = "src/test/resources/testdata/unittest/merger/";
+    private final String resourcesRoot = "src/test/resources/testdata/unittest/patchPreferingMerger/";
 
     /**
-     * Sets up a merger with patch priority
+     * Sets up a patchPreferingMerger with patch priority
      * @author sholzer (Aug 27, 2015)
      */
     @Before
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
-        merger = new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHOVERWRITE);
+        patchPreferingMerger =
+            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHOVERWRITE);
+        basePreferingMerger =
+            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEOVERWRITE);
+    }
+
+    /**
+     * @see XmlMergerTest#testMergeDoesNotDestroySchemaLocation()
+     * @throws Exception
+     *             test fails
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    public void mergeDoesNotDestroySchemaLocation() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_namespaces.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(basePath, charset);
+        String mergedString = basePreferingMerger.merge(baseFile, patchString, charset);
+        Assert.assertTrue("Schema definition 'xsi:schemaLocation' has been destroyed.",
+            mergedString.contains("xsi:schemaLocation"));
+
+    }
+
+    /**
+     * Tests Issue #18 - https://github.com/oasp/tools-cobigen/issues/18
+     *
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeAlsoMergesSchemaLocations() throws Exception {
+
+        String basePath = resourcesRoot + "BaseFile_namespaces.xml";
+        String patchPath = resourcesRoot + "PatchFile_namespaces.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        Assert
+            .assertTrue(
+                "Merged document does not contain schema locations defined in base.",
+                mergedDoc
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+        Assert
+            .assertTrue(
+                "Merged document does not contain schema locations defined in patch.",
+                mergedDoc
+                    .contains("http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+        Assert
+            .assertTrue(
+                "Merged schema locations are not separated by whitespace.",
+                mergedDoc
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                        + "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+    }
+
+    /**
+     * Tests whether merging of schemaLocations is not producing duplicates
+     *
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testNoDuplicateNamespacesMerged() throws Exception {
+
+        String basePath = resourcesRoot + "BaseFile_namespaces.xml";
+        String patchPath = resourcesRoot + "PatchFile_namespaces.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        Assert
+            .assertFalse(
+                "Merge duplicates schema locations.",
+                mergedDoc
+                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                        + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
     }
 
     /**
@@ -64,7 +156,7 @@ public class XmlPluginMergerIntergrationTest {
 
         File baseFile = new File(basePath);
         String patchString = readFile(patchPath, charset);
-        String mergedString = merger.merge(baseFile, patchString, charset);
+        String mergedString = basePreferingMerger.merge(baseFile, patchString, charset);
 
         Document mergeDoc = parseString(mergedString);
 
@@ -80,12 +172,126 @@ public class XmlPluginMergerIntergrationTest {
             .getElementsByTagName("transition").getLength());
     }
 
+    /**
+     * Merges two xhtml documents
+     * @see BasicXmlMergeTest#testMergeOverview_NonOverride()
+     * @throws Exception
+     *             test fails
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    @Ignore("Merge process does not end")
+    public void xhtmlTest() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_overview.xhtml";
+        String patchPath = resourcesRoot + "PatchFile_overview.xhtml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedString = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        Document mergeDoc = parseString(mergedString);
+
+        Assert.assertEquals(1, mergeDoc.getElementsByTagName("ui:composition").getLength());
+        Assert.assertEquals(4, mergeDoc.getElementsByTagName("ui:define").getLength());
+        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(0))
+            .getElementsByTagName("title").getLength());
+        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(1))
+            .getElementsByTagName("ui:include").getLength());
+        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(2))
+            .getElementsByTagName("ui:include").getLength());
+        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(3))
+            .getElementsByTagName("ui:include").getLength());
+    }
+
+    /**
+     * @see BasicXmlMergeTest#testMergeQueries_NonOverride()
+     * @throws Exception
+     *             test fails
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    public void queryTest() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_queries.xml";
+        String patchPath = resourcesRoot + "PatchFile_queries.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedString = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        Document mergeDoc = parseString(mergedString);
+        Assert.assertEquals(1, mergeDoc.getElementsByTagName("hibernate-mapping").getLength());
+        Assert.assertEquals(5, mergeDoc.getElementsByTagName("query").getLength());
+    }
+
+    /**
+     * @see BasicXmlMergeTest#testMergeTable_NonOverride()
+     * @throws Exception
+     *             tets fails
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    @Ignore("Merge process does not end")
+    public void xhtmlTableTest() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_table.xhtml";
+        String patchPath = resourcesRoot + "PatchFile_table.xhtml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedString = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        Document mergeDoc = parseString(mergedString);
+
+        Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("div").getLength());
+        Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").getLength());
+        Assert.assertEquals(7, ((Element) mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable")
+            .item(0)).getElementsByTagName("h:column").getLength());
+    }
+
+    /**
+     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * @throws Exception
+     *             when something goes wrong
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    public void testMergeDozerMapping() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_OneOneNine_dozer.xml";
+        String patchPath = resourcesRoot + "PatchFile_OneOneNine_dozer.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
+        assertEquals("not the expected amount of mappings", 5, mergedDoc.split("<mapping").length - 1);
+
+    }
+
+    /**
+     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * @throws Exception
+     *             when something goes wrong
+     * @author sholzer (Aug 28, 2015)
+     */
+    @Test
+    public void testMergeJaxrsServiceBeans() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_OneOneNine.xml";
+        String patchPath = resourcesRoot + "PatchFile_OneOneNine.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
+
+        assertEquals("To many jaxrs:server elements", mergedDoc.split("<jaxrs:server").length - 1, 1);
+
+    }
+
     // utils
 
     /**
      * Reads a file into a string
      * @param path
      *            to the file
+     * @param charset
+     *            String name of the used charset
      * @return String
      * @throws IOException
      *             when the file can't be read
@@ -96,6 +302,15 @@ public class XmlPluginMergerIntergrationTest {
         return new String(encoded, charset);
     }
 
+    /**
+     * Parses a String into a Document.
+     * @param string
+     *            String to be parsed
+     * @return Document
+     * @throws Exception
+     *             shouldn't happen
+     * @author sholzer (Aug 28, 2015)
+     */
     public org.w3c.dom.Document parseString(String string) throws Exception {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
