@@ -260,7 +260,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                             .segmentCount());
                     if (p.segmentCount() != 1) {
                         continue;
-                    } else if (_cachedProvidedResources.containsKey(path)) {
+                    } else if (_cachedProvidedResources.containsKey(path)
+                        && !stubbedChildren.contains(_cachedProvidedResources.get(path))) {
                         // if already seen, just get it and skip creation
                         stubbedChildren.add(_cachedProvidedResources.get(path));
                         continue;
@@ -277,7 +278,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     // it
                     if (!isDefinedInSourceFolder(path) || !considerPackages) {
                         continue;
-                    } else if (_cachedProvidedResources.containsKey(path)) {
+                    } else if (_cachedProvidedResources.containsKey(path)
+                        && !stubbedChildren.contains(_cachedProvidedResources.get(path))) {
                         // if already seen, just get it and skip creation
                         stubbedChildren.add(_cachedProvidedResources.get(path));
                         continue;
@@ -313,14 +315,33 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 }
                 javaElementStub.setChildren(javaChildren);
 
-                stubbedChildren.add(javaElementStub);
-                _cachedProvidedResources.put(javaElementStub.getPath().toString(), javaElementStub);
-                LOG.debug("Stub created for {} with element name '{}' and path '{}'", debugInfo,
-                    javaElementStub.getElementName(), javaElementStub.getPath().toString());
+                if (!stubbedChildren.contains(javaElementStub)) {
+                    stubbedChildren.add(javaElementStub);
+                    _cachedProvidedResources.put(javaElementStub.getPath().toString(), javaElementStub);
+                    LOG.debug("Stub created for {} with element name '{}' and path '{}'", debugInfo,
+                        javaElementStub.getElementName(), javaElementStub.getPath().toString());
+                }
+            }
+
+            // for IPackageFragments as parents, also retrieve all stubbed children for each package to not
+            // forget any stubbed file #151/#137
+            if (parentElement instanceof IPackageFragmentRoot) {
+                List<IPackageFragment> allExistingPackageFragments =
+                    HierarchicalTreeOperator.retrievePackageChildren((IPackageFragmentRoot) parentElement,
+                        Lists.newArrayListWithCapacity(0));
+                for (IPackageFragment frag : allExistingPackageFragments) {
+                    List<Object> recStubbedChildren = stubNonExistentChildren(frag, considerPackages);
+                    for (Object c : recStubbedChildren) {
+                        if (!stubbedChildren.contains(c)) {
+                            stubbedChildren.add(c);
+                        }
+                    }
+                }
             }
         } else if (parentElement instanceof IResource) {
             stubNonExistentChildren((IResource) parentElement, stubbedChildren);
         }
+
         return stubbedChildren;
     }
 
