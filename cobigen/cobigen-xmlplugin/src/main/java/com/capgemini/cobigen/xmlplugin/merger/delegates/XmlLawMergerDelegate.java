@@ -53,4 +53,14 @@ public class XmlLawMergerDelegate implements IMerger {
         return merger.mergeInString(base, patch, targetCharset, conflictHandlingType);
     }
 
+    /**
+     * Sets the validation flag
+     * @param validation
+     *            true if a validation is desired. false otherwise. Default is true
+     * @author sholzer (Sep 1, 2015)
+     */
+    public void setValidation(boolean validation) {
+        merger.setValidation(validation);
+    }
+
 }
