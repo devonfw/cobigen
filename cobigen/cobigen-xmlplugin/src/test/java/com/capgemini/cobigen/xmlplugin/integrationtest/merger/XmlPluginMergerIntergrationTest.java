@@ -51,7 +51,7 @@ public class XmlPluginMergerIntergrationTest {
     /**
      * the path to the used resources
      */
-    private final String resourcesRoot = "src/test/resources/testdata/unittest/patchPreferingMerger/";
+    private final String resourcesRoot = "src/test/resources/testdata/unittest/merger/";
 
     /**
      * Sets up a patchPreferingMerger with patch priority
@@ -61,9 +61,9 @@ public class XmlPluginMergerIntergrationTest {
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
         patchPreferingMerger =
-            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHOVERWRITE);
+            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHATTACHOROVERWRITE);
         basePreferingMerger =
-            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEOVERWRITE);
+            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEATTACHOROVERWRITE);
     }
 
     /**
