@@ -54,7 +54,7 @@ public class XmlPluginMergerIntergrationTest {
     private final String resourcesRoot = "src/test/resources/testdata/unittest/merger/";
 
     /**
-     * Sets up a patchPreferingMerger with patch priority
+     * Sets up a patchPreferingMerger and a basePreferingMerger without validation
      * @author sholzer (Aug 27, 2015)
      */
     @Before
@@ -62,8 +62,10 @@ public class XmlPluginMergerIntergrationTest {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
         patchPreferingMerger =
             new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHATTACHOROVERWRITE);
+        // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
         basePreferingMerger =
             new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEATTACHOROVERWRITE);
+        // ((XmlLawMergerDelegate) basePreferingMerger).setValidation(false);
     }
 
     /**
@@ -110,12 +112,6 @@ public class XmlPluginMergerIntergrationTest {
                 "Merged document does not contain schema locations defined in patch.",
                 mergedDoc
                     .contains("http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
-        Assert
-            .assertTrue(
-                "Merged schema locations are not separated by whitespace.",
-                mergedDoc
-                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
-                        + "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
     }
 
     /**
