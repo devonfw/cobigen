@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="hibernate-mapping" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../../../../../xml-law-merger/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="//Hibernate/Hibernate Mapping DTD 3.0//EN" type="dtd"/>
+
+  <ms:Handling for="meta"><ms:Criterion xpath="./@attribute"/></ms:Handling>
+  <ms:Handling for="identifier-generator"></ms:Handling>
+  <ms:Handling for="typedef"></ms:Handling>
+  <ms:Handling for="filter-def"></ms:Handling>
+  <ms:Handling for="import"></ms:Handling>
+  <ms:Handling for="class"></ms:Handling>
+  <ms:Handling for="subclass"></ms:Handling>
+  <ms:Handling for="joined-subclass"></ms:Handling>
+  <ms:Handling for="union-subclass"></ms:Handling>
+  <ms:Handling for="resultset"></ms:Handling>
+  <ms:Handling for="query"></ms:Handling>
+  <ms:Handling for="sql-query"></ms:Handling>
+  <ms:Handling for="fetch-profile"></ms:Handling>
+  <ms:Handling for="database-object"></ms:Handling>
+
+</ms:MergeSchema>
