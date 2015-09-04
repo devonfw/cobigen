@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -176,7 +175,7 @@ public class XmlPluginMergerIntergrationTest {
      * @author sholzer (Aug 28, 2015)
      */
     @Test
-    @Ignore("Merge process does not end")
+    // @Ignore("Merge process does not end")
     public void xhtmlTest() throws Exception {
         String basePath = resourcesRoot + "BaseFile_overview.xhtml";
         String patchPath = resourcesRoot + "PatchFile_overview.xhtml";
@@ -226,7 +225,6 @@ public class XmlPluginMergerIntergrationTest {
      * @author sholzer (Aug 28, 2015)
      */
     @Test
-    @Ignore("Merge process does not end")
     public void xhtmlTableTest() throws Exception {
         String basePath = resourcesRoot + "BaseFile_table.xhtml";
         String patchPath = resourcesRoot + "PatchFile_table.xhtml";
