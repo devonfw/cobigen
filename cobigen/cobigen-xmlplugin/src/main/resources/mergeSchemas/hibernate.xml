@@ -4,10 +4,7 @@
 
   <ms:Handling for="meta"><ms:Criterion xpath="./@attribute"/></ms:Handling>
   <ms:Handling for="identifier-generator"><ms:Criterion xpath="./@name"/></ms:Handling>
-  <ms:Handling for="typedef">
-    <ms:Criterion xpath="./@class"/>
-    <ms:Handling for="param"></ms:Handling>
-  </ms:Handling>
+  <ms:Handling for="typedef"><ms:Criterion xpath="./@class"/></ms:Handling>
   <ms:Handling for="filter-def">
     <ms:Criterion xpath="./@name"/>
     <ms:Handling for="filter-param"><ms:Criterion xpath="./@name"/></ms:Handling>
@@ -15,13 +12,9 @@
   <ms:Handling for="import"><ms:Criterion xpath="./@class"/></ms:Handling>
   <ms:Handling for="class">
     <ms:Criterion xpath="./@entity-name"/>
-    <ms:Handling for="cache" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
-    <ms:Handling for="comment" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
     <ms:Handling for="id" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
     <ms:Handling for="composite-id" unique="true">
       <ms:Criterion xpath="true()"/>
-      <ms:Handling for="key-property"></ms:Handling>
-      <ms:Handling for="key-many-to-one"></ms:Handling>
     </ms:Handling>
     <ms:Handling for="discriminator" unique="true">
       <ms:Criterion xpath="true()"/>
@@ -30,52 +23,99 @@
     <ms:Handling for="natural-id" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
     <ms:Handling for="version" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
     <ms:Handling for="timestamp" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
-    <ms:Handling for="filter"><ms:Criterion xpath="./@name"/></ms:Handling>
   </ms:Handling>
   <ms:Handling for="subclass"><ms:Criterion xpath="./@entity-name"/></ms:Handling>
   <ms:Handling for="joined-subclass"><ms:Criterion xpath="./@entity-name"/></ms:Handling>
   <ms:Handling for="union-subclass"><ms:Criterion xpath="./@entity-name"/></ms:Handling>
-  <ms:Handling for="resultset"></ms:Handling>
-  <ms:Handling for="query"></ms:Handling>
-  <ms:Handling for="sql-query"></ms:Handling>
+  <ms:Handling for="resultset"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="return-scalar"><ms:Criterion xpath="./@column"/></ms:Handling>
+  <ms:Handling for="return-join"><ms:Criterion xpath="./@property"/></ms:Handling>
+  <ms:Handling for="return">
+    <ms:Criterion xpath="./@entity-name"/>
+    <ms:Handling for="return-discriminator" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="return-property">
+      <ms:Criterion xpath="./@name"/>
+      <ms:Handling for="return-column"><ms:Criterion xpath="./@name"/></ms:Handling>
+    </ms:Handling>
+  </ms:Handling>
+  <ms:Handling for="load-collection"><ms:Criterion xpath="./@role"/></ms:Handling>
+  <ms:Handling for="query"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="sql-query"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="query-param"><ms:Criterion xpath="./@name"/></ms:Handling>
   <ms:Handling for="fetch-profile">
     <ms:Criterion xapth="./@name"/>
     <ms:Handling for="fetch"><ms:Criterion xpath="./@association"/></ms:Handling>
   </ms:Handling>
-  <ms:Handling for="database-object"></ms:Handling>
+  <ms:Handling for="database-object">
+    <ms:Criterion xpath="./definition | ./create" ordered="false"/>
+    <ms:Handling for="definition" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="create" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="drop" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="dialect-scope"><ms:Criterion xpath="./@name"/></ms:Handling>
+  </ms:Handling>
 
   <!--  -->
-  <ms:Handling for="column"></ms:Handling>
+  <ms:Handling for="column"><ms:Criterion xpath="./@name"/></ms:Handling>
   <ms:Handling for="generator" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="tuplizer"><ms:Criterion xpath="./@class"/></ms:Handling>
-  <ms:Handling for="synchronize"></ms:Handling>
+  <ms:Handling for="synchronize"><ms:Criterion xpath="./@table"/></ms:Handling>
   <ms:Handling for="property"><ms:Criterion xpath="./@name"/></ms:Handling>
   <ms:Handling for="many-to-one"><ms:Criterion xpath="./@name"/></ms:Handling>
   <ms:Handling for="one-to-one"><ms:Criterion xpath="./@name"/></ms:Handling>
-  <ms:Handling for="component"><ms:Criterion xpath="./@name"/></ms:Handling> <!-- bookmark -->
-  <ms:Handling for="dynamic-component"></ms:Handling>
-  <ms:Handling for="properties"></ms:Handling>
-  <ms:Handling for="any">
+  <ms:Handling for="component">
     <ms:Criterion xpath="./@name"/>
-    <ms:Handling for="meta-value"><ms:Criterion xpath="./@class"/></ms:Handling>
+    <ms:Handling for="parent" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  </ms:Handling> <!-- bookmark -->
+  <ms:Handling for="dynamic-component"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="properties"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="any"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="map">
+    <ms:Criterion xpath="./@name"/>
+    <ms:Handling for="map-key" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="composite-map-key" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="map-key-many-to-many" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="composite-index" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="index-many-to-many" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="index-many-to-any" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   </ms:Handling>
-  <ms:Handling for="map"></ms:Handling>
-  <ms:Handling for="set"></ms:Handling>
-  <ms:Handling for="list"></ms:Handling>
-  <ms:Handling for="bag"></ms:Handling>
-  <ms:Handling for="idbag"></ms:Handling>
-  <ms:Handling for="array"></ms:Handling>
-  <ms:Handling for="primitive-array"></ms:Handling>
-  <ms:Handling for="join">
-    <ms:Criterion xpath="./@table"/>
-    <ms:Handling for="key" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="set"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="list"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="bag"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="idbag">
+    <ms:Criterion xpath="./@name"/>
+    <ms:Handling for="collection-id" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   </ms:Handling>
+  <ms:Handling for="array"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="primitive-array"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="join"><ms:Criterion xpath="./@table"/></ms:Handling>
+  <ms:Handling for="key" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="loader" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="sql-insert" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="sql-update" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="sql-delete" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="subselect" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="formula"></ms:Handling>
+  <ms:Handling for="formula"><ms:Criterion xpath="text()"/></ms:Handling>
   <ms:Handling for="type" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="cache" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="comment" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
 
+  <!-- elements used by map/set etc. -->
+  <ms:Handling for="element" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="one-to-many" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="many-to-many" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="composite-element" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="many-to-any" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="sql-delete-all" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="filter"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="index" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="list-index" unique="true">
+    <ms:Criterion xpath="true()"/>
+    <ms:Handling for="column" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  </ms:Handling>
+  <ms:Handling for="formula"></ms:Handling>
+  <ms:Handling for="nested-composite-element"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="key-property"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="key-many-to-one"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="meta-value"><ms:Criterion xpath="./@class"/></ms:Handling>
+  <ms:Handling for="param"><ms:Criterion xpath="./@name"/></ms:Handling>
 </ms:MergeSchema>
