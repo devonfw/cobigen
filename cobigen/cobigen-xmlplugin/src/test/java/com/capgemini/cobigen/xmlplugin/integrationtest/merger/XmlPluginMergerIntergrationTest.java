@@ -35,6 +35,7 @@ public class XmlPluginMergerIntergrationTest {
     /**
      * The merger under test, prefers patch values over base values
      */
+    @SuppressWarnings("unused")
     private IMerger patchPreferingMerger;
 
     /**
