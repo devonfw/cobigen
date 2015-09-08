@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="composition" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../../../../../../../xml-law-merger/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://java.sun.com/jsf/facelets"/>
+
+  <!-- This MergeSchema is far from beeing complete since the document definition couldn't be found. The merge rules are derived from different unit tests -->
+
+  <ms:Handling for="define"><ms:Criterion xpath="./@name"/></ms:Handling>
+  <ms:Handling for="include"><ms:Criterion xpath="./@src"/></ms:Handling>
+
+</ms:MergeSchema>
