@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ms:MergeSchema for="" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../../../../../xml-law-merger/src/main/resources/xsd/MergeSchema.xsd ">
+<ms:MergeSchema for="html" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../../../../../xml-law-merger/src/main/resources/xsd/MergeSchema.xsd ">
   <ms:Definition namespace="http://www.w3.org/1999/xhtml" type="dtd">
     <ms:AdditionalNamespace namespace="//W3C//ENTITIES Latin 1 for XHTML//EN"/>
   </ms:Definition>
 
+  <ms:DefaultCriterion xpath="./@id"/>
 
+  <ms:Handling for="head" unique="true">
+    <ms:Criterion xpath="true()"/>
+    <ms:Handling for="style"><ms:Criterion xpath="type"/></ms:Handling>
+    <ms:Handling for="meta"><ms:Criterion xpath="./@content"/></ms:Handling>
+    <ms:Handling for="link"><ms:Criterion xpath="./"/></ms:Handling>
+    <ms:Handling for="title" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="base" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+  </ms:Handling>
+  <ms:Handling for="body" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+
+  <ms:Handling for="table">
+    <ms:Criterion xpath="./child::thead/tr" ordered="true"/>
+    <ms:Handling for="caption" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="thead" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="tfoot" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="tbody" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
+    <ms:Handling for="tr"><ms:Criterion xpath="./child::td | ./child::th" ordered="true"/></ms:Handling>
+  </ms:Handling>
 
 </ms:MergeSchema>
