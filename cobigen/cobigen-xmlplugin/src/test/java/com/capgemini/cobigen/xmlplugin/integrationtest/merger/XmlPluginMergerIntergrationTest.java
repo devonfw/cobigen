@@ -71,7 +71,7 @@ public class XmlPluginMergerIntergrationTest {
         // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
         basePreferingMerger =
             new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEATTACHOROVERWRITE);
-        // ((XmlLawMergerDelegate) basePreferingMerger).setValidation(false);
+        ((XmlLawMergerDelegate) basePreferingMerger).setValidation(false);
     }
 
     /**
