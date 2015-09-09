@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:MergeSchema for="" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../../../../../xml-law-merger/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:Definition namespace="http://java.sun.com/jsf/html"/>
+
+  <!-- Incomplete and dependent MergeSchema. The namespace http://java.sun.com/jsf/core needs to use the prefix 'f' -->
+
+  <ms:Handling for="dataTable"><ms:Criterion xpath="./@id"/></ms:Handling>
+  <ms:Handling for="column"><ms:Criterion xpath="./*[namespace-uri()='http://java.sun.com/jsf/core' and local-name()='facet' and @name='header']/text()"/></ms:Handling>
+
+</ms:MergeSchema>
