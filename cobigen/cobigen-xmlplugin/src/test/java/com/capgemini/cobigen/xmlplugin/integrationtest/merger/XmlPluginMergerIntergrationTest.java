@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,21 +21,13 @@ import org.xml.sax.InputSource;
 
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
-import com.capgemini.cobigen.xmlplugin.unittest.merger.BasicXmlMergeTest;
-import com.capgemini.cobigen.xmlplugin.unittest.merger.XmlMergerTest;
 import com.capgemini.xmllawmerger.ConflictHandlingType;
 
 /**
- * Tests if the used XML patchPreferingMerger behaves as desired. The test cases are adapted from
- * {@link BasicXmlMergeTest}
+ * Tests if the used XML patchPreferingMerger behaves as desired.
  * @author sholzer (Aug 27, 2015)
  */
 public class XmlPluginMergerIntergrationTest {
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.out.println("Current working directory: " + System.getProperty("user.dir"));
-    }
 
     /**
      * The merger under test, prefers patch values over base values
@@ -75,7 +66,6 @@ public class XmlPluginMergerIntergrationTest {
     }
 
     /**
-     * @see XmlMergerTest#testMergeDoesNotDestroySchemaLocation()
      * @throws Exception
      *             test fails
      * @author sholzer (Aug 28, 2015)
@@ -146,7 +136,6 @@ public class XmlPluginMergerIntergrationTest {
 
     /**
      * Merges two Spring web flow documents.
-     * @see BasicXmlMergeTest#testMergeFlow_NonOverride()
      * @author sholzer (Aug 27, 2015)
      * @throws Exception
      *             hopefully never
@@ -176,7 +165,6 @@ public class XmlPluginMergerIntergrationTest {
 
     /**
      * Merges two xhtml documents
-     * @see BasicXmlMergeTest#testMergeOverview_NonOverride()
      * @throws Exception
      *             test fails
      * @author sholzer (Aug 28, 2015)
@@ -206,7 +194,6 @@ public class XmlPluginMergerIntergrationTest {
     }
 
     /**
-     * @see BasicXmlMergeTest#testMergeQueries_NonOverride()
      * @throws Exception
      *             test fails
      * @author sholzer (Aug 28, 2015)
@@ -226,7 +213,6 @@ public class XmlPluginMergerIntergrationTest {
     }
 
     /**
-     * @see BasicXmlMergeTest#testMergeTable_NonOverride()
      * @throws Exception
      *             tets fails
      * @author sholzer (Aug 28, 2015)
