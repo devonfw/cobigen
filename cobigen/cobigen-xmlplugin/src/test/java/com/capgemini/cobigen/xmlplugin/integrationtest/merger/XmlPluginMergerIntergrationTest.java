@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,6 +32,11 @@ import com.capgemini.xmllawmerger.ConflictHandlingType;
  * @author sholzer (Aug 27, 2015)
  */
 public class XmlPluginMergerIntergrationTest {
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.out.println("Current working directory: " + System.getProperty("user.dir"));
+    }
 
     /**
      * The merger under test, prefers patch values over base values
