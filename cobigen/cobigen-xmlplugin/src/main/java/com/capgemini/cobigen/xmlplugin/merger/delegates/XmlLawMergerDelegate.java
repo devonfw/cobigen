@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.xmlplugin.merger.delegates;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.xmllawmerger.ConflictHandlingType;
@@ -31,6 +32,19 @@ public class XmlLawMergerDelegate implements IMerger {
      * @author sholzer (Aug 27, 2015)
      */
     public XmlLawMergerDelegate(String mergeSchemaLocation, ConflictHandlingType conflictHandlingType) {
+        this.conflictHandlingType = conflictHandlingType;
+        merger = new XmlLawMerger(mergeSchemaLocation);
+    }
+
+    /**
+     *
+     * @param mergeSchemaLocation
+     *            path to the folder containing the merge schemas to be used
+     * @param conflictHandlingType
+     *            the way how conflicts will be handled
+     * @author sholzer (Aug 27, 2015)
+     */
+    public XmlLawMergerDelegate(Path mergeSchemaLocation, ConflictHandlingType conflictHandlingType) {
         this.conflictHandlingType = conflictHandlingType;
         merger = new XmlLawMerger(mergeSchemaLocation);
     }
