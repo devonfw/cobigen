@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 
-import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 
@@ -25,7 +24,7 @@ public class ConfigurationProjectRCL implements IResourceChangeListener {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (08.04.2013)
+     * @author mbrunnli (08.04.2013), updated by sholzer (29.09.2015) for issue #156
      */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
@@ -48,17 +47,17 @@ public class ConfigurationProjectRCL implements IResourceChangeListener {
         // //////////////
         if (event.getType() == IResourceChangeEvent.POST_BUILD && closedBefore) {
             closedBefore = false;
-            Activator.getDefault().stopSelectionServiceListener();
+            // Activator.getDefault().stopSelectionServiceListener();
         }
 
         // //////////////
         // POST_CHANGE //
         // //////////////
-        if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+        if (event.getType() == IResourceChangeEvent.POST_CHANGE) { // TODO probably not necessary anymore
             IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
             for (IResourceDelta projDelta : affectedProjects) {
                 if (projDelta.getResource().getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
-                    Activator.getDefault().startSelectionServiceListener();
+                    // Activator.getDefault().startSelectionServiceListener();
                 }
             }
         }
