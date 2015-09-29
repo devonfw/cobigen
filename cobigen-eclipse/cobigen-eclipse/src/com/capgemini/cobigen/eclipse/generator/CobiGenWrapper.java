@@ -12,7 +12,10 @@ import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
@@ -35,6 +38,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * States whether at least one input object has been set
      */
     private boolean initialized;
+
+    /**
+     * Assigning logger to CobiGenWrapper
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CobiGenWrapper.class);
 
     /**
      * States, whether the input is unique and a container
@@ -148,7 +156,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if an internal eclipse exception occurs
      * @author mbrunnli (14.02.2013)
      */
-    @SuppressWarnings("unused")
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
         MergeException, CoreException {
 
@@ -391,6 +398,23 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             return children.get(0);
         } else {
             return inputs.get(0);
+        }
+    }
+
+    /**
+     * delegate of {@link CobiGen#getMatchingTriggerIds(Object)}
+     * @param loadClass
+     *            the object to be loaded
+     * @return the list of matching trigger id's
+     * @author sholzer (Sep 23, 2015)
+     */
+    public List<String> getMatchingTriggerIds(Object loadClass) {
+        if (initialized) {
+            return cobiGen.getMatchingTriggerIds(loadClass);
+        } else {
+            LOG.debug("Generator is not initialized. Could not get matching triggers for "
+                + loadClass.toString());
+            return null;
         }
     }
 
