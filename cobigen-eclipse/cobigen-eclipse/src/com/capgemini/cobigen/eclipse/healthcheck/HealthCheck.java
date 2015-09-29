@@ -152,10 +152,10 @@ public class HealthCheck {
      * Performs the upgrade of the context configuration.
      * @param configurationFolder
      *            {@link Path} of the configuration folder to be upgraded.
-     * @author mbrunnli (Jun 24, 2015)
+     * @author mbrunnli (Jun 24, 2015), updated by sholzer (29.09.2015) for issue #156
      */
     private void upgradeContextConfiguration(Path configurationFolder) {
-        Activator.getDefault().stopSelectionServiceListener();
+        // Activator.getDefault().stopSelectionServiceListener();
         Activator.getDefault().stopConfigurationListener();
         ContextConfigurationUpgrader contextConfigurationUpgrader = new ContextConfigurationUpgrader();
         try {
@@ -179,7 +179,7 @@ public class HealthCheck {
 
         ResourcesPluginUtil.refreshConfigurationProject();
 
-        Activator.getDefault().startSelectionServiceListener();
+        // Activator.getDefault().startSelectionServiceListener();
         Activator.getDefault().startConfigurationProjectListener();
     }
 
