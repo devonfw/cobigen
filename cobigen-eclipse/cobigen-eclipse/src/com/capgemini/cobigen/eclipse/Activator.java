@@ -6,11 +6,9 @@ import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.services.ISourceProviderService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,7 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectRCL;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.eclipse.workbenchcontrol.SourceProvider;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
@@ -52,7 +50,7 @@ public class Activator extends AbstractUIPlugin {
     /**
      * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
      */
-    private SelectionServiceListener selectionServiceListener;
+    // private SelectionServiceListener selectionServiceListener; // sholzer (22.09.2015)
 
     /** Sync Object for (un-)registering the {@link SelectionServiceListener} */
     private Object selectionServiceListenerSync = new Object();
@@ -76,7 +74,7 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (14.02.2013)
+     * @author mbrunnli (14.02.2013), updated by sholzer (22.09.2015)
      */
     @Override
     public void start(BundleContext context) throws Exception {
@@ -87,7 +85,8 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        startSelectionServiceListener();
+        // startSelectionServiceListener(); // sholzer 22.09.15 SelectionServiceListener not needed
+        activateMenuEntry();
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
@@ -138,72 +137,96 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Starts the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     * @author mbrunnli (08.04.2013), adapted by sbasnet(30.10.2014)
+     * @author mbrunnli (08.04.2013), adapted by sbasnet(30.10.2014), commented out by sholzer (29.09.2015)
+     *         for issue #156
      */
-    public void startSelectionServiceListener() {
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (selectionServiceListenerSync) {
-                    if (selectionServiceListener != null) {
-                        return;
-                    }
-                    LOG.info("Start SelectionServiceListener.");
-                    try {
-                        selectionServiceListener = new SelectionServiceListener(true);
-                        PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
-                            selectionServiceListener);
-                        PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
-                            selectionServiceListener);
-                        LOG.info("SelectionServiceListener started.");
-                    } catch (InvalidConfigurationException e) {
-                        if (initialized) {
-                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
-                                    + "The generator might not behave as intended:\n" + e.getMessage());
-                        }
-                        stopSelectionServiceListener();
-                    } catch (Throwable e) {
-                        if (initialized) {
-                            PlatformUIUtil
-                                .openErrorDialog(
-                                    "CobiGen does not work properly!",
-                                    "An error occurred while registering all necessary resource change listeners.",
-                                    e);
-                            LOG.error("Error during initialization:", e);
-                        }
-                        stopSelectionServiceListener();
-                    } finally {
-                        initialized = true;
-                    }
-                }
-            }
-        });
-    }
+    // public void startSelectionServiceListener() {
+    // Display.getDefault().asyncExec(new Runnable() {
+    // @Override
+    // public void run() {
+    // synchronized (selectionServiceListenerSync) {
+    // if (selectionServiceListener != null) {
+    // return;
+    // }
+    // LOG.info("Start SelectionServiceListener.");
+    // try {
+    // selectionServiceListener = new SelectionServiceListener(true);
+    // PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
+    // selectionServiceListener);
+    // PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
+    // selectionServiceListener);
+    // LOG.info("SelectionServiceListener started.");
+    // } catch (InvalidConfigurationException e) {
+    // if (initialized) {
+    // MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+    // "The context.xml of the generator configuration was changed into an invalid state.\n"
+    // + "The generator might not behave as intended:\n" + e.getMessage());
+    // }
+    // stopSelectionServiceListener();
+    // } catch (Throwable e) {
+    // if (initialized) {
+    // PlatformUIUtil
+    // .openErrorDialog(
+    // "CobiGen does not work properly!",
+    // "An error occurred while registering all necessary resource change listeners.",
+    // e);
+    // LOG.error("Error during initialization:", e);
+    // }
+    // stopSelectionServiceListener();
+    // } finally {
+    // initialized = true;
+    // }
+    // }
+    // }
+    // });
+    // }
 
     /**
      * Stops the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
      *
-     * @author mbrunnli (08.04.2013)
+     * @author mbrunnli (08.04.2013), commented out by sholzer (29.09.2015) for issue #156
      */
-    public void stopSelectionServiceListener() {
-        Display.getDefault().syncExec(new Runnable() {
+    // public void stopSelectionServiceListener() {
+    // Display.getDefault().syncExec(new Runnable() {
+    // @Override
+    // public void run() {
+    // synchronized (selectionServiceListenerSync) {
+    // if (selectionServiceListener == null) {
+    // return;
+    // }
+    // PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(JavaUI.ID_PACKAGES,
+    // selectionServiceListener);
+    // PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
+    // selectionServiceListener);
+    // selectionServiceListener.stopConfigurationChangeListener();
+    // selectionServiceListener = null;
+    // LOG.info("SelectionServiceListener stopped.");
+    // }
+    // }
+    // });
+    // }
+
+    /**
+     * Sets the CobiGen-Generate menu entry to 'on'
+     *
+     * @author sholzer (Sep 22, 2015)
+     */
+    public void activateMenuEntry() {
+        LOG.debug("sholzer's changes");
+        Display.getDefault().asyncExec(new Runnable() {
+
             @Override
             public void run() {
-                synchronized (selectionServiceListenerSync) {
-                    if (selectionServiceListener == null) {
-                        return;
-                    }
-                    PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(JavaUI.ID_PACKAGES,
-                        selectionServiceListener);
-                    PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
-                        selectionServiceListener);
-                    selectionServiceListener.stopConfigurationChangeListener();
-                    selectionServiceListener = null;
-                    LOG.info("SelectionServiceListener stopped.");
-                }
+                ISourceProviderService isps =
+                    (ISourceProviderService) PlatformUIUtil.getActiveWorkbenchWindow().getService(
+                        ISourceProviderService.class);
+                SourceProvider sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
+                sp.setVariable(SourceProvider.VALID_INPUT, true);
+                LOG.debug("Generate should now be active");
             }
+
         });
+
     }
 
     /**
