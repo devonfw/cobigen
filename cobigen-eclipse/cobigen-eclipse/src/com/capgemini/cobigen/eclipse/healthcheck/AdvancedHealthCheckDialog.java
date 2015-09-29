@@ -157,15 +157,15 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * Upgrades the templates configuration within the folder with the given {@link Path}
      * @param templatesConfigurationFolder
      *            folder {@link Path} of the templates folder
-     * @author mbrunnli (Jun 24, 2015)
+     * @author mbrunnli (Jun 24, 2015), updated by sholzer (29.09.2015) for issue #156
      */
     private void upgradeTemplatesConfiguration(Path templatesConfigurationFolder) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
         LOG.info("Upgrade of the templates configuration in '" + templatesConfigurationFolder
             + "' triggered.");
 
-        Activator.getDefault().stopSelectionServiceListener();
-        Activator.getDefault().stopConfigurationListener();
+        // Activator.getDefault().stopSelectionServiceListener();
+        // Activator.getDefault().stopConfigurationListener();
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
         boolean successful = true;
@@ -204,7 +204,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
         ResourcesPluginUtil.refreshConfigurationProject();
 
-        Activator.getDefault().startSelectionServiceListener();
+        // Activator.getDefault().startSelectionServiceListener();
         Activator.getDefault().startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
