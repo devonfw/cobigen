@@ -212,7 +212,7 @@ public class Activator extends AbstractUIPlugin {
      * @author sholzer (Sep 22, 2015)
      */
     public void activateMenuEntry() {
-        LOG.debug("sholzer's changes");
+        LOG.debug("'Generate' always on");
         Display.getDefault().asyncExec(new Runnable() {
 
             @Override
