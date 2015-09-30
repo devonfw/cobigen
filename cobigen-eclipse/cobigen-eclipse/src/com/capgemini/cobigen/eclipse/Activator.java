@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectRCL;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.SourceProvider;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
@@ -53,13 +52,13 @@ public class Activator extends AbstractUIPlugin {
     // private SelectionServiceListener selectionServiceListener; // sholzer (22.09.2015)
 
     /** Sync Object for (un-)registering the {@link SelectionServiceListener} */
-    private Object selectionServiceListenerSync = new Object();
+    // private Object selectionServiceListenerSync = new Object();
 
     /**
      * Checks whether the workbench has been initialized (workaround for better user notification about
      * context.xml compile errors)
      */
-    private volatile boolean initialized = false;
+    // private volatile boolean initialized = false;
 
     /**
      * Assigning logger to Activator
