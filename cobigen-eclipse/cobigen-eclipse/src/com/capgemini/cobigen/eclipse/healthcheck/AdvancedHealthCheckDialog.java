@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
-import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
@@ -205,7 +204,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
         ResourcesPluginUtil.refreshConfigurationProject();
 
         // Activator.getDefault().startSelectionServiceListener();
-        Activator.getDefault().startConfigurationProjectListener();
+        // Activator.getDefault().startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 }

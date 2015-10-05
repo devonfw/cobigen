@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Display;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
-import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -156,7 +155,7 @@ public class HealthCheck {
      */
     private void upgradeContextConfiguration(Path configurationFolder) {
         // Activator.getDefault().stopSelectionServiceListener();
-        Activator.getDefault().stopConfigurationListener();
+        // Activator.getDefault().stopConfigurationListener();
         ContextConfigurationUpgrader contextConfigurationUpgrader = new ContextConfigurationUpgrader();
         try {
             try {
@@ -180,7 +179,7 @@ public class HealthCheck {
         ResourcesPluginUtil.refreshConfigurationProject();
 
         // Activator.getDefault().startSelectionServiceListener();
-        Activator.getDefault().startConfigurationProjectListener();
+        // Activator.getDefault().startConfigurationProjectListener();
     }
 
     /**

@@ -3,9 +3,6 @@ package com.capgemini.cobigen.eclipse;
 import java.util.UUID;
 
 import org.apache.log4j.MDC;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.services.ISourceProviderService;
@@ -15,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectRCL;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.SourceProvider;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
@@ -39,12 +35,12 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectRCL();
+    // private IResourceChangeListener configurationProjectListener = new ConfigurationProjectRCL();
 
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
      */
-    private volatile boolean configurationProjectListenerStarted = false;
+    // private volatile boolean configurationProjectListenerStarted = false;
 
     /**
      * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
@@ -86,53 +82,53 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
         // startSelectionServiceListener(); // sholzer 22.09.15 SelectionServiceListener not needed
         activateMenuEntry();
-        startConfigurationProjectListener();
+        // startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
-    /**
-     * Starts the ResourceChangeListener
-     * @author mbrunnli (08.04.2013)
-     */
-    public void startConfigurationProjectListener() {
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (configurationProjectListener) {
-                    if (configurationProjectListenerStarted) {
-                        return;
-                    }
-                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
-                        configurationProjectListener,
-                        IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
-                            | IResourceChangeEvent.POST_CHANGE);
-                    configurationProjectListenerStarted = true;
-                    LOG.info("ResourceChangeListener for configuration project started.");
-                }
-            }
-        });
-    }
+    // /**
+    // * Starts the ResourceChangeListener
+    // * @author mbrunnli (08.04.2013)
+    // */
+    // public void startConfigurationProjectListener() {
+    // Display.getDefault().asyncExec(new Runnable() {
+    // @Override
+    // public void run() {
+    // synchronized (configurationProjectListener) {
+    // if (configurationProjectListenerStarted) {
+    // return;
+    // }
+    // ResourcesPlugin.getWorkspace().addResourceChangeListener(
+    // configurationProjectListener,
+    // IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
+    // | IResourceChangeEvent.POST_CHANGE);
+    // configurationProjectListenerStarted = true;
+    // LOG.info("ResourceChangeListener for configuration project started.");
+    // }
+    // }
+    // });
+    // }
 
-    /**
-     *
-     *
-     * @author mbrunnli (Jun 24, 2015)
-     */
-    public void stopConfigurationListener() {
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (configurationProjectListener) {
-                    if (!configurationProjectListenerStarted) {
-                        return;
-                    }
-                    ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
-                    configurationProjectListenerStarted = false;
-                    LOG.info("ResourceChangeListener for configuration project stopped.");
-                }
-            }
-        });
-    }
+    // /**
+    // *
+    // *
+    // * @author mbrunnli (Jun 24, 2015)
+    // */
+    // public void stopConfigurationListener() {
+    // Display.getDefault().syncExec(new Runnable() {
+    // @Override
+    // public void run() {
+    // synchronized (configurationProjectListener) {
+    // if (!configurationProjectListenerStarted) {
+    // return;
+    // }
+    // ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
+    // configurationProjectListenerStarted = false;
+    // LOG.info("ResourceChangeListener for configuration project stopped.");
+    // }
+    // }
+    // });
+    // }
 
     /**
      * Starts the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
@@ -211,7 +207,6 @@ public class Activator extends AbstractUIPlugin {
      * @author sholzer (Sep 22, 2015)
      */
     public void activateMenuEntry() {
-        LOG.debug("'Generate' always on");
         Display.getDefault().asyncExec(new Runnable() {
 
             @Override
@@ -221,7 +216,7 @@ public class Activator extends AbstractUIPlugin {
                         ISourceProviderService.class);
                 SourceProvider sp = (SourceProvider) isps.getSourceProvider(SourceProvider.VALID_INPUT);
                 sp.setVariable(SourceProvider.VALID_INPUT, true);
-                LOG.debug("Generate should now be active");
+                LOG.debug("'Generate' always on");
             }
 
         });
