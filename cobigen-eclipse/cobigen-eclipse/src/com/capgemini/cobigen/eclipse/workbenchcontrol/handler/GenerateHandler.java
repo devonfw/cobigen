@@ -218,9 +218,10 @@ public class GenerateHandler extends AbstractHandler {
             if (firstTriggers == null || firstTriggers.isEmpty()) {
                 throw new InvalidInputException("Could not find matching triggers for the current selection");
             }
+        } else {
+            throw new InvalidInputException(
+                "The current selection is not an instance of IStructuredSelection");
         }
-
-        throw new InvalidInputException("The current selection is not an instance of IStructuredSelection");
     }
 
     /**
