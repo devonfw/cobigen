@@ -8,6 +8,11 @@ import java.io.Serializable;
  */
 public class ${pojo.name} implements Serializable {
 
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
 <#list pojo.fields as attr>
 	<#if attr.javaDoc[0]??>
     ${attr.javaDoc}

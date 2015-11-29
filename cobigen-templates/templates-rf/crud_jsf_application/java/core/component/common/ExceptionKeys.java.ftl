@@ -3,7 +3,7 @@ package ${variables.rootPackage}.core.${variables.component}.common;
 /**
  * @generated
  */
-public class ExceptionKeys extends ${variables.rootPackage}.common.constants.ExceptionKeys {
+public class ExceptionKeys {
 
     /**
      * No such ${pojo.name} exception
