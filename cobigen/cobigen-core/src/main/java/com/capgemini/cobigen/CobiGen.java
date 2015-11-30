@@ -425,10 +425,9 @@ public class CobiGen {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos
-                .add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                    templates, convertIncrements(increment.getDependentIncrements(), trigger,
-                        triggerInterpreter)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(),
+                trigger.getId(), templates, convertIncrements(increment.getDependentIncrements(), trigger,
+                    triggerInterpreter)));
         }
         return incrementTos;
     }
