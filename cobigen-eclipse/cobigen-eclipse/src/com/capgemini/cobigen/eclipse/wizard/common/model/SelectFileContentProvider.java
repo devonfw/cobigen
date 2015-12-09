@@ -144,8 +144,28 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
                     ((IContainer) parentElement).getName(), e);
             }
-        } else if (parentElement instanceof IParent && parentElement instanceof IJavaElement) {
+        } else if (parentElement instanceof IPackageFragmentRoot
+            && ((IPackageFragmentRoot) parentElement).getPath().lastSegment().equals("resources")) {
 
+            // check cache
+            String key = ((IPackageFragmentRoot) parentElement).getPath().toString();
+            if (_cachedChildren.containsKey(key)) {
+                return _cachedChildren.get(key);
+            }
+
+            try {
+                Set<Object> affectedChildren = new HashSet<>();
+                affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
+                _cachedChildren.put(((IPackageFragmentRoot) parentElement).getPath().toString(),
+                    affectedChildren.toArray());
+                return affectedChildren.toArray();
+            } catch (CoreException e) {
+                LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
+                    ((IPackageFragmentRoot) parentElement).getElementName(), e);
+            }
+
+        } else if (parentElement instanceof IParent && parentElement instanceof IJavaElement) {
+            LOG.debug(parentElement.toString() + " entered else if");
             // check cache
             String key = ((IJavaElement) parentElement).getPath().toString();
             if (_cachedChildren.containsKey(key)) {
