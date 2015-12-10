@@ -165,7 +165,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
 
         } else if (parentElement instanceof IParent && parentElement instanceof IJavaElement) {
-            LOG.debug(parentElement.toString() + " entered else if");
             // check cache
             String key = ((IJavaElement) parentElement).getPath().toString();
             if (_cachedChildren.containsKey(key)) {
