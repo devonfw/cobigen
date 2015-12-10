@@ -146,15 +146,26 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
         } else if (parentElement instanceof IPackageFragmentRoot
             && ((IPackageFragmentRoot) parentElement).getPath().lastSegment().equals("resources")) {
-
+            // TODO case from issue #163 by sholzer
+            IPackageFragmentRoot parentPackageFragmentRoot = (IPackageFragmentRoot) parentElement;
             // check cache
-            String key = ((IPackageFragmentRoot) parentElement).getPath().toString();
+            String key = (parentPackageFragmentRoot).getPath().toString();
             if (_cachedChildren.containsKey(key)) {
                 return _cachedChildren.get(key);
             }
 
             try {
                 Set<Object> affectedChildren = new HashSet<>();
+
+                try {
+                    IContainer parentContainer =
+                        (IContainer) parentPackageFragmentRoot.getCorrespondingResource();
+
+                    affectedChildren.addAll(Arrays.asList(parentContainer.members()));
+                } catch (Exception e) {
+                    LOG.debug(parentPackageFragmentRoot.getElementName() + " is not an IContainer");
+                }
+
                 affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
                 _cachedChildren.put(((IPackageFragmentRoot) parentElement).getPath().toString(),
                     affectedChildren.toArray());
