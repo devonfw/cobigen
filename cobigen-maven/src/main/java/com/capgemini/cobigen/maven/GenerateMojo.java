@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.maven.artifact.Artifact;
@@ -43,6 +44,7 @@ import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import freemarker.template.TemplateException;
 
@@ -50,8 +52,8 @@ import freemarker.template.TemplateException;
  * CobiGen generation Mojo, which handles generation using a configuration folder/archive
  * @author mbrunnli (08.02.2015)
  */
-@Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.RUNTIME, requiresProject = true,
-    defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyCollection = ResolutionScope.RUNTIME)
+@Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.TEST, requiresProject = true,
+    defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyCollection = ResolutionScope.TEST)
 public class GenerateMojo extends AbstractMojo {
 
     static {
@@ -333,13 +335,16 @@ public class GenerateMojo extends AbstractMojo {
      * @author mbrunnli (11.02.2015)
      */
     private ClassLoader getProjectClassLoader() throws MojoFailureException {
-        List<String> classpathElements = null;
+        Set<String> classpathElements = Sets.newHashSet();
         try {
-            classpathElements = project.getCompileClasspathElements();
+            classpathElements.addAll(project.getCompileClasspathElements());
+            classpathElements.addAll(project.getTestClasspathElements());
             List<URL> projectClasspathList = new ArrayList<>();
             for (String element : classpathElements) {
                 try {
-                    projectClasspathList.add(new File(element).toURI().toURL());
+                    URL url = new File(element).toURI().toURL();
+                    getLog().debug("Add Classpath-URL: " + url);
+                    projectClasspathList.add(url);
                 } catch (MalformedURLException e) {
                     getLog().error(element + " is an invalid classpath element", e);
                     throw new MojoFailureException(element + " is an invalid classpath element");
