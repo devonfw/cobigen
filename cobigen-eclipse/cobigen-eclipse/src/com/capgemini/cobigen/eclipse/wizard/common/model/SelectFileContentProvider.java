@@ -144,36 +144,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
                     ((IContainer) parentElement).getName(), e);
             }
-        } else if (parentElement instanceof IPackageFragmentRoot
-            && ((IPackageFragmentRoot) parentElement).getPath().lastSegment().equals("resources")) {
-            // TODO case from issue #163 by sholzer
-            IPackageFragmentRoot parentPackageFragmentRoot = (IPackageFragmentRoot) parentElement;
-            // check cache
-            String key = (parentPackageFragmentRoot).getPath().toString();
-            if (_cachedChildren.containsKey(key)) {
-                return _cachedChildren.get(key);
-            }
-
-            try {
-                Set<Object> affectedChildren = new HashSet<>();
-
-                try {
-                    IContainer parentContainer =
-                        (IContainer) parentPackageFragmentRoot.getCorrespondingResource();
-
-                    affectedChildren.addAll(Arrays.asList(parentContainer.members()));
-                } catch (Exception e) {
-                    LOG.debug(parentPackageFragmentRoot.getElementName() + " is not an IContainer");
-                }
-
-                affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
-                _cachedChildren.put(((IPackageFragmentRoot) parentElement).getPath().toString(),
-                    affectedChildren.toArray());
-                return affectedChildren.toArray();
-            } catch (CoreException e) {
-                LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
-                    ((IPackageFragmentRoot) parentElement).getElementName(), e);
-            }
 
         } else if (parentElement instanceof IParent && parentElement instanceof IJavaElement) {
             // check cache
