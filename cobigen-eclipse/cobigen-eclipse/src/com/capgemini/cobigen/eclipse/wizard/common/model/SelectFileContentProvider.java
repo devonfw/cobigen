@@ -131,9 +131,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
             try {
                 Set<Object> affectedChildren =
-                    new HashSet<>(
-                        Arrays
-                            .asList(getAffectedChildren(getNoneDuplicateResourceChildren((IContainer) parentElement))));
+                    new HashSet<>(Arrays.asList(getAffectedChildren(getNoneDuplicateResourceChildren(
+                        (IContainer) parentElement, null))));
 
                 // Add all non existent but targeting resources using Mocks
                 affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
@@ -183,7 +182,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     }
                 }
                 if (!(parentElement instanceof ICompilationUnit)) {
-                    children.addAll(getNonPackageChildren((IParent) parentElement));
+                    List<Object> stubbedChildren = stubNonExistentChildren(parentElement, false);
+                    children.addAll(getNonPackageChildren((IParent) parentElement, stubbedChildren));
                 }
 
                 Object[] affectedChildren = getAffectedChildren(children);
@@ -582,7 +582,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *             if an internal eclipse exception occurs
      * @author mbrunnli (14.02.2013)
      */
-    private Set<Object> getNonPackageChildren(IParent parent) throws CoreException {
+    private Set<Object> getNonPackageChildren(IParent parent, List<Object> stubbedResources)
+        throws CoreException {
 
         Set<Object> children = new HashSet<>();
         for (IJavaElement c : parent.getChildren()) {
@@ -593,7 +594,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         if (parent instanceof IJavaElement) {
             IResource r = ((IJavaElement) parent).getResource();
             if (r != null && r instanceof IContainer) {
-                children.addAll(getNoneDuplicateResourceChildren((IContainer) r));
+                children.addAll(getNoneDuplicateResourceChildren((IContainer) r, stubbedResources));
             }
         }
         return children;
@@ -610,7 +611,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *             if an internal eclipse exception occurs
      * @author mbrunnli (04.03.2013)
      */
-    private List<Object> getNoneDuplicateResourceChildren(IContainer parent) throws CoreException {
+    private List<Object> getNoneDuplicateResourceChildren(IContainer parent, List<Object> stubbedResources)
+        throws CoreException {
 
         List<Object> children = new ArrayList<>();
         IResource[] resources = parent.members();
@@ -622,6 +624,16 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 && (!isPartOfAnySourceFolder(child.getFullPath().toString()) || isPartOfAnyNonSourceFolderPath(child
                     .getFullPath().toString()))) {
                 children.add(child);
+            }
+        }
+
+        if (stubbedResources != null) {
+            for (Object stubbedResource : stubbedResources) {
+                if (stubbedResource instanceof IResource
+                    && ((IResource) stubbedResource).getFullPath().toString()
+                        .startsWith(parent.getFullPath().toString())) {
+                    children.add(stubbedResource);
+                }
             }
         }
         return children;
