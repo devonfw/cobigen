@@ -2,13 +2,13 @@ package com.capgemini.cobigen.eclipse;
 
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
@@ -73,7 +73,7 @@ public class Activator extends AbstractUIPlugin {
      */
     @Override
     public void start(BundleContext context) throws Exception {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         super.start(context);
         plugin = this;
         PluginRegistry.loadPlugin(JavaPluginActivator.class);

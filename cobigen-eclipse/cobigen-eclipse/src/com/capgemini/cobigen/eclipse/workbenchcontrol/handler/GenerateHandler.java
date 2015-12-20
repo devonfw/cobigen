@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -28,6 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -69,7 +69,7 @@ public class GenerateHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         LOG.debug("on click Event? " + event.getClass().getName());
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);

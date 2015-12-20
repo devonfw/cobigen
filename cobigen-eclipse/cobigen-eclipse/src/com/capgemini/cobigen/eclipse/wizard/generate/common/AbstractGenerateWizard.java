@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
@@ -16,6 +15,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
@@ -89,7 +89,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     @Override
     public boolean performFinish() {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 
