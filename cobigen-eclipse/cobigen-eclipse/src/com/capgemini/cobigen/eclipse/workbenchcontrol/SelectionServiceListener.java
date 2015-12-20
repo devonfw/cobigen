@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -29,6 +28,7 @@ import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -133,7 +133,7 @@ public class SelectionServiceListener implements ISelectionListener {
      */
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         if (part instanceof PackageExplorerPart || part instanceof ProjectExplorer
             && selection instanceof IStructuredSelection) {
