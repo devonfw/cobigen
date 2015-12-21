@@ -12,6 +12,10 @@
     <templateExtension ref="${variables.entityName}Dao.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}DaoImpl.java" mergeStrategy="javamerge"/>
 
+    <templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>
+
     <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
   </templates>
 
@@ -33,7 +37,7 @@
       <templateRef ref="${variables.entityName}Cto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
-    <increment name="logic_impl" description="CRUD logic layer">
+    <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
@@ -46,7 +50,7 @@
       <templateRef ref="${variables.entityName}.java"/>
     </increment>
     <increment name="service_impl" description="CRUD REST services">
-    	<templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
+      <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
     </increment>
   </increments>
 </templatesConfiguration>

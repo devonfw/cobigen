@@ -2,20 +2,18 @@
 package ${variables.rootPackage}.${variables.component}.dataaccess.api;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
-import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
 
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 /**
  * Data access object for ${variables.entityName} entities
  */
-@Entity
-@javax.dataaccess.Table(name = "${variables.entityName}")
-public class ${pojo.name} extends ApplicationPersistenceEntity implements ${variables.entityName} {
+@Embeddable
+public class ${pojo.name} implements ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
-
+  
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references -->
   /**
@@ -36,7 +34,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
    * {@inheritDoc}
    */
   @Override
-  public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+  public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) { 
 
     if (${idVar} == null) {
       this.${field.name} = null;

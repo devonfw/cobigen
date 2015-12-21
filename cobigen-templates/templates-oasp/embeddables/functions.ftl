@@ -35,16 +35,10 @@
 <#-- 
 	Generates all field declaration whereas Entity references will be converted to appropriate id references 
 -->
-<#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion isSearchCriteria=false>
+<#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${resolveIdVariableName(field)};
-<#elseif field.type?contains("Embeddable")>
-	<#if isSearchCriteria>
-		private ${field.type?replace("Embeddable","SearchCriteriaTo")} ${field.name};
-	<#else>
-		private ${field.type?replace("Embeddable","Eto")} ${field.name};
-	</#if>
 <#else>
 	private ${field.type} ${field.name};
 </#if>
@@ -54,7 +48,7 @@
 <#-- 
 	Generates all setter and getter for the fields whereas for Entity fields it will generate setter and getter for id references 
 -->
-<#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true, isInterface=false, isSearchCriteria=false>
+<#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
@@ -63,51 +57,33 @@
    * {@inheritDoc}
    */
 	@Override</#if>
-	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} <#if isInterface>;<#else>{
+	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
 		return ${idVar};
-	}</#if>
+	}
 	
 	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
+	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
-	}</#if>
-<#elseif field.type?contains("Embeddable")>
-	<#if isSearchCriteria>
-		public ${field.type?replace("Embeddable","SearchCriteriaTo")} get${field.name?cap_first}() <#if isInterface>;<#else>{
-			return ${field.name};
-		}</#if>
-		
-		public void set${field.name?cap_first}(${field.type?replace("Embeddable","SearchCriteriaTo")} ${field.name}) <#if isInterface>;<#else>{
-			this.${field.name} = ${field.name};
-		}</#if>
-	<#else>
-		public ${field.type?replace("Embeddable","")} get${field.name?cap_first}() <#if isInterface>;<#else>{
-			return ${field.name};
-		}</#if>
-		
-		public void set${field.name?cap_first}(${field.type?replace("Embeddable","")} ${field.name}) <#if isInterface>;<#else>{
-			this.${field.name} = ${field.name};
-		}</#if>
-	</#if>
+	}
 <#else>
    	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public ${field.type} get${field.name?cap_first}() <#if isInterface>;<#else>{
+	public ${field.type} get${field.name?cap_first}() {
 		return ${field.name};
-	}</#if>
+	}
 	
 	<#if implementsInterface>/**
    * {@inheritDoc}
    */
 	@Override</#if>
-	public void set${field.name?cap_first}(${field.type} ${field.name}) <#if isInterface>;<#else>{
+	public void set${field.name?cap_first}(${field.type} ${field.name}) {
 		this.${field.name} = ${field.name};
-	}</#if>
+	}
 </#if>
 </#list>
 </#macro>
