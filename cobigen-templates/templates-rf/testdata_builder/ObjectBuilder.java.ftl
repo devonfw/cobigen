@@ -1,6 +1,6 @@
 <#include '/makros.ftl'>
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.common.builders.${variables.subPackage};
+package ${variables.rootPackage}.common.builders<#if variables.subPackage='null'>.</#if>${variables.subPackage};
 
 import java.util.LinkedList;
 import java.util.List;
