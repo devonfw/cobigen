@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.xmllawmerger.ConflictHandlingType;
 import com.capgemini.xmllawmerger.XmlLawMerger;
 
 /**
@@ -16,7 +15,7 @@ public class XmlLawMergerDelegate implements IMerger {
     /**
      *
      */
-    private ConflictHandlingType conflictHandlingType = ConflictHandlingType.PATCHOVERWRITE;
+    private MergeType mergeType = MergeType.PATCHOVERWRITE;
 
     /**
      *
@@ -27,12 +26,12 @@ public class XmlLawMergerDelegate implements IMerger {
      *
      * @param mergeSchemaLocation
      *            path to the folder containing the merge schemas to be used
-     * @param conflictHandlingType
+     * @param mergeType
      *            the way how conflicts will be handled
      * @author sholzer (Aug 27, 2015)
      */
-    public XmlLawMergerDelegate(String mergeSchemaLocation, ConflictHandlingType conflictHandlingType) {
-        this.conflictHandlingType = conflictHandlingType;
+    public XmlLawMergerDelegate(String mergeSchemaLocation, MergeType mergeType) {
+        this.mergeType = mergeType;
         merger = new XmlLawMerger(mergeSchemaLocation);
     }
 
@@ -40,12 +39,12 @@ public class XmlLawMergerDelegate implements IMerger {
      *
      * @param mergeSchemaLocation
      *            path to the folder containing the merge schemas to be used
-     * @param conflictHandlingType
+     * @param mergeType
      *            the way how conflicts will be handled
      * @author sholzer (Aug 27, 2015)
      */
-    public XmlLawMergerDelegate(Path mergeSchemaLocation, ConflictHandlingType conflictHandlingType) {
-        this.conflictHandlingType = conflictHandlingType;
+    public XmlLawMergerDelegate(Path mergeSchemaLocation, MergeType mergeType) {
+        this.mergeType = mergeType;
         merger = new XmlLawMerger(mergeSchemaLocation);
     }
 
@@ -55,7 +54,7 @@ public class XmlLawMergerDelegate implements IMerger {
      */
     @Override
     public String getType() {
-        return conflictHandlingType.name();
+        return mergeType.value;
     }
 
     /**
@@ -64,7 +63,7 @@ public class XmlLawMergerDelegate implements IMerger {
      */
     @Override
     public String merge(File base, String patch, String targetCharset) throws Exception {
-        return merger.mergeInString(base, patch, targetCharset, conflictHandlingType);
+        return merger.mergeInString(base, patch, targetCharset, mergeType.type);
     }
 
     /**

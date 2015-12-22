@@ -20,8 +20,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
-import com.capgemini.xmllawmerger.ConflictHandlingType;
 
 /**
  * Tests if the used XML patchPreferingMerger behaves as desired.
@@ -58,10 +58,9 @@ public class XmlPluginMergerIntergrationTest {
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
         patchPreferingMerger =
-            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.PATCHATTACHOROVERWRITE);
+            new XmlLawMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE);
         // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
-        basePreferingMerger =
-            new XmlLawMergerDelegate(mergeSchemaLocation, ConflictHandlingType.BASEATTACHOROVERWRITE);
+        basePreferingMerger = new XmlLawMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE);
         ((XmlLawMergerDelegate) basePreferingMerger).setValidation(false);
     }
 

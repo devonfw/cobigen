@@ -5,8 +5,8 @@ import java.util.List;
 import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
-import com.capgemini.xmllawmerger.ConflictHandlingType;
 import com.google.common.collect.Lists;
 
 /**
@@ -33,20 +33,18 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
          * merger.add(new XmlMerger("xmlmerge", new CompleteMergeAction())); merger.add(new
          * XmlMerger("xmlmerge_override", new OverrideMergeAction()));
          */
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, ConflictHandlingType.BASEOVERWRITE)); // Corresponds
-                                                                                                              // with
-                                                                                                              // the
-                                                                                                              // old
-                                                                                                              // CompleteMergeAction
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation,
-            ConflictHandlingType.BASEATTACHOROVERWRITE));
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, ConflictHandlingType.PATCHOVERWRITE)); // Corresponds
-                                                                                                               // with
-                                                                                                               // the
-                                                                                                               // old
-                                                                                                               // OverrideMergeAction
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation,
-            ConflictHandlingType.PATCHATTACHOROVERWRITE));
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE)); // Corresponds
+                                                                                                   // with
+                                                                                                   // the
+                                                                                                   // old
+                                                                                                   // CompleteMergeAction
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE)); // Corresponds
+                                                                                                    // with
+                                                                                                    // the
+                                                                                                    // old
+                                                                                                    // OverrideMergeAction
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE));
         return merger;
     }
 
