@@ -29,21 +29,9 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
 
-        /*
-         * merger.add(new XmlMerger("xmlmerge", new CompleteMergeAction())); merger.add(new
-         * XmlMerger("xmlmerge_override", new OverrideMergeAction()));
-         */
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE)); // Corresponds
-                                                                                                   // with
-                                                                                                   // the
-                                                                                                   // old
-                                                                                                   // CompleteMergeAction
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE));
         merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE)); // Corresponds
-                                                                                                    // with
-                                                                                                    // the
-                                                                                                    // old
-                                                                                                    // OverrideMergeAction
+        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE));
         merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE));
         return merger;
     }

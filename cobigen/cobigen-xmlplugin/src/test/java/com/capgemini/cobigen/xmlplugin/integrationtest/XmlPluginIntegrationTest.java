@@ -1,5 +1,9 @@
 package com.capgemini.cobigen.xmlplugin.integrationtest;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.util.List;
 
@@ -11,7 +15,7 @@ import junit.framework.AssertionFailedError;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -19,6 +23,7 @@ import org.w3c.dom.Document;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
@@ -49,8 +54,8 @@ public class XmlPluginIntegrationTest {
      * Common test setup
      * @author fkreis (19.11.2014)
      */
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
     }
 
@@ -63,38 +68,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_SingleAttribute() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_SingleAttribute")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_SingleAttribute.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("rootAttr1ContentrootAttr2ContentrootAttr3Content",
-                    FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt",
+            "rootAttr1ContentrootAttr2ContentrootAttr3Content");
     }
 
     /**
@@ -106,39 +81,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_AttributeList() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_AttributeList")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_AttributeList.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals(
-                    "rootAttr1rootAttr1ContentrootAttr2rootAttr2ContentrootAttr3rootAttr3Content",
-                    FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_AttributeList", "xmlTestOutput_AttributeList.txt",
+            "rootAttr1rootAttr1ContentrootAttr2rootAttr2ContentrootAttr3rootAttr3Content");
     }
 
     /**
@@ -150,38 +94,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_TextContent() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_TextContent")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_TextContent.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("rootTextContent1rootTextContent2",
-                    FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_TextContent", "xmlTestOutput_TextContent.txt",
+            "rootTextContent1rootTextContent2");
     }
 
     /**
@@ -193,38 +107,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_TextNodes() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_TextNodes")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_TextNodes.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("rootTextContent1 rootTextContent2 ",
-                    FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt",
+            "rootTextContent1 rootTextContent2 ");
     }
 
     /**
@@ -236,37 +120,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_SingleChild() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_SingleChild")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_SingleChild.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("child1", FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt",
+            "child1");
     }
 
     /**
@@ -278,38 +133,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_ChildList() throws Exception {
 
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
-
-        // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
-
-        // find matching templates and use testtemplate for generation
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
-        boolean templateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_ChildList")) {
-                cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_ChildList.txt");
-
-                // validate results
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("child1childdublicatechilddublicate",
-                    FileUtils.readFileToString(expectedFile));
-                templateFound = true;
-                break;
-            }
-        }
-
-        if (!templateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt",
+            "child1childdublicatechilddublicate");
     }
 
     /**
@@ -321,8 +146,124 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_VariablesConstant() throws Exception {
 
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", "testConstantValue");
+    }
+
+    /**
+     * Regression test that the error message of cobigen-core has not be changed, which indicates a merge
+     * strategy to not being found. This is necessary for the tests checking the already implemented merge
+     * strategies to exist.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Test
+    public void testMergeStrategyNotFoundErrorMessageRegression() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt",
+            null);
+        try {
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute",
+                "xmlTestOutput_SingleAttribute.txt", null);
+        } catch (MergeException e) {
+            assertThat(e.getMessage(), containsString("No merger for merge strategy"));
+        }
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_attachTexts to exist and being registered.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
+
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
+        try {
+            generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
+        } catch (MergeException e) {
+            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
+        }
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override_attachTexts to exist and being registered.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
+
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
+        try {
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt",
+                null);
+        } catch (MergeException e) {
+            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
+        }
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge to exist and being registered.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge() throws Exception {
+
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
+        try {
+            generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
+        } catch (MergeException e) {
+            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
+        }
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override to exist and being registered.
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
+
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", null);
+        try {
+            generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+                "xmlTestOutput_VariablesConstant.txt", null);
+        } catch (MergeException e) {
+            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
+        }
+    }
+
+    /**
+     * Generates the template with the given templateId and reads the generated File with the outputFileName.
+     * It will be asserted, that this file has the expectedFileContents passed as parameter.
+     * @param templateId
+     *            Template to generate
+     * @param outputFileName
+     *            file name of the generated output File
+     * @param expectedFileContents
+     *            generated contents to be expected (asserted)
+     * @throws Exception
+     *             if anything fails.
+     * @author mbrunnli (Jan 9, 2016)
+     */
+    private void generateTemplateAndTestOutput(String templateId, String outputFileName,
+        String expectedFileContents) throws Exception {
         CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+
+        // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
+        File tmpFolderCobiGen =
+            new File(tmpFolder.getRoot().getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "cobigen_output");
+        if (!tmpFolderCobiGen.exists()) {
+            tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+        }
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
@@ -331,19 +272,20 @@ public class XmlPluginIntegrationTest {
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document inputDocument = dBuilder.parse(testinput);
 
-        // find matching templates and use testtemplate for generation
+        // find matching templates and use test template for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
         boolean templateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("xmlTestTemplate_VariablesConstant")) {
+            if (template.getId().equals(templateId)) {
                 cobiGen.generate(inputDocument, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "xmlTestOutput_VariablesConstant.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
 
-                // validate results
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("testConstantValue", FileUtils.readFileToString(expectedFile));
+                // validate results if expected file contents are defined
+                if (expectedFileContents != null) {
+                    Assert.assertEquals(expectedFileContents, FileUtils.readFileToString(expectedFile));
+                }
                 templateFound = true;
                 break;
             }

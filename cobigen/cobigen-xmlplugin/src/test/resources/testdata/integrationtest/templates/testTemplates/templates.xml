@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="1.0">
 
   <templates>
-    <template id="xmlTestTemplate_SingleAttribute" destinationPath="xmlTestOutput_SingleAttribute.txt" templateFile="xmlTestTemplate_SingleAttribute.ftl" />
-    <template id="xmlTestTemplate_AttributeList" destinationPath="xmlTestOutput_AttributeList.txt" templateFile="xmlTestTemplate_AttributeList.ftl" />
-    <template id="xmlTestTemplate_TextContent" destinationPath="xmlTestOutput_TextContent.txt" templateFile="xmlTestTemplate_TextContent.ftl" />
-    <template id="xmlTestTemplate_TextNodes" destinationPath="xmlTestOutput_TextNodes.txt" templateFile="xmlTestTemplate_TextNodes.ftl" />
-     <template id="xmlTestTemplate_SingleChild" destinationPath="xmlTestOutput_SingleChild.txt" templateFile="xmlTestTemplate_SingleChild.ftl" />
-     <template id="xmlTestTemplate_ChildList" destinationPath="xmlTestOutput_ChildList.txt" templateFile="xmlTestTemplate_ChildList.ftl" />
-     <template id="xmlTestTemplate_VariablesConstant" destinationPath="xmlTestOutput_VariablesConstant.txt" templateFile="xmlTestTemplate_VariablesConstant.ftl" />
+    <template id="xmlTestTemplate_SingleAttribute" destinationPath="xmlTestOutput_SingleAttribute.txt"
+      templateFile="xmlTestTemplate_SingleAttribute.ftl" mergeStrategy="NONSENSE"/>
+    <template id="xmlTestTemplate_AttributeList" destinationPath="xmlTestOutput_AttributeList.txt"
+      templateFile="xmlTestTemplate_AttributeList.ftl"/>
+    <template id="xmlTestTemplate_TextContent" destinationPath="xmlTestOutput_TextContent.txt" templateFile="xmlTestTemplate_TextContent.ftl"/>
+    <template id="xmlTestTemplate_TextNodes" destinationPath="xmlTestOutput_TextNodes.txt" templateFile="xmlTestTemplate_TextNodes.ftl"
+      mergeStrategy="xmlmerge_attachTexts"/>
+    <template id="xmlTestTemplate_SingleChild" destinationPath="xmlTestOutput_SingleChild.txt" templateFile="xmlTestTemplate_SingleChild.ftl"
+      mergeStrategy="xmlmerge_override_attachTexts"/>
+    <template id="xmlTestTemplate_ChildList" destinationPath="xmlTestOutput_ChildList.txt" templateFile="xmlTestTemplate_ChildList.ftl"
+      mergeStrategy="xmlmerge"/>
+    <template id="xmlTestTemplate_VariablesConstant" destinationPath="xmlTestOutput_VariablesConstant.txt"
+      templateFile="xmlTestTemplate_VariablesConstant.ftl" mergeStrategy="xmlmerge_override"/>
   </templates>
 
 </templatesConfiguration>

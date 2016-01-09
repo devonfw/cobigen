@@ -26,7 +26,6 @@ public enum MergeType {
      * possible
      */
     PATCHATTACHOROVERWRITE("xmlmerge_override_attachTexts", ConflictHandlingType.PATCHATTACHOROVERWRITE);
-    ;
 
     /**
      * The ConflictHandlingType
