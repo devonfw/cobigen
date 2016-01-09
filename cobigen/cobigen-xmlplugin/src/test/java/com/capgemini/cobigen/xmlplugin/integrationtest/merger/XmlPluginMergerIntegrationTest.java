@@ -27,7 +27,7 @@ import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
  * Tests if the used XML patchPreferingMerger behaves as desired.
  * @author sholzer (Aug 27, 2015)
  */
-public class XmlPluginMergerIntergrationTest {
+public class XmlPluginMergerIntegrationTest {
 
     /**
      * The merger under test, prefers patch values over base values
@@ -169,7 +169,6 @@ public class XmlPluginMergerIntergrationTest {
      * @author sholzer (Aug 28, 2015)
      */
     @Test
-    // @Ignore("Merge process does not end")
     public void xhtmlTest() throws Exception {
         String basePath = resourcesRoot + "BaseFile_overview.xhtml";
         String patchPath = resourcesRoot + "PatchFile_overview.xhtml";
@@ -181,8 +180,7 @@ public class XmlPluginMergerIntergrationTest {
         Document mergeDoc = parseString(mergedString);
         // changed by sholzer on 10.09.2015. The element in
         // question is now the second in the list (to be
-        // honest I can't tell why but the document remains
-        // valid
+        // honest I can't tell why but the document remains valid
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("ui:composition").getLength());
         Assert.assertEquals(4, mergeDoc.getElementsByTagName("ui:define").getLength());
         Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(1))

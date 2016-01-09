@@ -20,48 +20,10 @@
       <version>1.2.0</version>
     </dependency>
 
-    <!-- XML Merge for structural merge -->
-
-    <!-- Adopt legacy logging -->
-
-    <!-- <dependency>
-      <groupId>ch.elca.el4j.modules</groupId>
-      <artifactId>module-jmx</artifactId>
-      <version>3.1</version>
-      <exclusions>
-      <exclusion>
-      <groupId>javax.inject</groupId>
-      <artifactId>inject</artifactId>
-      </exclusion>
-      </exclusions>
-      </dependency> -->
-
-    <!-- Explicit definition of dependency due to access restrictions of the original XML Merge library dependencies -->
-
-    <!-- Explicit JDom version as result of dependency conflicts -->
-
-    <!-- Temporarily local dependency for XmlLawMerger -->
     <dependency>
       <artifactId>xml-law-merger</artifactId>
       <groupId>com.capgemini</groupId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-
   </dependencies>
-
-  <repositories>
-    <!-- For XML Merge -->
-    <!-- Build with Maven2 or 3.1.x due to strange dependencies which should be authorized !!! -->
-    <repository>
-      <id>el4jReleaseRepositoryExternal</id>
-      <name>External release repository of the EL4J project</name>
-      <url>http://public-el4.elca-services.ch/el4j/maven2repository</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-  </repositories>
 </project>
