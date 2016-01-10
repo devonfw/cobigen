@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -81,6 +84,8 @@ public class ParsedJavaModelBuilder {
 
         List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
         pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
+        determinePojoIds(javaClass, accessibleAttributes);
+        collectAnnotations(javaClass, accessibleAttributes);
 
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -177,7 +182,9 @@ public class ParsedJavaModelBuilder {
         JavaAnnotatedElement annotatedElement) {
         Map<String, Object> fieldValues = new HashMap<>();
         fieldValues.put(ModelConstant.NAME, fieldName);
-        fieldValues.put(ModelConstant.TYPE, field.getGenericValue());
+        // currently there is a problem with qDox. It provides the canonical type for supertype fields when
+        // calling "field.getGenericValue()". Thats why we need the JavaParserUtil here.
+        fieldValues.put(ModelConstant.TYPE, JavaParserUtil.resolveToSimpleType(field.getGenericValue()));
         fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
 
         if (annotatedElement != null) {
@@ -268,6 +275,11 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
+            JavaField classField = javaClass.getFieldByName((String) attr.get(ModelConstant.NAME));
+
+            if (classField != null) {
+                extractAnnotationsRecursively(annotations, classField.getAnnotations());
+            }
 
             JavaMethod getter =
                 javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
@@ -283,10 +295,15 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
 
-            // TODO bugfixing: setter has to have some parameters
+            List<JavaType> paramList = null;
+            if (classField != null) {
+                JavaType attrType = classField.getType();
+                paramList = new ArrayList<>();
+                paramList.add(attrType);
+            }
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
-                    null, false);
+                    paramList, false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
@@ -334,10 +351,17 @@ public class ParsedJavaModelBuilder {
                     // annotationParameters.put(propertyName, Lists.newLinkedList(Arrays.asList(value)));
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
+                } else if (value instanceof Collection<?>) {
+                    annotationParameters.put(propertyName, value);
+                } else if (value instanceof Byte || value instanceof Short || value instanceof Integer
+                    || value instanceof Long || value instanceof Float || value instanceof Double
+                    || value instanceof Boolean || value instanceof Character) {
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
-                    // resolves it.
-                    annotationParameters.put(propertyName, value);
+                    // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we
+                    // always come into the else-part
+                    annotationParameters.put(propertyName, value != null ? value.toString() : null);
                 }
             }
         }
