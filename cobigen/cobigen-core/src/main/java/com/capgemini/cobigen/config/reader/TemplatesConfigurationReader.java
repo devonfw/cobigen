@@ -320,7 +320,9 @@ public class TemplatesConfigurationReader {
                             + templateNameWithoutExtension;
                     if (observedTemplateNames.contains(templateName)) {
                         throw new InvalidConfigurationException(
-                            "TemplateScan has detected two files with the same file name and thus with the same "
+                            "TemplateScan has detected two files with the same file name ("
+                                + next.toString()
+                                + ") and thus with the same "
                                 + "template name. Continuing would result in an indeterministic behavior.\n"
                                 + "For now, multiple files with the same name are not supported to be automatically "
                                 + "configured with templateScans.");
