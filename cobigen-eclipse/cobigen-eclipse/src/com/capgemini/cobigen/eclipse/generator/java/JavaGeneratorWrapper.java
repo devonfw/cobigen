@@ -158,8 +158,7 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
 
             if (uniqueSourceSelected && selection.size() > 1) {
                 throw new InvalidInputException(
-                    "You selected at least one input in a mass-selection,"
-                        + " which type is currently not supported for batch processing. "
+                    "You selected at least one input, which type is currently not supported for batch processing.\n "
                         + "Please just select multiple inputs only if batch processing is supported for all inputs.");
             }
         }
