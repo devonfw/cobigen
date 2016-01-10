@@ -420,7 +420,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported
-     * by the same {@link Trigger}s
+     * by the same {@link Trigger}s. Returns a boolean value, if all objects of the selection could be
+     * processed. If there are objects, which are not yet supported as inputs for generation, or the selection
+     * in composed of valid objects in an not yet supported way, an {@link InvalidInputException} will be
+     * thrown. Thus, getting a boolean value can be interpreted as
+     * "selection supported, but currently not matching trigger".
      *
      * @param selection
      *            the selection made

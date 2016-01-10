@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
@@ -124,10 +123,6 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             PlatformUIUtil.openErrorDialog("Plug-in Processing Exception",
                 "A plug-in caused an unhandled exception:\n", e);
             LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
-        } catch (NotYetSupportedException e) {
-            PlatformUIUtil.openErrorDialog("Not yet supported!",
-                "An unsupported operation has been triggered", e);
-            LOG.warn("An unsupported operation has been triggered:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
 import com.capgemini.cobigen.eclipse.generator.xml.XmlGeneratorWrapper;
@@ -41,10 +41,13 @@ public class GeneratorWrapperFactory {
      *             if any exception occurred during converting the inputs or creating the generator
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project does not exist
+     * @throws InvalidInputException
+     *             if the selection includes non supported input types or is composed in a non supported
+     *             combination of inputs.
      * @author mbrunnli (04.12.2014)
      */
     public static CobiGenWrapper createGenerator(IStructuredSelection selection)
-        throws GeneratorCreationException, GeneratorProjectNotExistentException {
+        throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
         if (extractedInputs.size() > 0) {
@@ -75,7 +78,7 @@ public class GeneratorWrapperFactory {
 
     /**
      * Extracts a list of valid eclipse inputs. Therefore this method will throw an
-     * {@link NotYetSupportedException},whenever<br>
+     * {@link InvalidInputException},whenever<br>
      * <ul>
      * <li>the selection contains different content types</li>
      * <li>the selection contains a content type, which is currently not supported</li>
@@ -84,9 +87,13 @@ public class GeneratorWrapperFactory {
      *            current {@link IStructuredSelection selection} of within the IDE
      * @return the {@link List} of selected objects, whereas all elements of the list are of the same content
      *         type
+     * @throws InvalidInputException
+     *             if the selection includes non supported input types or is composed in a non supported
+     *             combination of inputs.
      * @author mbrunnli (04.12.2014)
      */
-    public static List<Object> extractValidEclipseInputs(IStructuredSelection selection) {
+    public static List<Object> extractValidEclipseInputs(IStructuredSelection selection)
+        throws InvalidInputException {
         int type = 0;
         boolean initialized = false;
         List<Object> inputObjects = Lists.newLinkedList();
@@ -103,7 +110,7 @@ public class GeneratorWrapperFactory {
                     inputObjects.add(o);
                     initialized = true;
                 } else if (initialized) {
-                    throw new NotYetSupportedException(
+                    throw new InvalidInputException(
                         "Multiple different inputs have been selected of the following types: "
                             + ICompilationUnit.class + ", " + o.getClass());
                 }
@@ -117,7 +124,7 @@ public class GeneratorWrapperFactory {
                     inputObjects.add(o);
                     initialized = true;
                 } else if (initialized) {
-                    throw new NotYetSupportedException(
+                    throw new InvalidInputException(
                         "Multiple different inputs have been selected of the following types: "
                             + IPackageFragment.class + ", " + o.getClass());
                 }
@@ -131,7 +138,7 @@ public class GeneratorWrapperFactory {
                     inputObjects.add(o);
                     initialized = true;
                 } else if (initialized) {
-                    throw new NotYetSupportedException(
+                    throw new InvalidInputException(
                         "Multiple different inputs have been selected of the following types: " + IFile.class
                             + ", " + o.getClass());
                 }
@@ -141,8 +148,11 @@ public class GeneratorWrapperFactory {
                 }
                 //$FALL-THROUGH$
             default:
-                throw new NotYetSupportedException("An input of the type " + o.getClass().toString()
-                    + " has been forwarded an input for generation but it is not yet supported!");
+                throw new InvalidInputException(
+                    "Your selection contains an object of the type "
+                        + o.getClass().toString()
+                        + ", which is not yet supported to be treated as an input for generation.\n"
+                        + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
             }
         }
 
