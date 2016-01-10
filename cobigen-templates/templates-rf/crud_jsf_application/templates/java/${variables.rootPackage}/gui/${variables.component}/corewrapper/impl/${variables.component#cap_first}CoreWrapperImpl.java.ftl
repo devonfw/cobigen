@@ -13,7 +13,7 @@ import ${variables.rootPackage}.gui.${variables.component}.corewrapper.${variabl
 
 /**
  * Implementation of the ${variables.component} wrapper interface. This class communications this the application
- * core component '${variables.componen?cap_first}'.
+ * core component '${variables.component?cap_first}'.
  */
 @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 public class ${variables.component?cap_first}CoreWrapperImpl implements ${variables.component?cap_first}CoreWrapper {
@@ -60,7 +60,7 @@ public class ${variables.component?cap_first}CoreWrapperImpl implements ${variab
         LOG.debug("Get ${pojo.name?lower_case} with id(s) '" + <@insertIdParameterValuesAsStringList/> + "'.");
         return ${pojo.name?uncap_first}Management.get${pojo.name}(<@insertIdParameterValues/>);
     }
-	
+
 	    /**
      * Sets the field '${pojo.name?lower_case}Management'.
      * @param ${pojo.name?lower_case}sManagement
