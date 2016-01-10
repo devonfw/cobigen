@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,6 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
@@ -78,7 +78,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         getShell().setText(AdvancedHealthCheck.COMMON_DIALOG_TITLE);
         Composite contentParent = new Composite(parent, SWT.NONE);
@@ -157,14 +157,12 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * Upgrades the templates configuration within the folder with the given {@link Path}
      * @param templatesConfigurationFolder
      *            folder {@link Path} of the templates folder
-     * @author mbrunnli (Jun 24, 2015)
+     * @author mbrunnli (Jun 24, 2015), updated by sholzer (29.09.2015) for issue #156
      */
     private void upgradeTemplatesConfiguration(Path templatesConfigurationFolder) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
-        LOG.info("Upgrade of the templates configuration in '" + templatesConfigurationFolder
-            + "' triggered.");
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
 
-        Activator.getDefault().stopSelectionServiceListener();
         Activator.getDefault().stopConfigurationListener();
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
@@ -204,7 +202,6 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
         ResourcesPluginUtil.refreshConfigurationProject();
 
-        Activator.getDefault().startSelectionServiceListener();
         Activator.getDefault().startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }

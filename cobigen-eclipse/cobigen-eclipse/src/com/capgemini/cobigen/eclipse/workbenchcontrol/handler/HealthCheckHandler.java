@@ -2,11 +2,11 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
@@ -25,7 +25,7 @@ public class HealthCheckHandler extends AbstractHandler {
      */
     @Override
     public Object execute(final ExecutionEvent event) throws ExecutionException {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         try {
             new HealthCheck().execute(HandlerUtil.getCurrentSelection(event));

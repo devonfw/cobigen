@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -140,11 +142,12 @@ public class HierarchicalTreeOperator {
         Set<IPackageFragment> packageChildren = new HashSet<>(getPackageChildren(frag, stubbedResources));
         packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
         cachePackageFragment(curr);
-        while (curr.getChildren().length == 0 && packageChildren.size() == 1) {
+        while (curr.getChildren().length == 0 && packageChildren.size() == 1
+            && getStubbedAtomicNonPackageChildren(curr, stubbedResources).size() == 0) {
             curr = packageChildren.iterator().next();
             packageChildren.clear();
             packageChildren.addAll(getPackageChildren(curr, stubbedResources));
-            packageChildren.addAll(getStubbedAtomicPackageChildren(frag, stubbedResources));
+            packageChildren.addAll(getStubbedAtomicPackageChildren(curr, stubbedResources));
             cachePackageFragment(curr);
         }
 
@@ -195,6 +198,42 @@ public class HierarchicalTreeOperator {
                     if (!childPackagePath.toString().contains("/")) {
                         stubbedPackages.add(fold((IPackageFragment) child, stubbedResources));
                     }
+                }
+            }
+        }
+        return stubbedPackages;
+    }
+
+    /**
+     *
+     * This method calculates all atomic children from the stubbedResources and returns them
+     *
+     * @param parent
+     *            to calculate children for
+     * @param stubbedResources
+     *            list of all stubbed resources
+     * @return the stubbed resources, which represent atomic children for the given parent
+     */
+    private static List<Object> getStubbedAtomicNonPackageChildren(IPackageFragment parent,
+        List<Object> stubbedResources) {
+
+        if (stubbedResources == null) {
+            return Lists.newArrayList();
+        }
+
+        List<Object> stubbedPackages = Lists.newLinkedList();
+        for (Object child : stubbedResources) {
+            IPath childPath = null;
+            if (child instanceof ICompilationUnit) {
+                childPath = ((ICompilationUnit) child).getPath();
+            } else if (child instanceof IResource) {
+                childPath = ((IResource) child).getFullPath();
+            }
+            if (childPath != null && childPath.toString().startsWith(parent.getPath().toString())
+                && !childPath.equals(parent.getPath())) {
+                childPath = childPath.removeFirstSegments(parent.getPath().segmentCount());
+                if (!childPath.toString().contains("/")) {
+                    stubbedPackages.add(child);
                 }
             }
         }
@@ -305,7 +344,7 @@ public class HierarchicalTreeOperator {
      *             corresponding resource
      * @author mbrunnli (18.03.2013)
      */
-    private static List<IPackageFragment> retrievePackageChildren(IPackageFragmentRoot parentElement,
+    public static List<IPackageFragment> retrievePackageChildren(IPackageFragmentRoot parentElement,
         List<Object> stubbedResources) throws JavaModelException {
 
         List<IPackageFragment> packageChildren = new LinkedList<>();
