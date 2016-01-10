@@ -76,9 +76,11 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (08.04.2013)
      */
     public void startConfigurationProjectListener() {
+        LOG.info("Start configuration project listener");
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
+                MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
                 synchronized (configurationProjectListener) {
                     if (configurationProjectListenerStarted) {
                         return;
@@ -90,6 +92,7 @@ public class Activator extends AbstractUIPlugin {
                     configurationProjectListenerStarted = true;
                     LOG.info("ResourceChangeListener for configuration project started.");
                 }
+                MDC.remove(InfrastructureConstants.CORRELATION_ID);
             }
         });
     }
@@ -99,9 +102,11 @@ public class Activator extends AbstractUIPlugin {
      * @author mbrunnli (Jun 24, 2015)
      */
     public void stopConfigurationListener() {
+        LOG.info("Stop configuration project listener");
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
+                MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
                 synchronized (configurationProjectListener) {
                     if (!configurationProjectListenerStarted) {
                         return;
@@ -110,6 +115,7 @@ public class Activator extends AbstractUIPlugin {
                     configurationProjectListenerStarted = false;
                     LOG.info("ResourceChangeListener for configuration project stopped.");
                 }
+                MDC.remove(InfrastructureConstants.CORRELATION_ID);
             }
         });
     }

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
-import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateBatchSelectionProcess;
+import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateBatchSelectionJob;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
 
@@ -95,14 +95,14 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             templateIds.add(template.getId());
         }
 
-        GenerateBatchSelectionProcess job;
+        GenerateBatchSelectionJob job;
         if (container == null) {
             job =
-                new GenerateBatchSelectionProcess(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
+                new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
                     inputTypes);
         } else {
             job =
-                new GenerateBatchSelectionProcess(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
+                new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
                     container);
         }
         try {

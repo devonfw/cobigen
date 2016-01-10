@@ -11,7 +11,7 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.SelectAttributesPage;
-import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateSelectionProcess;
+import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateSelectionJob;
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
@@ -90,8 +90,9 @@ public class GenerateWizard extends AbstractGenerateWizard {
             }
         }
 
-        GenerateSelectionProcess job =
-            new GenerateSelectionProcess(cobigenWrapper, page1.getTemplatesToBeGenerated());
+        LOG.info("Start generation process job...");
+        GenerateSelectionJob job =
+            new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(true, false, job);
         } catch (InvocationTargetException e) {
