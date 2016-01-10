@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.widgets.Shell;
 
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -24,18 +23,15 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
      *
-     * @param shell
-     *            on which to display error messages
      * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of templates to be generated
      * @author mbrunnli (12.03.2013)
      */
-    public GenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
-        List<TemplateTo> templatesToBeGenerated) {
+    public GenerateSelectionProcess(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
 
-        super(shell, cobigenWrapper, templatesToBeGenerated);
+        super(cobigenWrapper, templatesToBeGenerated);
     }
 
     /**

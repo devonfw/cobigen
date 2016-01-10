@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.widgets.Shell;
 
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -34,8 +33,6 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
      *
-     * @param shell
-     *            on which to display error messages
      * @param javaGeneratorWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
@@ -45,18 +42,16 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
      *
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchSelectionProcess(Shell shell, CobiGenWrapper javaGeneratorWrapper,
+    public GenerateBatchSelectionProcess(CobiGenWrapper javaGeneratorWrapper,
         List<TemplateTo> templatesToBeGenerated, List<IType> inputTypes) {
 
-        super(shell, javaGeneratorWrapper, templatesToBeGenerated);
+        super(javaGeneratorWrapper, templatesToBeGenerated);
         this.inputTypes = inputTypes;
     }
 
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
      *
-     * @param shell
-     *            on which to display error messages
      * @param javaGeneratorWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
@@ -65,10 +60,10 @@ public class GenerateBatchSelectionProcess extends AbstractGenerateSelectionProc
      *            selected {@link IPackageFragment} for the generation
      * @author mbrunnli (04.06.2014)
      */
-    public GenerateBatchSelectionProcess(Shell shell, CobiGenWrapper javaGeneratorWrapper,
+    public GenerateBatchSelectionProcess(CobiGenWrapper javaGeneratorWrapper,
         List<TemplateTo> templatesToBeGenerated, IPackageFragment container) {
 
-        super(shell, javaGeneratorWrapper, templatesToBeGenerated);
+        super(javaGeneratorWrapper, templatesToBeGenerated);
         this.container = container;
     }
 

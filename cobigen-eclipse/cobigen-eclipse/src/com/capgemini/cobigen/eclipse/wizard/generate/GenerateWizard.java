@@ -91,9 +91,9 @@ public class GenerateWizard extends AbstractGenerateWizard {
         }
 
         GenerateSelectionProcess job =
-            new GenerateSelectionProcess(getShell(), cobigenWrapper, page1.getTemplatesToBeGenerated());
+            new GenerateSelectionProcess(cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
-            dialog.run(false, false, job);
+            dialog.run(true, false, job);
         } catch (InvocationTargetException e) {
             LOG.error("An internal error occured while invoking the generation job.", e);
         } catch (InterruptedException e) {
