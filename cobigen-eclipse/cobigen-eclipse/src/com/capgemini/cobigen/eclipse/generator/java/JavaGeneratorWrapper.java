@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.eclipse.generator.java;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,11 +10,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jface.viewers.IStructuredSelection;
 
+import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
+import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
+import com.capgemini.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
@@ -109,6 +119,86 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
+
+        Iterator<?> it = selection.iterator();
+        List<String> firstTriggers = null;
+
+        boolean uniqueSourceSelected = false;
+
+        while (it.hasNext()) {
+            Object tmp = it.next();
+            if (tmp instanceof ICompilationUnit) {
+                if (firstTriggers == null) {
+                    firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
+                } else {
+                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
+                        throw new InvalidInputException(
+                            "You selected at least two inputs, which are not matching the same triggers. "
+                                + "For batch processing all inputs have to match the same triggers.");
+                    }
+                }
+            } else if (tmp instanceof IPackageFragment) {
+                uniqueSourceSelected = true;
+                firstTriggers =
+                    cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp).getResource()
+                        .getLocationURI(), ((IPackageFragment) tmp).getElementName()));
+            } else {
+                throw new InvalidInputException(
+                    "You selected at least one input, which type is currently not supported as input for generation. "
+                        + "Please choose a different one or read the CobiGen documentation for more details.");
+            }
+
+            if (uniqueSourceSelected && selection.size() > 1) {
+                throw new InvalidInputException(
+                    "You selected at least one input in a mass-selection,"
+                        + " which type is currently not supported for batch processing. "
+                        + "Please just select multiple inputs only if batch processing is supported for all inputs.");
+            }
+        }
+        return firstTriggers != null && !firstTriggers.isEmpty();
+    }
+
+    /**
+     * Returns a {@link Set} of {@link Trigger}s that support the give {@link ICompilationUnit}
+     *
+     * @param cu
+     *            {@link ICompilationUnit} to be checked
+     * @return the {@link Set} of {@link Trigger}s
+     * @throws InvalidInputException
+     *             if the input could not be read as expected
+     * @author trippl (22.04.2013)
+     */
+    private List<String> findMatchingTriggers(ICompilationUnit cu) throws InvalidInputException {
+
+        ClassLoader classLoader;
+        IType type = null;
+        try {
+            classLoader = ClassLoaderUtil.getProjectClassLoader(cu.getJavaProject());
+            type = EclipseJavaModelUtil.getJavaClassType(cu);
+            return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
+        } catch (MalformedURLException e) {
+            throw new InvalidInputException("Error while retrieving the project's ('"
+                + cu.getJavaProject().getElementName() + "') classloader.", e);
+        } catch (CoreException e) {
+            throw new InvalidInputException("An eclipse internal exception occured!", e);
+        } catch (ClassNotFoundException e) {
+            throw new InvalidInputException("The class '" + type.getFullyQualifiedName()
+                + "' could not be found. "
+                + "This may be cause of a non-compiling host project of the selected input.", e);
+        } catch (UnsupportedClassVersionError e) {
+            throw new InvalidInputException(
+                "Incompatible java version: "
+                    + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+                    + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+                    + "Current runtime: " + System.getProperty("java.version"), e);
         }
     }
 }

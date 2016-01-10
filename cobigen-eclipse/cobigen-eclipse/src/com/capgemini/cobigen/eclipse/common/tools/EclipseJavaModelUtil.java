@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.IType;
  *
  * @author mbrunnli (08.04.2013)
  */
-public class JavaModelUtil {
+public class EclipseJavaModelUtil {
 
     /**
      * Returns the type equivalent to the java file name for the given {@link ICompilationUnit}

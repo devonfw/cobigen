@@ -17,7 +17,8 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
@@ -45,12 +46,37 @@ public class HealthCheck {
         String secondStep =
             "\n2. CobiGen context configuration '" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME + "'... ";
 
-        SelectionServiceListener selectionServiceListener = null;
         String healthyCheckMessage = "";
         IProject generatorConfProj = null;
         try {
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            selectionServiceListener = new SelectionServiceListener(false);
+            CobiGenWrapper cobiGenWrapper =
+                GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
+
+            healthyCheckMessage = firstStep + "OK.";
+            healthyCheckMessage += secondStep + "OK.";
+            healthyCheckMessage += "\n3. Check validity of current selection... ";
+            if (selection instanceof IStructuredSelection) {
+                try {
+                    if (cobiGenWrapper.isValidInput((IStructuredSelection) selection)) {
+                        healthyCheckMessage += "OK.";
+                        openSuccessDialog(healthyCheckMessage, false);
+                    } else {
+                        healthyCheckMessage += "NO MATCHING TRIGGER.";
+                        openSuccessDialog(healthyCheckMessage, true);
+                    }
+                } catch (InvalidInputException e) {
+                    healthyCheckMessage += "INVALID.\n=> Cause: " + e.getLocalizedMessage();
+                    if (e.hasRootCause()) {
+                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
+                    } else {
+                        openSuccessDialog(healthyCheckMessage, true);
+                    }
+                }
+            } else {
+                healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
+                PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
+            }
         } catch (GeneratorProjectNotExistentException e) {
             healthyCheckMessage =
                 firstStep + "NOT FOUND IN WORKSPACE!\n"
@@ -93,36 +119,6 @@ public class HealthCheck {
         } catch (Throwable e) {
             healthyCheckMessage = "An unexpected error occurred while loading CobiGen! ";
             PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
-        }
-
-        if (selectionServiceListener != null) {
-            healthyCheckMessage = firstStep + "OK.";
-            healthyCheckMessage += secondStep + "OK.";
-            healthyCheckMessage += "\n3. Check validity of current selection... ";
-            if (selection instanceof IStructuredSelection) {
-                try {
-                    if (selectionServiceListener.isValidInput((IStructuredSelection) selection)) {
-                        healthyCheckMessage += "OK.";
-                        openSuccessDialog(healthyCheckMessage, false);
-                    } else {
-                        healthyCheckMessage += "NO MATCHING TRIGGER.";
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                } catch (InvalidInputException e) {
-                    healthyCheckMessage += "INVALID.\n=> Cause: " + e.getLocalizedMessage();
-                    if (e.hasRootCause()) {
-                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
-                    } else {
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                } catch (Throwable e) {
-                    healthyCheckMessage += "\n=> An unexpected error occurred while loading CobiGen! ";
-                    PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
-                }
-            } else {
-                healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
-                PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
-            }
         }
     }
 
