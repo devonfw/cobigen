@@ -8,6 +8,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
@@ -30,6 +32,9 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
  */
 public class HealthCheck {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(HealthCheck.class);
+
     /** Dialog title of the Health Check */
     private static final String HEALTH_CHECK_DIALOG_TITLE = "Health Check";
 
@@ -51,14 +56,15 @@ public class HealthCheck {
         IProject generatorConfProj = null;
         try {
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            CobiGenWrapper cobiGenWrapper =
-                GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "OK.";
             healthyCheckMessage += "\n3. Check validity of current selection... ";
             if (selection instanceof IStructuredSelection) {
                 try {
+                    CobiGenWrapper cobiGenWrapper =
+                        GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
+
                     if (cobiGenWrapper.isValidInput((IStructuredSelection) selection)) {
                         healthyCheckMessage += "OK.";
                         openSuccessDialog(healthyCheckMessage, false);
@@ -80,9 +86,9 @@ public class HealthCheck {
             }
         } catch (GeneratorProjectNotExistentException e) {
             healthyCheckMessage =
-                firstStep + "NOT FOUND IN WORKSPACE!\n"
-                    + "=> Please import the configuration project as stated in the documentation of CobiGen"
-                    + " or in the one of your project.";
+                firstStep + "NOT FOUND!\n"
+                    + "=> Please import the configuration project into your workspace as stated in the "
+                    + "documentation of CobiGen or in the one of your project.";
             PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
         } catch (InvalidConfigurationException e) {
             healthyCheckMessage = firstStep + "OK.";
@@ -114,12 +120,13 @@ public class HealthCheck {
                             + "Maybe just a mistake in the context configuration?";
                     healthyCheckMessage += "\n\n=> " + e.getLocalizedMessage();
                 }
-
             }
             PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
+            LOG.warn(healthyCheckMessage, e);
         } catch (Throwable e) {
-            healthyCheckMessage = "An unexpected error occurred while loading CobiGen! ";
+            healthyCheckMessage = "An unexpected error occurred!";
             PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
+            LOG.error(healthyCheckMessage, e);
         }
     }
 

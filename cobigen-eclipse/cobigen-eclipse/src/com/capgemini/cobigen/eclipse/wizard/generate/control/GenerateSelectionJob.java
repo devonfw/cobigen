@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.widgets.Shell;
 
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -19,23 +18,20 @@ import com.capgemini.cobigen.extension.to.TemplateTo;
  *
  * @author mbrunnli (12.03.2013)
  */
-public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
+public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
 
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
      *
-     * @param shell
-     *            on which to display error messages
      * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of templates to be generated
      * @author mbrunnli (12.03.2013)
      */
-    public GenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
-        List<TemplateTo> templatesToBeGenerated) {
+    public GenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
 
-        super(shell, cobigenWrapper, templatesToBeGenerated);
+        super(cobigenWrapper, templatesToBeGenerated);
     }
 
     /**
@@ -45,21 +41,26 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
      */
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
+        LOG.info("Perform Generation...");
 
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
-            monitor.beginTask("GenerateHandler files...", templatesToBeGenerated.size());
+            monitor.beginTask("Generating files...", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
                 if (template.getMergeStrategy() == null) {
                     cobigenWrapper.generate(template, true);
                 } else {
                     cobigenWrapper.generate(template, false);
                 }
+                monitor.subTask(template.getId());
                 monitor.worked(1);
             }
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+            monitor.done();
+            LOG.info("Generation finished successfully.");
             return true;
         } else {
+            LOG.warn("Generation finished: No generation target project configured! Potential Bug!");
             return false;
         }
     }

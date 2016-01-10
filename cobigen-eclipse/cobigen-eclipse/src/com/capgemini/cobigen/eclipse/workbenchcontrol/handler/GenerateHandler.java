@@ -50,7 +50,7 @@ public class GenerateHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-        LOG.debug("on click Event? " + event.getClass().getName());
+        LOG.info("Generate command triggered.");
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);
 
@@ -60,11 +60,22 @@ public class GenerateHandler extends AbstractHandler {
             // supported by the following implementation
 
             try {
+                LOG.info("Initiating CobiGen...");
                 CobiGenWrapper generator =
                     GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
-                if (generator == null || !generator.isValidInput((IStructuredSelection) sel)) {
+                if (generator == null) {
                     MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
                         "The current selection is currently not supported as valid input.");
+                    LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
+                    return null;
+                }
+
+                if (!generator.isValidInput((IStructuredSelection) sel)) {
+                    MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
+                        "Your current selection is not valid as input for any generation purpose. "
+                            + "Please find the specification of valid inputs in the context configuration ('"
+                            + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml').");
+                    LOG.info("No matching Trigger. Exiting generate command.");
                     return null;
                 }
 
@@ -75,11 +86,13 @@ public class GenerateHandler extends AbstractHandler {
                             new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
+                    LOG.info("Generate Wizard (Batchmode) opened.");
                 } else if (((IStructuredSelection) sel).size() == 1) {
                     WizardDialog wiz =
                         new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
+                    LOG.info("Generate Wizard opened.");
                 }
 
             } catch (UnknownContextVariableException e) {
@@ -109,8 +122,9 @@ public class GenerateHandler extends AbstractHandler {
                 PlatformUIUtil.openErrorDialog("Error", "Could not create an instance of the generator!", e);
                 LOG.error("Could not create an instance of the generator.", e);
             } catch (InvalidInputException e) {
-                PlatformUIUtil.openErrorDialog("Error", "Invalid selection: " + e.getMessage(), e);
-                LOG.error("Invalid Configuration", e);
+                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection",
+                    e.getMessage());
+                LOG.info("Invalid input selected for generation: " + e.getMessage());
             } catch (Throwable e) {
                 PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);

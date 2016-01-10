@@ -19,17 +19,15 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.actions.FormatAllAction;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
@@ -41,17 +39,12 @@ import com.capgemini.cobigen.extension.to.TemplateTo;
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public abstract class AbstractGenerateSelectionProcess implements IRunnableWithProgress {
+public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Logger instance
      */
     protected final Logger LOG = LoggerFactory.getLogger(getClass());
-
-    /**
-     * {@link Shell} on which to display error messages
-     */
-    private Shell shell;
 
     /**
      * Generator instance with which to generate the contents
@@ -66,17 +59,13 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     /**
      * Sets the given properties and make them accessible for sub types
      *
-     * @param shell
-     *            on which to display error messages
      * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
-        List<TemplateTo> templatesToBeGenerated) {
+    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
 
-        this.shell = shell;
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
     }
@@ -89,6 +78,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Start generation process...");
 
         if (templatesToBeGenerated.size() == 0) {
             return;
@@ -112,8 +102,14 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
                 formatSourceCode(cus);
             }
 
-            MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
-                + " templates have been generated.");
+            PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
+                @Override
+                public void run() {
+                    MessageDialog.openInformation(
+                        PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(), "Success!",
+                        "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
+                }
+            });
 
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog("Eclipse internal Exception",
@@ -124,15 +120,13 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
             PlatformUIUtil.openErrorDialog("Plug-in Processing Exception",
                 "A plug-in caused an unhandled exception:\n", e);
             LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
-        } catch (NotYetSupportedException e) {
-            PlatformUIUtil.openErrorDialog("Not yet supported!",
-                "An unsupported operation has been triggered", e);
-            LOG.warn("An unsupported operation has been triggered:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
+        } finally {
+            LOG.info("Finished processing generation.");
+            monitor.done();
         }
-        monitor.done();
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }

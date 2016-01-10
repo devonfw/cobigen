@@ -14,6 +14,8 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -32,6 +34,9 @@ import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
  * @author mbrunnli (13.02.2013)
  */
 public class JavaGeneratorWrapper extends CobiGenWrapper {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(JavaGeneratorWrapper.class);
 
     /**
      * A set of removed fields for the generation.
@@ -127,42 +132,47 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      */
     @Override
     public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
+        LOG.debug("Start checking selection validity for the use as Java input.");
 
         Iterator<?> it = selection.iterator();
         List<String> firstTriggers = null;
 
         boolean uniqueSourceSelected = false;
 
-        while (it.hasNext()) {
-            Object tmp = it.next();
-            if (tmp instanceof ICompilationUnit) {
-                if (firstTriggers == null) {
-                    firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
-                } else {
-                    if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
-                        throw new InvalidInputException(
-                            "You selected at least two inputs, which are not matching the same triggers. "
-                                + "For batch processing all inputs have to match the same triggers.");
+        try {
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                if (tmp instanceof ICompilationUnit) {
+                    if (firstTriggers == null) {
+                        firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
+                    } else {
+                        if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
+                            throw new InvalidInputException(
+                                "You selected at least two inputs, which are not matching the same triggers. "
+                                    + "For batch processing all inputs have to match the same triggers.");
+                        }
                     }
+                } else if (tmp instanceof IPackageFragment) {
+                    uniqueSourceSelected = true;
+                    firstTriggers =
+                        cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
+                            .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
+                } else {
+                    throw new InvalidInputException(
+                        "You selected at least one input, which type is currently not supported as input for generation. "
+                            + "Please choose a different one or read the CobiGen documentation for more details.");
                 }
-            } else if (tmp instanceof IPackageFragment) {
-                uniqueSourceSelected = true;
-                firstTriggers =
-                    cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp).getResource()
-                        .getLocationURI(), ((IPackageFragment) tmp).getElementName()));
-            } else {
-                throw new InvalidInputException(
-                    "You selected at least one input, which type is currently not supported as input for generation. "
-                        + "Please choose a different one or read the CobiGen documentation for more details.");
-            }
 
-            if (uniqueSourceSelected && selection.size() > 1) {
-                throw new InvalidInputException(
-                    "You selected at least one input in a mass-selection,"
-                        + " which type is currently not supported for batch processing. "
-                        + "Please just select multiple inputs only if batch processing is supported for all inputs.");
+                if (uniqueSourceSelected && selection.size() > 1) {
+                    throw new InvalidInputException(
+                        "You selected at least one input, which type is currently not supported for batch processing.\n "
+                            + "Please just select multiple inputs only if batch processing is supported for all inputs.");
+                }
             }
+        } finally {
+            LOG.debug("Ended checking selection validity for the use as Java input.");
         }
+
         return firstTriggers != null && !firstTriggers.isEmpty();
     }
 
