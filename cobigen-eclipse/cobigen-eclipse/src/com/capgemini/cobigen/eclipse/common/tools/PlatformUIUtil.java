@@ -70,13 +70,19 @@ public class PlatformUIUtil {
      *            of the error or <code>null</code> if the error was not caused by any {@link Throwable}
      * @author mbrunnli (Jun 23, 2015)
      */
-    public static void openErrorDialog(String dialogTitle, String message, Throwable cause) {
-        if (cause == null) {
-            MessageDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message);
-        } else {
-            ErrorDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message,
-                createMultiStatus(cause));
-        }
+    public static void openErrorDialog(final String dialogTitle, final String message, final Throwable cause) {
+
+        getWorkbench().getDisplay().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (cause == null) {
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message);
+                } else {
+                    ErrorDialog.openError(Display.getDefault().getActiveShell(), dialogTitle, message,
+                        createMultiStatus(cause));
+                }
+            }
+        });
     }
 
     /**

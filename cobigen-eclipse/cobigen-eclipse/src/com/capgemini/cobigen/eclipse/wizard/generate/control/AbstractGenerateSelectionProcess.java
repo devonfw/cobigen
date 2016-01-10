@@ -22,7 +22,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +47,6 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
     /**
-     * {@link Shell} on which to display error messages
-     */
-    private Shell shell;
-
-    /**
      * Generator instance with which to generate the contents
      */
     protected CobiGenWrapper cobigenWrapper;
@@ -65,17 +59,14 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     /**
      * Sets the given properties and make them accessible for sub types
      *
-     * @param shell
-     *            on which to display error messages
      * @param cobigenWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionProcess(Shell shell, CobiGenWrapper cobigenWrapper,
+    public AbstractGenerateSelectionProcess(CobiGenWrapper cobigenWrapper,
         List<TemplateTo> templatesToBeGenerated) {
 
-        this.shell = shell;
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
     }
@@ -111,8 +102,14 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
                 formatSourceCode(cus);
             }
 
-            MessageDialog.openInformation(shell, "Success!", "Contents from " + templatesToBeGenerated.size()
-                + " templates have been generated.");
+            PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
+                @Override
+                public void run() {
+                    MessageDialog.openInformation(
+                        PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(), "Success!",
+                        "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
+                }
+            });
 
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog("Eclipse internal Exception",

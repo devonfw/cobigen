@@ -98,15 +98,15 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
         GenerateBatchSelectionProcess job;
         if (container == null) {
             job =
-                new GenerateBatchSelectionProcess(getShell(), cobigenWrapper,
-                    cobigenWrapper.getTemplates(templateIds), inputTypes);
+                new GenerateBatchSelectionProcess(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
+                    inputTypes);
         } else {
             job =
-                new GenerateBatchSelectionProcess(getShell(), cobigenWrapper,
-                    cobigenWrapper.getTemplates(templateIds), container);
+                new GenerateBatchSelectionProcess(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
+                    container);
         }
         try {
-            dialog.run(false, false, job);
+            dialog.run(true, false, job);
         } catch (InvocationTargetException e) {
             LOG.error("An internal error occured while invoking the generation batch job.", e);
         } catch (InterruptedException e) {
