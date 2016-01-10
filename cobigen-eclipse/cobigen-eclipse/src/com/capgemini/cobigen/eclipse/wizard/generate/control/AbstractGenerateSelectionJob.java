@@ -19,7 +19,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.actions.FormatAllAction;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -27,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -39,7 +39,7 @@ import com.capgemini.cobigen.extension.to.TemplateTo;
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
-public abstract class AbstractGenerateSelectionProcess implements IRunnableWithProgress {
+public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Logger instance
@@ -64,8 +64,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionProcess(CobiGenWrapper cobigenWrapper,
-        List<TemplateTo> templatesToBeGenerated) {
+    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
 
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
@@ -79,6 +78,7 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Start generation process...");
 
         if (templatesToBeGenerated.size() == 0) {
             return;
@@ -123,8 +123,10 @@ public abstract class AbstractGenerateSelectionProcess implements IRunnableWithP
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
+        } finally {
+            LOG.info("Finished processing generation.");
+            monitor.done();
         }
-        monitor.done();
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
