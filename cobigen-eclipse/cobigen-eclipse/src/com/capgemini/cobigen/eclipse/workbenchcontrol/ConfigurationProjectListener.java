@@ -15,18 +15,15 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 
 /**
- * {@link ConfigurationProjectListener} for starting / stopping the {@link LogbackConfigChangeListener}
+ * {@link ConfigurationProjectListener} for starting / stopping the {@link LogbackConfigChangeListener}. This
+ * class is an abstract, due to the potential need of having multiple nested {@link IResourceChangeListener}
+ * for the CobiGen configuration.
  * @author mbrunnli (08.04.2013)
  */
 public class ConfigurationProjectListener implements IResourceChangeListener {
 
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationProjectListener.class);
-
-    /**
-     * Checks whether the given {@link IResourceChangeEvent} has closed the generator configuration project
-     */
-    private boolean closedBefore = false;
 
     /**
      * Resource change listener for the logback configuration.
@@ -37,6 +34,19 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
      * Object for synchronization purposes regarding the logback configuration listener
      */
     private Object logbackConfigListenerSync = new Object();
+
+    /**
+     * Initializes the {@link ConfigurationProjectListener} by registering all nested resource listener if the
+     * folder already exists.
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    public ConfigurationProjectListener() {
+        IProject cobigenConfigProject =
+            ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+        if (cobigenConfigProject.exists() && cobigenConfigProject.isOpen()) {
+            registerLogbackConfigListenerIfNotAlreadyDone(cobigenConfigProject);
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -53,41 +63,44 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
             if (event.getResource() instanceof IProject) {
                 IProject proj = (IProject) event.getResource();
                 if (proj.getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
-                    closedBefore = true;
-                }
-            }
-        }
-
-        // //////////////
-        // POST_CLOSE //
-        // //////////////
-        if (event.getType() == IResourceChangeEvent.POST_BUILD && closedBefore) {
-            closedBefore = false;
-            synchronized (logbackConfigListenerSync) {
-                ResourcesPlugin.getWorkspace().removeResourceChangeListener(logbackConfigListener);
-                logbackConfigListener = null;
-                LOG.info("Logback configuration listener registered.");
-            }
-        }
-
-        // //////////////
-        // POST_CHANGE //
-        // //////////////
-        if (event.getType() == IResourceChangeEvent.POST_CHANGE) { // TODO probably not necessary anymore
-            IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
-            for (IResourceDelta projDelta : affectedProjects) {
-                if (projDelta.getResource() instanceof IProject
-                    && projDelta.getResource().getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
                     synchronized (logbackConfigListenerSync) {
-                        logbackConfigListener =
-                            new LogbackConfigChangeListener(((IProject) projDelta.getResource()));
-                        ResourcesPlugin.getWorkspace().addResourceChangeListener(logbackConfigListener);
+                        ResourcesPlugin.getWorkspace().removeResourceChangeListener(logbackConfigListener);
+                        logbackConfigListener = null;
                         LOG.info("Logback configuration listener unregistered.");
                     }
                 }
             }
         }
 
+        // //////////////
+        // POST_CHANGE //
+        // //////////////
+        if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+            IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
+            for (IResourceDelta projDelta : affectedProjects) {
+                if (projDelta.getResource() instanceof IProject
+                    && projDelta.getResource().getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
+                    registerLogbackConfigListenerIfNotAlreadyDone((IProject) projDelta.getResource());
+                }
+            }
+        }
+
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    }
+
+    /**
+     * Registers the {@link LogbackConfigChangeListener} if not already set
+     * @param cobigenConfigFolder
+     *            CobiGens configuration project in the workspace
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    private void registerLogbackConfigListenerIfNotAlreadyDone(IProject cobigenConfigFolder) {
+        synchronized (logbackConfigListenerSync) {
+            if (logbackConfigListener == null) {
+                logbackConfigListener = new LogbackConfigChangeListener(cobigenConfigFolder);
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(logbackConfigListener);
+            }
+            LOG.info("Logback configuration listener registered.");
+        }
     }
 }
