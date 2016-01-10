@@ -2,6 +2,10 @@ package com.capgemini.cobigen.eclipse;
 
 import java.util.UUID;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -31,18 +35,18 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    // private IResourceChangeListener configurationProjectListener = new ConfigurationProjectRCL();
+    private IResourceChangeListener configurationProjectListener;
 
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
      */
-    // private volatile boolean configurationProjectListenerStarted = false;
+    private volatile boolean configurationProjectListenerStarted = false;
 
     /**
      * Checks whether the workbench has been initialized (workaround for better user notification about
      * context.xml compile errors)
      */
-    // private volatile boolean initialized = false;
+    private volatile boolean initialized = false;
 
     /**
      * Assigning logger to Activator
@@ -68,53 +72,52 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        // startConfigurationProjectListener();
+        startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
-    // /**
-    // * Starts the ResourceChangeListener
-    // * @author mbrunnli (08.04.2013)
-    // */
-    // public void startConfigurationProjectListener() {
-    // Display.getDefault().asyncExec(new Runnable() {
-    // @Override
-    // public void run() {
-    // synchronized (configurationProjectListener) {
-    // if (configurationProjectListenerStarted) {
-    // return;
-    // }
-    // ResourcesPlugin.getWorkspace().addResourceChangeListener(
-    // configurationProjectListener,
-    // IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
-    // | IResourceChangeEvent.POST_CHANGE);
-    // configurationProjectListenerStarted = true;
-    // LOG.info("ResourceChangeListener for configuration project started.");
-    // }
-    // }
-    // });
-    // }
+    /**
+     * Starts the ResourceChangeListener
+     * @author mbrunnli (08.04.2013)
+     */
+    public void startConfigurationProjectListener() {
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (configurationProjectListener) {
+                    if (configurationProjectListenerStarted) {
+                        return;
+                    }
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                        configurationProjectListener,
+                        IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
+                            | IResourceChangeEvent.POST_CHANGE);
+                    configurationProjectListenerStarted = true;
+                    LOG.info("ResourceChangeListener for configuration project started.");
+                }
+            }
+        });
+    }
 
-    // /**
-    // *
-    // *
-    // * @author mbrunnli (Jun 24, 2015)
-    // */
-    // public void stopConfigurationListener() {
-    // Display.getDefault().syncExec(new Runnable() {
-    // @Override
-    // public void run() {
-    // synchronized (configurationProjectListener) {
-    // if (!configurationProjectListenerStarted) {
-    // return;
-    // }
-    // ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
-    // configurationProjectListenerStarted = false;
-    // LOG.info("ResourceChangeListener for configuration project stopped.");
-    // }
-    // }
-    // });
-    // }
+    /**
+     * Stops the ResourceChangeListener
+     * @author mbrunnli (Jun 24, 2015)
+     */
+    public void stopConfigurationListener() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (configurationProjectListener) {
+                    if (!configurationProjectListenerStarted) {
+                        return;
+                    }
+                    ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
+                    configurationProjectListenerStarted = false;
+                    LOG.info("ResourceChangeListener for configuration project stopped.");
+                }
+            }
+        });
+    }
 
     /**
      * {@inheritDoc}

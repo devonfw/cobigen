@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
+import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
@@ -162,8 +163,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
 
-        // Activator.getDefault().stopSelectionServiceListener();
-        // Activator.getDefault().stopConfigurationListener();
+        Activator.getDefault().stopConfigurationListener();
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
         boolean successful = true;
@@ -202,8 +202,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
         ResourcesPluginUtil.refreshConfigurationProject();
 
-        // Activator.getDefault().startSelectionServiceListener();
-        // Activator.getDefault().startConfigurationProjectListener();
+        Activator.getDefault().startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 }
