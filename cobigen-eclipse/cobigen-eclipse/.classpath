@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-2.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-5.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dozer-5.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-5.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.20.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/annotations-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-17.0.jar"/>

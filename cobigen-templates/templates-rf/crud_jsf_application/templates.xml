@@ -1,154 +1,103 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
-	<templates>
-		<template id="java_common_constants_exceptionKeys" destinationPath="src/main/java/${variables.rootPackage}/common/constants/ExceptionKeys.java" templateFile="java/common/constants/ExceptionKeys.java.ftl" mergeStrategy="javamerge" />
-		<template id="java_common_constants_namedQueries" destinationPath="src/main/java/${variables.rootPackage}/common/constants/NamedQueries.java" templateFile="java/common/constants/NamedQueries.java.ftl" mergeStrategy="javamerge" />
-		<template id="java_common_exception_technicalRuntimeException" destinationPath="src/main/java/${variables.rootPackage}/common/exception/TechnicalRuntimeException.java" templateFile="java/common/exception/TechnicalRuntimeException.java.ftl" />
-		<template id="java_common_exception_validationException" destinationPath="src/main/java/${variables.rootPackage}/common/exception/ValidationException.java" templateFile="java/common/exception/ValidationException.java.ftl" />
-		<template id="java_common_abstractLayerImpl" destinationPath="src/main/java/${variables.rootPackage}/common/AbstractLayerImpl.java" templateFile="java/common/AbstractLayerImpl.java.ftl" />
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <templateExtension ref="ExceptionKeys.java" mergeStrategy="javamerge"/>
+        <templateExtension ref="NamedQueries.java" mergeStrategy="javamerge"/>
+        
+        <templateExtension ref="${variables.component#cap_first}ExceptionKeys.java" mergeStrategy="javamerge"/>
+        <templateExtension ref="${variables.pojoName}To.java" mergeStrategy="javamerge"/>
+		
+        <templateExtension ref="NamedQueries.hbm.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="core.xml" mergeStrategy="xmlmerge"/>
+		
+        <templateExtension ref="gui-controller.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="gui-core-wrapper.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="jpa.xml" mergeStrategy="xmlmerge"/>
+		
+        <templateExtension ref="masktexts_de.properties" mergeStrategy="propertymerge" targetCharset="ISO-8859-1"/>
 
-
-		<template id="java_core_common_abstractUc" destinationPath="src/main/java/${variables.rootPackage}/core/common/AbstractUc.java" templateFile="java/core/common/AbstractUc.java.ftl" />
-		<template id="java_core_component_common_abstractDataUc" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/common/Abstract${variables.pojoName}Uc.java" templateFile="java/core/component/common/AbstractDataUc.java.ftl"/>
-		<template id="java_core_component_common_exceptionKeys" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/common/ExceptionKeys.java" templateFile="java/core/component/common/ExceptionKeys.java.ftl" mergeStrategy="javamerge" />
-		<template id="java_core_component_entity_dataObjects" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/entity/${variables.pojoName}.java" templateFile="java/core/component/entity/DataObjects.java.ftl"/>
-		<template id="java_core_component_dataManagement" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/${variables.pojoName}Management.java" templateFile="java/core/component/DataManagement.java.ftl"/>
-		<template id="java_core_component_impl_dataManagementImpl" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/impl/${variables.pojoName}ManagementImpl.java" templateFile="java/core/component/impl/DataManagementImpl.java.ftl"/>
-		<template id="java_core_component_impl_ucFindData" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/impl/UcFind${variables.pojoName}.java" templateFile="java/core/component/impl/UcFindData.java.ftl"/>
-		<template id="java_core_component_impl_ucManageData" destinationPath="src/main/java/${variables.rootPackage}/core/${variables.component}/impl/UcManage${variables.pojoName}.java" templateFile="java/core/component/impl/UcManageData.java.ftl"/>
-
-
-		<template id="java_gui_common_abstractController" destinationPath="src/main/java/${variables.rootPackage}/gui/common/AbstractController.java" templateFile="java/gui/common/AbstractController.java.ftl" />
-		<template id="java_gui_component_common_abstractDataController" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/common/Abstract${variables.pojoName}Controller.java" templateFile="java/gui/component/common/AbstractDataController.java.ftl" />
-		<template id="java_gui_component_corewrapper_dataManagementCoreWrapper" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/corewrapper/${variables.pojoName}ManagementCoreWrapper.java" templateFile="java/gui/component/corewrapper/DataManagementCoreWrapper.java.ftl" />
-		<template id="java_gui_component_corewrapper_impl_dataManagementCoreWrapper" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/corewrapper/impl/${variables.pojoName}ManagementCoreWrapperImpl.java" templateFile="java/gui/component/corewrapper/impl/DataManagementCoreWrapperImpl.java.ftl" />
-
-		<template id="java_gui_component_createdata_createDataController" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/create${variables.pojoName?lower_case}/Create${variables.pojoName}Controller.java" templateFile="java/gui/component/createdata/CreateDataController.java.ftl" />
-		<template id="java_gui_component_createdata_createDataModel" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/create${variables.pojoName?lower_case}/Create${variables.pojoName}Model.java" templateFile="java/gui/component/createdata/CreateDataModel.java.ftl" />
-		<template id="java_gui_component_createdata_createDataModelValidator" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/create${variables.pojoName?lower_case}/Create${variables.pojoName}ModelValidator.java" templateFile="java/gui/component/createdata/CreateDataModelValidator.java.ftl" />
-
-		<template id="java_gui_component_dataoverview_dataOverviewController" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName}OverviewController.java" templateFile="java/gui/component/dataoverview/DataOverviewController.java.ftl" />
-		<template id="java_gui_component_dataoverview_dataOverviewModel" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName}OverviewModel.java" templateFile="java/gui/component/dataoverview/DataOverviewModel.java.ftl" />
-
-		<template id="java_gui_component_managedata_manageDataController" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/manage${variables.pojoName?lower_case}/Manage${variables.pojoName}Controller.java" templateFile="java/gui/component/managedata/ManageDataController.java.ftl" />
-		<template id="java_gui_component_managedata_manageDataModel" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/manage${variables.pojoName?lower_case}/Manage${variables.pojoName}Model.java" templateFile="java/gui/component/managedata/ManageDataModel.java.ftl" />
-		<template id="java_gui_component_managedata_manageDataModelValidator" destinationPath="src/main/java/${variables.rootPackage}/gui/${variables.component}/manage${variables.pojoName?lower_case}/Manage${variables.pojoName}ModelValidator.java" templateFile="java/gui/component/managedata/ManageDataModelValidator.java.ftl" />
-
-
-		<template id="java_persistence_common_abstractDomainDao" destinationPath="src/main/java/${variables.rootPackage}/persistence/common/AbstractDomainDao.java" templateFile="java/persistence/common/AbstractDomainDao.java.ftl" />
-		<template id="java_persistence_common_domainDao" destinationPath="src/main/java/${variables.rootPackage}/persistence/common/DomainDao.java" templateFile="java/persistence/common/DomainDao.java.ftl" />
-		<template id="java_persistence_component_dao_dataDao" destinationPath="src/main/java/${variables.rootPackage}/persistence/${variables.component}/dao/${variables.pojoName}Dao.java" templateFile="java/persistence/component/dao/DataDao.java.ftl"/>
-		<template id="java_persistence_component_dao_impl_dataDaoImpl" destinationPath="src/main/java/${variables.rootPackage}/persistence/${variables.component}/dao/impl/${variables.pojoName}DaoImpl.java" templateFile="java/persistence/component/dao/impl/DataDaoImpl.java.ftl"/>
-
-		<template id="resources_resources_persistence_namedQueries" destinationPath="src/main/resources/resources/persistence/NamedQueries.hbm.xml" templateFile="resources/resources/persistence/NamedQueries.hbm.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="resources_resources_spring_common" destinationPath="src/main/resources/resources/spring/common.xml" templateFile="resources/resources/spring/common.xml.ftl" />
-		<template id="resources_resources_spring_core" destinationPath="src/main/resources/resources/spring/core.xml" templateFile="resources/resources/spring/core.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="resources_resources_spring_core_dataManagement" destinationPath="src/main/resources/resources/spring/core/${variables.component}.xml" templateFile="resources/resources/spring/core/DataManagement.xml.ftl" />
-		<template id="resources_resources_spring_gui_gui-controller" destinationPath="src/main/resources/resources/spring/gui/gui-controller.xml" templateFile="resources/resources/spring/gui/gui-controller.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="resources_resources_spring_gui_gui-core-wrapper" destinationPath="src/main/resources/resources/spring/gui/gui-core-wrapper.xml" templateFile="resources/resources/spring/gui/gui-core-wrapper.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="resources_resources_spring_persistence_jpa" destinationPath="src/main/resources/resources/spring/persistence/jpa.xml" templateFile="resources/resources/spring/persistence/jpa.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="resources_resources_messages_masktexts_de" destinationPath="src/main/resources/resources/messages/masktexts_de.properties" templateFile="resources/resources/messages/masktexts_de.properties.ftl" mergeStrategy="propertymerge" targetCharset="ISO-8859-1" />
-
-
-		<template id="webapp_WEB-INF_gui_component_createdata_createdataButtonline" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Buttonline.xhtml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataButtonline.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_createdata_createdataFlow" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Flow.xml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataFlow.xml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_createdata_createdataForm" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Form.xhtml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataForm.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_createdata_createdataOverview" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}Overview.xhtml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataOverview.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_createdata_createdataViewState" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/create${variables.pojoName?lower_case}/create${variables.pojoName?lower_case}ViewState.xhtml" templateFile="webapp/WEB-INF/gui/component/createdata/createdataViewState.xhtml.ftl" />
-
-		<template id="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataButtonline" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName?lower_case}overviewButtonline.xhtml" templateFile="webapp/WEB-INF/gui/component/dataoverview/dataoverviewButtonline.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataFlow" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName?lower_case}overviewFlow.xml" templateFile="webapp/WEB-INF/gui/component/dataoverview/dataoverviewFlow.xml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataForm" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName?lower_case}overviewForm.xhtml" templateFile="webapp/WEB-INF/gui/component/dataoverview/dataoverviewForm.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataOverview" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName?lower_case}overviewOverview.xhtml" templateFile="webapp/WEB-INF/gui/component/dataoverview/dataoverviewOverview.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataViewState" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/${variables.pojoName?lower_case}overview/${variables.pojoName?lower_case}overviewViewState.xhtml" templateFile="webapp/WEB-INF/gui/component/dataoverview/dataoverviewViewState.xhtml.ftl" />
-
-		<template id="webapp_WEB-INF_gui_component_managedata_managedataButtonline" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/manage${variables.pojoName?lower_case}/manage${variables.pojoName?lower_case}Buttonline.xhtml" templateFile="webapp/WEB-INF/gui/component/managedata/managedataButtonline.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_managedata_managedataFlow" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/manage${variables.pojoName?lower_case}/manage${variables.pojoName?lower_case}Flow.xml" templateFile="webapp/WEB-INF/gui/component/managedata/managedataFlow.xml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_managedata_managedataForm" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/manage${variables.pojoName?lower_case}/manage${variables.pojoName?lower_case}Form.xhtml" templateFile="webapp/WEB-INF/gui/component/managedata/managedataForm.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_managedata_managedataOverview" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/manage${variables.pojoName?lower_case}/manage${variables.pojoName?lower_case}Overview.xhtml" templateFile="webapp/WEB-INF/gui/component/managedata/managedataOverview.xhtml.ftl" />
-		<template id="webapp_WEB-INF_gui_component_managedata_managedataViewState" destinationPath="src/main/webapp/WEB-INF/gui/${variables.component}/manage${variables.pojoName?lower_case}/manage${variables.pojoName?lower_case}ViewState.xhtml" templateFile="webapp/WEB-INF/gui/component/managedata/managedataViewState.xhtml.ftl" />
-
-		<template id="webapp_WEB-INF_gui_startpage_startpageButtons" destinationPath="src/main/webapp/WEB-INF/gui/startpage/startpageButtons.xhtml" templateFile="webapp/WEB-INF/gui/startpage/startpageButtons.xhtml.ftl" mergeStrategy="xmlmerge" />
-		<template id="webapp_WEB-INF_gui_startpage_startpageFlow" destinationPath="src/main/webapp/WEB-INF/gui/startpage/startpageFlow.xml" templateFile="webapp/WEB-INF/gui/startpage/startpageFlow.xml.ftl" mergeStrategy="xmlmerge" />
-		<template id="webapp_WEB-INF_gui_startpage_startpageOverview" destinationPath="src/main/webapp/WEB-INF/gui/startpage/startpageOverview.xhtml" templateFile="webapp/WEB-INF/gui/startpage/startpageOverview.xhtml.ftl" mergeStrategy="xmlmerge" />
-		<template id="webapp_WEB-INF_gui_startpage_startpageViewState" destinationPath="src/main/webapp/WEB-INF/gui/startpage/startpageViewState.xhtml" templateFile="webapp/WEB-INF/gui/startpage/startpageViewState.xhtml.ftl" mergeStrategy="xmlmerge" />
-
-		<template id="webapp_index" destinationPath="src/main/webapp/index.html" templateFile="webapp/index.html.ftl"/>
-
-	</templates>
-
-	<increments>
-		<increment id="common_exceptions" description="Common exception classes">
-			<templateRef idref="java_common_exception_technicalRuntimeException"/>
-			<templateRef idref="java_common_exception_validationException"/>
-		</increment>
-		<increment id="daos" description="DAO's">
-			<templateRef idref="java_common_constants_namedQueries"/>
-			<templateRef idref="java_persistence_common_abstractDomainDao"/>
-			<templateRef idref="java_persistence_common_domainDao"/>
-			<templateRef idref="java_persistence_component_dao_dataDao"/>
-			<templateRef idref="java_persistence_component_dao_impl_dataDaoImpl"/>
-			<templateRef idref="resources_resources_spring_persistence_jpa" />
-			<templateRef idref="resources_resources_persistence_namedQueries" />
-		</increment>
-		<increment id="core_layer" description="Core-Layer">
-			<templateRef idref="java_core_common_abstractUc"/>
-			<templateRef idref="java_core_component_common_abstractDataUc"/>
-			<templateRef idref="java_core_component_common_exceptionKeys"/>
-			<templateRef idref="java_core_component_entity_dataObjects"/>
-			<templateRef idref="java_core_component_dataManagement"/>
-			<templateRef idref="java_core_component_impl_dataManagementImpl"/>
-			<templateRef idref="java_core_component_impl_ucFindData"/>
-			<templateRef idref="java_core_component_impl_ucManageData"/>
-		</increment>
-		<increment id="gui_layer" description="Layer implementation">
-			<templateRef idref="java_gui_common_abstractController"/>
-			<templateRef idref="java_gui_component_common_abstractDataController"/>
-			<templateRef idref="java_gui_component_corewrapper_dataManagementCoreWrapper"/>
-			<templateRef idref="java_gui_component_corewrapper_impl_dataManagementCoreWrapper"/>
-			<templateRef idref="java_gui_component_createdata_createDataController"/>
-			<templateRef idref="java_gui_component_createdata_createDataModel"/>
-			<templateRef idref="java_gui_component_createdata_createDataModelValidator"/>
-			<templateRef idref="java_gui_component_dataoverview_dataOverviewController"/>
-			<templateRef idref="java_gui_component_dataoverview_dataOverviewModel"/>
-			<templateRef idref="java_gui_component_managedata_manageDataController"/>
-			<templateRef idref="java_gui_component_managedata_manageDataModel"/>
-			<templateRef idref="java_gui_component_managedata_manageDataModelValidator"/>
-		</increment>
-		<increment id="gui_jsf" description="JSF Masks">
-			<templateRef idref="resources_resources_messages_masktexts_de"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_createdata_createdataButtonline"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_createdata_createdataFlow"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_createdata_createdataForm"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_createdata_createdataOverview"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_createdata_createdataViewState"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataButtonline"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataFlow"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataForm"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataOverview"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_dataoverview_dataoverviewDataViewState"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_managedata_managedataButtonline"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_managedata_managedataFlow"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_managedata_managedataForm"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_managedata_managedataOverview"/>
-			<templateRef idref="webapp_WEB-INF_gui_component_managedata_managedataViewState"/>
-			<templateRef idref="webapp_WEB-INF_gui_startpage_startpageButtons"/>
-			<templateRef idref="webapp_WEB-INF_gui_startpage_startpageFlow"/>
-			<templateRef idref="webapp_WEB-INF_gui_startpage_startpageOverview"/>
-			<templateRef idref="webapp_WEB-INF_gui_startpage_startpageViewState"/>
-			<templateRef idref="webapp_index"/>
-		</increment>
-		<increment id="gui_spring" description="Spring configuration">
-			<templateRef idref="resources_resources_spring_common"/>
-			<templateRef idref="resources_resources_spring_core"/>
-			<templateRef idref="resources_resources_spring_core_dataManagement"/>
-			<templateRef idref="resources_resources_spring_gui_gui-controller"/>
-			<templateRef idref="resources_resources_spring_gui_gui-core-wrapper"/>
-		</increment>
-		<increment id="gui" description="GUI">
-			<incrementRef idref="gui_layer" />
-			<incrementRef idref="gui_jsf" />
-			<incrementRef idref="gui_spring" />
-		</increment>
-	</increments>
+        <templateExtension ref="startpageButtons.xhtml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageFlow.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageOverview.xhtml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageViewState.xhtml" mergeStrategy="xmlmerge"/>
+    </templates>
+    
+    <templateScans>
+        <templateScan templatePath="templates" destinationPath="src/main"/>
+    </templateScans>
+	
+    <increments>
+        <increment name="common_exceptions" description="Common exception classes">
+            <templateRef ref="TechnicalRuntimeException.java"/>
+            <templateRef ref="ValidationException.java"/>
+        </increment>
+        <increment name="daos" description="DAO's">
+            <templateRef ref="NamedQueries.java"/>
+            <templateRef ref="AbstractDomainDao.java"/>
+            <templateRef ref="DomainDao.java"/>
+            <templateRef ref="${variables.pojoName}Dao.java"/>
+            <templateRef ref="${variables.pojoName}DaoImpl.java"/>
+            <templateRef ref="jpa.xml"/>
+            <templateRef ref="NamedQueries.hbm.xml"/>
+        </increment>
+        <increment name="core_layer" description="Core layer">
+            <templateRef ref="AbstractUc.java"/>
+            <templateRef ref="Abstract${variables.pojoName}Uc.java"/>
+            <templateRef ref="${variables.component#cap_first}ExceptionKeys.java"/>
+            <templateRef ref="${variables.pojoName}To.java"/>
+            <templateRef ref="${variables.component#cap_first}.java"/>
+            <templateRef ref="${variables.component#cap_first}Impl.java"/>
+            <templateRef ref="UcFind${variables.pojoName}.java"/>
+            <templateRef ref="UcManage${variables.pojoName}.java"/>
+        </increment>
+        <increment name="gui_layer" description="JSF GUI layer">
+            <templateRef ref="AbstractController.java"/>
+            <templateRef ref="Abstract${variables.pojoName}Controller.java"/>
+            <templateRef ref="${variables.component#cap_first}CoreWrapper.java"/>
+            <templateRef ref="${variables.component#cap_first}CoreWrapperImpl.java"/>
+            <templateRef ref="Create${variables.pojoName}Controller.java"/>
+            <templateRef ref="Create${variables.pojoName}Model.java"/>
+            <templateRef ref="Create${variables.pojoName}ModelValidator.java"/>
+            <templateRef ref="${variables.pojoName}OverviewController.java"/>
+            <templateRef ref="${variables.pojoName}OverviewModel.java"/>
+            <templateRef ref="Manage${variables.pojoName}Controller.java"/>
+            <templateRef ref="Manage${variables.pojoName}Model.java"/>
+            <templateRef ref="Manage${variables.pojoName}ModelValidator.java"/>
+        </increment>
+        <increment name="gui_jsf" description="JSF Masks">
+            <templateRef ref="masktexts_de.properties"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Buttonline.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Flow.xml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Form.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Overview.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}ViewState.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewButtonline.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewFlow.xml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewForm.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewOverview.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewViewState.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Buttonline.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Flow.xml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Form.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Overview.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}ViewState.xhtml"/>
+            <templateRef ref="startpageButtons.xhtml"/>
+            <templateRef ref="startpageFlow.xml"/>
+            <templateRef ref="startpageOverview.xhtml"/>
+            <templateRef ref="startpageViewState.xhtml"/>
+            <templateRef ref="index.html"/>
+        </increment>
+        <increment name="gui_spring" description="Spring configuration">
+            <templateRef ref="common.xml"/>
+            <templateRef ref="core.xml"/>
+            <templateRef ref="${variables.component#cap_first}.xml"/>
+            <templateRef ref="gui-controller.xml"/>
+            <templateRef ref="gui-core-wrapper.xml"/>
+        </increment>
+        <increment name="gui" description="GUI">
+            <incrementRef ref="gui_layer"/>
+            <incrementRef ref="gui_jsf"/>
+            <incrementRef ref="gui_spring"/>
+        </increment>
+    </increments>
 </templatesConfiguration>

@@ -7,8 +7,8 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.eclipse.common.constants.ConfigResources;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
@@ -62,7 +62,7 @@ public abstract class AbstractCobiGenWrapper {
     private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
         InvalidConfigurationException, IOException {
 
-        IProject generatorProj = ConfigResources.getGeneratorConfigurationProject();
+        IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
         return new CobiGen(generatorProj.getLocationURI());
     }
 
