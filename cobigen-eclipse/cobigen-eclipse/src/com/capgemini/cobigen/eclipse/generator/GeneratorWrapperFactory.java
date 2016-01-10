@@ -54,12 +54,14 @@ public class GeneratorWrapperFactory {
             try {
                 Object firstElement = extractedInputs.get(0);
                 if (firstElement instanceof IJavaElement) {
+                    LOG.info("Create new CobiGen instance for java inputs...");
                     JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
                     generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject()
                         .getProject());
                     generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
                     return generator;
                 } else if (firstElement instanceof IFile) {
+                    LOG.info("Create new CobiGen instance for xml inputs...");
                     XmlGeneratorWrapper generator = new XmlGeneratorWrapper();
                     generator.setGenerationTargetProject(((IFile) firstElement).getProject());
                     generator.setInputs(XmlInputConverter.convertInput(extractedInputs));
@@ -94,6 +96,7 @@ public class GeneratorWrapperFactory {
      */
     public static List<Object> extractValidEclipseInputs(IStructuredSelection selection)
         throws InvalidInputException {
+        LOG.info("Start extraction of valid inputs from selection...");
         int type = 0;
         boolean initialized = false;
         List<Object> inputObjects = Lists.newLinkedList();
@@ -156,6 +159,7 @@ public class GeneratorWrapperFactory {
             }
         }
 
+        LOG.info("Finished extraction of inputs from selection successfully.");
         return inputObjects;
     }
 }
