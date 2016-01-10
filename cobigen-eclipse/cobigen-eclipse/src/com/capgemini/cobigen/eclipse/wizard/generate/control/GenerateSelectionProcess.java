@@ -48,7 +48,7 @@ public class GenerateSelectionProcess extends AbstractGenerateSelectionProcess {
 
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
-            monitor.beginTask("Generate files...", templatesToBeGenerated.size());
+            monitor.beginTask("GenerateHandler files...", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
                 if (template.getMergeStrategy() == null) {
                     cobigenWrapper.generate(template, true);

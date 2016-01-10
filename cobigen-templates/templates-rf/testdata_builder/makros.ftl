@@ -1,17 +1,29 @@
 <#macro callNotNullPropertyWithDefaultValue attr>
 <#compress>
-<#if attr.type = "String">
-	${attr.name}("DefaultString");
-<#elseif attr.type = "int" || attr.type = "Integer">
+<#if attr.canonicalType = "byte" || attr.canonicalType = "java.lang.Byte" >
+	${attr.name}((byte)1);
+<#elseif attr.canonicalType  = "short" || attr.canonicalType = "java.lang.Short" >
+	${attr.name}((short)1);
+<#elseif attr.canonicalType  = "int" || attr.canonicalType = "java.lang.Integer" >
 	${attr.name}(1);
-<#elseif attr.type?lower_case = "long">
-	${attr.name}(1l);
-<#elseif attr.type?lower_case = "float">
+<#elseif attr.canonicalType  = "long" || attr.canonicalType = "java.lang.Long" >
+	${attr.name}(1L);
+<#elseif attr.canonicalType  = "float" || attr.canonicalType = "java.lang.Float" >
 	${attr.name}(1f);
+<#elseif attr.canonicalType  = "double" || attr.canonicalType = "java.lang.Double" >
+	${attr.name}(1d);
+<#elseif attr.canonicalType  = "char" || attr.canonicalType = "java.lang.Character" >
+	${attr.name}('c');
+<#elseif attr.canonicalType  = "boolean" || attr.canonicalType = "java.lang.Boolean" >
+	${attr.name}(true);
+<#elseif attr.canonicalType   = "java.lang.String">
+	${attr.name}("DefaultString");
+<#elseif attr.canonicalType   = "java.lang.Number">
+	${attr.name}(1);
 <#elseif getPackage(attr.canonicalType) = pojo.package>
 	${attr.name}(new ${attr.name?cap_first}Builder().createNew());
 <#else>
-	//TODO ${attr.name}(...); //set Default ${getPackage(attr.canonicalType)}
+	//TODO ${attr.name}(...); //set Default ${attr.canonicalType}
 </#if>
 </#compress>
 </#macro>

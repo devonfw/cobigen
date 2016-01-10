@@ -2,6 +2,9 @@ package com.capgemini.cobigen.javaplugin.merger.libextension;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
 
 import com.thoughtworks.qdox.library.AbstractClassLibrary;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
@@ -28,6 +31,33 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
     @Override
     public JavaSource addSource(File file) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(file);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 26, 2015)
+     */
+    @Override
+    public JavaSource addSource(InputStream stream) throws IOException {
+        return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(stream);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 26, 2015)
+     */
+    @Override
+    public JavaSource addSource(Reader reader) {
+        return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(reader);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 26, 2015)
+     */
+    @Override
+    public JavaSource addSource(URL url) throws IOException {
+        return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(url);
     }
 
     /**

@@ -1,26 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
-	<templates>
-		<template id="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge" />
-		<template id="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge" />
-		<template id="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override" />
-		<template id="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge" />
-		<template id="P" destinationPath="src/test/java/${variables.rootPackage}/common/builders/P.java" templateFile="P.java.ftl" />
-	</templates>
-
-	<increments>
-		<increment id="testdata_builder" description="Testdata-Builder">
-			<templateRef idref="P"/>
-			<templateRef idref="entityBuilder"/>
-			<templateRef idref="entityBuilder_fillMandatoryFields"/>
-			<templateRef idref="entityBuilder_customFunctions"/>
-		</increment>
-		<increment id="testdata_builder_persistable" description="Testdata-Builder (persistable)">
-			<templateRef idref="P"/>
-			<templateRef idref="entityBuilder"/>
-			<templateRef idref="entityBuilder_fillMandatoryFields"/>
-			<templateRef idref="entityBuilder_customFunctions"/>
-			<templateRef idref="entityBuilder_persistable"/>
-		</increment>
-	</increments>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <template name="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
+        <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
+        <template name="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override"/>
+        <template name="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.subPackage}/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge"/>
+        <template name="P" destinationPath="src/test/java/${variables.rootPackage}/common/builders/P.java" templateFile="P.java.ftl"/>
+    </templates>
+    <increments>
+        <increment name="testdata_builder" description="Testdata-Builder">
+            <templateRef ref="P"/>
+            <templateRef ref="entityBuilder"/>
+            <templateRef ref="entityBuilder_fillMandatoryFields"/>
+            <templateRef ref="entityBuilder_customFunctions"/>
+        </increment>
+        <increment name="testdata_builder_persistable" description="Testdata-Builder (persistable)">
+            <templateRef ref="P"/>
+            <templateRef ref="entityBuilder"/>
+            <templateRef ref="entityBuilder_fillMandatoryFields"/>
+            <templateRef ref="entityBuilder_customFunctions"/>
+            <templateRef ref="entityBuilder_persistable"/>
+        </increment>
+    </increments>
 </templatesConfiguration>
