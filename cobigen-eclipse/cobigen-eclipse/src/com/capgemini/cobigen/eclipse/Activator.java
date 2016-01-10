@@ -2,24 +2,18 @@ package com.capgemini.cobigen.eclipse;
 
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectRCL;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
@@ -42,26 +36,12 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectRCL();
+    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectListener();
 
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
      */
     private volatile boolean configurationProjectListenerStarted = false;
-
-    /**
-     * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     */
-    private SelectionServiceListener selectionServiceListener;
-
-    /** Sync Object for (un-)registering the {@link SelectionServiceListener} */
-    private Object selectionServiceListenerSync = new Object();
-
-    /**
-     * Checks whether the workbench has been initialized (workaround for better user notification about
-     * context.xml compile errors)
-     */
-    private volatile boolean initialized = false;
 
     /**
      * Assigning logger to Activator
@@ -76,18 +56,17 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (14.02.2013)
+     * @author mbrunnli (14.02.2013), updated by sholzer (22.09.2015)
      */
     @Override
     public void start(BundleContext context) throws Exception {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         super.start(context);
         plugin = this;
         PluginRegistry.loadPlugin(JavaPluginActivator.class);
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        startSelectionServiceListener();
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
@@ -116,8 +95,7 @@ public class Activator extends AbstractUIPlugin {
     }
 
     /**
-     *
-     *
+     * Stops the ResourceChangeListener
      * @author mbrunnli (Jun 24, 2015)
      */
     public void stopConfigurationListener() {
@@ -131,76 +109,6 @@ public class Activator extends AbstractUIPlugin {
                     ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
                     configurationProjectListenerStarted = false;
                     LOG.info("ResourceChangeListener for configuration project stopped.");
-                }
-            }
-        });
-    }
-
-    /**
-     * Starts the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     * @author mbrunnli (08.04.2013), adapted by sbasnet(30.10.2014)
-     */
-    public void startSelectionServiceListener() {
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (selectionServiceListenerSync) {
-                    if (selectionServiceListener != null) {
-                        return;
-                    }
-                    LOG.info("Start SelectionServiceListener.");
-                    try {
-                        selectionServiceListener = new SelectionServiceListener(true);
-                        PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(JavaUI.ID_PACKAGES,
-                            selectionServiceListener);
-                        PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(ProjectExplorer.VIEW_ID,
-                            selectionServiceListener);
-                        LOG.info("SelectionServiceListener started.");
-                    } catch (InvalidConfigurationException e) {
-                        if (initialized) {
-                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The context.xml of the generator configuration was changed into an invalid state.\n"
-                                    + "The generator might not behave as intended:\n" + e.getMessage());
-                        }
-                        stopSelectionServiceListener();
-                    } catch (Throwable e) {
-                        if (initialized) {
-                            PlatformUIUtil
-                                .openErrorDialog(
-                                    "CobiGen does not work properly!",
-                                    "An error occurred while registering all necessary resource change listeners.",
-                                    e);
-                            LOG.error("Error during initialization:", e);
-                        }
-                        stopSelectionServiceListener();
-                    } finally {
-                        initialized = true;
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * Stops the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     *
-     * @author mbrunnli (08.04.2013)
-     */
-    public void stopSelectionServiceListener() {
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (selectionServiceListenerSync) {
-                    if (selectionServiceListener == null) {
-                        return;
-                    }
-                    PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(JavaUI.ID_PACKAGES,
-                        selectionServiceListener);
-                    PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(ProjectExplorer.VIEW_ID,
-                        selectionServiceListener);
-                    selectionServiceListener.stopConfigurationChangeListener();
-                    selectionServiceListener = null;
-                    LOG.info("SelectionServiceListener stopped.");
                 }
             }
         });

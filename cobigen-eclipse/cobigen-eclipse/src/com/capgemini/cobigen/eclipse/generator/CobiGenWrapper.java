@@ -12,8 +12,14 @@ import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
@@ -35,6 +41,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * States whether at least one input object has been set
      */
     private boolean initialized;
+
+    /**
+     * Assigning logger to CobiGenWrapper
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CobiGenWrapper.class);
 
     /**
      * States, whether the input is unique and a container
@@ -144,13 +155,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the specified template could not be found
      * @throws MergeException
      *             if there are some problems while merging
-     * @throws CoreException
-     *             if an internal eclipse exception occurs
      * @author mbrunnli (14.02.2013)
      */
-    @SuppressWarnings("unused")
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        MergeException, CoreException {
+        MergeException {
 
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
@@ -173,7 +181,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            template model
      * @author mbrunnli (06.12.2014)
      */
-    public abstract void adaptModel(Map<String, Object> model);
+    protected abstract void adaptModel(Map<String, Object> model);
 
     /**
      * Returns all matching trigger ids for the currently stored input
@@ -269,7 +277,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @author mbrunnli (14.02.2013)
      */
     public List<TemplateTo> getTemplatesForFilePath(String filePath, Set<IncrementTo> consideredIncrements) {
-        // TODO DRINGEND!!! BUG, da die selektion sonst nicht mehr funktioniert??? testen!
         List<TemplateTo> templates = Lists.newLinkedList();
         if (consideredIncrements != null) {
             for (IncrementTo increment : getAllIncrements()) {
@@ -394,4 +401,142 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
     }
 
+    /**
+     * delegate of {@link CobiGen#getMatchingTriggerIds(Object)}
+     * @param loadClass
+     *            the object to be loaded
+     * @return the list of matching trigger id's
+     * @author sholzer (Sep 23, 2015)
+     */
+    public List<String> getMatchingTriggerIds(Object loadClass) {
+        if (initialized) {
+            return cobiGen.getMatchingTriggerIds(loadClass);
+        } else {
+            LOG.debug("Generator is not initialized. Could not get matching triggers for "
+                + loadClass.toString());
+            return null;
+        }
+    }
+
+    /**
+     * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported
+     * by the same {@link Trigger}s
+     *
+     * @param selection
+     *            the selection made
+     * @return true, if all items are supported by the same trigger(s)<br>
+     *         false, if they are not supported by any trigger at all
+     * @throws InvalidInputException
+     *             if the input could not be read as expected
+     * @author trippl (22.04.2013)
+     */
+    public abstract boolean isValidInput(IStructuredSelection selection) throws InvalidInputException;
+
+    // /**
+    // * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported
+    // * by the same {@link Trigger}s
+    // *
+    // * @param selection
+    // * the selection made
+    // * @return true, if all items are supported by the same trigger(s)<br>
+    // * false, if they are not supported by any trigger at all
+    // * @throws InvalidInputException
+    // * if the input could not be read as expected
+    // * @author trippl (22.04.2013)
+    // */
+    // public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
+    //
+    // Iterator<?> it = selection.iterator();
+    // List<String> firstTriggers = null;
+    //
+    // boolean uniqueSourceSelected = false;
+    //
+    // while (it.hasNext()) {
+    // Object tmp = it.next();
+    // if (tmp instanceof ICompilationUnit) {
+    // if (firstTriggers == null) {
+    // firstTriggers = findMatchingTriggers((ICompilationUnit) tmp);
+    // } else {
+    // if (!firstTriggers.equals(findMatchingTriggers((ICompilationUnit) tmp))) {
+    // throw new InvalidInputException(
+    // "You selected at least two inputs, which are not matching the same triggers. "
+    // + "For batch processing all inputs have to match the same triggers.");
+    // }
+    // }
+    // } else if (tmp instanceof IPackageFragment) {
+    // uniqueSourceSelected = true;
+    // firstTriggers =
+    // cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp).getResource()
+    // .getLocationURI(), ((IPackageFragment) tmp).getElementName()));
+    // } else if (tmp instanceof IFile) {
+    // uniqueSourceSelected = true;
+    // try (InputStream stream = ((IFile) tmp).getContents()) {
+    // LOG.debug("Try parsing file {} as xml...", ((IFile) tmp).getName());
+    // Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
+    // firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
+    // } catch (CoreException e) {
+    // throw new InvalidInputException("An eclipse internal exception occured! ", e);
+    // } catch (IOException e) {
+    // throw new InvalidInputException("The file " + ((IFile) tmp).getName()
+    // + " could not be read!", e);
+    // } catch (ParserConfigurationException e) {
+    // throw new InvalidInputException("The file " + ((IFile) tmp).getName()
+    // + " could not be parsed, because of an internal configuration error!", e);
+    // } catch (SAXException e) {
+    // throw new InvalidInputException("The contents of the file " + ((IFile) tmp).getName()
+    // + " could not be detected as an instance of any CobiGen supported input language.");
+    // }
+    // } else {
+    // throw new InvalidInputException(
+    // "You selected at least one input, which type is currently not supported as input for generation. "
+    // + "Please choose a different one or read the CobiGen documentation for more details.");
+    // }
+    //
+    // if (uniqueSourceSelected && selection.size() > 1) {
+    // throw new InvalidInputException(
+    // "You selected at least one input in a mass-selection,"
+    // + " which type is currently not supported for batch processing. "
+    // + "Please just select multiple inputs only if batch processing is supported for all inputs.");
+    // }
+    // }
+    // return firstTriggers != null && !firstTriggers.isEmpty();
+    // }
+    //
+    // /**
+    // * Returns a {@link Set} of {@link Trigger}s that support the give {@link ICompilationUnit}
+    // *
+    // * @param cu
+    // * {@link ICompilationUnit} to be checked
+    // * @return the {@link Set} of {@link Trigger}s
+    // * @throws InvalidInputException
+    // * if the input could not be read as expected
+    // * @author trippl (22.04.2013)
+    // */
+    // private List<String> findMatchingTriggers(ICompilationUnit cu) throws InvalidInputException {
+    //
+    // ClassLoader classLoader;
+    // IType type = null;
+    // try {
+    // classLoader = ClassLoaderUtil.getProjectClassLoader(cu.getJavaProject());
+    // type = EclipseJavaModelUtil.getJavaClassType(cu);
+    // return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
+    // } catch (MalformedURLException e) {
+    // throw new InvalidInputException("Error while retrieving the project's ('"
+    // + cu.getJavaProject().getElementName() + "') classloader.", e);
+    // } catch (CoreException e) {
+    // throw new InvalidInputException("An eclipse internal exception occured!", e);
+    // } catch (ClassNotFoundException e) {
+    // throw new InvalidInputException("The class '" + type.getFullyQualifiedName()
+    // + "' could not be found. "
+    // + "This may be cause of a non-compiling host project of the selected input.", e);
+    // } catch (UnsupportedClassVersionError e) {
+    // throw new InvalidInputException(
+    // "Incompatible java version: "
+    // +
+    // "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+    // +
+    // "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+    // + "Current runtime: " + System.getProperty("java.version"), e);
+    // }
+    // }
 }

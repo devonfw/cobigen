@@ -2,7 +2,6 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol.handler;
 
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -10,17 +9,18 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
@@ -44,15 +44,17 @@ public class GenerateHandler extends AbstractHandler {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (13.02.2013)
+     * @author mbrunnli (13.02.2013), updated by sholzer (22.09.2015)
      */
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.debug("on click Event? " + event.getClass().getName());
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);
-        if (sel instanceof ITreeSelection) {
+
+        if (sel instanceof IStructuredSelection) {
 
             // when this handler is executed, we should we should be sure, that the selection is currently
             // supported by the following implementation
@@ -60,9 +62,9 @@ public class GenerateHandler extends AbstractHandler {
             try {
                 CobiGenWrapper generator =
                     GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
-                if (generator == null) {
+                if (generator == null || !generator.isValidInput((IStructuredSelection) sel)) {
                     MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
-                        "The selection is currently not supported as valid input.");
+                        "The current selection is currently not supported as valid input.");
                     return null;
                 }
 
@@ -106,6 +108,9 @@ public class GenerateHandler extends AbstractHandler {
             } catch (GeneratorCreationException e) {
                 PlatformUIUtil.openErrorDialog("Error", "Could not create an instance of the generator!", e);
                 LOG.error("Could not create an instance of the generator.", e);
+            } catch (InvalidInputException e) {
+                PlatformUIUtil.openErrorDialog("Error", "Invalid selection: " + e.getMessage(), e);
+                LOG.error("Invalid Configuration", e);
             } catch (Throwable e) {
                 PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);

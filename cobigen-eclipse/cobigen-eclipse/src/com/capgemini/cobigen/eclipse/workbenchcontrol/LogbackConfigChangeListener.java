@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -14,22 +13,26 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
-import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
 /**
  * {@link IResourceChangeListener} for the generator configuration project
  *
  * @author mbrunnli (10.04.2013)
  */
-public class ConfigurationRCL implements IResourceChangeListener {
+public class LogbackConfigChangeListener implements IResourceChangeListener {
+
+    /**
+     * Assigning logger to LogbackConfigChangeListener
+     */
+    private final static Logger LOG = LoggerFactory.getLogger(LogbackConfigChangeListener.class);
 
     /**
      * Generator configuration project
@@ -37,39 +40,20 @@ public class ConfigurationRCL implements IResourceChangeListener {
     private IProject generatorConfProj;
 
     /**
-     * context.xml of the given project
-     */
-    private IFile contextXmlFile;
-
-    /**
      * logback.xml of the given project
      */
     private IFile logbackXmlFile;
-
-    /**
-     * current {@link CobiGen} instance to get updated on changes
-     */
-    private CobiGen generator;
-
-    /**
-     * Assigning logger to ConfigurationRCL
-     */
-    private final static Logger LOG = LoggerFactory.getLogger(ConfigurationRCL.class);
 
     /**
      * Creates a new resource change listener for the given generator configuration project. The resource
      * change listener will track the context.xml and logback.xml files to be reloaded, when they change.
      * @param generatorConfProj
      *            generator configuration folder
-     * @param generator
-     *            {@link CobiGen} generator to be configured with the changed configuration files
      * @author mbrunnli (10.04.2013)
      */
-    public ConfigurationRCL(IProject generatorConfProj, CobiGen generator) {
+    public LogbackConfigChangeListener(IProject generatorConfProj) {
 
         this.generatorConfProj = generatorConfProj;
-        this.generator = generator;
-        contextXmlFile = generatorConfProj.getFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         logbackXmlFile = generatorConfProj.getFile("logback.xml");
         try {
             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
@@ -85,30 +69,14 @@ public class ConfigurationRCL implements IResourceChangeListener {
      */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren();
         for (IResourceDelta projDelta : affectedProjects) {
             if (projDelta.getResource().equals(generatorConfProj)) {
                 IResourceDelta[] affectedChildren = projDelta.getAffectedChildren();
                 for (IResourceDelta fileDelta : affectedChildren) {
-                    if (fileDelta.getResource().equals(contextXmlFile)) {
-                        try {
-                            generator.reloadContextConfigurationFromFile();
-                            LOG.info("The CobiGen " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
-                                + " has been changed and reloaded.");
-                        } catch (InvalidConfigurationException e) {
-                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
-                                    + " of the generator configuration was changed into an invalid state.\n"
-                                    + "The generator might not behave as intended:\n" + e.getMessage());
-                            LOG.warn(
-                                "The "
-                                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
-                                    + " of the generator configuration was changed into an invalid state. The generator might not behave as intended:\n",
-                                e);
-                        }
-                    } else if (fileDelta.getResource().equals(logbackXmlFile)) {
+                    if (fileDelta.getResource().equals(logbackXmlFile)) {
                         try {
                             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
                             LOG.info("The Logback logback.xml has been changed and reloaded.");
@@ -120,10 +88,8 @@ public class ConfigurationRCL implements IResourceChangeListener {
                                     + " of the generator configuration was changed into an invalid state.\n"
                                     + "The generator might not behave as intended:\n" + e.getMessage());
                             LOG.error(
-                                "The "
-                                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
-                                    + " of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
-                                e);
+                                "The {} of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                ConfigurationConstants.CONTEXT_CONFIG_FILENAME, e);
                         }
                     }
                 }
@@ -165,7 +131,7 @@ public class ConfigurationRCL implements IResourceChangeListener {
                     configurator.setContext(lc);
                     lc.reset();
                     configurator.doConfigure(externalConfigFileLocation);
-                    LOG.info("Configured Logback with config file from: " + externalConfigFileLocation);
+                    LOG.info("Configured Logback with config file from: {}", externalConfigFileLocation);
                 }
             }
         }
