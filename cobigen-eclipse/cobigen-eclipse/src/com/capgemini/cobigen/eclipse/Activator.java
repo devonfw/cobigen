@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
@@ -35,18 +36,12 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    private IResourceChangeListener configurationProjectListener;
+    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectListener();
 
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
      */
     private volatile boolean configurationProjectListenerStarted = false;
-
-    /**
-     * Checks whether the workbench has been initialized (workaround for better user notification about
-     * context.xml compile errors)
-     */
-    private volatile boolean initialized = false;
 
     /**
      * Assigning logger to Activator
