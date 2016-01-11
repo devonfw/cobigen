@@ -48,6 +48,7 @@ public class GeneratorWrapperFactory {
      */
     public static CobiGenWrapper createGenerator(IStructuredSelection selection)
         throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
+
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
         if (extractedInputs.size() > 0) {
@@ -94,7 +95,7 @@ public class GeneratorWrapperFactory {
      *             combination of inputs.
      * @author mbrunnli (04.12.2014)
      */
-    public static List<Object> extractValidEclipseInputs(IStructuredSelection selection)
+    private static List<Object> extractValidEclipseInputs(IStructuredSelection selection)
         throws InvalidInputException {
         LOG.info("Start extraction of valid inputs from selection...");
         int type = 0;
