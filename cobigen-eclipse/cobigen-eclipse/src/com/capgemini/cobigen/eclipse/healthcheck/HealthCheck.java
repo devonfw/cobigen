@@ -186,7 +186,7 @@ public class HealthCheck {
 
         int result = dialog.open();
         if (result == 0) {
-            new HealthCheck().execute();
+            new AdvancedHealthCheck().execute();
         }
     }
 
