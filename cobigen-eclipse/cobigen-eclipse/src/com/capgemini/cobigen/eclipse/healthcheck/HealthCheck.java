@@ -5,23 +5,19 @@ import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
@@ -41,11 +37,9 @@ public class HealthCheck {
     /**
      * Executes the simple health check, checking configuration project existence, validity of context
      * configuration, as well as validity of the current workbench selection as generation input.
-     * @param selection
-     *            current selection in the workbench
      * @author mbrunnli (Jun 24, 2015)
      */
-    public void execute(final ISelection selection) {
+    public void execute() {
 
         String firstStep =
             "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
@@ -54,37 +48,21 @@ public class HealthCheck {
 
         String healthyCheckMessage = "";
         IProject generatorConfProj = null;
+
         try {
+            // check configuration project existence
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+
+            // refresh and check context configuration
+            ResourcesPluginUtil.refreshConfigurationProject();
+            new CobiGen(generatorConfProj.getLocationURI());
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "OK.";
-            healthyCheckMessage += "\n3. Check validity of current selection... ";
-            if (selection instanceof IStructuredSelection) {
-                try {
-                    CobiGenWrapper cobiGenWrapper =
-                        GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
+            openSuccessDialog(healthyCheckMessage, false);
 
-                    if (cobiGenWrapper.isValidInput((IStructuredSelection) selection)) {
-                        healthyCheckMessage += "OK.";
-                        openSuccessDialog(healthyCheckMessage, false);
-                    } else {
-                        healthyCheckMessage += "NO MATCHING TRIGGER.";
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                } catch (InvalidInputException e) {
-                    healthyCheckMessage += "INVALID.\n=> Cause: " + e.getLocalizedMessage();
-                    if (e.hasRootCause()) {
-                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
-                    } else {
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                }
-            } else {
-                healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
-                PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
-            }
         } catch (GeneratorProjectNotExistentException e) {
+            LOG.warn("Configuration project not found!", e);
             healthyCheckMessage =
                 firstStep + "NOT FOUND!\n"
                     + "=> Please import the configuration project into your workspace as stated in the "
@@ -104,15 +82,18 @@ public class HealthCheck {
                         "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
                             + currentVersion + " / Currently Supported: "
                             + ContextConfigurationVersion.getLatest();
-                    openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
+                    boolean upgraded =
+                        openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
 
-                    // re-run Health Check
-                    Display.getCurrent().asyncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            execute(selection);
-                        }
-                    });
+                    if (upgraded) {
+                        // re-run Health Check
+                        Display.getCurrent().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                execute();
+                            }
+                        });
+                    }
                     return;
                 } else {
                     healthyCheckMessage +=
@@ -136,9 +117,11 @@ public class HealthCheck {
      *            message to be shown to the user
      * @param configurationFolder
      *            path of the configuration folder to perform the upgrade
+     * @return <code>true</code> if the upgrade has been triggered, <code>false</code> if the dialog has been
+     *         aborted
      * @author mbrunnli (Jun 24, 2015)
      */
-    private void openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder) {
+    private boolean openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder) {
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), "Health Check", null,
                 healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration",
@@ -148,7 +131,9 @@ public class HealthCheck {
         int result = dialog.open();
         if (result == 0) {
             upgradeContextConfiguration(configurationFolder);
+            return true;
         }
+        return false;
     }
 
     /**

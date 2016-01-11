@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,7 +32,7 @@ public class HealthCheckHandler extends AbstractHandler {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         try {
-            new HealthCheck().execute(HandlerUtil.getCurrentSelection(event));
+            new HealthCheck().execute();
         } catch (Throwable e) {
             LOG.error("An unexpected error occurred while processing the health check. This is a bug.", e);
             PlatformUIUtil.openErrorDialog("Error",

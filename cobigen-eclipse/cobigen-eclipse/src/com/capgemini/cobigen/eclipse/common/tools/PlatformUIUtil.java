@@ -95,12 +95,16 @@ public class PlatformUIUtil {
     public static MultiStatus createMultiStatus(Throwable t) {
 
         List<Status> childStatus = Lists.newArrayList();
-
-        StackTraceElement[] stackTraces = t.getStackTrace();
-
-        for (StackTraceElement stackTrace : stackTraces) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, stackTrace.toString());
+        StackTraceElement[] stackTraceElements = t.getStackTrace();
+        for (int i = 0; i < stackTraceElements.length; i++) {
+            StackTraceElement element = stackTraceElements[i];
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, element.toString());
             childStatus.add(status);
+        }
+
+        if (t.getCause() != null) {
+            childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Caused by"));
+            childStatus.add(createMultiStatus(t.getCause()));
         }
 
         MultiStatus ms =
