@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
+import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
@@ -105,8 +107,7 @@ public class GenerateHandler extends AbstractHandler {
                 PlatformUIUtil.openErrorDialog("Error", "Unknown Expression: " + e.getMessage(), e);
                 LOG.error("Unknown Expression", e);
             } catch (InvalidConfigurationException e) {
-                PlatformUIUtil.openErrorDialog("Error", "Invalid Configuration: " + e.getMessage(), e);
-                LOG.error("Invalid Configuration", e);
+                openInvalidConfigurationErrorDialog();
             } catch (GeneratorProjectNotExistentException e) {
                 MessageDialog
                     .openError(
@@ -133,5 +134,27 @@ public class GenerateHandler extends AbstractHandler {
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return null;
+    }
+
+    /**
+     * Opens up a message dialog for displaying further guidance on context configuration issues.
+     * @author mbrunnli (Jan 11, 2016)
+     */
+    private void openInvalidConfigurationErrorDialog() {
+        MessageDialog dialog =
+            new MessageDialog(
+                Display.getDefault().getActiveShell(),
+                "Invalid context configuration!",
+                null,
+                "The context configuration has been changed into an invalid state "
+                    + "OR is simply outdated, if you recently updated CobiGen. "
+                    + "For further investigation and automatic upgrade options start CobiGen's Health Check.",
+                MessageDialog.WARNING, new String[] { "Health Check", "OK" }, 1);
+        dialog.setBlockOnOpen(true);
+
+        int result = dialog.open();
+        if (result == 0) {
+            new HealthCheck().execute();
+        }
     }
 }
