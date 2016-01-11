@@ -271,6 +271,26 @@ public class XmlPluginMergerIntegrationTest {
 
     }
 
+    /**
+     * Tests the correct merge behaviour with Spring Beans. Test files are used from XmlLawMerger test
+     * resources
+     * @throws Exception
+     *             should not happen
+     * @author sholzer (Jan 11, 2016)
+     */
+    @Test
+    public void testBeans() throws Exception {
+        String basePath = resourcesRoot + "BaseFile_beans.xml";
+        String patchPath = resourcesRoot + "PatchFile_beans.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
+        assertEquals("Not the expected amount of beans", 3, mergedDoc.split("<p:bean").length - 1);
+        // Note: The test expects 2 bean elements but by the way they're retrieved their root <p:beans> is
+        // returned as well and needed to be considered
+    }
+
     // utils
 
     /**
