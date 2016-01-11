@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +37,9 @@ public class HealthCheck {
     /**
      * Executes the simple health check, checking configuration project existence, validity of context
      * configuration, as well as validity of the current workbench selection as generation input.
-     * @param selection
-     *            current selection in the workbench
      * @author mbrunnli (Jun 24, 2015)
      */
-    public void execute(final ISelection selection) {
+    public void execute() {
 
         String firstStep =
             "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
@@ -93,7 +90,7 @@ public class HealthCheck {
                         Display.getCurrent().asyncExec(new Runnable() {
                             @Override
                             public void run() {
-                                execute(selection);
+                                execute();
                             }
                         });
                     }
@@ -189,7 +186,7 @@ public class HealthCheck {
 
         int result = dialog.open();
         if (result == 0) {
-            new AdvancedHealthCheck().execute();
+            new HealthCheck().execute();
         }
     }
 
