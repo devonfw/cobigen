@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +17,8 @@ import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 
@@ -55,42 +51,19 @@ public class HealthCheck {
 
         String healthyCheckMessage = "";
         IProject generatorConfProj = null;
+
         try {
+            // check configuration project existence
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+
+            // refresh and check context configuration
+            ResourcesPluginUtil.refreshConfigurationProject();
+            new CobiGen(generatorConfProj.getLocationURI());
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "OK.";
-            healthyCheckMessage += "\n3. Check validity of current selection... ";
-            if (selection instanceof IStructuredSelection) {
-                try {
-                    // first check context configuration validity for health check consistency
-                    ResourcesPluginUtil.refreshConfigurationProject();
-                    new CobiGen(generatorConfProj.getLocationURI());
+            openSuccessDialog(healthyCheckMessage, false);
 
-                    // check input
-                    CobiGenWrapper cobiGenWrapper =
-                        GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
-
-                    if (cobiGenWrapper.isValidInput((IStructuredSelection) selection)) {
-                        healthyCheckMessage += "OK.";
-                        openSuccessDialog(healthyCheckMessage, false);
-                    } else {
-                        healthyCheckMessage += "NO MATCHING TRIGGER.";
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                } catch (InvalidInputException e) {
-                    healthyCheckMessage += "INVALID.\n=> Cause: " + e.getLocalizedMessage();
-                    if (e.hasRootCause()) {
-                        PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, e);
-                    } else {
-                        openSuccessDialog(healthyCheckMessage, true);
-                    }
-                    LOG.warn("InvalidInputException!!!!", e);
-                }
-            } else {
-                healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
-                PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
-            }
         } catch (GeneratorProjectNotExistentException e) {
             LOG.warn("Configuration project not found!", e);
             healthyCheckMessage =
