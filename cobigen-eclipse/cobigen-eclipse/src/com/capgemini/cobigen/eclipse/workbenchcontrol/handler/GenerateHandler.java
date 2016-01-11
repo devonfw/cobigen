@@ -107,7 +107,7 @@ public class GenerateHandler extends AbstractHandler {
                 PlatformUIUtil.openErrorDialog("Error", "Unknown Expression: " + e.getMessage(), e);
                 LOG.error("Unknown Expression", e);
             } catch (InvalidConfigurationException e) {
-                openInvalidConfigurationErrorDialog();
+                openInvalidConfigurationErrorDialog(e);
             } catch (GeneratorProjectNotExistentException e) {
                 MessageDialog
                     .openError(
@@ -138,18 +138,19 @@ public class GenerateHandler extends AbstractHandler {
 
     /**
      * Opens up a message dialog for displaying further guidance on context configuration issues.
+     * @param e
+     *            {@link InvalidConfigurationException} occurred
      * @author mbrunnli (Jan 11, 2016)
      */
-    private void openInvalidConfigurationErrorDialog() {
+    private void openInvalidConfigurationErrorDialog(InvalidConfigurationException e) {
+        LOG.warn("Generate command triggered with invalid configuration.", e);
         MessageDialog dialog =
-            new MessageDialog(
-                Display.getDefault().getActiveShell(),
-                "Invalid context configuration!",
-                null,
-                "The context configuration has been changed into an invalid state "
+            new MessageDialog(Display.getDefault().getActiveShell(), "Invalid context configuration!", null,
+                "Any context/templates configuration has been changed into an invalid state "
                     + "OR is simply outdated, if you recently updated CobiGen. "
-                    + "For further investigation and automatic upgrade options start CobiGen's Health Check.",
-                MessageDialog.WARNING, new String[] { "Health Check", "OK" }, 1);
+                    + "For further investigation and automatic upgrade options start CobiGen's Health Check."
+                    + "\n\nOriginal error message: " + e.getMessage(), MessageDialog.ERROR, new String[] {
+                    "Health Check", "OK" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
