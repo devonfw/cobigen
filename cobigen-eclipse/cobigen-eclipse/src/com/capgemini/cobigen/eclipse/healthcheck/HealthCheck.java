@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
@@ -62,6 +63,11 @@ public class HealthCheck {
             healthyCheckMessage += "\n3. Check validity of current selection... ";
             if (selection instanceof IStructuredSelection) {
                 try {
+                    // first check context configuration validity for health check consistency
+                    ResourcesPluginUtil.refreshConfigurationProject();
+                    new CobiGen(generatorConfProj.getLocationURI());
+
+                    // check input
                     CobiGenWrapper cobiGenWrapper =
                         GeneratorWrapperFactory.createGenerator((IStructuredSelection) selection);
 
@@ -79,12 +85,14 @@ public class HealthCheck {
                     } else {
                         openSuccessDialog(healthyCheckMessage, true);
                     }
+                    LOG.warn("InvalidInputException!!!!", e);
                 }
             } else {
                 healthyCheckMessage += "invalid!\n=> Unsupported selection type " + selection.getClass();
                 PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
             }
         } catch (GeneratorProjectNotExistentException e) {
+            LOG.warn("Configuration project not found!", e);
             healthyCheckMessage =
                 firstStep + "NOT FOUND!\n"
                     + "=> Please import the configuration project into your workspace as stated in the "
@@ -104,15 +112,18 @@ public class HealthCheck {
                         "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
                             + currentVersion + " / Currently Supported: "
                             + ContextConfigurationVersion.getLatest();
-                    openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
+                    boolean upgraded =
+                        openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
 
-                    // re-run Health Check
-                    Display.getCurrent().asyncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            execute(selection);
-                        }
-                    });
+                    if (upgraded) {
+                        // re-run Health Check
+                        Display.getCurrent().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                execute(selection);
+                            }
+                        });
+                    }
                     return;
                 } else {
                     healthyCheckMessage +=
@@ -136,9 +147,11 @@ public class HealthCheck {
      *            message to be shown to the user
      * @param configurationFolder
      *            path of the configuration folder to perform the upgrade
+     * @return <code>true</code> if the upgrade has been triggered, <code>false</code> if the dialog has been
+     *         aborted
      * @author mbrunnli (Jun 24, 2015)
      */
-    private void openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder) {
+    private boolean openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder) {
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), "Health Check", null,
                 healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration",
@@ -148,7 +161,9 @@ public class HealthCheck {
         int result = dialog.open();
         if (result == 0) {
             upgradeContextConfiguration(configurationFolder);
+            return true;
         }
+        return false;
     }
 
     /**
