@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ms:MergeSchema for="beans" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
-	<!-- MergeSchema for spring bean documents. Patch document will be favored over base document -->
-  <ms:Definition namespace="http://www.springframework.org/schema/beans"/>
+	<ms:Definition namespace="http://www.springframework.org/schema/beans"/>
 
   <ms:DefaultCriterion xpath="true()"/>
 
@@ -20,13 +19,13 @@
   </ms:Handling>
 
   <ms:Handling for="bean" label="refListOrSetType">
-    <ms:Criterion xpath="./@name"/>
+    <ms:Criterion xpath="concat(./@name , ./@id)"/>
   	<!-- Handling for description from the axis above -->
   	<ms:Handling for="constructor-arg">
       <ms:Criterion xpath="./@name"/>
   	</ms:Handling>
 
-    <ms:Handling for="propertyType">
+    <ms:Handling for="property">
       <ms:Criterion xpath="./@name"/>
     </ms:Handling>
 
