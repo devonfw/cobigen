@@ -123,7 +123,17 @@
   <ms:Handling for="outputDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="profiles"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="profile"><ms:Criterion xpath="./id/text()"/></ms:Handling>
+  <ms:Handling for="activation"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="activeByDefault"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="jdk"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="os"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="familiy"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="arch"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="property"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="value"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="file"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="missing"><ms:Criterion xpath="true()"/></ms:Handling>
+  <ms:Handling for="exists"><ms:Criterion xpath="true()"/></ms:Handling>
 
-  <!-- Bookmark: Profile -->
 
 </ms:MergeSchema>
