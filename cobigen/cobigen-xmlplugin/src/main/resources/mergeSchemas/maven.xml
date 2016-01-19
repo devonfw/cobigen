@@ -4,136 +4,28 @@
 
   <ms:DefaultCriterion xpath="true()"/>
 
-  <ms:Handling for="modelVersion"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="parent"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="groupId"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="artifactId"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="version"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="relativePath"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="packaging"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="name"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="description"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="url"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="inceptionYear"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="organization"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="licences"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="license"><ms:Criterion xpath="./name/text()"/></ms:Handling>
-  <ms:Handling for="comments"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="developers"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="developer"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
-  <ms:Handling for="id"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="email"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="organizationUrl"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="roles"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="role"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="timezone"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="properties"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="contributors"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="contributor"><ms:Criterion xpath="./name/text()"/></ms:Handling>
-  <ms:Handling for="mailingLists"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="mailingList"><ms:Criterion xpath="./name/text()"/></ms:Handling>
-  <ms:Handling for="subscribe"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="unsubscribe"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="post"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="archive"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="otherArchives"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="otherArchive"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="prerequisites"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="maven"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="modules"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="module"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="scm"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="connection"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="developerConnection"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="tag"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="issueManagement"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="system"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="ciManagement"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="notifiers"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="notifier"><ms:Criterion xpath="./address/text()"/></ms:Handling>
-  <ms:Handling for="type"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="sendOnError"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="sendOnFailure"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="sendOnSuccess"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="sendOnWarning"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="configuration"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="distributionManagement"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="repository"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="snapshotRepository"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="uniqueVersion"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="releases"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="enabled"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="updatePolicy"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="checksumPolicy"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="snapshots"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="layout"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="site"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="downloadUrl"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="relocation"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="message"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="status"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="dependencyManagement"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="dependencies"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="dependency"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
-  <ms:Handling for="classifier"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="scope"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="systemPath"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="optional"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="exclusions"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="exclusion"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
   <ms:Handling for="repositories"><ms:Criterion xpath="true()"/>
     <ms:Handling for="repository"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
   </ms:Handling>
-  <ms:Handling for="pluginRepositories"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="pluginRepository"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
-  <ms:Handling for="build"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="sourceDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="scriptSourceDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="testSourceDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="outputDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="testOutputDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="extensions"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="extension"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
-  <ms:Handling for="defaultGoal"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="resources"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="resource"><ms:Criterion xpath="./directory/text()"/></ms:Handling>
-  <ms:Handling for="targetPath"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="filtering"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="includes"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="include"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="excludes"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="exclude"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="testResources"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="testResource"><ms:Criterion xpath="./directory/text()"/></ms:Handling>
-  <ms:Handling for="directory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="finalName"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="filters"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="filter"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="pluginManagement"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="plugins"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="plugin"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
-  <ms:Handling for="executions"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="execution"><ms:Criterion xpath="./id/text()"/></ms:Handling>
-  <ms:Handling for="phase"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="goals"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="inherited"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="reports"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="reporting"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="excludeDefaults"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="outputDirectory"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="profiles"><ms:Criterion xpath="true()"/></ms:Handling>
   <ms:Handling for="profile"><ms:Criterion xpath="./id/text()"/></ms:Handling>
-  <ms:Handling for="activation"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="activeByDefault"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="jdk"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="os"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="familiy"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="arch"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="property"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="value"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="file"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="missing"><ms:Criterion xpath="true()"/></ms:Handling>
-  <ms:Handling for="exists"><ms:Criterion xpath="true()"/></ms:Handling>
-
 
 </ms:MergeSchema>
