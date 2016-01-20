@@ -5,26 +5,26 @@
   <ms:DefaultCriterion xpath="true()"/>
 
   <ms:Handling for="license"><ms:Criterion xpath="./name/text()"/></ms:Handling>
-  <ms:Handling for="developer"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
+  <ms:Handling for="developer"><ms:Criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:Handling>
   <ms:Handling for="role"><ms:Criterion xpath="./text()"/></ms:Handling>
   <ms:Handling for="contributor"><ms:Criterion xpath="./name/text()"/></ms:Handling>
   <ms:Handling for="mailingList"><ms:Criterion xpath="./name/text()"/></ms:Handling>
   <ms:Handling for="otherArchive"><ms:Criterion xpath="./text()"/></ms:Handling>
   <ms:Handling for="module"><ms:Criterion xpath="./text()"/></ms:Handling>
   <ms:Handling for="notifier"><ms:Criterion xpath="./address/text()"/></ms:Handling>
-  <ms:Handling for="dependency"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
-  <ms:Handling for="exclusion"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
+  <ms:Handling for="dependency"><ms:Criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:Handling>
+  <ms:Handling for="exclusion"><ms:Criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:Handling>
   <ms:Handling for="repositories"><ms:Criterion xpath="true()"/>
-    <ms:Handling for="repository"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
+    <ms:Handling for="repository"><ms:Criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:Handling>
   </ms:Handling>
-  <ms:Handling for="pluginRepository"><ms:Criterion xpath="concat(./id/text(),./name/text())"/></ms:Handling>
-  <ms:Handling for="extension"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
+  <ms:Handling for="pluginRepository"><ms:Criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:Handling>
+  <ms:Handling for="extension"><ms:Criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:Handling>
   <ms:Handling for="resource"><ms:Criterion xpath="./directory/text()"/></ms:Handling>
   <ms:Handling for="include"><ms:Criterion xpath="./text()"/></ms:Handling>
   <ms:Handling for="exclude"><ms:Criterion xpath="./text()"/></ms:Handling>
   <ms:Handling for="testResource"><ms:Criterion xpath="./directory/text()"/></ms:Handling>
   <ms:Handling for="filter"><ms:Criterion xpath="./text()"/></ms:Handling>
-  <ms:Handling for="plugin"><ms:Criterion xpath="concat(./groupId/text(),'.',./artifactId/text())"/></ms:Handling>
+  <ms:Handling for="plugin"><ms:Criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:Handling>
   <ms:Handling for="execution"><ms:Criterion xpath="./id/text()"/></ms:Handling>
   <ms:Handling for="profile"><ms:Criterion xpath="./id/text()"/></ms:Handling>
 
