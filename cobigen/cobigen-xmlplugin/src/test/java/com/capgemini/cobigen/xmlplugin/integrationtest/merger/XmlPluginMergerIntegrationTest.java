@@ -291,6 +291,25 @@ public class XmlPluginMergerIntegrationTest {
         // returned as well and needed to be considered
     }
 
+    /**
+     * Test for Issue #189. Tests if maven configurations can be merged to accumulate dependencies
+     * @throws Exception
+     *             shouldn#t happen
+     * @author sholzer (Jan 19, 2016)
+     */
+    @Test
+    public void testMavenAddDependency() throws Exception {
+        String basePath = resourcesRoot + "BasePom.xml";
+        String patchPath = resourcesRoot + "PatchPom.xml";
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        String mergedDoc = patchPreferingMerger.merge(baseFile, patchString, charset);
+        assertEquals("Not the expected number of dependencies elements", 1,
+            mergedDoc.split("<dependencies").length - 1);
+        assertEquals("Not the expected number of dependency elements", 4,
+            mergedDoc.split("<dependency").length - 1);
+    }
+
     // utils
 
     /**
