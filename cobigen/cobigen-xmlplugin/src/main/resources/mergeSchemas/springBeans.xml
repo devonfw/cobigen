@@ -19,7 +19,7 @@
   </ms:Handling>
 
   <ms:Handling for="bean" label="refListOrSetType">
-    <ms:Criterion xpath="concat(./@name , ./@id)"/>
+    <ms:Criterion xpath="@*[name() = 'id' or name()='name']/text()"/>
   	<!-- Handling for description from the axis above -->
   	<ms:Handling for="constructor-arg">
       <ms:Criterion xpath="./@name"/>
