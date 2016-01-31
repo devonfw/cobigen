@@ -3,7 +3,7 @@
 <#-- ---------------------------------------- -->
 
 <#function equalsJavaPrimitive simpleType>
-<#return simpleType=="byte" || simpleType=="short" || simpleType=="int" || simpleType=="long" || simpleType=="float" || simpleType=="double" || simpleType=="boolean" || simpleType=="char">
+<#return simpleType=="byte[]" || simpleType=="byte" || simpleType=="short" || simpleType=="short[]" || simpleType=="int" || simpleType=="int[]" || simpleType=="long" || simpleType=="long[]" || simpleType=="float" || simpleType=="float[]" || simpleType=="double" || simpleType=="double[]" || simpleType=="boolean" || simpleType=="boolean[]" || simpleType=="char" || simpleType=="char[]">
 </#function>
 
 <#macro boxJavaPrimitive simpleType varName>
@@ -73,7 +73,7 @@
    * {@inheritDoc}
    */
 	@Override</#if>
-	public ${field.type} get${field.name?cap_first}() {
+	public ${field.type} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() {
 		return ${field.name};
 	}
 	
