@@ -18,9 +18,6 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
 
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references -->
-  /**
-   * {@inheritDoc}
-   */
   @Override
   @Transient
   public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
@@ -32,9 +29,6 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
   }
 
   <#assign idVar = resolveIdVariableName(field)>
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 
