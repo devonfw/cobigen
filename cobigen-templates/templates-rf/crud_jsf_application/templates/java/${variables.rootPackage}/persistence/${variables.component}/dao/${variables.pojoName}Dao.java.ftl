@@ -19,7 +19,7 @@ public interface ${pojo.name}Dao extends DomainDao<${pojo.name}, <@insertIdObjec
     /**
      * Returns a list of all existing ${pojo.name?uncap_first}s.
      *
-     * @return {@link List} of all existing {@link ${pojo.name}}s.
+     * @return {@link List} of all existing ${pojo.name}s.
      */
     List<${pojo.name}> getAll${pojo.name}s();
 
