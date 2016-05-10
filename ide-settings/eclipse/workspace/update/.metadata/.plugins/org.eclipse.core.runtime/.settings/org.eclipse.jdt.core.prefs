@@ -1,4 +1,4 @@
-#Wed Oct 29 12:54:46 CET 2014
+#Tue May 10 17:38:19 CEST 2016
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*.launch,*.ucls,*.useq
 org.eclipse.jdt.core.classpathVariable.ECLIPSE_HOME=${client.env.home}/software/eclipse
@@ -34,7 +34,7 @@ org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsVisibility=private
 org.eclipse.jdt.core.compiler.problem.localVariableHiding=ignore
 org.eclipse.jdt.core.compiler.problem.missingDeprecatedAnnotation=warning
 org.eclipse.jdt.core.compiler.problem.missingJavadocComments=warning
-org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsOverriding=enabled
+org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsOverriding=disabled
 org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsVisibility=private
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagDescription=all_standard_tags
 org.eclipse.jdt.core.compiler.problem.missingJavadocTags=warning
