@@ -63,9 +63,11 @@
 -->
 <#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion isSearchCriteria=false>
 <#list pojo.fields as field>
-<#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+<#-- 
+<#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${resolveIdVariableName(field)};
-<#elseif field.type?contains("Embeddable")>
+<#elseif -->
+<#if field.type?contains("Embeddable")>
 	<#if isSearchCriteria>
 		private ${field.type?replace("Embeddable","SearchCriteriaTo")} ${field.name};
 	<#else>
@@ -84,7 +86,7 @@
 -->
 <#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true, isInterface=false, isSearchCriteria=false>
 <#list pojo.fields as field>
-<#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+<#-- <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references
 
 	<#assign idVar = resolveIdVariableName(field)>
 	<#if implementsInterface>@Override</#if>
@@ -114,7 +116,7 @@
 			this.${field.name} = ${field.name};
 		}</#if>
 	</#if>
-<#else>
+<#else> -->
   <#if implementsInterface>@Override</#if>
 	public <#if isSearchCriteria>${getBoxedType(field.type)}<#else>${field.type}</#if> <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
@@ -124,7 +126,7 @@
 	public void set${field.name?cap_first}(<#if isSearchCriteria>${getBoxedType(field.type)}<#else>${field.type}</#if> ${field.name}) <#if isInterface>;<#else>{
 		this.${field.name} = ${field.name};
 	}</#if>
-</#if>
+<#-- </#if> -->
 </#list>
 </#macro>
 

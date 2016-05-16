@@ -31,6 +31,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   private static final Logger LOG = LoggerFactory.getLogger(${variables.component?cap_first}Impl.class);
 
   /** @see #get${variables.entityName}Dao() */
+  @Inject
   private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
 
   /**
@@ -80,15 +81,6 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	public ${variables.entityName}Dao get${variables.entityName}Dao() {
 
 		return this.${variables.entityName?uncap_first}Dao;
-	}
-
-	/**
-	 * Sets the field '${variables.entityName?uncap_first}Dao'.
-	 * @param ${variables.entityName?uncap_first}Dao New value for ${variables.entityName?uncap_first}Dao
-	 */
-	@Inject
-	public void set${variables.entityName}Dao(${variables.entityName}Dao ${variables.entityName?uncap_first}Dao) {
-		this.${variables.entityName?uncap_first}Dao = ${variables.entityName?uncap_first}Dao;
 	}
 
 }

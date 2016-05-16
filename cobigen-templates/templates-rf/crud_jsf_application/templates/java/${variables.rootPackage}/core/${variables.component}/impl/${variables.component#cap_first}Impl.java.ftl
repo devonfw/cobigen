@@ -25,9 +25,6 @@ public class ${variables.component?cap_first}Impl extends AbstractLayerImpl impl
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ${pojo.name}To get${pojo.name}(<@insertIdParameter/>) {
         ${pojo.name} persistence${pojo.name} = ucFind${pojo.name}.get${pojo.name}(<@insertIdParameterValues/>);
@@ -37,9 +34,6 @@ public class ${variables.component?cap_first}Impl extends AbstractLayerImpl impl
         return core${pojo.name};
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<${pojo.name}To> getAll${pojo.name}s() {
         List<${pojo.name}> persistence${pojo.name}s = ucFind${pojo.name}.getAll${pojo.name}s();
@@ -49,9 +43,6 @@ public class ${variables.component?cap_first}Impl extends AbstractLayerImpl impl
         return core${pojo.name}s;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void save${pojo.name}(${pojo.name}To ${pojo.name?uncap_first}) {
         ${pojo.name} persistence${pojo.name} =
@@ -60,9 +51,6 @@ public class ${variables.component?cap_first}Impl extends AbstractLayerImpl impl
         this.ucManage${pojo.name}.save${pojo.name}(persistence${pojo.name});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean delete${pojo.name}(<@insertIdParameter/>) {
         return this.ucManage${pojo.name}.delete${pojo.name}(<@insertIdParameterValues/>);

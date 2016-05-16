@@ -26,10 +26,10 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         	<#list pojo.fields as field>
         		<#if equalsJavaPrimitive(field.type)>
 					result = prime * result + <@boxJavaPrimitive field.type field.name/>.hashCode();
-				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-					<#assign idVar = resolveIdVariableName(field)>
+				<#-- <#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references
+					<#-- <#assign idVar = resolveIdVariableName(field)>
 					result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
-        		<#else>
+        		<#else> -->
 					result = prime * result + ((this.${field.name} == null) ? 0 : this.${field.name}.hashCode());
         		</#if>
         	</#list>
@@ -58,15 +58,15 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 		if(this.${field.name} != other.${field.name}) {
 			return false;
 		}
-    <#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-		<#assign idVar = resolveIdVariableName(field)>
-		if (this.${idVar} == null) {
-		  if (other.${idVar} != null) {
-			return false;
-		  }
-		} else if(!this.${idVar}.equals(other.${idVar})){
-		  return false;
-		}
+    <#-- <#elseif field.type?contains("Entity")> add ID getter & setter for Entity references only for ID references -->
+		<#-- <#assign idVar = resolveIdVariableName(field)> -->
+		<#-- if (this.${idVar} == null) { -->
+		<#--  if (other.${idVar} != null) { -->
+		<#--	return false; -->
+		<#--  } -->
+		<#-- } else if(!this.${idVar}.equals(other.${idVar})){ -->
+		  <#-- return false; -->
+		<#-- } -->
 	<#else>
 		if (this.${field.name} == null) {
 		  if (other.${field.name} != null) {
