@@ -22,9 +22,6 @@ public class ${variables.component?cap_first}CoreWrapperImpl implements ${variab
 
     private ${variables.component?cap_first} ${pojo.name?uncap_first}Management;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ${pojo.name} save${pojo.name}(${pojo.name} ${pojo.name?uncap_first}) {
         ${pojo.name?uncap_first}Management.update${pojo.name}(${pojo.name?uncap_first});
@@ -33,9 +30,6 @@ public class ${variables.component?cap_first}CoreWrapperImpl implements ${variab
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean delete${pojo.name}(${pojo.name} ${pojo.name?uncap_first}) {
         <@defineAndRetrieveAllIds/>
@@ -43,18 +37,12 @@ public class ${variables.component?cap_first}CoreWrapperImpl implements ${variab
         return ${pojo.name?uncap_first}Management.delete${pojo.name}(${pojo.name?uncap_first});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<${pojo.name}> getAll${pojo.name}s() {
         LOG.debug("Get all ${pojo.name?lower_case}s");
         return ${pojo.name?uncap_first}Management.getAll${pojo.name}s();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ${pojo.name} get${pojo.name}(<@insertIdParameter/>) {
         LOG.debug("Get ${pojo.name?lower_case} with id(s) '" + <@insertIdParameterValuesAsStringList/> + "'.");
