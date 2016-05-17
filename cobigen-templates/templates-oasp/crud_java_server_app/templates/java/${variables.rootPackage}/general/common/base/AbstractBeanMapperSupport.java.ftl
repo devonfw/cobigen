@@ -10,16 +10,8 @@ import javax.inject.Inject;
 public abstract class AbstractBeanMapperSupport {
 
   /** @see #getBeanMapper() */
-  private BeanMapper beanMapper;
-
-  /**
-   * @param beanMapper is the {@link BeanMapper} to {@link Inject}
-   */
   @Inject
-  public void setBeanMapper(BeanMapper beanMapper) {
-
-    this.beanMapper = beanMapper;
-  }
+  private BeanMapper beanMapper;
 
   /**
    * @return the {@link BeanMapper} instance.
