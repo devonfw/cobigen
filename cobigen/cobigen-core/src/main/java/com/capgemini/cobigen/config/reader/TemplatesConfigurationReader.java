@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Template;
@@ -113,7 +113,7 @@ public class TemplatesConfigurationReader {
                         "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
                 } else {
                     VersionValidator validator =
-                        new VersionValidator(Type.TEMPLATES_CONFIGURATION, CobiGen.CURRENT_VERSION);
+                        new VersionValidator(Type.TEMPLATES_CONFIGURATION, MavenMetadata.VERSION);
                     validator.validate(configVersion.floatValue());
                 }
             } else {
