@@ -31,17 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ${variables.component?cap_first}RestServiceImpl {
 
-  private ${variables.component?cap_first} ${variables.component?lower_case};
-
-  /**
-   * This method sets the field <tt>${variables.component}</tt>.
-   *
-   * @param ${variables.component} the new value of the field ${variables.component}
-   */
   @Inject
-  public void set${variables.component?cap_first}(${variables.component?cap_first} ${variables.component}) {
-    this.${variables.component} = ${variables.component};
-  }
+  private ${variables.component?cap_first} ${variables.component?lower_case};
 
   /**
   * Delegates to {@link ${variables.component?cap_first}#find${variables.entityName}}.

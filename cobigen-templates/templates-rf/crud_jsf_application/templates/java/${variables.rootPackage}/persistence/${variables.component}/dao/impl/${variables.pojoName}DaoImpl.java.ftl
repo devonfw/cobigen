@@ -15,9 +15,6 @@ import ${variables.rootPackage}.persistence.${variables.component}.entity.${pojo
  */
 public class ${pojo.name}DaoImpl extends AbstractDomainDao<${pojo.name}, <@insertIdObjectType/>> implements ${pojo.name}Dao {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void save(${pojo.name} ${pojo.name?uncap_first}) {
 
@@ -25,9 +22,6 @@ public class ${pojo.name}DaoImpl extends AbstractDomainDao<${pojo.name}, <@inser
       super.save(persistent${pojo.name});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(<@insertIdParameter/>) {
 	  ${pojo.name} ${pojo.name?uncap_first} = new ${pojo.name}();
@@ -37,10 +31,6 @@ public class ${pojo.name}DaoImpl extends AbstractDomainDao<${pojo.name}, <@inser
       super.delete(${pojo.name?uncap_first});
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<${pojo.name}> getAll${pojo.name}s() {
 
