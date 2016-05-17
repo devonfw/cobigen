@@ -62,6 +62,7 @@ public abstract class AbstractCobiGenWrapper {
     private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
         InvalidConfigurationException, IOException {
 
+        ResourcesPluginUtil.refreshConfigurationProject();
         IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
         return new CobiGen(generatorProj.getLocationURI());
     }

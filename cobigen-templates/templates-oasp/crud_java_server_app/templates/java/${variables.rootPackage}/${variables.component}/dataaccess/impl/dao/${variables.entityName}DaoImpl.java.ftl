@@ -8,7 +8,7 @@ import ${variables.rootPackage}.general.dataaccess.base.dao.ApplicationDaoImpl;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
-<#include '/functions.ftl'>
+
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 
 import javax.inject.Named;
@@ -22,20 +22,20 @@ import com.mysema.query.types.path.EntityPathBase;
  */
 @Named
 public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.name}> implements ${variables.entityName}Dao {
-	
+
 	/**
 	* The constructor.
 	*/
 	public ${variables.entityName}DaoImpl() {
-	
+
 		super();
 	}
-  
+
   @Override
   public Class<${pojo.name}> getEntityClass() {
   	return ${pojo.name}.class;
  	}
- 	
+
  	@Override
   public PaginatedListTo<${variables.entityName}Entity> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria) {
 
@@ -55,7 +55,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
       query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
     <#if !equalsJavaPrimitive(field.type)>}</#if>
 	</#compress>
-	
+
     </#list>
 
     return findPaginated(criteria, query, alias);

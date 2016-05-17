@@ -1,9 +1,9 @@
 package com.capgemini.cobigen.eclipse.healthcheck;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,11 +11,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.TemplatesConfigurationVersion;
+import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -41,51 +44,48 @@ public class AdvancedHealthCheck {
             // 1. Get configuration resources
             Path configurationProjectPath =
                 Paths.get(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocationURI());
-            File[] directoryChildren = configurationProjectPath.toFile().listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory();
-                }
-            });
+            // determine expected template configurations to be defined
+            ContextConfiguration contextConfiguration = new ContextConfiguration(configurationProjectPath);
+            List<String> expectedTemplatesConfigurations = Lists.newArrayList();
+            for (Trigger t : contextConfiguration.getTriggers()) {
+                expectedTemplatesConfigurations.add(t.getTemplateFolder());
+            }
 
             // 2. Determine current state
             TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-            Set<String> hasConfiguration = Sets.newTreeSet();
-            Map<String, Boolean> isAccessible = Maps.newHashMap();
+            Set<String> hasConfiguration = Sets.newHashSet();
+            Set<String> isAccessible = Sets.newHashSet();
             Map<String, Path> upgradeableConfigurations = Maps.newHashMap();
             Set<String> upToDateConfigurations = Sets.newHashSet();
 
-            for (File dir : directoryChildren) {
+            for (String expectedTemplateFolder : expectedTemplatesConfigurations) {
+                Path templateFolder = configurationProjectPath.resolve(expectedTemplateFolder);
                 Path templatesConfigurationPath =
-                    dir.toPath().resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+                    templateFolder.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
                 File templatesConfigurationFile = templatesConfigurationPath.toFile();
-                String key =
-                    templatesConfigurationPath.subpath(templatesConfigurationPath.getNameCount() - 2,
-                        templatesConfigurationPath.getNameCount()).toString();
                 if (templatesConfigurationFile.exists()) {
-                    hasConfiguration.add(key);
+                    hasConfiguration.add(expectedTemplateFolder);
                     if (templatesConfigurationFile.canWrite()) {
-                        isAccessible.put(key, true);
+                        isAccessible.add(expectedTemplateFolder);
 
                         TemplatesConfigurationVersion resolvedVersion =
-                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(dir.toPath());
+                            templateConfigurationUpgrader
+                                .resolveLatestCompatibleSchemaVersion(templateFolder);
                         if (resolvedVersion != null) {
                             if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
-                                upgradeableConfigurations.put(key, dir.toPath());
+                                upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
                             } else {
-                                upToDateConfigurations.add(key);
+                                upToDateConfigurations.add(expectedTemplateFolder);
                             }
                         }
-                    } else {
-                        isAccessible.put(key, false);
                     }
                 }
             }
 
             // 3. Show current status to the user
             AdvancedHealthCheckDialog advancedHealthCheckDialog =
-                new AdvancedHealthCheckDialog(hasConfiguration, isAccessible, upgradeableConfigurations,
-                    upToDateConfigurations);
+                new AdvancedHealthCheckDialog(expectedTemplatesConfigurations, hasConfiguration,
+                    isAccessible, upgradeableConfigurations, upToDateConfigurations);
             advancedHealthCheckDialog.setBlockOnOpen(false);
             advancedHealthCheckDialog.open();
 
