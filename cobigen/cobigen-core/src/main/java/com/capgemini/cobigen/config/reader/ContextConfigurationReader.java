@@ -22,9 +22,9 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
+import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
@@ -78,7 +78,7 @@ public class ContextConfigurationReader {
                         "The required 'version' attribute of node \"contextConfiguration\" has not been set");
                 } else {
                     VersionValidator validator =
-                        new VersionValidator(Type.CONTEXT_CONFIGURATION, CobiGen.CURRENT_VERSION);
+                        new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
                     validator.validate(configVersion.floatValue());
                 }
             } else {
