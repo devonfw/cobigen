@@ -22,6 +22,7 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
@@ -30,6 +31,7 @@ import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
 import com.capgemini.cobigen.config.entity.io.ContextConfiguration;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
+import com.capgemini.cobigen.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.util.ExceptionUtil;
 import com.google.common.collect.Lists;
@@ -75,7 +77,9 @@ public class ContextConfigurationReader {
                     throw new InvalidConfigurationException(filePath,
                         "The required 'version' attribute of node \"contextConfiguration\" has not been set");
                 } else {
-                    VersionValidator.validateContextConfig(configVersion);
+                    VersionValidator validator =
+                        new VersionValidator(Type.CONTEXT_CONFIGURATION, CobiGen.CURRENT_VERSION);
+                    validator.validate(configVersion.floatValue());
                 }
             } else {
                 throw new InvalidConfigurationException(filePath,
@@ -87,8 +91,8 @@ public class ContextConfigurationReader {
             // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
-            try (InputStream schemaStream =
-                getClass().getResourceAsStream(
+            try (
+                InputStream schemaStream = getClass().getResourceAsStream(
                     "/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
                 InputStream configInputStream = Files.newInputStream(contextFile)) {
 
@@ -106,8 +110,8 @@ public class ContextConfigurationReader {
                 message = parseCause.getMessage();
             }
 
-            throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n"
-                + message, e);
+            throw new InvalidConfigurationException(filePath,
+                "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             throw new IllegalStateException(
@@ -134,10 +138,8 @@ public class ContextConfigurationReader {
 
         Map<String, Trigger> triggers = Maps.newHashMap();
         for (com.capgemini.cobigen.config.entity.io.Trigger t : contextNode.getTrigger()) {
-            triggers.put(
-                t.getId(),
-                new Trigger(t.getId(), t.getType(), t.getTemplateFolder(), Charset.forName(t
-                    .getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
+            triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
+                Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
         }
         return triggers;
     }
@@ -154,8 +156,8 @@ public class ContextConfigurationReader {
 
         List<Matcher> matcher = new LinkedList<>();
         for (com.capgemini.cobigen.config.entity.io.Matcher m : trigger.getMatcher()) {
-            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m
-                .getAccumulationType()));
+            matcher.add(
+                new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
         }
         return matcher;
     }
@@ -173,8 +175,8 @@ public class ContextConfigurationReader {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
         for (com.capgemini.cobigen.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
-            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm
-                .isRetrieveObjectsRecursively()));
+            containerMatchers
+                .add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
         }
         return containerMatchers;
     }
