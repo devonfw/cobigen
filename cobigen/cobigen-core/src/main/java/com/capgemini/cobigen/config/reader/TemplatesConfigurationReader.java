@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.config.entity.Increment;
@@ -44,6 +45,7 @@ import com.capgemini.cobigen.config.entity.io.TemplateScans;
 import com.capgemini.cobigen.config.entity.io.Templates;
 import com.capgemini.cobigen.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.config.versioning.VersionValidator;
+import com.capgemini.cobigen.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
@@ -110,7 +112,9 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
                 } else {
-                    VersionValidator.validateTemplatesConfig(configVersion);
+                    VersionValidator validator =
+                        new VersionValidator(Type.TEMPLATES_CONFIGURATION, CobiGen.CURRENT_VERSION);
+                    validator.validate(configVersion.floatValue());
                 }
             } else {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
@@ -124,8 +128,8 @@ public class TemplatesConfigurationReader {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             TemplatesConfigurationVersion latestConfigurationVersion =
                 TemplatesConfigurationVersion.getLatest();
-            try (InputStream schemaStream =
-                getClass().getResourceAsStream(
+            try (
+                InputStream schemaStream = getClass().getResourceAsStream(
                     "/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");
                 InputStream configInputStream = Files.newInputStream(configFilePath)) {
 
@@ -151,8 +155,7 @@ public class TemplatesConfigurationReader {
         } catch (NumberFormatException e) {
             // The version number is currently the only xml value which will be parsed to a number data type
             // So provide help
-            throw new InvalidConfigurationException(
-                configFilePath.toUri().toString(),
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "Invalid version number defined. The version of the templates configuration should consist of 'major.minor' version.",
                 e);
         } catch (IOException e) {
@@ -188,10 +191,9 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for ref='" + t.getName() + "'");
                 }
-                templates.put(
-                    t.getName(),
-                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(), t
-                        .getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
+                templates.put(t.getName(),
+                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(),
+                        t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
         }
 
@@ -255,8 +257,8 @@ public class TemplatesConfigurationReader {
 
         Path templateFolderPath = configFilePath.getParent().resolve(scan.getTemplatePath());
         if (!Files.isDirectory(templateFolderPath)) {
-            throw new IllegalArgumentException("The path '" + templateFolderPath
-                + "' does not describe a directory.");
+            throw new IllegalArgumentException(
+                "The path '" + templateFolderPath + "' does not describe a directory.");
         }
 
         if (scan.getName() != null) {
@@ -305,23 +307,21 @@ public class TemplatesConfigurationReader {
             while (it.hasNext()) {
                 Path next = it.next();
                 if (Files.isDirectory(next)) {
-                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan,
-                        templates, trigger, triggerInterpreter, observedTemplateNames);
+                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan, templates,
+                        trigger, triggerInterpreter, observedTemplateNames);
                 } else {
                     String templateFileName = next.getFileName().toString();
                     String templateNameWithoutExtension = templateFileName;
                     if (templateFileName.endsWith(ConfigurationConstants.TEMPLATE_EXTENSION)) {
-                        templateNameWithoutExtension =
-                            templateFileName.substring(0, templateFileName.length()
-                                - ConfigurationConstants.TEMPLATE_EXTENSION.length());
+                        templateNameWithoutExtension = templateFileName.substring(0,
+                            templateFileName.length() - ConfigurationConstants.TEMPLATE_EXTENSION.length());
                     }
                     String templateName =
                         (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
                             + templateNameWithoutExtension;
                     if (observedTemplateNames.contains(templateName)) {
                         throw new InvalidConfigurationException(
-                            "TemplateScan has detected two files with the same file name ("
-                                + next.toString()
+                            "TemplateScan has detected two files with the same file name (" + next.toString()
                                 + ") and thus with the same "
                                 + "template name. Continuing would result in an indeterministic behavior.\n"
                                 + "For now, multiple files with the same name are not supported to be automatically "
@@ -329,15 +329,13 @@ public class TemplatesConfigurationReader {
                     }
                     observedTemplateNames.add(templateName);
                     if (!templates.containsKey(templateName)) {
-                        String destinationPath =
-                            scan.getDestinationPath() + "/" + currentPathWithSlash
-                                + templateNameWithoutExtension;
+                        String destinationPath = scan.getDestinationPath() + "/" + currentPathWithSlash
+                            + templateNameWithoutExtension;
                         String templateFile =
                             scan.getTemplatePath() + "/" + currentPathWithSlash + templateFileName;
                         String mergeStratgey = scan.getMergeStrategy();
-                        Template template =
-                            new Template(templateName, destinationPath, templateFile, mergeStratgey,
-                                scan.getTargetCharset(), trigger, triggerInterpreter);
+                        Template template = new Template(templateName, destinationPath, templateFile,
+                            mergeStratgey, scan.getTargetCharset(), trigger, triggerInterpreter);
                         templates.put(templateName, template);
 
                         if (templateScanTemplates.get(scan.getName()) != null) {
@@ -374,8 +372,8 @@ public class TemplatesConfigurationReader {
             // Add first all increments informally be able to resolve recursive increment references
             for (com.capgemini.cobigen.config.entity.io.Increment source : incrementsNode.getIncrement()) {
                 if (!increments.containsKey(source.getName())) {
-                    increments.put(source.getName(), new Increment(source.getName(), source.getDescription(),
-                        trigger));
+                    increments.put(source.getName(),
+                        new Increment(source.getName(), source.getDescription(), trigger));
                 } else {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Duplicate increment found with name='" + source.getName() + "'.");
