@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
+import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
@@ -70,7 +71,7 @@ public class CobiGen {
     /**
      * Current version of the generation, needed for configuration file validation
      */
-    public static final String CURRENT_VERSION = "2.1.1";
+    public static final String CURRENT_VERSION = MavenMetadata.VERSION;
 
     /**
      * The {@link ContextConfiguration} for this instance
