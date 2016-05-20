@@ -48,14 +48,14 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     <#assign newFieldType=field.type?replace("[^<>,]+Entity","Long","r")>
     <#assign fieldCapName=field.name?cap_first>
     </#compress>
-
-    ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
-    <#compress>
-	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
-      query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
-    <#if !equalsJavaPrimitive(field.type)>}</#if>
-	</#compress>
-
+    <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
+        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
+        <#compress>
+      	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
+            query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
+          <#if !equalsJavaPrimitive(field.type)>}</#if>
+    	</#compress>
+    </#if>
     </#list>
 
     return findPaginated(criteria, query, alias);
