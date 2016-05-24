@@ -49,12 +49,12 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     <#assign fieldCapName=field.name?cap_first>
     </#compress>
     <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
-        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
-        <#compress>
-      	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
-            query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
-          <#if !equalsJavaPrimitive(field.type)>}</#if>
-    	</#compress>
+    ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
+    <#compress>
+	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
+      query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
+    <#if !equalsJavaPrimitive(field.type)>}</#if>
+	</#compress>
     </#if>
     </#list>
 

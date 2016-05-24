@@ -27,13 +27,13 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         		<#if equalsJavaPrimitive(field.type)>
 					result = prime * result + <@boxJavaPrimitive field.type field.name/>.hashCode();
 				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-          <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
+           <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
     					<#assign idVar = resolveIdVariableName(field)>
     					result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
-          </#if>
-    		<#else>
-					result = prime * result + ((this.${field.name} == null) ? 0 : this.${field.name}.hashCode());
-        		</#if>
+					</#if>
+      		<#else>
+				      result = prime * result + ((this.${field.name} == null) ? 0 : this.${field.name}.hashCode());
+      		</#if>
         	</#list>
         <#else>
         result = prime * result;
@@ -61,19 +61,17 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 			return false;
 		}
     <#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-       <#if !field.type?starts_with("List<")>
-         <#if !field.type?starts_with("Set<")>
-        		<#assign idVar = resolveIdVariableName(field)>
-        		if (this.${idVar} == null) {
-        		  if (other.${idVar} != null) {
-        			return false;
-        		  }
-        		} else if(!this.${idVar}.equals(other.${idVar})){
-        		  return false;
-        		}
-        </#if>
+       <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
+      		<#assign idVar = resolveIdVariableName(field)>
+      		if (this.${idVar} == null) {
+      		  if (other.${idVar} != null) {
+      			return false;
+      		  }
+      		} else if(!this.${idVar}.equals(other.${idVar})){
+      		  return false;
+      		}
       </#if>
-  	<#else>
+	 <#else>
   		if (this.${field.name} == null) {
   		  if (other.${field.name} != null) {
   			return false;
