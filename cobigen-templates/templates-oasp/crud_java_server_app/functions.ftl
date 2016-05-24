@@ -64,7 +64,9 @@
 <#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion isSearchCriteria=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+   <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")> <#-- do not generate field for multiple relation -->
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${resolveIdVariableName(field)};
+   </#if>	
 <#elseif field.type?contains("Embeddable")>
 	<#if isSearchCriteria>
 		private ${field.type?replace("Embeddable","SearchCriteriaTo")} ${field.name};
@@ -85,7 +87,7 @@
 <#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true, isInterface=false, isSearchCriteria=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-
+  <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")> <#-- do not generate getters & setters for multiple relation -->
 	<#assign idVar = resolveIdVariableName(field)>
 	<#if implementsInterface>@Override</#if>
 	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} <#if isInterface>;<#else>{
@@ -96,6 +98,7 @@
 	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
 		this.${idVar} = ${idVar};
 	}</#if>
+ </#if>
 <#elseif field.type?contains("Embeddable")>
 	<#if isSearchCriteria>
 		public ${field.type?replace("Embeddable","SearchCriteriaTo")} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{

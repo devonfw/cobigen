@@ -18,6 +18,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
 
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references -->
+  <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
   @Override
   @Transient
   public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
@@ -40,6 +41,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
       this.${field.name} = ${field.type?uncap_first};
     }
   }
+  </#if>
 </#if>
 </#list>
 
