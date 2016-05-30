@@ -54,17 +54,27 @@ public class ${variables.component?cap_first}RestServiceImpl {
   public ${variables.entityName}Eto get${variables.entityName}(@PathParam("id") String id) {
 
     Long idAsLong;
+
     if (id == null) {
       throw new BadRequestException("missing id");
     }
+
+    ${variables.entityName}Eto ${variables.entityName?lower_case}Eto = null;
+
     try {
       idAsLong = Long.parseLong(id);
+
+      ${variables.entityName?lower_case}Eto = this.${variables.component}.find${variables.entityName}(idAsLong);
+
+      if(${variables.entityName?lower_case}Eto == null)
+        throw new NotFoundException("${variables.entityName?lower_case} not found");
+
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
     } catch (NotFoundException e) {
       throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    return this.${variables.component}.find${variables.entityName}(idAsLong);
+    return ${variables.entityName?lower_case}Eto;
   }
 
   /**
@@ -88,18 +98,30 @@ public class ${variables.component?cap_first}RestServiceImpl {
   @DELETE
   @Path("/${variables.entityName?lower_case}/{id}/")
   public void delete${variables.entityName}(@PathParam("id") String id) {
+
     Long idAsLong;
+
     if (id == null) {
       throw new BadRequestException("missing id");
     }
+
+    ${variables.entityName}Eto ${variables.entityName?lower_case}Eto = null;
+
     try {
       idAsLong = Long.parseLong(id);
+
+      ${variables.entityName?lower_case}Eto = this.${variables.component}.delete${variables.entityName}(idAsLong);
+
+      if(${variables.entityName?lower_case}Eto == null)
+        throw new NotFoundException("${variables.entityName?lower_case} not found");
+
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
     } catch (NotFoundException e) {
       throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    this.${variables.component}.delete${variables.entityName}(idAsLong);
+    return ${variables.entityName?lower_case}Eto;    
+
   }
 
   /**
