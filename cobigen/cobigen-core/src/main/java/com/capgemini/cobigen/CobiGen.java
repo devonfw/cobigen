@@ -53,7 +53,7 @@ import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
@@ -109,8 +109,9 @@ public class CobiGen {
 
         configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
         contextConfiguration = new ContextConfiguration(configFolder);
-        freeMarkerConfig = new Configuration();
-        freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+        freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
+        freeMarkerConfig
+            .setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);
@@ -285,9 +286,9 @@ public class CobiGen {
 
             if (rawModel == null) {
                 model = new ModelBuilder(targetInput, trigger, input).createModel(triggerInterpreter);
-                bm = new BeanModel(model, (BeansWrapper) freeMarkerConfig.getObjectWrapper());
+                bm = new BeanModel(model, (BeansWrapper) freeMarkerConfig.getObjectWrapper().wrap(input));
             } else {
-                bm = new BeanModel(rawModel, (BeansWrapper) freeMarkerConfig.getObjectWrapper());
+                bm = new BeanModel(rawModel, (BeansWrapper) freeMarkerConfig.getObjectWrapper().wrap(input));
             }
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
