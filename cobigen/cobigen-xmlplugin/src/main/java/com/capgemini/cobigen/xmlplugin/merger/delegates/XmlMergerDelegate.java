@@ -4,13 +4,13 @@ import java.io.File;
 import java.nio.file.Path;
 
 import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.xmllawmerger.XmlLawMerger;
+import com.github.maybeec.lexeme.LeXeMerger;
 
 /**
  * Provides a XmlLawMerger instance with the IMerger interface
  * @author sholzer (Aug 27, 2015)
  */
-public class XmlLawMergerDelegate implements IMerger {
+public class XmlMergerDelegate implements IMerger {
 
     /**
      *
@@ -20,7 +20,7 @@ public class XmlLawMergerDelegate implements IMerger {
     /**
      *
      */
-    private XmlLawMerger merger;
+    private LeXeMerger merger;
 
     /**
      *
@@ -30,9 +30,9 @@ public class XmlLawMergerDelegate implements IMerger {
      *            the way how conflicts will be handled
      * @author sholzer (Aug 27, 2015)
      */
-    public XmlLawMergerDelegate(String mergeSchemaLocation, MergeType mergeType) {
+    public XmlMergerDelegate(String mergeSchemaLocation, MergeType mergeType) {
         this.mergeType = mergeType;
-        merger = new XmlLawMerger(mergeSchemaLocation);
+        merger = new LeXeMerger(mergeSchemaLocation);
     }
 
     /**
@@ -43,9 +43,9 @@ public class XmlLawMergerDelegate implements IMerger {
      *            the way how conflicts will be handled
      * @author sholzer (Aug 27, 2015)
      */
-    public XmlLawMergerDelegate(Path mergeSchemaLocation, MergeType mergeType) {
+    public XmlMergerDelegate(Path mergeSchemaLocation, MergeType mergeType) {
         this.mergeType = mergeType;
-        merger = new XmlLawMerger(mergeSchemaLocation);
+        merger = new LeXeMerger(mergeSchemaLocation);
     }
 
     /**

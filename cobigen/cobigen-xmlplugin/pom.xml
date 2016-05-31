@@ -21,8 +21,8 @@
     </dependency>
 
     <dependency>
-      <artifactId>xml-law-merger</artifactId>
-      <groupId>com.capgemini</groupId>
+      <artifactId>lexeme</artifactId>
+      <groupId>com.github.maybeec</groupId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
