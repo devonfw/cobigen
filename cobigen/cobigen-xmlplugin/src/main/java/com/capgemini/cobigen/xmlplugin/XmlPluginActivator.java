@@ -6,7 +6,7 @@ import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
-import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlLawMergerDelegate;
+import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 import com.google.common.collect.Lists;
 
 /**
@@ -29,10 +29,10 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
 
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE));
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE));
-        merger.add(new XmlLawMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE));
         return merger;
     }
 

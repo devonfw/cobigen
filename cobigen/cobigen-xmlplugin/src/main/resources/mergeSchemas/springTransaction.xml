@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ms:MergeSchema for="" root="false" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
-  <ms:Definition namespace="http://www.springframework.org/schema/tx"/>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/tx"/>
 
-  <ms:DefaultCriterion xpath="./@id"/>
+  <ms:default-criterion xpath="./@id"/>
 
-  <ms:Handling for="advice">
-    <ms:Handling for="attributes" type="unique">
-    <ms:Criterion xpath="true()"/>
-      <ms:Handling for="method">
-        <ms:Criterion xpath="./@name"/>
-        <ms:Attribute for="rollback-for" attachable="true" separationString=","/>
-        <ms:Attribute for="no-rollback-fot" attachable="true" separationString=","/>
-      </ms:Handling>
-    </ms:Handling>
-  </ms:Handling>
+  <ms:handling for="advice">
+    <ms:handling for="attributes" type="unique">
+    <ms:criterion xpath="true()"/>
+      <ms:handling for="method">
+        <ms:criterion xpath="./@name"/>
+        <ms:attribute for="rollback-for" attachable="true" separationString=","/>
+        <ms:attribute for="no-rollback-fot" attachable="true" separationString=","/>
+      </ms:handling>
+    </ms:handling>
+  </ms:handling>
 
-  <ms:Handling for="annotation-driven">
-    <ms:Criterion xpath="true()"/>
-  </ms:Handling>
+  <ms:handling for="annotation-driven">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
 
 
-</ms:MergeSchema>
+</ms:merge-schema>

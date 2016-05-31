@@ -1,6 +1,6 @@
 package com.capgemini.cobigen.xmlplugin.merger.delegates;
 
-import com.capgemini.xmllawmerger.ConflictHandlingType;
+import com.github.maybeec.lexeme.ConflictHandlingType;
 
 /**
  * Maps the ConflictHandlingTypes and the already used merge types

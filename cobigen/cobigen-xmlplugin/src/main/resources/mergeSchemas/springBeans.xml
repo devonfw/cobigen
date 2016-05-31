@@ -1,84 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ms:MergeSchema for="beans" xmlns:ms="http://www.capgemini.com/MergeSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.capgemini.com/MergeSchema ../xsd/MergeSchema.xsd ">
-	<ms:Definition namespace="http://www.springframework.org/schema/beans"/>
+<ms:merge-schema for="beans" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+	<ms:definition namespace="http://www.springframework.org/schema/beans"/>
 
-  <ms:DefaultCriterion xpath="true()"/>
+  <ms:default-criterion xpath="true()"/>
 
-  <ms:Handling for="description" unique="true">
-  	<ms:Criterion xpath="true()"/>
-  </ms:Handling>
-  <ms:Handling for="entry">
-    <ms:Criterion xpath="./@key" />
-    <ms:Handling for="key" unique="true"><ms:Criterion xpath="true()"/></ms:Handling>
-  </ms:Handling>
-  <ms:Handling for="import">
-    <ms:Criterion xpath="true()"/>
-  </ms:Handling>
-  <ms:Handling for="alias">
-    <ms:Criterion xpath="true()"/>
-  </ms:Handling>
+  <ms:handling for="description" unique="true">
+  	<ms:criterion xpath="true()"/>
+  </ms:handling>
+  <ms:handling for="entry">
+    <ms:criterion xpath="./@key" />
+    <ms:handling for="key" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="import">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+  <ms:handling for="alias">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
 
-  <ms:Handling for="bean" label="refListOrSetType">
-    <ms:Criterion xpath="./@*[name() = 'id' or name()='name']/text()"/>
+  <ms:handling for="bean" label="refListOrSetType">
+    <ms:criterion xpath="./@*[name() = 'id' or name()='name']/text()"/>
   	<!-- Handling for description from the axis above -->
-  	<ms:Handling for="constructor-arg">
-      <ms:Criterion xpath="./@name"/>
-  	</ms:Handling>
+  	<ms:handling for="constructor-arg">
+      <ms:criterion xpath="./@name"/>
+  	</ms:handling>
 
-    <ms:Handling for="property">
-      <ms:Criterion xpath="./@name"/>
-    </ms:Handling>
+    <ms:handling for="property">
+      <ms:criterion xpath="./@name"/>
+    </ms:handling>
 
-    <ms:Handling for="qualifier">
-      <ms:Criterion xpath="./@type"/>
-    </ms:Handling>
+    <ms:handling for="qualifier">
+      <ms:criterion xpath="./@type"/>
+    </ms:handling>
 
-    <ms:Handling for="lookup-method">
-      <ms:Criterion xpath="./@name"/>
-    </ms:Handling>
+    <ms:handling for="lookup-method">
+      <ms:criterion xpath="./@name"/>
+    </ms:handling>
 
-    <ms:Handling for="replaced-method">
-      <ms:Criterion xpath="./@name"/>
-      <ms:Handling for="arg-type">
-        <ms:Criterion xpath="./@match"/>
-      </ms:Handling>
-    </ms:Handling>
+    <ms:handling for="replaced-method">
+      <ms:criterion xpath="./@name"/>
+      <ms:handling for="arg-type">
+        <ms:criterion xpath="./@match"/>
+      </ms:handling>
+    </ms:handling>
 
 
 
-  </ms:Handling> <!-- End Handling for bean -->
+  </ms:handling> <!-- End Handling for bean -->
 
   <!-- shared Handlings -->
-    <ms:Handling for="ref" unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="idref"  unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="value" unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="null"  unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="array" unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="list" unique="true">
-      <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="set" unique="true">
-    <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="map" unique="true" label="map">
-    <ms:Criterion xpath="true()"/>
-    </ms:Handling>
-    <ms:Handling for="props" unique="true">
-    <ms:Criterion xpath="true()"/>
-    </ms:Handling>
+    <ms:handling for="ref" unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="idref"  unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="value" unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="null"  unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="array" unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="list" unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="set" unique="true">
+    <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="map" unique="true" label="map">
+    <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="props" unique="true">
+    <ms:criterion xpath="true()"/>
+    </ms:handling>
 
-  <ms:Handling for="meta">
-  	<ms:Criterion xpath="./@key"/>
-  </ms:Handling>
+  <ms:handling for="meta">
+  	<ms:criterion xpath="./@key"/>
+  </ms:handling>
 
-</ms:MergeSchema>
+</ms:merge-schema>
