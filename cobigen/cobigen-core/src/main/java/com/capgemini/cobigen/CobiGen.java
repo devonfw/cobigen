@@ -50,9 +50,8 @@ import com.capgemini.cobigen.validator.InputValidator;
 import com.google.common.collect.Lists;
 
 import freemarker.core.Environment;
-import freemarker.ext.beans.BeanModel;
-import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
@@ -282,13 +281,11 @@ public class CobiGen {
         Template templateIntern = getTemplate(template, triggerInterpreter);
         for (Object targetInput : inputObjects) {
             Map<String, Object> model;
-            BeanModel bm = null;
 
             if (rawModel == null) {
                 model = new ModelBuilder(targetInput, trigger, input).createModel(triggerInterpreter);
-                bm = new BeanModel(model, (BeansWrapper) freeMarkerConfig.getObjectWrapper().wrap(input));
             } else {
-                bm = new BeanModel(rawModel, (BeansWrapper) freeMarkerConfig.getObjectWrapper().wrap(input));
+                model = rawModel;
             }
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
@@ -296,11 +293,11 @@ public class CobiGen {
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, bm, targetCharset, inputReader,
-                        input);
+                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
+                        inputReader, input);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, bm, targetCharset, inputReader,
+                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
                             input);
                         String result = null;
                         try {
@@ -325,7 +322,7 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, bm, targetCharset, inputReader,
+                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
                     input);
             }
         }
@@ -681,7 +678,7 @@ public class CobiGen {
      *             be created, or cannot be opened for any other reason
      * @author mbrunnli (21.03.2013)
      */
-    private void generateTemplateAndWriteFile(File output, Template template, BeanModel model,
+    private void generateTemplateAndWriteFile(File output, Template template, Map<String, Object> model,
         String outputCharset, IInputReader inputReader, Object input)
         throws FileNotFoundException, TemplateException, IOException {
 
@@ -740,18 +737,20 @@ public class CobiGen {
      *             if an I/O exception occurs (during writing to the writer)
      * @author mbrunnli (12.03.2013)
      */
-    private void generateTemplateAndWritePatch(Writer out, Template template, BeanModel model,
+    private void generateTemplateAndWritePatch(Writer out, Template template, Map<String, Object> model,
         String outputCharset, IInputReader inputReader, Object input) throws TemplateException, IOException {
 
         freemarker.template.Template fmTemplate;
+        DefaultObjectWrapper def = (DefaultObjectWrapper) freeMarkerConfig.getObjectWrapper();
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getTemplateFile());
+            def.wrap(model);
         } catch (IOException e) {
             LOG.error("Error while retrieving template with id '{}'.", template.getName(), e);
             throw new IOException("Template " + template.getName() + ":\n" + e.getMessage(), e);
         }
 
-        Environment env = fmTemplate.createProcessingEnvironment(model, out);
+        Environment env = fmTemplate.createProcessingEnvironment(model, out, def);
         env.setOutputEncoding(outputCharset);
         // env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
 
