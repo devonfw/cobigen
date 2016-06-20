@@ -292,7 +292,8 @@ public class CobiGen {
             LOG.info("Generating template '{}' ...", templateIntern.getName(), targetInput);
 
             if (originalFile.exists()) {
-                if (forceOverride || templateIntern.getMergeStrategy() == null) {
+                if (forceOverride || templateIntern.getMergeStrategy() == null
+                    || templateIntern.getMergeStrategy().equals("override")) {
                     generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
                         inputReader, input);
                 } else {
