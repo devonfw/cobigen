@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="cobigen-eclipse-feature"
+      id="com.capgemini.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
       version="1.4.3"
       provider-name="Capgemini">
@@ -23,8 +23,13 @@ To the extent that CobiGen contains software licensed under open source licenses
 To the extent CobiGen contains Capgemini proprietary code, non-transferrable use rights are granted by Capgemini as set forth in the CobiGen License Agreement.
    </license>
 
+   <url>
+      <update label="CobiGen Eclipse Plug-in"/>
+      <discovery label="GitHub Repository" url="https://github.com/devonfw/tools-cobigen"/>
+   </url>
+
    <plugin
-         id="cobigen-eclipse"
+         id="com.capgemini.cobigen.eclipse"
          download-size="0"
          install-size="0"
          version="0.0.0"
