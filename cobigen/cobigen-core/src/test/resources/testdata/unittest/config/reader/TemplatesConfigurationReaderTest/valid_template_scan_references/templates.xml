@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templateScans>
+    <templateScan name="toBeReferencedFoo" templatePath="foo" templateNamePrefix="prefix_foo_" destinationPath="src/main/java/foo"/>
+    <templateScan name="toBeReferencedBar" templatePath="bar" templateNamePrefix="prefix_bar_" destinationPath="src/main/java/bar"/>
+  </templateScans>
+
+	<increments>
+		<increment name="test" description="TEST">
+			<templateScanRef ref="toBeReferencedFoo"/>
+		</increment>
+	</increments>
+
+</templatesConfiguration>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <templateExtension ref="ExceptionKeys.java" mergeStrategy="javamerge"/>
+        <templateExtension ref="NamedQueries.java" mergeStrategy="javamerge"/>
+        
+        <templateExtension ref="${variables.component#cap_first}ExceptionKeys.java" mergeStrategy="javamerge"/>
+        <templateExtension ref="${variables.pojoName}To.java" mergeStrategy="javamerge"/>
+		
+        <templateExtension ref="NamedQueries.hbm.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="core.xml" mergeStrategy="xmlmerge"/>
+		
+        <templateExtension ref="gui-controller.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="gui-core-wrapper.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="jpa.xml" mergeStrategy="xmlmerge"/>
+		
+        <templateExtension ref="masktexts_de.properties" mergeStrategy="propertymerge" targetCharset="ISO-8859-1"/>
+
+        <templateExtension ref="startpageButtons.xhtml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageFlow.xml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageOverview.xhtml" mergeStrategy="xmlmerge"/>
+        <templateExtension ref="startpageViewState.xhtml" mergeStrategy="xmlmerge"/>
+    </templates>
+    
+    <templateScans>
+        <templateScan templatePath="templates" destinationPath="src/main"/>
+    </templateScans>
+	
+    <increments>
+        <increment name="common_exceptions" description="Common exception classes">
+            <templateRef ref="TechnicalRuntimeException.java"/>
+            <templateRef ref="ValidationException.java"/>
+        </increment>
+        <increment name="daos" description="DAO's">
+            <templateRef ref="NamedQueries.java"/>
+            <templateRef ref="AbstractDomainDao.java"/>
+            <templateRef ref="DomainDao.java"/>
+            <templateRef ref="${variables.pojoName}Dao.java"/>
+            <templateRef ref="${variables.pojoName}DaoImpl.java"/>
+            <templateRef ref="jpa.xml"/>
+            <templateRef ref="NamedQueries.hbm.xml"/>
+        </increment>
+        <increment name="core_layer" description="Core layer">
+            <templateRef ref="AbstractUc.java"/>
+            <templateRef ref="Abstract${variables.pojoName}Uc.java"/>
+            <templateRef ref="${variables.component#cap_first}ExceptionKeys.java"/>
+            <templateRef ref="${variables.pojoName}To.java"/>
+            <templateRef ref="${variables.component#cap_first}.java"/>
+            <templateRef ref="${variables.component#cap_first}Impl.java"/>
+            <templateRef ref="UcFind${variables.pojoName}.java"/>
+            <templateRef ref="UcManage${variables.pojoName}.java"/>
+        </increment>
+        <increment name="gui_layer" description="JSF GUI layer">
+            <templateRef ref="AbstractController.java"/>
+            <templateRef ref="Abstract${variables.pojoName}Controller.java"/>
+            <templateRef ref="${variables.component#cap_first}CoreWrapper.java"/>
+            <templateRef ref="${variables.component#cap_first}CoreWrapperImpl.java"/>
+            <templateRef ref="Create${variables.pojoName}Controller.java"/>
+            <templateRef ref="Create${variables.pojoName}Model.java"/>
+            <templateRef ref="Create${variables.pojoName}ModelValidator.java"/>
+            <templateRef ref="${variables.pojoName}OverviewController.java"/>
+            <templateRef ref="${variables.pojoName}OverviewModel.java"/>
+            <templateRef ref="Manage${variables.pojoName}Controller.java"/>
+            <templateRef ref="Manage${variables.pojoName}Model.java"/>
+            <templateRef ref="Manage${variables.pojoName}ModelValidator.java"/>
+        </increment>
+        <increment name="gui_jsf" description="JSF Masks">
+            <templateRef ref="masktexts_de.properties"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Buttonline.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Flow.xml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Form.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}Overview.xhtml"/>
+            <templateRef ref="create${variables.pojoName#lower_case}ViewState.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewButtonline.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewFlow.xml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewForm.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewOverview.xhtml"/>
+            <templateRef ref="${variables.pojoName#lower_case}overviewViewState.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Buttonline.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Flow.xml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Form.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}Overview.xhtml"/>
+            <templateRef ref="manage${variables.pojoName#lower_case}ViewState.xhtml"/>
+            <templateRef ref="startpageButtons.xhtml"/>
+            <templateRef ref="startpageFlow.xml"/>
+            <templateRef ref="startpageOverview.xhtml"/>
+            <templateRef ref="startpageViewState.xhtml"/>
+            <templateRef ref="index.html"/>
+        </increment>
+        <increment name="gui_spring" description="Spring configuration">
+            <templateRef ref="common.xml"/>
+            <templateRef ref="core.xml"/>
+            <templateRef ref="${variables.component#cap_first}.xml"/>
+            <templateRef ref="gui-controller.xml"/>
+            <templateRef ref="gui-core-wrapper.xml"/>
+        </increment>
+        <increment name="gui" description="GUI">
+            <incrementRef ref="gui_layer"/>
+            <incrementRef ref="gui_jsf"/>
+            <incrementRef ref="gui_spring"/>
+        </increment>
+    </increments>
+</templatesConfiguration>

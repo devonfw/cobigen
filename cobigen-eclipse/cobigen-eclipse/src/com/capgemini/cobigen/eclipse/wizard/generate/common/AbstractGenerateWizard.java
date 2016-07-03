@@ -1,9 +1,9 @@
 package com.capgemini.cobigen.eclipse.wizard.generate.common;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
@@ -14,14 +14,15 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
@@ -62,21 +63,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
     protected void initializeWizard() {
 
         page1 = new SelectFilesPage(cobigenWrapper, false);
-    }
-
-    /**
-     * Returns the set of all destination paths for the templates
-     *
-     * @return the set of all destination paths for the templates
-     * @author mbrunnli (11.03.2013)
-     */
-    public Set<String> getAllGenerationPaths() {
-
-        Set<String> paths = new HashSet<>();
-        for (TemplateTo tmp : cobigenWrapper.getAllTemplates()) {
-            paths.add(tmp.resolveDestinationPath(cobigenWrapper.getCurrentRepresentingInput()));
-        }
-        return paths;
+        LOG.info("AbstractGenerateWizard initialized");
     }
 
     /**
@@ -86,6 +73,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     @Override
     public boolean performFinish() {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Start performing wizard finish operation...");
 
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 
@@ -96,6 +85,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
         page1.saveSelection();
         generateContents(dialog);
 
+        LOG.info("Performing wizard finish operation completed.");
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return true;
     }
 
@@ -112,11 +103,12 @@ public abstract class AbstractGenerateWizard extends Wizard {
      * Checks whether files will be overwritten by the generation process and whether the user is aware of
      * this behavior and confirms it
      *
-     * @return true, if the user confirms the changes beeing made or no files will be overwritten<br>
+     * @return true, if the user confirms the changes being made or no files will be overwritten<br>
      *         false, otherwise
      * @author mbrunnli (18.02.2013)
      */
     private boolean userConfirmed() {
+        LOG.info("Check for necessary user confirmation to be displayed.");
 
         List<Object> diff = page1.getSelectedResources();
 
@@ -140,7 +132,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
                 } catch (JavaModelException e) {
                     LOG.error(
                         "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
-                        e);
+                        ((IJavaElement) r).getElementName(), e);
                 }
             } else {
                 iResource = r;
@@ -151,6 +143,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
         }
 
         if (!diff.isEmpty()) {
+            LOG.info("Opening dialog for user confirmation... waiting for user interaction.");
             MessageDialog dialog =
                 new MessageDialog(
                     getShell(),
@@ -159,10 +152,13 @@ public abstract class AbstractGenerateWizard extends Wizard {
                     "You have selected resources that are already existent and will be overwritten when proceeding.\nDo you really want to replace the existing files by newly generated ones?",
                     MessageDialog.WARNING, new String[] { "Yes", "No" }, 1);
             int result = dialog.open();
+            LOG.info("Got user input. Continue processing...");
             if (result == 1 || result == SWT.DEFAULT) {
+                LOG.info("Finish user confirmation checking: user indicates to not override existing files.");
                 return false;
             }
         }
+        LOG.info("Finish user confirmation checking.");
         return true;
     }
 }

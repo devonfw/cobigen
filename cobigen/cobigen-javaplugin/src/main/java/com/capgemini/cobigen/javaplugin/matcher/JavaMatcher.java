@@ -89,6 +89,10 @@ public class JavaMatcher implements IMatcher {
                     TriggerExpressionResolver resolver = new TriggerExpressionResolver((Class<?>) target);
                     return resolver.evaluateExpression(matcher.getValue());
                 }
+                if (target instanceof JavaClass) {
+                    TriggerExpressionResolver resolver = new TriggerExpressionResolver((JavaClass) target);
+                    return resolver.evaluateExpression(matcher.getValue());
+                }
             }
         } catch (IllegalArgumentException e) {
             LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
@@ -205,27 +209,30 @@ public class JavaMatcher implements IMatcher {
             if (m.matches()) {
                 try {
                     String value = m.group(Integer.parseInt(va.getValue()));
-                    if (value == null) {
-                        throw new InvalidConfigurationException(
-                            "The VariableAssignment '"
-                                + va.getType().toUpperCase()
-                                + "' in the Matcher of type '"
-                                + matcherType.toString()
-                                + "' does not match a regular expression group of the matcher value.\nCurrent value: '"
-                                + va.getValue() + "'");
-                    }
+                    // removed a not null check (github issue #159) causing a InvalidConfigurationException
+                    // thrown when value == null
                     return value;
                 } catch (NumberFormatException e) {
                     LOG.error(
-                        "The VariableAssignment '{}' in the Matcher of type '{}' should have an integer as value representing a regular expression group.\nCurrent value: '{}'",
-                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
+                        "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
+                            + " representing a regular expression group.\nCurrent value: '{}'", va.getType()
+                            .toUpperCase(), matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException(
                         "The VariableAssignment '"
                             + va.getType().toUpperCase()
-                            + "' in the Matcher of type '"
+                            + "' of Matcher of type '"
                             + matcherType.toString()
                             + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
                             + va.getValue() + "'");
+                } catch (IndexOutOfBoundsException e) {
+                    LOG.error(
+                        "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
+                            + " group not in range.\nCurrent value: '{}'", va.getType().toUpperCase(),
+                        matcherType.toString(), va.getValue(), e);
+                    throw new InvalidConfigurationException("The VariableAssignment '"
+                        + va.getType().toUpperCase() + "' of Matcher of type '" + matcherType.toString()
+                        + "' declares a regular expression group not in range.\nCurrent value: '"
+                        + va.getValue() + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {

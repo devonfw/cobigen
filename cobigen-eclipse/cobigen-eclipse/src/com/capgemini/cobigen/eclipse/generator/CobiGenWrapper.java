@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.eclipse.generator;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -12,10 +13,20 @@ import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.config.entity.Trigger;
+import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
+import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
@@ -25,7 +36,7 @@ import com.google.common.collect.Lists;
 import freemarker.template.TemplateException;
 
 /**
- *
+ * Wrapper for CobiGen providing an eclipse compliant API.
  * @author mbrunnli (02.12.2014)
  */
 public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
@@ -34,6 +45,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * States whether at least one input object has been set
      */
     private boolean initialized;
+
+    /**
+     * Assigning logger to CobiGenWrapper
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CobiGenWrapper.class);
 
     /**
      * States, whether the input is unique and a container
@@ -56,9 +72,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
+     * @throws IOException
+     *             if the generator project could not be found or read
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         super();
     }
 
@@ -70,9 +91,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
+     * @throws IOException
+     *             if the generator project could not be found or read
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException {
+    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         super();
         setInputs(inputs);
     }
@@ -85,10 +111,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public void setInput(Object input) {
         if (input != null) {
+            LOG.info("Set new generator input. Calculating matching templates...");
             initialized = true;
             inputs = Lists.newArrayList(input);
             matchingTemplates = cobiGen.getMatchingTemplates(input);
             singleNonContainerInput = !cobiGen.combinesMultipleInputs(input);
+            LOG.info("Finished calculating matching templates.");
         } else {
             initialized = false;
             inputs = null;
@@ -108,11 +136,31 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         initialized = this.inputs != null && this.inputs.size() > 0;
 
         if (initialized) {
+            LOG.info("Set new generator inputs. Calculating matching templates...");
             matchingTemplates = Lists.newLinkedList();
-            for (Object input : this.inputs) {
-                matchingTemplates.addAll(cobiGen.getMatchingTemplates(input));
+
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+            AnalyzeInputJob job = new AnalyzeInputJob(cobiGen, inputs);
+            try {
+                dialog.run(true, false, job);
+            } catch (InvocationTargetException e) {
+                LOG.error("An internal error occured while invoking input analyzer job.", e);
+                throw new CobiGenEclipseRuntimeException(
+                    "An internal error occured while invoking input analyzer job", e);
+            } catch (InterruptedException e) {
+                LOG.warn("The working thread doing the input analyzer job has been interrupted.", e);
+                throw new CobiGenEclipseRuntimeException(
+                    "The working thread doing the input analyzer job has been interrupted", e);
             }
-            singleNonContainerInput = inputs.size() == 1 && !cobiGen.combinesMultipleInputs(inputs.get(0));
+
+            // forward exception thrown in the processing thread if an exception occurred
+            if (job.isExceptionOccurred()) {
+                throw job.getOccurredException();
+            }
+
+            matchingTemplates = job.getResultMatchingTemplates();
+            singleNonContainerInput = job.isResultSingleNonContainerInput();
+            LOG.info("Finished analyzing generation input.");
         } else {
             inputs = null;
             matchingTemplates = null;
@@ -133,13 +181,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the specified template could not be found
      * @throws MergeException
      *             if there are some problems while merging
-     * @throws CoreException
-     *             if an internal eclipse exception occurs
      * @author mbrunnli (14.02.2013)
      */
-    @SuppressWarnings("unused")
     public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        MergeException, CoreException {
+        MergeException {
 
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
@@ -162,7 +207,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            template model
      * @author mbrunnli (06.12.2014)
      */
-    public abstract void adaptModel(Map<String, Object> model);
+    protected abstract void adaptModel(Map<String, Object> model);
 
     /**
      * Returns all matching trigger ids for the currently stored input
@@ -258,7 +303,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @author mbrunnli (14.02.2013)
      */
     public List<TemplateTo> getTemplatesForFilePath(String filePath, Set<IncrementTo> consideredIncrements) {
-        // TODO DRINGEND!!! BUG, da die selektion sonst nicht mehr funktioniert??? testen!
         List<TemplateTo> templates = Lists.newLinkedList();
         if (consideredIncrements != null) {
             for (IncrementTo increment : getAllIncrements()) {
@@ -348,8 +392,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         Set<IFile> files = new HashSet<>();
+        boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(inputs.get(0));
         for (TemplateTo t : getAllTemplates()) {
-            if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
+            if (combinesMultipleInputs) {
                 List<Object> children = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
                 for (Object child : children) {
                     files.add(getGenerationTargetProject().getFile(t.resolveDestinationPath(child)));
@@ -382,5 +427,40 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             return inputs.get(0);
         }
     }
+
+    /**
+     * delegate of {@link CobiGen#getMatchingTriggerIds(Object)}
+     * @param loadClass
+     *            the object to be loaded
+     * @return the list of matching trigger id's
+     * @author sholzer (Sep 23, 2015)
+     */
+    public List<String> getMatchingTriggerIds(Object loadClass) {
+        if (initialized) {
+            return cobiGen.getMatchingTriggerIds(loadClass);
+        } else {
+            LOG.debug("Generator is not initialized. Could not get matching triggers for "
+                + loadClass.toString());
+            return null;
+        }
+    }
+
+    /**
+     * Checks if the selected items are supported by one or more {@link Trigger}s, and if they are supported
+     * by the same {@link Trigger}s. Returns a boolean value, if all objects of the selection could be
+     * processed. If there are objects, which are not yet supported as inputs for generation, or the selection
+     * in composed of valid objects in an not yet supported way, an {@link InvalidInputException} will be
+     * thrown. Thus, getting a boolean value can be interpreted as
+     * "selection supported, but currently not matching trigger".
+     *
+     * @param selection
+     *            the selection made
+     * @return true, if all items are supported by the same trigger(s)<br>
+     *         false, if they are not supported by any trigger at all
+     * @throws InvalidInputException
+     *             if the input could not be read as expected
+     * @author trippl (22.04.2013)
+     */
+    public abstract boolean isValidInput(IStructuredSelection selection) throws InvalidInputException;
 
 }

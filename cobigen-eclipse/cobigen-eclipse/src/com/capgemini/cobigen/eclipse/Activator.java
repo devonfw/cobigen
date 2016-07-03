@@ -1,17 +1,19 @@
 package com.capgemini.cobigen.eclipse;
 
+import java.util.UUID;
+
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
-import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectRCL;
-import com.capgemini.cobigen.eclipse.workbenchcontrol.SelectionServiceListener;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
@@ -33,21 +35,13 @@ public class Activator extends AbstractUIPlugin {
      */
     private static Activator plugin;
 
-    /**
-     * {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     */
-    private SelectionServiceListener selectionServiceListener;
+    /** {@link IResourceChangeListener} for the configuration project */
+    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectListener();
 
     /**
-     * Current state of the {@link SelectionServiceListener}
+     * Current state of the {@link IResourceChangeListener} for the configuration project
      */
-    private boolean selectionServiceListenerStarted = false;
-
-    /**
-     * Checks whether the workbench has been initialized (workaround for better user notification about
-     * context.xml compile errors)
-     */
-    private volatile boolean initialized = false;
+    private volatile boolean configurationProjectListenerStarted = false;
 
     /**
      * Assigning logger to Activator
@@ -62,95 +56,66 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (14.02.2013)
+     * @author mbrunnli (14.02.2013), updated by sholzer (22.09.2015)
      */
     @Override
     public void start(BundleContext context) throws Exception {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         super.start(context);
         plugin = this;
         PluginRegistry.loadPlugin(JavaPluginActivator.class);
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        startSelectionServiceListener();
-        startResourceChangeListener();
-
+        startConfigurationProjectListener();
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
      * Starts the ResourceChangeListener
-     *
      * @author mbrunnli (08.04.2013)
      */
-    private void startResourceChangeListener() {
+    public void startConfigurationProjectListener() {
+        LOG.info("Start configuration project listener");
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
-                ConfigurationProjectRCL resourceChangeListener = new ConfigurationProjectRCL();
-                ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
-            }
-        });
-    }
-
-    /**
-     * Starts the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     * @author mbrunnli (08.04.2013), adapted by sbasnet(30.10.2014)
-     */
-    public void startSelectionServiceListener() {
-        if (selectionServiceListenerStarted) {
-            return;
-        }
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    selectionServiceListener = new SelectionServiceListener();
-                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
-                        "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
-                    PlatformUIUtil.getActiveWorkbenchPage().addSelectionListener(
-                        "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
-                    selectionServiceListenerStarted = true;
-                } catch (InvalidConfigurationException e) {
-                    if (initialized) {
-                        MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                            "The context.xml of the generator configuration was changed into an invalid state.\n"
-                                + "The generator might not behave as intended:\n" + e.getMessage());
-                        LOG.error(
-                            "The context.xml of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
-                            e);
+                MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+                synchronized (configurationProjectListener) {
+                    if (configurationProjectListenerStarted) {
+                        return;
                     }
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    if (initialized) {
-                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Error",
-                            "Internal error: " + e.getMessage());
-                        LOG.error("Internal error", e);
-                    }
-
-                } finally {
-                    initialized = true;
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                        configurationProjectListener,
+                        IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
+                            | IResourceChangeEvent.POST_CHANGE);
+                    configurationProjectListenerStarted = true;
+                    LOG.info("ResourceChangeListener for configuration project started.");
                 }
+                MDC.remove(InfrastructureConstants.CORRELATION_ID);
             }
         });
     }
 
     /**
-     * Stops the {@link SelectionServiceListener} for valid input evaluation for the context menu entries
-     *
-     * @author mbrunnli (08.04.2013)
+     * Stops the ResourceChangeListener
+     * @author mbrunnli (Jun 24, 2015)
      */
-    public void stopSelectionServiceListener() {
-        if (!selectionServiceListenerStarted) {
-            return;
-        }
+    public void stopConfigurationListener() {
+        LOG.info("Stop configuration project listener");
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
-                    "org.eclipse.jdt.ui.PackageExplorer", selectionServiceListener);
-                PlatformUIUtil.getActiveWorkbenchPage().removeSelectionListener(
-                    "org.eclipse.ui.navigator.ProjectExplorer", selectionServiceListener);
-                selectionServiceListenerStarted = false;
+                MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+                synchronized (configurationProjectListener) {
+                    if (!configurationProjectListenerStarted) {
+                        return;
+                    }
+                    ResourcesPlugin.getWorkspace().removeResourceChangeListener(configurationProjectListener);
+                    configurationProjectListenerStarted = false;
+                    LOG.info("ResourceChangeListener for configuration project stopped.");
+                }
+                MDC.remove(InfrastructureConstants.CORRELATION_ID);
             }
         });
     }

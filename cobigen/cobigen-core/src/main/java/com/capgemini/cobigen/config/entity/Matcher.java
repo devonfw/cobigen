@@ -3,6 +3,8 @@ package com.capgemini.cobigen.config.entity;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.capgemini.cobigen.config.entity.io.AccumulationType;
+
 /**
  * The {@link Matcher} type corresponds to the &lt;matcher&gt; xml node
  * @author mbrunnli (08.04.2014)
@@ -15,16 +17,9 @@ public class Matcher extends AbstractMatcher {
     private List<VariableAssignment> variableAssignments;
 
     /**
-     * Creates a new container Matcher for a given type, with a given value to match against
-     * @param type
-     *            matcher type
-     * @param value
-     *            to match against
-     * @author mbrunnli (08.04.2014)
+     * Accumulation type
      */
-    public Matcher(String type, String value) {
-        super(type, value);
-    }
+    private AccumulationType accumulationType;
 
     /**
      * Creates a new Matcher for a given type, with a given value to match against and the corresponding
@@ -35,10 +30,14 @@ public class Matcher extends AbstractMatcher {
      *            to match against
      * @param variableAssignments
      *            of the matcher
+     * @param accumulationType
+     *            of the matcher
      * @author mbrunnli (08.04.2014)
      */
-    public Matcher(String type, String value, List<VariableAssignment> variableAssignments) {
+    public Matcher(String type, String value, List<VariableAssignment> variableAssignments,
+        AccumulationType accumulationType) {
         super(type, value);
+        this.accumulationType = accumulationType;
         this.variableAssignments =
             variableAssignments == null ? new LinkedList<VariableAssignment>() : variableAssignments;
     }
@@ -52,4 +51,22 @@ public class Matcher extends AbstractMatcher {
         return variableAssignments;
     }
 
+    /**
+     * Returns the field 'accumulationType'
+     * @return value of accumulationType
+     * @author mbrunnli (22.02.2015)
+     */
+    public AccumulationType getAccumulationType() {
+        return accumulationType;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 17, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "'/accuType='"
+            + accumulationType.name() + "']";
+    }
 }

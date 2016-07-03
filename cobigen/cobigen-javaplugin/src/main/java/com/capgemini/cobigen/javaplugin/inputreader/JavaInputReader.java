@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.extension.IInputReader;
+import com.capgemini.cobigen.extension.InputReaderV13;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -34,7 +35,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  *
  * @author mbrunnli (15.10.2013)
  */
-public class JavaInputReader implements IInputReader {
+public class JavaInputReader implements InputReaderV13 {
 
     /**
      * Logger instance
@@ -118,22 +119,45 @@ public class JavaInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}
-     *
      * @author mbrunnli (03.06.2014)
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        return getInputObjects(input, inputCharset, false);
+    }
 
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (19.01.2015)
+     */
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        return getInputObjects(input, inputCharset, true);
+    }
+
+    /**
+     * Returns all input objects for the given container input.
+     * @param input
+     *            container input (only {@link PackageFolder} instances will be supported)
+     * @param inputCharset
+     *            {@link Charset} to be used to read the children
+     * @param recursively
+     *            states, whether the children should be retrieved recursively
+     * @return the list of children. In this case {@link File} objects
+     * @author mbrunnli (18.01.2015)
+     */
+    public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
         List<Object> javaClasses = new LinkedList<>();
         if (input instanceof PackageFolder) {
             File packageFolder = new File(((PackageFolder) input).getLocation());
-            List<File> files = retrieveAllJavaSourceFiles(packageFolder);
+            List<File> files = retrieveAllJavaSourceFiles(packageFolder, recursively);
             for (File f : files) {
 
                 ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
                 classLibraryBuilder.appendDefaultClassLoaders();
-                if (((PackageFolder) input).getClassLoader() != null) {
-                    classLibraryBuilder.appendClassLoader(((PackageFolder) input).getClassLoader());
+                ClassLoader containerClassloader = ((PackageFolder) input).getClassLoader();
+                if (containerClassloader != null) {
+                    classLibraryBuilder.appendClassLoader(containerClassloader);
                 }
                 try {
                     classLibraryBuilder
@@ -148,7 +172,23 @@ public class JavaInputReader implements IInputReader {
                         // save cast as given by the customized builder
                         if (source.getClasses().size() > 0) {
                             JavaClass javaClass = source.getClasses().get(0);
-                            javaClasses.add(javaClass);
+
+                            // try loading class
+                            if (containerClassloader != null) {
+                                try {
+                                    Class<?> loadedClass =
+                                        containerClassloader.loadClass(javaClass.getCanonicalName());
+                                    javaClasses.add(new Object[] { javaClass, loadedClass });
+                                } catch (ClassNotFoundException e) {
+                                    LOG.info(
+                                        "Could not load Java type '{}' with the containers class loader. "
+                                            + "Just returning the parsed Java model.",
+                                        javaClass.getCanonicalName());
+                                    javaClasses.add(javaClass);
+                                }
+                            } else {
+                                javaClasses.add(javaClass);
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -166,15 +206,19 @@ public class JavaInputReader implements IInputReader {
      *
      * @param packageFolder
      *            the package's folder
+     * @param recursively
+     *            states whether the java source files should be retrieved recursively
      * @return the list of files contained in the package's folder
      * @author mbrunnli (03.06.2014)
      */
-    private List<File> retrieveAllJavaSourceFiles(File packageFolder) {
+    private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 
         List<File> files = new LinkedList<>();
         if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
-                if (!f.isDirectory() && f.getName().endsWith(".java")) {
+                if (f.isDirectory() && recursively) {
+                    files.addAll(retrieveAllJavaSourceFiles(f, recursively));
+                } else if (f.isFile() && f.getName().endsWith(".java")) {
                     files.add(f);
                 }
             }
@@ -360,4 +404,5 @@ public class JavaInputReader implements IInputReader {
             return parsedModel;
         }
     }
+
 }

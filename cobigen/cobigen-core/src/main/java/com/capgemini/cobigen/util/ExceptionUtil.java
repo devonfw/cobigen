@@ -22,7 +22,7 @@ public class ExceptionUtil {
      *         otherwise <code>null</code>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Throwable> T getCause(Exception e, Class<T> cause) {
+    public static <T extends Throwable> T getCause(Throwable e, Class<T> cause) {
 
         Throwable curr = e;
         while (curr != null && !cause.equals(curr.getClass())) {
@@ -33,5 +33,32 @@ public class ExceptionUtil {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Tries to find the exception with the given type in the causing stack trace of exceptions of the given
+     * exception <code>e</code>
+     *
+     * @param e
+     *            super exception to retrieve the causes stack from
+     * @param causes
+     *            {@link Class}es which should be found and retrieved in sorted with a decreasing priority to
+     *            be found.
+     * @return the cause with the given type if found<br>
+     *         otherwise <code>null</code>
+     */
+    public static Throwable getCause(Throwable e, Class<?>... causes) {
+
+        for (Class<?> cause : causes) {
+            Throwable curr = e;
+            while (curr != null && !cause.equals(curr.getClass())) {
+                curr = curr.getCause();
+            }
+            if (curr != null) {
+                // if found return as this exception has a higher priority as the upcoming
+                return curr;
+            }
+        }
+        return null;
     }
 }
