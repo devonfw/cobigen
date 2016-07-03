@@ -3,9 +3,6 @@ package com.capgemini.cobigen.model;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.VariableAssignment;
@@ -24,11 +21,6 @@ import com.google.common.collect.Maps;
  * @author mbrunnli (03.06.2014)
  */
 public class ContextVariableResolver {
-
-    /**
-     * Logger instance
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ContextVariableResolver.class);
 
     /**
      * Input object for which a new object model should be created
@@ -77,18 +69,15 @@ public class ContextVariableResolver {
             MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                 try {
-                    Map<String, String> resolvedVariables =
-                        triggerInterpreter.getMatcher()
-                            .resolveVariables(matcherTo, getVariableAssignments(m));
+                    Map<String, String> resolvedVariables = triggerInterpreter.getMatcher()
+                        .resolveVariables(matcherTo, getVariableAssignments(m));
                     InputValidator.validateResolvedVariables(resolvedVariables);
                     variables.putAll(resolvedVariables);
+                } catch (InvalidConfigurationException e) {
+                    throw e;
                 } catch (Throwable e) {
-                    LOG.error(
-                        "The matcher '{}' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
-                        triggerInterpreter.getMatcher().getClass().getCanonicalName(), e);
                     throw new PluginProcessingException(
-                        "The matcher '"
-                            + triggerInterpreter.getMatcher().getClass().getCanonicalName()
+                        "The matcher '" + triggerInterpreter.getMatcher().getClass().getCanonicalName()
                             + "' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
                         e);
                 }
