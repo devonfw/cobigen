@@ -19,8 +19,10 @@ import javax.inject.Named;
 @Named
 public class ${variables.component?cap_first}Impl extends AbstractComponentFacade implements ${variables.component?cap_first} {
 
+    @Inject
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
+    @Inject
     private UcManage${variables.entityName} ucManage${variables.entityName};
 
     /**
@@ -51,28 +53,5 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     public boolean delete${variables.entityName}(Long id) {
 
       return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
-    }
-
-
-    /**
-     * Sets the field 'ucFind${variables.entityName}'.
-     * @param ucFind${variables.entityName}
-     *            New value for ucFind${variables.entityName}
-     */
-    @Inject
-	@UseCase
-    public void setUcFind${variables.entityName}(UcFind${variables.entityName} ucFind${variables.entityName}) {
-        this.ucFind${variables.entityName} = ucFind${variables.entityName};
-    }
-
-    /**
-     * Sets the field 'ucManage${variables.entityName}'.
-     * @param ucManage${variables.entityName}
-     *            New value for ucManage${variables.entityName}
-     */
-    @Inject
-	@UseCase
-    public void setUcManage${variables.entityName}(UcManage${variables.entityName} ucManage${variables.entityName}) {
-        this.ucManage${variables.entityName} = ucManage${variables.entityName};
     }
 }
