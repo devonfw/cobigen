@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.wizard.common;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -24,6 +26,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.prefs.BackingStoreException;
@@ -33,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.eclipse.Activator;
+import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
@@ -44,7 +48,6 @@ import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTree
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
 import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -312,11 +315,33 @@ public class SelectFilesPage extends WizardPage {
             }
         }
 
-        List<TemplateTo> templates = Lists.newLinkedList();
-        for (String path : getFilePathsToBeGenerated()) {
-            templates.addAll(cobigenWrapper.getTemplatesForFilePath(path, selectedIncrements));
+        ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+        DetermineTemplatesJob job =
+            new DetermineTemplatesJob(getFilePathsToBeGenerated(), selectedIncrements, cobigenWrapper);
+        try {
+            dialog.run(true, false, job);
+        } catch (InvocationTargetException e) {
+            LOG.error(
+                "An internal error occured while invoking the job for determining the templates to generate.",
+                e);
+            throw new CobiGenEclipseRuntimeException(
+                "An internal error occured while invoking the job for determining the templates to generate",
+                e);
+        } catch (InterruptedException e) {
+            LOG.warn(
+                "The working thread doing the job for determining the templates to generate has been interrupted.",
+                e);
+            throw new CobiGenEclipseRuntimeException(
+                "The working thread doing the job for determining the templates to generate has been interrupted",
+                e);
         }
-        return templates;
+
+        // forward potential occurred exception
+        if (job.isExceptionOccurred()) {
+            throw job.getOccurredException();
+        }
+
+        return job.getResultTemplates();
     }
 
     /**

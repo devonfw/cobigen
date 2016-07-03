@@ -53,33 +53,25 @@
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
 	<#assign idVar = resolveIdVariableName(field)>
-	<#if implementsInterface>/**
-   * {@inheritDoc}
-   */
+	<#if implementsInterface>
 	@Override</#if>
 	public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
 		return ${idVar};
 	}
 	
-	<#if implementsInterface>/**
-   * {@inheritDoc}
-   */
+	<#if implementsInterface>
 	@Override</#if>
 	public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
 	}
 <#else>
-   	<#if implementsInterface>/**
-   * {@inheritDoc}
-   */
+   	<#if implementsInterface>
 	@Override</#if>
 	public ${field.type} get${field.name?cap_first}() {
 		return ${field.name};
 	}
 	
-	<#if implementsInterface>/**
-   * {@inheritDoc}
-   */
+	<#if implementsInterface>
 	@Override</#if>
 	public void set${field.name?cap_first}(${field.type} ${field.name}) {
 		this.${field.name} = ${field.name};

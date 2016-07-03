@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -28,7 +29,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
@@ -83,6 +86,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      */
     @Override
     public String getText(Object element) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         String result = "";
 
@@ -108,6 +112,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
         result = addMetaInformation(element, result);
 
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return result.isEmpty() ? "UNDEFINED" : result;
     }
 
@@ -151,6 +156,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      */
     @Override
     public Color getBackground(Object element) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         if (checkedResources.contains(element)) {
             if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !batch) {
@@ -163,6 +169,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 }
             }
         }
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return null;
     }
 
