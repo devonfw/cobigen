@@ -50,7 +50,12 @@ public class PathExpressionResolver {
 
         HashMap<String, String> newVariables = new HashMap<>();
         for (String var : variables.keySet()) {
-            newVariables.put(var, variables.get(var).replaceAll("\\.", "/"));
+            String value = variables.get(var);
+            if (value != null) {
+                newVariables.put(var, value.replaceAll("\\.", "/"));
+            } else {
+                newVariables.put(var, value);
+            }
         }
         variables = newVariables;
     }
@@ -91,26 +96,34 @@ public class PathExpressionResolver {
         Matcher m = p.matcher(in);
         StringBuffer out = new StringBuffer();
         while (m.find()) {
-            if (variables.get(m.group(1)) == null) {
+            if (!variables.containsKey(m.group(1))) {
                 throw new UnknownContextVariableException(m.group(1));
             }
-            if (m.group(2) != null) {
-                boolean first = true;
-                String modifiedValue = variables.get(m.group(1));
-                for (String modifier : m.group(2).split("(\\?|#)")) {
-                    if (first) {
-                        first = false;
-                        continue; // ignore first as always empty due to beginning '?'
+
+            if (variables.get(m.group(1)) != null) {
+                if (m.group(2) != null) {
+                    boolean first = true;
+                    String modifiedValue = variables.get(m.group(1));
+                    for (String modifier : m.group(2).split("(\\?|#)")) {
+                        if (first) {
+                            first = false;
+                            continue; // ignore first as always empty due to beginning '?'
+                        }
+                        modifiedValue = applyStringModifier(modifier, modifiedValue);
                     }
-                    modifiedValue = applyStringModifier(modifier, modifiedValue);
+                    m.appendReplacement(out, modifiedValue);
+                } else {
+                    m.appendReplacement(out, variables.get(m.group(1)));
                 }
-                m.appendReplacement(out, modifiedValue);
             } else {
-                m.appendReplacement(out, variables.get(m.group(1)));
+                m.appendReplacement(out, "");
             }
         }
         m.appendTail(out);
-        return out.toString();
+
+        // Cleanup empty path segements
+        String rawPath = out.toString();
+        return rawPath.replaceAll("/+", "/");
     }
 
     /**
