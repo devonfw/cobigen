@@ -1,6 +1,8 @@
 package com.capgemini.cobigen.unittest.config.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -371,5 +373,24 @@ public class TemplatesConfigurationReaderTest {
         assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl",
             "prefix_scanned", "scanned", "prefix_scanned2");
 
+    }
+
+    /**
+     * Test for <a href="https://github.com/devonfw/tools-cobigen/issues/167">Issue 167</a>. Tests if the
+     * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
+     * the exception
+     *
+     * @author sholzer (Dec 18, 2015)
+     */
+    @Test
+    public void testExceptionMessageForDuplicateTemplateNames() {
+        String message = "";
+        try {
+            testErrorOnDuplicateScannedIds();
+            fail("An Exception should have been thrown");
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+        assertFalse(message.indexOf("Bar") == -1);
     }
 }

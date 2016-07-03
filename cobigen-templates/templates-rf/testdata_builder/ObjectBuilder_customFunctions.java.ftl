@@ -1,5 +1,5 @@
 <#include '/makros.ftl'>
-package ${variables.rootPackage}.common.builders.${variables.subPackage};
+package ${variables.rootPackage}.common.builders<#if variables.subPackage != "null">.${variables.subPackage}</#if>;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,9 +11,9 @@ public class ${pojo.name}Builder {
 
 	/**
 	 *  Might be enrichted to users needs (will not be overwritten)
-	 */	
+	 */
     private void fillMandatoryFields_custom() {
-    
+
     }
 
 }

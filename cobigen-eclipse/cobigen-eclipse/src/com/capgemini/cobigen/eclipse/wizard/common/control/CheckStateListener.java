@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -14,7 +15,11 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
@@ -36,6 +41,9 @@ import com.google.common.collect.Lists;
  * @author mbrunnli (19.02.2013)
  */
 public class CheckStateListener implements ICheckStateListener, SelectionListener {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(CheckStateListener.class);
 
     /**
      * Currently used {@link CobiGenWrapper} instance
@@ -70,7 +78,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     public CheckStateListener(CobiGenWrapper cobigenWrapper, SelectFilesPage page, boolean batch) {
 
-        this.javaGeneratorWrapper = cobigenWrapper;
+        javaGeneratorWrapper = cobigenWrapper;
         this.page = page;
         this.batch = batch;
     }
@@ -82,6 +90,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     @Override
     public void checkStateChanged(CheckStateChangedEvent event) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Increment selection changed. Calculating generation preview file tree...");
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         CheckboxTreeViewer packageSelector = page.getPackageSelector();
@@ -109,6 +119,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         }
 
         checkPageComplete();
+
+        LOG.info("Calculating of changed preview file tree finished.");
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
@@ -357,8 +370,10 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     @Override
     public void widgetSelected(SelectionEvent e) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         checkPageComplete();
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
@@ -368,7 +383,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      */
     @Override
     public void widgetDefaultSelected(SelectionEvent e) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         checkPageComplete();
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 }

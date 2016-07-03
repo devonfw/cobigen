@@ -70,7 +70,7 @@ public class CobiGen {
     /**
      * Current version of the generation, needed for configuration file validation
      */
-    public static final String CURRENT_VERSION = "2.1.0";
+    public static final String CURRENT_VERSION = "2.1.1";
 
     /**
      * The {@link ContextConfiguration} for this instance
@@ -425,10 +425,9 @@ public class CobiGen {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos
-                .add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                    templates, convertIncrements(increment.getDependentIncrements(), trigger,
-                        triggerInterpreter)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(),
+                trigger.getId(), templates, convertIncrements(increment.getDependentIncrements(), trigger,
+                    triggerInterpreter)));
         }
         return incrementTos;
     }

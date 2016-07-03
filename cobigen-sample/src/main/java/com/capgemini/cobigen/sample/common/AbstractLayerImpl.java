@@ -127,7 +127,7 @@ public class AbstractLayerImpl {
 
             /*
              * True: 'super <-> sub' relationship exists.
-             *
+             * 
              * Initial Layer [next step]: Cast the super entity to the sub type
              */
             P castedEntity = initialLayerSubClassType.cast(initialLayerSuperClassEntity);

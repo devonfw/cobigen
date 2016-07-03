@@ -1,0 +1,104 @@
+package com.capgemini.cobigen.eclipse.generator;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.log4j.MDC;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.google.common.collect.Lists;
+
+/**
+ * Job implementation for processing long running operations of CobiGen off the ui thread.
+ * @author mbrunnli (Jan 10, 2016)
+ */
+public class AnalyzeInputJob extends AbstractCobiGenJob {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(AnalyzeInputJob.class);
+
+    /**
+     * CobiGen API
+     */
+    private CobiGen cobigen;
+
+    /**
+     * input objects to be analyzed
+     */
+    private List<Object> inputs;
+
+    /**
+     * Determined matching templates
+     */
+    private List<TemplateTo> resultMatchingTemplates = Lists.newArrayList();
+
+    /**
+     * States whether the generation input is a single non container input.
+     */
+    private boolean resultSingleNonContainerInput;
+
+    /**
+     * Creates a new job for analyzing the inputs regarding matching templates etc.
+     * @param cobigen
+     *            CobiGen instance
+     * @param inputs
+     *            input objects to be analyzed
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    public AnalyzeInputJob(CobiGen cobigen, List<Object> inputs) {
+        this.cobigen = cobigen;
+        this.inputs = inputs;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    @Override
+    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+
+        try {
+            LOG.info("Determine matching templates...");
+            monitor.beginTask("Determine matching templates...", inputs.size() + 1);
+            for (Object input : inputs) {
+                resultMatchingTemplates.addAll(cobigen.getMatchingTemplates(input));
+                monitor.worked(1);
+            }
+            LOG.info("Determine if input is container...");
+            resultSingleNonContainerInput =
+                inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));
+            monitor.done();
+        } catch (RuntimeException e) {
+            occurredException = e;
+        }
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    }
+
+    /**
+     * Returns the field 'resultMatchingTemplates'
+     * @return value of resultMatchingTemplates
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    public List<TemplateTo> getResultMatchingTemplates() {
+        return resultMatchingTemplates;
+    }
+
+    /**
+     * Returns the field 'resultSingleNonContainerInput'
+     * @return value of resultSingleNonContainerInput
+     * @author mbrunnli (Jan 10, 2016)
+     */
+    public boolean isResultSingleNonContainerInput() {
+        return resultSingleNonContainerInput;
+    }
+
+}

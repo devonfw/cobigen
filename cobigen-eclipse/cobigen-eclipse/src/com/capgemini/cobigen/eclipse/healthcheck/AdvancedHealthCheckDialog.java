@@ -1,11 +1,11 @@
 package com.capgemini.cobigen.eclipse.healthcheck;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
@@ -43,7 +44,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
     private Set<String> hasConfiguration;
 
     /** Accessibility of templates configuration for changes */
-    private Map<String, Boolean> isAccessible;
+    private Set<String> isAccessible;
 
     /** Templates configurations, which can be upgraded */
     private Map<String, Path> upgradeableConfigurations;
@@ -51,8 +52,13 @@ public class AdvancedHealthCheckDialog extends Dialog {
     /** Templates configurations, which are already up to date */
     private Set<String> upToDateConfigurations;
 
+    /** Expected templates configurations liked by the context configuration */
+    private List<String> expectedTemplatesConfigurations;
+
     /**
      * Creates a new {@link AdvancedHealthCheckDialog} with the given parameters.
+     * @param expectedTemplatesConfigurations
+     *            expected templates configurations liked by the context configuration
      * @param hasConfiguration
      *            Availability of templates configuration in the found folders
      * @param isAccessible
@@ -63,13 +69,15 @@ public class AdvancedHealthCheckDialog extends Dialog {
      *            Templates configurations, which are already up to date
      * @author mbrunnli (Jun 24, 2015)
      */
-    AdvancedHealthCheckDialog(Set<String> hasConfiguration, Map<String, Boolean> isAccessible,
-        Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations) {
+    AdvancedHealthCheckDialog(List<String> expectedTemplatesConfigurations, Set<String> hasConfiguration,
+        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations,
+        Set<String> upToDateConfigurations) {
         super(Display.getDefault().getActiveShell());
         this.hasConfiguration = hasConfiguration;
         this.isAccessible = isAccessible;
         this.upgradeableConfigurations = upgradeableConfigurations;
         this.upToDateConfigurations = upToDateConfigurations;
+        this.expectedTemplatesConfigurations = expectedTemplatesConfigurations;
     }
 
     /**
@@ -78,7 +86,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         getShell().setText(AdvancedHealthCheck.COMMON_DIALOG_TITLE);
         Composite contentParent = new Composite(parent, SWT.NONE);
@@ -94,13 +102,15 @@ public class AdvancedHealthCheckDialog extends Dialog {
         gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         gridData.widthHint = 400;
         gridData.horizontalSpan = 2;
-        introduction
-            .setText("The following template configurations have been found in the current configuration folder:");
+        introduction.setText("The following template folders are referenced by the context configuration. "
+            + "These are the results of scanning each templates configuration.");
         introduction.setLayoutData(gridData);
 
         GridData leftGridData = new GridData(GridData.BEGINNING, GridData.CENTER, true, false);
+        leftGridData.widthHint = 320;
         GridData rightGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
-        for (final String key : hasConfiguration) {
+        rightGridData.widthHint = 80;
+        for (final String key : expectedTemplatesConfigurations) {
             Label label = new Label(contentParent, SWT.NONE);
             label.setText(key);
             label.setLayoutData(leftGridData);
@@ -110,26 +120,29 @@ public class AdvancedHealthCheckDialog extends Dialog {
                 infoLabel.setText("Up-to-date");
                 infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
                 infoLabel.setLayoutData(rightGridData);
-            } else if (isAccessible.get(key)) {
-                if (upgradeableConfigurations.get(key) != null) {
-                    Button upgrade = new Button(contentParent, SWT.PUSH);
-                    upgrade.setText("Upgrade");
-                    upgrade.setLayoutData(rightGridData);
-                    upgrade.addSelectionListener(new SelectionAdapter() {
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            upgradeTemplatesConfiguration(upgradeableConfigurations.get(key));
-                        }
-                    });
-                } else {
-                    Label infoLabel = new Label(contentParent, SWT.NONE);
-                    infoLabel.setText("Invalid!");
-                    infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
-                    infoLabel.setLayoutData(rightGridData);
-                }
+            } else if (upgradeableConfigurations.containsKey(key)) {
+                Button upgrade = new Button(contentParent, SWT.PUSH);
+                upgrade.setText("Upgrade");
+                upgrade.setLayoutData(rightGridData);
+                upgrade.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        upgradeTemplatesConfiguration(upgradeableConfigurations.get(key));
+                    }
+                });
+            } else if (!hasConfiguration.contains(key)) {
+                Label infoLabel = new Label(contentParent, SWT.NONE);
+                infoLabel.setText("Not found!");
+                infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
+                infoLabel.setLayoutData(rightGridData);
+            } else if (!isAccessible.contains(key)) {
+                Label infoLabel = new Label(contentParent, SWT.NONE);
+                infoLabel.setText("Not writable!");
+                infoLabel.setLayoutData(rightGridData);
             } else {
                 Label infoLabel = new Label(contentParent, SWT.NONE);
-                infoLabel.setText("Not accessible!");
+                infoLabel.setText("Invalid!");
+                infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
                 infoLabel.setLayoutData(rightGridData);
             }
         }
@@ -157,14 +170,12 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * Upgrades the templates configuration within the folder with the given {@link Path}
      * @param templatesConfigurationFolder
      *            folder {@link Path} of the templates folder
-     * @author mbrunnli (Jun 24, 2015)
+     * @author mbrunnli (Jun 24, 2015), updated by sholzer (29.09.2015) for issue #156
      */
     private void upgradeTemplatesConfiguration(Path templatesConfigurationFolder) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
-        LOG.info("Upgrade of the templates configuration in '" + templatesConfigurationFolder
-            + "' triggered.");
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
 
-        Activator.getDefault().stopSelectionServiceListener();
         Activator.getDefault().stopConfigurationListener();
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
@@ -204,7 +215,6 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
         ResourcesPluginUtil.refreshConfigurationProject();
 
-        Activator.getDefault().startSelectionServiceListener();
         Activator.getDefault().startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }

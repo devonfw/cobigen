@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -28,7 +29,6 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Test suite for template-scan related system tests
@@ -62,10 +62,13 @@ public class TemplateScanTest extends AbstractApiTest {
             generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
-        Assert.assertEquals(1, templates.size());
+
+        TemplateTo targetTemplate =
+            getTemplateById(templates, "prefix_${variables.component#cap_first#replace('1','ONE')}.java");
+        Assert.assertNotNull(targetTemplate);
 
         // Execution
-        target.generate(input, templates.get(0), false);
+        target.generate(input, targetTemplate, false);
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
@@ -93,6 +96,76 @@ public class TemplateScanTest extends AbstractApiTest {
         // checking
         assertThat(templates, notNullValue());
         assertThat(templates.size(), equalTo(7));
+    }
+
+    /**
+     * Tests the correct destination resolution for resources obtained by template-scans in the case of an
+     * empty path element
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (20.12.2015)
+     */
+    @Test
+    public void testCorrectDestinationResoution_emptyPathElement() throws Exception {
+        Object input = createTestInputAndConfigureMock();
+
+        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+        // Useful to see generates if necessary, comment the generationRootFolder above then
+        // File generationRootFolder = new File(testFileRootPath + "generates");
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
+        List<TemplateTo> templates = target.getMatchingTemplates(input);
+        Assert.assertNotNull(templates);
+
+        TemplateTo targetTemplate = getTemplateById(templates, "prefix_Test.java");
+        Assert.assertNotNull(targetTemplate);
+
+        // Execution
+        target.generate(input, targetTemplate, false);
+
+        // Validation
+        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
+            + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
+            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
+    }
+
+    /**
+     * Tests the correct destination resolution for resources obtained by template-scans in the case of
+     * multiple empty path elements
+     * @throws Exception
+     *             test fails
+     * @author mbrunnli (20.12.2015)
+     */
+    @Test
+    public void testCorrectDestinationResoution_emptyPathElements() throws Exception {
+        Object input = createTestInputAndConfigureMock();
+
+        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+        // Useful to see generates if necessary, comment the generationRootFolder above then
+        // File generationRootFolder = new File(testFileRootPath + "generates");
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
+        List<TemplateTo> templates = target.getMatchingTemplates(input);
+        Assert.assertNotNull(templates);
+
+        TemplateTo targetTemplate = getTemplateById(templates, "prefix_MultiEmpty.java");
+        Assert.assertNotNull(targetTemplate);
+
+        // Execution
+        target.generate(input, targetTemplate, false);
+
+        // Validation
+        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
+            + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
+            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java").exists());
     }
 
     /**
@@ -140,6 +213,11 @@ public class TemplateScanTest extends AbstractApiTest {
             .thenReturn(true);
 
         // Simulate variable resolving of any plug-in
+        HashMap<String, String> variables = new HashMap<>(3);
+        variables.put("rootPackage", "com.capgemini");
+        variables.put("component", "comp1");
+        variables.put("detail", null);
+
         when(
             matcher.resolveVariables(
                 argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
@@ -147,9 +225,7 @@ public class TemplateScanTest extends AbstractApiTest {
                     //
                     new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
                     new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-            .thenReturn(
-                ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
-                    .put("component", "comp1").build());
+            .thenReturn(variables);
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 

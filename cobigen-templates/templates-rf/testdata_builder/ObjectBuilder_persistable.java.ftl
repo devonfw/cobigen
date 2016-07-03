@@ -1,5 +1,5 @@
 <#include '/makros.ftl'>
-package ${variables.rootPackage}.common.builders.${variables.subPackage};
+package ${variables.rootPackage}.common.builders<#if variables.subPackage != "null">.${variables.subPackage}</#if>;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class ${pojo.name}Builder {
         em.persist(${pojo.name?lower_case});
         return ${pojo.name?lower_case};
     }
-    
+
     public List<${pojo.name}> persistAndDuplicate(EntityManager em, int quantity) {
 
         List<${pojo.name}> ${pojo.name?lower_case}List = new LinkedList<${pojo.name}>();

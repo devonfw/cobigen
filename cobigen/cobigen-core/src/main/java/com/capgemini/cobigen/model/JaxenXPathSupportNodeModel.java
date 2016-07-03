@@ -40,7 +40,7 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
         try {
             useJaxenXPathSupport();
         } catch (Exception e) {
-            LOG.error("{}", "Exception if the Jaxen classes are not present", e);
+            LOG.error("Exception if the Jaxen classes are not present", e);
         }
     }
 

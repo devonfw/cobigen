@@ -4,14 +4,14 @@
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
 		<file><!-- TODO choose your log file location --></file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>%n%date %d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n
+			<Pattern>%n%date [%thread] [C:%X{correlationId}] - %-5level - %logger - %msg%n
 			</Pattern>
 		</encoder>
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] [C:%X{correlationId}] - %-5level - %logger{36} - %msg%n
 			</Pattern>
 		</encoder>
 	</appender>
