@@ -21,9 +21,6 @@ public abstract class AbstractDomainDao<T, ID extends Serializable> extends Abst
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Required
     @PersistenceContext
@@ -31,23 +28,14 @@ public abstract class AbstractDomainDao<T, ID extends Serializable> extends Abst
         super.setEntityManager(entityManager);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void save(T object) {
         super.speichere(object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void delete(T object) {
         super.loesche(object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public T searchById(ID id) {
         return super.sucheMitId(id);
     }

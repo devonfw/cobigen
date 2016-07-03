@@ -2,16 +2,14 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
   <artifactId>cobigen-eclipse-parent</artifactId>
-  <version>1.1.0</version>
   <name>CobiGen - Eclipse Plug-In - Parent</name>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-master-parent</artifactId>
-    <version>1.1.0</version>
+    <version>dev-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -42,6 +40,39 @@
         <version>${tycho.version}</version>
         <extensions>true</extensions>
       </plugin>
+
+      <!-- Code Signing -->
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-source-feature-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-source-feature</id>
+            <goals>
+              <goal>source-feature</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-p2-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-p2-metadata-default</id>
+            <configuration>
+              <attachP2Metadata>false</attachP2Metadata>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-p2-metadata</id>
+            <phase>package</phase>
+            <goals>
+              <goal>p2-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -62,11 +93,6 @@
             </compilerArguments>
           </configuration>
         </plugin>
-        <!--<plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-surefire-plugin</artifactId>
-          <version>${tycho.version}</version>
-          </plugin> -->
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-source-plugin</artifactId>
@@ -80,11 +106,6 @@
           <artifactId>tycho-source-feature-plugin</artifactId>
           <version>${tycho-extras.version}</version>
         </plugin>
-        <!--<plugin>
-          <groupId>org.eclipse.tycho.extras</groupId>
-          <artifactId>tycho-custom-bundle-plugin</artifactId>
-          <version>${tycho-extras.version}</version>
-          </plugin> -->
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-p2-plugin</artifactId>
@@ -97,8 +118,8 @@
       </plugins>
     </pluginManagement>
   </build>
-  
-    <profiles>
+
+  <profiles>
     <profile>
       <id>uploadSnapshot</id>
       <build>

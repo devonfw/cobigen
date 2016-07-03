@@ -10,7 +10,8 @@ import javax.inject.Inject;
  */
 public class Abstract${variables.entityName}Uc extends AbstractUc {
 
-	/** @see #get${variables.entityName}Dao() */
+	  /** @see #get${variables.entityName}Dao() */
+	  @Inject
     private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
 
     /**
@@ -20,16 +21,6 @@ public class Abstract${variables.entityName}Uc extends AbstractUc {
     public ${variables.entityName}Dao get${variables.entityName}Dao() {
 
       return this.${variables.entityName?uncap_first}Dao;
-    }
-
-    /**
-     * Sets the field '${variables.entityName?uncap_first}Dao'.
-     * @param ${variables.entityName?uncap_first}Dao
-     *            New value for ${variables.entityName?uncap_first}Dao
-     */
-    @Inject
-    public void set${variables.entityName}Dao(${variables.entityName}Dao ${variables.entityName?uncap_first}Dao) {
-        this.${variables.entityName?uncap_first}Dao = ${variables.entityName?uncap_first}Dao;
     }
 
 }
