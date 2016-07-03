@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-eclipse-parent</artifactId>
-    <version>1.1.0</version>
+    <version>dev-SNAPSHOT</version>
   </parent>
 
   <dependencies>
