@@ -75,7 +75,7 @@ public class InputValidator {
     }
 
     /**
-     * Validates a {@link Map} of resolved variables for null keys and values
+     * Validates a {@link Map} of resolved variables for null keys
      * @param resolvedVariables
      *            to be validated
      * @author mbrunnli (10.04.2014)
@@ -89,10 +89,6 @@ public class InputValidator {
             if (var.getKey() == null) {
                 throw new PluginProcessingException(
                     "A Plug-In must not add entries with null keys into the resolved variables Map");
-            }
-            if (var.getValue() == null) {
-                throw new PluginProcessingException(
-                    "A Plug-In must not add entries with null values into the resolved variables Map");
             }
         }
     }

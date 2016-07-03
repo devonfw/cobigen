@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,12 +10,18 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.thoughtworks.qdox.model.BeanProperty;
+import com.thoughtworks.qdox.model.DocletTag;
+import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser
@@ -59,6 +67,11 @@ public class ParsedJavaModelBuilder {
         }
         pojoModel.put(ModelConstant.CANONICAL_NAME, javaClass.getCanonicalName());
 
+        Map<String, String> javaDoc = extractJavaDoc(javaClass);
+        if (javaDoc != null) {
+            pojoModel.put(ModelConstant.JAVADOC, javaDoc);
+        }
+
         Map<String, Object> annotations = new HashMap<>();
         extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
         pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
@@ -68,6 +81,11 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.FIELDS, fields);
         determinePojoIds(javaClass, fields);
         collectAnnotations(javaClass, fields);
+
+        List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
+        pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
+        determinePojoIds(javaClass, accessibleAttributes);
+        collectAnnotations(javaClass, accessibleAttributes);
 
         Map<String, Object> superclass = extractSuperclass(javaClass);
         pojoModel.put(ModelConstant.EXTENDED_TYPE, superclass);
@@ -79,6 +97,25 @@ public class ParsedJavaModelBuilder {
         cachedModel.put(ModelConstant.ROOT, pojoModel);
 
         return new HashMap<>(cachedModel);
+    }
+
+    /**
+     * Extracts all fields from the given pojo, which are visible by using setter and getter methods
+     * @param javaClass
+     *            source {@link JavaClass} to determine all fields accessible via methods from
+     * @return a list of field properties equivalently to {@link #extractFields(JavaClass)}
+     * @author mbrunnli (25.01.2015)
+     */
+    private List<Map<String, Object>> extractMethodAccessibleFields(JavaClass javaClass) {
+        List<Map<String, Object>> fields = Lists.newLinkedList();
+
+        List<BeanProperty> beanProperties = javaClass.getBeanProperties(true);
+        for (BeanProperty property : beanProperties) {
+            if (property.getAccessor() != null && property.getMutator() != null) {
+                fields.add(extractField(property.getName(), property.getType(), null));
+            }
+        }
+        return fields;
     }
 
     /**
@@ -96,7 +133,10 @@ public class ParsedJavaModelBuilder {
             Map<String, Object> methodAttributes = new HashMap<>();
             methodAttributes.put(ModelConstant.NAME, method.getName());
             if (method.getComment() != null) {
-                methodAttributes.put(ModelConstant.JAVADOC, method.getComment());
+                Map<String, String> javaDoc = extractJavaDoc(method);
+                if (javaDoc != null) {
+                    methodAttributes.put(ModelConstant.JAVADOC, javaDoc);
+                }
             }
             Map<String, Object> annotations = new HashMap<>();
             extractAnnotationsRecursively(annotations, method.getAnnotations());
@@ -122,13 +162,39 @@ public class ParsedJavaModelBuilder {
             if (f.isStatic()) {
                 continue;
             }
-            Map<String, Object> fieldValues = new HashMap<>();
-            fieldValues.put(ModelConstant.NAME, f.getName());
-            fieldValues.put(ModelConstant.TYPE, f.getType().getGenericValue());
-            fieldValues.put(ModelConstant.CANONICAL_TYPE, f.getType().getGenericCanonicalName());
-            fields.add(fieldValues);
+            fields.add(extractField(f.getName(), f.getType(), f));
         }
         return fields;
+    }
+
+    /**
+     * Extracts all properties needed for model building from a given field
+     * @param fieldName
+     *            the field's name
+     * @param field
+     *            the values should be extracted for
+     * @param annotatedElement
+     *            Annotated Element the field type is source of
+     * @return the mapping of property names to their values
+     * @author mbrunnli (25.01.2015)
+     */
+    private Map<String, Object> extractField(String fieldName, JavaType field,
+        JavaAnnotatedElement annotatedElement) {
+        Map<String, Object> fieldValues = new HashMap<>();
+        fieldValues.put(ModelConstant.NAME, fieldName);
+        // currently there is a problem with qDox. It provides the canonical type for supertype fields when
+        // calling "field.getGenericValue()". Thats why we need the JavaParserUtil here.
+        fieldValues.put(ModelConstant.TYPE, JavaParserUtil.resolveToSimpleType(field.getGenericValue()));
+        fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
+
+        if (annotatedElement != null) {
+            Map<String, String> javaDoc = extractJavaDoc(annotatedElement);
+            if (javaDoc != null) {
+                fieldValues.put(ModelConstant.JAVADOC, javaDoc);
+            }
+        }
+
+        return fieldValues;
     }
 
     /**
@@ -152,6 +218,12 @@ public class ParsedJavaModelBuilder {
         } else {
             superclassModel.put(ModelConstant.PACKAGE, "");
         }
+
+        Map<String, String> javaDoc = extractJavaDoc(superclass);
+        if (javaDoc != null) {
+            superclassModel.put(ModelConstant.JAVADOC, javaDoc);
+        }
+
         return superclassModel;
     }
 
@@ -177,6 +249,10 @@ public class ParsedJavaModelBuilder {
                 interfaceModel.put(ModelConstant.PACKAGE, "");
             }
 
+            Map<String, String> javaDoc = extractJavaDoc(c);
+            if (javaDoc != null) {
+                interfaceModel.put(ModelConstant.JAVADOC, javaDoc);
+            }
             interfaceList.add(interfaceModel);
         }
 
@@ -199,6 +275,11 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
+            JavaField classField = javaClass.getFieldByName((String) attr.get(ModelConstant.NAME));
+
+            if (classField != null) {
+                extractAnnotationsRecursively(annotations, classField.getAnnotations());
+            }
 
             JavaMethod getter =
                 javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
@@ -214,10 +295,15 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
 
-            // TODO bugfixing: setter has to have some parameters
+            List<JavaType> paramList = null;
+            if (classField != null) {
+                JavaType attrType = classField.getType();
+                paramList = new ArrayList<>();
+                paramList.add(attrType);
+            }
             JavaMethod setter =
                 javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
-                    null, false);
+                    paramList, false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
@@ -265,13 +351,43 @@ public class ParsedJavaModelBuilder {
                     // annotationParameters.put(propertyName, Lists.newLinkedList(Arrays.asList(value)));
                 } else if (value instanceof Enum<?>) {
                     annotationParameters.put(propertyName, ((Enum<?>) value).name());
+                } else if (value instanceof Collection<?>) {
+                    annotationParameters.put(propertyName, value);
+                } else if (value instanceof Byte || value instanceof Short || value instanceof Integer
+                    || value instanceof Long || value instanceof Float || value instanceof Double
+                    || value instanceof Boolean || value instanceof Character) {
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
-                    // resolves it.
-                    annotationParameters.put(propertyName, value);
+                    // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we
+                    // always come into the else-part
+                    annotationParameters.put(propertyName, value != null ? value.toString() : null);
                 }
             }
         }
+    }
+
+    /**
+     * Builds the model for javaDoc. This includes extraction of the comment (without doclets) as well as a
+     * mapping of docletTags to its values.
+     * @param annotatedElement
+     *            Annotated element, which javaDoc should be parsed
+     * @return the mapping of javaDoc elements to its values or <code>null</code> if the element does not
+     *         declare javaDoc
+     * @author mbrunnli (30.01.2015)
+     */
+    private Map<String, String> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
+        if (annotatedElement.getComment() == null) {
+            return null;
+        }
+        Map<String, String> javaDocModel = Maps.newHashMap();
+        javaDocModel.put(ModelConstant.COMMENT, annotatedElement.getComment());
+        for (DocletTag tag : annotatedElement.getTags()) {
+            // currently conflicting tag names like @param or @throws are simply not in scope.
+            // what we want to get is a simple way of addressing custom docletTags and its values
+            javaDocModel.put(tag.getName(), tag.getValue());
+        }
+        return javaDocModel;
     }
 
     /**
@@ -284,6 +400,7 @@ public class ParsedJavaModelBuilder {
      *            a {@link List} of all attributes and their properties
      * @author mbrunnli (12.02.2013)
      */
+    @Deprecated
     private void determinePojoIds(JavaClass javaClass, List<Map<String, Object>> attributes) {
 
         for (Map<String, Object> attr : attributes) {

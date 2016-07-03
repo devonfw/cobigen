@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+	<templates>
+    <template name="FooClass.java" templateFile="foo/FooClass.java.ftl" destinationPath="src/main/java/FooClass.java"/>
+		<templateExtension ref="FooClass.java" />
+    <templateExtension ref="FooClass.java" />
+	</templates>
+</templatesConfiguration>

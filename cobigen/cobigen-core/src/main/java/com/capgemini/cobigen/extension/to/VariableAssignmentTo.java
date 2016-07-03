@@ -125,13 +125,8 @@ public class VariableAssignmentTo {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(this.getClass().getSimpleName() + " {");
-        result.append("type: " + getType());
-        result.append(" var: " + getVarName());
-        result.append(" value: " + getValue());
-        result.append("}");
-        return result.toString();
+        return getClass().getSimpleName() + "[type='" + getType() + "'/varName='" + getVarName()
+            + "'/value='" + getValue() + "']";
     }
 
 }

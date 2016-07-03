@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+
+  <template-scans>
+    <template-scan name="toBeReferenced" templatePath="foo" templateIdPrefix="prefix_foo_" destinationPath="src/main/java/foo"/>
+    <template-scan name="toBeReferenced" templatePath="bar" templateIdPrefix="prefix_bar_" destinationPath="src/main/java/bar"/>
+  </template-scans>
+
+</templatesConfiguration>

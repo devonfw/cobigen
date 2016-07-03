@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+    <trigger id="triggerId" type="test" templateFolder="*">
+        <matcher type="and1" value="*" accumulationType="AND"/>
+        <matcher type="and2" value="*" accumulationType="AND"/>
+        <matcher type="or" value="*"/>
+        <matcher type="not" value="*" accumulationType="NOT"/>
+    </trigger>
+    <trigger id="triggerId2" type="test" templateFolder="*">
+        <matcher type="or" value="*"/>
+        <matcher type="not" value="*" accumulationType="NOT"/>
+    </trigger>
+</contextConfiguration>

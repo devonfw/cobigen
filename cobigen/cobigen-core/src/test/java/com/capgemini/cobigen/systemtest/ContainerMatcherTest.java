@@ -1,9 +1,12 @@
 package com.capgemini.cobigen.systemtest;
 
-import static com.capgemini.cobigen.unittest.common.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,6 +20,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
+import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.extension.IInputReader;
@@ -26,8 +31,6 @@ import com.capgemini.cobigen.extension.to.IncrementTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
-import com.capgemini.cobigen.unittest.common.matchers.MatcherToMatcher;
-import com.capgemini.cobigen.unittest.common.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -44,16 +47,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether a container matcher will not match iff there are no other matchers
+     * @throws Exception
+     *             test fails
      */
     @Test
-    public void testContainerMatcherDoesNotMatchWithoutMatcher() {
+    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(false);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -64,17 +69,19 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether a container matcher will match iff there are matchers matching the child resources
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContainerMatcherMatches() {
+    public void testContainerMatcherMatches() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -86,17 +93,19 @@ public class ContainerMatcherTest extends AbstractApiTest {
     /**
      * Tests whether variable resolving works for a container's children as the container itself does not
      * include any variable resolving
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (13.10.2014)
      */
     @Test
-    public void testContextVariableResolving() {
+    public void testContextVariableResolving() throws Exception {
 
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true);
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
 
         // Verification
@@ -117,7 +126,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
         target.setContextSetting(ContextSetting.GenerationTargetRootPath,
             generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
@@ -129,16 +138,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
     /**
      * Tests whether the increments can be correctly retrieved for container matchers
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (16.10.2014)
      */
     @Test
-    public void testGetAllIncrements() {
+    public void testGetAllIncrements() throws Exception {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true, true);
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
 
         // Execution
         List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
@@ -151,16 +162,18 @@ public class ContainerMatcherTest extends AbstractApiTest {
     /**
      * Tests whether multiple triggers will be activated if their container matcher matches a given input.<br/>
      * <a href="https://github.com/oasp/tools-cobigen/issues/57">(Bug #57)</a>
+     * @throws Exception
+     *             test fails
      * @author mbrunnli (12.11.2014)
      */
     @Test
-    public void testMultipleTriggerWithContainerMatchers() {
+    public void testMultipleTriggerWithContainerMatchers() throws Exception {
         // Mocking
         Object containerInput = createTestDataAndConfigureMock(true, false);
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder);
+        CobiGen target = new CobiGen(templatesFolder.toURI());
 
         // Execution
         List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
@@ -168,6 +181,92 @@ public class ContainerMatcherTest extends AbstractApiTest {
         // Verification
         Assert.assertNotNull(triggerIds);
         Assert.assertEquals(2, triggerIds.size());
+    }
+
+    @Test
+    public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
+
+        Object container = new Object() {
+            @Override
+            public String toString() {
+                return "container";
+            }
+        };
+        Object child1 = new Object() {
+            @Override
+            public String toString() {
+                return "child1";
+            }
+        };
+        Object child2 = new Object() {
+            @Override
+            public String toString() {
+                return "child2";
+            }
+        };
+
+        // Pre-processing: Mocking
+        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
+        IMatcher matcher = mock(IMatcher.class);
+        IInputReader inputReader = mock(IInputReader.class);
+
+        when(triggerInterpreter.getType()).thenReturn("test");
+        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
+        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+
+        when(inputReader.isValidInput(any())).thenReturn(true);
+
+        // Simulate container children resolution of any plug-in
+        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
+        when(
+            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
+                anyList())).thenReturn(
+            ImmutableMap.<String, String> builder().put("variable", "child1").build());
+        when(
+            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
+                anyList())).thenReturn(
+            ImmutableMap.<String, String> builder().put("variable", "child2").build());
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
+            Lists.newArrayList(child1, child2));
+
+        // match container
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(container)))))
+            .thenReturn(false);
+
+        // do not match first child
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
+            .thenReturn(true);
+
+        // match second child
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2)))))
+            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
+            .thenReturn(false);
+
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+
+        TemplateTo templateTo = mock(TemplateTo.class);
+        when(templateTo.getTriggerId()).thenReturn("trigger1");
+        when(templateTo.getId()).thenReturn("t1");
+
+        // create CobiGen instance
+        File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
+        CobiGen target = new CobiGen(templatesFolder.toURI());
+        File folder = tmpFolder.newFolder();
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, folder.getAbsolutePath());
+
+        // Execution
+        target.generate(container, templateTo, false);
+
+        // Verification
+        assertNotNull(folder.list());
+        assertEquals(1, folder.list().length);
+        assertEquals("child2.txt", folder.list()[0]);
+
     }
 
     // ######################### PRIVATE ##############################

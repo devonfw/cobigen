@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+	<templates>
+		<template name="resources_resources_spring_common"
+			destinationPath="src/main/resources/resources/spring/common.xml"
+			templateFile="resources/resources/spring/common.ftl" />
+	</templates>
+
+	<increments>
+		<increment name="gui_spring" description="Spring configuration">
+			<templateRef ref="resources_resources_spring_common" />
+		</increment>
+		<increment name="gui" description="GUI">
+			<inkrementRef ref="gui_spring" />
+		</increment>
+	</increments>
+</templatesConfiguration>

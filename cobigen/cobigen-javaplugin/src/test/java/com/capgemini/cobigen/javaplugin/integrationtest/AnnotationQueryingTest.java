@@ -32,7 +32,7 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
      */
     @Test
     public void testAnnotationWithObjectArraysAsValues() throws Exception {
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         cobiGen
             .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
@@ -47,7 +47,7 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("annotationQuerying")) {
+            if (template.getId().equals("annotationQuerying.txt")) {
                 cobiGen.generate(input, template, false);
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR

@@ -1,7 +1,5 @@
 package com.capgemini.cobigen.exceptions;
 
-import java.io.File;
-
 /**
  * Occurs if the configuration xml could not be parsed successfully
  *
@@ -17,31 +15,31 @@ public class InvalidConfigurationException extends RuntimeException {
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
      *
-     * @param file
-     *            {@link File} causing the InvalidConfigurationException
+     * @param filePath
+     *            file path causing the InvalidConfigurationException or null if not available
      * @param msg
      *            error message of the exception
      * @param t
      *            cause exception
      * @author mbrunnli (25.04.2014)
      */
-    public InvalidConfigurationException(File file, String msg, Throwable t) {
+    public InvalidConfigurationException(String filePath, String msg, Throwable t) {
 
-        super(file.getAbsolutePath().toString() + ":\n" + msg, t);
+        super((filePath != null ? filePath + ":\n" : "") + msg, t);
     }
 
     /**
      * Creates a new {@link InvalidConfigurationException} with the given message
      *
-     * @param file
-     *            {@link File} causing the InvalidConfigurationException
+     * @param filePath
+     *            file path causing the InvalidConfigurationException or null if not available
      * @param msg
      *            error message of the exception
      * @author mbrunnli (19.02.2013)
      */
-    public InvalidConfigurationException(File file, String msg) {
+    public InvalidConfigurationException(String filePath, String msg) {
 
-        super(file.getAbsolutePath().toString() + ":\n" + msg);
+        super((filePath != null ? filePath + ":\n" : "") + msg);
     }
 
     /**

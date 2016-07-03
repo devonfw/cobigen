@@ -1,10 +1,12 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
 
+import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.subpackage.SuperClass2;
+
 /**
  *
  * @author mbrunnli (14.11.2014)
  */
-public class SuperClass1 {
+public abstract class SuperClass1 extends SuperClass2 {
 
     private String superClass1Field;
 
