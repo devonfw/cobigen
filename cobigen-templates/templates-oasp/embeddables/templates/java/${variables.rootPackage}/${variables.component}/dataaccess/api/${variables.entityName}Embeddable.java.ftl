@@ -13,12 +13,9 @@ import javax.persistence.Transient;
 public class ${pojo.name} implements ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
-  
+
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references -->
-  /**
-   * {@inheritDoc}
-   */
   @Override
   @Transient
   public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
@@ -30,11 +27,8 @@ public class ${pojo.name} implements ${variables.entityName} {
   }
 
   <#assign idVar = resolveIdVariableName(field)>
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) { 
+  public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 
     if (${idVar} == null) {
       this.${field.name} = null;
