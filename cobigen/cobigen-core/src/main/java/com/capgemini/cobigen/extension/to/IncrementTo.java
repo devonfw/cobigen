@@ -179,15 +179,8 @@ public class IncrementTo {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(this.getClass().getSimpleName() + " {");
-        result.append("id: " + getId());
-        result.append(" desc: " + getDescription());
-        result.append(" #templates: " + getTemplates().size());
-        result.append(" triggerId: " + getTriggerId());
-        result.append(" #dependentIncrements: " + getDependentIncrements().size());
-        result.append("}");
-        return result.toString();
+        return getClass().getSimpleName() + "[id='" + getId() + "'/desc='" + getDescription()
+            + "'/#templates='" + getTemplates().size() + "' triggerId='" + getTriggerId()
+            + "'/#dependentIncrements: " + getDependentIncrements().size() + "']";
     }
-
 }

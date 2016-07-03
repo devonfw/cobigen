@@ -1,6 +1,6 @@
-[submodule "cobigen-documentation/oasp-docgen"]
-	path = cobigen-documentation/oasp-docgen
-	url = https://github.com/oasp/oasp-docgen
 [submodule "cobigen-documentation/tools-cobigen.wiki"]
 	path = cobigen-documentation/tools-cobigen.wiki
 	url = https://github.com/oasp/tools-cobigen.wiki.git
+[submodule "cobigen-documentation/devonfw-docgen"]
+	path = cobigen-documentation/devonfw-docgen
+	url = https://github.com/devonfw/devonfw-docgen.git

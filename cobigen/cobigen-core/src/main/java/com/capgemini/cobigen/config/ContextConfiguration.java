@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.config;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Map;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.util.SystemUtil;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and
@@ -23,10 +23,6 @@ public class ContextConfiguration {
      * @author mbrunnli (04.02.2013)
      */
     public enum ContextSetting {
-        /**
-         * The root path of the generator project, top folder of context.xml and all context template folders
-         */
-        GeneratorProjectRootPath,
         /**
          * The root path of the target folder all relative target paths start with
          */
@@ -44,47 +40,42 @@ public class ContextConfiguration {
     private Map<String, Trigger> triggers;
 
     /**
-     * context.xml file
-     */
-    private File contextXmlFile;
-
-    /**
      * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
-     * @param rootConfigFolder
-     *            the root folder containing the context.xml and all templates, configurations etc.
+     * @param configRoot
+     *            root path for the configuration of CobiGen
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author mbrunnli (04.02.2013)
      */
-    public ContextConfiguration(File rootConfigFolder) throws InvalidConfigurationException {
+    public ContextConfiguration(Path configRoot) throws InvalidConfigurationException {
         initializeSettings();
-        set(ContextSetting.GeneratorProjectRootPath, rootConfigFolder.getAbsolutePath());
-        contextXmlFile =
-            new File(rootConfigFolder.getAbsolutePath() + SystemUtil.FILE_SEPARATOR + "context.xml");
-
-        readConfiguration();
+        readConfiguration(configRoot);
     }
 
     /**
-     * Reads the configuration from {@link #contextXmlFile}
+     * Reads the configuration from the given path
+     * @param configRoot
+     *            CobiGen configuration root path
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author mbrunnli (10.04.2013)
      */
-    private void readConfiguration() throws InvalidConfigurationException {
-        ContextConfigurationReader reader = new ContextConfigurationReader(contextXmlFile);
+    private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
+        ContextConfigurationReader reader = new ContextConfigurationReader(configRoot);
         triggers = reader.loadTriggers();
     }
 
     /**
      * Reloads the configuration from source. This function might be called if the configuration file has
      * changed in a running system
+     * @param configRoot
+     *            CobiGen configuration root path
      * @throws InvalidConfigurationException
      *             thrown if the {@link File} is not valid with respect to the context.xsd
      * @author mbrunnli (10.04.2013)
      */
-    public void reloadConfigurationFromFile() throws InvalidConfigurationException {
-        readConfiguration();
+    public void reloadConfigurationFromFile(Path configRoot) throws InvalidConfigurationException {
+        readConfiguration(configRoot);
     }
 
     /**

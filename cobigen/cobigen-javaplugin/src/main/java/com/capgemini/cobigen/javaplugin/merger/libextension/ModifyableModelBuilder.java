@@ -447,7 +447,14 @@ public class ModifyableModelBuilder implements Builder {
         DefaultJavaParameter jParam =
             new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
                 fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
-        // jParam.setParentMethod(currentMethod); -> not available any more since 2.0-M2
+        if( currentMethod != null )
+        {
+            jParam.setDeclarator( currentMethod );
+        }
+        else
+        {
+            jParam.setDeclarator( currentConstructor );
+        }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);
         setAnnotations(jParam);

@@ -1,0 +1,1 @@
+<#list pojo.fields as field><#if field.name="testField">${field.type} ${field.name}</#if></#list>

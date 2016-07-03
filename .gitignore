@@ -1,5 +1,8 @@
 /*.settings
 bin
 target
+.flattened-pom.xml
+/.project
 
 /cobigen-eclipse/.project
+cobigen-maven/src/main/resources/META-INF/maven/plugin.xml

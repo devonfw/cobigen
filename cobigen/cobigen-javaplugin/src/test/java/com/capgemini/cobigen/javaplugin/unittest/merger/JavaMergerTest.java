@@ -1,6 +1,8 @@
 package com.capgemini.cobigen.javaplugin.unittest.merger;
 
 import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -406,6 +408,31 @@ public class JavaMergerTest {
             .assertEquals(
                 "The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'",
                 "HashMap<String,Long>", resultClazz.getSuperClass().getGenericValue());
+    }
+
+    /**
+     * Tests the behavior if one file imports a type while the other uses an explicit type. Corresponds to <a
+     * href=https://github.com/devonfw/tools-cobigen/issues/108>#108</a>
+     * @throws IOException
+     *             shouldn't happen
+     * @throws MergeException
+     *             shoudln't happen either
+     * @author sholzer (Jun 16, 2015)
+     */
+    @Test
+    public void testMergeExpizitAndImplizitParameterTypes() throws IOException, MergeException {
+
+        File base = new File(testFileRootPath + "BaseFile_QualType.java");
+        File patch = new File(testFileRootPath + "PatchFile_QualType.java");
+
+        JavaSource mergedSource = getMergedSource(base, patch, true);
+        assertFalse(mergedSource.getClasses().isEmpty());
+        JavaClass mergedClass = mergedSource.getClasses().get(0);
+        // System.out.print(mergedSource.toString());
+        assertEquals("Too much fields", 1, mergedClass.getFields().size());
+        assertEquals("Too much methods:\n" + mergedClass.getMethods().toString(), 1, mergedClass.getMethods()
+            .size());
+
     }
 
     /**
