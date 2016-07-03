@@ -94,6 +94,11 @@ public class ModelConstant {
     public static final String JAVADOC = "javaDoc";
 
     /**
+     * JavaDoc comment (without doclets) or possibly any other comment
+     */
+    public static final String COMMENT = "comment";
+
+    /**
      * A list of all visible fields accessible via setter and getter methods including inherited fields.
      */
     public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";

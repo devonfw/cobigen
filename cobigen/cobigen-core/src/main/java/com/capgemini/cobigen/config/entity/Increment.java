@@ -15,7 +15,7 @@ public class Increment {
     /**
      * Identifies the {@link Increment}
      */
-    private String id;
+    private String name;
 
     /**
      * Textual description of the {@link Increment}. Used for (G)UI.
@@ -33,13 +33,13 @@ public class Increment {
     private Set<Increment> dependentIncrements = new HashSet<>();
 
     /**
-     * {@link Trigger} the incrment is dependent on
+     * {@link Trigger} the increment is dependent on
      */
     private Trigger trigger;
 
     /**
-     * Creates a new {@link Increment} with the specified id and description
-     * @param id
+     * Creates a new {@link Increment} with the specified name and description
+     * @param name
      *            of the increment
      * @param description
      *            of the increment
@@ -47,19 +47,19 @@ public class Increment {
      *            the increment depends on
      * @author trippl (07.03.2013), adapted by mbrunnli (07.03.2013)
      */
-    public Increment(String id, String description, Trigger trigger) {
-        this.id = id;
+    public Increment(String name, String description, Trigger trigger) {
+        this.name = name;
         this.description = description;
         this.trigger = trigger;
     }
 
     /**
-     * Returns the {@link Increment}'s {@link #id}
-     * @return the increment id
+     * Returns the {@link Increment}'s {@link #name}
+     * @return the increment name
      * @author trippl (07.03.2013)
      */
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -119,7 +119,7 @@ public class Increment {
             Increment objIncrement = (Increment) obj;
             if (hasTrigger() && objIncrement.hasTrigger()) {
                 if (trigger.getType().equals(objIncrement.getTrigger().getType())) {
-                    return id.equals(((Increment) obj).getId());
+                    return name.equals(((Increment) obj).getName());
                 }
             }
         }
@@ -131,17 +131,8 @@ public class Increment {
      * @author mbrunnli (11.03.2013)
      */
     @Override
-    public String toString() {
-        return description;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (11.03.2013)
-     */
-    @Override
     public int hashCode() {
-        return id.hashCode();
+        return name.hashCode();
     }
 
     /**
@@ -161,5 +152,14 @@ public class Increment {
      */
     public boolean hasTrigger() {
         return trigger != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @author mbrunnli (Jun 25, 2015)
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[name='" + getName() + "]";
     }
 }

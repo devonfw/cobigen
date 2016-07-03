@@ -72,4 +72,23 @@ public class JavaParserUtil {
         }
         return targetClass;
     }
+
+    /**
+     * Converts the String representation of a canonical type into a String which represents the simple type.
+     * E.g.:
+     * <ul>
+     * <li><code>java.lang.String</code> is converted into <code>String</code></li>
+     * <li><code>java.util.List&ltjava.lang.String&gt;</code> is converted into
+     * <code>List&lt;String&gt;</code></li>
+     * </ul>
+     *
+     * @param canonicalType
+     *            the String representation of the canonical type to be resolved
+     * @return the resolved simple type as String representation.
+     * @author fkreis (24.06.15)
+     */
+    public static String resolveToSimpleType(String canonicalType) {
+        String simpleType = new String(canonicalType).replaceAll("(([\\w]+\\.))", "");
+        return simpleType;
+    }
 }

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.wizard.WizardPage;
@@ -12,7 +13,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.slf4j.MDC;
 
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.wizard.generate.model.SelectAttributesContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.generate.model.SelectAttributesLabelProvider;
 
@@ -50,6 +53,8 @@ public class SelectAttributesPage extends WizardPage {
      */
     @Override
     public void createControl(Composite parent) {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+
         Composite container = new Composite(parent, SWT.FILL);
         container.setLayout(new GridLayout());
 
@@ -84,6 +89,8 @@ public class SelectAttributesPage extends WizardPage {
         // detailAttributes.getTable().setLayoutData(gd);
 
         setControl(container);
+
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
