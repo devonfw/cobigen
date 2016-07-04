@@ -47,7 +47,7 @@ public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
         if (proj != null) {
             monitor.beginTask("Generating files...", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
-                if (template.getMergeStrategy() == null) {
+                if (template.getMergeStrategy() == null || template.getMergeStrategy().equals("override")) {
                     cobigenWrapper.generate(template, true);
                 } else {
                     cobigenWrapper.generate(template, false);
