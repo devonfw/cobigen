@@ -17,6 +17,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.annotation.security.RolesAllowed;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.BadRequestException;
+
+import net.sf.mmm.util.exception.api.ObjectNotFoundUserException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +49,13 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	@Override
 	public ${variables.entityName}Eto find${variables.entityName}(Long id) {
 		LOG.debug("Get ${variables.entityName} with id {} from database.", id);
-		return getBeanMapper().map(get${variables.entityName}Dao().findOne(id), ${variables.entityName}Eto.class);
+		${variables.entityName}Eto ${variables.entityName?uncap_first}Eto = null;
+		try{
+		    ${variables.entityName?uncap_first}Eto = getBeanMapper().map(get${variables.entityName}Dao().findOne(id), ${variables.entityName}Eto.class);
+		}catch(IllegalArgumentException e){
+		    throw new BadRequestException("missing id");
+		}
+		return ${variables.entityName?uncap_first}Eto;
 	}
 
 	@Override
@@ -56,8 +67,15 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
 	@Override
 	public boolean delete${variables.entityName}(Long ${variables.entityName?uncap_first}Id) {
-		${variables.entityName}Entity ${variables.entityName?uncap_first} = get${variables.entityName}Dao().find(${variables.entityName?uncap_first}Id);
-		get${variables.entityName}Dao().delete(${variables.entityName?uncap_first});
+	    ${variables.entityName}Entity ${variables.entityName?uncap_first} = null;
+	    try{
+		      ${variables.entityName?uncap_first} = get${variables.entityName}Dao().find(${variables.entityName?uncap_first}Id);
+		  }
+		  catch(ObjectNotFoundUserException e){
+		      throw new NotFoundException("no ${variables.entityName} found with that " + ${variables.entityName?uncap_first}Id
+		      + " !");
+		  }
+		  get${variables.entityName}Dao().delete(${variables.entityName?uncap_first});
 		LOG.debug("The ${variables.entityName?uncap_first} with id '{}' has been deleted.", ${variables.entityName?uncap_first}Id);
 		return true;
 	}
