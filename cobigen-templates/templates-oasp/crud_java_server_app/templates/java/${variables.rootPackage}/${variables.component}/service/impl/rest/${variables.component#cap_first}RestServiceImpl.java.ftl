@@ -12,7 +12,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -45,15 +44,10 @@ public class ${variables.component?cap_first}RestServiceImpl {
   public ${variables.entityName}Eto get${variables.entityName}(@PathParam("id") String id) {
 
     Long idAsLong;
-    if (id == null) {
-      throw new BadRequestException("missing id");
-    }
     try {
       idAsLong = Long.parseLong(id);
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
-    } catch (NotFoundException e) {
-      throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
     return this.${variables.component}.find${variables.entityName}(idAsLong);
   }
@@ -87,8 +81,6 @@ public class ${variables.component?cap_first}RestServiceImpl {
       idAsLong = Long.parseLong(id);
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
-    } catch (NotFoundException e) {
-      throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
     this.${variables.component}.delete${variables.entityName}(idAsLong);
   }
