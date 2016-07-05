@@ -183,8 +183,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if there are some problems while merging
      * @author mbrunnli (14.02.2013)
      */
-    public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        MergeException {
+    public void generate(TemplateTo template, boolean forceOverride)
+        throws IOException, TemplateException, MergeException {
 
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
@@ -238,15 +238,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             // convert to comparable increments
             for (IncrementTo increment : matchingIncrements) {
-                result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment
-                    .getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
+                result.add(new ComparableIncrement(increment.getId(), increment.getDescription(),
+                    increment.getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
             }
         }
 
         // add "all" increment, which should include all possible templates
-        ComparableIncrement all =
-            new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-                Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all = new ComparableIncrement("all", "All", null,
+            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -308,8 +307,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             for (IncrementTo increment : getAllIncrements()) {
                 if (consideredIncrements.contains(increment)) {
                     for (TemplateTo tmp : increment.getTemplates()) {
-                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
-                            PathUtil.getProjectDependendFilePath(filePath))) {
+                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
+                            .equals(PathUtil.getProjectDependendFilePath(filePath))) {
                             templates.add(tmp);
                         }
                     }
@@ -317,8 +316,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
         } else {
             for (TemplateTo tmp : getAllTemplates()) {
-                if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
-                    PathUtil.getProjectDependendFilePath(filePath))) {
+                if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
+                    .equals(PathUtil.getProjectDependendFilePath(filePath))) {
                     templates.add(tmp);
                 }
             }
@@ -339,8 +338,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
-                mergeableFiles.add(targetProjet.getFile(t
-                    .resolveDestinationPath(getCurrentRepresentingInput())));
+                mergeableFiles
+                    .add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
             }
         }
         return mergeableFiles;
@@ -420,7 +419,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
+            List<Object> children =
+                new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return children.get(0);
         } else {
@@ -439,8 +439,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         if (initialized) {
             return cobiGen.getMatchingTriggerIds(loadClass);
         } else {
-            LOG.debug("Generator is not initialized. Could not get matching triggers for "
-                + loadClass.toString());
+            LOG.debug(
+                "Generator is not initialized. Could not get matching triggers for " + loadClass.toString());
             return null;
         }
     }
