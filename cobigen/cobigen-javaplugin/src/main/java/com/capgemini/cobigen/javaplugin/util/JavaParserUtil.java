@@ -7,6 +7,7 @@ import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
+import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * The {@link JavaParserUtil} class provides helper functions for generating parsed inputs
@@ -42,8 +43,10 @@ public class JavaParserUtil {
      *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (01.10.2014)
+     * @throws ParseException
      */
-    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) {
+    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader)
+        throws ParseException {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         classLibraryBuilder.appendClassLoader(classLoader);
         return getFirstJavaClass(classLibraryBuilder, reader);
@@ -60,8 +63,10 @@ public class JavaParserUtil {
      *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (01.10.2014)
+     * @throws ParseException
      */
-    private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader) {
+    private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader)
+        throws ParseException {
         JavaSource source = null;
         ModifyableJavaClass targetClass = null;
         for (Reader r : reader) {
