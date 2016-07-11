@@ -19,6 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * The service class for REST calls in order to execute the methods in {@link ${variables.component?cap_first}}.
@@ -42,20 +44,25 @@ public class ${variables.component?cap_first}RestServiceImpl {
   */
   @GET
   @Path("/${variables.entityName?lower_case}/{id}/")
-  public ${variables.entityName}Eto get${variables.entityName}(@PathParam("id") String id) {
+  public ResponseEntity<${variables.entityName}Eto> get${variables.entityName}(@PathParam("id") String id) {
 
     Long idAsLong;
     if (id == null) {
       throw new BadRequestException("missing id");
     }
+    
+    ${variables.entityName}Eto ${variables.entityName?lower_case}Eto = null;
+    
     try {
       idAsLong = Long.parseLong(id);
+      ${variables.entityName?lower_case}Eto = this.${variables.component}.find${variables.entityName}(idAsLong);
+      
+      if(${variables.entityName?lower_case}Eto == null)
+          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
-    } catch (NotFoundException e) {
-      throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    return this.${variables.component}.find${variables.entityName}(idAsLong);
+    return new ResponseEntity<>(${variables.entityName?lower_case}Eto, HttpStatus.OK);
   }
 
   /**
@@ -79,18 +86,20 @@ public class ${variables.component?cap_first}RestServiceImpl {
   @DELETE
   @Path("/${variables.entityName?lower_case}/{id}/")
   public void delete${variables.entityName}(@PathParam("id") String id) {
+  
     Long idAsLong;
+    
     if (id == null) {
       throw new BadRequestException("missing id");
     }
     try {
       idAsLong = Long.parseLong(id);
+      
+      if(!this.${variables.component}.delete${variables.entityName}(idAsLong))
+          throw new NotFoundException("table not found");
     } catch (NumberFormatException e) {
       throw new BadRequestException("id is not a number");
-    } catch (NotFoundException e) {
-      throw new BadRequestException("${variables.entityName?lower_case} not found");
     }
-    this.${variables.component}.delete${variables.entityName}(idAsLong);
   }
 
   /**

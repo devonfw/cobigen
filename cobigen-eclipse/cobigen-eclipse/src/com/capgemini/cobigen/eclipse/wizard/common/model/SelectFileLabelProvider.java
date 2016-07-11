@@ -194,7 +194,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         // boundary case: multiple templates target one path, which are not mergable... does not make sense
         List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
-            if (path != null && template.getMergeStrategy() != null) {
+            if (path != null && template.getMergeStrategy() != null
+                && !template.getMergeStrategy().equals("override")) {
                 return true;
             }
         }
