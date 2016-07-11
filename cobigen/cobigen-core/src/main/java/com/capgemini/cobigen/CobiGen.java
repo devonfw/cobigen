@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
+import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
@@ -43,13 +44,14 @@ import com.capgemini.cobigen.extension.to.MatcherTo;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.model.JaxenXPathSupportNodeModel;
 import com.capgemini.cobigen.model.ModelBuilder;
-import com.capgemini.cobigen.model.ModelConverter;
 import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.util.FileSystemUtil;
 import com.capgemini.cobigen.validator.InputValidator;
 import com.google.common.collect.Lists;
 
 import freemarker.core.Environment;
+import freemarker.ext.beans.BeanModel;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateException;
@@ -69,8 +71,10 @@ public class CobiGen {
 
     /**
      * Current version of the generation, needed for configuration file validation
+     * @deprecated use {@link MavenMetadata#VERSION} instead, will be removed with 3.0 release
      */
-    public static final String CURRENT_VERSION = "2.1.1";
+    @Deprecated
+    public static final String CURRENT_VERSION = MavenMetadata.VERSION;
 
     /**
      * The {@link ContextConfiguration} for this instance
@@ -132,8 +136,8 @@ public class CobiGen {
      *             if an exception occurs during content merging
      * @author sbasnet (22.10.2014)
      */
-    public void generate(Object input, IncrementTo increment, boolean forceOverride) throws IOException,
-        TemplateException, MergeException {
+    public void generate(Object input, IncrementTo increment, boolean forceOverride)
+        throws IOException, TemplateException, MergeException {
         InputValidator.validateInputsUnequalNull(input, increment);
         for (TemplateTo t : increment.getTemplates()) {
             generate(input, t, forceOverride);
@@ -162,8 +166,8 @@ public class CobiGen {
      *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (08.04.2014)
      */
-    public void generate(Object input, TemplateTo template, boolean forceOverride) throws IOException,
-        TemplateException, MergeException {
+    public void generate(Object input, TemplateTo template, boolean forceOverride)
+        throws IOException, TemplateException, MergeException {
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(input, template, triggerInterpreter, forceOverride);
@@ -194,8 +198,8 @@ public class CobiGen {
      * @author mbrunnli (06.02.2013) edited by trippl (05.03.2013)
      */
     private void generate(Object generatorInput, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-        boolean forceOverride) throws IOException, TemplateException, MergeException,
-        InvalidConfigurationException {
+        boolean forceOverride)
+        throws IOException, TemplateException, MergeException, InvalidConfigurationException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template);
         InputValidator.validateTriggerInterpreter(triggerInterpreter,
@@ -234,8 +238,8 @@ public class CobiGen {
         boolean forceOverride, Map<String, Object> rawModel) throws IOException, TemplateException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
-        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(configFolder
-            .resolve(trigger.getTemplateFolder()));
+        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
+            .setTemplateRoot(configFolder.resolve(trigger.getTemplateFolder()));
 
         IInputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
@@ -257,9 +261,8 @@ public class CobiGen {
                 }
             }
             if (retrieveInputsRecursively) {
-                inputObjects =
-                    ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
-                        trigger.getInputCharset());
+                inputObjects = ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
+                    trigger.getInputCharset());
 
             } else {
                 inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
@@ -277,13 +280,14 @@ public class CobiGen {
 
         Template templateIntern = getTemplate(template, triggerInterpreter);
         for (Object targetInput : inputObjects) {
-            Document model;
+            Map<String, Object> model;
+            BeanModel bm = null;
+
             if (rawModel == null) {
-                model =
-                    new ModelBuilder(targetInput, trigger, input)
-                        .createModelAndConvertToDOM(triggerInterpreter);
+                model = new ModelBuilder(targetInput, trigger, input).createModel(triggerInterpreter);
+                bm = new BeanModel(model, (BeansWrapper) freeMarkerConfig.getObjectWrapper());
             } else {
-                model = new ModelConverter(rawModel).convertToDOM();
+                bm = new BeanModel(rawModel, (BeansWrapper) freeMarkerConfig.getObjectWrapper());
             }
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
@@ -291,11 +295,11 @@ public class CobiGen {
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
-                        inputReader, input);
+                    generateTemplateAndWriteFile(originalFile, templateIntern, bm, targetCharset, inputReader,
+                        input);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
+                        generateTemplateAndWritePatch(out, templateIntern, bm, targetCharset, inputReader,
                             input);
                         String result = null;
                         try {
@@ -308,8 +312,8 @@ public class CobiGen {
                             }
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
-                            throw new MergeException("'An error occured while merging the file "
-                                + originalFile.toURI() + "'!", e);
+                            throw new MergeException(
+                                "'An error occured while merging the file " + originalFile.toURI() + "'!", e);
                         }
 
                         if (result != null) {
@@ -320,7 +324,7 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
+                generateTemplateAndWriteFile(originalFile, templateIntern, bm, targetCharset, inputReader,
                     input);
             }
         }
@@ -351,8 +355,8 @@ public class CobiGen {
      * @author mbrunnli (09.04.2014)
      */
     public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
-        boolean forceOverride) throws InvalidConfigurationException, IOException, TemplateException,
-        MergeException {
+        boolean forceOverride)
+        throws InvalidConfigurationException, IOException, TemplateException, MergeException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template, model);
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
@@ -393,7 +397,8 @@ public class CobiGen {
 
         LOG.info("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
@@ -425,9 +430,9 @@ public class CobiGen {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(),
-                trigger.getId(), templates, convertIncrements(increment.getDependentIncrements(), trigger,
-                    triggerInterpreter)));
+            incrementTos.add(
+                new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(), templates,
+                    convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
         }
         return incrementTos;
     }
@@ -460,9 +465,8 @@ public class CobiGen {
                         LOG.debug("Check container matchers ...");
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo containerMatcherTo =
-                                new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(),
-                                    matcherInput);
+                            MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
+                                containerMatcher.getValue(), matcherInput);
                             LOG.debug("Check {} ...", containerMatcherTo);
                             if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
                                 LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
@@ -476,9 +480,8 @@ public class CobiGen {
                                 } else {
                                     // the charset does not matter as we just want to see whether there is one
                                     // matcher for one of the container resources
-                                    containerResources =
-                                        triggerInterpreter.getInputReader().getInputObjects(matcherInput,
-                                            Charsets.UTF_8);
+                                    containerResources = triggerInterpreter.getInputReader()
+                                        .getInputObjects(matcherInput, Charsets.UTF_8);
                                 }
                                 LOG.debug("{} objects retrieved.", containerResources.size());
 
@@ -547,8 +550,8 @@ public class CobiGen {
                 }
             }
         }
-        LOG.info("Matcher declarations "
-            + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.info(
+            "Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
@@ -567,11 +570,12 @@ public class CobiGen {
 
         LOG.info("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), templatesConfiguration.getTrigger(), templatesConfiguration
-                        .getTriggerInterpreter()));
+                    template.getMergeStrategy(), templatesConfiguration.getTrigger(),
+                    templatesConfiguration.getTriggerInterpreter()));
             }
         }
         LOG.info("{} matching templates found.", templates.size());
@@ -676,9 +680,9 @@ public class CobiGen {
      *             be created, or cannot be opened for any other reason
      * @author mbrunnli (21.03.2013)
      */
-    private void generateTemplateAndWriteFile(File output, Template template, Document model,
-        String outputCharset, IInputReader inputReader, Object input) throws FileNotFoundException,
-        TemplateException, IOException {
+    private void generateTemplateAndWriteFile(File output, Template template, BeanModel model,
+        String outputCharset, IInputReader inputReader, Object input)
+        throws FileNotFoundException, TemplateException, IOException {
 
         try (Writer out = new StringWriter()) {
             generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader, input);
@@ -735,7 +739,7 @@ public class CobiGen {
      *             if an I/O exception occurs (during writing to the writer)
      * @author mbrunnli (12.03.2013)
      */
-    private void generateTemplateAndWritePatch(Writer out, Template template, Document model,
+    private void generateTemplateAndWritePatch(Writer out, Template template, BeanModel model,
         String outputCharset, IInputReader inputReader, Object input) throws TemplateException, IOException {
 
         freemarker.template.Template fmTemplate;
@@ -748,7 +752,7 @@ public class CobiGen {
 
         Environment env = fmTemplate.createProcessingEnvironment(model, out);
         env.setOutputEncoding(outputCharset);
-        env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
+        // env.setCurrentVisitorNode(new JaxenXPathSupportNodeModel(model));
 
         Map<String, Object> templateMethods = inputReader.getTemplateMethods(input);
         if (templateMethods != null) {
@@ -757,7 +761,7 @@ public class CobiGen {
             }
         }
 
-        createModelShortcuts(model, env);
+        // createModelShortcuts(model, env);
         env.process();
     }
 
