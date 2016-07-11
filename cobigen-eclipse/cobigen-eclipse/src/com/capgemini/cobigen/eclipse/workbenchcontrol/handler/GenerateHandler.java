@@ -32,6 +32,7 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
+import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * Handler for the Package-Explorer Event
@@ -83,9 +84,8 @@ public class GenerateHandler extends AbstractHandler {
 
                 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
                     && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
-                    WizardDialog wiz =
-                        new WizardDialog(HandlerUtil.getActiveShell(event),
-                            new GenerateBatchWizard(generator));
+                    WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(event),
+                        new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
                     LOG.info("Generate Wizard (Batchmode) opened.");
@@ -109,13 +109,10 @@ public class GenerateHandler extends AbstractHandler {
             } catch (InvalidConfigurationException e) {
                 openInvalidConfigurationErrorDialog(e);
             } catch (GeneratorProjectNotExistentException e) {
-                MessageDialog
-                    .openError(
-                        HandlerUtil.getActiveShell(event),
-                        "Generator configuration project not found!",
-                        "The project '"
-                            + ResourceConstants.CONFIG_PROJECT_NAME
-                            + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
+                MessageDialog.openError(HandlerUtil.getActiveShell(event),
+                    "Generator configuration project not found!",
+                    "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
+                        + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
                 LOG.error(
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
                     ResourceConstants.CONFIG_PROJECT_NAME, e);
@@ -126,6 +123,11 @@ public class GenerateHandler extends AbstractHandler {
                 MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection",
                     e.getMessage());
                 LOG.info("Invalid input selected for generation: " + e.getMessage());
+            } catch (ParseException e) {
+                MessageDialog.openError(HandlerUtil.getActiveShell(event),
+                    "Java syntax error at " + e.getMessage().split("@")[0],
+                    "File with error: " + e.getMessage().split("@")[0] + '\n' + "Line: " + e.getLine()
+                        + " Column: " + e.getColumn());
             } catch (Throwable e) {
                 PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);
@@ -149,8 +151,8 @@ public class GenerateHandler extends AbstractHandler {
                 "Any context/templates configuration has been changed into an invalid state "
                     + "OR is simply outdated, if you recently updated CobiGen. "
                     + "For further investigation and automatic upgrade options start CobiGen's Health Check."
-                    + "\n\nOriginal error message: " + e.getMessage(), MessageDialog.ERROR, new String[] {
-                    "Health Check", "OK" }, 1);
+                    + "\n\nOriginal error message: " + e.getMessage(),
+                MessageDialog.ERROR, new String[] { "Health Check", "OK" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
