@@ -52,7 +52,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
         ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
         <#compress>
     	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
-          <#if field.type?contains("Entity")>
+          <#if field.type?ends_with("Entity")>
               query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${fieldCapName}()</#if>.getId()).eq(${field.name}));
           <#else>
               query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
