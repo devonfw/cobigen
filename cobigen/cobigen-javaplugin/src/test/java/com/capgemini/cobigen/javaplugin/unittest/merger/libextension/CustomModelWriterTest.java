@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.libextension.CustomModelWriter;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -32,9 +33,10 @@ public class CustomModelWriterTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testWriteField() throws FileNotFoundException {
+    public void testWriteField() throws FileNotFoundException, MergeException {
 
         File baseFile = new File(testFileRootPath + "ClassFile_field.java");
         CustomModelWriter target = new CustomModelWriter();
@@ -50,10 +52,11 @@ public class CustomModelWriterTest {
      * @throws IOException
      *             test fails
      * @author mbrunnli (12.04.2013)
+     * @throws MergeException
      */
     @Test
     @Ignore("Not yet implemented --> QDox ignores comments while parsing")
-    public void testExistenceOfHeader() throws IOException {
+    public void testExistenceOfHeader() throws IOException, MergeException {
 
         File file = new File(testFileRootPath + "ClassFile_header.java");
         CustomModelWriter target = new CustomModelWriter();
@@ -68,9 +71,10 @@ public class CustomModelWriterTest {
      * @throws IOException
      *             test fails
      * @author mbrunnli (12.04.2013)
+     * @throws MergeException
      */
     @Test
-    public void testCorrectlyWrittenGenerics() throws IOException {
+    public void testCorrectlyWrittenGenerics() throws IOException, MergeException {
 
         File file = new File(testFileRootPath + "ClassFile_generics.java");
         CustomModelWriter target = new CustomModelWriter();
@@ -90,10 +94,11 @@ public class CustomModelWriterTest {
      * @throws FileNotFoundException
      *             test fails
      * @author mbrunnli (17.06.2013)
+     * @throws MergeException
      */
     @Test
     // @Ignore("Not yet implemented --> QDox defect")
-    public void testCorrectlyWrittenModifiers() throws FileNotFoundException {
+    public void testCorrectlyWrittenModifiers() throws FileNotFoundException, MergeException {
 
         File file = new File(testFileRootPath + "ClassFile_modifiers.java");
         CustomModelWriter target = new CustomModelWriter();
@@ -113,9 +118,11 @@ public class CustomModelWriterTest {
      * @throws FileNotFoundException
      *             test fails
      * @author mbrunnli (Jun 26, 2015)
+     * @throws MergeException
      */
     @Test
-    public void testDoNotWriteDefaultValueIdentifierOfAnnotations() throws FileNotFoundException {
+    public void testDoNotWriteDefaultValueIdentifierOfAnnotations()
+        throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
@@ -127,7 +134,7 @@ public class CustomModelWriterTest {
 
     @Test
     public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes()
-        throws FileNotFoundException {
+        throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));

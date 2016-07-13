@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
@@ -49,9 +50,10 @@ public class ParsedJavaModelBuilderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException, MergeException {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -70,9 +72,10 @@ public class ParsedJavaModelBuilderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException, MergeException {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
 
@@ -104,10 +107,11 @@ public class ParsedJavaModelBuilderTest {
      * @throws FileNotFoundException
      *             test fails
      * @author mbrunnli (30.09.2014)
+     * @throws MergeException
      */
     @Test
     public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration()
-        throws FileNotFoundException {
+        throws FileNotFoundException, MergeException {
 
         File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
 
@@ -124,21 +128,22 @@ public class ParsedJavaModelBuilderTest {
      * @throws FileNotFoundException
      *             test fails
      * @author mbrunnli (30.09.2014)
+     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
+    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException, MergeException {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        Assert
-            .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        Assert.assertEquals("AbstractTestClass",
+            JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
         assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass",
             JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata", JavaModelUtil
-            .getExtendedType(model).get(ModelConstant.PACKAGE));
+        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
+            JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE));
     }
 
     /**
@@ -146,9 +151,10 @@ public class ParsedJavaModelBuilderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException {
+    public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException, MergeException {
 
         File file = new File(testFileRootPath + "Pojo.java");
 
@@ -214,8 +220,9 @@ public class ParsedJavaModelBuilderTest {
                 found = true;
             }
         }
-        assertTrue("Class " + RootClass.class.getName()
-            + "could not be found as child of the package folder.", found);
+        assertTrue(
+            "Class " + RootClass.class.getName() + "could not be found as child of the package folder.",
+            found);
     }
 
     /**
@@ -256,9 +263,10 @@ public class ParsedJavaModelBuilderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws FileNotFoundException, MergeException {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -284,11 +292,11 @@ public class ParsedJavaModelBuilderTest {
         assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
     }
 
     /**
@@ -297,9 +305,11 @@ public class ParsedJavaModelBuilderTest {
      * @throws FileNotFoundException
      *             test fails
      * @author fkreis (08.05.2015)
+     * @throws MergeException
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_inherited() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_inherited()
+        throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -342,10 +352,12 @@ public class ParsedJavaModelBuilderTest {
      * @throws FileNotFoundException
      *             test fails
      * @author fkreis (08.05.2015)
+     * @throws MergeException
      */
     @Test
     @Ignore(value = "This test case is not successfull due to boundaries of qDox")
-    public void testExtractionOfMethodAccessibleFields_inheritedInherited() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_inheritedInherited()
+        throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -394,9 +406,10 @@ public class ParsedJavaModelBuilderTest {
      * @throws FileNotFoundException
      *             test fails
      * @author fkreis (08.05.2015)
+     * @throws MergeException
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_local() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_local() throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -424,11 +437,11 @@ public class ParsedJavaModelBuilderTest {
         assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
     }
 
 }
