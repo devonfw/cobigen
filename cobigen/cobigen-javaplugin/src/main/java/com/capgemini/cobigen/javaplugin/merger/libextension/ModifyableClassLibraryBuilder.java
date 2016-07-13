@@ -11,7 +11,6 @@ import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.library.OrderedClassLibraryBuilder;
 import com.thoughtworks.qdox.library.SourceLibrary;
 import com.thoughtworks.qdox.model.JavaSource;
-import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * {@link ClassLibraryBuilder} forwarding {@link #addSource(File)} to
@@ -30,7 +29,7 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
      * @author mbrunnli (04.04.2013)
      */
     @Override
-    public JavaSource addSource(File file) throws IOException, ParseException {
+    public JavaSource addSource(File file) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(file);
     }
 
@@ -39,7 +38,7 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
      * @author mbrunnli (Jun 26, 2015)
      */
     @Override
-    public JavaSource addSource(InputStream stream) throws IOException, ParseException {
+    public JavaSource addSource(InputStream stream) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(stream);
     }
 
@@ -48,7 +47,7 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
      * @author mbrunnli (Jun 26, 2015)
      */
     @Override
-    public JavaSource addSource(Reader reader) throws ParseException {
+    public JavaSource addSource(Reader reader) {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(reader);
     }
 
@@ -57,7 +56,7 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
      * @author mbrunnli (Jun 26, 2015)
      */
     @Override
-    public JavaSource addSource(URL url) throws IOException, ParseException {
+    public JavaSource addSource(URL url) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(url);
     }
 
