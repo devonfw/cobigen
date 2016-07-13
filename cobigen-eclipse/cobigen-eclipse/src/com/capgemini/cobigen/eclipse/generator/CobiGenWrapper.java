@@ -439,8 +439,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         if (initialized) {
             return cobiGen.getMatchingTriggerIds(loadClass);
         } else {
-            LOG.debug(
-                "Generator is not initialized. Could not get matching triggers for " + loadClass.toString());
+            LOG.debug("Generator is not initialized. Could not get matching triggers for {}.",
+                loadClass.toString());
             return null;
         }
     }
