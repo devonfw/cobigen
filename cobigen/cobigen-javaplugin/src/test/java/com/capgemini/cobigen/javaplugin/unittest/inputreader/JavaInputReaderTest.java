@@ -13,6 +13,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
@@ -44,17 +45,17 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass.java");
         Class<?> javaClass = TestClass.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model =
-            javaInputReader.createModel(new Object[] {
-                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader.createModel(
+            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
         // Check parser feature (resolving of parametric type variables)
@@ -69,17 +70,18 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures_oneModelEmpty()
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass_empty.java");
         Class<?> javaClass = TestClass.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model =
-            javaInputReader.createModel(new Object[] {
-                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader.createModel(
+            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
     }
@@ -90,17 +92,18 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withAnnotations() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures_withAnnotations()
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotations.java");
         Class<?> javaClass = TestClassWithAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model =
-            javaInputReader.createModel(new Object[] {
-                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader.createModel(
+            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
     }
@@ -111,18 +114,18 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
     public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations()
-        throws FileNotFoundException {
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithRecursiveAnnotations.java");
         Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model =
-            javaInputReader.createModel(new Object[] {
-                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader.createModel(
+            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
     }
@@ -133,19 +136,19 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
     public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays()
-        throws FileNotFoundException {
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile =
             new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Class<?> javaClass = TestClassWithAnnotationsContainingObjectArrays.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model =
-            javaInputReader.createModel(new Object[] {
-                JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader.createModel(
+            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         Assert.assertNotNull("No model has been created!", model);
 
     }
@@ -175,9 +178,10 @@ public class JavaInputReaderTest {
      * field information (especially annotations) if two inputs (.java and .class) are used.
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws FileNotFoundException, MergeException {
         // create instance
         JavaInputReader reader = new JavaInputReader();
 
@@ -210,11 +214,11 @@ public class JavaInputReaderTest {
         assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
 
         // test local field of method accessible fields
         Map<String, Object> classFieldAccessible =
@@ -239,11 +243,11 @@ public class JavaInputReaderTest {
         assertTrue(JavaModelUtil.getAnnotations(classFieldAccessible).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classFieldAccessible).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classFieldAccessible)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classFieldAccessible).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classFieldAccessible)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
 
         // test inherited field of method accessible fields
         Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
