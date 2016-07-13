@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 
@@ -47,7 +48,8 @@ public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
         if (proj != null) {
             monitor.beginTask("Generating files...", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
-                if (template.getMergeStrategy() == null || template.getMergeStrategy().equals("override")) {
+                if (template.getMergeStrategy() == null
+                    || template.getMergeStrategy().equals(ResourceConstants.OVERRIDE)) {
                     cobigenWrapper.generate(template, true);
                 } else {
                     cobigenWrapper.generate(template, false);

@@ -11,4 +11,9 @@ public class ResourceConstants {
      * Generator Configuration Project Name
      */
     public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
+
+    /**
+     * Merge strategy for override
+     */
+    public static final String OVERRIDE = "override";
 }
