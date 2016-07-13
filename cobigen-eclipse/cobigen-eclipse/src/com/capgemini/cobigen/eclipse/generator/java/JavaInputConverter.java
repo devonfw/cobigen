@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
@@ -71,23 +72,22 @@ public class JavaInputConverter {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
                         Class<?> loadedClass = projectClassLoader.loadClass(rootType.getFullyQualifiedName());
-                        Object[] inputSourceAndClass =
-                            new Object[] {
-                                loadedClass,
-                                JavaParserUtil.getFirstJavaClass(
-                                    ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject()),
-                                    new StringReader(((ICompilationUnit) elem).getSource())) };
+                        Object[] inputSourceAndClass = new Object[] { loadedClass,
+                            JavaParserUtil.getFirstJavaClass(
+                                ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject()),
+                                new StringReader(((ICompilationUnit) elem).getSource())) };
                         convertedInputs.add(inputSourceAndClass);
                     } catch (MalformedURLException e) {
                         LOG.error("An internal exception occurred while loading Java class {}",
                             rootType.getFullyQualifiedName(), e);
                         throw new GeneratorCreationException(
                             "An internal exception occurred while loading Java class "
-                                + rootType.getFullyQualifiedName(), e);
+                                + rootType.getFullyQualifiedName(),
+                            e);
                     } catch (ClassNotFoundException e) {
                         LOG.error("Could not instantiate Java class {}", rootType.getFullyQualifiedName(), e);
-                        throw new GeneratorCreationException("Could not instantiate Java class "
-                            + rootType.getFullyQualifiedName(), e);
+                        throw new GeneratorCreationException(
+                            "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     }
                 } catch (JavaModelException e) {
                     LOG.error("An eclipse internal exception occurred while accessing the java model.", e);
@@ -95,6 +95,9 @@ public class JavaInputConverter {
                 } catch (CoreException e) {
                     LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
+                } catch (MergeException e) {
+                    throw new MergeException("JAVA SYNTAX ERROR\n" + "Base File: "
+                        + ((ICompilationUnit) elem).getElementName() + '\n' + e.getMessage());
                 }
             }
         }
