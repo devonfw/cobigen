@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
@@ -195,7 +196,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
             if (path != null && template.getMergeStrategy() != null
-                && !template.getMergeStrategy().equals("override")) {
+                && !template.getMergeStrategy().equals(ResourceConstants.OVERRIDE)) {
                 return true;
             }
         }
