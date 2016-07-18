@@ -57,13 +57,13 @@ public class JavaInputReader implements InputReaderV13 {
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                        ((Class<?>) inputArr[1]).getCanonicalName())) {
+                    if (((JavaClass) inputArr[0]).getFullyQualifiedName()
+                        .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                    if (((Class<?>) inputArr[0]).getCanonicalName()
+                        .equals(((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
                     }
                 }
@@ -192,8 +192,8 @@ public class JavaInputReader implements InputReaderV13 {
                         }
                     }
                 } catch (IOException e) {
-                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath()
-                        .toString(), e);
+                    LOG.error("The file {} could not be parsed as a java class",
+                        f.getAbsolutePath().toString(), e);
                 }
 
             }
@@ -214,7 +214,9 @@ public class JavaInputReader implements InputReaderV13 {
     private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 
         List<File> files = new LinkedList<>();
-        if (packageFolder.isDirectory()) {
+        if (packageFolder.isFile()) {
+            files.add(packageFolder);
+        } else if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
                 if (f.isDirectory() && recursively) {
                     files.addAll(retrieveAllJavaSourceFiles(f, recursively));
@@ -333,7 +335,7 @@ public class JavaInputReader implements InputReaderV13 {
             else if (parsedModel instanceof List && reflectionModel instanceof List) {
                 if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
                     || !((List<?>) reflectionModel).isEmpty()
-                    && ((List<?>) reflectionModel).get(0) instanceof Map) {
+                        && ((List<?>) reflectionModel).get(0) instanceof Map) {
                     List<Map<String, Object>> model1List =
                         Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
                     List<Map<String, Object>> model2List =
@@ -350,8 +352,8 @@ public class JavaInputReader implements InputReaderV13 {
                             Map<String, Object> model2Entry = model2ListIt.next();
                             // valid merging for fields and methods
                             if (model1Entry.get(ModelConstant.NAME) != null) {
-                                if (model1Entry.get(ModelConstant.NAME).equals(
-                                    model2Entry.get(ModelConstant.NAME))) {
+                                if (model1Entry.get(ModelConstant.NAME)
+                                    .equals(model2Entry.get(ModelConstant.NAME))) {
                                     mergedModel.add(mergeModelsRecursively(model1Entry, model2Entry));
 
                                     // remove both entries as they have been matched and recursively merged
