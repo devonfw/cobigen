@@ -216,9 +216,7 @@ public class JavaInputReader implements InputReaderV13 {
         List<File> files = new LinkedList<>();
         List<File> noDir = new LinkedList<>();
         List<File> dir = new LinkedList<>();
-        if (packageFolder.isFile()) {
-            files.add(packageFolder);
-        } else if (packageFolder.isDirectory()) {
+        if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
                 if (f.isFile() && f.getName().endsWith(".java")) {
                     noDir.add(f);
