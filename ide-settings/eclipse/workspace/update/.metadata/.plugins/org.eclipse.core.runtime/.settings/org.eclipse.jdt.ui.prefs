@@ -1,4 +1,4 @@
-#Tue May 10 19:21:27 CEST 2016
+#Tue Jul 19 18:01:58 CEST 2016
 cleanup.add_default_serial_version_id=true
 cleanup.add_generated_serial_version_id=false
 cleanup.add_missing_annotations=true
@@ -14,7 +14,7 @@ cleanup.always_use_this_for_non_static_field_access=false
 cleanup.always_use_this_for_non_static_method_access=false
 cleanup.convert_to_enhanced_for_loop=false
 cleanup.correct_indentation=false
-cleanup.format_source_code=false
+cleanup.format_source_code=true
 cleanup.format_source_code_changes_only=false
 cleanup.make_local_variable_final=true
 cleanup.make_parameters_final=false
