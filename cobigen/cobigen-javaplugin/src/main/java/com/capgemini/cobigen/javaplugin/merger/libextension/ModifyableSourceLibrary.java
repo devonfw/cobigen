@@ -207,11 +207,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (04.04.2013)
-     */
     @Override
     protected Builder getModelBuilder() {
         ModifyableModelBuilder modelBuilder = new ModifyableModelBuilder(this, new DefaultDocletTagFactory());

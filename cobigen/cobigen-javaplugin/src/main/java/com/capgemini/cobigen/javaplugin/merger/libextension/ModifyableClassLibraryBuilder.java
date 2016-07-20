@@ -24,46 +24,26 @@ public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
      */
     private static final long serialVersionUID = 6191405303611576834L;
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (04.04.2013)
-     */
     @Override
     public JavaSource addSource(File file) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(file);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 26, 2015)
-     */
     @Override
     public JavaSource addSource(InputStream stream) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(stream);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 26, 2015)
-     */
     @Override
     public JavaSource addSource(Reader reader) {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(reader);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 26, 2015)
-     */
     @Override
     public JavaSource addSource(URL url) throws IOException {
         return ((ModifyableSourceLibrary) getSourceLibrary()).addSource(url);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (04.04.2013)
-     */
     @Override
     protected SourceLibrary newSourceLibrary(AbstractClassLibrary parentLibrary) {
         return new ModifyableSourceLibrary(parentLibrary);
