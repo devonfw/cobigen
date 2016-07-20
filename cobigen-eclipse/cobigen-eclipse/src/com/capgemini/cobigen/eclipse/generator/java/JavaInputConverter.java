@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
@@ -91,6 +92,9 @@ public class JavaInputConverter {
                 } catch (CoreException e) {
                     LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
+                } catch (MergeException e) {
+                    throw new MergeException("JAVA SYNTAX ERROR\n" + "Base File: "
+                        + ((ICompilationUnit) elem).getElementName() + '\n' + e.getMessage());
                 }
             }
         }

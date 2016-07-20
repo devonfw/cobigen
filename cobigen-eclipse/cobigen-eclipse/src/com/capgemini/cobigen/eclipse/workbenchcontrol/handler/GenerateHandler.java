@@ -29,6 +29,7 @@ import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.exceptions.UnknownTemplateException;
@@ -119,6 +120,8 @@ public class GenerateHandler extends AbstractHandler {
             } catch (InvalidInputException e) {
                 MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
                 LOG.info("Invalid input selected for generation: " + e.getMessage());
+            } catch (MergeException e) {
+                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Merge Error", e.getMessage());
             } catch (Throwable e) {
                 PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);
