@@ -51,8 +51,7 @@ public class JavaInputConverter {
                     IPackageFragment frag = (IPackageFragment) elem;
                     PackageFolder packageFolder =
                         new PackageFolder(frag.getResource().getLocationURI(), frag.getElementName());
-                    packageFolder
-                        .setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
+                    packageFolder.setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
                     LOG.error("An internal exception occurred while building the project class loader.", e);
@@ -71,23 +70,20 @@ public class JavaInputConverter {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
                         Class<?> loadedClass = projectClassLoader.loadClass(rootType.getFullyQualifiedName());
-                        Object[] inputSourceAndClass =
-                            new Object[] {
-                                loadedClass,
-                                JavaParserUtil.getFirstJavaClass(
-                                    ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject()),
-                                    new StringReader(((ICompilationUnit) elem).getSource())) };
+                        Object[] inputSourceAndClass = new Object[] { loadedClass,
+                            JavaParserUtil.getFirstJavaClass(
+                                ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject()),
+                                new StringReader(((ICompilationUnit) elem).getSource())) };
                         convertedInputs.add(inputSourceAndClass);
                     } catch (MalformedURLException e) {
                         LOG.error("An internal exception occurred while loading Java class {}",
                             rootType.getFullyQualifiedName(), e);
-                        throw new GeneratorCreationException(
-                            "An internal exception occurred while loading Java class "
-                                + rootType.getFullyQualifiedName(), e);
+                        throw new GeneratorCreationException("An internal exception occurred while loading Java class "
+                            + rootType.getFullyQualifiedName(), e);
                     } catch (ClassNotFoundException e) {
                         LOG.error("Could not instantiate Java class {}", rootType.getFullyQualifiedName(), e);
-                        throw new GeneratorCreationException("Could not instantiate Java class "
-                            + rootType.getFullyQualifiedName(), e);
+                        throw new GeneratorCreationException(
+                            "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     }
                 } catch (JavaModelException e) {
                     LOG.error("An eclipse internal exception occurred while accessing the java model.", e);
