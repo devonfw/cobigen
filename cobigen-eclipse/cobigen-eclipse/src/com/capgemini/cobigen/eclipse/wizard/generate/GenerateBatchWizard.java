@@ -60,12 +60,11 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     @Override
     protected void initializeWizard() {
         super.initializeWizard();
-        page1
-            .setMessage(
-                "You are running a generation in batch mode!\n"
-                    + "The shown target files are based on the first input of your selection. "
-                    + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
-                IMessageProvider.WARNING);
+        page1.setMessage(
+            "You are running a generation in batch mode!\n"
+                + "The shown target files are based on the first input of your selection. "
+                + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
+            IMessageProvider.WARNING);
     }
 
     /**
@@ -97,13 +96,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
 
         GenerateBatchSelectionJob job;
         if (container == null) {
-            job =
-                new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
-                    inputTypes);
+            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds), inputTypes);
         } else {
-            job =
-                new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
-                    container);
+            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds), container);
         }
         try {
             dialog.run(true, false, job);

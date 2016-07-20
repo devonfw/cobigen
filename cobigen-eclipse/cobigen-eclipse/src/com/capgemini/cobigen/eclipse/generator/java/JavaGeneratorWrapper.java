@@ -56,8 +56,8 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (21.03.2014)
      */
-    public JavaGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public JavaGeneratorWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
     }
 
@@ -84,8 +84,7 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
 
         Object firstInput = getCurrentRepresentingInput();
         List<String> matchingTriggerIds = cobiGen.getMatchingTriggerIds(firstInput);
-        Map<String, Object> model =
-            cobiGen.getModelBuilder(firstInput, matchingTriggerIds.get(0)).createModel();
+        Map<String, Object> model = cobiGen.getModelBuilder(firstInput, matchingTriggerIds.get(0)).createModel();
 
         List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
         for (Map<String, Object> attr : attributes) {
@@ -154,9 +153,9 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                     }
                 } else if (tmp instanceof IPackageFragment) {
                     uniqueSourceSelected = true;
-                    firstTriggers =
-                        cobiGen.getMatchingTriggerIds(new PackageFolder(((IPackageFragment) tmp)
-                            .getResource().getLocationURI(), ((IPackageFragment) tmp).getElementName()));
+                    firstTriggers = cobiGen.getMatchingTriggerIds(
+                        new PackageFolder(((IPackageFragment) tmp).getResource().getLocationURI(),
+                            ((IPackageFragment) tmp).getElementName()));
                 } else {
                     throw new InvalidInputException(
                         "You selected at least one input, which type is currently not supported as input for generation. "
@@ -195,20 +194,19 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
             type = EclipseJavaModelUtil.getJavaClassType(cu);
             return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
-            throw new InvalidInputException("Error while retrieving the project's ('"
-                + cu.getJavaProject().getElementName() + "') classloader.", e);
+            throw new InvalidInputException(
+                "Error while retrieving the project's ('" + cu.getJavaProject().getElementName() + "') classloader.",
+                e);
         } catch (CoreException e) {
             throw new InvalidInputException("An eclipse internal exception occured!", e);
         } catch (ClassNotFoundException e) {
-            throw new InvalidInputException("The class '" + type.getFullyQualifiedName()
-                + "' could not be found. "
+            throw new InvalidInputException("The class '" + type.getFullyQualifiedName() + "' could not be found. "
                 + "This may be cause of a non-compiling host project of the selected input.", e);
         } catch (UnsupportedClassVersionError e) {
-            throw new InvalidInputException(
-                "Incompatible java version: "
-                    + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
-                    + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
-                    + "Current runtime: " + System.getProperty("java.version"), e);
+            throw new InvalidInputException("Incompatible java version: "
+                + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+                + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+                + "Current runtime: " + System.getProperty("java.version"), e);
         }
     }
 }
