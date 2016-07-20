@@ -102,7 +102,6 @@ public class ModifyableModelBuilder implements Builder {
         currentArguments = new LinkedList<>();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void setModelWriterFactory(ModelWriterFactory modelWriterFactory) {
 
@@ -110,7 +109,6 @@ public class ModifyableModelBuilder implements Builder {
         source.setModelWriterFactory(modelWriterFactory);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addPackage(PackageDef packageDef) {
 
@@ -123,28 +121,24 @@ public class ModifyableModelBuilder implements Builder {
         source.setPackage(jPackage);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addImport(String importName) {
 
         source.addImport(importName);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addJavaDoc(String text) {
 
         lastComment = text;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addJavaDocTag(TagDef tagDef) {
 
         lastTagSet.add(tagDef);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginClass(ClassDef def) {
 
@@ -215,7 +209,6 @@ public class ModifyableModelBuilder implements Builder {
         return newClass;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endClass() {
 
@@ -266,7 +259,6 @@ public class ModifyableModelBuilder implements Builder {
 
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginConstructor() {
 
@@ -282,7 +274,6 @@ public class ModifyableModelBuilder implements Builder {
         classStack.getFirst().addConstructor(currentConstructor);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endConstructor(MethodDef def) {
 
@@ -318,7 +309,6 @@ public class ModifyableModelBuilder implements Builder {
         currentConstructor.setSourceCode(def.getBody());
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginMethod() {
 
@@ -333,7 +323,6 @@ public class ModifyableModelBuilder implements Builder {
         setAnnotations(currentMethod);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endMethod(MethodDef def) {
 
@@ -389,7 +378,6 @@ public class ModifyableModelBuilder implements Builder {
         return result;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginField(FieldDef def) {
 
@@ -418,7 +406,6 @@ public class ModifyableModelBuilder implements Builder {
         setAnnotations(currentField);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endField() {
 
@@ -439,7 +426,6 @@ public class ModifyableModelBuilder implements Builder {
         currentField = null;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addParameter(FieldDef fieldDef) {
 
@@ -473,7 +459,6 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     // Don't resolve until we need it... class hasn't been defined yet.
-    /** {@inheritDoc} */
     @Override
     public void addAnnotation(AnnoDef annotation) {
 

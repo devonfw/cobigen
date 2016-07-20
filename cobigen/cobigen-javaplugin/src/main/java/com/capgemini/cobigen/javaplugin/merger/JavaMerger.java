@@ -50,11 +50,6 @@ public class JavaMerger implements IMerger {
         this.patchOverrides = patchOverrides;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public String getType() {
 
@@ -62,8 +57,6 @@ public class JavaMerger implements IMerger {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws IOException
      *             if the base file does not exist or could not be written
      * @throws MergeException

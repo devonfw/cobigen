@@ -14,10 +14,6 @@ import com.google.common.collect.Lists;
  */
 public class JavaPluginActivator implements IGeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
-     */
     @Override
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
@@ -26,10 +22,6 @@ public class JavaPluginActivator implements IGeneratorPluginActivator {
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
         return Lists.<ITriggerInterpreter> newArrayList(new JavaTriggerInterpreter("java"));

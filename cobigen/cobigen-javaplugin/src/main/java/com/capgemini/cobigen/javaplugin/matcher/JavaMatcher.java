@@ -56,11 +56,6 @@ public class JavaMatcher implements IMatcher {
         REGEX
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public boolean matches(MatcherTo matcher) {
 
@@ -100,11 +95,6 @@ public class JavaMatcher implements IMatcher {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
         throws InvalidConfigurationException {

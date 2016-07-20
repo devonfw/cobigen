@@ -42,11 +42,6 @@ public class JavaInputReader implements InputReaderV13 {
      */
     private static final Logger LOG = LoggerFactory.getLogger(JavaInputReader.class);
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public boolean isValidInput(Object input) {
 
@@ -72,11 +67,6 @@ public class JavaInputReader implements InputReaderV13 {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (15.10.2013)
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> createModel(Object o) {
@@ -103,11 +93,6 @@ public class JavaInputReader implements InputReaderV13 {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
 
@@ -117,19 +102,11 @@ public class JavaInputReader implements InputReaderV13 {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, false);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (19.01.2015)
-     */
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, true);
@@ -221,10 +198,6 @@ public class JavaInputReader implements InputReaderV13 {
         return files;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (22.10.2014)
-     */
     @Override
     public Map<String, Object> getTemplateMethods(Object input) {
 

@@ -27,28 +27,16 @@ public class JavaTriggerInterpreter implements ITriggerInterpreter {
         this.type = type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public IInputReader getInputReader() {
         return new JavaInputReader();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public IMatcher getMatcher() {
         return new JavaMatcher();
