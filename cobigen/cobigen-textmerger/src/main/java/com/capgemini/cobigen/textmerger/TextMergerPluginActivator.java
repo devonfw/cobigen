@@ -13,10 +13,6 @@ import com.google.common.collect.Lists;
  */
 public class TextMergerPluginActivator implements IGeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
-     */
     @Override
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
@@ -25,10 +21,6 @@ public class TextMergerPluginActivator implements IGeneratorPluginActivator {
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
         return null;

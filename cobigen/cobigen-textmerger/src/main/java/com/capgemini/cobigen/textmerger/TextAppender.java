@@ -39,19 +39,11 @@ public class TextAppender implements IMerger {
         this.withNewLineBeforehand = withNewLineBeforehand;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
     public String merge(File base, String patch, String targetCharset) throws Exception {
         String mergedString = FileUtils.readFileToString(base, targetCharset);
