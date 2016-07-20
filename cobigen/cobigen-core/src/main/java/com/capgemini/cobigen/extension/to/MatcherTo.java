@@ -64,10 +64,6 @@ public class MatcherTo {
         return target;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (31.10.2014)
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -78,10 +74,6 @@ public class MatcherTo {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (31.10.2014)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -117,10 +109,6 @@ public class MatcherTo {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (31.10.2014)
-     */
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "']";

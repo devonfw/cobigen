@@ -45,20 +45,12 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
         value = valueMatcher;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public void describeTo(Description description) {
         description.appendText(MatcherTo.class.getSimpleName() + "(type='" + type + "', varName='" + varName
             + "', value='" + value + "')");
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public boolean matches(Object item) {
         if (item instanceof VariableAssignmentTo) {
@@ -69,10 +61,6 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public void describeMismatch(Object item, Description mismatchDescription) {
         if (type == null || value == null || varName == null) {

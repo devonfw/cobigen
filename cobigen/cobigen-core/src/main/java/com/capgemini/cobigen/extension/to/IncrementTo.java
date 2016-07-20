@@ -103,10 +103,6 @@ public class IncrementTo {
         return Lists.newLinkedList(dependentIncrements);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -119,10 +115,6 @@ public class IncrementTo {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -172,10 +164,6 @@ public class IncrementTo {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[id='" + getId() + "'/desc='" + getDescription() + "'/#templates='"

@@ -70,10 +70,6 @@ public class TemplateTo extends AbstractTemplateResolver {
         return getTrigger().getId();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -84,10 +80,6 @@ public class TemplateTo extends AbstractTemplateResolver {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -122,10 +114,6 @@ public class TemplateTo extends AbstractTemplateResolver {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sbasnet (23.10.2014)
-     */
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId() + "'/mergeStrategy="

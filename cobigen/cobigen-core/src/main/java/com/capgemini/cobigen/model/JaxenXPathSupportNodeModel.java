@@ -44,11 +44,6 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.02.2013)
-     */
     @Override
     public String getNodeName() throws TemplateModelException {
         if (node instanceof Element) {
@@ -61,11 +56,6 @@ public class JaxenXPathSupportNodeModel extends NodeModel {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (08.02.2013)
-     */
     @Override
     public boolean isEmpty() throws TemplateModelException {
         if (node instanceof Element) {
