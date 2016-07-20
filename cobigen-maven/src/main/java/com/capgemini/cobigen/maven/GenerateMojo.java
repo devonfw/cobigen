@@ -117,10 +117,6 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter(defaultValue = "${basedir}")
     private File destinationRoot;
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.02.2015)
-     */
     @Override
     public void execute() throws MojoFailureException, MojoFailureException {
 
