@@ -26,10 +26,6 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 23, 2015)
-     */
     @Override
     protected ConfigurationUpgradeResult performNextUpgradeStep(TemplatesConfigurationVersion source,
         Object previousConfigurationRootNode) throws Exception {

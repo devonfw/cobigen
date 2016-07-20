@@ -43,20 +43,12 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
         this.target = target;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public void describeTo(Description description) {
         description.appendText(
             MatcherTo.class.getSimpleName() + "(type='" + type + "', value='" + value + "', target='" + target + "')");
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public boolean matches(Object item) {
         if (item instanceof MatcherTo) {
@@ -67,10 +59,6 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.10.2014)
-     */
     @Override
     public void describeMismatch(Object item, Description mismatchDescription) {
         if (type == null || value == null || target == null) {

@@ -39,19 +39,11 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
         this.templatesRoot = templatesRoot;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.02.2015)
-     */
     @Override
     public Object findTemplateSource(String name) throws IOException {
         return templatesRoot.resolve(name);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.02.2015)
-     */
     @Override
     public long getLastModified(Object templateSource) {
         BasicFileAttributes attrs;
@@ -66,19 +58,11 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.02.2015)
-     */
     @Override
     public Reader getReader(Object templateSource, String encoding) throws IOException {
         return new InputStreamReader(Files.newInputStream((Path) templateSource), encoding);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.02.2015)
-     */
     @Override
     public void closeTemplateSource(Object templateSource) throws IOException {
         // do nothing (referring to FreeMarkers FileTemlpateLoader.class implementation)

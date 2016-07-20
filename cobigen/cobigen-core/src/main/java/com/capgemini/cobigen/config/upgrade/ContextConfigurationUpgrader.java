@@ -26,10 +26,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
             ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 23, 2015)
-     */
     @Override
     protected ConfigurationUpgradeResult performNextUpgradeStep(ContextConfigurationVersion source,
         Object previousConfigurationRootNode) throws Exception {
