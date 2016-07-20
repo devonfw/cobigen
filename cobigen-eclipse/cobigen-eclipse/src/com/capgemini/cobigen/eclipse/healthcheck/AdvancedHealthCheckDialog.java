@@ -79,10 +79,6 @@ public class AdvancedHealthCheckDialog extends Dialog {
         this.expectedTemplatesConfigurations = expectedTemplatesConfigurations;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 24, 2015)
-     */
     @Override
     protected Control createDialogArea(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -150,10 +146,6 @@ public class AdvancedHealthCheckDialog extends Dialog {
         return contentParent;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 24, 2015)
-     */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         GridLayout layout = new GridLayout();

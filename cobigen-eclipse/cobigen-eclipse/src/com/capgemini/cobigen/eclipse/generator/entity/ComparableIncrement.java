@@ -63,10 +63,6 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
         templates.add(template);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (09.04.2014)
-     */
     @Override
     public List<TemplateTo> getTemplates() {
         return templates;
@@ -81,19 +77,11 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
         return dependentIncrements;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (11.03.2013)
-     */
     @Override
     public int compareTo(IncrementTo o) {
         return getDescription().compareTo(o.getDescription());
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (11.03.2013)
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -126,19 +114,11 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (10.04.2014)
-     */
     @Override
     public int hashCode() {
         return getId().hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (10.04.2014)
-     */
     @Override
     public String toString() {
         return getDescription();

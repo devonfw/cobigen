@@ -67,9 +67,6 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
         this.container = container;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
         LOG.info("Perform generation of contents in batch mode...");

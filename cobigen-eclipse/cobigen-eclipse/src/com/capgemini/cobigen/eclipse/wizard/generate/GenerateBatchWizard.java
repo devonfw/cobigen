@@ -67,11 +67,6 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
             IMessageProvider.WARNING);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author trippl (22.04.2013)
-     */
     @Override
     public void addPages() {
 

@@ -125,11 +125,6 @@ public class SelectFilesPage extends WizardPage {
         this.batch = batch;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public void createControl(Composite parent) {
 
@@ -268,11 +263,6 @@ public class SelectFilesPage extends WizardPage {
         containerRight.layout();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (28.04.2013)
-     */
     @Override
     public boolean canFlipToNextPage() {
 

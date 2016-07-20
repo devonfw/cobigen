@@ -44,10 +44,6 @@ public class GenerateWizard extends AbstractGenerateWizard {
         initializeWizard();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (18.02.2013)
-     */
     @Override
     protected void initializeWizard() {
 
@@ -59,11 +55,6 @@ public class GenerateWizard extends AbstractGenerateWizard {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (15.02.2013)
-     */
     @Override
     public void addPages() {
 

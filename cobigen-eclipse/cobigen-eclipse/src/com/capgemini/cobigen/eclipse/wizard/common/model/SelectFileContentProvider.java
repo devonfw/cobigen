@@ -84,11 +84,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         HierarchicalTreeOperator.resetCache();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object[] getElements(Object inputElement) {
 
@@ -113,11 +108,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object[] getChildren(Object parentElement) {
 
@@ -518,46 +508,25 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         return paths;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object getParent(Object element) {
 
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public boolean hasChildren(Object element) {
 
         return getChildren(element).length > 0;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public void dispose() {
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
         // will not occur / not needed
     }
 

@@ -47,10 +47,6 @@ public class SelectAttributesPage extends WizardPage {
         this.attributes = attributes;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void createControl(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

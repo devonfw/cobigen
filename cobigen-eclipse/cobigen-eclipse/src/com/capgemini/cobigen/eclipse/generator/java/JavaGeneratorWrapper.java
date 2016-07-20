@@ -61,10 +61,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.12.2014)
-     */
     @Override
     public void adaptModel(Map<String, Object> model) {
         removeIgnoredFieldsFromModel(model);
@@ -126,9 +122,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
         LOG.debug("Start checking selection validity for the use as Java input.");
