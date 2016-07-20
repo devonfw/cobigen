@@ -126,8 +126,7 @@ public class CustomModelWriterTest {
     }
 
     @Test
-    public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes()
-        throws FileNotFoundException {
+    public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes() throws FileNotFoundException {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));

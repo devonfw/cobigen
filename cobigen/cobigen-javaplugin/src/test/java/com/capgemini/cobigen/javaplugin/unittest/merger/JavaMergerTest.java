@@ -143,8 +143,7 @@ public class JavaMergerTest {
         Assert.assertNotNull(innerField);
         Assert.assertEquals(true, innerField.getInitializationExpression().equals("0"));
 
-        JavaMethod baseMethod =
-            innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
+        JavaMethod baseMethod = innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
         Assert.assertNotNull(baseMethod);
         Assert.assertEquals(void.class.getCanonicalName(), baseMethod.getReturnType(true).getCanonicalName());
 
@@ -228,8 +227,7 @@ public class JavaMergerTest {
 
         JavaMethod baseMethod = clsFooBar.getMethodBySignature("baseMethod", new LinkedList<JavaType>());
         Assert.assertNotNull(baseMethod);
-        Assert.assertEquals(String.class.getCanonicalName(), baseMethod.getReturnType(true)
-            .getCanonicalName());
+        Assert.assertEquals(String.class.getCanonicalName(), baseMethod.getReturnType(true).getCanonicalName());
     }
 
     /**
@@ -262,11 +260,9 @@ public class JavaMergerTest {
         Assert.assertNotNull(innerField);
         Assert.assertEquals(true, innerField.getInitializationExpression().equals("1"));
 
-        JavaMethod baseMethod =
-            innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
+        JavaMethod baseMethod = innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
         Assert.assertNotNull(baseMethod);
-        Assert.assertEquals(String.class.getCanonicalName(), baseMethod.getReturnType(true)
-            .getCanonicalName());
+        Assert.assertEquals(String.class.getCanonicalName(), baseMethod.getReturnType(true).getCanonicalName());
 
         JavaClass mergedInnerEnum = innerClass.getNestedClassByName("InnerBaseEnum");
         Assert.assertNotNull(mergedInnerEnum);
@@ -297,8 +293,7 @@ public class JavaMergerTest {
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
 
         baseFile = new File(testFileRootPath + "BaseFile_encoding_ISO-8859-1.java");
-        mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
+        mergedContents = new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
         mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
         Assert.assertTrue(mergedSource.toString().contains("enthält"));
     }
@@ -356,8 +351,7 @@ public class JavaMergerTest {
      * @author mbrunnli (07.06.2014)
      */
     @Test
-    public void testMergeMethodsWithoutExtendingMethodBodyWithWhitespaces() throws IOException,
-        MergeException {
+    public void testMergeMethodsWithoutExtendingMethodBodyWithWhitespaces() throws IOException, MergeException {
         File file = new File(testFileRootPath + "PatchFile_method.java");
 
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
@@ -372,8 +366,7 @@ public class JavaMergerTest {
         JavaClass resultClazz = source.getClasses().get(0);
 
         for (JavaMethod method : resultClazz.getMethods()) {
-            JavaMethod origMethod =
-                origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
+            JavaMethod origMethod = origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
             Assert.assertEquals(origMethod.getCodeBlock(), method.getCodeBlock());
         }
     }
@@ -396,18 +389,15 @@ public class JavaMergerTest {
         Assert.assertEquals("java.lang.Object", origClazz.getSuperClass().getCanonicalName());
 
         String mergedContents =
-            new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")),
-                "UTF-8");
+            new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")), "UTF-8");
 
         JavaClass resultClazz = getFirstJavaClass(new StringReader(mergedContents));
-        Assert
-            .assertEquals(
-                "The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'",
-                "java.util.HashMap", resultClazz.getSuperClass().getCanonicalName());
-        Assert
-            .assertEquals(
-                "The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'",
-                "HashMap<String,Long>", resultClazz.getSuperClass().getGenericValue());
+        Assert.assertEquals(
+            "The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'",
+            "java.util.HashMap", resultClazz.getSuperClass().getCanonicalName());
+        Assert.assertEquals(
+            "The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'",
+            "HashMap<String,Long>", resultClazz.getSuperClass().getGenericValue());
     }
 
     /**
@@ -430,8 +420,7 @@ public class JavaMergerTest {
         JavaClass mergedClass = mergedSource.getClasses().get(0);
         // System.out.print(mergedSource.toString());
         assertEquals("Too much fields", 1, mergedClass.getFields().size());
-        assertEquals("Too much methods:\n" + mergedClass.getMethods().toString(), 1, mergedClass.getMethods()
-            .size());
+        assertEquals("Too much methods:\n" + mergedClass.getMethods().toString(), 1, mergedClass.getMethods().size());
 
     }
 
@@ -450,8 +439,8 @@ public class JavaMergerTest {
      *             test fails
      * @author mbrunnli (17.04.2013)
      */
-    private JavaSource getMergedSource(File baseFile, File patchFile, boolean override) throws IOException,
-        MergeException {
+    private JavaSource getMergedSource(File baseFile, File patchFile, boolean override)
+        throws IOException, MergeException {
         String mergedContents =
             new JavaMerger("", override).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
         return getFirstJavaClass(new StringReader(mergedContents)).getSource();

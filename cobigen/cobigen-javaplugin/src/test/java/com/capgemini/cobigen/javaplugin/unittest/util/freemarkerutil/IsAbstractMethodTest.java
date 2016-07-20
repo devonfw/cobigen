@@ -30,8 +30,7 @@ public class IsAbstractMethodTest {
 
         // create testdata
         SimpleScalar abstractClass =
-            new SimpleScalar(
-                "com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil.SimpleAbstractClass");
+            new SimpleScalar("com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil.SimpleAbstractClass");
         ArrayList<Object> args = new ArrayList<>();
         args.add(abstractClass);
 
