@@ -20,11 +20,6 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
      */
     static private String defaultMergeSchemaLocation = "src/main/resources/mergeSchemas";
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014), edited by sholzer (20.08.15)
-     *
-     */
     @Override
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
@@ -36,10 +31,6 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
         return Lists.<ITriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));

@@ -30,28 +30,16 @@ public class XmlTriggerInterpreter implements ITriggerInterpreter {
         this.type = type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public IInputReader getInputReader() {
         return new XmlInputReader();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public IMatcher getMatcher() {
         return new XmlMatcher();
