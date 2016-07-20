@@ -104,8 +104,7 @@ public class ModelBuilder implements IModelBuilder {
     @Override
     public Map<String, Object> createModel(ITriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
-        Map<String, Object> model =
-            new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
+        Map<String, Object> model = new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
         if (matcherInput != null) {
             model.put("variables",
                 new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter));

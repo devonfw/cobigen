@@ -15,8 +15,7 @@ import com.capgemini.cobigen.exceptions.NotYetSupportedException;
  * latest supported version.
  * @author mbrunnli (Jun 22, 2015)
  */
-public class TemplateConfigurationUpgrader extends
-    AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
+public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
 
     /**
      * Creates a new {@link TemplateConfigurationUpgrader} instance.
@@ -54,8 +53,8 @@ public class TemplateConfigurationUpgrader extends
 
             break;
         default:
-            throw new NotYetSupportedException("An upgrade of the templates configuration from version "
-                + source + " to a newer one is currently not supported.");
+            throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source
+                + " to a newer one is currently not supported.");
         }
 
         return result;

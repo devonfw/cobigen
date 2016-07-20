@@ -127,8 +127,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
@@ -160,7 +159,8 @@ public class ContainerMatcherTest extends AbstractApiTest {
     }
 
     /**
-     * Tests whether multiple triggers will be activated if their container matcher matches a given input.<br/>
+     * Tests whether multiple triggers will be activated if their container matcher matches a given input.
+     * <br/>
      * <a href="https://github.com/oasp/tools-cobigen/issues/57">(Bug #57)</a>
      * @throws Exception
      *             test fails
@@ -218,16 +218,11 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
-        when(
-            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
-                anyList())).thenReturn(
-            ImmutableMap.<String, String> builder().put("variable", "child1").build());
-        when(
-            matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
-                anyList())).thenReturn(
-            ImmutableMap.<String, String> builder().put("variable", "child2").build());
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-            Lists.newArrayList(child1, child2));
+        when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
+            anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
+        when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
+            anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
 
         // match container
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
@@ -236,14 +231,12 @@ public class ContainerMatcherTest extends AbstractApiTest {
             .thenReturn(false);
 
         // do not match first child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
             .thenReturn(true);
 
         // match second child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
             .thenReturn(false);
 
@@ -335,28 +328,25 @@ public class ContainerMatcherTest extends AbstractApiTest {
                     return "child2";
                 }
             };
-            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-                Lists.newArrayList(firstChildResource, secondChildResource));
+            when(inputReader.getInputObjects(any(), any(Charset.class)))
+                .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
         } else {
-            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-                Lists.newArrayList(firstChildResource));
+            when(inputReader.getInputObjects(any(), any(Charset.class)))
+                .thenReturn(Lists.newArrayList(firstChildResource));
         }
 
-        when(
-            matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
-                sameInstance(firstChildResource))))).thenReturn(containerChildMatchesTrigger);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
-        when(
-            matcher.resolveVariables(
-                argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
-                argThat(hasItemsInList(
-                    //
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-            .thenReturn(
-                ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
-                    .put("entityName", "Test").build());
+        when(matcher.resolveVariables(
+            argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+            argThat(hasItemsInList(
+                //
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
+                    .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
+                        .put("entityName", "Test").build());
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 

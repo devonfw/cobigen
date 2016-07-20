@@ -48,8 +48,7 @@ public class ContextConfigurationUpgraderTest {
 
         ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
 
-        ContextConfigurationVersion version =
-            sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
+        ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
 
         sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
@@ -61,8 +60,9 @@ public class ContextConfigurationUpgraderTest {
 
         XMLUnit.setIgnoreWhitespace(true);
         new XMLTestCase() {
-        }.assertXMLEqual(new FileReader(testFileRootPath + "valid-v2.1/"
-            + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
+        }.assertXMLEqual(
+            new FileReader(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME),
+            new FileReader(tmpTargetConfig));
     }
 
     /**

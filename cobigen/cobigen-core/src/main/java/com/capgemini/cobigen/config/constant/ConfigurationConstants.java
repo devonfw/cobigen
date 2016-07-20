@@ -15,7 +15,9 @@ public class ConfigurationConstants {
     /** Templates configuration file name */
     public static final String TEMPLATES_CONFIG_FILENAME = "templates.xml";
 
-    /** Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification) */
+    /**
+     * Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification)
+     */
     public static final String JAXB_PACKAGE_PREFIX = "com.capgemini.cobigen.config.entity.io";
 
 }

@@ -69,8 +69,8 @@ public class ContextVariableResolver {
             MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                 try {
-                    Map<String, String> resolvedVariables = triggerInterpreter.getMatcher()
-                        .resolveVariables(matcherTo, getVariableAssignments(m));
+                    Map<String, String> resolvedVariables =
+                        triggerInterpreter.getMatcher().resolveVariables(matcherTo, getVariableAssignments(m));
                     InputValidator.validateResolvedVariables(resolvedVariables);
                     variables.putAll(resolvedVariables);
                 } catch (InvalidConfigurationException e) {

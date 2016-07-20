@@ -32,6 +32,5 @@ public interface IModelBuilder {
      *             if one of the {@link VariableAssignment}s could not be resolved
      * @author mbrunnli (14.04.2014)
      */
-    public Map<String, Object> createModel(ITriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException;
+    public Map<String, Object> createModel(ITriggerInterpreter triggerInterpreter) throws InvalidConfigurationException;
 }

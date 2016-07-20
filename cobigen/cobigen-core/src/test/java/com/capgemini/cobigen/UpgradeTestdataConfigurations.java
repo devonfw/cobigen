@@ -41,15 +41,15 @@ public class UpgradeTestdataConfigurations {
             } else if (current.getName().equals("context.xml")) {
                 if (!current.toPath().getParent().getFileName().toString().startsWith("faulty")) {
                     LOG.debug("Upgrading ContextConfiguration: {}", current.toPath());
-                    new ContextConfigurationUpgrader().upgradeConfigurationToLatestVersion(current.toPath()
-                        .getParent(), true);
+                    new ContextConfigurationUpgrader().upgradeConfigurationToLatestVersion(current.toPath().getParent(),
+                        true);
                     current.toPath().resolveSibling("context.bak.xml").toFile().delete();
                 }
             } else if (current.getName().equals("templates.xml")) {
                 if (!current.toPath().getParent().getFileName().toString().startsWith("faulty")) {
                     LOG.debug("Upgrading TemplateConfiguration: {}", current.toPath());
-                    new TemplateConfigurationUpgrader().upgradeConfigurationToLatestVersion(current.toPath()
-                        .getParent(), true);
+                    new TemplateConfigurationUpgrader()
+                        .upgradeConfigurationToLatestVersion(current.toPath().getParent(), true);
                     current.toPath().resolveSibling("templates.bak.xml").toFile().delete();
                 }
             }

@@ -45,9 +45,8 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
                 getClass().getResourceAsStream("/dozer/config/upgrade/contextConfiguration-v2.0-v2.1.xml")) {
                 mapper.addMapping(stream);
             }
-            com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration upgradedConfig =
-                mapper.map(previousConfigurationRootNode,
-                    com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration.class);
+            com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration upgradedConfig = mapper.map(
+                previousConfigurationRootNode, com.capgemini.cobigen.config.entity.io.v2_1.ContextConfiguration.class);
             upgradedConfig.setVersion(new BigDecimal("2.1"));
 
             result.setResultConfigurationJaxbRootNode(upgradedConfig);

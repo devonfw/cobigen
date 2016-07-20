@@ -57,15 +57,14 @@ public class Trigger {
      *            all declared {@link ContainerMatcher}s for this trigger
      * @author trippl (05.04.2013)
      */
-    public Trigger(String id, String type, String templateFolder, Charset inputCharset,
-        List<Matcher> matcher, List<ContainerMatcher> containerMatchers) {
+    public Trigger(String id, String type, String templateFolder, Charset inputCharset, List<Matcher> matcher,
+        List<ContainerMatcher> containerMatchers) {
         this.id = id;
         this.type = type;
         this.templateFolder = templateFolder;
         this.inputCharset = inputCharset;
         matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
-        this.containerMatchers =
-            containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
+        this.containerMatchers = containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
     }
 
     /**

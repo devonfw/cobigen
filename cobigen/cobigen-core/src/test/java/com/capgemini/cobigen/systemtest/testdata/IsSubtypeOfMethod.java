@@ -52,8 +52,7 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
         }
         try {
             boolean isSubtypeOf =
-                isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(),
-                    ((SimpleScalar) args.get(1)).getAsString());
+                isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(), ((SimpleScalar) args.get(1)).getAsString());
             if (isSubtypeOf) {
                 return TemplateBooleanModel.TRUE;
             } else {
