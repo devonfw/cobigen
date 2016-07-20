@@ -47,10 +47,6 @@ public class XmlMatcher implements IMatcher {
         REGEX
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public boolean matches(MatcherTo matcher) {
         try {
@@ -71,13 +67,9 @@ public class XmlMatcher implements IMatcher {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException {
 
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());

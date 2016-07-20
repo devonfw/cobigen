@@ -20,10 +20,6 @@ import com.capgemini.cobigen.extension.IInputReader;
  */
 public class XmlInputReader implements IInputReader {
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (10.11.2014)
-     */
     @Override
     public boolean isValidInput(Object input) {
         if (input instanceof Document) {
@@ -34,10 +30,6 @@ public class XmlInputReader implements IInputReader {
 
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (10.11.2014)
-     */
     @Override
     public Map<String, Object> createModel(Object input) {
         if (isValidInput(input)) {
@@ -53,7 +45,7 @@ public class XmlInputReader implements IInputReader {
     }
 
     /**
-     * {@inheritDoc}<br>
+     * {@inheritDoc}.<br>
      * <br>
      * Since the {@link XmlInputReader} does not support multiple input objects it always returns
      * <code>false</code>.
