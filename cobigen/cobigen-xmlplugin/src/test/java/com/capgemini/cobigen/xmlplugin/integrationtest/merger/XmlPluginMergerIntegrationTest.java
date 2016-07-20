@@ -57,8 +57,7 @@ public class XmlPluginMergerIntegrationTest {
     @Before
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
-        patchPreferingMerger =
-            new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE);
+        patchPreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE);
         // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
         basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE);
         ((XmlMergerDelegate) basePreferingMerger).setValidation(false);
@@ -97,16 +96,10 @@ public class XmlPluginMergerIntegrationTest {
         String patchString = readFile(patchPath, charset);
         String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
 
-        Assert
-            .assertTrue(
-                "Merged document does not contain schema locations defined in base.",
-                mergedDoc
-                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
-        Assert
-            .assertTrue(
-                "Merged document does not contain schema locations defined in patch.",
-                mergedDoc
-                    .contains("http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+        Assert.assertTrue("Merged document does not contain schema locations defined in base.", mergedDoc.contains(
+            "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+        Assert.assertTrue("Merged document does not contain schema locations defined in patch.", mergedDoc.contains(
+            "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
     }
 
     /**
@@ -125,12 +118,9 @@ public class XmlPluginMergerIntegrationTest {
         String patchString = readFile(patchPath, charset);
         String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
 
-        Assert
-            .assertFalse(
-                "Merge duplicates schema locations.",
-                mergedDoc
-                    .contains("http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
-                        + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+        Assert.assertFalse("Merge duplicates schema locations.", mergedDoc.contains(
+            "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+                + "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
     }
 
     /**
@@ -183,8 +173,8 @@ public class XmlPluginMergerIntegrationTest {
         // honest I can't tell why but the document remains valid
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("ui:composition").getLength());
         Assert.assertEquals(4, mergeDoc.getElementsByTagName("ui:define").getLength());
-        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(1))
-            .getElementsByTagName("title").getLength());
+        Assert.assertEquals(1,
+            ((Element) mergeDoc.getElementsByTagName("ui:define").item(1)).getElementsByTagName("title").getLength());
         Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(0))
             .getElementsByTagName("ui:include").getLength());
         Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(2))
@@ -230,8 +220,8 @@ public class XmlPluginMergerIntegrationTest {
 
         Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("div").getLength());
         Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").getLength());
-        Assert.assertEquals(7, ((Element) mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable")
-            .item(0)).getElementsByTagName("h:column").getLength());
+        Assert.assertEquals(7, ((Element) mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").item(0))
+            .getElementsByTagName("h:column").getLength());
     }
 
     /**
@@ -306,8 +296,7 @@ public class XmlPluginMergerIntegrationTest {
         String mergedDoc = patchPreferingMerger.merge(baseFile, patchString, charset);
         assertEquals("Not the expected number of dependencies elements", 1,
             mergedDoc.split("<dependencies").length - 1);
-        assertEquals("Not the expected number of dependency elements", 4,
-            mergedDoc.split("<dependency").length - 1);
+        assertEquals("Not the expected number of dependency elements", 4, mergedDoc.split("<dependency").length - 1);
     }
 
     // utils
