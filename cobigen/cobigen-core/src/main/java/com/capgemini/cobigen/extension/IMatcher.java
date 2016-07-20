@@ -39,6 +39,6 @@ public interface IMatcher {
      *             {@link IMatcher} instance
      * @author mbrunnli (08.04.2014)
      */
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException;
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException;
 }

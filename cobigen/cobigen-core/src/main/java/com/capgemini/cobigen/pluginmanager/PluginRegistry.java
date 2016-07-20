@@ -22,14 +22,14 @@ public class PluginRegistry {
     /**
      * Currently registered {@link IMerger}s mapped by their type
      */
-    private static Map<String, IMerger> registeredMerger = Collections.synchronizedMap(Maps
-        .<String, IMerger> newHashMap());
+    private static Map<String, IMerger> registeredMerger =
+        Collections.synchronizedMap(Maps.<String, IMerger> newHashMap());
 
     /**
      * Currently registered {@link ITriggerInterpreter}s mapped by their type
      */
-    private static Map<String, ITriggerInterpreter> registeredTriggerInterpreter = Collections
-        .synchronizedMap(Maps.<String, ITriggerInterpreter> newHashMap());
+    private static Map<String, ITriggerInterpreter> registeredTriggerInterpreter =
+        Collections.synchronizedMap(Maps.<String, ITriggerInterpreter> newHashMap());
 
     /**
      * Assigning logger to PluginRegistry
@@ -85,8 +85,7 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass()
-            .getCanonicalName());
+        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass().getCanonicalName());
     }
 
     /**

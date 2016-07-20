@@ -58,8 +58,7 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -71,10 +70,9 @@ public class TemplateScanTest extends AbstractApiTest {
         target.generate(input, targetTemplate, false);
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
-            + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")
-            .exists());
+        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java").exists());
     }
 
     /**
@@ -116,8 +114,7 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -128,9 +125,9 @@ public class TemplateScanTest extends AbstractApiTest {
         target.generate(input, targetTemplate, false);
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
-            + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
+        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
     }
 
     /**
@@ -151,8 +148,7 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -163,9 +159,9 @@ public class TemplateScanTest extends AbstractApiTest {
         target.generate(input, targetTemplate, false);
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR
-            + "src" + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java").exists());
+        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java").exists());
     }
 
     /**
@@ -209,8 +205,7 @@ public class TemplateScanTest extends AbstractApiTest {
         // Map<String, Object> methodMap = new HashMap<>();
         // when(inputReader.getTemplateMethods(any())).thenReturn(methodMap);
 
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))))).thenReturn(true);
 
         // Simulate variable resolving of any plug-in
         HashMap<String, String> variables = new HashMap<>(3);
@@ -218,14 +213,12 @@ public class TemplateScanTest extends AbstractApiTest {
         variables.put("component", "comp1");
         variables.put("detail", null);
 
-        when(
-            matcher.resolveVariables(
-                argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
-                argThat(hasItemsInList(
-                    //
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-            .thenReturn(variables);
+        when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
+            argThat(hasItemsInList(
+                //
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
+                    .thenReturn(variables);
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 

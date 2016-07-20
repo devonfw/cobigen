@@ -60,8 +60,7 @@ public class TemplateMethodsTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
@@ -123,11 +122,11 @@ public class TemplateMethodsTest extends AbstractApiTest {
                     return "child2";
                 }
             };
-            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-                Lists.newArrayList(firstChildResource, secondChildResource));
+            when(inputReader.getInputObjects(any(), any(Charset.class)))
+                .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
         } else {
-            when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(
-                Lists.newArrayList(firstChildResource));
+            when(inputReader.getInputObjects(any(), any(Charset.class)))
+                .thenReturn(Lists.newArrayList(firstChildResource));
         }
 
         // simulate return of method map
@@ -135,21 +134,18 @@ public class TemplateMethodsTest extends AbstractApiTest {
         methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(this.getClass().getClassLoader()));
         when(inputReader.getTemplateMethods(any())).thenReturn(methodMap);
 
-        when(
-            matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY,
-                sameInstance(firstChildResource))))).thenReturn(containerChildMatchesTrigger);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
-        when(
-            matcher.resolveVariables(
-                argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
-                argThat(hasItemsInList(
-                    //
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-                    new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-            .thenReturn(
-                ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
-                    .put("entityName", "Test").build());
+        when(matcher.resolveVariables(
+            argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+            argThat(hasItemsInList(
+                //
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
+                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
+                    .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.capgemini")
+                        .put("entityName", "Test").build());
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 

@@ -26,8 +26,7 @@ public class ClasspathScanner {
      */
     public static void scanClasspathAndRegisterPlugins() {
 
-        Reflections reflections =
-            new Reflections(new ConfigurationBuilder().addScanners(new SubTypesScanner()));
+        Reflections reflections = new Reflections(new ConfigurationBuilder().addScanners(new SubTypesScanner()));
         Set<Class<? extends IGeneratorPluginActivator>> plugins =
             reflections.getSubTypesOf(IGeneratorPluginActivator.class);
 

@@ -3,13 +3,13 @@ package com.capgemini.cobigen.unittest.config.reader;
 import java.io.File;
 import java.nio.file.Paths;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+
+import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link ContextConfigurationReader}

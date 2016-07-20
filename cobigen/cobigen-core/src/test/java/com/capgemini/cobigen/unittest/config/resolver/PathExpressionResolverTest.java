@@ -40,8 +40,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionCapFirst() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?cap_first} asdf")).isEqualTo(
-            "asdfPraefix Value Suffix asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?cap_first} asdf"))
+            .isEqualTo("asdfPraefix Value Suffix asdf");
     }
 
     /**
@@ -49,8 +49,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionUncapFirst() {
-        assertThat(target.evaluateExpressions("asdf${variables.v2?uncap_first} asdf")).isEqualTo(
-            "asdfpraefix Value Suffix asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v2?uncap_first} asdf"))
+            .isEqualTo("asdfpraefix Value Suffix asdf");
     }
 
     /**
@@ -58,8 +58,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionLowerCase() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?lower_case} asdf")).isEqualTo(
-            "asdfpraefix value suffix asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?lower_case} asdf"))
+            .isEqualTo("asdfpraefix value suffix asdf");
     }
 
     /**
@@ -67,8 +67,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionUpperCase() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?upper_case} asdf")).isEqualTo(
-            "asdfPRAEFIX VALUE SUFFIX asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?upper_case} asdf"))
+            .isEqualTo("asdfPRAEFIX VALUE SUFFIX asdf");
     }
 
     /**
@@ -85,8 +85,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionReplaceAll() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?replace('x', 'XXX')} asdf")).isEqualTo(
-            "asdfpraefiXXX Value SuffiXXX asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?replace('x', 'XXX')} asdf"))
+            .isEqualTo("asdfpraefiXXX Value SuffiXXX asdf");
     }
 
     /**
@@ -94,8 +94,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionRemoveSuffix() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?removeSuffix('Suffix')} asdf")).isEqualTo(
-            "asdfpraefix Value  asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?removeSuffix('Suffix')} asdf"))
+            .isEqualTo("asdfpraefix Value  asdf");
     }
 
     /**
@@ -103,8 +103,8 @@ public class PathExpressionResolverTest {
      */
     @Test
     public void testEvaluateExpressionRemovePraefix() {
-        assertThat(target.evaluateExpressions("asdf${variables.v1?removePrefix('praefix')} asdf")).isEqualTo(
-            "asdf Value Suffix asdf");
+        assertThat(target.evaluateExpressions("asdf${variables.v1?removePrefix('praefix')} asdf"))
+            .isEqualTo("asdf Value Suffix asdf");
     }
 
     /**

@@ -125,8 +125,8 @@ public class VariableAssignmentTo {
      */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[type='" + getType() + "'/varName='" + getVarName()
-            + "'/value='" + getValue() + "']";
+        return getClass().getSimpleName() + "[type='" + getType() + "'/varName='" + getVarName() + "'/value='"
+            + getValue() + "']";
     }
 
 }

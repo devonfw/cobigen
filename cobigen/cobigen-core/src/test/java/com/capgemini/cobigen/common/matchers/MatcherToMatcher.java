@@ -49,8 +49,8 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
      */
     @Override
     public void describeTo(Description description) {
-        description.appendText(MatcherTo.class.getSimpleName() + "(type='" + type + "', value='" + value
-            + "', target='" + target + "')");
+        description.appendText(
+            MatcherTo.class.getSimpleName() + "(type='" + type + "', value='" + value + "', target='" + target + "')");
     }
 
     /**
