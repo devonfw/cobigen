@@ -43,8 +43,8 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
      *
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
-        List<TemplateTo> templatesToBeGenerated, List<IType> inputTypes) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
+        List<IType> inputTypes) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.inputTypes = inputTypes;
@@ -61,8 +61,8 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
      *            selected {@link IPackageFragment} for the generation
      * @author mbrunnli (04.06.2014)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
-        List<TemplateTo> templatesToBeGenerated, IPackageFragment container) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
+        IPackageFragment container) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.container = container;
@@ -84,8 +84,7 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
         if (proj != null) {
             monitor.beginTask("Generating files...", templatesToBeGenerated.size());
             for (TemplateTo temp : templatesToBeGenerated) {
-                if (temp.getMergeStrategy() == null
-                    || temp.getMergeStrategy().equals(ResourceConstants.OVERRIDE)) {
+                if (temp.getMergeStrategy() == null || temp.getMergeStrategy().equals(ResourceConstants.OVERRIDE)) {
                     cobigenWrapper.generate(temp, true);
                 } else {
                     cobigenWrapper.generate(temp, false);

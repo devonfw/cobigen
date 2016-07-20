@@ -106,8 +106,7 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
     private Object[] getChildren(Object element) {
         if (element instanceof ComparableIncrement) {
             ComparableIncrement[] children =
-                ((ComparableIncrement) element).getDependentComparableIncrements().toArray(
-                    new ComparableIncrement[0]);
+                ((ComparableIncrement) element).getDependentComparableIncrements().toArray(new ComparableIncrement[0]);
             return children;
         }
         return new Object[0];

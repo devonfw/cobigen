@@ -73,8 +73,7 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
                 monitor.worked(1);
             }
             LOG.info("Determine if input is container...");
-            resultSingleNonContainerInput =
-                inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));
+            resultSingleNonContainerInput = inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));
             monitor.done();
         } catch (RuntimeException e) {
             occurredException = e;

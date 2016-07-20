@@ -43,8 +43,8 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (06.12.2014)
      */
-    public XmlGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public XmlGeneratorWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
     }
 
@@ -79,8 +79,7 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
                 } catch (CoreException e) {
                     throw new InvalidInputException("An eclipse internal exception occured! ", e);
                 } catch (IOException e) {
-                    throw new InvalidInputException("The file " + ((IFile) tmp).getName()
-                        + " could not be read!", e);
+                    throw new InvalidInputException("The file " + ((IFile) tmp).getName() + " could not be read!", e);
                 } catch (ParserConfigurationException e) {
                     throw new InvalidInputException("The file " + ((IFile) tmp).getName()
                         + " could not be parsed, because of an internal configuration error!", e);
@@ -95,10 +94,9 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
             }
 
             if (uniqueSourceSelected && selection.size() > 1) {
-                throw new InvalidInputException(
-                    "You selected at least one input in a mass-selection,"
-                        + " which type is currently not supported for batch processing. "
-                        + "Please just select multiple inputs only if batch processing is supported for all inputs.");
+                throw new InvalidInputException("You selected at least one input in a mass-selection,"
+                    + " which type is currently not supported for batch processing. "
+                    + "Please just select multiple inputs only if batch processing is supported for all inputs.");
             }
         }
         return firstTriggers != null && !firstTriggers.isEmpty();
