@@ -140,9 +140,8 @@ public class GenerateMojo extends AbstractMojo {
                     execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
                 if (dependencies != null && !dependencies.isEmpty()) {
                     Dependency dependency = dependencies.iterator().next();
-                    Artifact templatesArtifact =
-                        execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                            .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
+                    Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
+                        .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
                     cobiGen = new CobiGen(templatesArtifact.getFile().toURI());
                 } else {
                     throw new MojoFailureException(
@@ -150,8 +149,7 @@ public class GenerateMojo extends AbstractMojo {
                             + " or inject an archive as plugin dependency.");
                 }
             }
-            cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-                destinationRoot.getAbsolutePath());
+            cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, destinationRoot.getAbsolutePath());
 
             generateFromIncrements(cobiGen, inputs);
             generateFromTemplates(cobiGen, inputs);
@@ -187,8 +185,7 @@ public class GenerateMojo extends AbstractMojo {
                 List<Path> sourcePathsObserved = Lists.newLinkedList();
                 for (String sourceRoot : sourceRoots) {
                     String packagePath =
-                        inputPackage.replaceAll("\\.",
-                            Matcher.quoteReplacement(System.getProperty("file.separator")));
+                        inputPackage.replaceAll("\\.", Matcher.quoteReplacement(System.getProperty("file.separator")));
                     Path sourcePath = Paths.get(sourceRoot, packagePath);
                     getLog().debug("Checking source path " + sourcePath);
                     if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
@@ -201,10 +198,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
 
                 if (!sourceFound) {
-                    throw new MojoFailureException(
-                        "Currently, packages as inputs are only supported "
-                            + "if defined as sources in the current project to be build. Having searched for sources at paths: "
-                            + sourcePathsObserved);
+                    throw new MojoFailureException("Currently, packages as inputs are only supported "
+                        + "if defined as sources in the current project to be build. Having searched for sources at paths: "
+                        + sourcePathsObserved);
                 }
             }
         }
@@ -242,14 +238,11 @@ public class GenerateMojo extends AbstractMojo {
                             String errorMessage;
                             if (input instanceof PackageFolder) {
                                 errorMessage =
-                                    "An exception occured while generating increment with id '"
-                                        + increment.getId() + "' for input package/folder '"
-                                        + ((PackageFolder) input).getLocation() + "'";
+                                    "An exception occured while generating increment with id '" + increment.getId()
+                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
                             } else {
-                                errorMessage =
-                                    "An exception occured while generating increment with id '"
-                                        + increment.getId() + "' for input file '" + ((File) input).toURI()
-                                        + "'";
+                                errorMessage = "An exception occured while generating increment with id '"
+                                    + increment.getId() + "' for input file '" + ((File) input).toURI() + "'";
                             }
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
@@ -260,9 +253,9 @@ public class GenerateMojo extends AbstractMojo {
                 // error handling for increments not found
                 if (!configuredIncrements.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                            + "' not matched for input '" + ((PackageFolder) input).getLocation()
-                            + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException(
+                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
+                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
                     } else {
                         throw new MojoFailureException("Increments with ids '" + configuredIncrements
                             + "' not matched for input '" + input + "' by provided CobiGen configuration.");
@@ -295,14 +288,11 @@ public class GenerateMojo extends AbstractMojo {
                             String errorMessage;
                             if (input instanceof PackageFolder) {
                                 errorMessage =
-                                    "An exception occured while generating template with id '"
-                                        + template.getId() + "' for input package/folder '"
-                                        + ((PackageFolder) input).getLocation() + "'";
+                                    "An exception occured while generating template with id '" + template.getId()
+                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
                             } else {
-                                errorMessage =
-                                    "An exception occured while generating template with id '"
-                                        + template.getId() + "' for input file '" + ((File) input).toURI()
-                                        + "'";
+                                errorMessage = "An exception occured while generating template with id '"
+                                    + template.getId() + "' for input file '" + ((File) input).toURI() + "'";
                             }
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
@@ -315,9 +305,9 @@ public class GenerateMojo extends AbstractMojo {
                 // error handling for increments not found
                 if (!configuredTemplates.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                            + "' not matched for package folder '" + ((PackageFolder) input).getLocation()
-                            + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException(
+                            "Templates with ids '" + configuredTemplates + "' not matched for package folder '"
+                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
                     } else {
                         throw new MojoFailureException("Templates with ids '" + configuredTemplates
                             + "' not matched for input '" + input + "' by provided CobiGen configuration.");
