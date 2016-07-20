@@ -40,8 +40,8 @@ public abstract class AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (21.03.2014)
      */
-    public AbstractCobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public AbstractCobiGenWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         cobiGen = initializeGenerator();
     }
 
@@ -59,8 +59,8 @@ public abstract class AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (05.02.2013)
      */
-    private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    private CobiGen initializeGenerator()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
 
         ResourcesPluginUtil.refreshConfigurationProject();
         IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
@@ -77,8 +77,7 @@ public abstract class AbstractCobiGenWrapper {
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation()
-            .toString());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation().toString());
     }
 
     /**
