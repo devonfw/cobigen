@@ -86,15 +86,15 @@ public class JavaInputConverter {
                         throw new GeneratorCreationException(
                             "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     }
+                } catch (MergeException e) {
+                    throw new GeneratorCreationException("Could not parse Java base file: "
+                        + ((ICompilationUnit) elem).getElementName() + ":\n" + e.getMessage(), e);
                 } catch (JavaModelException e) {
                     LOG.error("An eclipse internal exception occurred while accessing the java model.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 } catch (CoreException e) {
                     LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
-                } catch (MergeException e) {
-                    throw new MergeException("JAVA SYNTAX ERROR\n" + "Base File: "
-                        + ((ICompilationUnit) elem).getElementName() + '\n' + e.getMessage());
                 }
             }
         }
