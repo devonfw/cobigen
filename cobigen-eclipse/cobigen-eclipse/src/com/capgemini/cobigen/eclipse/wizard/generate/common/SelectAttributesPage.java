@@ -61,7 +61,8 @@ public class SelectAttributesPage extends WizardPage {
         Label label = new Label(container, SWT.WRAP);
         label.setText("Every attribute selected will be displayed in the UI:");
         // label
-        // .setText("Every attribute selected will be displayed as a column in the overview or search results table:");
+        // .setText("Every attribute selected will be displayed as a column in the overview or search results
+        // table:");
 
         tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
         tableAttributes.setContentProvider(new SelectAttributesContentProvider());
@@ -75,7 +76,8 @@ public class SelectAttributesPage extends WizardPage {
 
         // label = new Label(container, SWT.WRAP);
         // label
-        // .setText("Every attribute selected will be displayed in the detail, creation or modification dialog:");
+        // .setText("Every attribute selected will be displayed in the detail, creation or modification
+        // dialog:");
         //
         // CheckboxTableViewer detailAttributes =
         // CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
