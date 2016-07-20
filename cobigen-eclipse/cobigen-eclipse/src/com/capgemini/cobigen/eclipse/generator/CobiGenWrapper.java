@@ -78,8 +78,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public CobiGenWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
     }
 
@@ -97,8 +97,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public CobiGenWrapper(List<Object> inputs)
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
         setInputs(inputs);
     }
@@ -145,8 +145,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 dialog.run(true, false, job);
             } catch (InvocationTargetException e) {
                 LOG.error("An internal error occured while invoking input analyzer job.", e);
-                throw new CobiGenEclipseRuntimeException(
-                    "An internal error occured while invoking input analyzer job", e);
+                throw new CobiGenEclipseRuntimeException("An internal error occured while invoking input analyzer job",
+                    e);
             } catch (InterruptedException e) {
                 LOG.warn("The working thread doing the input analyzer job has been interrupted.", e);
                 throw new CobiGenEclipseRuntimeException(
@@ -183,13 +183,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if there are some problems while merging
      * @author mbrunnli (14.02.2013)
      */
-    public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException,
-        MergeException {
+    public void generate(TemplateTo template, boolean forceOverride)
+        throws IOException, TemplateException, MergeException {
 
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
-            Map<String, Object> model =
-                cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
+            Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
             cobiGen.generate(inputs.get(0), template, model, forceOverride);
         } else {
@@ -238,15 +237,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             // convert to comparable increments
             for (IncrementTo increment : matchingIncrements) {
-                result.add(new ComparableIncrement(increment.getId(), increment.getDescription(), increment
-                    .getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
+                result.add(new ComparableIncrement(increment.getId(), increment.getDescription(),
+                    increment.getTriggerId(), increment.getTemplates(), increment.getDependentIncrements()));
             }
         }
 
         // add "all" increment, which should include all possible templates
-        ComparableIncrement all =
-            new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-                Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
+            Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -308,8 +306,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             for (IncrementTo increment : getAllIncrements()) {
                 if (consideredIncrements.contains(increment)) {
                     for (TemplateTo tmp : increment.getTemplates()) {
-                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
-                            PathUtil.getProjectDependendFilePath(filePath))) {
+                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
+                            .equals(PathUtil.getProjectDependendFilePath(filePath))) {
                             templates.add(tmp);
                         }
                     }
@@ -317,8 +315,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
         } else {
             for (TemplateTo tmp : getAllTemplates()) {
-                if (tmp.resolveDestinationPath(getCurrentRepresentingInput()).equals(
-                    PathUtil.getProjectDependendFilePath(filePath))) {
+                if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
+                    .equals(PathUtil.getProjectDependendFilePath(filePath))) {
                     templates.add(tmp);
                 }
             }
@@ -339,8 +337,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
-                mergeableFiles.add(targetProjet.getFile(t
-                    .resolveDestinationPath(getCurrentRepresentingInput())));
+                mergeableFiles.add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
             }
         }
         return mergeableFiles;
@@ -439,8 +436,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         if (initialized) {
             return cobiGen.getMatchingTriggerIds(loadClass);
         } else {
-            LOG.debug("Generator is not initialized. Could not get matching triggers for "
-                + loadClass.toString());
+            LOG.debug("Generator is not initialized. Could not get matching triggers for " + loadClass.toString());
             return null;
         }
     }

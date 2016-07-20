@@ -85,8 +85,7 @@ public class Activator extends AbstractUIPlugin {
                     if (configurationProjectListenerStarted) {
                         return;
                     }
-                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
-                        configurationProjectListener,
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(configurationProjectListener,
                         IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
                             | IResourceChangeEvent.POST_CHANGE);
                     configurationProjectListenerStarted = true;

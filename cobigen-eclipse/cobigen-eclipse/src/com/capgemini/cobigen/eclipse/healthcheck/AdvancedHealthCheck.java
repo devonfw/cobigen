@@ -69,8 +69,7 @@ public class AdvancedHealthCheck {
                         isAccessible.add(expectedTemplateFolder);
 
                         TemplatesConfigurationVersion resolvedVersion =
-                            templateConfigurationUpgrader
-                                .resolveLatestCompatibleSchemaVersion(templateFolder);
+                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(templateFolder);
                         if (resolvedVersion != null) {
                             if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
                                 upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
@@ -84,18 +83,15 @@ public class AdvancedHealthCheck {
 
             // 3. Show current status to the user
             AdvancedHealthCheckDialog advancedHealthCheckDialog =
-                new AdvancedHealthCheckDialog(expectedTemplatesConfigurations, hasConfiguration,
-                    isAccessible, upgradeableConfigurations, upToDateConfigurations);
+                new AdvancedHealthCheckDialog(expectedTemplatesConfigurations, hasConfiguration, isAccessible,
+                    upgradeableConfigurations, upToDateConfigurations);
             advancedHealthCheckDialog.setBlockOnOpen(false);
             advancedHealthCheckDialog.open();
 
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog(COMMON_DIALOG_TITLE,
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
-            LOG.error(
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
+                "An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
+            LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
         }
     }
 }

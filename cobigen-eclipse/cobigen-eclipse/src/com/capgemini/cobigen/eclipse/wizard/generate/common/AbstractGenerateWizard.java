@@ -144,13 +144,9 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
         if (!diff.isEmpty()) {
             LOG.info("Opening dialog for user confirmation... waiting for user interaction.");
-            MessageDialog dialog =
-                new MessageDialog(
-                    getShell(),
-                    "Warning!",
-                    null,
-                    "You have selected resources that are already existent and will be overwritten when proceeding.\nDo you really want to replace the existing files by newly generated ones?",
-                    MessageDialog.WARNING, new String[] { "Yes", "No" }, 1);
+            MessageDialog dialog = new MessageDialog(getShell(), "Warning!", null,
+                "You have selected resources that are already existent and will be overwritten when proceeding.\nDo you really want to replace the existing files by newly generated ones?",
+                MessageDialog.WARNING, new String[] { "Yes", "No" }, 1);
             int result = dialog.open();
             LOG.info("Got user input. Continue processing...");
             if (result == 1 || result == SWT.DEFAULT) {
