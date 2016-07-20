@@ -70,11 +70,6 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
         this.templatesToBeGenerated = templatesToBeGenerated;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author trippl (22.04.2013) / mbrunnli (06.08.2014)
-     */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

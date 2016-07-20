@@ -50,10 +50,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
         this.cobiGenWrapper = cobiGenWrapper;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jan 10, 2016)
-     */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

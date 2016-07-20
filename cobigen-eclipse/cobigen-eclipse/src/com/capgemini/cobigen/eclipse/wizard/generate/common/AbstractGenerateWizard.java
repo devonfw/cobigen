@@ -66,11 +66,6 @@ public abstract class AbstractGenerateWizard extends Wizard {
         LOG.info("AbstractGenerateWizard initialized");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (15.02.2013)
-     */
     @Override
     public boolean performFinish() {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

@@ -79,11 +79,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         this.batch = batch;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public String getText(Object element) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -116,11 +111,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return result.isEmpty() ? "UNDEFINED" : result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Image getImage(Object element) {
 
@@ -138,22 +128,12 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Color getForeground(Object element) {
 
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Color getBackground(Object element) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

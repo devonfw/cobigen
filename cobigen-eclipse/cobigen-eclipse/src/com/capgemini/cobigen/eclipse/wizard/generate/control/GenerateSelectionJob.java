@@ -34,11 +34,6 @@ public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
         super(cobigenWrapper, templatesToBeGenerated);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
         LOG.info("Perform Generation...");

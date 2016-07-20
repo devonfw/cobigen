@@ -83,11 +83,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         this.batch = batch;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (19.02.2013)
-     */
     @Override
     public void checkStateChanged(CheckStateChangedEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -356,11 +351,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (28.04.2013)
-     */
     @Override
     public void widgetSelected(SelectionEvent e) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -369,11 +359,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (28.04.2013)
-     */
     @Override
     public void widgetDefaultSelected(SelectionEvent e) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

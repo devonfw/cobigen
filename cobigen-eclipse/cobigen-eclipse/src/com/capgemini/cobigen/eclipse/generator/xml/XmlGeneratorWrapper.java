@@ -48,18 +48,11 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.12.2014)
-     */
     @Override
     public void adaptModel(Map<String, Object> model) {
         // nothing to do
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isValidInput(IStructuredSelection selection) throws InvalidInputException {
 
