@@ -121,8 +121,7 @@ public class CustomModelWriterTest {
      * @throws MergeException
      */
     @Test
-    public void testDoNotWriteDefaultValueIdentifierOfAnnotations()
-        throws FileNotFoundException, MergeException {
+    public void testDoNotWriteDefaultValueIdentifierOfAnnotations() throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));

@@ -73,15 +73,13 @@ public class JavaMerger implements IMerger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
 
-        ModifyableJavaClass baseClass =
-            (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new InputStreamReader(new FileInputStream(
-                base), targetCharset));
+        ModifyableJavaClass baseClass = (ModifyableJavaClass) JavaParserUtil
+            .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
         ModifyableJavaClass patchClass =
             (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
 
         if (baseClass == null) {
-            throw new MergeException("The base file " + base.getAbsolutePath()
-                + " does not declare a valid JavaClass");
+            throw new MergeException("The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");
         } else if (patchClass == null) {
             throw new MergeException("The patch does not declare a valid JavaClass");
         }

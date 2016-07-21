@@ -138,8 +138,7 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        Assert.assertEquals("AbstractTestClass",
-            JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
         assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass",
             JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
         assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
@@ -190,8 +189,7 @@ public class ParsedJavaModelBuilderTest {
             Map<String, Object> model = javaInputReader.createModel(o);
             assertNotNull("No model has been created!", model);
             if (RootClass.class.getSimpleName().equals(JavaModelUtil.getName(model))) {
-                List<Map<String, Object>> methodAccessibleFields =
-                    JavaModelUtil.getMethodAccessibleFields(model);
+                List<Map<String, Object>> methodAccessibleFields = JavaModelUtil.getMethodAccessibleFields(model);
                 assertNotNull(methodAccessibleFields);
                 assertEquals(3, methodAccessibleFields.size());
 
@@ -220,9 +218,7 @@ public class ParsedJavaModelBuilderTest {
                 found = true;
             }
         }
-        assertTrue(
-            "Class " + RootClass.class.getName() + "could not be found as child of the package folder.",
-            found);
+        assertTrue("Class " + RootClass.class.getName() + "could not be found as child of the package folder.", found);
     }
 
     /**
@@ -286,11 +282,11 @@ public class ParsedJavaModelBuilderTest {
         // test annotations for attribute, getter, setter, is-method
         assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
         assertTrue(JavaModelUtil.getAnnotations(classField)
             .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
@@ -308,8 +304,7 @@ public class ParsedJavaModelBuilderTest {
      * @throws MergeException
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_inherited()
-        throws FileNotFoundException, MergeException {
+    public void testExtractionOfMethodAccessibleFields_inherited() throws FileNotFoundException, MergeException {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -366,8 +361,7 @@ public class ParsedJavaModelBuilderTest {
 
         // test inherited field of direct superclass named "id"
         System.out.println(model);
-        Map<String, Object> inheritedField =
-            JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
         assertNotNull(inheritedField);
         assertEquals("superSuperString", inheritedField.get(ModelConstant.NAME));
 
@@ -431,11 +425,11 @@ public class ParsedJavaModelBuilderTest {
         // test annotations for attribute, getter, setter, is-method
         assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertTrue(JavaModelUtil.getAnnotations(classField)
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
         // is-method
         assertTrue(JavaModelUtil.getAnnotations(classField)
             .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));

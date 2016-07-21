@@ -49,8 +49,7 @@ public class JavaParserUtil {
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (01.10.2014)
      */
-    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader)
-        throws MergeException {
+    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) throws MergeException {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         classLibraryBuilder.appendClassLoader(classLoader);
         return getFirstJavaClass(classLibraryBuilder, reader);

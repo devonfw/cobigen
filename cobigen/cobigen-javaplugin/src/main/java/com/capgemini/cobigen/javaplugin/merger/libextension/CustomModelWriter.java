@@ -110,8 +110,8 @@ public class CustomModelWriter implements ModelWriter {
         writeAccessibilityModifier(cls.getModifiers());
         writeNonAccessibilityModifiers(cls.getModifiers());
 
-        buffer.write(cls.isEnum() ? "enum " : cls.isInterface() ? "interface "
-            : cls.isAnnotation() ? "@interface " : "class ");
+        buffer.write(
+            cls.isEnum() ? "enum " : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
         buffer.write(cls.getName());
 
         writeTypeParameters(cls);
@@ -146,8 +146,7 @@ public class CustomModelWriter implements ModelWriter {
         buffer.indent();
 
         // fields
-        if (cls.getSuperClass() != null
-            && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
+        if (cls.getSuperClass() != null && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
             Iterator<JavaField> it = cls.getFields().iterator();
             while (it.hasNext()) {
                 JavaField curr = it.next();
@@ -224,8 +223,7 @@ public class CustomModelWriter implements ModelWriter {
         if (field.isEnumConstant()) {
             if (field.getEnumConstantArguments() != null && !field.getEnumConstantArguments().isEmpty()) {
                 buffer.write("( ");
-                for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter
-                    .hasNext();) {
+                for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter.hasNext();) {
                     buffer.write(iter.next().getParameterValue().toString());
                     if (iter.hasNext()) {
                         buffer.write(", ");
