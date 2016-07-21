@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
@@ -16,6 +14,8 @@ import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * This test suite includes all tests, which focus on the correct model creation including correct extraction
@@ -40,14 +40,11 @@ public class ModelCreationTest extends AbstractIntegrationTest {
     public void testCorrectGenericTypeExtraction() throws Exception {
         CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen
-            .setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
-        Object[] input =
-            new Object[] {
-                this.getClass(),
-                JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                    "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+        Object[] input = new Object[] { this.getClass(),
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
+                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -55,8 +52,7 @@ public class ModelCreationTest extends AbstractIntegrationTest {
             if (template.getId().equals("genericTypes.txt")) {
                 cobiGen.generate(input, template, false);
                 File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                        + "genericTypes.txt");
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("List<String> testField", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;

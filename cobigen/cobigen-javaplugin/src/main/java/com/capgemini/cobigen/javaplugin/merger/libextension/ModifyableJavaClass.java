@@ -293,8 +293,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     @Override
     public String getFullyQualifiedName() {
         return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
-            : getPackage() != null ? (getPackage().getName() + ".") : "")
-            + getName();
+            : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
     }
 
     /** {@inheritDoc} */
@@ -442,46 +441,38 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         for (JavaMethod method : callingClazz.getMethods()) {
             if (!method.isPrivate()) {
                 String signature = method.getDeclarationSignature(false);
-                result.put( signature, method );
+                result.put(signature, method);
             }
         }
 
         JavaClass superclass = callingClazz.getSuperJavaClass();
         if (superclass != null) {
-            Map<String, JavaMethod> superClassMethods =
-                getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
+            Map<String, JavaMethod> superClassMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
             for (Map.Entry<String, JavaMethod> methodEntry : superClassMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
-                    if ( superclass.equals( rootClass ) )
-                    {
+                    if (superclass.equals(rootClass)) {
                         method = methodEntry.getValue();
+                    } else {
+                        method = new JavaMethodDelegate(callingClazz, methodEntry.getValue());
                     }
-                    else
-                    {
-                        method = new JavaMethodDelegate( callingClazz, methodEntry.getValue() );
-                    }
-                    result.put( methodEntry.getKey(), method );
+                    result.put(methodEntry.getKey(), method);
                 }
             }
 
         }
 
         for (JavaClass clazz : callingClazz.getImplementedInterfaces()) {
-            Map<String, JavaMethod> interfaceMethods =
-                getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
+            Map<String, JavaMethod> interfaceMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
             for (Map.Entry<String, JavaMethod> methodEntry : interfaceMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
-                    if ( clazz.equals( rootClass ) )
-                    {
+                    if (clazz.equals(rootClass)) {
                         method = methodEntry.getValue();
+                    } else {
+                        method = new JavaMethodDelegate(callingClazz, methodEntry.getValue());
                     }
-                    else
-                    {
-                        method = new JavaMethodDelegate( callingClazz, methodEntry.getValue() );
-                    }
-                    result.put( methodEntry.getKey(), method );
+                    result.put(methodEntry.getKey(), method);
                 }
             }
 
@@ -524,15 +515,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     /** {@inheritDoc} */
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
-        boolean superclasses) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses) {
         return getMethodsBySignature(name, parameterTypes, superclasses, false);
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
-        boolean superclasses, boolean varArg) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses,
+        boolean varArg) {
         List<JavaMethod> result = new LinkedList<>();
 
         JavaMethod methodInThisClass = getMethod(name, parameterTypes, varArg);
