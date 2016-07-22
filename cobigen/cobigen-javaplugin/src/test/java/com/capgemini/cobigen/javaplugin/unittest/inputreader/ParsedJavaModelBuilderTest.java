@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
@@ -48,12 +46,11 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether parametric attribute types will be extracted correctly to the model
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException, MergeException {
+    public void testCorrectlyExtractedGenericAttributeTypes() throws Exception {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -70,12 +67,11 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException, MergeException {
+    public void testCorrectlyExtractedImplementedTypes() throws Exception {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
 
@@ -104,14 +100,12 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether no {@link NullPointerException} will be thrown if the extended type is in the default
      * package
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author mbrunnli (30.09.2014)
-     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration()
-        throws FileNotFoundException, MergeException {
+    public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration() throws Exception {
 
         File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
 
@@ -125,13 +119,12 @@ public class ParsedJavaModelBuilderTest {
 
     /**
      * Tests whether the inherited type will be correctly extracted and put into the model
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author mbrunnli (30.09.2014)
-     * @throws MergeException
      */
     @Test
-    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException, MergeException {
+    public void testCorrectlyExtractedInheritedType() throws Exception {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -148,12 +141,11 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the type and the canonical type of a field will be extracted correctly
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException, MergeException {
+    public void testCorrectlyResolvedFieldTypes() throws Exception {
 
         File file = new File(testFileRootPath + "Pojo.java");
 
@@ -257,12 +249,11 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the input type's fields are extracted correctly (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException, MergeException {
+    public void testExtractionOfFields() throws Exception {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -298,13 +289,12 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author fkreis (08.05.2015)
-     * @throws MergeException
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_inherited() throws FileNotFoundException, MergeException {
+    public void testExtractionOfMethodAccessibleFields_inherited() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -344,15 +334,13 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author fkreis (08.05.2015)
-     * @throws MergeException
      */
     @Test
     @Ignore(value = "This test case is not successfull due to boundaries of qDox")
-    public void testExtractionOfMethodAccessibleFields_inheritedInherited()
-        throws FileNotFoundException, MergeException {
+    public void testExtractionOfMethodAccessibleFields_inheritedInherited() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -397,13 +385,12 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author fkreis (08.05.2015)
-     * @throws MergeException
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_local() throws FileNotFoundException, MergeException {
+    public void testExtractionOfMethodAccessibleFields_local() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();

@@ -15,6 +15,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * The {@link JavaMerger} merges a patch and the base file of the same class. This merge is a structural merge
@@ -66,10 +67,21 @@ public class JavaMerger implements IMerger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
 
-        ModifyableJavaClass baseClass = (ModifyableJavaClass) JavaParserUtil
-            .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
-        ModifyableJavaClass patchClass =
-            (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
+        ModifyableJavaClass baseClass;
+        try {
+            baseClass = (ModifyableJavaClass) JavaParserUtil
+                .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
+        } catch (ParseException e) {
+            throw new MergeException("Cannot parse base file '" + base.toPath().toString() + ". Error in line: "
+                + e.getLine() + "/column: " + e.getColumn() + ": " + e.getMessage());
+        }
+        ModifyableJavaClass patchClass;
+        try {
+            patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
+        } catch (ParseException e) {
+            throw new MergeException("Cannot parse generated patch. Error in line: " + e.getLine() + "/column: "
+                + e.getColumn() + ": " + e.getMessage());
+        }
 
         if (baseClass == null) {
             throw new MergeException("The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");

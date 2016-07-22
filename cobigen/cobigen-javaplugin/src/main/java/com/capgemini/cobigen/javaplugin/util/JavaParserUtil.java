@@ -2,13 +2,11 @@ package com.capgemini.cobigen.javaplugin.util;
 
 import java.io.Reader;
 
-import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
-import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * The {@link JavaParserUtil} class provides helper functions for generating parsed inputs
@@ -24,12 +22,10 @@ public class JavaParserUtil {
      *
      * @param reader
      *            {@link Reader}s which contents should be parsed
-     * @throws MergeException
-     *             Parser fails
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (19.03.2013)
      */
-    public static JavaClass getFirstJavaClass(Reader... reader) throws MergeException {
+    public static JavaClass getFirstJavaClass(Reader... reader) {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         classLibraryBuilder.appendDefaultClassLoaders();
         return getFirstJavaClass(classLibraryBuilder, reader);
@@ -44,12 +40,10 @@ public class JavaParserUtil {
      *            which should be used for class name resolving
      * @param reader
      *            {@link Reader}s which contents should be parsed
-     * @throws MergeException
-     *             Parser fails
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (01.10.2014)
      */
-    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) throws MergeException {
+    public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
         classLibraryBuilder.appendClassLoader(classLoader);
         return getFirstJavaClass(classLibraryBuilder, reader);
@@ -64,26 +58,19 @@ public class JavaParserUtil {
      *            {@link ClassLibraryBuilder} to build the sources with
      * @param reader
      *            {@link Reader}s which contents should be parsed
-     * @throws MergeException
-     *             Parser fails
      * @return the parsed {@link JavaClass}
      * @author mbrunnli (01.10.2014)
      */
-    private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader)
-        throws MergeException {
+    private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader) {
         JavaSource source = null;
         ModifyableJavaClass targetClass = null;
-        try {
-            for (Reader r : reader) {
-                source = classLibraryBuilder.addSource(r);
-                if (targetClass == null) {
-                    targetClass = (ModifyableJavaClass) source.getClasses().get(0);
-                }
+        for (Reader r : reader) {
+            source = classLibraryBuilder.addSource(r);
+            if (targetClass == null) {
+                targetClass = (ModifyableJavaClass) source.getClasses().get(0);
             }
-            return targetClass;
-        } catch (ParseException e) {
-            throw new MergeException("Line: " + e.getLine() + " Column: " + e.getColumn());
         }
+        return targetClass;
     }
 
     /**
