@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +12,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
@@ -43,12 +41,11 @@ public class JavaInputReaderTest {
     /**
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException, MergeException {
+    public void provideParsingAndReflectionModelFeatures() throws Exception {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass.java");
         Class<?> javaClass = TestClass.class;
@@ -68,12 +65,11 @@ public class JavaInputReaderTest {
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
      * whereas one model does not provide any fields and/or methods
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws FileNotFoundException, MergeException {
+    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws Exception {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass_empty.java");
         Class<?> javaClass = TestClass.class;
@@ -89,13 +85,11 @@ public class JavaInputReaderTest {
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
      * whereas the models are equal and contain boolean values within annotations
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withAnnotations()
-        throws FileNotFoundException, MergeException {
+    public void provideParsingAndReflectionModelFeatures_withAnnotations() throws Exception {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotations.java");
         Class<?> javaClass = TestClassWithAnnotations.class;
@@ -111,13 +105,11 @@ public class JavaInputReaderTest {
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
      * whereas the models are equal and contain recursive annotations
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations()
-        throws FileNotFoundException, MergeException {
+    public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations() throws Exception {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithRecursiveAnnotations.java");
         Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
@@ -133,13 +125,11 @@ public class JavaInputReaderTest {
      * Tests whether both features can be used when providing parsed and reflected inputs for one java class,
      * whereas the models are equal and an annotation contains an object array as property value
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays()
-        throws FileNotFoundException, MergeException {
+    public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays() throws Exception {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Class<?> javaClass = TestClassWithAnnotationsContainingObjectArrays.class;
@@ -174,12 +164,11 @@ public class JavaInputReaderTest {
     /**
      * Test method for {@link JavaInputReader#createModel(Object)}. Checks whether the model includes all
      * field information (especially annotations) if two inputs (.java and .class) are used.
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @throws MergeException
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException, MergeException {
+    public void testExtractionOfFields() throws Exception {
         // create instance
         JavaInputReader reader = new JavaInputReader();
 
