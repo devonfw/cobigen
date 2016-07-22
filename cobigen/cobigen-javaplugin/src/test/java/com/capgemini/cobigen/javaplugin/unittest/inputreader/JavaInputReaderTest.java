@@ -13,6 +13,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
@@ -44,9 +45,10 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures() throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass.java");
         Class<?> javaClass = TestClass.class;
@@ -68,9 +70,10 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures_oneModelEmpty() throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClass_empty.java");
         Class<?> javaClass = TestClass.class;
@@ -88,9 +91,11 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withAnnotations() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures_withAnnotations()
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotations.java");
         Class<?> javaClass = TestClassWithAnnotations.class;
@@ -108,9 +113,11 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations() throws FileNotFoundException {
+    public void provideParsingAndReflectionModelFeatures_withRecursiveAnnotations()
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithRecursiveAnnotations.java");
         Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
@@ -128,10 +135,11 @@ public class JavaInputReaderTest {
      *
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
     public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays()
-        throws FileNotFoundException {
+        throws FileNotFoundException, MergeException {
 
         File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Class<?> javaClass = TestClassWithAnnotationsContainingObjectArrays.class;
@@ -168,9 +176,10 @@ public class JavaInputReaderTest {
      * field information (especially annotations) if two inputs (.java and .class) are used.
      * @throws FileNotFoundException
      *             test fails
+     * @throws MergeException
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws FileNotFoundException, MergeException {
         // create instance
         JavaInputReader reader = new JavaInputReader();
 
