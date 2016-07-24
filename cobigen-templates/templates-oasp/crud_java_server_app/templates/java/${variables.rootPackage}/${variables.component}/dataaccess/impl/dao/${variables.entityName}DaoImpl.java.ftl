@@ -46,6 +46,8 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     <#list pojo.fields as field>
     <#compress>
     <#assign newFieldType=field.type?replace("[^<>,]+Entity","Long","r")>
+	<#if newFieldType?ends_with("Embeddable")><#assign newFieldType=newFieldType?replace("Embeddable","SearchCriteriaTo","r")></#if>
+	<#assign newFieldType=newFieldType?replace("[^<>,]+Embeddable","SearchCriteriaTo","r")>
     <#assign fieldCapName=field.name?cap_first>
     </#compress>
     <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
