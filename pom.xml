@@ -18,6 +18,7 @@
     <module>cobigen</module>
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
+	<module>cobigen-templates</module>
   </modules>
 
   <url>https://github.com/${github.project}</url>

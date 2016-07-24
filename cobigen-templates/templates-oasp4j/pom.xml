@@ -2,8 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
-  <artifactId>cobigen-templates-oasp</artifactId>
+  <artifactId>cobigen-templates-oasp4j</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
   <name>CobiGen OASP Templates</name>
@@ -11,7 +10,7 @@
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-templates-parent</artifactId>
-    <version>1.0.0</version>
+    <version>dev-SNAPSHOT</version>
   </parent>
 
 </project>
