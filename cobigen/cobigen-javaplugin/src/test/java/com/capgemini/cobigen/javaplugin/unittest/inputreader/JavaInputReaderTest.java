@@ -291,16 +291,6 @@ public class JavaInputReaderTest {
         Assert.assertNotNull(pkg);
 
         JavaInputReader input = new JavaInputReader();
-        /*
-         * List<File> list = input.retrieveAllJavaSourceFiles(javaSourceFile, true); assertTrue(list.size() ==
-         * 3); assertTrue((list.get(0).getName().equals("RootClass.java") ||
-         * list.get(0).getName().equals("SuperClass1.java")) &&
-         * list.get(2).getName().equals("SuperClass2.java"));
-         *
-         * list = input.retrieveAllJavaSourceFiles(javaSourceFile, false); assertTrue(list.size() == 2);
-         * assertTrue(list.get(0).getName().equals("RootClass.java") ||
-         * list.get(0).getName().equals("SuperClass1.java"));
-         */
 
         List<Object> list = input.getInputObjectsRecursively(pkg, Charsets.UTF_8);
         assertTrue(list.size() == 3);
