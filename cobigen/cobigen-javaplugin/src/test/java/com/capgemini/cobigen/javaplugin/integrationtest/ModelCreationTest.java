@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
@@ -16,6 +14,8 @@ import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * This test suite includes all tests, which focus on the correct model creation including correct extraction
