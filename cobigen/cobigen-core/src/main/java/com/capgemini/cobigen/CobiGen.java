@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,6 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
@@ -109,7 +109,8 @@ public class CobiGen {
         configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
         contextConfiguration = new ContextConfiguration(configFolder);
         freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
-        freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
+        freeMarkerConfig
+            .setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);
@@ -117,8 +118,7 @@ public class CobiGen {
     }
 
     /**
-     * Runs a generation for each template within the given increment to the destination specified by each
-     * template according to its configuration.
+     * Delegates with null list for compatibility with given API.
      * @param input
      *            generator input object
      * @param increment
@@ -137,16 +137,42 @@ public class CobiGen {
      */
     public void generate(Object input, IncrementTo increment, boolean forceOverride)
         throws IOException, TemplateException, MergeException {
+        List<Class<?>> list = new ArrayList<>();
+        generate(input, increment, forceOverride, list);
+    }
+
+    /**
+     * Runs a generation for each template within the given increment to the destination specified by each
+     * template according to its configuration.
+     * @param input
+     *            generator input object
+     * @param increment
+     *            to be used for generation
+     * @param forceOverride
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
+     * @param logicClasses
+     *            a list of java class files including template logic methods
+     * @throws IOException
+     *             if the output file could not be read or written
+     * @throws TemplateException
+     *             if an exception occurs during template processing by FreeMarker
+     * @throws MergeException
+     *             if an exception occurs during content merging
+     * @author sbasnet (22.10.2014)
+     *
+     */
+    public void generate(Object input, IncrementTo increment, boolean forceOverride,
+        List<Class<?>> logicClasses) throws IOException, TemplateException, MergeException {
         InputValidator.validateInputsUnequalNull(input, increment);
         for (TemplateTo t : increment.getTemplates()) {
-            generate(input, t, forceOverride);
+            generate(input, t, forceOverride, logicClasses);
         }
     }
 
     /**
-     * Generates code for the given input with the given template to the destination specified by the
-     * templates configuration.
-     *
+     * Delegates with null list for compatibility with given API.
      * @param input
      *            generator input object
      * @param template
@@ -167,9 +193,39 @@ public class CobiGen {
      */
     public void generate(Object input, TemplateTo template, boolean forceOverride)
         throws IOException, TemplateException, MergeException {
+        List<Class<?>> list = new ArrayList<>();
+        generate(input, template, forceOverride, list);
+    }
+
+    /**
+     * Generates code for the given input with the given template to the destination specified by the
+     * templates configuration.
+     *
+     * @param input
+     *            generator input object
+     * @param template
+     *            to be used for generation
+     * @param forceOverride
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
+     * @param logicClasses
+     *            a list of java class files including template logic methods
+     * @throws IOException
+     *             if the output file could not be read or written
+     * @throws TemplateException
+     *             if an exception occurs during template processing by FreeMarker
+     * @throws MergeException
+     *             if an exception occurs during content merging
+     * @throws InvalidConfigurationException
+     *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @author mbrunnli (08.04.2014)
+     */
+    public void generate(Object input, TemplateTo template, boolean forceOverride,
+        List<Class<?>> logicClasses) throws IOException, TemplateException, MergeException {
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-        generate(input, template, triggerInterpreter, forceOverride);
+        generate(input, template, triggerInterpreter, forceOverride, logicClasses);
     }
 
     /**
@@ -186,6 +242,8 @@ public class CobiGen {
      *            if <code>true</code> and the destination path is already existent, the contents will be
      *            overwritten by the generated ones iff there is no merge strategy defined by the templates
      *            configuration
+     * @param logicClasses
+     *            a list of java class files including template logic methods
      * @throws IOException
      *             if the output file could not be read or written
      * @throws TemplateException
@@ -197,13 +255,14 @@ public class CobiGen {
      * @author mbrunnli (06.02.2013) edited by trippl (05.03.2013)
      */
     private void generate(Object generatorInput, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-        boolean forceOverride) throws IOException, TemplateException, MergeException, InvalidConfigurationException {
+        boolean forceOverride, List<Class<?>> logicClasses)
+        throws IOException, TemplateException, MergeException, InvalidConfigurationException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template);
         InputValidator.validateTriggerInterpreter(triggerInterpreter,
             contextConfiguration.getTrigger(template.getTriggerId()));
 
-        generate(generatorInput, template, triggerInterpreter, forceOverride, null);
+        generate(generatorInput, template, triggerInterpreter, forceOverride, null, logicClasses);
     }
 
     /**
@@ -222,6 +281,8 @@ public class CobiGen {
      *            configuration
      * @param rawModel
      *            if provided by the user or <code>null</code> if not
+     * @param logicClasses
+     *            a list of java class files including template logic methods
      * @throws IOException
      *             if the output file could not be read or written
      * @throws TemplateException
@@ -233,7 +294,8 @@ public class CobiGen {
      * @author mbrunnli (10.04.2014)
      */
     private void generate(Object input, TemplateTo template, ITriggerInterpreter triggerInterpreter,
-        boolean forceOverride, Map<String, Object> rawModel) throws IOException, TemplateException {
+        boolean forceOverride, Map<String, Object> rawModel, List<Class<?>> logicClasses)
+        throws IOException, TemplateException {
 
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
@@ -243,11 +305,12 @@ public class CobiGen {
         List<Object> inputObjects = Lists.newArrayList(input);
         if (inputReader.combinesMultipleInputObjects(input)) {
 
-            // check whether the inputs should be retieved recursively
+            // check whether the inputs should be retrieved recursively
             boolean retrieveInputsRecursively = false;
             if (inputReader instanceof InputReaderV13) {
                 for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                    MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+                    MatcherTo matcherTo =
+                        new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
                     if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                         if (!retrieveInputsRecursively) {
                             retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
@@ -258,8 +321,8 @@ public class CobiGen {
                 }
             }
             if (retrieveInputsRecursively) {
-                inputObjects =
-                    ((InputReaderV13) inputReader).getInputObjectsRecursively(input, trigger.getInputCharset());
+                inputObjects = ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
+                    trigger.getInputCharset());
 
             } else {
                 inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
@@ -284,25 +347,38 @@ public class CobiGen {
             } else {
                 model = rawModel;
             }
+            if (logicClasses != null) {
+                for (Class<?> logicClass : logicClasses) {
+                    try {
+                        model.put(logicClass.getSimpleName(), logicClass.newInstance());
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(targetInput));
             String targetCharset = templateIntern.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateIntern.getName(), targetInput);
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
-                        input);
+                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
+                        inputReader, input);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader, input);
+                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
+                            input);
                         String result = null;
                         try {
                             IMerger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
                             if (merger != null) {
                                 result = merger.merge(originalFile, out.toString(), targetCharset);
                             } else {
-                                throw new InvalidConfigurationException(
-                                    "No merger for merge strategy '" + templateIntern.getMergeStrategy() + "' found.");
+                                throw new InvalidConfigurationException("No merger for merge strategy '"
+                                    + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
@@ -318,14 +394,14 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader, input);
+                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
+                    input);
             }
         }
     }
 
     /**
-     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
-     * the destination specified by the templates configuration.
+     * Delegates with null list for compatibility with given API.
      *
      * @param generatorInput
      *            input object for the generation
@@ -347,13 +423,48 @@ public class CobiGen {
      *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (09.04.2014)
      */
-    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model, boolean forceOverride)
+    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
+        boolean forceOverride)
+        throws InvalidConfigurationException, IOException, TemplateException, MergeException {
+
+        List<Class<?>> list = new ArrayList<>();
+        generate(generatorInput, template, model, forceOverride, list);
+    }
+
+    /**
+     * Generates code for the given input with the given template and the given {@link ITriggerInterpreter} to
+     * the destination specified by the templates configuration.
+     *
+     * @param generatorInput
+     *            input object for the generation
+     * @param template
+     *            to be used for generation
+     * @param model
+     *            to be used for generation
+     * @param forceOverride
+     *            if <code>true</code> and the destination path is already existent, the contents will be
+     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
+     *            configuration
+     * @param logicClasses
+     *            a list of java class files including template logic methods
+     * @throws IOException
+     *             if the output file could not be read or written
+     * @throws TemplateException
+     *             if an exception occurs during template processing by FreeMarker
+     * @throws MergeException
+     *             if an exception occurs during content merging
+     * @throws InvalidConfigurationException
+     *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @author mbrunnli (09.04.2014)
+     */
+    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
+        boolean forceOverride, List<Class<?>> logicClasses)
         throws InvalidConfigurationException, IOException, TemplateException, MergeException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template, model);
         Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-        generate(generatorInput, template, triggerInterpreter, forceOverride, model);
+        generate(generatorInput, template, triggerInterpreter, forceOverride, model, logicClasses);
     }
 
     /**
@@ -389,7 +500,8 @@ public class CobiGen {
 
         LOG.info("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
@@ -421,8 +533,9 @@ public class CobiGen {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
+            incrementTos.add(
+                new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(), templates,
+                    convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
         }
         return incrementTos;
     }
@@ -455,8 +568,8 @@ public class CobiGen {
                         LOG.debug("Check container matchers ...");
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo containerMatcherTo =
-                                new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), matcherInput);
+                            MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
+                                containerMatcher.getValue(), matcherInput);
                             LOG.debug("Check {} ...", containerMatcherTo);
                             if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
                                 LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
@@ -464,8 +577,9 @@ public class CobiGen {
                                 List<Object> containerResources;
                                 if (triggerInterpreter.getInputReader() instanceof InputReaderV13
                                     && containerMatcher.isRetrieveObjectsRecursively()) {
-                                    containerResources = ((InputReaderV13) triggerInterpreter.getInputReader())
-                                        .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
+                                    containerResources =
+                                        ((InputReaderV13) triggerInterpreter.getInputReader())
+                                            .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
                                 } else {
                                     // the charset does not matter as we just want to see whether there is one
                                     // matcher for one of the container resources
@@ -490,7 +604,8 @@ public class CobiGen {
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(), e);
+                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(),
+                    e);
             }
         }
         return matchingTrigger;
@@ -509,7 +624,8 @@ public class CobiGen {
      *         <code>false</code>, otherwise
      * @author mbrunnli (22.02.2015)
      */
-    private boolean matches(Object matcherInput, List<Matcher> matcherList, ITriggerInterpreter triggerInterpreter) {
+    private boolean matches(Object matcherInput, List<Matcher> matcherList,
+        ITriggerInterpreter triggerInterpreter) {
         boolean matcherSetMatches = false;
         LOG.info("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
         MATCHER_LOOP:
@@ -537,7 +653,8 @@ public class CobiGen {
                 }
             }
         }
-        LOG.info("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.info(
+            "Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
@@ -556,7 +673,8 @@ public class CobiGen {
 
         LOG.info("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), templatesConfiguration.getTrigger(),
@@ -587,7 +705,8 @@ public class CobiGen {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
 
-            TemplatesConfiguration templatesConfiguration = createTemplatesConfiguration(trigger, triggerInterpreter);
+            TemplatesConfiguration templatesConfiguration =
+                createTemplatesConfiguration(trigger, triggerInterpreter);
             if (templatesConfiguration != null) {
                 templateConfigurations.add(templatesConfiguration);
             }
@@ -609,8 +728,8 @@ public class CobiGen {
      *             if the configuration is not valid
      * @author mbrunnli (14.10.2014)
      */
-    private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger, ITriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
+    private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger,
+        ITriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
         return new TemplatesConfiguration(configFolder, trigger, triggerInterpreter);
     }
 
@@ -743,7 +862,7 @@ public class CobiGen {
         Map<String, Object> templateMethods = inputReader.getTemplateMethods(input);
         if (templateMethods != null) {
             for (String key : templateMethods.keySet()) {
-                env.setVariable(key, (TemplateModel) templateMethods.get(key));
+                env.setVariable(key, def.wrap(templateMethods.get(key)));
             }
         }
 
