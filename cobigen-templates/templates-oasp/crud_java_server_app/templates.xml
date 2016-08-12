@@ -27,6 +27,7 @@
     <increment name="daos" description="CRUD DAO's">
       <templateRef ref="ApplicationDao.java"/>
       <templateRef ref="ApplicationDaoImpl.java"/>
+      <templateRef ref="ApplicationMasterDataDaoImpl.java"/>
       <templateRef ref="${variables.entityName}Dao.java"/>
       <templateRef ref="${variables.entityName}DaoImpl.java"/>
     </increment>

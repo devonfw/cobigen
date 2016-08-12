@@ -21,7 +21,7 @@ import com.mysema.query.types.path.EntityPathBase;
  * This is the implementation of {@link ${variables.entityName}Dao}.
  */
 @Named
-public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.name}> implements ${variables.entityName}Dao {
+public class ${variables.entityName}DaoImpl extends ApplicationMasterDataDaoImpl<${pojo.name}> implements ${variables.entityName}Dao {
 
 	/**
 	* The constructor.
