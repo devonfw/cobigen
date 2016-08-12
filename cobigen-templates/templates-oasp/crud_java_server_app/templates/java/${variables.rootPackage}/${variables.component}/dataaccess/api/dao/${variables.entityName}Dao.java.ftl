@@ -8,7 +8,7 @@ import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 /**
  * Data access interface for ${variables.entityName} entities
  */
-public interface ${variables.entityName}Dao extends ApplicationDao<${pojo.name}> {
+public interface ${variables.entityName}Dao extends ApplicationDao<${pojo.name}>, MasterDataDao<${pojo.name}> {
   
   /**
    * Finds the {@link ${variables.entityName}Entity ${variables.entityName?lower_case}s} matching the given {@link ${variables.entityName}SearchCriteriaTo}.
