@@ -12,6 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/tools-cobigen</github.project>
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
+    <slf4j.version>1.7.21</slf4j.version>
   </properties>
 
   <modules>
@@ -77,13 +78,23 @@
       <comments>Proprietary license. The complete Capgemini CobiGen License Agreement can be requested from the developers.</comments>
     </license>
   </licenses>
-
+  
   <dependencies>
     <!-- SLF4j logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
 
     <!-- Test-Dependencies -->
