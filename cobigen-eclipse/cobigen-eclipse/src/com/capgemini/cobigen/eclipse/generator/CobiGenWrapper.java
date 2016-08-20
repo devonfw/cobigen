@@ -417,7 +417,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
+            List<Object> children = new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return children.get(0);
         } else {
@@ -436,7 +436,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         if (initialized) {
             return cobiGen.getMatchingTriggerIds(loadClass);
         } else {
-            LOG.debug("Generator is not initialized. Could not get matching triggers for " + loadClass.toString());
+            LOG.debug("Generator is not initialized. Could not get matching triggers for {}.", loadClass.toString());
             return null;
         }
     }

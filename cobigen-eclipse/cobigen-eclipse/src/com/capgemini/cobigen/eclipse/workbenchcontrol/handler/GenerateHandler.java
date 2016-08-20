@@ -119,7 +119,7 @@ public class GenerateHandler extends AbstractHandler {
                 LOG.error("Could not create an instance of the generator.", e);
             } catch (InvalidInputException e) {
                 MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
-                LOG.info("Invalid input selected for generation: " + e.getMessage());
+                LOG.info("Invalid input selected for generation: {}", e.getMessage());
             } catch (Throwable e) {
                 PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);
