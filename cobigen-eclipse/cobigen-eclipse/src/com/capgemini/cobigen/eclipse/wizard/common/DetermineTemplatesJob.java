@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
