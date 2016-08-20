@@ -1,8 +1,10 @@
 package com.capgemini.cobigen.systemtest;
 
 import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -10,7 +12,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -45,67 +46,52 @@ public class ClassLoadingTest extends AbstractApiTest {
     private static String testFileRootPath = apiTestsRootPath + "ClassLoadTest/";
 
     /**
-     * An impractical way of loading classes from a jar file
-     * @param name
-     *            the name of the class to load from the jar file
-     * @return the requested class
+     * Tests the usage of sample logic classes to be used in a template.
+     * @throws Exception
+     *             test fails
      * @author sroeger (Aug 12, 2016)
-     * @throws IOException
      */
-    public Class<?> getJarClass(String name) throws IOException {
-
-        File currentDirFile = new File(".");
-        String helper = currentDirFile.getAbsolutePath();
-        String currentDir = helper.substring(0, helper.length() - 1);
-        String filePath = new String(
-            currentDir + "src/test/resources/testdata/systemtest/ClassLoadTest/jarredclasses/jarred.jar");
-
-        URL myJarFile = null;
-        try {
-            myJarFile = new URL("file:///" + filePath);
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        }
-
-        URLClassLoader cl = URLClassLoader.newInstance(new URL[] { myJarFile });
-
-        Class<?> jarred = null;
-        try {
-            jarred = cl.loadClass(name);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return jarred;
-    }
-
     @Test
     public void callClassLoadingTest() throws Exception {
 
         // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true, false);
-        // File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+        Object containerInput = createTestDataAndConfigureMock();
+
         // Useful to see generates if necessary, comment the generationRootFolder above then
-        File generationRootFolder = new File(testFileRootPath + "generates");
+        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // very manual way to load classes
         List<Class<?>> logicClasses = new ArrayList<>();
         logicClasses.add(getJarClass("JarredClass"));
         logicClasses.add(getJarClass("OtherJarredClass"));
+
         // Execution
         // should not throw any Exceptions
         target.generate(containerInput, templates.get(0), false, logicClasses);
+
+        // Verification
+        File expectedResult = new File(testFileRootPath, "expected/Test.java");
+        File generatedFile = new File(generationRootFolder, "com/capgemini/Test.java");
+        assertThat(generatedFile).exists();
+        assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
+
     }
 
+    /**
+     * Creates simple to debug test data, which includes on container object and one child of the container
+     * object. A {@link ITriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
+     * classes to mock a simple java trigger interpreter. Furthermore, the mocked trigger interpreter will be
+     * directly registered in the {@link PluginRegistry}.
+     * @return the container as input for generation interpreter for
+     */
     @SuppressWarnings("unchecked")
-    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,
-        boolean multipleContainerChildren) {
+    private Object createTestDataAndConfigureMock() {
         // we only need any objects for inputs to have a unique object reference to affect the mocked method
         // calls as intended
         Object container = new Object() {
@@ -138,23 +124,10 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
-        if (multipleContainerChildren) {
-            Object secondChildResource = new Object() {
-                @Override
-                public String toString() {
-                    return "child2";
-                }
-            };
-            when(inputReader.getInputObjects(any(), any(Charset.class)))
-                .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
-        } else {
-            when(inputReader.getInputObjects(any(), any(Charset.class)))
-                .thenReturn(Lists.newArrayList(firstChildResource));
-        }
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
 
-        when(matcher
-            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-                .thenReturn(containerChildMatchesTrigger);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(true);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(
@@ -171,4 +144,25 @@ public class ClassLoadingTest extends AbstractApiTest {
         return container;
     }
 
+    /**
+     * An impractical way of loading classes from a jar file
+     * @param name
+     *            the name of the class to load from the jar file
+     * @return the requested class
+     * @author sroeger (Aug 12, 2016)
+     */
+    private Class<?> getJarClass(String name) {
+
+        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
+
+        URLClassLoader cl;
+        Class<?> jarred = null;
+        try {
+            cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
+            jarred = cl.loadClass(name);
+        } catch (MalformedURLException | ClassNotFoundException e) {
+            fail();
+        }
+        return jarred;
+    }
 }
