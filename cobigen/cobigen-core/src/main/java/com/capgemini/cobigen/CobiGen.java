@@ -6,28 +6,29 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.config.ConfigurationHolder;
 import com.capgemini.cobigen.config.ContextConfiguration;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.config.TemplatesConfiguration;
-import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.config.entity.Increment;
 import com.capgemini.cobigen.config.entity.Matcher;
 import com.capgemini.cobigen.config.entity.Template;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.config.entity.io.AccumulationType;
+import com.capgemini.cobigen.config.nio.ConfigurationChangedListener;
 import com.capgemini.cobigen.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.MergeException;
@@ -54,62 +55,59 @@ import freemarker.template.TemplateModel;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
- *
- * @author mbrunnli (05.02.2013)
  */
 public class CobiGen {
 
-    /**
-     * Assigning logger to CobiGen
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(CobiGen.class);
 
-    /**
-     * Current version of the generation, needed for configuration file validation
-     * @deprecated use {@link MavenMetadata#VERSION} instead, will be removed with 3.0 release
-     */
-    @Deprecated
-    public static final String CURRENT_VERSION = MavenMetadata.VERSION;
-
-    /**
-     * The {@link ContextConfiguration} for this instance
-     */
-    private ContextConfiguration contextConfiguration;
-
-    /**
-     * The FreeMarker configuration
-     */
+    /** The FreeMarker configuration */
     private Configuration freeMarkerConfig;
 
-    /**
-     * Configuration folder of CobiGen.
-     */
+    /** ConfigurationHolder folder of CobiGen. */
     private Path configFolder;
+
+    /** CobiGen Configuration Cache */
+    private ConfigurationHolder configurationHolder;
+
+    /**
+     * @see #CobiGen(URI, boolean)
+     */
+    @SuppressWarnings("javadoc")
+    public CobiGen(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
+        this(configFileOrFolder, false);
+    }
 
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
      * @param configFileOrFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
+     * @param watchForChanges
+     *            states whether configuration changes should be detected dynamically
      * @throws IOException
-     *             if the {@link URI} points to a new {@link FileSystem} to be created (e.g. zip/jar)
+     *             if the {@link URI} points to a file or folder, which could not be read.
      * @throws InvalidConfigurationException
      *             if the context configuration could not be read properly.
-     * @author mbrunnli (05.02.2013)
      */
-    public CobiGen(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
-        if (configFileOrFolder == null) {
-            throw new IllegalArgumentException("The configuration file could not be null");
-        }
+    public CobiGen(URI configFileOrFolder, boolean watchForChanges)
+        throws InvalidConfigurationException, IOException {
+        Objects.requireNonNull(configFileOrFolder,
+            "The URI pointing to the configuration could not be null.");
 
         configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
-        contextConfiguration = new ContextConfiguration(configFolder);
         freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
-        freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
+        freeMarkerConfig
+            .setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);
         freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
+
+        configurationHolder = new ConfigurationHolder(configFolder);
+        if (watchForChanges) {
+            new ConfigurationChangedListener(configFolder, configurationHolder);
+        }
     }
 
     /**
@@ -158,8 +156,8 @@ public class CobiGen {
      * @author sbasnet (22.10.2014)
      *
      */
-    public void generate(Object input, IncrementTo increment, boolean forceOverride, List<Class<?>> logicClasses)
-        throws IOException, TemplateException, MergeException {
+    public void generate(Object input, IncrementTo increment, boolean forceOverride,
+        List<Class<?>> logicClasses) throws IOException, TemplateException, MergeException {
         InputValidator.validateInputsUnequalNull(input, increment);
         for (TemplateTo t : increment.getTemplates()) {
             generate(input, t, forceOverride, logicClasses);
@@ -216,9 +214,9 @@ public class CobiGen {
      *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (08.04.2014)
      */
-    public void generate(Object input, TemplateTo template, boolean forceOverride, List<Class<?>> logicClasses)
-        throws IOException, TemplateException, MergeException {
-        Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+    public void generate(Object input, TemplateTo template, boolean forceOverride,
+        List<Class<?>> logicClasses) throws IOException, TemplateException, MergeException {
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(input, template, triggerInterpreter, forceOverride, logicClasses);
     }
@@ -255,7 +253,7 @@ public class CobiGen {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template);
         InputValidator.validateTriggerInterpreter(triggerInterpreter,
-            contextConfiguration.getTrigger(template.getTriggerId()));
+            configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
 
         generate(generatorInput, template, triggerInterpreter, forceOverride, null, logicClasses);
     }
@@ -292,7 +290,7 @@ public class CobiGen {
         boolean forceOverride, Map<String, Object> rawModel, List<Class<?>> logicClasses)
         throws IOException, TemplateException {
 
-        Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
             .setTemplateRoot(configFolder.resolve(trigger.getTemplateFolder()));
 
@@ -304,7 +302,8 @@ public class CobiGen {
             boolean retrieveInputsRecursively = false;
             if (inputReader instanceof InputReaderV13) {
                 for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                    MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+                    MatcherTo matcherTo =
+                        new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
                     if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                         if (!retrieveInputsRecursively) {
                             retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
@@ -315,8 +314,8 @@ public class CobiGen {
                 }
             }
             if (retrieveInputsRecursively) {
-                inputObjects =
-                    ((InputReaderV13) inputReader).getInputObjectsRecursively(input, trigger.getInputCharset());
+                inputObjects = ((InputReaderV13) inputReader).getInputObjectsRecursively(input,
+                    trigger.getInputCharset());
 
             } else {
                 inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
@@ -325,7 +324,7 @@ public class CobiGen {
             Iterator<Object> it = inputObjects.iterator();
             while (it.hasNext()) {
                 Object next = it.next();
-                trigger = contextConfiguration.getTrigger(template.getTriggerId());
+                trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                 if (!matches(next, trigger.getMatcher(), triggerInterpreter)) {
                     it.remove();
                 }
@@ -359,19 +358,20 @@ public class CobiGen {
 
             if (originalFile.exists()) {
                 if (forceOverride || templateIntern.getMergeStrategy() == null) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
-                        input);
+                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
+                        inputReader, input);
                 } else {
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader, input);
+                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
+                            input);
                         String result = null;
                         try {
                             IMerger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
                             if (merger != null) {
                                 result = merger.merge(originalFile, out.toString(), targetCharset);
                             } else {
-                                throw new InvalidConfigurationException(
-                                    "No merger for merge strategy '" + templateIntern.getMergeStrategy() + "' found.");
+                                throw new InvalidConfigurationException("No merger for merge strategy '"
+                                    + templateIntern.getMergeStrategy() + "' found.");
                             }
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
@@ -387,7 +387,8 @@ public class CobiGen {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader, input);
+                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
+                    input);
             }
         }
     }
@@ -415,7 +416,8 @@ public class CobiGen {
      *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (09.04.2014)
      */
-    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model, boolean forceOverride)
+    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
+        boolean forceOverride)
         throws InvalidConfigurationException, IOException, TemplateException, MergeException {
 
         List<Class<?>> list = new ArrayList<>();
@@ -448,12 +450,12 @@ public class CobiGen {
      *             if the inputs do not fit to the configuration or there are some configuration failures
      * @author mbrunnli (09.04.2014)
      */
-    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model, boolean forceOverride,
-        List<Class<?>> logicClasses)
+    public void generate(Object generatorInput, TemplateTo template, Map<String, Object> model,
+        boolean forceOverride, List<Class<?>> logicClasses)
         throws InvalidConfigurationException, IOException, TemplateException, MergeException {
 
         InputValidator.validateInputsUnequalNull(generatorInput, template, model);
-        Trigger trigger = contextConfiguration.getTrigger(template.getTriggerId());
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         generate(generatorInput, template, triggerInterpreter, forceOverride, model, logicClasses);
     }
@@ -491,7 +493,8 @@ public class CobiGen {
 
         LOG.info("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
@@ -523,8 +526,9 @@ public class CobiGen {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger, triggerInterpreter));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
+            incrementTos.add(
+                new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(), templates,
+                    convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
         }
         return incrementTos;
     }
@@ -541,7 +545,7 @@ public class CobiGen {
 
         LOG.debug("Retrieve matching triggers.");
         List<Trigger> matchingTrigger = Lists.newLinkedList();
-        for (Trigger trigger : contextConfiguration.getTriggers()) {
+        for (Trigger trigger : configurationHolder.readContextConfiguration().getTriggers()) {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
             LOG.debug("Check {} to match the input.", trigger);
@@ -557,8 +561,8 @@ public class CobiGen {
                         LOG.debug("Check container matchers ...");
                         FOR_CONTAINERMATCHER:
                         for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo containerMatcherTo =
-                                new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), matcherInput);
+                            MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
+                                containerMatcher.getValue(), matcherInput);
                             LOG.debug("Check {} ...", containerMatcherTo);
                             if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
                                 LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
@@ -566,8 +570,9 @@ public class CobiGen {
                                 List<Object> containerResources;
                                 if (triggerInterpreter.getInputReader() instanceof InputReaderV13
                                     && containerMatcher.isRetrieveObjectsRecursively()) {
-                                    containerResources = ((InputReaderV13) triggerInterpreter.getInputReader())
-                                        .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
+                                    containerResources =
+                                        ((InputReaderV13) triggerInterpreter.getInputReader())
+                                            .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
                                 } else {
                                     // the charset does not matter as we just want to see whether there is one
                                     // matcher for one of the container resources
@@ -592,7 +597,8 @@ public class CobiGen {
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(), e);
+                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(),
+                    e);
             }
         }
         return matchingTrigger;
@@ -611,7 +617,8 @@ public class CobiGen {
      *         <code>false</code>, otherwise
      * @author mbrunnli (22.02.2015)
      */
-    private boolean matches(Object matcherInput, List<Matcher> matcherList, ITriggerInterpreter triggerInterpreter) {
+    private boolean matches(Object matcherInput, List<Matcher> matcherList,
+        ITriggerInterpreter triggerInterpreter) {
         boolean matcherSetMatches = false;
         LOG.info("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
         MATCHER_LOOP:
@@ -639,7 +646,8 @@ public class CobiGen {
                 }
             }
         }
-        LOG.info("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.info(
+            "Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
@@ -658,7 +666,8 @@ public class CobiGen {
 
         LOG.info("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), templatesConfiguration.getTrigger(),
@@ -689,31 +698,13 @@ public class CobiGen {
             ITriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter);
 
-            TemplatesConfiguration templatesConfiguration = createTemplatesConfiguration(trigger, triggerInterpreter);
+            TemplatesConfiguration templatesConfiguration =
+                configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
             if (templatesConfiguration != null) {
                 templateConfigurations.add(templatesConfiguration);
             }
         }
         return templateConfigurations;
-    }
-
-    /**
-     * Creates a new templates configuration while resolving the context variables dependent on the given
-     * input. The context variables will be retrieved from the given {@link Trigger} resp.
-     * {@link ITriggerInterpreter trigger interpreter}.
-     * @param trigger
-     *            to get matcher declarations from
-     * @param triggerInterpreter
-     *            to get the matcher implementation from
-     * @return the {@link ContextConfiguration} for the given input or <code>null</code> if the context
-     *         variables could not be resolved.
-     * @throws InvalidConfigurationException
-     *             if the configuration is not valid
-     * @author mbrunnli (14.10.2014)
-     */
-    private TemplatesConfiguration createTemplatesConfiguration(Trigger trigger, ITriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
-        return new TemplatesConfiguration(configFolder, trigger, triggerInterpreter);
     }
 
     /**
@@ -731,8 +722,10 @@ public class CobiGen {
     private Template getTemplate(TemplateTo templateTo, ITriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
 
-        Trigger trigger = contextConfiguration.getTrigger(templateTo.getTriggerId());
-        TemplatesConfiguration tConfig = createTemplatesConfiguration(trigger, triggerInterpreter);
+        Trigger trigger =
+            configurationHolder.readContextConfiguration().getTrigger(templateTo.getTriggerId());
+        TemplatesConfiguration tConfig =
+            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
             throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
@@ -786,7 +779,8 @@ public class CobiGen {
      */
     private File getDestinationFile(String relDestinationPath) {
 
-        String rootPath = contextConfiguration.get(ContextSetting.GenerationTargetRootPath);
+        String rootPath =
+            configurationHolder.readContextConfiguration().get(ContextSetting.GenerationTargetRootPath);
         if (!rootPath.endsWith("/")) {
             rootPath += "/";
         }
@@ -860,7 +854,7 @@ public class CobiGen {
      */
     public void setContextSetting(ContextSetting contextSetting, String value) {
 
-        contextConfiguration.set(contextSetting, value);
+        configurationHolder.readContextConfiguration().set(contextSetting, value);
     }
 
     /**
@@ -872,7 +866,7 @@ public class CobiGen {
      */
     public void getContextSetting(ContextSetting contextSetting) {
 
-        contextConfiguration.get(contextSetting);
+        configurationHolder.readContextConfiguration().get(contextSetting);
     }
 
     /**
@@ -887,7 +881,7 @@ public class CobiGen {
      */
     public IModelBuilder getModelBuilder(Object generatorInput, String triggerId) {
 
-        Trigger trigger = contextConfiguration.getTrigger(triggerId);
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(triggerId);
         if (trigger == null) {
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         }
@@ -909,7 +903,7 @@ public class CobiGen {
      */
     public IModelBuilder getModelBuilder(Object generatorInput, Object matcherInput, String triggerId) {
 
-        Trigger trigger = contextConfiguration.getTrigger(triggerId);
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(triggerId);
         if (trigger == null) {
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         }
@@ -943,7 +937,7 @@ public class CobiGen {
      */
     public void reloadContextConfigurationFromFile() throws InvalidConfigurationException {
 
-        contextConfiguration.reloadConfigurationFromFile(configFolder);
+        configurationHolder.readContextConfiguration().reloadConfigurationFromFile(configFolder);
     }
 
 }
