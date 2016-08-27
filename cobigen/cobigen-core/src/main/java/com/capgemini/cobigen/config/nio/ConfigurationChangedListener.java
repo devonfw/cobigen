@@ -18,7 +18,8 @@ import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.google.common.collect.Lists;
 
 /**
- * ConfigurationHolder file tracker for file changes.
+ * ConfigurationHolder file tracker for file changes. Mandatory to be started to invalidate the
+ * {@link ConfigurationHolder} cache correctly.
  */
 public class ConfigurationChangedListener implements Runnable {
 
