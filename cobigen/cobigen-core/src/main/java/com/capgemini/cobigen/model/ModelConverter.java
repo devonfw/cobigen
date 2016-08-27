@@ -51,7 +51,7 @@ public class ModelConverter {
             doc = docBuilder.newDocument();
         } catch (ParserConfigurationException e) {
             // should not occur
-            LOG.error("{}", "Building new Document Exception", e);
+            LOG.error("Building new Document Exception", e);
         }
     }
 

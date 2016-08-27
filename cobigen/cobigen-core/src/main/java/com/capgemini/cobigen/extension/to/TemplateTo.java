@@ -9,7 +9,7 @@ import com.capgemini.cobigen.extension.ITriggerInterpreter;
  * The transfer object for templates
  * @author mbrunnli (09.04.2014)
  */
-public class TemplateTo extends AbstractTemplateResolver {
+public class TemplateTo extends AbstractTemplateResolver implements GenerableArtifact {
 
     /**
      * Id of the template
@@ -116,7 +116,7 @@ public class TemplateTo extends AbstractTemplateResolver {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId() + "'/mergeStrategy="
-            + getMergeStrategy() + "']";
+        return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId()
+            + "'/mergeStrategy=" + getMergeStrategy() + "']";
     }
 }

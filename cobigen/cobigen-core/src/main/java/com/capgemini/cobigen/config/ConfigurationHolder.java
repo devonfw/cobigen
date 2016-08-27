@@ -3,12 +3,11 @@ package com.capgemini.cobigen.config;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.assertj.core.util.Maps;
-
 import com.capgemini.cobigen.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.config.entity.Trigger;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.google.common.collect.Maps;
 
 /**
  * Cached in-memory CobiGen configuration.
@@ -68,9 +67,8 @@ public class ConfigurationHolder {
             templatesConfigurations.put(trigger.getTemplateFolder(),
                 Maps.<String, TemplatesConfiguration> newHashMap());
 
-            Path templatesFolder = configurationPath.resolve(trigger.getTemplateFolder());
             TemplatesConfiguration config =
-                new TemplatesConfiguration(templatesFolder, trigger, triggerInterpreter);
+                new TemplatesConfiguration(configurationPath, trigger, triggerInterpreter);
             templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
         }
 

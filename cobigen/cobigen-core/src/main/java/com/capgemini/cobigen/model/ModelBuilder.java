@@ -1,8 +1,11 @@
 package com.capgemini.cobigen.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.capgemini.cobigen.config.entity.Trigger;
@@ -22,6 +25,9 @@ import com.capgemini.cobigen.validator.InputValidator;
  * @author mbrunnli (08.04.2014)
  */
 public class ModelBuilder implements IModelBuilder {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ModelBuilder.class);
 
     /**
      * Input object activates a matcher and thus is target for context variable extraction. Possibly a
@@ -104,7 +110,8 @@ public class ModelBuilder implements IModelBuilder {
     @Override
     public Map<String, Object> createModel(ITriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
-        Map<String, Object> model = new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
+        Map<String, Object> model =
+            new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
         if (matcherInput != null) {
             model.put("variables",
                 new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter));
@@ -112,6 +119,25 @@ public class ModelBuilder implements IModelBuilder {
         model.put("variables",
             new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
         return model;
+    }
+
+    /**
+     * Enriches the model by reference by additional logic providing beans.
+     * @param model
+     *            to be enriched
+     * @param logicClasses
+     *            logic implementing beans to be made accessible
+     */
+    public void enrichByLogicBeans(Map<String, Object> model, List<Class<?>> logicClasses) {
+        for (Class<?> logicClass : logicClasses) {
+            try {
+                model.put(logicClass.getSimpleName(), logicClass.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                LOG.warn(
+                    "The Java class '{}' could not been instantiated for template processing and thus will be missing in the model.",
+                    logicClass.getCanonicalName());
+            }
+        }
     }
 
 }

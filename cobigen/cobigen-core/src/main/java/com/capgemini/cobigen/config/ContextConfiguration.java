@@ -40,6 +40,12 @@ public class ContextConfiguration {
     private Map<String, Trigger> triggers;
 
     /**
+     * Path of the configuration. Might point to a folder or a jar or maybe even something different in
+     * future.
+     */
+    private Path configurationPath;
+
+    /**
      * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
      * @param configRoot
      *            root path for the configuration of CobiGen
@@ -48,6 +54,7 @@ public class ContextConfiguration {
      * @author mbrunnli (04.02.2013)
      */
     public ContextConfiguration(Path configRoot) throws InvalidConfigurationException {
+        configurationPath = configRoot;
         initializeSettings();
         readConfiguration(configRoot);
     }
@@ -131,6 +138,14 @@ public class ContextConfiguration {
      */
     public Trigger getTrigger(String id) {
         return triggers.get(id);
+    }
+
+    /**
+     * Returns the configuration's {@link Path} represented by this object.
+     * @return the {@link Path}
+     */
+    public Path getConfigurationPath() {
+        return configurationPath;
     }
 
 }
