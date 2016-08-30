@@ -20,11 +20,6 @@
       <artifactId>guava</artifactId>
       <version>17.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.9-RC2</version>
-    </dependency>
 
     <!-- FreeMarker engine -->
     <dependency>
