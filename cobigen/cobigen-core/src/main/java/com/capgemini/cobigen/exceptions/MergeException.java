@@ -1,36 +1,38 @@
 package com.capgemini.cobigen.exceptions;
 
+import java.io.File;
+
 /**
- * This Exception indicates a problem while merging
- * @author mbrunnli (18.06.2013)
+ * This Exception indicates a problem while merging.
  */
 public class MergeException extends RuntimeException {
 
     /**
      * Generated Serial Version UID
      */
-    private static final long serialVersionUID = 7583064321403970609L;
+    private static final long serialVersionUID = 1;
 
     /**
-     * Creates an exception with the given message
+     * Creates an exception for the base file to be merged with the given message.
+     * @param baseFile
+     *            file to be merged
      * @param msg
      *            error message
-     * @author mbrunnli (18.06.2013)
      */
-    public MergeException(String msg) {
-        super(msg);
+    public MergeException(File baseFile, String msg) {
+        super("Unable to merge a generated patch into file " + baseFile.toURI() + ": " + msg);
     }
 
     /**
-     * Creates an exception with the given message and root cause.
+     * Creates an exception for the base file to be merged with the given message and root cause.
+     * @param baseFile
+     *            file to be merged
      * @param msg
      *            error message
      * @param cause
      *            root cause
-     * @author mbrunnli (Jun 25, 2015)
      */
-    public MergeException(String msg, Throwable cause) {
-        super(msg, cause);
+    public MergeException(File baseFile, String msg, Throwable cause) {
+        super("Unable to merge a generated patch into file " + baseFile.toURI() + ": " + msg, cause);
     }
-
 }
