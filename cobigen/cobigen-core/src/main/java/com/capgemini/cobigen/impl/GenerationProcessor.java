@@ -210,17 +210,17 @@ public class GenerationProcessor {
                                 throw new InvalidConfigurationException("No merger for merge strategy '"
                                     + templateIntern.getMergeStrategy() + "' found.");
                             }
+                        } catch (InvalidConfigurationException | MergeException e) {
+                            throw e;
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
-                            throw new MergeException(
-                                "'An error occured while merging the file " + originalFile.toURI() + "'!", e);
+                            throw new MergeException(originalFile, "Plug-in terminated abruptly!", e);
                         }
 
                         if (result != null) {
-                            LOG.debug("Merge {} with charset {}.", originalFile.getName(), targetCharset);
+                            LOG.debug("Merge {} with char set {}.", originalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(originalFile, result, targetCharset);
                         }
-
                     } catch (IOException e) {
                         String message = "Could not write file " + originalFile.toString() + " after merge.";
                         LOG.error(message, e);

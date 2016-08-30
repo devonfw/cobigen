@@ -2,6 +2,8 @@ package com.capgemini.cobigen.api.extension;
 
 import java.io.File;
 
+import com.capgemini.cobigen.exceptions.MergeException;
+
 /**
  * This interface should be inherited to declare a new component to handle document merges. An {@link Merger}
  * can be registered via an {@link TriggerInterpreter} implementation
@@ -21,10 +23,10 @@ public interface Merger {
      * @param patch
      *            {@link String} patch, which should be applied to the base file
      * @param targetCharset
-     *            target charset of the file to be read and write
+     *            target char set of the file to be read and write
      * @return Merged source code (not null)
-     * @throws Exception
+     * @throws MergeException
      *             if an exception occurs while merging the contents
      */
-    public String merge(File base, String patch, String targetCharset) throws Exception;
+    public String merge(File base, String patch, String targetCharset) throws MergeException;
 }
