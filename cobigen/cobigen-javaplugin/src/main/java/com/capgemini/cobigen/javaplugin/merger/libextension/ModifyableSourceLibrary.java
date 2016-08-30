@@ -101,14 +101,15 @@ public class ModifyableSourceLibrary extends SourceLibrary {
         throws FileNotFoundException, MalformedURLException, UnsupportedEncodingException, IOException {
         JavaSource resultSource = null;
         if (source instanceof File) {
-            resultSource = parse(new FileInputStream((File) source), ((File) source).toURI().toURL(), modelBuilder);
+            resultSource =
+                parse(new FileInputStream((File) source), ((File) source).toURI().toURL(), modelBuilder);
         } else if (source instanceof Reader) {
             resultSource = parse((Reader) source, null, modelBuilder);
         } else if (source instanceof InputStream) {
             resultSource = parse((InputStream) source, null, modelBuilder);
         } else if (source instanceof URL) {
-            resultSource =
-                parse(new InputStreamReader(((URL) source).openStream(), getEncoding()), (URL) source, modelBuilder);
+            resultSource = parse(new InputStreamReader(((URL) source).openStream(), getEncoding()),
+                (URL) source, modelBuilder);
         } else {
             // throw runtimeexception?
         }

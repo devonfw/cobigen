@@ -47,7 +47,8 @@ public class JavaModelUtil {
      */
     public static List<Map<String, Object>> getFields(Map<String, Object> model) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> fields = (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
+        List<Map<String, Object>> fields =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.FIELDS);
         return fields;
     }
 
@@ -164,7 +165,8 @@ public class JavaModelUtil {
      */
     public static List<Map<String, Object>> getMethods(Map<String, Object> model) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> methods = (List<Map<String, Object>>) getRoot(model).get(ModelConstant.METHODS);
+        List<Map<String, Object>> methods =
+            (List<Map<String, Object>>) getRoot(model).get(ModelConstant.METHODS);
         return methods;
     }
 

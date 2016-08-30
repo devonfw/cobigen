@@ -156,8 +156,8 @@ public class ModifyableModelBuilder implements Builder {
         if (newClass.isInterface()) {
             newClass.setSuperClass(null);
         } else if (!newClass.isEnum()) {
-            newClass
-                .setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
+            newClass.setSuperClass(
+                def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
         }
 
         // implements
@@ -430,8 +430,8 @@ public class ModifyableModelBuilder implements Builder {
     public void addParameter(FieldDef fieldDef) {
 
         DefaultJavaParameter jParam =
-            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
-                fieldDef.getModifiers(), fieldDef.isVarArgs());
+            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
+                fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
         if (currentMethod != null) {
             jParam.setDeclarator(currentMethod);
         } else {
