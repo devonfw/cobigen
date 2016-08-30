@@ -16,6 +16,9 @@ import com.capgemini.cobigen.impl.util.FileSystemUtil;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
 
+/**
+ * CobiGen's Factory to create new instances of {@link CobiGen}.
+ */
 public class CobiGenFactory {
 
     /**
@@ -23,12 +26,13 @@ public class CobiGenFactory {
      *
      * @param configFileOrFolder
      *            the root folder containing the context.xml and all templates, configurations etc.
+     * @return a new instance of {@link CobiGen}
      * @throws IOException
      *             if the {@link URI} points to a file or folder, which could not be read.
      * @throws InvalidConfigurationException
      *             if the context configuration could not be read properly.
      */
-    public CobiGen create(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
+    public static CobiGen create(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
         Objects.requireNonNull(configFileOrFolder,
             "The URI pointing to the configuration could not be null.");
 
@@ -46,7 +50,7 @@ public class CobiGenFactory {
             new ConfigurationChangedListener(configFolder, configurationHolder);
         }
 
-        return new CobiGenImpl(configFolder, freeMarkerConfig, configurationHolder);
+        return new CobiGenImpl(freeMarkerConfig, configurationHolder);
     }
 
 }
