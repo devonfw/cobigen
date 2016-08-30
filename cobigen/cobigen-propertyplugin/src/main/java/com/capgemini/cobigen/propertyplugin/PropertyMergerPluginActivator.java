@@ -1,41 +1,28 @@
-/*
- * Copyright © Capgemini 2013. All rights reserved.
- */
 package com.capgemini.cobigen.propertyplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.google.common.collect.Lists;
 
 /**
- * 
- * @author mbrunnli (06.04.2014)
+ * Plug-in activator to be registered in CobiGen's {@link PluginRegistry}.
  */
-public class PropertyMergerPluginActivator implements IGeneratorPluginActivator {
+public class PropertyMergerPluginActivator implements GeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @author mbrunnli (06.04.2014)
-     */
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
         merger.add(new PropertyMerger("propertymerge", false));
         merger.add(new PropertyMerger("propertymerge_override", true));
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
         return null;
     }
 
