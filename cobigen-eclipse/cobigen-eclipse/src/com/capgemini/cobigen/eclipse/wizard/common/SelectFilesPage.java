@@ -34,7 +34,8 @@ import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.config.entity.Template;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -46,8 +47,6 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Sets;
 
 /**

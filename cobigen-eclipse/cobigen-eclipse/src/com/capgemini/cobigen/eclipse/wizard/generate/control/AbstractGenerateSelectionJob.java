@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.exceptions.PluginProcessingException;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
  * Abstract implementation for processing generation

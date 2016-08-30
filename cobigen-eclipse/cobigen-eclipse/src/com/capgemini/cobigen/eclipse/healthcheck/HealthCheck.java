@@ -9,10 +9,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.constant.ConfigurationConstants;
-import com.capgemini.cobigen.config.constant.ContextConfigurationVersion;
-import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -20,6 +17,9 @@ import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 
 /**
  * This class implements the Health Check to provide more information about the current status of CobiGen and
@@ -41,7 +41,8 @@ public class HealthCheck {
      */
     public void execute() {
 
-        String firstStep = "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
+        String firstStep =
+            "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
         String secondStep =
             "\n2. CobiGen context configuration '" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME + "'... ";
 
@@ -54,7 +55,7 @@ public class HealthCheck {
 
             // refresh and check context configuration
             ResourcesPluginUtil.refreshConfigurationProject();
-            new CobiGen(generatorConfProj.getLocationURI());
+            CobiGenFactory.create(generatorConfProj.getLocationURI());
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "OK.";
@@ -71,14 +72,15 @@ public class HealthCheck {
             healthyCheckMessage += secondStep + "INVALID!";
             if (generatorConfProj != null) {
                 Path configurationProject = Paths.get(generatorConfProj.getLocationURI());
-                ContextConfigurationVersion currentVersion =
-                    new ContextConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(configurationProject);
+                ContextConfigurationVersion currentVersion = new ContextConfigurationUpgrader()
+                    .resolveLatestCompatibleSchemaVersion(configurationProject);
                 if (currentVersion != null) {
                     // upgrade possible
-                    healthyCheckMessage +=
-                        "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
-                            + currentVersion + " / Currently Supported: " + ContextConfigurationVersion.getLatest();
-                    boolean upgraded = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
+                    healthyCheckMessage += "\n\nAutomatic upgrade of the context configuration available.\n"
+                        + "Detected: " + currentVersion + " / Currently Supported: "
+                        + ContextConfigurationVersion.getLatest();
+                    boolean upgraded =
+                        openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject);
 
                     if (upgraded) {
                         // re-run Health Check
@@ -117,7 +119,8 @@ public class HealthCheck {
      */
     private boolean openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder) {
         MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Health Check", null,
-            healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration", "Abort" }, 1);
+            healthyCheckMessage, MessageDialog.ERROR,
+            new String[] { "Upgrade Context Configuration", "Abort" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
@@ -141,13 +144,14 @@ public class HealthCheck {
             try {
                 contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, false);
             } catch (BackupFailedException e) {
-                boolean continueUpgrade =
-                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE,
-                        "Backup failed while upgrading. "
-                            + "An upgrade deletes all comments in the configuration file, "
-                            + "which will be gone without a backup. Continue anyhow?");
+                boolean continueUpgrade = MessageDialog.openQuestion(Display.getDefault().getActiveShell(),
+                    HEALTH_CHECK_DIALOG_TITLE,
+                    "Backup failed while upgrading. "
+                        + "An upgrade deletes all comments in the configuration file, "
+                        + "which will be gone without a backup. Continue anyhow?");
                 if (continueUpgrade) {
-                    contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, true);
+                    contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder,
+                        true);
                 }
             }
         } catch (Throwable e) {
@@ -169,9 +173,10 @@ public class HealthCheck {
      * @author mbrunnli (Jun 23, 2015)
      */
     private void openSuccessDialog(String healthyCheckMessage, boolean warn) {
-        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE, null,
-            healthyCheckMessage, warn ? MessageDialog.WARNING : MessageDialog.INFORMATION,
-            new String[] { "Advanced Health Check", "OK" }, 1);
+        MessageDialog dialog =
+            new MessageDialog(Display.getDefault().getActiveShell(), HEALTH_CHECK_DIALOG_TITLE, null,
+                healthyCheckMessage, warn ? MessageDialog.WARNING : MessageDialog.INFORMATION,
+                new String[] { "Advanced Health Check", "OK" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();

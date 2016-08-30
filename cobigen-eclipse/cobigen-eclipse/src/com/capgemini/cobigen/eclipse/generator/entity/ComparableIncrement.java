@@ -2,8 +2,8 @@ package com.capgemini.cobigen.eclipse.generator.entity;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.google.common.collect.Lists;
 
 /**

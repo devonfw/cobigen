@@ -9,8 +9,8 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
  * Running this process as issued in {@link IRunnableWithProgress} performs the generation tasks of the

@@ -23,12 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.BackupFailedException;
+import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 
 /**
  * Dialog to show the advanced health check results as well as performing the templates configuration
