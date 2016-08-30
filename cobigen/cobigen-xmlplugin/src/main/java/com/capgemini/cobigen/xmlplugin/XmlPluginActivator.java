@@ -2,18 +2,18 @@ package com.capgemini.cobigen.xmlplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (06.04.2014)
+ * Plug-in activator to be registered at CobiGen's {@link PluginRegistry}.
  */
-public class XmlPluginActivator implements IGeneratorPluginActivator {
+public class XmlPluginActivator implements GeneratorPluginActivator {
 
     /**
      * defining the default location of the merge schemas
@@ -21,8 +21,8 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
     static private String defaultMergeSchemaLocation = "src/main/resources/mergeSchemas";
 
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
 
         merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE));
         merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
@@ -32,8 +32,8 @@ public class XmlPluginActivator implements IGeneratorPluginActivator {
     }
 
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<ITriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
+        return Lists.<TriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
     }
 
 }

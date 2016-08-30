@@ -19,18 +19,19 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
 import junit.framework.AssertionFailedError;
 
 /**
- * Test suite for testing the xml plugin correctly integrated with cobigen-core
- * @author fkreis (19.11.2014)
+ * Test suite for testing the xml plugin correctly integrated with cobigen-core.
  */
 public class XmlPluginIntegrationTest {
 
@@ -120,7 +121,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_SingleChild() throws Exception {
 
-        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", "child1");
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt",
+            "child1");
     }
 
     /**
@@ -145,8 +147,8 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testXmlReaderIntegration_VariablesConstant() throws Exception {
 
-        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt",
-            "testConstantValue");
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", "testConstantValue");
     }
 
     /**
@@ -155,14 +157,15 @@ public class XmlPluginIntegrationTest {
      * strategies to exist.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyNotFoundErrorMessageRegression() throws Exception {
-        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt",
+            null);
         try {
-            generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        } catch (MergeException e) {
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute",
+                "xmlTestOutput_SingleAttribute.txt", null);
+        } catch (InvalidConfigurationException e) {
             assertThat(e.getMessage(), containsString("No merger for merge strategy"));
         }
     }
@@ -195,7 +198,8 @@ public class XmlPluginIntegrationTest {
 
         generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
         try {
-            generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt",
+                null);
         } catch (MergeException e) {
             assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
         }
@@ -227,10 +231,11 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
 
-        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", null);
         try {
-            generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt",
-                null);
+            generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+                "xmlTestOutput_VariablesConstant.txt", null);
         } catch (MergeException e) {
             assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
         }
@@ -249,9 +254,9 @@ public class XmlPluginIntegrationTest {
      *             if anything fails.
      * @author mbrunnli (Jan 9, 2016)
      */
-    private void generateTemplateAndTestOutput(String templateId, String outputFileName, String expectedFileContents)
-        throws Exception {
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder);
+    private void generateTemplateAndTestOutput(String templateId, String outputFileName,
+        String expectedFileContents) throws Exception {
+        CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
 
         // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
         File tmpFolderCobiGen =
@@ -259,7 +264,8 @@ public class XmlPluginIntegrationTest {
         if (!tmpFolderCobiGen.exists()) {
             tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         }
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -272,8 +278,8 @@ public class XmlPluginIntegrationTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
                 cobiGen.generate(inputDocument, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
+                File expectedFile = new File(
+                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
 
                 Assert.assertTrue(expectedFile.exists());
                 // validate results if expected file contents are defined
