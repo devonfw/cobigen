@@ -3,23 +3,21 @@ package com.capgemini.cobigen.xmlplugin.merger.delegates;
 import java.io.File;
 import java.nio.file.Path;
 
-import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.extension.Merger;
 import com.github.maybeec.lexeme.LeXeMerger;
+import com.github.maybeec.lexeme.common.exception.XMLMergeException;
 
 /**
- * Provides a XmlLawMerger instance with the IMerger interface
- * @author sholzer (Aug 27, 2015)
+ * Provides a XmlLawMerger instance with the {@link Merger} interface
  */
-public class XmlMergerDelegate implements IMerger {
+public class XmlMergerDelegate implements Merger {
 
-    /**
-     *
-     */
+    /** Merger type of this instance. */
+
     private MergeType mergeType = MergeType.PATCHOVERWRITE;
 
-    /**
-     *
-     */
+    /** {@link LeXeMerger} instance to be used. */
     private LeXeMerger merger;
 
     /**
@@ -48,22 +46,18 @@ public class XmlMergerDelegate implements IMerger {
         merger = new LeXeMerger(mergeSchemaLocation);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sholzer (Aug 27, 2015)
-     */
     @Override
     public String getType() {
         return mergeType.value;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author sholzer (Aug 27, 2015)
-     */
     @Override
-    public String merge(File base, String patch, String targetCharset) throws Exception {
-        return merger.mergeInString(base, patch, targetCharset, mergeType.type);
+    public String merge(File base, String patch, String targetCharset) throws MergeException {
+        try {
+            return merger.mergeInString(base, patch, targetCharset, mergeType.type);
+        } catch (XMLMergeException e) {
+            throw new MergeException(base, "Error during merge processing by LeXeMe.", e);
+        }
     }
 
     /**

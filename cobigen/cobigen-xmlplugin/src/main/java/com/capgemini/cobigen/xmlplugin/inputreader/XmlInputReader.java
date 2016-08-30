@@ -12,13 +12,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.capgemini.cobigen.extension.IInputReader;
+import com.capgemini.cobigen.api.extension.InputReader;
 
 /**
- *
- * @author fkreis (10.11.2014)
+ * {@link InputReader} for XML files.
  */
-public class XmlInputReader implements IInputReader {
+public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
@@ -27,7 +26,6 @@ public class XmlInputReader implements IInputReader {
         } else {
             return false;
         }
-
     }
 
     @Override
@@ -41,15 +39,12 @@ public class XmlInputReader implements IInputReader {
         } else {
             return null;
         }
-
     }
 
     /**
      * {@inheritDoc}.<br>
-     * <br>
      * Since the {@link XmlInputReader} does not support multiple input objects it always returns
      * <code>false</code>.
-     * @author fkreis (10.11.2014)
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
@@ -58,35 +53,38 @@ public class XmlInputReader implements IInputReader {
 
     /**
      * {@inheritDoc}<br>
-     * <br>
      * Since the {@link XmlInputReader} does not support multiple input objects it always returns an empty
      * {@link List}.
-     * @author fkreis (10.11.2014)
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
-        List<Object> emptyList = new LinkedList<>();
-        return emptyList;
+        return new LinkedList<>();
+    }
+
+    /**
+     * {@inheritDoc}<br>
+     * Since the {@link XmlInputReader} does not support multiple input objects it always returns an empty
+     * {@link List}.
+     */
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        return new LinkedList<>();
     }
 
     /**
      * {@inheritDoc} <br>
-     * <br>
      * Since the {@link XmlInputReader} does not provide any template methods it always returns an empty
      * {@link Map}.
-     * @author fkreis (10.11.2014)
      */
     @Override
     public Map<String, Object> getTemplateMethods(Object input) {
-        Map<String, Object> emptyMap = new HashMap<>();
-        return emptyMap;
+        return new HashMap<>();
     }
 
     /**
      * @param input
      *            the element the model should derived from
      * @return derived sub model
-     * @author fkreis (17.11.2014)
      */
     private Map<String, Object> deriveSubModel(Element input) {
         // prepare result object
