@@ -4,8 +4,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 
 /**
  * The {@link InputValidator} takes care of valid API user input, e.g., checks for null references
@@ -49,12 +50,12 @@ public class InputValidator {
     private static void validateTriggerInterpreterInternal(TriggerInterpreter triggerInterpreter,
         String triggerType) {
         if (triggerInterpreter == null) {
-            throw new IllegalArgumentException("No TriggerInterpreter "
+            throw new InvalidConfigurationException("No TriggerInterpreter "
                 + (triggerType != null ? "for type '" + triggerType + "' " : "") + "found/provided!");
         }
 
         if (triggerInterpreter.getInputReader() == null) {
-            throw new IllegalArgumentException(
+            throw new PluginProcessingException(
                 "The TriggerInterpreter for type '" + triggerInterpreter.getType()
                     + "' has to declare an InputReader, which is currently not the case!");
         }
@@ -78,17 +79,16 @@ public class InputValidator {
      * Validates a {@link Map} of resolved variables for null keys
      * @param resolvedVariables
      *            to be validated
-     * @author mbrunnli (10.04.2014)
      */
     public static void validateResolvedVariables(Map<String, String> resolvedVariables) {
         if (resolvedVariables == null) {
-            throw new PluginProcessingException("A Plug-In must not return null as resolved Variables");
+            throw new PluginProcessingException("A Plug-In must not return null as resolved variables.");
         }
 
         for (Entry<String, String> var : resolvedVariables.entrySet()) {
             if (var.getKey() == null) {
                 throw new PluginProcessingException(
-                    "A Plug-In must not add entries with null keys into the resolved variables Map");
+                    "A Plug-In must not add entries with null keys into the resolved variables map.");
             }
         }
     }

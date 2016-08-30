@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.impl.exceptions;
 
 /**
  * The {@link UnknownContextVariableException} occurs a context variable is used, which is unknown by xsd
@@ -11,7 +11,7 @@ public class UnknownContextVariableException extends InvalidConfigurationExcepti
     /**
      * Generated serial version UID
      */
-    private static final long serialVersionUID = -821298945327700134L;
+    private static final long serialVersionUID = 1;
 
     /**
      * Creates a new {@link UnknownContextVariableException} with the name of the unknown variable

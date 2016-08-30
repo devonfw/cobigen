@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * This interface should be implemented for providing a new input matcher. Input matcher are defined as part

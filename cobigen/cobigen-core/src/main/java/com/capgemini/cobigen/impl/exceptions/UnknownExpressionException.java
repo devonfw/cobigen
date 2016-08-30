@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.impl.exceptions;
 
 /**
  * Occurs if a variable expression in the configuration xml is unknown
@@ -10,7 +10,7 @@ public class UnknownExpressionException extends InvalidConfigurationException {
     /**
      * Generated serial version UID
      */
-    private static final long serialVersionUID = -8573224799473882852L;
+    private static final long serialVersionUID = 1;
 
     /**
      * Creates a new {@link UnknownExpressionException}

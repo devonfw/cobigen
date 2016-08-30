@@ -3,8 +3,8 @@ package com.capgemini.cobigen.api.extension;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * The {@link ModelBuilder} is an interface for accessing the internal model builder instance. Such instance

@@ -1,9 +1,9 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.impl.exceptions;
 
 /**
  * Occurs if the configuration xml could not be parsed successfully
  */
-public class InvalidConfigurationException extends RuntimeException {
+public class InvalidConfigurationException extends CobiGenRuntimeException {
 
     /**
      * Default serial version UID

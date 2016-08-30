@@ -5,10 +5,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 
 /**
  * The version validator checks the compatibility of CobiGen and its configuration files

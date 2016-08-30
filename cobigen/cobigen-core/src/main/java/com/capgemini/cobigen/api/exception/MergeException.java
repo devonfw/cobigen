@@ -1,11 +1,13 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.api.exception;
 
 import java.io.File;
+
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 
 /**
  * This Exception indicates a problem while merging.
  */
-public class MergeException extends RuntimeException {
+public class MergeException extends CobiGenRuntimeException {
 
     /**
      * Generated Serial Version UID

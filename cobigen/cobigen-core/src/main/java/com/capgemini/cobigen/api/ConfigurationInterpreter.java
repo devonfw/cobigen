@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * The configuration interpreter is responsible to interpret the underlying CobiGen configuration and e.g.
