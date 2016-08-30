@@ -30,15 +30,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.config.entity.io.IncrementRef;
-import com.capgemini.cobigen.impl.config.entity.io.Increments;
-import com.capgemini.cobigen.impl.config.entity.io.TemplateExtension;
-import com.capgemini.cobigen.impl.config.entity.io.TemplateRef;
-import com.capgemini.cobigen.impl.config.entity.io.TemplateScan;
-import com.capgemini.cobigen.impl.config.entity.io.TemplateScanRef;
-import com.capgemini.cobigen.impl.config.entity.io.TemplateScans;
-import com.capgemini.cobigen.impl.config.entity.io.Templates;
-import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
@@ -48,6 +39,15 @@ import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.io.IncrementRef;
+import com.capgemini.cobigen.impl.config.entity.io.Increments;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateExtension;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateRef;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateScan;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateScanRef;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateScans;
+import com.capgemini.cobigen.impl.config.entity.io.Templates;
+import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
@@ -100,7 +100,8 @@ public class TemplatesConfigurationReader {
      */
     private void readConfiguration() {
         try {
-            Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
+            Unmarshaller unmarschaller =
+                JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
@@ -125,10 +126,11 @@ public class TemplatesConfigurationReader {
             // correct his
             // failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            TemplatesConfigurationVersion latestConfigurationVersion = TemplatesConfigurationVersion.getLatest();
+            TemplatesConfigurationVersion latestConfigurationVersion =
+                TemplatesConfigurationVersion.getLatest();
             try (
-                InputStream schemaStream = getClass()
-                    .getResourceAsStream("/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");
+                InputStream schemaStream = getClass().getResourceAsStream(
+                    "/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");
                 InputStream configInputStream = Files.newInputStream(configFilePath)) {
 
                 Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
@@ -138,7 +140,8 @@ public class TemplatesConfigurationReader {
             }
         } catch (JAXBException e) {
             // try getting SAXParseException for better error handling and user support
-            Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+            Throwable parseCause =
+                ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
             String message = "";
             if (parseCause != null && parseCause.getMessage() != null) {
                 message = parseCause.getMessage();
@@ -188,8 +191,9 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for ref='" + t.getName() + "'");
                 }
-                templates.put(t.getName(), new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(),
-                    t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
+                templates.put(t.getName(),
+                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(),
+                        t.getMergeStrategy(), t.getTargetCharset(), trigger, triggerInterpreter));
             }
         }
 
@@ -209,8 +213,8 @@ public class TemplatesConfigurationReader {
             for (TemplateExtension ext : configNode.getTemplates().getTemplateExtension()) {
                 // detection of duplicate templateExtensions
                 if (observedExtensionNames.contains(ext.getRef())) {
-                    throw new InvalidConfigurationException(
-                        "Two templateExtensions declared for ref='" + ext.getRef() + "'. Don't know what to do.");
+                    throw new InvalidConfigurationException("Two templateExtensions declared for ref='"
+                        + ext.getRef() + "'. Don't know what to do.");
                 }
                 observedExtensionNames.add(ext.getRef());
 
@@ -227,8 +231,8 @@ public class TemplatesConfigurationReader {
                         template.setTargetCharset(ext.getTargetCharset());
                     }
                 } else {
-                    throw new InvalidConfigurationException(
-                        "The templateExtension with ref='" + ext.getRef() + "' does not reference any template!");
+                    throw new InvalidConfigurationException("The templateExtension with ref='" + ext.getRef()
+                        + "' does not reference any template!");
                 }
             }
         }
@@ -253,7 +257,8 @@ public class TemplatesConfigurationReader {
 
         Path templateFolderPath = configFilePath.getParent().resolve(scan.getTemplatePath());
         if (!Files.isDirectory(templateFolderPath)) {
-            throw new IllegalArgumentException("The path '" + templateFolderPath + "' does not describe a directory.");
+            throw new IllegalArgumentException(
+                "The path '" + templateFolderPath + "' does not describe a directory.");
         }
 
         if (scan.getName() != null) {
@@ -265,7 +270,8 @@ public class TemplatesConfigurationReader {
             }
         }
 
-        scanTemplates(templateFolderPath, "", scan, templates, trigger, triggerInterpreter, Sets.<String> newHashSet());
+        scanTemplates(templateFolderPath, "", scan, templates, trigger, triggerInterpreter,
+            Sets.<String> newHashSet());
     }
 
     /**
@@ -301,8 +307,8 @@ public class TemplatesConfigurationReader {
             while (it.hasNext()) {
                 Path next = it.next();
                 if (Files.isDirectory(next)) {
-                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan, templates, trigger,
-                        triggerInterpreter, observedTemplateNames);
+                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan, templates,
+                        trigger, triggerInterpreter, observedTemplateNames);
                 } else {
                     String templateFileName = next.getFileName().toString();
                     String templateNameWithoutExtension = templateFileName;
@@ -310,8 +316,9 @@ public class TemplatesConfigurationReader {
                         templateNameWithoutExtension = templateFileName.substring(0,
                             templateFileName.length() - ConfigurationConstants.TEMPLATE_EXTENSION.length());
                     }
-                    String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
-                        + templateNameWithoutExtension;
+                    String templateName =
+                        (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
+                            + templateNameWithoutExtension;
                     if (observedTemplateNames.contains(templateName)) {
                         throw new InvalidConfigurationException(
                             "TemplateScan has detected two files with the same file name (" + next.toString()
@@ -322,12 +329,13 @@ public class TemplatesConfigurationReader {
                     }
                     observedTemplateNames.add(templateName);
                     if (!templates.containsKey(templateName)) {
-                        String destinationPath =
-                            scan.getDestinationPath() + "/" + currentPathWithSlash + templateNameWithoutExtension;
-                        String templateFile = scan.getTemplatePath() + "/" + currentPathWithSlash + templateFileName;
+                        String destinationPath = scan.getDestinationPath() + "/" + currentPathWithSlash
+                            + templateNameWithoutExtension;
+                        String templateFile =
+                            scan.getTemplatePath() + "/" + currentPathWithSlash + templateFileName;
                         String mergeStratgey = scan.getMergeStrategy();
-                        Template template = new Template(templateName, destinationPath, templateFile, mergeStratgey,
-                            scan.getTargetCharset(), trigger, triggerInterpreter);
+                        Template template = new Template(templateName, destinationPath, templateFile,
+                            mergeStratgey, scan.getTargetCharset(), trigger, triggerInterpreter);
                         templates.put(templateName, template);
 
                         if (templateScanTemplates.get(scan.getName()) != null) {
@@ -362,16 +370,19 @@ public class TemplatesConfigurationReader {
         Increments incrementsNode = configNode.getIncrements();
         if (incrementsNode != null) {
             // Add first all increments informally be able to resolve recursive increment references
-            for (com.capgemini.cobigen.impl.config.entity.io.Increment source : incrementsNode.getIncrement()) {
+            for (com.capgemini.cobigen.impl.config.entity.io.Increment source : incrementsNode
+                .getIncrement()) {
                 if (!increments.containsKey(source.getName())) {
-                    increments.put(source.getName(), new Increment(source.getName(), source.getDescription(), trigger));
+                    increments.put(source.getName(),
+                        new Increment(source.getName(), source.getDescription(), trigger));
                 } else {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Duplicate increment found with name='" + source.getName() + "'.");
                 }
             }
             // Collect templates
-            for (com.capgemini.cobigen.impl.config.entity.io.Increment p : configNode.getIncrements().getIncrement()) {
+            for (com.capgemini.cobigen.impl.config.entity.io.Increment p : configNode.getIncrements()
+                .getIncrement()) {
                 Increment target = increments.get(p.getName());
                 addAllTemplatesRecursively(target, p, templates, increments);
             }
@@ -385,8 +396,8 @@ public class TemplatesConfigurationReader {
      * @param rootIncrement
      *            the {@link Increment} on which the templates should be added
      * @param current
-     *            the source {@link com.capgemini.cobigen.impl.config.entity.io.Increment} from which to retrieve
-     *            the data
+     *            the source {@link com.capgemini.cobigen.impl.config.entity.io.Increment} from which to
+     *            retrieve the data
      * @param templates
      *            {@link Map} of all templates (see
      *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, TriggerInterpreter)}
@@ -436,7 +447,8 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * Returns the {@link com.capgemini.cobigen.impl.config.entity.io.Increment} for the given {@link IncrementRef}
+     * Returns the {@link com.capgemini.cobigen.impl.config.entity.io.Increment} for the given
+     * {@link IncrementRef}
      *
      * @param source
      *            {@link IncrementRef}
@@ -459,7 +471,8 @@ public class TemplatesConfigurationReader {
 
         com.capgemini.cobigen.impl.config.entity.io.Increment result = null;
         while (allNamedIncrementsIt.hasNext()) {
-            com.capgemini.cobigen.impl.config.entity.io.Increment currentIncrement = allNamedIncrementsIt.next();
+            com.capgemini.cobigen.impl.config.entity.io.Increment currentIncrement =
+                allNamedIncrementsIt.next();
             if (source.getRef().equals(currentIncrement.getName())) {
                 if (result == null) {
                     result = currentIncrement;

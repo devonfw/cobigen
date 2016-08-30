@@ -5,17 +5,18 @@ import java.math.BigDecimal;
 
 import org.dozer.DozerBeanMapper;
 
-import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
+import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
 
 /**
  * This class encompasses all logic for legacy templates configuration detection and upgrading these to the
  * latest supported version.
  * @author mbrunnli (Jun 22, 2015)
  */
-public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
+public class TemplateConfigurationUpgrader
+    extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
 
     /**
      * Creates a new {@link TemplateConfigurationUpgrader} instance.
@@ -36,8 +37,8 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
         case v1_2: // to v2.1
 
             DozerBeanMapper mapper = new DozerBeanMapper();
-            try (InputStream stream =
-                getClass().getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
+            try (InputStream stream = getClass()
+                .getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
                 mapper.addMapping(stream);
             }
             com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplatesConfiguration upgradedConfig =
@@ -49,8 +50,8 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
 
             break;
         default:
-            throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source
-                + " to a newer one is currently not supported.");
+            throw new NotYetSupportedException("An upgrade of the templates configuration from version "
+                + source + " to a newer one is currently not supported.");
         }
 
         return result;

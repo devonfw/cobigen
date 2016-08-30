@@ -18,8 +18,8 @@ public interface GeneratorPluginActivator {
     public List<Merger> bindMerger();
 
     /**
-     * This function should return all {@link TriggerInterpreter} implementations, which should be provided
-     * by this plug-in implementation
+     * This function should return all {@link TriggerInterpreter} implementations, which should be provided by
+     * this plug-in implementation
      * @return a {@link List} of all {@link TriggerInterpreter}s, which should be registered (not null)
      * @author mbrunnli (08.04.2014)
      */
