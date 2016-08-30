@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.cobigen.exceptions.BackupFailedException;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.NotYetSupportedException;
-import com.capgemini.cobigen.exceptions.TechnicalRuntimeException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
 
 /**
@@ -92,7 +92,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
             this.versions = (VERSIONS_TYPE[]) version.getClass().getMethod("values").invoke(version);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
             | NoSuchMethodException | SecurityException e) {
-            throw new TechnicalRuntimeException(
+            throw new CobiGenRuntimeException(
                 "Unexpected happend! Could not determine values of the enum '" + version + "'.", e);
         }
     }
@@ -182,7 +182,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more information.
      * @param ignoreFailedBackup
      *            If is set to <code>true</code>, the backup will silently log a failed backup and return
-     *            successfully. Otherwise it will throw a {@link TechnicalRuntimeException}.
+     *            successfully. Otherwise it will throw a {@link CobiGenRuntimeException}.
      * @return if manual adoptions has to be performed after upgrading
      * @throws BackupFailedException
      *             if the backup could not be created
@@ -230,7 +230,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                     } catch (NotYetSupportedException | BackupFailedException e) {
                         throw e;
                     } catch (Throwable e) {
-                        throw new TechnicalRuntimeException(
+                        throw new CobiGenRuntimeException(
                             "An unexpected exception occurred while upgrading the " + configurationName
                                 + " from version '" + versions[i] + "' to '" + versions[i + 1] + "'.",
                             e);
@@ -238,7 +238,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
                     // if CobiGen does not understand the upgraded file... throw exception
                     if (currentVersion == null) {
-                        throw new TechnicalRuntimeException(
+                        throw new CobiGenRuntimeException(
                             "An error occurred while upgrading " + configurationName + " from version "
                                 + versions[i] + " to " + versions[i + 1] + ".");
                     }
@@ -260,7 +260,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *         upgrading.
      * @throws Exception
      *             Any exception thrown during processing will be wrapped into a
-     *             {@link TechnicalRuntimeException} by the {@link AbstractConfigurationUpgrader} with an
+     *             {@link CobiGenRuntimeException} by the {@link AbstractConfigurationUpgrader} with an
      *             appropriate message. {@link NotYetSupportedException}s will be forwarded untouched to the
      *             user.
      * @author mbrunnli (Jun 22, 2015)
@@ -275,7 +275,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            to be backed up
      * @param ignoreFailedBackup
      *            If is set to <code>true</code>, the backup will silently log a failed backup and return
-     *            successfully. Otherwise it will throw a {@link TechnicalRuntimeException}.
+     *            successfully. Otherwise it will throw a {@link CobiGenRuntimeException}.
      * @throws BackupFailedException
      *             if the backup could not be created
      * @author mbrunnli (Jun 22, 2015)

@@ -5,12 +5,12 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.CobiGenImpl;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
 import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.util.FileSystemUtil;
 
 import freemarker.template.Configuration;

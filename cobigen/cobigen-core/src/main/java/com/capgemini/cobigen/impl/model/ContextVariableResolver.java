@@ -6,11 +6,11 @@ import java.util.Map;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,7 +59,6 @@ public class ContextVariableResolver {
      * @return the mapping of variable to value
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
-     * @author mbrunnli (08.04.2014)
      */
     public Map<String, String> resolveVariables(TriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
@@ -68,19 +67,17 @@ public class ContextVariableResolver {
         for (Matcher m : trigger.getMatcher()) {
             MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+                Map<String, String> resolvedVariables;
                 try {
-                    Map<String, String> resolvedVariables = triggerInterpreter.getMatcher()
-                        .resolveVariables(matcherTo, getVariableAssignments(m));
-                    InputValidator.validateResolvedVariables(resolvedVariables);
-                    variables.putAll(resolvedVariables);
+                    resolvedVariables = triggerInterpreter.getMatcher().resolveVariables(matcherTo,
+                        getVariableAssignments(m));
                 } catch (InvalidConfigurationException e) {
                     throw e;
                 } catch (Throwable e) {
-                    throw new PluginProcessingException(
-                        "The matcher '" + triggerInterpreter.getMatcher().getClass().getCanonicalName()
-                            + "' has been exited abruptly. Please state this as a Bug in plug-in development respository.",
-                        e);
+                    throw new PluginProcessingException(e);
                 }
+                InputValidator.validateResolvedVariables(resolvedVariables);
+                variables.putAll(resolvedVariables);
             }
         }
         return variables;

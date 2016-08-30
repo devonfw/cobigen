@@ -13,7 +13,6 @@ import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.cache.Cached;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
@@ -21,6 +20,7 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 

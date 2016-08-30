@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 
 import org.dozer.DozerBeanMapper;
 
-import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
+import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 
 /**
  * This class encompasses all logic for legacy templates configuration detection and upgrading these to the

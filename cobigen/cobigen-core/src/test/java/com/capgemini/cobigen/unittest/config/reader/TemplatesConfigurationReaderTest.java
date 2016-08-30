@@ -14,13 +14,13 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.reader.TemplatesConfigurationReader;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 import junit.framework.TestCase;
 

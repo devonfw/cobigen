@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 
 import org.dozer.DozerBeanMapper;
 
-import com.capgemini.cobigen.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 
 /**
  * This class encompasses all logic for legacy context configuration detection and upgrading these to the

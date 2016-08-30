@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
@@ -22,10 +23,6 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.exceptions.PluginProcessingException;
-import com.capgemini.cobigen.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
@@ -35,6 +32,9 @@ import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
+import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
@@ -214,7 +214,7 @@ public class GenerationProcessor {
                             throw e;
                         } catch (Throwable e) {
                             LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
-                            throw new MergeException(originalFile, "Plug-in terminated abruptly!", e);
+                            throw new PluginProcessingException(e);
                         }
 
                         if (result != null) {
@@ -400,10 +400,9 @@ public class GenerationProcessor {
             try {
                 templateMethods = inputReader.getTemplateMethods(input);
             } catch (Throwable e) {
-                String message = "Error while executing getTemplateMethods() on InputReader class '"
-                    + inputReader.getClass().getCanonicalName() + "'.";
-                LOG.error(message, e);
-                throw new PluginProcessingException(message, e);
+                LOG.error("Error while executing getTemplateMethods() on InputReader class '{}'.",
+                    inputReader.getClass().getCanonicalName(), e);
+                throw new PluginProcessingException(e);
             }
 
             try {

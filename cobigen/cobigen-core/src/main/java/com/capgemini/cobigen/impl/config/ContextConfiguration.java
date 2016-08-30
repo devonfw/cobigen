@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and

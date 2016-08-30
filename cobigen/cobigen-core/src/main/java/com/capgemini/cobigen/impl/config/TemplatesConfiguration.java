@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.reader.TemplatesConfigurationReader;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
+import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 
 /**
  * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about

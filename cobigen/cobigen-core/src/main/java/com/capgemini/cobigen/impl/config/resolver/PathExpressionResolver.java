@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
+import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
+import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.util.StringUtil;
 import com.google.common.collect.Maps;
 

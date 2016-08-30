@@ -22,7 +22,6 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
@@ -33,6 +32,7 @@ import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
 import com.capgemini.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator.Type;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

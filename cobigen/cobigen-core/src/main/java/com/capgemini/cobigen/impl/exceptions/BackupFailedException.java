@@ -1,10 +1,9 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.impl.exceptions;
 
 /**
- *
- * @author mbrunnli (Jun 24, 2015)
+ * Exception indicating a failed backup process.
  */
-public class BackupFailedException extends RuntimeException {
+public class BackupFailedException extends CobiGenRuntimeException {
 
     /**
      * Default serial version UID.

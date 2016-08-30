@@ -1,10 +1,10 @@
-package com.capgemini.cobigen.exceptions;
+package com.capgemini.cobigen.impl.exceptions;
 
 /**
  * States that any logic has been triggered, which is currently not supported.
  * @author mbrunnli (Jun 22, 2015)
  */
-public class NotYetSupportedException extends RuntimeException {
+public class NotYetSupportedException extends CobiGenRuntimeException {
 
     /**
      * Default serial version UID.
