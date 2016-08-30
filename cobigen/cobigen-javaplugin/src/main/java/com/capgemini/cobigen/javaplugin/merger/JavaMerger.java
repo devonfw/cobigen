@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
 
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -57,37 +57,31 @@ public class JavaMerger implements Merger {
         return type;
     }
 
-    /**
-     * @throws IOException
-     *             if the base file does not exist or could not be written
-     * @throws MergeException
-     *             if problems occurs while merging
-     * @author mbrunnli (19.03.2013)
-     */
     @Override
-    public String merge(File base, String patch, String targetCharset) throws IOException, MergeException {
+    public String merge(File base, String patch, String targetCharset) throws MergeException {
 
         ModifyableJavaClass baseClass;
         try {
             baseClass = (ModifyableJavaClass) JavaParserUtil
                 .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
+        } catch (IOException e) {
+            throw new MergeException(base, "Cannot read base file.", e);
         } catch (ParseException e) {
-            throw new MergeException("Cannot parse base file '" + base.toPath().toString()
-                + ". Error in line: " + e.getLine() + "/column: " + e.getColumn() + ": " + e.getMessage());
+            throw new MergeException(base, "Cannot parse base file. Error in line: " + e.getLine()
+                + "/ column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
         ModifyableJavaClass patchClass;
         try {
             patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
         } catch (ParseException e) {
-            throw new MergeException("Cannot parse generated patch. Error in line: " + e.getLine()
-                + "/column: " + e.getColumn() + ": " + e.getMessage());
+            throw new MergeException(base, "Cannot parse generated patch. Error in line: " + e.getLine()
+                + "/ column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
 
         if (baseClass == null) {
-            throw new MergeException(
-                "The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");
+            throw new MergeException(base, "The base file does not declare a valid JavaClass.");
         } else if (patchClass == null) {
-            throw new MergeException("The patch does not declare a valid JavaClass");
+            throw new MergeException(base, "The patch does not declare a valid JavaClass.");
         }
 
         ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
@@ -146,10 +140,8 @@ public class JavaMerger implements Merger {
         } else {
             List<JavaClass> baseClassInterfaces = baseClass.getImplementedInterfaces();
             for (JavaClass pClass : patchClass.getImplementedInterfaces()) {
-                if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) { // TODO funktioniert
-                                                                                       // noch nicht, da super
-                                                                                       // klassen nicht im
-                                                                                       // QDox Modell sind
+                // TODO funktioniert noch nicht, da super klassen nicht im QDox Modell sind
+                if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) {
                     baseClassInterfaces.add(pClass);
                 }
             }

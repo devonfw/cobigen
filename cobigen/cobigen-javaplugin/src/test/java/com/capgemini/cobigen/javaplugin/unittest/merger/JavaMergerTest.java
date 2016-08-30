@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.exceptions.MergeException;
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.google.common.io.Files;

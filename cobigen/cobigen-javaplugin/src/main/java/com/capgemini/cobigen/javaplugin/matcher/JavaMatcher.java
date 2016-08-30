@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
 import com.google.common.collect.Maps;
