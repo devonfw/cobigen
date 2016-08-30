@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 
 /**
  * Input validator, which validates the increment and template declarations within the maven plugin
