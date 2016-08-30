@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.exceptions.MergeException;

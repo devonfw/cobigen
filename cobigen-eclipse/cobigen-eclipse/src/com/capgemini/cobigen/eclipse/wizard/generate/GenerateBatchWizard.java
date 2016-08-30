@@ -10,11 +10,11 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateBatchSelectionJob;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
 
 /**

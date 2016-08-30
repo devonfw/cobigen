@@ -5,11 +5,12 @@ import java.io.IOException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 
 /**
  *
@@ -40,8 +41,8 @@ public abstract class AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (21.03.2014)
      */
-    public AbstractCobiGenWrapper()
-        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
+    public AbstractCobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
         cobiGen = initializeGenerator();
     }
 
@@ -59,12 +60,12 @@ public abstract class AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (05.02.2013)
      */
-    private CobiGen initializeGenerator()
-        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
+    private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
+        InvalidConfigurationException, IOException {
 
         ResourcesPluginUtil.refreshConfigurationProject();
         IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-        return new CobiGen(generatorProj.getLocationURI());
+        return CobiGenFactory.create(generatorProj.getLocationURI());
     }
 
     /**
@@ -77,7 +78,8 @@ public abstract class AbstractCobiGenWrapper {
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation().toString());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            proj.getProject().getLocation().toString());
     }
 
     /**

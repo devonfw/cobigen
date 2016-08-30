@@ -11,13 +11,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.config.ContextConfiguration;
-import com.capgemini.cobigen.config.constant.ConfigurationConstants;
-import com.capgemini.cobigen.config.constant.TemplatesConfigurationVersion;
-import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
+import com.capgemini.cobigen.impl.config.ContextConfiguration;
+import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
+import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -68,8 +68,8 @@ public class AdvancedHealthCheck {
                     if (templatesConfigurationFile.canWrite()) {
                         isAccessible.add(expectedTemplateFolder);
 
-                        TemplatesConfigurationVersion resolvedVersion =
-                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(templateFolder);
+                        TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
+                            .resolveLatestCompatibleSchemaVersion(templateFolder);
                         if (resolvedVersion != null) {
                             if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
                                 upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
@@ -90,8 +90,11 @@ public class AdvancedHealthCheck {
 
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog(COMMON_DIALOG_TITLE,
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
-            LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
+                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
+                e);
+            LOG.error(
+                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
+                e);
         }
     }
 }

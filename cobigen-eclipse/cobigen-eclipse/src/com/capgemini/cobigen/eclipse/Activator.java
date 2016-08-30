@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
@@ -54,10 +54,6 @@ public class Activator extends AbstractUIPlugin {
     public Activator() {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (14.02.2013), updated by sholzer (22.09.2015)
-     */
     @Override
     public void start(BundleContext context) throws Exception {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -73,7 +69,6 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Starts the ResourceChangeListener
-     * @author mbrunnli (08.04.2013)
      */
     public void startConfigurationProjectListener() {
         LOG.info("Start configuration project listener");
