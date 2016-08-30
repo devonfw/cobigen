@@ -1,17 +1,20 @@
 package com.capgemini.cobigen.impl;
 
 import java.util.List;
+import java.util.WeakHashMap;
 
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.cache.Cached;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
@@ -21,30 +24,31 @@ import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 
-public class InputProcessorCache {
+/**
+ * The configuration holder enables caching for several requests with the same input. Therefore, the cache
+ * relies on the assumption, that the input objects will be hold in memory as long as they are referenced. Due
+ * to the fact, that this cache is just utilizing a {@link WeakHashMap}, it will automatically discard entries
+ * which are collected by the GC.
+ */
+public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(InputProcessorCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationInterpreterImpl.class);
 
-    private Object cachedInput;
-
+    /** {@link ConfigurationHolder} holding CobiGen's configuration */
     private ConfigurationHolder configurationHolder;
 
     /**
-     * Creates a new cache instance for the given input object.
+     * Creates a new instance.
+     * @param configurationHolder
+     *            {@link ConfigurationHolder} holding CobiGen's configuration
      */
-    InputProcessorCache(Object input, ConfigurationHolder configurationHolder) {
-        cachedInput = input;
+    ConfigurationInterpreterImpl(ConfigurationHolder configurationHolder) {
         this.configurationHolder = configurationHolder;
     }
 
-    /**
-     * Returns all matching trigger ids for a given input object
-     *
-     * @param matcherInput
-     *            object
-     * @return the {@link List} of matching trigger ids
-     */
+    @Cached
+    @Override
     public List<String> getMatchingTriggerIds(Object matcherInput) {
 
         LOG.info("Matching trigger IDs requested.");
@@ -56,16 +60,8 @@ public class InputProcessorCache {
         return matchingTriggerIds;
     }
 
-    /**
-     * Returns all matching increments for a given input object
-     *
-     * @param matcherInput
-     *            object
-     * @return this {@link List} of matching increments
-     * @throws InvalidConfigurationException
-     *             if the configuration of CobiGen is not valid
-     * @author mbrunnli (09.04.2014)
-     */
+    @Cached
+    @Override
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
         LOG.info("Matching increments requested.");
@@ -79,6 +75,35 @@ public class InputProcessorCache {
         return increments;
     }
 
+    @Cached
+    @Override
+    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
+
+        LOG.info("Matching templates requested.");
+        List<TemplateTo> templates = Lists.newLinkedList();
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
+            matcherInput)) {
+            for (Template template : templatesConfiguration.getAllTemplates()) {
+                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
+                    template.getMergeStrategy(), templatesConfiguration.getTrigger(),
+                    templatesConfiguration.getTriggerInterpreter()));
+            }
+        }
+        LOG.info("{} matching templates found.", templates.size());
+        return templates;
+    }
+
+    @Cached
+    @Override
+    public boolean combinesMultipleInputs(Object input) {
+        List<Trigger> matchingTriggers = getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
+        }
+        return false;
+    }
+
     /**
      * Converts a {@link List} of {@link Increment}s with their parent {@link Trigger} to a {@link List} of
      * {@link IncrementTo}s
@@ -90,7 +115,6 @@ public class InputProcessorCache {
      * @return the {@link List} of {@link IncrementTo}s
      * @param triggerInterpreter
      *            {@link TriggerInterpreter} the trigger has been interpreted with
-     * @author mbrunnli (10.04.2014)
      */
     // TODO create ToConverter
     private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger,
@@ -116,7 +140,6 @@ public class InputProcessorCache {
      * @param matcherInput
      *            object
      * @return the {@link List} of matching {@link Trigger}s
-     * @author mbrunnli (09.04.2014)
      */
     private List<Trigger> getMatchingTriggers(Object matcherInput) {
 
@@ -182,33 +205,6 @@ public class InputProcessorCache {
     }
 
     /**
-     * Returns the {@link List} of matching templates for the given input object
-     *
-     * @param matcherInput
-     *            input object activates a matcher and thus is target for context variable extraction.
-     *            Possibly a combined or wrapping object for multiple input objects
-     * @return the {@link List} of matching templates
-     * @throws InvalidConfigurationException
-     *             if the configuration is not valid
-     * @author mbrunnli (09.04.2014)
-     */
-    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
-
-        LOG.info("Matching templates requested.");
-        List<TemplateTo> templates = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
-            matcherInput)) {
-            for (Template template : templatesConfiguration.getAllTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), templatesConfiguration.getTrigger(),
-                    templatesConfiguration.getTriggerInterpreter()));
-            }
-        }
-        LOG.info("{} matching templates found.", templates.size());
-        return templates;
-    }
-
-    /**
      * Returns the {@link List} of matching {@link TemplatesConfiguration}s for the given input object
      *
      * @param matcherInput
@@ -217,7 +213,6 @@ public class InputProcessorCache {
      * @return the {@link List} of matching {@link TemplatesConfiguration}s
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
-     * @author mbrunnli (09.04.2014)
      */
     private List<TemplatesConfiguration> getMatchingTemplatesConfigurations(Object matcherInput)
         throws InvalidConfigurationException {
@@ -235,23 +230,6 @@ public class InputProcessorCache {
             }
         }
         return templateConfigurations;
-    }
-
-    /**
-     * Checks whether there is at least one input reader, which interprets the given input as combined input.
-     * @param input
-     *            object
-     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
-     *         combined input,<code>false</code>, otherwise
-     * @author mbrunnli (03.12.2014)
-     */
-    public boolean combinesMultipleInputs(Object input) {
-        List<Trigger> matchingTriggers = getMatchingTriggers(input);
-        for (Trigger trigger : matchingTriggers) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
-        }
-        return false;
     }
 
 }

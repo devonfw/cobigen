@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
@@ -58,7 +59,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -81,7 +82,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
         // Verification
@@ -105,7 +106,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // Execution
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
 
         // Verification
@@ -126,8 +127,9 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
@@ -148,7 +150,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
 
         // Execution
         List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
@@ -173,7 +175,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
 
         // Execution
         List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
@@ -222,7 +224,8 @@ public class ContainerMatcherTest extends AbstractApiTest {
             anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
         when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
             anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
+        when(inputReader.getInputObjects(any(), any(Charset.class)))
+            .thenReturn(Lists.newArrayList(child1, child2));
 
         // match container
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
@@ -231,12 +234,14 @@ public class ContainerMatcherTest extends AbstractApiTest {
             .thenReturn(false);
 
         // do not match first child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1)))))
+            .thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
             .thenReturn(true);
 
         // match second child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2)))))
+            .thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
             .thenReturn(false);
 
@@ -248,7 +253,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
         // create CobiGen instance
         File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         File folder = tmpFolder.newFolder();
         target.setContextSetting(ContextSetting.GenerationTargetRootPath, folder.getAbsolutePath());
 
@@ -335,8 +340,9 @@ public class ContainerMatcherTest extends AbstractApiTest {
                 .thenReturn(Lists.newArrayList(firstChildResource));
         }
 
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-            .thenReturn(containerChildMatchesTrigger);
+        when(matcher
+            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+                .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(

@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
@@ -62,8 +63,9 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // very manual way to load classes
@@ -124,10 +126,12 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
+        when(inputReader.getInputObjects(any(), any(Charset.class)))
+            .thenReturn(Lists.newArrayList(firstChildResource));
 
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-            .thenReturn(true);
+        when(matcher
+            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+                .thenReturn(true);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(

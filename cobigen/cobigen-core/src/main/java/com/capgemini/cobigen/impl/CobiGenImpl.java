@@ -4,13 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.cache.UnaryMethodReturnValueCache;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
+import com.capgemini.cobigen.impl.proxy.AbstractHandler;
+import com.capgemini.cobigen.impl.proxy.ProxyFactory;
 import com.google.common.collect.Lists;
 
 import freemarker.template.Configuration;
@@ -27,6 +34,12 @@ public class CobiGenImpl implements CobiGen {
     private ConfigurationHolder configurationHolder;
 
     /**
+     * {@link ConfigurationInterpreter} which holds a cache to improve performance for multiple requests for
+     * the same input
+     */
+    private ConfigurationInterpreter configurationInterpreter;
+
+    /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
      * @param templateEngineConfiguration
@@ -37,6 +50,11 @@ public class CobiGenImpl implements CobiGen {
     public CobiGenImpl(Configuration templateEngineConfiguration, ConfigurationHolder configurationHolder) {
         freeMarkerConfig = templateEngineConfiguration;
         this.configurationHolder = configurationHolder;
+
+        // Create proxy cached proxy of ConfigurationInterpreter to cache method calls
+        ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
+        configurationInterpreter = (ConfigurationInterpreter) ProxyFactory.getProxy(impl,
+            Lists.<AbstractHandler> newArrayList(new UnaryMethodReturnValueCache()));
     }
 
     @Override
@@ -88,13 +106,11 @@ public class CobiGenImpl implements CobiGen {
 
     @Override
     public void setContextSetting(ContextSetting contextSetting, String value) {
-
         configurationHolder.readContextConfiguration().set(contextSetting, value);
     }
 
     @Override
     public void getContextSetting(ContextSetting contextSetting) {
-
         configurationHolder.readContextConfiguration().get(contextSetting);
     }
 
@@ -116,5 +132,25 @@ public class CobiGenImpl implements CobiGen {
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         }
         return new ModelBuilderImpl(generatorInput, trigger, matcherInput);
+    }
+
+    @Override
+    public boolean combinesMultipleInputs(Object input) {
+        return configurationInterpreter.combinesMultipleInputs(input);
+    }
+
+    @Override
+    public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
+        return configurationInterpreter.getMatchingIncrements(matcherInput);
+    }
+
+    @Override
+    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
+        return configurationInterpreter.getMatchingTemplates(matcherInput);
+    }
+
+    @Override
+    public List<String> getMatchingTriggerIds(Object matcherInput) {
+        return configurationInterpreter.getMatchingTriggerIds(matcherInput);
     }
 }

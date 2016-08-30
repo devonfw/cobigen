@@ -8,10 +8,9 @@ import org.junit.rules.TemporaryFolder;
 import com.capgemini.cobigen.api.to.TemplateTo;
 
 /**
- *
- * @author mbrunnli (07.12.2014)
+ * Abstract test implementation providing cross-cutting functionality and properties.
  */
-public class AbstractApiTest {
+public abstract class AbstractApiTest {
 
     /**
      * Root path to all resources used in this test case

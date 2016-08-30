@@ -18,6 +18,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
@@ -59,8 +60,9 @@ public class TemplateMethodsTest extends AbstractApiTest {
 
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = new CobiGen(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath, generationRootFolder.getAbsolutePath());
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
@@ -134,8 +136,9 @@ public class TemplateMethodsTest extends AbstractApiTest {
         methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(this.getClass().getClassLoader()));
         when(inputReader.getTemplateMethods(any())).thenReturn(methodMap);
 
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-            .thenReturn(containerChildMatchesTrigger);
+        when(matcher
+            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+                .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(
