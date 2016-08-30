@@ -21,8 +21,8 @@ public class JSPluginActivator implements IGeneratorPluginActivator {
     @Override
     public List<IMerger> bindMerger() {
         List<IMerger> merger = Lists.newLinkedList();
-        merger.add(new JSMerger("javamerge", false));
-        merger.add(new JSMerger("javamerge_override", true));
+        merger.add(new JSMerger("jsmerge", false));
+        merger.add(new JSMerger("jsmerge_override", true));
         return merger;
     }
 
@@ -32,7 +32,7 @@ public class JSPluginActivator implements IGeneratorPluginActivator {
      */
     @Override
     public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<ITriggerInterpreter> newArrayList(new JSTriggerInterpreter("java"));
+        return Lists.<ITriggerInterpreter> newArrayList(new JSTriggerInterpreter("js"));
     }
 
 }

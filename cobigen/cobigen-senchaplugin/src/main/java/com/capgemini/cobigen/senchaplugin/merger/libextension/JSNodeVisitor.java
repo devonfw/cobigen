@@ -3,12 +3,12 @@ package com.capgemini.cobigen.senchaplugin.merger.libextension;
 import java.util.LinkedList;
 import java.util.List;
 
-import sun.org.mozilla.javascript.internal.Token;
-import sun.org.mozilla.javascript.internal.ast.AstNode;
-import sun.org.mozilla.javascript.internal.ast.NodeVisitor;
-import sun.org.mozilla.javascript.internal.ast.ObjectProperty;
-import sun.org.mozilla.javascript.internal.ast.PropertyGet;
-import sun.org.mozilla.javascript.internal.ast.StringLiteral;
+import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstNode;
+import org.mozilla.javascript.ast.NodeVisitor;
+import org.mozilla.javascript.ast.ObjectProperty;
+import org.mozilla.javascript.ast.PropertyGet;
+import org.mozilla.javascript.ast.StringLiteral;
 
 /**
  *
@@ -76,7 +76,7 @@ public class JSNodeVisitor implements NodeVisitor {
 
     /**
      * @return the first argument of the Ext.define
-     * 
+     *
      * @author rudiazma (8 de ago. de 2016)
      */
     public StringLiteral getFirstArgument() {
