@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 
 /**
  *

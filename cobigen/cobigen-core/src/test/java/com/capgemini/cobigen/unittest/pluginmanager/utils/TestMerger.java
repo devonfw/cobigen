@@ -2,9 +2,9 @@ package com.capgemini.cobigen.unittest.pluginmanager.utils;
 
 import java.io.File;
 
-import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.api.extension.Merger;
 
-public class TestMerger implements IMerger {
+public class TestMerger implements Merger {
 
     @Override
     public String getType() {

@@ -4,7 +4,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import com.capgemini.cobigen.extension.to.MatcherTo;
+import com.capgemini.cobigen.api.to.MatcherTo;
 
 /**
  * Hamcrest Matcher for {@link MatcherTo}s

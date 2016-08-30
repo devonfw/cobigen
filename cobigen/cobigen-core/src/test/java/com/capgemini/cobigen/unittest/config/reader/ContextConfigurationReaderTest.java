@@ -5,9 +5,9 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.reader.ContextConfigurationReader;
+import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
 
 import junit.framework.TestCase;
 

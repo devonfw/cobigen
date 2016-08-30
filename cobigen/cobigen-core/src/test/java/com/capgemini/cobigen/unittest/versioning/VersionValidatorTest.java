@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.config.versioning.VersionValidator;
-import com.capgemini.cobigen.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.config.versioning.VersionValidator;
+import com.capgemini.cobigen.impl.config.versioning.VersionValidator.Type;
 
 /**
  * Test suite for {@link VersionValidator} class.

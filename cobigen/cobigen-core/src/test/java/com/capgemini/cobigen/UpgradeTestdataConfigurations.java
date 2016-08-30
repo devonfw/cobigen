@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.config.upgrade.ContextConfigurationUpgrader;
-import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
+import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.google.common.collect.Lists;
 
 /**

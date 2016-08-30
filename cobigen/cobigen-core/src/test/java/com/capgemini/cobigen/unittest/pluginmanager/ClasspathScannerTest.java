@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.pluginmanager.ClasspathScanner;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 public class ClasspathScannerTest {
 
