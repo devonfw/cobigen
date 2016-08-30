@@ -9,9 +9,10 @@ import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
+import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
@@ -38,21 +39,22 @@ public class ModelCreationTest extends AbstractIntegrationTest {
      */
     @Test
     public void testCorrectGenericTypeExtraction() throws Exception {
-        CobiGen cobiGen = new CobiGen(cobigenConfigFolder.toURI());
+        CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
+        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
+            tmpFolderCobiGen.getAbsolutePath());
 
         Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
+                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("genericTypes.txt")) {
                 cobiGen.generate(input, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
+                File expectedFile = new File(
+                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
                 Assert.assertTrue(expectedFile.exists());
                 Assert.assertEquals("List<String> testField", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;

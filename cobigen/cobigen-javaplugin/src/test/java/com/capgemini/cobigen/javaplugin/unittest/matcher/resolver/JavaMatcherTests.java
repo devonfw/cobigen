@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 import com.capgemini.cobigen.javaplugin.matcher.JavaMatcher;
 
 /**

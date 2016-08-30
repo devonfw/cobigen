@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
 
+import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -23,7 +23,7 @@ import com.thoughtworks.qdox.parser.ParseException;
  *
  * @author mbrunnli (19.03.2013)
  */
-public class JavaMerger implements IMerger {
+public class JavaMerger implements Merger {
 
     /**
      * Merger Type to be registered
@@ -72,19 +72,20 @@ public class JavaMerger implements IMerger {
             baseClass = (ModifyableJavaClass) JavaParserUtil
                 .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
         } catch (ParseException e) {
-            throw new MergeException("Cannot parse base file '" + base.toPath().toString() + ". Error in line: "
-                + e.getLine() + "/column: " + e.getColumn() + ": " + e.getMessage());
+            throw new MergeException("Cannot parse base file '" + base.toPath().toString()
+                + ". Error in line: " + e.getLine() + "/column: " + e.getColumn() + ": " + e.getMessage());
         }
         ModifyableJavaClass patchClass;
         try {
             patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
         } catch (ParseException e) {
-            throw new MergeException("Cannot parse generated patch. Error in line: " + e.getLine() + "/column: "
-                + e.getColumn() + ": " + e.getMessage());
+            throw new MergeException("Cannot parse generated patch. Error in line: " + e.getLine()
+                + "/column: " + e.getColumn() + ": " + e.getMessage());
         }
 
         if (baseClass == null) {
-            throw new MergeException("The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");
+            throw new MergeException(
+                "The base file " + base.getAbsolutePath() + " does not declare a valid JavaClass");
         } else if (patchClass == null) {
             throw new MergeException("The patch does not declare a valid JavaClass");
         }
