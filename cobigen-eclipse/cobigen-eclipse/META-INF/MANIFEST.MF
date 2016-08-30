@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In
 Bundle-SymbolicName: com.capgemini.cobigen.eclipse;singleton:=true
-Bundle-Version: 1.5.0
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: com.capgemini.cobigen.eclipse.Activator
 Bundle-Vendor: Capgemini
 Require-Bundle: org.eclipse.ui;bundle-version="3.104.0",
@@ -19,8 +19,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/ant-1.9.6.jar,
- lib/cobigen-propertyplugin-1.0.0.jar,
- lib/cobigen-textmerger-1.0.1.jar,
  lib/cobigen-xmlplugin-3.0.0-SNAPSHOT.jar,
  lib/commons-beanutils-1.9.1.jar,
  lib/commons-collections-3.2.1.jar,
@@ -40,7 +38,9 @@ Bundle-ClassPath: .,
  lib/mmm-util-core-5.0.0.jar,
  lib/qdox-2.0-M3.jar,
  lib/slf4j-api-1.7.21.jar,
- lib/cobigen-javaplugin-1.3.3-SNAPSHOT.jar,
  lib/lexeme-1.0.0.jar,
  lib/sax-2.0.1.jar,
- lib/cobigen-core-3.0.0-SNAPSHOT.jar
+ lib/cobigen-core-3.0.0-SNAPSHOT.jar,
+ lib/cobigen-javaplugin-1.4.0-SNAPSHOT.jar,
+ lib/cobigen-propertyplugin-1.1.0-SNAPSHOT.jar,
+ lib/cobigen-textmerger-1.1.0-SNAPSHOT.jar

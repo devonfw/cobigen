@@ -28,10 +28,10 @@ import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
-import com.capgemini.cobigen.exceptions.UnknownTemplateException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
+import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 
 /**
  * Handler for the Package-Explorer Event

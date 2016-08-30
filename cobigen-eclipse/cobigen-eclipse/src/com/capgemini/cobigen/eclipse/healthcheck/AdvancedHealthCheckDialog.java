@@ -27,8 +27,8 @@ import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.exceptions.BackupFailedException;
 import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
+import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
 
 /**
  * Dialog to show the advanced health check results as well as performing the templates configuration

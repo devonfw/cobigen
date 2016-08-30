@@ -14,9 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
-import com.capgemini.cobigen.exceptions.MergeException;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
