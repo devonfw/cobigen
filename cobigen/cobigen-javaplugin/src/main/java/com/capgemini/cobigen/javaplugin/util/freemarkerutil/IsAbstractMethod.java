@@ -48,7 +48,8 @@ public class IsAbstractMethod implements TemplateMethodModelEx {
         } else if (args.get(0) instanceof SimpleScalar) {
             input = ((SimpleScalar) args.get(0)).getAsString();
         } else {
-            throw new TemplateModelException("The passed argument has an unexpected type. A String is expected");
+            throw new TemplateModelException(
+                "The passed argument has an unexpected type. A String is expected");
         }
 
         try {

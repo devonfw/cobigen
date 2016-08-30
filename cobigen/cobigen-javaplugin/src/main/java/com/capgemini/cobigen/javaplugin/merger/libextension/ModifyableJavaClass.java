@@ -410,7 +410,8 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
         JavaClass superclass = callingClazz.getSuperJavaClass();
         if (superclass != null) {
-            Map<String, JavaMethod> superClassMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
+            Map<String, JavaMethod> superClassMethods =
+                getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
             for (Map.Entry<String, JavaMethod> methodEntry : superClassMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
@@ -426,7 +427,8 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         }
 
         for (JavaClass clazz : callingClazz.getImplementedInterfaces()) {
-            Map<String, JavaMethod> interfaceMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
+            Map<String, JavaMethod> interfaceMethods =
+                getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
             for (Map.Entry<String, JavaMethod> methodEntry : interfaceMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
@@ -473,13 +475,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
+        boolean superclasses) {
         return getMethodsBySignature(name, parameterTypes, superclasses, false);
     }
 
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses,
-        boolean varArg) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
+        boolean superclasses, boolean varArg) {
         List<JavaMethod> result = new LinkedList<>();
 
         JavaMethod methodInThisClass = getMethod(name, parameterTypes, varArg);
