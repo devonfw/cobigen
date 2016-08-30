@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
 
@@ -13,8 +13,6 @@ import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link ContextConfigurationReader}
- *
- * @author mbrunnli (18.06.2013)
  */
 public class ContextConfigurationReaderTest {
 
@@ -42,7 +40,7 @@ public class ContextConfigurationReaderTest {
      */
     @Test
     public void testReadConfigurationFromZip() throws Exception {
-        new CobiGen(new File(testFileRootPath + "valid.zip").toURI());
+        CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
     }
 
 }

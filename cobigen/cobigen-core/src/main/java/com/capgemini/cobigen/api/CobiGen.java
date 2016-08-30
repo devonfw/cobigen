@@ -11,7 +11,7 @@ import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
  */
-public interface CobiGen {
+public interface CobiGen extends ConfigurationInterpreter {
 
     /**
      * @see #generate(Object, List, boolean, List, Map)

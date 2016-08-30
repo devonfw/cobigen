@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.entity.io.IncrementRef;
 import com.capgemini.cobigen.impl.config.entity.io.Increments;
 import com.capgemini.cobigen.impl.config.entity.io.TemplateExtension;
@@ -44,6 +43,7 @@ import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
+import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;

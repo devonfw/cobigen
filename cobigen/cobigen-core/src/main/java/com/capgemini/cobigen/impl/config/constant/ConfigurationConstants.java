@@ -18,6 +18,6 @@ public class ConfigurationConstants {
     /**
      * Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification)
      */
-    public static final String JAXB_PACKAGE_PREFIX = "com.capgemini.cobigen.config.entity.io";
+    public static final String JAXB_PACKAGE_PREFIX = "com.capgemini.cobigen.impl.config.entity.io";
 
 }

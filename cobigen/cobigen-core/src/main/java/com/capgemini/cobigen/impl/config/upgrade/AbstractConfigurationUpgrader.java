@@ -42,7 +42,6 @@ import com.capgemini.cobigen.impl.util.ExceptionUtil;
  * </ul>
  * @param <VERSIONS_TYPE>
  *            Type of the version enum listing all supported versions (increasing declaration).
- * @author mbrunnli (Jun 23, 2015)
  */
 public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?>> {
 
@@ -80,18 +79,19 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         this.configurationJaxbRootNode = configurationJaxbRootNode;
         this.configurationFilename = configurationFilename;
 
-        configurationName = StringUtils
-            .join(configurationJaxbRootNode.getSimpleName().split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=-Z][a-z])"), " ");// split
-                                                                                                                      // camel
-                                                                                                                      // case
+        // split camel case
+        configurationName = StringUtils.join(
+            configurationJaxbRootNode.getSimpleName().split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=-Z][a-z])"),
+            " ");
 
-        configurationXsdFilename = StringUtils.uncapitalize(configurationJaxbRootNode.getSimpleName()) + ".xsd";
+        configurationXsdFilename =
+            StringUtils.uncapitalize(configurationJaxbRootNode.getSimpleName()) + ".xsd";
 
         // determine all "version enum" values
         try {
             this.versions = (VERSIONS_TYPE[]) version.getClass().getMethod("values").invoke(version);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-            | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+            | NoSuchMethodException | SecurityException e) {
             throw new TechnicalRuntimeException(
                 "Unexpected happend! Could not determine values of the enum '" + version + "'.", e);
         }
@@ -131,7 +131,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *         configuration is not compliant to any.
      * @author mbrunnli (Jun 22, 2015)
      */
-    private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion) {
+    private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot,
+        boolean justCheckLatestVersion) {
         LOG.info("Try reading {} (including trails with legacy schema).", configurationName);
 
         Path configurationFile = configurationRoot.resolve(configurationFilename);
@@ -145,13 +146,16 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
                 // check, whether the read node can be casted to the correct configuration root node object
                 if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
-                    LOG.info("It was not possible to read {} with schema '{}' .", configurationName, lv.toString());
+                    LOG.info("It was not possible to read {} with schema '{}' .", configurationName,
+                        lv.toString());
                 } else {
-                    LOG.info("It was possible to read {} with schema '{}' .", configurationName, lv.toString());
+                    LOG.info("It was possible to read {} with schema '{}' .", configurationName,
+                        lv.toString());
                     return lv;
                 }
             } catch (Throwable e) {
-                Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+                Throwable cause =
+                    ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
                 if (cause != null && cause.getMessage() != null) {
                     LOG.info("Not able to read template configuration with schema '{}': {}", lv.toString(),
                         cause.getMessage());
@@ -201,13 +205,14 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                     break; // already up to date
                 }
                 if (currentVersion == versions[i]) {
-                    LOG.info("Upgrading {} '{}' from version {} to {}...", configurationName, configurationFile.toUri(),
-                        versions[i], versions[i + 1]);
+                    LOG.info("Upgrading {} '{}' from version {} to {}...", configurationName,
+                        configurationFile.toUri(), versions[i], versions[i + 1]);
 
                     Object rootNode;
                     try {
                         Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(versions[i]);
-                        rootNode = unmarshallConfiguration(configurationFile, versions[i], jaxbConfigurationClass);
+                        rootNode =
+                            unmarshallConfiguration(configurationFile, versions[i], jaxbConfigurationClass);
 
                         createBackup(configurationFile, ignoreFailedBackup);
 
@@ -225,15 +230,17 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                     } catch (NotYetSupportedException | BackupFailedException e) {
                         throw e;
                     } catch (Throwable e) {
-                        throw new TechnicalRuntimeException("An unexpected exception occurred while upgrading the "
-                            + configurationName + " from version '" + versions[i] + "' to '" + versions[i + 1] + "'.",
+                        throw new TechnicalRuntimeException(
+                            "An unexpected exception occurred while upgrading the " + configurationName
+                                + " from version '" + versions[i] + "' to '" + versions[i + 1] + "'.",
                             e);
                     }
 
                     // if CobiGen does not understand the upgraded file... throw exception
                     if (currentVersion == null) {
-                        throw new TechnicalRuntimeException("An error occurred while upgrading " + configurationName
-                            + " from version " + versions[i] + " to " + versions[i + 1] + ".");
+                        throw new TechnicalRuntimeException(
+                            "An error occurred while upgrading " + configurationName + " from version "
+                                + versions[i] + " to " + versions[i + 1] + ".");
                     }
                 }
             }
@@ -313,8 +320,9 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * @author mbrunnli (Jun 23, 2015)
      */
     private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
-        Class<?> configurationClass = getClass().getClassLoader().loadClass(ConfigurationConstants.JAXB_PACKAGE_PREFIX
-            + "." + lv.name() + "." + configurationJaxbRootNode.getSimpleName());
+        Class<?> configurationClass =
+            getClass().getClassLoader().loadClass(ConfigurationConstants.JAXB_PACKAGE_PREFIX + "." + lv.name()
+                + "." + configurationJaxbRootNode.getSimpleName());
         return configurationClass;
     }
 
@@ -335,8 +343,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *             if the configuration file could not be read
      * @author mbrunnli (Jun 23, 2015)
      */
-    private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv, Class<?> jaxbConfigurationClass)
-        throws JAXBException, SAXException, IOException {
+    private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv,
+        Class<?> jaxbConfigurationClass) throws JAXBException, SAXException, IOException {
         Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(new StreamSource(
