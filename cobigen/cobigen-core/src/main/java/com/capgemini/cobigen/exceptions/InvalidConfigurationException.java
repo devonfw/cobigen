@@ -2,8 +2,6 @@ package com.capgemini.cobigen.exceptions;
 
 /**
  * Occurs if the configuration xml could not be parsed successfully
- *
- * @author mbrunnli (19.02.2013)
  */
 public class InvalidConfigurationException extends RuntimeException {
 
