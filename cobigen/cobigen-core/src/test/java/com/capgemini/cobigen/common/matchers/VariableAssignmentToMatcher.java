@@ -71,7 +71,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
 
         VariableAssignmentTo varAssignTo = (VariableAssignmentTo) item;
 
-        mismatchDescription.appendText("VariableAssignmentTo does not match!\nShould be VariableAssignmentTo(");
+        mismatchDescription
+            .appendText("VariableAssignmentTo does not match!\nShould be VariableAssignmentTo(");
         type.describeTo(mismatchDescription);
         mismatchDescription.appendText(", ");
         varName.describeTo(mismatchDescription);

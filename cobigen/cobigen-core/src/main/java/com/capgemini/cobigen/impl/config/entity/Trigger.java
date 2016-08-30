@@ -64,7 +64,8 @@ public class Trigger {
         this.templateFolder = templateFolder;
         this.inputCharset = inputCharset;
         matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
-        this.containerMatchers = containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
+        this.containerMatchers =
+            containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
     }
 
     /**

@@ -76,7 +76,8 @@ public class VersionValidator {
 
         Float currentCobiGenVersion;
         String currentCobiGenVersionStr = cobiGenVersion;
-        currentCobiGenVersionStr = currentCobiGenVersionStr.substring(0, currentCobiGenVersionStr.lastIndexOf("."));
+        currentCobiGenVersionStr =
+            currentCobiGenVersionStr.substring(0, currentCobiGenVersionStr.lastIndexOf("."));
         currentCobiGenVersion = Float.parseFloat(currentCobiGenVersionStr);
 
         if (configVersion == currentCobiGenVersion) {
@@ -94,10 +95,10 @@ public class VersionValidator {
             for (Float versionStep : versionSteps) {
                 // If there exists a version step (breaking change) in between, throw an error
                 if (configVersion < versionStep && versionStep <= currentCobiGenVersion) {
-                    LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", configName,
-                        currentCobiGenVersionStr, configName, configVersion);
-                    throw new InvalidConfigurationException("The " + configName + " with version '" + configVersion
-                        + "' has to be upgraded to a compatible " + configName + " version.");
+                    LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}",
+                        configName, currentCobiGenVersionStr, configName, configVersion);
+                    throw new InvalidConfigurationException("The " + configName + " with version '"
+                        + configVersion + "' has to be upgraded to a compatible " + configName + " version.");
                 }
             }
             LOG.debug("Compatible {} as no breaking changes found. CobiGen: {} / {}: {}", configName,

@@ -37,8 +37,8 @@ public class PluginRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(PluginRegistry.class);
 
     /***
-     * Loads the given plug-in and registers all {@link Merger}s and {@link TriggerInterpreter}s bound by
-     * the given plug-in
+     * Loads the given plug-in and registers all {@link Merger}s and {@link TriggerInterpreter}s bound by the
+     * given plug-in
      *
      * @param generatorPlugin
      *            plug-in to be loaded
@@ -85,7 +85,8 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass().getCanonicalName());
+        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(),
+            merger.getClass().getCanonicalName());
     }
 
     /**
@@ -111,8 +112,8 @@ public class PluginRegistry {
      *
      * @param mergerType
      *            the {@link Merger} should be able to interpret
-     * @return the {@link Merger} for the given mergerType or <code>null</code> if there is no
-     *         {@link Merger} for this mergerType
+     * @return the {@link Merger} for the given mergerType or <code>null</code> if there is no {@link Merger}
+     *         for this mergerType
      * @author mbrunnli (07.04.2014)
      */
     public static Merger getMerger(String mergerType) {

@@ -51,8 +51,8 @@ public class IsSubtypeOfMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Wrong number of arguments. 2 arguments are expected.");
         }
         try {
-            boolean isSubtypeOf =
-                isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(), ((SimpleScalar) args.get(1)).getAsString());
+            boolean isSubtypeOf = isSubtypeOf(((SimpleScalar) args.get(0)).getAsString(),
+                ((SimpleScalar) args.get(1)).getAsString());
             if (isSubtypeOf) {
                 return TemplateBooleanModel.TRUE;
             } else {

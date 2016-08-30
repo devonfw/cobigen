@@ -47,7 +47,8 @@ public class TemplateConfigurationUpgraderTest {
 
         TemplateConfigurationUpgrader sut = new TemplateConfigurationUpgrader();
 
-        TemplatesConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
+        TemplatesConfigurationVersion version =
+            sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(TemplatesConfigurationVersion.v1_2);
 
         sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
@@ -60,7 +61,8 @@ public class TemplateConfigurationUpgraderTest {
         XMLUnit.setIgnoreWhitespace(true);
         new XMLTestCase() {
         }.assertXMLEqual(
-            new FileReader(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME),
+            new FileReader(
+                testFileRootPath + "valid-v2.1/" + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME),
             new FileReader(tmpTargetConfig));
     }
 

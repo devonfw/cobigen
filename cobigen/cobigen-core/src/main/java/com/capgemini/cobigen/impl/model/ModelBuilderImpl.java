@@ -19,8 +19,8 @@ import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 
 /**
- * The {@link ModelBuilderImpl} is responsible to create the object models for a given object. Therefore, it uses
- * {@link TriggerInterpreter} plug-in extensions to query available {@link InputReader}s and
+ * The {@link ModelBuilderImpl} is responsible to create the object models for a given object. Therefore, it
+ * uses {@link TriggerInterpreter} plug-in extensions to query available {@link InputReader}s and
  * {@link MatcherInterpreter}s
  * @author mbrunnli (08.04.2014)
  */
@@ -68,8 +68,8 @@ public class ModelBuilderImpl implements ModelBuilder {
 
     /**
      * Creates a new model by using the given {@link TriggerInterpreter} to retrieve the {@link InputReader}
-     * and {@link MatcherInterpreter} from. Furthermore, the model will be directly converted to the DOM representation
-     * to enable xPath within for FreeMarker.
+     * and {@link MatcherInterpreter} from. Furthermore, the model will be directly converted to the DOM
+     * representation to enable xPath within for FreeMarker.
      * @param triggerInterpreter
      *            to be used
      * @return the created model
@@ -83,8 +83,8 @@ public class ModelBuilderImpl implements ModelBuilder {
     }
 
     /**
-     * Creates a new model by trying to retrieve the corresponding {@link TriggerInterpreter} from the
-     * plug-in registry
+     * Creates a new model by trying to retrieve the corresponding {@link TriggerInterpreter} from the plug-in
+     * registry
      * @return the created model
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
