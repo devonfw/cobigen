@@ -15,11 +15,11 @@ import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.exceptions.BackupFailedException;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * This class implements the Health Check to provide more information about the current status of CobiGen and

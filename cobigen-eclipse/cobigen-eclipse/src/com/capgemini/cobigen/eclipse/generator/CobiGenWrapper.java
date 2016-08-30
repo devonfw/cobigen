@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
@@ -27,12 +28,10 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.MergeException;
+import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
-
-import freemarker.template.TemplateException;
 
 /**
  * Wrapper for CobiGen providing an eclipse compliant API.
@@ -174,23 +173,17 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            {@link TemplateTo} to be generated
      * @param forceOverride
      *            forces the generator to override the maybe existing target file of the template
-     * @throws TemplateException
-     *             any exception of the FreeMarker engine
-     * @throws IOException
-     *             if the specified template could not be found
      * @throws MergeException
      *             if there are some problems while merging
-     * @author mbrunnli (14.02.2013)
      */
-    public void generate(TemplateTo template, boolean forceOverride)
-        throws IOException, TemplateException, MergeException {
+    public void generate(TemplateTo template, boolean forceOverride) throws MergeException {
 
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
-            cobiGen.generate(inputs.get(0), template, model, forceOverride);
+            cobiGen.generate(inputs.get(0), template, forceOverride, null, model);
         } else {
             for (Object input : inputs) {
                 cobiGen.generate(input, template, forceOverride);
@@ -458,7 +451,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *         false, if they are not supported by any trigger at all
      * @throws InvalidInputException
      *             if the input could not be read as expected
-     * @author trippl (22.04.2013)
      */
     public abstract boolean isValidInput(IStructuredSelection selection) throws InvalidInputException;
 
