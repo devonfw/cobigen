@@ -8,24 +8,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mozilla.javascript.CompilerEnvirons;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.ast.ArrayLiteral;
+import org.mozilla.javascript.ast.AstNode;
+import org.mozilla.javascript.ast.AstRoot;
+import org.mozilla.javascript.ast.ExpressionStatement;
+import org.mozilla.javascript.ast.FunctionCall;
+import org.mozilla.javascript.ast.FunctionNode;
+import org.mozilla.javascript.ast.ObjectLiteral;
+import org.mozilla.javascript.ast.ObjectProperty;
+import org.mozilla.javascript.ast.PropertyGet;
+import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.extension.IMerger;
 import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
-
-import sun.org.mozilla.javascript.internal.CompilerEnvirons;
-import sun.org.mozilla.javascript.internal.EvaluatorException;
-import sun.org.mozilla.javascript.internal.Parser;
-import sun.org.mozilla.javascript.internal.ast.ArrayLiteral;
-import sun.org.mozilla.javascript.internal.ast.AstNode;
-import sun.org.mozilla.javascript.internal.ast.AstRoot;
-import sun.org.mozilla.javascript.internal.ast.ExpressionStatement;
-import sun.org.mozilla.javascript.internal.ast.FunctionCall;
-import sun.org.mozilla.javascript.internal.ast.FunctionNode;
-import sun.org.mozilla.javascript.internal.ast.ObjectLiteral;
-import sun.org.mozilla.javascript.internal.ast.ObjectProperty;
-import sun.org.mozilla.javascript.internal.ast.PropertyGet;
-import sun.org.mozilla.javascript.internal.ast.StringLiteral;
 
 /**
  * The {@link JSMerger} merges a patch and the base JS file of the same file. This merge is a structural merge
