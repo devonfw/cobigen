@@ -21,15 +21,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -85,7 +85,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
     /**
      * Creates simple to debug test data, which includes on container object and one child of the container
-     * object. A {@link ITriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
+     * object. A {@link TriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
      * classes to mock a simple java trigger interpreter. Furthermore, the mocked trigger interpreter will be
      * directly registered in the {@link PluginRegistry}.
      * @return the container as input for generation interpreter for
@@ -108,9 +108,9 @@ public class ClassLoadingTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("java");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);

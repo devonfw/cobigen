@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.config.constant;
+package com.capgemini.cobigen.impl.config.constant;
 
 /**
  * Constants extracted from the maven pom.

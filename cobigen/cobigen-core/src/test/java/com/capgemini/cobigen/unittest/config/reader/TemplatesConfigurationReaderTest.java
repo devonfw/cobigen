@@ -13,14 +13,14 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.config.entity.ContainerMatcher;
-import com.capgemini.cobigen.config.entity.Increment;
-import com.capgemini.cobigen.config.entity.Matcher;
-import com.capgemini.cobigen.config.entity.Template;
-import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.config.reader.TemplatesConfigurationReader;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
+import com.capgemini.cobigen.impl.config.entity.Increment;
+import com.capgemini.cobigen.impl.config.entity.Matcher;
+import com.capgemini.cobigen.impl.config.entity.Template;
+import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.reader.TemplatesConfigurationReader;
 
 import junit.framework.TestCase;
 
@@ -72,7 +72,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
         String templateIdSpringCommon = "resources_resources_spring_common";
 
         // when
@@ -112,7 +112,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
@@ -150,7 +150,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
@@ -196,7 +196,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
@@ -281,7 +281,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
 
         // when
         Map<String, Template> templates = reader.loadTemplates(trigger, triggerInterpreter);
@@ -336,7 +336,7 @@ public class TemplatesConfigurationReaderTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        ITriggerInterpreter triggerInterpreter = null;
+        TriggerInterpreter triggerInterpreter = null;
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);

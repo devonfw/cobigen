@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.google.common.collect.Maps;
 
 /**

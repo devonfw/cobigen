@@ -6,31 +6,31 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ConfigurationBuilder;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.Merger;
 
 /**
- * The ClasspathScanner scans the current classpath for sub classes of {@link IGeneratorPluginActivator}. All
- * plugins will be called to bind their defined {@link IMerger}s and {@link IInputReader}s
- *
- * @author mbrunnli (06.04.2014)
+ * The ClasspathScanner scans the current classpath for sub classes of {@link GeneratorPluginActivator}. All
+ * plugins will be called to bind their defined {@link Merger}s and {@link InputReader}s
  */
 public class ClasspathScanner {
 
     /**
-     * Scans the classpath for {@link IGeneratorPluginActivator}s and registers {@link IMerger} and
-     * {@link IInputReader}
+     * Scans the classpath for {@link GeneratorPluginActivator}s and registers {@link Merger} and
+     * {@link InputReader}
      *
      * @author mbrunnli (06.04.2014)
      */
     public static void scanClasspathAndRegisterPlugins() {
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder().addScanners(new SubTypesScanner()));
-        Set<Class<? extends IGeneratorPluginActivator>> plugins =
-            reflections.getSubTypesOf(IGeneratorPluginActivator.class);
+        Reflections reflections =
+            new Reflections(new ConfigurationBuilder().addScanners(new SubTypesScanner()));
+        Set<Class<? extends GeneratorPluginActivator>> plugins =
+            reflections.getSubTypesOf(GeneratorPluginActivator.class);
 
-        for (Class<? extends IGeneratorPluginActivator> plugin : plugins) {
+        for (Class<? extends GeneratorPluginActivator> plugin : plugins) {
             PluginRegistry.loadPlugin(plugin);
         }
 

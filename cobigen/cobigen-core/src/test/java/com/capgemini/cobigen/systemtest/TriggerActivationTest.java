@@ -16,12 +16,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 
 /**
@@ -47,9 +47,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -86,9 +86,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -124,9 +124,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -163,9 +163,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -200,9 +200,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -238,9 +238,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
@@ -275,9 +275,9 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
-        ITriggerInterpreter triggerInterpreter = mock(ITriggerInterpreter.class);
-        IMatcher matcher = mock(IMatcher.class);
-        IInputReader inputReader = mock(IInputReader.class);
+        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+        InputReader inputReader = mock(InputReader.class);
 
         when(triggerInterpreter.getType()).thenReturn("test");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);

@@ -4,8 +4,8 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import com.capgemini.cobigen.extension.to.MatcherTo;
-import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.capgemini.cobigen.api.to.MatcherTo;
+import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 
 /**
  * A hamcrest matcher for providing matching functionality for {@link VariableAssignmentTo}s
