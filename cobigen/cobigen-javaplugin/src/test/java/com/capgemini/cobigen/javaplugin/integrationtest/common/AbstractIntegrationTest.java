@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 /**
  *

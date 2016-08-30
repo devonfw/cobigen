@@ -10,8 +10,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.capgemini.cobigen.impl.util.StringUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.BeanProperty;
@@ -178,7 +178,8 @@ public class ParsedJavaModelBuilder {
      * @return the mapping of property names to their values
      * @author mbrunnli (25.01.2015)
      */
-    private Map<String, Object> extractField(String fieldName, JavaType field, JavaAnnotatedElement annotatedElement) {
+    private Map<String, Object> extractField(String fieldName, JavaType field,
+        JavaAnnotatedElement annotatedElement) {
         Map<String, Object> fieldValues = new HashMap<>();
         fieldValues.put(ModelConstant.NAME, fieldName);
         // currently there is a problem with qDox. It provides the canonical type for supertype fields when
@@ -280,14 +281,14 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, classField.getAnnotations());
             }
 
-            JavaMethod getter =
-                javaClass.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null, false);
+            JavaMethod getter = javaClass.getMethod(
+                "get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null, false);
             if (getter != null) {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
 
-            getter =
-                javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), null, false);
+            getter = javaClass.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
+                null, false);
             if (getter != null) {
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             }
@@ -298,8 +299,8 @@ public class ParsedJavaModelBuilder {
                 paramList = new ArrayList<>();
                 paramList.add(attrType);
             }
-            JavaMethod setter = javaClass
-                .getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList, false);
+            JavaMethod setter = javaClass.getMethod(
+                "set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList, false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
@@ -317,11 +318,13 @@ public class ParsedJavaModelBuilder {
      * @author mbrunnli (01.04.2014)
      */
     @SuppressWarnings("unchecked")
-    private void extractAnnotationsRecursively(Map<String, Object> annotationsMap, List<JavaAnnotation> annotations) {
+    private void extractAnnotationsRecursively(Map<String, Object> annotationsMap,
+        List<JavaAnnotation> annotations) {
 
         for (JavaAnnotation annotation : annotations) {
             Map<String, Object> annotationParameters = new HashMap<>();
-            annotationsMap.put(annotation.getType().getCanonicalName().replaceAll("\\.", "_"), annotationParameters);
+            annotationsMap.put(annotation.getType().getCanonicalName().replaceAll("\\.", "_"),
+                annotationParameters);
 
             for (String propertyName : annotation.getPropertyMap().keySet()) {
                 Object value = annotation.getNamedParameter(propertyName);
@@ -400,11 +403,11 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             JavaMethod getter = null;
             try {
-                getter = javaClass.getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null,
-                    false);
+                getter = javaClass.getMethod(
+                    "get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
             } catch (Exception e) {
-                getter =
-                    javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
+                getter = javaClass.getMethod(
+                    "is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
             }
             if (getter == null) {
                 return;
