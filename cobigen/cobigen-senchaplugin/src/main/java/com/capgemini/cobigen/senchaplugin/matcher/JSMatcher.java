@@ -9,10 +9,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.to.MatcherTo;
-import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.to.MatcherTo;
+import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.senchaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.senchaplugin.matcher.resolver.TriggerExpressionResolver;
 import com.google.common.collect.Maps;
@@ -23,7 +23,7 @@ import com.thoughtworks.qdox.model.JavaClass;
  *
  * @author mbrunnli (08.04.2014)
  */
-public class JSMatcher implements IMatcher {
+public class JSMatcher implements MatcherInterpreter {
 
     /**
      * Assigning logger to JavaClassMatcher

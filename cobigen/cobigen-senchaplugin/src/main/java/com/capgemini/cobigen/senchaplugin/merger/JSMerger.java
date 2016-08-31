@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.senchaplugin.merger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -22,7 +23,7 @@ import org.mozilla.javascript.ast.ObjectProperty;
 import org.mozilla.javascript.ast.PropertyGet;
 import org.mozilla.javascript.ast.StringLiteral;
 
-import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
 
@@ -33,7 +34,7 @@ import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
  * @author rudiazma (26 de jul. de 2016)
  */
 
-public class JSMerger implements IMerger {
+public class JSMerger implements Merger {
 
     /**
      * Merger Type to be registered
@@ -74,7 +75,7 @@ public class JSMerger implements IMerger {
      * @author rudiazma (26 de jul. de 2016)
      */
     @Override
-    public String merge(File base, String patch, String targetCharset) throws Exception {
+    public String merge(File base, String patch, String targetCharset) {
 
         // Configure the compiler enviroment for the parser
         CompilerEnvirons env = new CompilerEnvirons();
@@ -89,15 +90,37 @@ public class JSMerger implements IMerger {
 
         String file = base.getAbsolutePath();
 
-        Reader reader = new FileReader(file);
-        Reader readerPatch = new FileReader(patch);
+        Reader reader = null;
+        try {
+            reader = new FileReader(file);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Reader readerPatch = null;
+        try {
+            readerPatch = new FileReader(patch);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         JSNodeVisitor nodesBase = new JSNodeVisitor();
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
         // parsing the base and patch files
-        nodesBase = parseAst(nodeBase, reader, file, env);
-        nodesPatch = parseAst(nodePatch, readerPatch, patch, env);
+        try {
+            nodesBase = parseAst(nodeBase, reader, file, env);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            nodesPatch = parseAst(nodePatch, readerPatch, patch, env);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         // Auxiliar structures to build the resultant ast at the end
         List<ObjectProperty> listProps = new LinkedList<>();

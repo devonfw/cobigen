@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.capgemini.cobigen.extension.IInputReader;
+import com.capgemini.cobigen.api.extension.InputReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,7 +17,7 @@ import com.thoughtworks.qdox.model.JavaClass;
  *
  * @author rudiazma (4 de ago. de 2016)
  */
-public class JSInputReader implements IInputReader {
+public class JSInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
@@ -217,6 +217,12 @@ public class JSInputReader implements IInputReader {
         else {
             return parsedModel;
         }
+    }
+
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
