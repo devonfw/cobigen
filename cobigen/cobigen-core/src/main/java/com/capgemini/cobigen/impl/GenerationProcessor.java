@@ -92,14 +92,12 @@ public class GenerationProcessor {
      * @param logicClasses
      *            a {@link List} of java class files, which will be included as accessible beans in the
      *            template model. Such classes can be used to implement more complex template logic.
-     * @param additionalModelValues
-     *            additional template model values, which will be merged with the model created by CobiGen.
-     *            Thus, it might be possible to enrich the model by additional values or even overwrite model
-     *            values for generation externally.
+     * @param rawModel
+     *            externally adapted model to be used for generation.
      * @return {@link GenerationReportTo the GenerationReport}
      */
     GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
         this.forceOverride = forceOverride;
@@ -114,7 +112,7 @@ public class GenerationProcessor {
             InputValidator.validateTriggerInterpreter(triggerInterpreter,
                 configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
 
-            generate(input, template, triggerInterpreter, logicClasses, additionalModelValues);
+            generate(input, template, triggerInterpreter, logicClasses, rawModel);
         }
 
         return generationReport;
@@ -161,15 +159,13 @@ public class GenerationProcessor {
      * @param logicClasses
      *            a {@link List} of java class files, which will be included as accessible beans in the
      *            template model. Such classes can be used to implement more complex template logic.
-     * @param additionalModelValues
-     *            additional template model values, which will be merged with the model created by CobiGen.
-     *            Thus, it might be possible to enrich the model by additional values or even overwrite model
-     *            values for generation externally.
+     * @param rawModel
+     *            externally adapted model to be used for generation.
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
     private void generate(Object matchingInput, TemplateTo template, TriggerInterpreter triggerInterpreter,
-        List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+        List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
@@ -183,11 +179,15 @@ public class GenerationProcessor {
         for (Object generatorInput : inputObjects) {
 
             ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger, matchingInput);
-            Map<String, Object> model = modelBuilderImpl.createModel(triggerInterpreter);
+            Map<String, Object> model;
+            if (rawModel != null) {
+                model = modelBuilderImpl.createModel(triggerInterpreter);
+            } else {
+                model = rawModel;
+            }
             if (logicClasses != null) {
                 modelBuilderImpl.enrichByLogicBeans(model, logicClasses);
             }
-            // TODO additionalModelValues???
 
             String targetCharset = templateIntern.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateIntern.getName(), generatorInput);
