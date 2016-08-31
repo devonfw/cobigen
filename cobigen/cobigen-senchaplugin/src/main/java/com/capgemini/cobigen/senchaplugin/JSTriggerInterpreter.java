@@ -1,8 +1,8 @@
 package com.capgemini.cobigen.senchaplugin;
 
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.senchaplugin.inputreader.JSInputReader;
 import com.capgemini.cobigen.senchaplugin.matcher.JSMatcher;
 
@@ -10,7 +10,7 @@ import com.capgemini.cobigen.senchaplugin.matcher.JSMatcher;
  * {@link ITriggerInterpreter} implementation of a Java Interpreter
  * @author mbrunnli (08.04.2014)
  */
-public class JSTriggerInterpreter implements ITriggerInterpreter {
+public class JSTriggerInterpreter implements TriggerInterpreter {
 
     /**
      * {@link ITriggerInterpreter} type to be registered
@@ -41,7 +41,7 @@ public class JSTriggerInterpreter implements ITriggerInterpreter {
      * @author mbrunnli (08.04.2014)
      */
     @Override
-    public IInputReader getInputReader() {
+    public InputReader getInputReader() {
         return new JSInputReader();
     }
 
@@ -50,7 +50,7 @@ public class JSTriggerInterpreter implements ITriggerInterpreter {
      * @author mbrunnli (08.04.2014)
      */
     @Override
-    public IMatcher getMatcher() {
+    public MatcherInterpreter getMatcher() {
         return new JSMatcher();
     }
 }

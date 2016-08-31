@@ -2,9 +2,9 @@ package com.capgemini.cobigen.senchaplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.senchaplugin.merger.JSMerger;
 import com.google.common.collect.Lists;
 
@@ -12,15 +12,15 @@ import com.google.common.collect.Lists;
  *
  * @author mbrunnli (06.04.2014)
  */
-public class JSPluginActivator implements IGeneratorPluginActivator {
+public class JSPluginActivator implements GeneratorPluginActivator {
 
     /**
      * {@inheritDoc}
      * @author mbrunnli (06.04.2014)
      */
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
         merger.add(new JSMerger("jsmerge", false));
         merger.add(new JSMerger("jsmerge_override", true));
         return merger;
@@ -31,8 +31,8 @@ public class JSPluginActivator implements IGeneratorPluginActivator {
      * @author mbrunnli (08.04.2014)
      */
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<ITriggerInterpreter> newArrayList(new JSTriggerInterpreter("js"));
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
+        return Lists.<TriggerInterpreter> newArrayList(new JSTriggerInterpreter("js"));
     }
 
 }

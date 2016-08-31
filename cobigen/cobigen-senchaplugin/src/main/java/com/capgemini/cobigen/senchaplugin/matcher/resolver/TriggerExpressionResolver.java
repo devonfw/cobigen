@@ -7,8 +7,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
