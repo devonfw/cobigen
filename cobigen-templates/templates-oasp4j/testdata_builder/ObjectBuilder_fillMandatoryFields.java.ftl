@@ -1,6 +1,9 @@
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.common.builders;
 
+/**
+ * Test data builder for ${pojo.name} generated with cobigen.
+ */
 public class ${pojo.name}Builder {
 
 	/**

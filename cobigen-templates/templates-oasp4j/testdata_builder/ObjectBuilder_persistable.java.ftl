@@ -9,6 +9,9 @@ import javax.persistence.EntityManager;
 import ${pojo.package}.${pojo.name};
 import ${variables.rootPackage}.common.builders.P;
 
+/**
+ * Test data builder for ${pojo.name} generated with cobigen.
+ */
 public class ${pojo.name}Builder {
 
    public ${pojo.name} persist(EntityManager em) {
