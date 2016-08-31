@@ -46,15 +46,13 @@ public interface CobiGen extends ConfigurationInterpreter {
      * @param logicClasses
      *            a {@link List} of java class files, which will be included as accessible beans in the
      *            template model. Such classes can be used to implement more complex template logic.
-     * @param additionalModelValues
-     *            additional template model values, which will be merged with the model created by CobiGen.
-     *            Thus, it might be possible to enrich the model by additional values or even overwrite model
-     *            values for generation externally.
+     * @param rawModel
+     *            externally adapted model to be used for generation.
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
     public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> additionalModelValues);
+        List<Class<?>> logicClasses, Map<String, Object> rawModel);
 
     /**
      * @see #generate(Object, GenerableArtifact, boolean, List, Map)
@@ -89,15 +87,13 @@ public interface CobiGen extends ConfigurationInterpreter {
      * @param logicClasses
      *            a {@link List} of java class files, which will be included as accessible beans in the
      *            template model. Such classes can be used to implement more complex template logic.
-     * @param additionalModelValues
-     *            additional template model values, which will be merged with the model created by CobiGen.
-     *            Thus, it might be possible to enrich the model by additional values or even overwrite model
-     *            values for generation externally.
+     * @param rawModel
+     *            externally adapted model to be used for generation.
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
     public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> additionalModelValues);
+        List<Class<?>> logicClasses, Map<String, Object> rawModel);
 
     /**
      * Set a {@link ContextSetting}
