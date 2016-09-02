@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,12 +101,7 @@ public class JSMerger implements Merger {
             e.printStackTrace();
         }
         Reader readerPatch = null;
-        try {
-            readerPatch = new FileReader(patch);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        readerPatch = new StringReader(patch);
 
         JSNodeVisitor nodesBase = new JSNodeVisitor();
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
