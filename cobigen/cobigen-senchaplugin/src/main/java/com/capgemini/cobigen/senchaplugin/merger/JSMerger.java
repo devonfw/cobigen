@@ -83,6 +83,8 @@ public class JSMerger implements Merger {
         env.setAllowSharpComments(true);
         env.setRecordingComments(true);
 
+        System.out.println(patch);
+
         String result = null;
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
