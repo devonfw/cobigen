@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="${variables.etoName}Controller.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}M.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}ListVM.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}ListVC.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}ListV.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}EditVM.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}EditVC.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}EditV.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}_es_ES.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName}_en_EN.js" mergeStrategy="jsmerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main/client"/>
+  </templateScans>
+
+  <increments>
+    <increment name="model" description="Model">
+      <templateRef ref="${variables.etoName}M.js"/>
+    </increment>
+    <increment name="controller" description="Controller">
+      <templateRef ref="${variables.etoName}Controller.js"/>
+    </increment>
+    <increment name="views" description="Views">
+      <templateRef ref="${variables.etoName}ListVM.js"/>
+      <templateRef ref="${variables.etoName}ListVC.js"/>
+      <templateRef ref="${variables.etoName}ListV.js"/>
+      <templateRef ref="${variables.etoName}EditVM.js"/>
+      <templateRef ref="${variables.etoName}EditVC.js"/>
+      <templateRef ref="${variables.etoName}EditV.js"/>
+    </increment> 
+    <increment name="i18n" description="i18n">
+      <templateRef ref="${variables.etoName}_es_ES.js"/>
+      <templateRef ref="${variables.etoName}_en_EN.js"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
