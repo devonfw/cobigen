@@ -84,8 +84,6 @@ public class JSMerger implements Merger {
         env.setAllowSharpComments(true);
         env.setRecordingComments(true);
 
-        System.out.println(patch);
-
         String result = null;
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
@@ -338,7 +336,6 @@ public class JSMerger implements Merger {
 
             } else if (property.getRight() instanceof ObjectLiteral) {
                 result = result + indent + property.getLeft().toSource() + " : {\n";
-                System.out.println(property.getLeft().toSource());
                 ObjectLiteral obj = (ObjectLiteral) property.getRight();
                 result = result + indent + objectLiteralIterate(obj, indent, 1);
                 if (propertyPos < resultAst.getPropertyNodes().size() - 1) {
