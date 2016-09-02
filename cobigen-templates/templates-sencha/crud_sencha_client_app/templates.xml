@@ -3,16 +3,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName}Controller.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}M.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}ListVM.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}ListVC.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}ListV.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}EditVM.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}EditVC.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}EditV.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}_es_ES.js" mergeStrategy="jsmerge"/>
-    <templateExtension ref="${variables.etoName}_en_EN.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}Controller.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}M.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}ListVM.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}ListVC.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}ListV.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}EditVM.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}EditVC.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}EditV.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}_es_ES.js" mergeStrategy="jsmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}_en_EN.js" mergeStrategy="jsmerge"/>
   </templates>
 
   <templateScans>
@@ -21,22 +21,22 @@
 
   <increments>
     <increment name="model" description="Model">
-      <templateRef ref="${variables.etoName}M.js"/>
+      <templateRef ref="${variables.etoName#cap_first}M.js"/>
     </increment>
     <increment name="controller" description="Controller">
-      <templateRef ref="${variables.etoName}Controller.js"/>
+      <templateRef ref="${variables.etoName#cap_first}Controller.js"/>
     </increment>
     <increment name="views" description="Views">
-      <templateRef ref="${variables.etoName}ListVM.js"/>
-      <templateRef ref="${variables.etoName}ListVC.js"/>
-      <templateRef ref="${variables.etoName}ListV.js"/>
-      <templateRef ref="${variables.etoName}EditVM.js"/>
-      <templateRef ref="${variables.etoName}EditVC.js"/>
-      <templateRef ref="${variables.etoName}EditV.js"/>
+      <templateRef ref="${variables.etoName#cap_first}ListVM.js"/>
+      <templateRef ref="${variables.etoName#cap_first}ListVC.js"/>
+      <templateRef ref="${variables.etoName#cap_first}ListV.js"/>
+      <templateRef ref="${variables.etoName#cap_first}EditVM.js"/>
+      <templateRef ref="${variables.etoName#cap_first}EditVC.js"/>
+      <templateRef ref="${variables.etoName#cap_first}EditV.js"/>
     </increment> 
     <increment name="i18n" description="i18n">
-      <templateRef ref="${variables.etoName}_es_ES.js"/>
-      <templateRef ref="${variables.etoName}_en_EN.js"/>
+      <templateRef ref="${variables.etoName#cap_first}_es_ES.js"/>
+      <templateRef ref="${variables.etoName#cap_first}_en_EN.js"/>
     </increment>
   </increments>
 </templatesConfiguration>
