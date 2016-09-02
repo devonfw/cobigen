@@ -110,8 +110,8 @@ public class CustomModelWriter implements ModelWriter {
         writeAccessibilityModifier(cls.getModifiers());
         writeNonAccessibilityModifiers(cls.getModifiers());
 
-        buffer.write(cls.isEnum() ? "enum " : cls.isInterface() ? "interface "
-            : cls.isAnnotation() ? "@interface " : "class ");
+        buffer.write(cls.isEnum() ? "enum "
+            : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
         buffer.write(cls.getName());
 
         writeTypeParameters(cls);
