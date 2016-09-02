@@ -5,10 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.EvaluatorException;
@@ -24,6 +25,7 @@ import org.mozilla.javascript.ast.ObjectProperty;
 import org.mozilla.javascript.ast.PropertyGet;
 import org.mozilla.javascript.ast.StringLiteral;
 
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
@@ -92,31 +94,25 @@ public class JSMerger implements Merger {
         String file = base.getAbsolutePath();
 
         Reader reader = null;
+        String baseString;
         try {
             reader = new FileReader(file);
+            baseString = IOUtils.toString(reader);
+            reader.close();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
         }
-        Reader readerPatch = null;
-        readerPatch = new StringReader(patch);
 
         JSNodeVisitor nodesBase = new JSNodeVisitor();
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
-        // parsing the base and patch files
-        try {
-            nodesBase = parseAst(nodeBase, reader, file, env);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            nodesPatch = parseAst(nodePatch, readerPatch, patch, env);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // parsing the base
+        nodesBase = parseAst(nodeBase, baseString, file, env);
+
+        // parsing the patch string
+        nodesPatch = parseAst(nodePatch, patch, patch, env);
 
         // Auxiliar structures to build the resultant ast at the end
         List<ObjectProperty> listProps = new LinkedList<>();
@@ -245,12 +241,9 @@ public class JSMerger implements Merger {
      * @param ast
      *            the ast to store the parse result
      * @return ast the ast parsed
-     * @throws IOException
-     *             if cannot find the file
      * @author rudiazma (8 de ago. de 2016)
      */
-    private JSNodeVisitor parseAst(AstRoot ast, Reader reader, String file, CompilerEnvirons env)
-        throws IOException {
+    private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env) {
 
         try {
             ast = new Parser(env).parse(reader, file, 1);
@@ -286,13 +279,13 @@ public class JSMerger implements Merger {
 
     /**
      * Convert an AstRoot into a String with format
-     *
-     * @param node
+     * @param ast
      *            the AstRoot to parse to String
+     * @param indent
+     *            the indent spaces
      * @return result the source of the ast as String
      * @author rudiazma (28 de jul. de 2016)
-     * @param ast
-     * @param indent
+     *
      */
     public String astToStringWithFormat(AstRoot ast, String indent) {
         String result = "";
@@ -320,7 +313,7 @@ public class JSMerger implements Merger {
                 ArrayLiteral rightSide = (ArrayLiteral) property.getRight();
                 result = result + indent + property.getLeft().toSource() + " : [\n";
                 int position = 0;
-                for (AstNode obj : rightSide.getElements()) {
+                for (Iterator<AstNode> iterator = rightSide.getElements().iterator(); iterator.hasNext();) {
                     if (position < rightSide.getElements().size() - 1) {
                         result = result + indent + indent + rightSide.getElement(position).toSource() + ",\n";
                         position++;
@@ -370,8 +363,11 @@ public class JSMerger implements Merger {
     /**
      *
      * @param obj
+     *            the object to iterate
      * @param indent
+     *            the indent spaces
      * @param tab
+     *            the tabulations needed
      * @return result
      * @author rudiazma (Aug 11, 2016)
      */

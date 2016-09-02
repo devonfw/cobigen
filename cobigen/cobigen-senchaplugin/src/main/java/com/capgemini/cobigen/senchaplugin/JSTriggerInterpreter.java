@@ -7,13 +7,13 @@ import com.capgemini.cobigen.senchaplugin.inputreader.JSInputReader;
 import com.capgemini.cobigen.senchaplugin.matcher.JSMatcher;
 
 /**
- * {@link ITriggerInterpreter} implementation of a Java Interpreter
- * @author mbrunnli (08.04.2014)
+ * {@link TriggerInterpreter} implementation of a Java Interpreter
+ * @author rudiazma (28 de jul. de 2016)
  */
 public class JSTriggerInterpreter implements TriggerInterpreter {
 
     /**
-     * {@link ITriggerInterpreter} type to be registered
+     * {@link TriggerInterpreter} type to be registered
      */
     public String type;
 
@@ -29,7 +29,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
+     * @author rudiazma (28 de jul. de 2016)
      */
     @Override
     public String getType() {
@@ -38,7 +38,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
+     * @author rudiazma (28 de jul. de 2016)
      */
     @Override
     public InputReader getInputReader() {
@@ -47,7 +47,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
+     * @author rudiazma (28 de jul. de 2016)
      */
     @Override
     public MatcherInterpreter getMatcher() {
