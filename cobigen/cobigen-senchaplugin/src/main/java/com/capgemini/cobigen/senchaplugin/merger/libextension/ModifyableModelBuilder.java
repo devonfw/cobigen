@@ -162,8 +162,8 @@ public class ModifyableModelBuilder implements Builder {
         if (newClass.isInterface()) {
             newClass.setSuperClass(null);
         } else if (!newClass.isEnum()) {
-            newClass.setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator()
-                .next(), 0) : null);
+            newClass.setSuperClass(
+                def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
         }
 
         // implements
@@ -235,8 +235,8 @@ public class ModifyableModelBuilder implements Builder {
         if (typeDef == null) {
             return null;
         }
-        return TypeAssembler.createUnresolved(typeDef, dimensions, classStack.isEmpty() ? source
-            : classStack.getFirst());
+        return TypeAssembler.createUnresolved(typeDef, dimensions,
+            classStack.isEmpty() ? source : classStack.getFirst());
     }
 
     private void addJavaDoc(AbstractBaseJavaEntity entity) {
@@ -295,8 +295,7 @@ public class ModifyableModelBuilder implements Builder {
         if (def.getTypeParams() != null) {
             List<JavaTypeVariable<JavaConstructor>> typeParams = new LinkedList<>();
             for (TypeVariableDef typeVariableDef : def.getTypeParams()) {
-                typeParams
-                    .add(createTypeVariable(typeVariableDef, (JavaConstructor) currentConstructor));
+                typeParams.add(createTypeVariable(typeVariableDef, (JavaConstructor) currentConstructor));
             }
             currentConstructor.setTypeParameters(typeParams);
         }
@@ -447,13 +446,10 @@ public class ModifyableModelBuilder implements Builder {
         DefaultJavaParameter jParam =
             new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
                 fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
-        if( currentMethod != null )
-        {
-            jParam.setDeclarator( currentMethod );
-        }
-        else
-        {
-            jParam.setDeclarator( currentConstructor );
+        if (currentMethod != null) {
+            jParam.setDeclarator(currentMethod);
+        } else {
+            jParam.setDeclarator(currentConstructor);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);

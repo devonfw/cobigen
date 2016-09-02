@@ -293,8 +293,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     @Override
     public String getFullyQualifiedName() {
         return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
-            : getPackage() != null ? (getPackage().getName() + ".") : "")
-            + getName();
+            : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
     }
 
     /** {@inheritDoc} */
@@ -442,7 +441,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         for (JavaMethod method : callingClazz.getMethods()) {
             if (!method.isPrivate()) {
                 String signature = method.getDeclarationSignature(false);
-                result.put( signature, method );
+                result.put(signature, method);
             }
         }
 
@@ -453,15 +452,12 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
             for (Map.Entry<String, JavaMethod> methodEntry : superClassMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
-                    if ( superclass.equals( rootClass ) )
-                    {
+                    if (superclass.equals(rootClass)) {
                         method = methodEntry.getValue();
+                    } else {
+                        method = new JavaMethodDelegate(callingClazz, methodEntry.getValue());
                     }
-                    else
-                    {
-                        method = new JavaMethodDelegate( callingClazz, methodEntry.getValue() );
-                    }
-                    result.put( methodEntry.getKey(), method );
+                    result.put(methodEntry.getKey(), method);
                 }
             }
 
@@ -473,15 +469,12 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
             for (Map.Entry<String, JavaMethod> methodEntry : interfaceMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
-                    if ( clazz.equals( rootClass ) )
-                    {
+                    if (clazz.equals(rootClass)) {
                         method = methodEntry.getValue();
+                    } else {
+                        method = new JavaMethodDelegate(callingClazz, methodEntry.getValue());
                     }
-                    else
-                    {
-                        method = new JavaMethodDelegate( callingClazz, methodEntry.getValue() );
-                    }
-                    result.put( methodEntry.getKey(), method );
+                    result.put(methodEntry.getKey(), method);
                 }
             }
 
