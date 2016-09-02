@@ -1,4 +1,4 @@
-Ext.define('${variables.component}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN', {
+Ext.define('${variables.rootPackage}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN', {
     extend: 'Devon.I18nBundle',
     singleton: true,
     i18n: {
