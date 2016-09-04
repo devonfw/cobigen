@@ -76,8 +76,9 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig);
-        gp.generate(input, generableArtifacts, forceOverride, logicClasses, additionalModelValues);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
+            generableArtifacts, forceOverride, logicClasses, additionalModelValues);
+        gp.generate();
     }
 
     @Override
@@ -99,9 +100,9 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig);
-        gp.generate(input, Lists.newArrayList(generableArtifact), forceOverride, logicClasses,
-            additionalModelValues);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
+            Lists.newArrayList(generableArtifact), forceOverride, logicClasses, additionalModelValues);
+        gp.generate();
     }
 
     @Override

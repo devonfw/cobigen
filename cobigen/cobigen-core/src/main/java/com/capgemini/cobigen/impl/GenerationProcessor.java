@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.PluginRegistry;
-import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
@@ -32,6 +31,7 @@ import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
@@ -61,6 +61,18 @@ public class GenerationProcessor {
     /** States, whether existing contents should be overwritten by generation */
     private boolean forceOverride;
 
+    /** Input to process generation for */
+    private Object input;
+
+    /** Artifacts to generate, e.g. templates or increments */
+    private List<GenerableArtifact> generableArtifacts;
+
+    /** Java classes to be served by the model implementing template logic */
+    private List<Class<?>> logicClasses;
+
+    /** Externally provided model to be used for generation */
+    private Map<String, Object> rawModel;
+
     /** Report to be returned after generation processing */
     private GenerationReportTo generationReport;
 
@@ -72,15 +84,6 @@ public class GenerationProcessor {
      *            {@link ConfigurationHolder} instance
      * @param freeMarkerConfig
      *            FreeMarker configuration
-     */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig) {
-        this.configurationHolder = configurationHolder;
-        this.freeMarkerConfig = freeMarkerConfig;
-    }
-
-    /**
-     * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
-     *
      * @param input
      *            generator input object
      * @param generableArtifacts
@@ -94,14 +97,29 @@ public class GenerationProcessor {
      *            template model. Such classes can be used to implement more complex template logic.
      * @param rawModel
      *            externally adapted model to be used for generation.
-     * @return {@link GenerationReportTo the GenerationReport}
      */
-    GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig,
+        Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
+        List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
+
+        this.configurationHolder = configurationHolder;
+        this.freeMarkerConfig = freeMarkerConfig;
         this.forceOverride = forceOverride;
+        this.input = input;
+        this.generableArtifacts = generableArtifacts;
+        this.logicClasses = logicClasses;
+        this.rawModel = rawModel;
+
         generationReport = new GenerationReportTo();
+    }
+
+    /**
+     * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
+     * @return {@link GenerationReportTo the GenerationReport}
+     */
+    GenerationReportTo generate() {
 
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
@@ -112,7 +130,7 @@ public class GenerationProcessor {
             InputValidator.validateTriggerInterpreter(triggerInterpreter,
                 configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
 
-            generate(input, template, triggerInterpreter, logicClasses, rawModel);
+            generate(template, triggerInterpreter);
         }
 
         return generationReport;
@@ -132,6 +150,15 @@ public class GenerationProcessor {
         for (GenerableArtifact artifact : generableArtifacts) {
             if (artifact instanceof TemplateTo) {
                 TemplateTo template = (TemplateTo) artifact;
+                if (templateIdToTemplateMap.containsKey(template.getId())) {
+                    String oldTriggerId = templateIdToTemplateMap.get(template.getId()).getTriggerId();
+                    if (oldTriggerId == template.getTriggerId()) {
+                        generationReport.addWarning("Template with ID '" + template.getId()
+                            + "' has been triggered by two different triggers ['" + oldTriggerId + "','"
+                            + template.getTriggerId()
+                            + "']. This might lead to indeterministic generation behavior if trigger variables differ.");
+                    }
+                }
                 templateIdToTemplateMap.put(template.getId(), template);
             } else if (artifact instanceof IncrementTo) {
                 for (TemplateTo t : ((IncrementTo) artifact).getTemplates()) {
@@ -150,35 +177,27 @@ public class GenerationProcessor {
      * Generates code for the given input with the given template and the given {@link TriggerInterpreter} to
      * the destination specified by the templates configuration.
      *
-     * @param matchingInput
-     *            input object for the generation
      * @param template
      *            to be processed for generation
      * @param triggerInterpreter
      *            {@link TriggerInterpreter} to be used for reading the input and creating the model
-     * @param logicClasses
-     *            a {@link List} of java class files, which will be included as accessible beans in the
-     *            template model. Such classes can be used to implement more complex template logic.
-     * @param rawModel
-     *            externally adapted model to be used for generation.
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
-    private void generate(Object matchingInput, TemplateTo template, TriggerInterpreter triggerInterpreter,
-        List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+    private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
             .setTemplateRoot(configurationHolder.readContextConfiguration().getConfigurationPath()
                 .resolve(trigger.getTemplateFolder()));
 
-        List<Object> inputObjects = collectInputObjects(matchingInput, triggerInterpreter, trigger);
+        List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
         Template templateIntern = getTemplate(template, triggerInterpreter);
         InputReader inputReader = triggerInterpreter.getInputReader();
 
         for (Object generatorInput : inputObjects) {
 
-            ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger, matchingInput);
+            ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger, input);
             Map<String, Object> model;
             if (rawModel != null) {
                 model = modelBuilderImpl.createModel(triggerInterpreter);
@@ -210,10 +229,9 @@ public class GenerationProcessor {
                                 throw new InvalidConfigurationException("No merger for merge strategy '"
                                     + templateIntern.getMergeStrategy() + "' found.");
                             }
-                        } catch (InvalidConfigurationException | MergeException e) {
+                        } catch (CobiGenRuntimeException e) {
                             throw e;
                         } catch (Throwable e) {
-                            LOG.error("An error occured while merging the file {}", originalFile.toURI(), e);
                             throw new PluginProcessingException(e);
                         }
 
@@ -222,9 +240,8 @@ public class GenerationProcessor {
                             FileUtils.writeStringToFile(originalFile, result, targetCharset);
                         }
                     } catch (IOException e) {
-                        String message = "Could not write file " + originalFile.toString() + " after merge.";
-                        LOG.error(message, e);
-                        generationReport.addErrorMessage(message);
+                        throw new CobiGenRuntimeException(
+                            "Could not write file " + originalFile.toURI().toString() + " after merge.", e);
                     }
                 }
             } else {
@@ -356,10 +373,8 @@ public class GenerationProcessor {
             generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader, input);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
-            String message =
-                "Could not write file while processing template with id '" + template.getName() + "'";
-            LOG.error(message, e);
-            generationReport.addErrorMessage(message);
+            throw new CobiGenRuntimeException(
+                "Could not write file while processing template with id '" + template.getName() + "'", e);
         }
     }
 
@@ -391,7 +406,7 @@ public class GenerationProcessor {
             String message = "An error occured while retrieving the FreeMarker template with id '"
                 + template.getName() + "' from the FreeMarker configuration.";
             LOG.error(message, e);
-            generationReport.addErrorMessage(message);
+            throw new CobiGenRuntimeException(message, e);
         }
 
         if (fmTemplate != null) {
@@ -400,8 +415,6 @@ public class GenerationProcessor {
             try {
                 templateMethods = inputReader.getTemplateMethods(input);
             } catch (Throwable e) {
-                LOG.error("Error while executing getTemplateMethods() on InputReader class '{}'.",
-                    inputReader.getClass().getCanonicalName(), e);
                 throw new PluginProcessingException(e);
             }
 
@@ -416,11 +429,10 @@ public class GenerationProcessor {
                 }
                 env.process();
             } catch (Throwable e) {
-                String message =
+                throw new CobiGenRuntimeException(
                     "An error occured while processing FreeMarkers generation environment for generating the template with id '"
-                        + template.getName() + "'.";
-                LOG.error(message, e);
-                generationReport.addErrorMessage(message);
+                        + template.getName() + "'.",
+                    e);
             }
         }
     }
@@ -435,7 +447,6 @@ public class GenerationProcessor {
      * @return the recovered {@link Template} object
      * @throws InvalidConfigurationException
      *             if at least one of the destination path variables could not be resolved
-     * @author mbrunnli (09.04.2014)
      */
     private Template getTemplate(TemplateTo templateTo, TriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
@@ -446,8 +457,7 @@ public class GenerationProcessor {
             configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
-            throw new UnknownTemplateException("Unknown template with id=" + templateTo.getId()
-                + ". Template could not be found in the configuration.");
+            throw new UnknownTemplateException(templateTo.getId());
         }
         return template;
     }
@@ -458,7 +468,6 @@ public class GenerationProcessor {
      * @param relDestinationPath
      *            relative destination path from {@link ContextSetting#GenerationTargetRootPath}
      * @return the destination file (might not be existent)
-     * @author mbrunnli (12.03.2013)
      */
     private File getDestinationFile(String relDestinationPath) {
 
