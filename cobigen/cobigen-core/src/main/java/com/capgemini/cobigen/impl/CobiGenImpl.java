@@ -50,7 +50,7 @@ public class CobiGenImpl implements CobiGen {
         freeMarkerConfig = templateEngineConfiguration;
         this.configurationHolder = configurationHolder;
 
-        // Create proxy cached proxy of ConfigurationInterpreter to cache method calls
+        // Create proxy of ConfigurationInterpreter to cache method calls
         ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
         configurationInterpreter = ProxyFactory.getProxy(impl);
     }
