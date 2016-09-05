@@ -48,10 +48,6 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2013), updated by sholzer (29.09.2015) for issue #156
-     */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());

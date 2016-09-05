@@ -22,6 +22,7 @@ import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
@@ -30,7 +31,6 @@ import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 /**
  * The generator interface for the external generator library
  *
- * @author mbrunnli (13.02.2013)
  */
 public class JavaGeneratorWrapper extends CobiGenWrapper {
 
@@ -53,7 +53,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
-     * @author mbrunnli (21.03.2014)
      */
     public JavaGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException,
         InvalidConfigurationException, IOException {
@@ -71,7 +70,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      * @return a {@link Map} mapping attribute name to attribute type name
      * @throws InvalidConfigurationException
      *             if the generator's configuration is faulty
-     * @author mbrunnli (12.03.2013)
      */
     public Map<String, String> getAttributesToTypeMapOfFirstInput() throws InvalidConfigurationException {
 
@@ -94,7 +92,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      *
      * @param name
      *            name of the attribute to be removed
-     * @author mbrunnli (21.03.2013)
      */
     public void removeFieldFromModel(String name) {
 
@@ -106,7 +103,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      *
      * @param model
      *            in which the ignored fields should be removed
-     * @author mbrunnli (15.10.2013)
      */
     private void removeIgnoredFieldsFromModel(Map<String, Object> model) {
 
@@ -176,7 +172,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      * @return the {@link Set} of {@link Trigger}s
      * @throws InvalidInputException
      *             if the input could not be read as expected
-     * @author trippl (22.04.2013)
      */
     private List<String> findMatchingTriggers(ICompilationUnit cu) throws InvalidInputException {
 
