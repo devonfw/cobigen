@@ -31,7 +31,8 @@ public class ClassLoaderUtil {
      *             if a path of one of the class path entries is not a valid URL
      * @author mbrunnli (05.02.2013)
      */
-    public static URLClassLoader getProjectClassLoader(IJavaProject proj) throws CoreException, MalformedURLException {
+    public static URLClassLoader getProjectClassLoader(IJavaProject proj)
+        throws CoreException, MalformedURLException {
         IClasspathEntry[] classPathEntries = proj.getResolvedClasspath(true);
 
         List<URL> urlList = new ArrayList<>();

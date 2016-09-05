@@ -70,7 +70,8 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * @author mbrunnli (Jun 24, 2015)
      */
     AdvancedHealthCheckDialog(List<String> expectedTemplatesConfigurations, Set<String> hasConfiguration,
-        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations) {
+        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations,
+        Set<String> upToDateConfigurations) {
         super(Display.getDefault().getActiveShell());
         this.hasConfiguration = hasConfiguration;
         this.isAccessible = isAccessible;
@@ -173,17 +174,18 @@ public class AdvancedHealthCheckDialog extends Dialog {
         boolean successful = true;
         try {
             try {
-                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
+                templateConfigurationUpgrader
+                    .upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
                 LOG.info("Upgrade finished successfully.");
             } catch (BackupFailedException e) {
-                boolean continueUpgrade = MessageDialog
-                    .openQuestion(Display.getDefault().getActiveShell(), AdvancedHealthCheck.COMMON_DIALOG_TITLE,
-                        "Backup failed while upgrading. "
-                            + "An upgrade deletes all comments in the configuration file, "
-                            + "which will be gone without a backup. Continue anyhow?");
+                boolean continueUpgrade = MessageDialog.openQuestion(Display.getDefault().getActiveShell(),
+                    AdvancedHealthCheck.COMMON_DIALOG_TITLE,
+                    "Backup failed while upgrading. "
+                        + "An upgrade deletes all comments in the configuration file, "
+                        + "which will be gone without a backup. Continue anyhow?");
                 if (continueUpgrade) {
-                    templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
-                        true);
+                    templateConfigurationUpgrader
+                        .upgradeConfigurationToLatestVersion(templatesConfigurationFolder, true);
                     LOG.info("Upgrade finished successfully.");
                 } else {
                     LOG.info("Upgrade aborted.");

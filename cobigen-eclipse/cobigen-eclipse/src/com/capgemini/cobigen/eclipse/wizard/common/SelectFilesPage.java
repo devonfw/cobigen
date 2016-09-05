@@ -310,14 +310,19 @@ public class SelectFilesPage extends WizardPage {
         try {
             dialog.run(true, false, job);
         } catch (InvocationTargetException e) {
-            LOG.error("An internal error occured while invoking the job for determining the templates to generate.", e);
-            throw new CobiGenEclipseRuntimeException(
-                "An internal error occured while invoking the job for determining the templates to generate", e);
-        } catch (InterruptedException e) {
-            LOG.warn("The working thread doing the job for determining the templates to generate has been interrupted.",
+            LOG.error(
+                "An internal error occured while invoking the job for determining the templates to generate.",
                 e);
             throw new CobiGenEclipseRuntimeException(
-                "The working thread doing the job for determining the templates to generate has been interrupted", e);
+                "An internal error occured while invoking the job for determining the templates to generate",
+                e);
+        } catch (InterruptedException e) {
+            LOG.warn(
+                "The working thread doing the job for determining the templates to generate has been interrupted.",
+                e);
+            throw new CobiGenEclipseRuntimeException(
+                "The working thread doing the job for determining the templates to generate has been interrupted",
+                e);
         }
 
         // forward potential occurred exception

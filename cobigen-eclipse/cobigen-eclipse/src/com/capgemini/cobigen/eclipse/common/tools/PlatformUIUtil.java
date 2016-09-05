@@ -70,7 +70,8 @@ public class PlatformUIUtil {
      *            of the error or <code>null</code> if the error was not caused by any {@link Throwable}
      * @author mbrunnli (Jun 23, 2015)
      */
-    public static void openErrorDialog(final String dialogTitle, final String message, final Throwable cause) {
+    public static void openErrorDialog(final String dialogTitle, final String message,
+        final Throwable cause) {
 
         getWorkbench().getDisplay().syncExec(new Runnable() {
             @Override
@@ -107,8 +108,8 @@ public class PlatformUIUtil {
             childStatus.add(createMultiStatus(t.getCause()));
         }
 
-        MultiStatus ms =
-            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]), t.toString(), t);
+        MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
+            childStatus.toArray(new Status[0]), t.toString(), t);
         return ms;
     }
 }
