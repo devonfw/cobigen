@@ -28,12 +28,6 @@ public class ModelBuilderImpl implements ModelBuilder {
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(ModelBuilderImpl.class);
 
-    /**
-     * Input object activates a matcher and thus is target for context variable extraction. Possibly a
-     * combined or wrapping object for multiple input objects
-     */
-    private Object matcherInput;
-
     /** Input object for which a new object model should be created */
     private Object generatorInput;
 
@@ -46,18 +40,14 @@ public class ModelBuilderImpl implements ModelBuilder {
      *            object for which a new object model should be created
      * @param trigger
      *            which has been activated for the given input
-     * @param matcherInput
-     *            input object activates a matcher and thus is target for context variable extraction.
-     *            Possibly a combined or wrapping object for multiple input objects
      */
-    public ModelBuilderImpl(Object generatorInput, Trigger trigger, Object matcherInput) {
+    public ModelBuilderImpl(Object generatorInput, Trigger trigger) {
         if (generatorInput == null || trigger == null || trigger.getMatcher() == null) {
             throw new IllegalArgumentException(
                 "Cannot create Model from input == null || trigger == null || trigger.getMatcher() == null");
         }
         this.generatorInput = generatorInput;
         this.trigger = trigger;
-        this.matcherInput = matcherInput;
     }
 
     /**
@@ -103,10 +93,6 @@ public class ModelBuilderImpl implements ModelBuilder {
         throws InvalidConfigurationException {
         Map<String, Object> model =
             new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
-        if (matcherInput != null) {
-            model.put("variables",
-                new ContextVariableResolver(matcherInput, trigger).resolveVariables(triggerInterpreter));
-        }
         model.put("variables",
             new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
         return model;

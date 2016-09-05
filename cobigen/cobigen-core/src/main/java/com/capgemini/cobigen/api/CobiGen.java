@@ -126,17 +126,4 @@ public interface CobiGen extends ConfigurationInterpreter {
      */
     public ModelBuilder getModelBuilder(Object generatorInput, String triggerId);
 
-    /**
-     * Returns a new {@link ModelBuilder} instance for the given input object and its matching trigger id
-     *
-     * @param generatorInput
-     *            object, models should be created for
-     * @param matcherInput
-     *            input object activates a matcher and thus is target for context variable extraction.
-     *            Possibly a combined or wrapping object for multiple input objects
-     * @param triggerId
-     *            which has been activated by the given object
-     * @return a new {@link ModelBuilder} instance
-     */
-    public ModelBuilder getModelBuilder(Object generatorInput, Object matcherInput, String triggerId);
 }
