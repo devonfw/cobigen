@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.annotation.ProxyFactory;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
+import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
 /**
@@ -67,7 +70,8 @@ public class PluginRegistry {
                 }
             }
         } catch (InstantiationException | IllegalAccessException e) {
-            LOG.error("Could not intantiate CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName(), e);
+            throw new CobiGenRuntimeException(
+                "Could not intantiate CobiGen Plug-in '" + generatorPlugin.getCanonicalName() + "'.", e);
         }
     }
 
@@ -85,16 +89,15 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(),
+        LOG.info("Merger for type '{}' registered ({}).", merger.getType(),
             merger.getClass().getCanonicalName());
     }
 
     /**
-     * Reigsters the given {@link TriggerInterpreter}
+     * Registers the given {@link TriggerInterpreter}
      *
      * @param triggerInterpreter
      *            to be registered
-     * @author mbrunnli (07.04.2014)
      */
     public static void registerTriggerInterpreter(TriggerInterpreter triggerInterpreter) {
 
@@ -103,7 +106,7 @@ public class PluginRegistry {
                 "You cannot register a new TriggerInterpreter with triggerInterpreter==null or type==null or empty!");
         }
         registeredTriggerInterpreter.put(triggerInterpreter.getType(), triggerInterpreter);
-        LOG.debug("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
+        LOG.info("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
     }
 
@@ -121,7 +124,11 @@ public class PluginRegistry {
         if (mergerType == null) {
             return null;
         }
-        return registeredMerger.get(mergerType);
+        Merger merger = registeredMerger.get(mergerType);
+        if (merger != null) {
+            merger = ProxyFactory.getProxy(merger);
+        }
+        return merger;
     }
 
     /**
@@ -137,7 +144,12 @@ public class PluginRegistry {
         if (triggerType == null) {
             return null;
         }
-        return registeredTriggerInterpreter.get(triggerType);
+        TriggerInterpreter triggerInterpreter = registeredTriggerInterpreter.get(triggerType);
+        if (triggerInterpreter != null) {
+            triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
+        }
+        InputValidator.validateTriggerInterpreter(triggerInterpreter);
+        return triggerInterpreter;
     }
 
 }

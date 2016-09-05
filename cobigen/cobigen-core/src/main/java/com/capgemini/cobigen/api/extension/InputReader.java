@@ -4,12 +4,14 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
+
 /**
  * This is an extension point to enable further generator input support. Implementations should inherit this
  * interface and should be registered via an implemented {@link TriggerInterpreter} to be integrated into the
  * CobiGen generation process.
- * @author mbrunnli (09.10.2013)
  */
+@ExceptionFacade
 public interface InputReader {
 
     /**
@@ -19,7 +21,6 @@ public interface InputReader {
      *            object to be checked
      * @return <code>true</code> if the given input can be processed by the implementing {@link InputReader},
      *         <code>false</code> otherwise
-     * @author mbrunnli (08.04.2014)
      */
     public boolean isValidInput(Object input);
 
@@ -28,7 +29,6 @@ public interface InputReader {
      * @param input
      *            object the model should be build of (not null)
      * @return a key to object {@link Map} representing an object model for the generation
-     * @author mbrunnli (09.10.2013)
      */
     public Map<String, Object> createModel(Object input);
 
@@ -38,7 +38,6 @@ public interface InputReader {
      *            to be checked
      * @return <code>true</code> if the given input combines multiple input objects for generation<br>
      *         <code>false</code>, otherwise
-     * @author mbrunnli (03.06.2014)
      */
     public boolean combinesMultipleInputObjects(Object input);
 
@@ -50,7 +49,6 @@ public interface InputReader {
      * @param inputCharset
      *            to be used for reading new inputs
      * @return a list of input objects, the generation should be triggered for each.
-     * @author mbrunnli (03.06.2014)
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset);
 
@@ -61,7 +59,6 @@ public interface InputReader {
      *            the object the methods should be derived from
      * @return a key to object {@link Map}. The keys are the method names and the objects are the
      *         corresponding instances of the class where the method is implemented.
-     * @author fkreis (22.10.2014)
      */
     public Map<String, Object> getTemplateMethods(Object input);
 
@@ -73,7 +70,6 @@ public interface InputReader {
      * @param inputCharset
      *            to be used for reading new inputs
      * @return a list of input objects, the generation should be triggered for each.
-     * @author mbrunnli (03.06.2014)
      */
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset);
 

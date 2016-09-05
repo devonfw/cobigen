@@ -124,13 +124,20 @@ public class GenerationProcessor {
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         for (TemplateTo template : templatesToBeGenerated) {
-            Trigger trigger =
-                configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            InputValidator.validateTriggerInterpreter(triggerInterpreter,
-                configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
-
-            generate(template, triggerInterpreter);
+            try {
+                Trigger trigger =
+                    configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+                TriggerInterpreter triggerInterpreter =
+                    PluginRegistry.getTriggerInterpreter(trigger.getType());
+                InputValidator.validateTriggerInterpreter(triggerInterpreter,
+                    configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
+                generate(template, triggerInterpreter);
+            } catch (CobiGenRuntimeException e) {
+                generationReport.addErrorMessage(e.getMessage());
+            } catch (Throwable e) {
+                generationReport.addErrorMessage("Something unexpected happened. ["
+                    + e.getClass().getSimpleName() + ": " + e.getMessage() + "]");
+            }
         }
 
         return generationReport;
@@ -150,19 +157,10 @@ public class GenerationProcessor {
         for (GenerableArtifact artifact : generableArtifacts) {
             if (artifact instanceof TemplateTo) {
                 TemplateTo template = (TemplateTo) artifact;
-                if (templateIdToTemplateMap.containsKey(template.getId())) {
-                    String oldTriggerId = templateIdToTemplateMap.get(template.getId()).getTriggerId();
-                    if (oldTriggerId == template.getTriggerId()) {
-                        generationReport.addWarning("Template with ID '" + template.getId()
-                            + "' has been triggered by two different triggers ['" + oldTriggerId + "','"
-                            + template.getTriggerId()
-                            + "']. This might lead to indeterministic generation behavior if trigger variables differ.");
-                    }
-                }
-                templateIdToTemplateMap.put(template.getId(), template);
+                checkAndAddToTemplateMap(templateIdToTemplateMap, template);
             } else if (artifact instanceof IncrementTo) {
-                for (TemplateTo t : ((IncrementTo) artifact).getTemplates()) {
-                    templateIdToTemplateMap.put(t.getId(), t);
+                for (TemplateTo template : ((IncrementTo) artifact).getTemplates()) {
+                    checkAndAddToTemplateMap(templateIdToTemplateMap, template);
                 }
             } else {
                 throw new IllegalArgumentException(
@@ -171,6 +169,28 @@ public class GenerationProcessor {
         }
 
         return templateIdToTemplateMap.values();
+    }
+
+    /**
+     * Checks whether the template already exists in the templateIdToTemplateMap. If so, a warning will be
+     * generated and the template will be overwritten in the map.
+     * @param templateIdToTemplateMap
+     *            Mapping from template ID to template
+     * @param template
+     *            {@link TemplateTo} to be added.
+     */
+    private void checkAndAddToTemplateMap(Map<String, TemplateTo> templateIdToTemplateMap,
+        TemplateTo template) {
+        if (templateIdToTemplateMap.containsKey(template.getId())) {
+            String oldTriggerId = templateIdToTemplateMap.get(template.getId()).getTriggerId();
+            if (oldTriggerId == template.getTriggerId()) {
+                generationReport.addWarning("Template with ID '" + template.getId()
+                    + "' has been triggered by two different triggers ['" + oldTriggerId + "','"
+                    + template.getTriggerId() + "']. This might lead to unintended generation results"
+                    + " if the trigger's variableAssignments differ.");
+            }
+        }
+        templateIdToTemplateMap.put(template.getId(), template);
     }
 
     /**
@@ -197,16 +217,7 @@ public class GenerationProcessor {
 
         for (Object generatorInput : inputObjects) {
 
-            ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger, input);
-            Map<String, Object> model;
-            if (rawModel != null) {
-                model = modelBuilderImpl.createModel(triggerInterpreter);
-            } else {
-                model = rawModel;
-            }
-            if (logicClasses != null) {
-                modelBuilderImpl.enrichByLogicBeans(model, logicClasses);
-            }
+            Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput);
 
             String targetCharset = templateIntern.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateIntern.getName(), generatorInput);
@@ -221,23 +232,20 @@ public class GenerationProcessor {
                         generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
                             generatorInput);
                         String result = null;
-                        try {
-                            Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
-                            if (merger != null) {
-                                result = merger.merge(originalFile, out.toString(), targetCharset);
-                            } else {
-                                throw new InvalidConfigurationException("No merger for merge strategy '"
-                                    + templateIntern.getMergeStrategy() + "' found.");
-                            }
-                        } catch (CobiGenRuntimeException e) {
-                            throw e;
-                        } catch (Throwable e) {
-                            throw new PluginProcessingException(e);
+                        Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
+                        if (merger != null) {
+                            result = merger.merge(originalFile, out.toString(), targetCharset);
+                        } else {
+                            throw new InvalidConfigurationException("No merger for merge strategy '"
+                                + templateIntern.getMergeStrategy() + "' found.");
                         }
 
                         if (result != null) {
                             LOG.debug("Merge {} with char set {}.", originalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(originalFile, result, targetCharset);
+                        } else {
+                            throw new PluginProcessingException("Merger " + merger.getType()
+                                + " returned null on merge(...), which is not allowed.");
                         }
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
@@ -250,6 +258,32 @@ public class GenerationProcessor {
                     generatorInput);
             }
         }
+    }
+
+    /**
+     * Builds the model for he given input.
+     * @param triggerInterpreter
+     *            {@link TriggerInterpreter} to be used
+     * @param trigger
+     *            activated {@link Trigger}
+     * @param generatorInput
+     *            input for generation to retrieve information from.
+     * @return the object model for generation.
+     */
+    private Map<String, Object> buildModel(TriggerInterpreter triggerInterpreter, Trigger trigger,
+        Object generatorInput) {
+        ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger);
+        Map<String, Object> model;
+
+        if (rawModel != null) {
+            model = modelBuilderImpl.createModel(triggerInterpreter);
+        } else {
+            model = rawModel;
+        }
+        if (logicClasses != null) {
+            modelBuilderImpl.enrichByLogicBeans(model, logicClasses);
+        }
+        return model;
     }
 
     /**
@@ -405,7 +439,6 @@ public class GenerationProcessor {
         } catch (Throwable e) {
             String message = "An error occured while retrieving the FreeMarker template with id '"
                 + template.getName() + "' from the FreeMarker configuration.";
-            LOG.error(message, e);
             throw new CobiGenRuntimeException(message, e);
         }
 

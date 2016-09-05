@@ -10,7 +10,6 @@ import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 
 /**
  * The {@link InputValidator} takes care of valid API user input, e.g., checks for null references
- * @author mbrunnli (08.04.2014)
  */
 public class InputValidator {
 
@@ -20,7 +19,6 @@ public class InputValidator {
      *            to be validated
      * @param trigger
      *            to be validated
-     * @author mbrunnli (08.04.2014)
      */
     public static void validateTriggerInterpreter(TriggerInterpreter triggerInterpreter, Trigger trigger) {
         if (trigger == null) {

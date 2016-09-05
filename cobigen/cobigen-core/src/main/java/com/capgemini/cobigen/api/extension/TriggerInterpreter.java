@@ -1,9 +1,12 @@
 package com.capgemini.cobigen.api.extension;
 
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
+
 /**
  * This interface should be inherited by implementations to cover the interpretation of new trigger types.
  * Therefore you have to provide exactly one {@link InputReader} and one {@link MatcherInterpreter}.
  */
+@ExceptionFacade
 public interface TriggerInterpreter {
 
     /**

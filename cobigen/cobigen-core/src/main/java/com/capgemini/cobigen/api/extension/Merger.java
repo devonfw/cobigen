@@ -3,11 +3,13 @@ package com.capgemini.cobigen.api.extension;
 import java.io.File;
 
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
 
 /**
  * This interface should be inherited to declare a new component to handle document merges. An {@link Merger}
  * can be registered via an {@link TriggerInterpreter} implementation
  */
+@ExceptionFacade
 public interface Merger {
 
     /**

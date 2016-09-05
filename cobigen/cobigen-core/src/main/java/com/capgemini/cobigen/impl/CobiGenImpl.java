@@ -9,15 +9,13 @@ import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.cache.UnaryMethodReturnValueCache;
+import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
-import com.capgemini.cobigen.impl.proxy.AbstractHandler;
-import com.capgemini.cobigen.impl.proxy.ProxyFactory;
 import com.google.common.collect.Lists;
 
 import freemarker.template.Configuration;
@@ -53,8 +51,7 @@ public class CobiGenImpl implements CobiGen {
 
         // Create proxy cached proxy of ConfigurationInterpreter to cache method calls
         ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
-        configurationInterpreter = (ConfigurationInterpreter) ProxyFactory.getProxy(impl,
-            Lists.<AbstractHandler> newArrayList(new UnaryMethodReturnValueCache()));
+        configurationInterpreter = ProxyFactory.getProxy(impl);
     }
 
     @Override

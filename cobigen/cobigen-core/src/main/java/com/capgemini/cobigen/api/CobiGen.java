@@ -5,12 +5,14 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
 import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
  */
+@ExceptionFacade
 public interface CobiGen extends ConfigurationInterpreter {
 
     /**

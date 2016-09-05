@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.cache;
+package com.capgemini.cobigen.impl.annotation;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -8,25 +8,28 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.impl.proxy.AbstractHandler;
-
 /**
- * The {@link UnaryMethodReturnValueCache} enables caching of several requests on the same method. Therefore,
- * the cache relies on the assumption, that the input objects will be hold in memory as long as they are
- * referenced. Due to the fact, that this cache is just utilizing a {@link WeakHashMap}, it will automatically
- * discard entries which are collected by the GC. This class serves as an interceptor for the
- * {@link Cached @Cached} annotation.
+ * The {@link CachedInterceptor} enables caching of several requests on the same method. Therefore, the cache
+ * relies on the assumption, that the input objects will be hold in memory as long as they are referenced. Due
+ * to the fact, that this cache is just utilizing a {@link WeakHashMap}, it will automatically discard entries
+ * which are collected by the GC. This class serves as an interceptor for the {@link Cached @Cached}
+ * annotation.
  */
-public class UnaryMethodReturnValueCache extends AbstractHandler {
+public class CachedInterceptor extends AbstractInterceptor {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(UnaryMethodReturnValueCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CachedInterceptor.class);
 
     /** Mapping of input object to method name to method result */
     private Map<Object, Map<Method, Object>> _cache = new WeakHashMap<>();
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        // just skip if annotation is not available
+        if (isActive(method, Cached.class)) {
+            return method.invoke(getTargetObject(), args);
+        }
 
         // Ask cache
         Object returnValue = askCache(args[0], method);

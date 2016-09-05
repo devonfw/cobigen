@@ -22,7 +22,6 @@ import com.capgemini.cobigen.impl.validator.InputValidator;
  * The {@link ModelBuilderImpl} is responsible to create the object models for a given object. Therefore, it
  * uses {@link TriggerInterpreter} plug-in extensions to query available {@link InputReader}s and
  * {@link MatcherInterpreter}s
- * @author mbrunnli (08.04.2014)
  */
 public class ModelBuilderImpl implements ModelBuilder {
 
@@ -35,14 +34,10 @@ public class ModelBuilderImpl implements ModelBuilder {
      */
     private Object matcherInput;
 
-    /**
-     * Input object for which a new object model should be created
-     */
+    /** Input object for which a new object model should be created */
     private Object generatorInput;
 
-    /**
-     * Trigger, which has been activated for the given input
-     */
+    /** Trigger, which has been activated for the given input */
     private Trigger trigger;
 
     /**
@@ -54,7 +49,6 @@ public class ModelBuilderImpl implements ModelBuilder {
      * @param matcherInput
      *            input object activates a matcher and thus is target for context variable extraction.
      *            Possibly a combined or wrapping object for multiple input objects
-     * @author mbrunnli (09.04.2014)
      */
     public ModelBuilderImpl(Object generatorInput, Trigger trigger, Object matcherInput) {
         if (generatorInput == null || trigger == null || trigger.getMatcher() == null) {
@@ -75,7 +69,6 @@ public class ModelBuilderImpl implements ModelBuilder {
      * @return the created model
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
-     * @author mbrunnli (08.04.2014)
      */
     public Document createModelAndConvertToDOM(TriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
@@ -88,7 +81,6 @@ public class ModelBuilderImpl implements ModelBuilder {
      * @return the created model
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
-     * @author mbrunnli (08.04.2014)
      */
     @Override
     public Map<String, Object> createModel() throws InvalidConfigurationException {
@@ -105,7 +97,6 @@ public class ModelBuilderImpl implements ModelBuilder {
      * @return the created model
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
-     * @author mbrunnli (08.04.2014)
      */
     @Override
     public Map<String, Object> createModel(TriggerInterpreter triggerInterpreter)
