@@ -119,17 +119,7 @@ public class CobiGenImpl implements CobiGen {
         if (trigger == null) {
             throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
         }
-        return new ModelBuilderImpl(generatorInput, trigger, null);
-    }
-
-    @Override
-    public ModelBuilder getModelBuilder(Object generatorInput, Object matcherInput, String triggerId) {
-
-        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(triggerId);
-        if (trigger == null) {
-            throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
-        }
-        return new ModelBuilderImpl(generatorInput, trigger, matcherInput);
+        return new ModelBuilderImpl(generatorInput, trigger);
     }
 
     @Override
