@@ -1,8 +1,11 @@
 package com.capgemini.cobigen.api.to;
 
-import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -11,7 +14,7 @@ import com.google.common.collect.Sets;
 public class GenerationReportTo {
 
     /** Error messages */
-    private Set<String> errorMessages = Sets.newTreeSet();
+    private SortedMap<String, Throwable> errors = Maps.newTreeMap();
 
     /** Warnings */
     private Set<String> warnings = Sets.newTreeSet();
@@ -20,9 +23,11 @@ public class GenerationReportTo {
      * Adds a new error message to the report.
      * @param message
      *            error message.
+     * @param cause
+     *            cause of the error.
      */
-    public void addErrorMessage(String message) {
-        errorMessages.add(message);
+    public void addError(String message, Throwable cause) {
+        errors.put(message, cause);
     }
 
     /**
@@ -36,18 +41,36 @@ public class GenerationReportTo {
 
     /**
      * Returns all error messages occurred.
-     * @return {@link List} of error messsages.
+     * @return {@link TreeSet} of error messages.
      */
-    public Set<String> getErrorMessages() {
-        return errorMessages;
+    public SortedSet<String> getErrorMessages() {
+        return Sets.newTreeSet(errors.keySet());
+    }
+
+    /**
+     * Returns the cause of the error with the given error message
+     * @param message
+     *            error message to the the cause for
+     * @return the cause of the error with the given error message
+     */
+    public Throwable getErrorCause(String message) {
+        return errors.get(message);
+    }
+
+    /**
+     * Returns a sorted error message to cause mapping.
+     * @return a {@link TreeSet} error message to cause mapping.
+     */
+    public SortedMap<String, Throwable> getErrors() {
+        return Maps.newTreeMap(errors);
     }
 
     /**
      * Returns all warnings created during generation.
-     * @return {@link List} of warnings.
+     * @return {@link TreeSet} of warnings.
      */
-    public Set<String> getWarnings() {
-        return warnings;
+    public SortedSet<String> getWarnings() {
+        return Sets.newTreeSet(warnings);
     }
 
     /**
@@ -55,7 +78,7 @@ public class GenerationReportTo {
      * {@code getErrorMessages().isEmpty()}
      * @return <code>true</code> if no errors occurred, <code>false</code> otherwise
      */
-    public boolean isSuccessfull() {
-        return errorMessages.isEmpty();
+    public boolean isSuccessful() {
+        return errors.isEmpty();
     }
 }

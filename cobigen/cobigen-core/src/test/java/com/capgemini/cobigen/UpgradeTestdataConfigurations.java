@@ -15,14 +15,16 @@ import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (Jun 23, 2015)
+ * Utility class to automatically migrate test configurations for CobiGen.
  */
 public class UpgradeTestdataConfigurations {
 
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(UpgradeTestdataConfigurations.class);
 
+    /**
+     * Utility test to automatically migrate test configurations for CobiGen.
+     */
     @Test
     @Ignore("Just a script to maintain test data after upgrading configurations. Should be run with caution!")
     public void upgradeTestdataConfigurations() {

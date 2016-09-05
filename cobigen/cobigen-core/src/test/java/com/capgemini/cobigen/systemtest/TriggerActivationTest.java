@@ -43,6 +43,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testNoActivation_1Of2AND_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -83,6 +84,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testNoActivation_1Of2AND_1OR_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -122,6 +124,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testActivation_2Of2AND_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -162,6 +165,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testNoActivation_2Of2AND_1NOT_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -201,6 +205,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testNoActivation_1OR_0AND_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -240,6 +245,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testNoActivation_1OR_1NOT_MatcherMatches() throws Exception {
 
         Object input = new Object();
@@ -279,6 +285,7 @@ public class TriggerActivationTest extends AbstractApiTest {
      * @author mbrunnli (22.02.2015)
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testActivation_1OR_MatcherMatches() throws Exception {
 
         Object input = new Object();
