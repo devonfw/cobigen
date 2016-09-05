@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.systemtest;
 
+import static com.capgemini.cobigen.common.assertj.CobiGenAsserts.assertThat;
 import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -27,6 +28,7 @@ import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
@@ -74,12 +76,12 @@ public class ClassLoadingTest extends AbstractApiTest {
         logicClasses.add(getJarClass("OtherJarredClass"));
 
         // Execution
-        // should not throw any Exceptions
-        target.generate(containerInput, templates.get(0), false, logicClasses);
+        GenerationReportTo report = target.generate(containerInput, templates.get(0), false, logicClasses);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test.java");
         File generatedFile = new File(generationRootFolder, "com/capgemini/Test.java");
+        assertThat(report).isSuccessful();
         assertThat(generatedFile).exists();
         assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
 

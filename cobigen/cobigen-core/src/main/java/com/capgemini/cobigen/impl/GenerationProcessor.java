@@ -133,10 +133,10 @@ public class GenerationProcessor {
                     configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
                 generate(template, triggerInterpreter);
             } catch (CobiGenRuntimeException e) {
-                generationReport.addErrorMessage(e.getMessage());
+                generationReport.addError(e.getMessage(), e);
             } catch (Throwable e) {
-                generationReport.addErrorMessage("Something unexpected happened. ["
-                    + e.getClass().getSimpleName() + ": " + e.getMessage() + "]");
+                generationReport.addError("Something unexpected happened. [" + e.getClass().getSimpleName()
+                    + ": " + e.getMessage() + "]", e);
             }
         }
 
@@ -276,9 +276,9 @@ public class GenerationProcessor {
         Map<String, Object> model;
 
         if (rawModel != null) {
-            model = modelBuilderImpl.createModel(triggerInterpreter);
-        } else {
             model = rawModel;
+        } else {
+            model = modelBuilderImpl.createModel(triggerInterpreter);
         }
         if (logicClasses != null) {
             modelBuilderImpl.enrichByLogicBeans(model, logicClasses);

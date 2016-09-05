@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.systemtest;
 
+import static com.capgemini.cobigen.common.assertj.CobiGenAsserts.assertThat;
 import static com.capgemini.cobigen.common.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -25,6 +26,7 @@ import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
@@ -133,8 +135,10 @@ public class ContainerMatcherTest extends AbstractApiTest {
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
-        // should not throw any UnknownContextVariableException
-        target.generate(containerInput, templates.get(0), false);
+        GenerationReportTo report = target.generate(containerInput, templates.get(0), false);
+
+        // assertion
+        assertThat(report).isSuccessful();
     }
 
     /**
@@ -185,7 +189,13 @@ public class ContainerMatcherTest extends AbstractApiTest {
         Assert.assertEquals(2, triggerIds.size());
     }
 
+    /**
+     * Create a new {@link ContainerMatcher}, which contains two children which do not match the same trigger.
+     * @throws Exception
+     *             test fails
+     */
     @Test
+    @SuppressWarnings("unchecked")
     public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
 
         Object container = new Object() {
