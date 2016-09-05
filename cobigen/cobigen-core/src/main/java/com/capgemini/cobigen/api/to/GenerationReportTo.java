@@ -1,8 +1,9 @@
 package com.capgemini.cobigen.api.to;
 
 import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Generation report.
@@ -10,10 +11,10 @@ import com.google.common.collect.Lists;
 public class GenerationReportTo {
 
     /** Error messages */
-    private List<String> errorMessages = Lists.newArrayList();
+    private Set<String> errorMessages = Sets.newTreeSet();
 
     /** Warnings */
-    private List<String> warnings = Lists.newArrayList();
+    private Set<String> warnings = Sets.newTreeSet();
 
     /**
      * Adds a new error message to the report.
@@ -37,7 +38,7 @@ public class GenerationReportTo {
      * Returns all error messages occurred.
      * @return {@link List} of error messsages.
      */
-    public List<String> getErrorMessages() {
+    public Set<String> getErrorMessages() {
         return errorMessages;
     }
 
@@ -45,7 +46,7 @@ public class GenerationReportTo {
      * Returns all warnings created during generation.
      * @return {@link List} of warnings.
      */
-    public List<String> getWarnings() {
+    public Set<String> getWarnings() {
         return warnings;
     }
 
@@ -54,7 +55,7 @@ public class GenerationReportTo {
      * {@code getErrorMessages().isEmpty()}
      * @return <code>true</code> if no errors occurred, <code>false</code> otherwise
      */
-    public boolean wasSuccessfull() {
+    public boolean isSuccessfull() {
         return errorMessages.isEmpty();
     }
 }
