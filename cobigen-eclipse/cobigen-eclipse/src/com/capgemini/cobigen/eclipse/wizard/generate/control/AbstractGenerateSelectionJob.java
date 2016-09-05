@@ -64,7 +64,8 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
+    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper,
+        List<TemplateTo> templatesToBeGenerated) {
 
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
@@ -107,15 +108,14 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
             });
 
         } catch (CoreException e) {
-            PlatformUIUtil
-                .openErrorDialog(
-                    "Eclipse internal Exception", "An eclipse internal exception occurred during processing:\n"
-                        + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.",
-                    e);
+            PlatformUIUtil.openErrorDialog("Eclipse internal Exception",
+                "An eclipse internal exception occurred during processing:\n" + e.getMessage()
+                    + "\n If this problem persists please report it to the CobiGen developers.",
+                e);
             LOG.error("Eclipse internal Exception", e);
         } catch (PluginProcessingException e) {
-            PlatformUIUtil.openErrorDialog("Plug-in Processing Exception", "A plug-in caused an unhandled exception:\n",
-                e);
+            PlatformUIUtil.openErrorDialog("Plug-in Processing Exception",
+                "A plug-in caused an unhandled exception:\n", e);
             LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);

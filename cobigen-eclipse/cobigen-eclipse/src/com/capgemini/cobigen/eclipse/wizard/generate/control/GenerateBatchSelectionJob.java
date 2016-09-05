@@ -42,8 +42,8 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
      *
      * @author trippl (22.04.2013)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
-        List<IType> inputTypes) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
+        List<TemplateTo> templatesToBeGenerated, List<IType> inputTypes) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.inputTypes = inputTypes;
@@ -60,8 +60,8 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
      *            selected {@link IPackageFragment} for the generation
      * @author mbrunnli (04.06.2014)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
-        IPackageFragment container) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
+        List<TemplateTo> templatesToBeGenerated, IPackageFragment container) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.container = container;

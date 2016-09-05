@@ -114,7 +114,8 @@ public class IFolderStub extends IResourceStub implements IFolder {
     }
 
     @Override
-    public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
+    public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 

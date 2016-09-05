@@ -57,7 +57,8 @@ public class GeneratorWrapperFactory {
                 if (firstElement instanceof IJavaElement) {
                     LOG.info("Create new CobiGen instance for java inputs...");
                     JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
-                    generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject().getProject());
+                    generator.setGenerationTargetProject(
+                        ((IJavaElement) firstElement).getJavaProject().getProject());
                     generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
                     return generator;
                 } else if (firstElement instanceof IFile) {
@@ -94,7 +95,8 @@ public class GeneratorWrapperFactory {
      *             combination of inputs.
      * @author mbrunnli (04.12.2014)
      */
-    private static List<Object> extractValidEclipseInputs(IStructuredSelection selection) throws InvalidInputException {
+    private static List<Object> extractValidEclipseInputs(IStructuredSelection selection)
+        throws InvalidInputException {
         LOG.info("Start extraction of valid inputs from selection...");
         int type = 0;
         boolean initialized = false;
@@ -113,8 +115,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: " + ICompilationUnit.class
-                            + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: "
+                            + ICompilationUnit.class + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 0;
@@ -127,8 +129,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: " + IPackageFragment.class
-                            + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: "
+                            + IPackageFragment.class + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 1;
@@ -141,8 +143,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: " + IFile.class + ", "
-                            + o.getClass());
+                        "Multiple different inputs have been selected of the following types: " + IFile.class
+                            + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 2;
