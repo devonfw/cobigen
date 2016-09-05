@@ -3,6 +3,7 @@ package com.capgemini.cobigen.api.extension;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
@@ -10,6 +11,7 @@ import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
  * The {@link ModelBuilder} is an interface for accessing the internal model builder instance. Such instance
  * can be retrieved by calling {@link CobiGen#getModelBuilder(Object, String)}
  */
+@ExceptionFacade
 public interface ModelBuilder {
 
     /**

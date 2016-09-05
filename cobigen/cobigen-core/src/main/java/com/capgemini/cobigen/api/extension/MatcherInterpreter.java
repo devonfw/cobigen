@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
@@ -13,6 +14,7 @@ import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
  * matchers may provide several variable assignments, which might be dependent on any information of the
  * matched input and thus should be resolvable by the defining matcher.
  */
+@ExceptionFacade
 public interface MatcherInterpreter {
 
     /**

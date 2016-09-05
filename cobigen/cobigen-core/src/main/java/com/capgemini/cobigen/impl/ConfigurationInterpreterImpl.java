@@ -13,7 +13,7 @@ import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.cache.Cached;
+import com.capgemini.cobigen.impl.annotation.Cached;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
@@ -150,55 +150,50 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
             LOG.debug("Check {} to match the input.", trigger);
 
-            try {
-                if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
-                    LOG.debug("Matcher input is marked as valid.");
-                    boolean triggerMatches =
-                        GenerationProcessor.matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
+            if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
+                LOG.debug("Matcher input is marked as valid.");
+                boolean triggerMatches =
+                    GenerationProcessor.matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
 
-                    // if a match has been found do not check container matchers in addition for performance
-                    // issues.
-                    if (!triggerMatches) {
-                        LOG.debug("Check container matchers ...");
-                        FOR_CONTAINERMATCHER:
-                        for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                            MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
-                                containerMatcher.getValue(), matcherInput);
-                            LOG.debug("Check {} ...", containerMatcherTo);
-                            if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
-                                LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
-                                // keep backward-compatibility
-                                List<Object> containerResources;
-                                if (containerMatcher.isRetrieveObjectsRecursively()) {
-                                    containerResources = triggerInterpreter.getInputReader()
-                                        .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
-                                } else {
-                                    // the charset does not matter as we just want to see whether there is one
-                                    // matcher for one of the container resources
-                                    containerResources = triggerInterpreter.getInputReader()
-                                        .getInputObjects(matcherInput, Charsets.UTF_8);
-                                }
-                                LOG.debug("{} objects retrieved.", containerResources.size());
+                // if a match has been found do not check container matchers in addition for performance
+                // issues.
+                if (!triggerMatches) {
+                    LOG.debug("Check container matchers ...");
+                    FOR_CONTAINERMATCHER:
+                    for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+                        MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
+                            containerMatcher.getValue(), matcherInput);
+                        LOG.debug("Check {} ...", containerMatcherTo);
+                        if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
+                            LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
+                            // keep backward-compatibility
+                            List<Object> containerResources;
+                            if (containerMatcher.isRetrieveObjectsRecursively()) {
+                                containerResources = triggerInterpreter.getInputReader()
+                                    .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
+                            } else {
+                                // the charset does not matter as we just want to see whether there is one
+                                // matcher for one of the container resources
+                                containerResources = triggerInterpreter.getInputReader()
+                                    .getInputObjects(matcherInput, Charsets.UTF_8);
+                            }
+                            LOG.debug("{} objects retrieved.", containerResources.size());
 
-                                for (Object resource : containerResources) {
-                                    if (GenerationProcessor.matches(resource, trigger.getMatcher(),
-                                        triggerInterpreter)) {
-                                        LOG.debug("At least one object from container matches.");
-                                        triggerMatches = true;
-                                        break FOR_CONTAINERMATCHER;
-                                    }
+                            for (Object resource : containerResources) {
+                                if (GenerationProcessor.matches(resource, trigger.getMatcher(),
+                                    triggerInterpreter)) {
+                                    LOG.debug("At least one object from container matches.");
+                                    triggerMatches = true;
+                                    break FOR_CONTAINERMATCHER;
                                 }
                             }
                         }
                     }
-                    LOG.info("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
-                    if (triggerMatches) {
-                        matchingTrigger.add(trigger);
-                    }
                 }
-            } catch (Throwable e) {
-                LOG.error("The TriggerInterpreter[type='{}'] exited abruptly!", triggerInterpreter.getType(),
-                    e);
+                LOG.info("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
+                if (triggerMatches) {
+                    matchingTrigger.add(trigger);
+                }
             }
         }
         return matchingTrigger;
@@ -221,7 +216,6 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            InputValidator.validateTriggerInterpreter(triggerInterpreter);
 
             TemplatesConfiguration templatesConfiguration =
                 configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
