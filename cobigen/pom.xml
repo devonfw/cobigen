@@ -18,7 +18,7 @@
     <module>cobigen-xmlplugin</module>
     <module>cobigen-propertyplugin</module>
     <module>cobigen-textmerger</module>
-    <module>cobigen-senchaplugin</module>
+    <module>cobigen-jssenchaplugin</module>
   </modules>
 
   <dependencies>
