@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.api.to;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -40,6 +41,34 @@ public class GenerationReportTo {
     }
 
     /**
+     * Adds the new warning messages to the report.
+     * @param messages
+     *            warning messages.
+     */
+    public void addAllWarnings(Collection<String> messages) {
+        warnings.addAll(messages);
+    }
+
+    /**
+     * Adds the new error messages to the report.
+     * @param messages
+     *            error messages.
+     */
+    public void addAllErrors(Collection<String> messages) {
+        warnings.addAll(messages);
+    }
+
+    /**
+     * Aggregates all properties of the given report within {@code this} report.
+     * @param report
+     *            {@link GenerationReportTo} to be aggregated
+     */
+    public void aggregate(GenerationReportTo report) {
+        addAllErrors(report.getErrorMessages());
+        addAllWarnings(report.getWarnings());
+    }
+
+    /**
      * Returns all error messages occurred.
      * @return {@link TreeSet} of error messages.
      */
@@ -74,8 +103,23 @@ public class GenerationReportTo {
     }
 
     /**
-     * Returns whether the generation could be performed successfully. Equivalent to
-     * {@code getErrorMessages().isEmpty()}
+     * Returns whether the report contains warnings.
+     * @return {@code true} if there is at least one warning, {@code false} otherwise.
+     */
+    public boolean hasWarnings() {
+        return !warnings.isEmpty();
+    }
+
+    /**
+     * Returns whether the report contains errors.
+     * @return {@code true} if there is at least one error, {@code false} otherwise.
+     */
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
+
+    /**
+     * Returns whether the generation could be performed successfully. Equivalent to !{@link #hasErrors()}
      * @return <code>true</code> if no errors occurred, <code>false</code> otherwise
      */
     public boolean isSuccessful() {
