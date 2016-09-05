@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
@@ -173,22 +173,21 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            {@link TemplateTo} to be generated
      * @param forceOverride
      *            forces the generator to override the maybe existing target file of the template
-     * @throws MergeException
-     *             if there are some problems while merging
+     * @return {@link GenerationReportTo generation report} of CobiGen
      */
-    public void generate(TemplateTo template, boolean forceOverride) throws MergeException {
+    public GenerationReportTo generate(TemplateTo template, boolean forceOverride) {
 
+        GenerationReportTo report;
         if (singleNonContainerInput) {
             // if we only consider one input, we want to allow some customizations of the generation
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
-            cobiGen.generate(inputs.get(0), template, forceOverride, null, model);
+            report = cobiGen.generate(inputs.get(0), template, forceOverride, null, model);
         } else {
-            for (Object input : inputs) {
-                cobiGen.generate(input, template, forceOverride);
-            }
+            report = cobiGen.generate(inputs, template, forceOverride);
         }
+        return report;
     }
 
     /**

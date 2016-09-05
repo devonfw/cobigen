@@ -3,6 +3,7 @@ package com.capgemini.cobigen.eclipse.wizard.generate.control;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,12 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 
 /**
  * Abstract implementation for processing generation
@@ -81,9 +83,9 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
         }
 
         try {
-            boolean anyResults = performGeneration(monitor);
+            final GenerationReportTo generationReport = performGeneration(monitor);
 
-            if (anyResults) {
+            if (generationReport.isSuccessful()) {
                 IProject proj = cobigenWrapper.getGenerationTargetProject();
                 if (proj != null) {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -96,27 +98,59 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
                 monitor.setTaskName("Format Source Code...");
                 formatSourceCode(cus);
-            }
 
-            PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    MessageDialog.openInformation(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
-                        "Success!",
-                        "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
+                if (generationReport.hasWarnings()) {
+                    PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            StringBuilder strBuilder = new StringBuilder();
+                            int counter = 0;
+                            for (String warning : generationReport.getWarnings()) {
+                                strBuilder.append(counter++);
+                                strBuilder.append(". ");
+                                strBuilder.append(warning);
+                                strBuilder.append("\n");
+                            }
+
+                            MessageDialog.openWarning(
+                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
+                                "Success with warnings!",
+                                "Contents from " + templatesToBeGenerated.size()
+                                    + " templates have been generated.\n\nWarnings:\n"
+                                    + strBuilder.toString());
+                        }
+                    });
+                } else {
+                    PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageDialog.openInformation(
+                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(), "Success!",
+                                "Contents from " + templatesToBeGenerated.size()
+                                    + " templates have been generated.");
+                        }
+                    });
                 }
-            });
-
+            } else {
+                PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        Entry<String, Throwable> firstError =
+                            generationReport.getErrors().entrySet().iterator().next();
+                        PlatformUIUtil.openErrorDialog("Generation exited with errors.", firstError.getKey(),
+                            firstError.getValue());
+                    }
+                });
+            }
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog("Eclipse internal Exception",
                 "An eclipse internal exception occurred during processing:\n" + e.getMessage()
                     + "\n If this problem persists please report it to the CobiGen developers.",
                 e);
             LOG.error("Eclipse internal Exception", e);
-        } catch (PluginProcessingException e) {
-            PlatformUIUtil.openErrorDialog("Plug-in Processing Exception",
-                "A plug-in caused an unhandled exception:\n", e);
-            LOG.error("A plug-in caused an unhandled exception:\n{}", e.getMessage(), e);
+        } catch (CobiGenRuntimeException e) {
+            PlatformUIUtil.openErrorDialog("CobiGen Error", e.getMessage(), e);
+            LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
             PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
@@ -136,12 +170,11 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
      * @param monitor
      *            {@link IProgressMonitor} for tracking current work. The monitor should NOT be set to
      *            {@link IProgressMonitor#done()}, because post processing will do that!
-     * @return <code>true</code>, if generation causes results, which should be post processed<br>
-     *         <code>false</code> , otherwise
+     * @return {@link GenerationReportTo generation report} of CobiGen
      * @throws Exception
      *             if the generation results in any exceptional case
      */
-    protected abstract boolean performGeneration(IProgressMonitor monitor) throws Exception;
+    protected abstract GenerationReportTo performGeneration(IProgressMonitor monitor) throws Exception;
 
     /**
      * Organizes the imports by calling the {@link OrganizeImportsAction}

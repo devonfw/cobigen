@@ -4,13 +4,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 
 /**
  * Running this process as issued in {@link IRunnableWithProgress} performs the generation tasks of the
@@ -68,30 +72,40 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
     }
 
     @Override
-    protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
+    protected GenerationReportTo performGeneration(IProgressMonitor monitor) throws Exception {
         LOG.info("Perform generation of contents in batch mode...");
 
+        GenerationReportTo result;
         if (inputTypes != null && inputTypes.size() == 0 && container == null) {
             LOG.warn("Generation finished: No inputs provided!");
-            return false;
+            result = new GenerationReportTo();
+            result.addWarning("No input provided!");
+            return result;
         }
 
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             monitor.beginTask("Generating files...", templatesToBeGenerated.size());
-            for (TemplateTo temp : templatesToBeGenerated) {
-                if (temp.getMergeStrategy() == null) {
-                    cobigenWrapper.generate(temp, true);
+
+            GenerationReportTo reportSummary = new GenerationReportTo();
+            for (TemplateTo template : templatesToBeGenerated) {
+                monitor.subTask(template.getId());
+                GenerationReportTo report;
+                if (template.getMergeStrategy() == null) {
+                    report = cobigenWrapper.generate(template, true);
                 } else {
-                    cobigenWrapper.generate(temp, false);
+                    report = cobigenWrapper.generate(template, false);
                 }
+                reportSummary.aggregate(report);
                 monitor.worked(1);
             }
+
+            proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+            monitor.done();
             LOG.info("Generation finished successfully.");
-            return true;
+            return reportSummary;
         } else {
-            LOG.warn("Generation finished: No generation target project configured! Potential Bug!");
-            return false;
+            throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
         }
     }
 }

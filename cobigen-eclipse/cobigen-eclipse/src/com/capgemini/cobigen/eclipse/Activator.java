@@ -114,10 +114,6 @@ public class Activator extends AbstractUIPlugin {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;

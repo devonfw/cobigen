@@ -47,6 +47,7 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
+import com.capgemini.cobigen.impl.config.entity.Template;
 import com.google.common.collect.Sets;
 
 /**

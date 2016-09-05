@@ -9,8 +9,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 
 /**
  * Running this this process as issued in {@link IRunnableWithProgress} performs the generation tasks of the
@@ -35,28 +37,31 @@ public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
     }
 
     @Override
-    protected boolean performGeneration(IProgressMonitor monitor) throws Exception {
+    protected GenerationReportTo performGeneration(IProgressMonitor monitor) throws Exception {
         LOG.info("Perform Generation...");
 
         final IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             monitor.beginTask("Generating files...", templatesToBeGenerated.size());
+
+            GenerationReportTo reportSummary = new GenerationReportTo();
             for (TemplateTo template : templatesToBeGenerated) {
-                if (template.getMergeStrategy() == null) {
-                    cobigenWrapper.generate(template, true);
-                } else {
-                    cobigenWrapper.generate(template, false);
-                }
                 monitor.subTask(template.getId());
+                GenerationReportTo report;
+                if (template.getMergeStrategy() == null) {
+                    report = cobigenWrapper.generate(template, true);
+                } else {
+                    report = cobigenWrapper.generate(template, false);
+                }
+                reportSummary.aggregate(report);
                 monitor.worked(1);
             }
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             monitor.done();
             LOG.info("Generation finished successfully.");
-            return true;
+            return reportSummary;
         } else {
-            LOG.warn("Generation finished: No generation target project configured! Potential Bug!");
-            return false;
+            throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
         }
     }
 

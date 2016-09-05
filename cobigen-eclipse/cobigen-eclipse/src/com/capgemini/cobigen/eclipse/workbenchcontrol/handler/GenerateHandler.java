@@ -28,10 +28,8 @@ import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
-import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 
 /**
  * Handler for the Package-Explorer Event
@@ -96,17 +94,11 @@ public class GenerateHandler extends AbstractHandler {
                     LOG.info("Generate Wizard opened.");
                 }
 
-            } catch (UnknownContextVariableException e) {
-                PlatformUIUtil.openErrorDialog("Error", "Unknown Context Variable: " + e.getMessage(), e);
-                LOG.error("Unknown Context Variable", e);
-            } catch (UnknownTemplateException e) {
-                PlatformUIUtil.openErrorDialog("Error", "Unknown Template: " + e.getMessage(), e);
-                LOG.error("Unknown Template", e);
-            } catch (UnknownExpressionException e) {
-                PlatformUIUtil.openErrorDialog("Error", "Unknown Expression: " + e.getMessage(), e);
-                LOG.error("Unknown Expression", e);
             } catch (InvalidConfigurationException e) {
                 openInvalidConfigurationErrorDialog(e);
+            } catch (CobiGenRuntimeException e) {
+                PlatformUIUtil.openErrorDialog("CobiGen Error", e.getMessage(), e);
+                LOG.error("CobiGen Error: {}", e.getMessage(), e);
             } catch (GeneratorProjectNotExistentException e) {
                 MessageDialog.openError(HandlerUtil.getActiveShell(event),
                     "Generator configuration project not found!",

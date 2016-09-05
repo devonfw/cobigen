@@ -62,11 +62,6 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (10.04.2013)
-     */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -107,7 +102,6 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      *             if the file could not be read or written
      * @throws JoranException
      *             if the file could not be handled by log4j
-     * @author sbasnet (11.06.2014)
      */
     public void loadLogbackConfiguration(String externalConfigFileLocation)
         throws IOException, JoranException {
