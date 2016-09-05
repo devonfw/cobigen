@@ -7,6 +7,7 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
@@ -55,51 +56,53 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts) {
-        generate(input, generableArtifacts, false, null, null);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts) {
+        return generate(input, generableArtifacts, false, null, null);
     }
 
     @Override
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride) {
-        generate(input, generableArtifacts, forceOverride, null, null);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride) {
+        return generate(input, generableArtifacts, forceOverride, null, null);
     }
 
     @Override
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
-        List<Class<?>> logicClasses) {
-        generate(input, generableArtifacts, forceOverride, logicClasses, null);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride, List<Class<?>> logicClasses) {
+        return generate(input, generableArtifacts, forceOverride, logicClasses, null);
     }
 
     @Override
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
             generableArtifacts, forceOverride, logicClasses, additionalModelValues);
-        gp.generate();
+        return gp.generate();
     }
 
     @Override
-    public void generate(Object input, GenerableArtifact generableArtifact) {
-        generate(input, generableArtifact, false, null, null);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact) {
+        return generate(input, generableArtifact, false, null, null);
     }
 
     @Override
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride) {
-        generate(input, generableArtifact, forceOverride, null, null);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride) {
+        return generate(input, generableArtifact, forceOverride, null, null);
     }
 
     @Override
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
-        List<Class<?>> logicClasses) {
-        generate(input, generableArtifact, forceOverride, logicClasses, null);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride, List<Class<?>> logicClasses) {
+        return generate(input, generableArtifact, forceOverride, logicClasses, null);
     }
 
     @Override
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
             Lists.newArrayList(generableArtifact), forceOverride, logicClasses, additionalModelValues);
-        gp.generate();
+        return gp.generate();
     }
 
     @Override

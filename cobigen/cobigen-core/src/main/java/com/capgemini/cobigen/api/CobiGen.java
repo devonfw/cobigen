@@ -5,9 +5,9 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
 import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
@@ -19,20 +19,21 @@ public interface CobiGen extends ConfigurationInterpreter {
      * @see #generate(Object, List, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts);
 
     /**
      * @see #generate(Object, List, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride);
 
     /**
      * @see #generate(Object, List, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
-        List<Class<?>> logicClasses);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride, List<Class<?>> logicClasses);
 
     /**
      * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
@@ -50,30 +51,31 @@ public interface CobiGen extends ConfigurationInterpreter {
      *            template model. Such classes can be used to implement more complex template logic.
      * @param rawModel
      *            externally adapted model to be used for generation.
-     * @throws InvalidConfigurationException
-     *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list
+     *         of warnings, as well as a list of error messages.
      */
-    public void generate(Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> rawModel);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
 
     /**
      * @see #generate(Object, GenerableArtifact, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, GenerableArtifact generableArtifact);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact);
 
     /**
      * @see #generate(Object, GenerableArtifact, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride);
 
     /**
      * @see #generate(Object, GenerableArtifact, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
-        List<Class<?>> logicClasses);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride, List<Class<?>> logicClasses);
 
     /**
      * Generates code by processing the {@link GenerableArtifact} for the given input.
@@ -91,11 +93,11 @@ public interface CobiGen extends ConfigurationInterpreter {
      *            template model. Such classes can be used to implement more complex template logic.
      * @param rawModel
      *            externally adapted model to be used for generation.
-     * @throws InvalidConfigurationException
-     *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list
+     *         of warnings, as well as a list of error messages.
      */
-    public void generate(Object input, GenerableArtifact generableArtifact, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> rawModel);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
 
     /**
      * Set a {@link ContextSetting}
