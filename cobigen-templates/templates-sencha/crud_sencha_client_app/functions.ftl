@@ -15,7 +15,7 @@
 <#return "float">
 <#elseif simpleType=="double">
 <#return "float">
-<#elseif simpleType=="oolean">
+<#elseif simpleType=="boolean">
 <#return "boolean">
 <#elseif simpleType=="char">
 <#return "string">
@@ -33,7 +33,7 @@
 <#-- -------------------- -->
 
 <#--
-	Generates all field declaration whereas Entity references will be converted to appropriate id references
+	Generates all field declaration
 -->
 <#macro generateSenchaModelFields>
   <#list pojo.fields as field>
@@ -41,6 +41,24 @@
       { name: '${field.name}', type: '${getSenchaType(field.type)}' },
     <#else>
       { name: '${field.name}', type: '${getSenchaType(field.type)}' }
+    </#if>
+  </#list>
+</#macro>
+
+<#macro generateGridColumns>
+  <#list pojo.fields as field>
+    <#if field?has_next>
+      <#if getSenchaType(field.type) == "auto">
+        { text: 'i18n.${variables.etoName?lower_case}s.grid.${field.name}', dataIndex: '${field.name}' },
+      <#else>
+        { text: '${field.name?upper_case}', dataIndex: '${field.name}' },
+      </#if>
+    <#else>
+      <#if getSenchaType(field.type) == "auto">
+        { text: 'i18n.${variables.etoName?lower_case}s.grid.${field.name}', dataIndex: '${field.name}' }
+      <#else>
+        { text: '${field.name?upper_case}', dataIndex: '${field.name}' }
+      </#if>
     </#if>
   </#list>
 </#macro>

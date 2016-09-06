@@ -3,6 +3,7 @@
     <trigger id="crud_sencha_client_app" type="js" templateFolder="crud_sencha_client_app">
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
           <variableAssignment type="regex" key="rootPackage" value="1"/>
+          <variableAssignment type="regex" key="component" value="2"/>
           <variableAssignment type="regex" key="etoName" value="5"/>
       </matcher>
     </trigger>

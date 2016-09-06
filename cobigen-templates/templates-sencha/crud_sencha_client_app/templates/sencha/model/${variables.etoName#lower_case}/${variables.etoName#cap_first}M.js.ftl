@@ -1,7 +1,12 @@
 <#include '/functions.ftl'>
-Ext.define('${variables.rootPackage}.model.${variables.etoName?cap_first}.${variables.etoName}M', {
+Ext.define('${variables.rootPackage}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}M', {
     extend: 'Ext.data.Model',
     fields: [
         <@generateSenchaModelFields/>
-    ]
+    ],
+    
+    proxy: {
+        type: 'rest',
+        url: Devon.Url.build('${variables.component}/v1/${variables.etoName?lower_case}')
+    }
 });
