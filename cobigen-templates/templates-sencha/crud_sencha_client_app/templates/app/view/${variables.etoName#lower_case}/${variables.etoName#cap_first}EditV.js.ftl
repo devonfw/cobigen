@@ -3,8 +3,8 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
     alias: 'widget.${variables.etoName?lower_case}edit',
 
     requires: [
-        'Sample.view.${variables.etoName?lower_case}.TableEditVM',
-        'Sample.view.${variables.etoName?lower_case}.TableEditVC'
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditVM',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditVC'
     ],
 
     controller: "${variables.etoName?lower_case}-edit-controller",
@@ -78,13 +78,6 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
         }, {
             text: i18n.${variables.etoName?lower_case}Edit.grid.status,
             dataIndex: 'state'
-        }, {
-            text: i18n.${variables.etoName?lower_case}Edit.grid.price,
-            dataIndex: 'price'
-        }, {
-            text: i18n.${variables.etoName?lower_case}Edit.grid.comment,
-            dataIndex: 'comment',
-            flex: 1
         }],
         bind: {
             store: '{positions}',
