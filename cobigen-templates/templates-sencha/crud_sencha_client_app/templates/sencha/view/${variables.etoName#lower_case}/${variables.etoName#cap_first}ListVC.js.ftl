@@ -1,10 +1,10 @@
-Ext.define('${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVC', {
+Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVC', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.${variables.etoName?lower_case}-${variables.etoName?lower_case}s',
 
     requires: [
         'Ext.grid.Panel',
-        '${variables.rootPackage}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}'
+        '${variables.domain}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}'
     ],
 
     listen: {

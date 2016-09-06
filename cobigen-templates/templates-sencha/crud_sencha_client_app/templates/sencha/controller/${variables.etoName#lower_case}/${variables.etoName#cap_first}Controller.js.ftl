@@ -1,12 +1,12 @@
-Ext.define('${variables.rootPackage}.controller.${variables.etoName?lower_case}.${variables.etoName?cap_first}Controller', {
+Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${variables.etoName?cap_first}Controller', {
     extend: 'Ext.app.Controller',
 
     requires: [
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_es_ES',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}CrudV',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV'
+        '${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN',
+        '${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_es_ES',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}CrudV',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV'
     ],
 
     config: {
@@ -33,7 +33,7 @@ Ext.define('${variables.rootPackage}.controller.${variables.etoName?lower_case}.
     },
 
     onMenuOpen${variables.etoName?cap_first}s: function(options) {
-        var ${variables.etoName?lower_case}s = new ${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV(options);
+        var ${variables.etoName?lower_case}s = new ${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV(options);
 
         Devon.App.openInContentPanel(${variables.etoName?lower_case}s);
 
@@ -61,7 +61,7 @@ Ext.define('${variables.rootPackage}.controller.${variables.etoName?lower_case}.
     //We use tab for edit case to show an example of how to edit multiple ${variables.etoName?lower_case}s in different tabs
     on${variables.etoName?cap_first}Edit: function(${variables.etoName?lower_case}Selected) {
         var id = ${variables.etoName?lower_case}Selected.id;
-        var panel = new ${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}Crud({
+        var panel = new ${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}Crud({
             title: i18n.${variables.etoName?lower_case}Edit.title + id,
             closable:true,
             viewModel: {
@@ -78,7 +78,7 @@ Ext.define('${variables.rootPackage}.controller.${variables.etoName?lower_case}.
 
     on${variables.etoName?cap_first}EditOrder: function(${variables.etoName?lower_case}Selected) {
         var id = ${variables.etoName?lower_case}Selected.id;
-        var panel = new ${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV({
+        var panel = new ${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV({
             title: i18n.${variables.etoName?lower_case}Edit.title + id,
             viewModel: {
                 data: {

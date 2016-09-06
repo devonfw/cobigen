@@ -1,12 +1,12 @@
-Ext.define('${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV', {
+Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV', {
     extend: "Ext.panel.Panel",
     alias: 'widget.${variables.etoName?lower_case}s',
 
     requires: [
         'Ext.grid.Panel',
         'Devon.grid.plugin.Pagination',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVM',
-        '${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVC'
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVM',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVC'
     ],
 
     closable: true,
