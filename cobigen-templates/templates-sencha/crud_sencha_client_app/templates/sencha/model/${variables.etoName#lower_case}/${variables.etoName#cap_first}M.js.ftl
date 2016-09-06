@@ -1,5 +1,5 @@
 <#include '/functions.ftl'>
-Ext.define('${variables.rootPackage}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}M', {
+Ext.define('${variables.domain}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}M', {
     extend: 'Ext.data.Model',
     fields: [
         <@generateSenchaModelFields/>

@@ -1,17 +1,17 @@
-Ext.define('${variables.rootPackage}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVM', {
+Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListVM', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.${variables.etoName?lower_case}-${variables.etoName?lower_case}s',
-    requires: ['${variables.rootPackage}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}'],
+    requires: ['${variables.domain}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}'],
 
     data: {
         selectedItem: false,
-        name: '${variables.rootPackage}',
+        name: '${variables.domain}',
         stateFilter: null
     },
 
     stores: {
         ${variables.etoName?lower_case}s: {
-            model: '${variables.rootPackage}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}',
+            model: '${variables.domain}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}',
             pageSize: 3,
             proxy: {
                 type: '${variables.component}.search',
