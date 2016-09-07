@@ -95,6 +95,7 @@ public class JSMerger implements Merger {
 
         Reader reader = null;
         String baseString;
+        System.out.println("va a abrir el base");
         try {
             reader = new FileReader(file);
             baseString = IOUtils.toString(reader);
@@ -109,9 +110,11 @@ public class JSMerger implements Merger {
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
         // parsing the base
+        System.out.println("va a parsear el base");
         nodesBase = parseAst(nodeBase, baseString, file, env);
 
         // parsing the patch string
+        System.out.println("va a parsear el string patch");
         nodesPatch = parseAst(nodePatch, patch, patch, env);
 
         // Auxiliar structures to build the resultant ast at the end
@@ -120,6 +123,7 @@ public class JSMerger implements Merger {
         // This list is used to store the field "name" of each property
         List<String> propsNames = new LinkedList<>();
 
+        System.out.println("lo ha parseado todo");
         // add to the auxiliar list all the properties of the base
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             listProps.add(propertyBase);
@@ -223,6 +227,7 @@ public class JSMerger implements Merger {
         newExpr.setExpression(newCall);
         resultado.addChild(newExpr);
 
+        System.out.println("antes del result");
         result = astToStringWithFormat(resultado, "    ");
 
         return result;
