@@ -1,4 +1,4 @@
-Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV', {
+Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}List', {
     extend: "Ext.panel.Panel",
     alias: 'widget.${variables.etoName?lower_case}s',
 

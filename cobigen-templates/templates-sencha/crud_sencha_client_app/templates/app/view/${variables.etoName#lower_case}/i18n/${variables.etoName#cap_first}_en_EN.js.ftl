@@ -13,7 +13,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
                 add: 'Add',
                 edit: 'Edit',
                 del: 'Delete',
-                refresh: 'Refresh',
+                refresh: 'Refresh'
             }
         },
 
@@ -29,7 +29,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
             grid: {
                 number: 'Number',
                 title: 'Title',
-                status: ' STATUS',
+                status: ' STATUS'
             }
         },
 
