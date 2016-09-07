@@ -228,9 +228,9 @@ public class JSMerger implements Merger {
         resultado.addChild(newExpr);
 
         System.out.println("antes del result");
-        result = astToStringWithFormat(resultado, "    ");
+        // result = astToStringWithFormat(resultado, " ");
 
-        return result;
+        return resultado.toSource();
 
     }
 
