@@ -15,7 +15,6 @@ Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${var
                 eventOpen${variables.etoName?cap_first}List: 'onMenuOpen${variables.etoName?cap_first}s',
                 event${variables.etoName?cap_first}Add: 'on${variables.etoName?cap_first}Add',
                 event${variables.etoName?cap_first}Edit: 'on${variables.etoName?cap_first}Edit',
-                event${variables.etoName?cap_first}EditOrder: 'on${variables.etoName?cap_first}EditOrder'
             }
         }
     },
@@ -74,21 +73,6 @@ Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${var
         Devon.App.openInContentPanel(panel, {id: id});
         
         Ext.GlobalEvents.fireEvent('openedInContentPanel', panel, {id:id});
-    },
-
-    on${variables.etoName?cap_first}EditOrder: function(${variables.etoName?lower_case}Selected) {
-        var id = ${variables.etoName?lower_case}Selected.id;
-        var panel = new ${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV({
-            title: i18n.${variables.etoName?lower_case}Edit.title + id,
-            viewModel: {
-                data: {
-                    ${variables.etoName?lower_case}Id: id
-                }
-            }
-        });
-        Devon.App.openInContentPanel(panel, {
-            id: id
-        });
     },
 
     closeWindow: function(window){

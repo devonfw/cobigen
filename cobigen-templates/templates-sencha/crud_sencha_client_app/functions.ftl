@@ -45,6 +45,9 @@
   </#list>
 </#macro>
 
+<#-- 
+  Generates columns for list grid
+-->
 <#macro generateGridColumns>
   <#list pojo.fields as field>
     <#if field?has_next>
