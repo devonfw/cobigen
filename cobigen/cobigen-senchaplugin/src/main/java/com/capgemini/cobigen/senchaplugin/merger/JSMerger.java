@@ -165,8 +165,12 @@ public class JSMerger implements Merger {
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
                                 int position = searchForNameField(obj);
-                                if (!arrayNames
-                                    .contains(obj.getElements().get(position).getRight().toSource())) {
+                                if (position < obj.getElements().size()) {
+                                    if (!arrayNames
+                                        .contains(obj.getElements().get(position).getRight().toSource())) {
+                                        resultArray.addElement(objArrayPatch);
+                                    }
+                                } else {
                                     resultArray.addElement(objArrayPatch);
                                 }
                             }
