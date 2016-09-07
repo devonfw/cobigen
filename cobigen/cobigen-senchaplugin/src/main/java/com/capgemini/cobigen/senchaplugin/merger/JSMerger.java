@@ -161,11 +161,13 @@ public class JSMerger implements Merger {
                                  * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
                                  * System.out.println(objArrayBase.toSource());
                                  */
+                                System.out.println(objArrayBase.toSource());
                                 arrayObjects.add(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
+                                System.out.println(objArrayPatch.toSource());
                                 if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                     resultArray.addElement(objArrayPatch);
                                 }
