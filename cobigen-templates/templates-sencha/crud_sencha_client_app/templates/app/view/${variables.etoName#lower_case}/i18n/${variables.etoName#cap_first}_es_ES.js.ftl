@@ -13,7 +13,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
                 add: 'Añadir',
                 edit: 'Editar',
                 del: 'Borrar',
-                refresh: 'Refrescar',
+                refresh: 'Refrescar'
             }
         },
 

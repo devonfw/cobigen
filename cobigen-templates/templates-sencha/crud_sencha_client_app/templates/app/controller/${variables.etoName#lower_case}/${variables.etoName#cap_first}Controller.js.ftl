@@ -4,9 +4,9 @@ Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${var
     requires: [
         '${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN',
         '${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_es_ES',
-        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}ListV',
-        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}CrudV',
-        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}EditV'
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}List',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}Crud',
+        '${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}Edit'
     ],
 
     config: {
