@@ -49,20 +49,6 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
         });
     },
 
-    onEditOrderClick: function() {
-        var rec = this.getViewModel().get('selectedItem');
-        Ext.GlobalEvents.fireEvent('event${variables.etoName?cap_first}EditOrder', {
-            id: rec.id
-        });
-    },
-
-    onEditDblclick: function(view, record, item, index, e, eOpts) {
-        Ext.GlobalEvents.fireEvent('event${variables.etoName?cap_first}Edit', {
-            id: record.get('id')
-        });
-
-    },
-
     onDeleteClick: function() {
         var me = this;
 

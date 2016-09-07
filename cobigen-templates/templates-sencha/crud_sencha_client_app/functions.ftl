@@ -65,3 +65,88 @@
     </#if>
   </#list>
 </#macro>
+
+<#--
+  Generates items for CRUD
+-->
+<#macro generateItemsCrud>
+  <#list pojo.fields as field>
+    <#if field?has_next>
+      <#if getSenchaType(field.type) == "auto">
+         {
+            xtype: 'combo',
+            reference: '${field.name}',
+            name: '${field.name}',
+            fieldLabel: i18n.${variables.etoName?lower_case}Crud.${field.name},
+            tabIndex: 2,
+            queryMode: 'local',
+            displayField: 'code',
+            valueField: 'code',
+            bind: {
+                store: '{${field.name}s',
+                value: '{${variables.etoName?lower_case}.${field.name}}'
+            },
+            tabIndex: 1,
+            minValue: 1
+        },
+      <#else>
+        {
+            xtype: '${field.name}field',
+            reference: '${field.name}',
+            name: '${field.name}',
+            fieldLabel: i18n.${variables.etoName?lower_case}Crud.${field.name},
+            bind: {
+                value: '{${variables.etoName?lower_case}.${field.name}}'
+            },
+            tabIndex: 1,
+            minValue: 1
+        },
+      </#if>
+    <#else>
+      <#if getSenchaType(field.type) == "auto">
+       {
+            xtype: 'combo',
+            reference: '${field.name}',
+            name: '${field.name}',
+            fieldLabel: i18n.${variables.etoName?lower_case}Crud.${field.name},
+            tabIndex: 2,
+            queryMode: 'local',
+            displayField: 'code',
+            valueField: 'code',
+            bind: {
+                store: '{${field.name}s',
+                value: '{${variables.etoName?lower_case}.${field.name}}'
+            },
+            tabIndex: 1,
+            minValue: 1
+        }
+      <#else>
+        {
+            xtype: '${field.name}field',
+            reference: '${field.name}',
+            name: '${field.name}',
+            fieldLabel: i18n.${variables.etoName?lower_case}Crud.${field.name},
+            bind: {
+                value: '{${variables.etoName?lower_case}.${field.name}}'
+            },
+            tabIndex: 1,
+            minValue: 1
+        }
+      </#if>
+    </#if>
+  </#list>
+</#macro>
+
+<#--
+  Generates CRUD data fields
+-->
+<#macro generateCrudData>
+  <#list pojo.fields as field>
+    <#if field?has_next>
+      ${field.name}: null,
+    <#else>
+      ${field.name}: null
+    </#if>
+  </#list>
+</#macro>
+
