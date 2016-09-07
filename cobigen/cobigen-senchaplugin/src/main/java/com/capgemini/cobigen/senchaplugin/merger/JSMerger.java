@@ -148,7 +148,7 @@ public class JSMerger implements Merger {
                     // elements
                     // of the patch file
                     if (propertyRight instanceof ArrayLiteral) {
-                        List<AstNode> arrayObjects = new LinkedList<>();
+                        List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
                         if (rightBase.getElement(0) instanceof ObjectLiteral) {
@@ -161,12 +161,12 @@ public class JSMerger implements Merger {
                                  * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
                                  * System.out.println(objArrayBase.toSource());
                                  */
-                                arrayObjects.add(objArrayBase);
+                                arrayObjects.add(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
-                                if (!arrayObjects.contains(objArrayPatch)) {
+                                if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                     resultArray.addElement(objArrayPatch);
                                 }
                                 /*
