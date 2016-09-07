@@ -58,13 +58,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
                     disabled: '{!selectedItem}'
                 },
                 handler: 'onDeleteClick'
-            }, '-', {
-                text: i18n.${variables.etoName?lower_case}s.buttons.editOrder,
-                bind: {
-                    disabled: '{!selectedItem}'
-                },
-                handler: 'onEditOrderClick'
-            }]
+            }, '-']
         },
 
         listeners: {
