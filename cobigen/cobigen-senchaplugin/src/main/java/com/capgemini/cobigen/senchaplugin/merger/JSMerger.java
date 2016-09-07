@@ -137,11 +137,11 @@ public class JSMerger implements Merger {
             }
         }
 
-        // Resolve the conflited properties
+        // Resolve the conflicted properties
         ArrayLiteral resultArray = new ArrayLiteral();
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
-                // Do something only if there is a conflited property
+                // Do something only if there is a conflicted property
                 if (propertyBase.getLeft().toSource().equals(propertyPatch.getLeft().toSource())) {
                     Object propertyRight = propertyBase.getRight();
                     // If the right part of the property is an array, add to the base the non existent
@@ -154,8 +154,12 @@ public class JSMerger implements Merger {
                         if (rightBase.getElement(0) instanceof ObjectLiteral) {
                             for (AstNode objArrayBase : rightBase.getElements()) {
                                 ObjectLiteral obj = (ObjectLiteral) objArrayBase;
+                                System.out.println(obj.toSource());
                                 int position = searchForNameField(obj);
-                                arrayNames.add(obj.getElements().get(position).getRight().toSource());
+                                if (position < obj.getElements().size()) {
+                                    arrayNames.add(obj.getElements().get(position).getRight().toSource());
+                                }
+                                System.out.println(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
