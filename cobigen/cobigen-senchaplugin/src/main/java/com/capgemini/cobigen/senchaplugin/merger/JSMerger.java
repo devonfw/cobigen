@@ -124,12 +124,14 @@ public class JSMerger implements Merger {
         // add to the auxiliar list all the properties of the base
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             listProps.add(propertyBase);
+            System.out.println(propertyBase.getLeft().toSource());
             propsNames.add(propertyBase.getLeft().toSource());
         }
-
+        System.out.println();
         // add all the patch properties that does not have any conflicts with the property already stored
         for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
             if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
+                System.out.println(propertyPatch.getLeft().toSource());
                 listProps.add(propertyPatch);
             }
         }
