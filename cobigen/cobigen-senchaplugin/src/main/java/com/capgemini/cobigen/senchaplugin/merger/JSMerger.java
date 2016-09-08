@@ -148,7 +148,8 @@ public class JSMerger implements Merger {
                         List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
-                        if (rightBase.getElement(0) instanceof ObjectLiteral) {
+                        if (rightBase.getElement(0) instanceof ObjectLiteral
+                            || rightBase.getElement(0) instanceof ObjectProperty) {
                             for (AstNode objArrayBase : rightBase.getElements()) {
                                 ObjectLiteral obj = (ObjectLiteral) objArrayBase;
                                 /*
