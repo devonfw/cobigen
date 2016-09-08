@@ -155,8 +155,17 @@ public class JSMerger implements Merger {
                              * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
                              * System.out.println(objArrayBase.toSource());
                              */
-                            arrayObjects.add(objArrayBase.toSource());
-                            resultArray.addElement(objArrayBase);
+                            if (objArrayBase instanceof ObjectLiteral) {
+                                ObjectLiteral objL = new ObjectLiteral();
+                                if (!objL.getElements().get(0).getRight().toSource().equals("grid")) {
+                                    arrayObjects.add(objArrayBase.toSource());
+                                    resultArray.addElement(objArrayBase);
+                                }
+                            } else {
+                                arrayObjects.add(objArrayBase.toSource());
+                                resultArray.addElement(objArrayBase);
+                            }
+
                         }
                         for (AstNode objArrayPatch : rightPatch.getElements()) {
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
