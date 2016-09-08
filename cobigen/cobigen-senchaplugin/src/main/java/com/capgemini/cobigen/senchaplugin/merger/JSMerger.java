@@ -149,7 +149,6 @@ public class JSMerger implements Merger {
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
                         for (AstNode objArrayBase : rightBase.getElements()) {
-                            ObjectLiteral obj = (ObjectLiteral) objArrayBase;
                             /*
                              * int position = searchForNameField(obj); if (position <
                              * obj.getElements().size()) {
@@ -160,7 +159,6 @@ public class JSMerger implements Merger {
                             resultArray.addElement(objArrayBase);
                         }
                         for (AstNode objArrayPatch : rightPatch.getElements()) {
-                            // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                 resultArray.addElement(objArrayPatch);
                             }
