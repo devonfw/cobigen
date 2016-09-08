@@ -136,7 +136,7 @@ public class JSMerger implements Merger {
         }
 
         // Resolve the conflicted properties
-        ArrayLiteral resultArray = new ArrayLiteral();
+
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
                 // Do something only if there is a conflicted property
@@ -146,6 +146,7 @@ public class JSMerger implements Merger {
                     // elements
                     // of the patch file
                     if (propertyRight instanceof ArrayLiteral) {
+                        ArrayLiteral resultArray = new ArrayLiteral();
                         List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
@@ -158,10 +159,8 @@ public class JSMerger implements Merger {
                              */
                             if (objArrayBase instanceof ObjectLiteral) {
                                 ObjectLiteral objL = (ObjectLiteral) objArrayBase;
-                                System.out.println(objL.getElements().get(0).getRight().toSource());
                                 if (!objL.getElements().get(0).getRight().toSource().equals("'grid'")) {
                                     arrayObjects.add(objArrayBase.toSource());
-                                    System.out.println(objArrayBase.toSource());
                                     resultArray.addElement(objArrayBase);
                                 }
                             } else {
@@ -170,10 +169,8 @@ public class JSMerger implements Merger {
                             }
 
                         }
-                        System.out.println();
                         for (AstNode objArrayPatch : rightPatch.getElements()) {
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
-                                System.out.println(objArrayPatch.toSource());
                                 resultArray.addElement(objArrayPatch);
                             }
                             /*
@@ -202,7 +199,6 @@ public class JSMerger implements Merger {
                                 toAdd.setRight(resultArray);
                                 listProps.remove(propertyBase);
                                 listProps.add(toAdd);
-                                resultArray = new ArrayLiteral();
                                 break;
                             }
                         } else {
