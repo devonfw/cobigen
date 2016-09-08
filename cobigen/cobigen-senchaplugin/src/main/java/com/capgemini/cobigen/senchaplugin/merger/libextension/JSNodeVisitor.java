@@ -26,7 +26,7 @@ public class JSNodeVisitor implements NodeVisitor {
     /**
      *
      */
-    private PropertyGet functionCall;
+    private List<PropertyGet> functionCall;
 
     /**
      *
@@ -39,7 +39,7 @@ public class JSNodeVisitor implements NodeVisitor {
      */
     public JSNodeVisitor() {
         propertyNodes = new LinkedList<>();
-        functionCall = new PropertyGet();
+        functionCall = new LinkedList<>();
         firstArgument = new StringLiteral();
 
     }
@@ -49,8 +49,8 @@ public class JSNodeVisitor implements NodeVisitor {
         if (node instanceof ObjectProperty && node.depth() == 4) {
             ObjectProperty obj = (ObjectProperty) node;
             propertyNodes.add(obj);
-        } else if (node.getType() == Token.GETPROP && node.depth() == 0) {
-            functionCall = (PropertyGet) node;
+        } else if (node.getType() == Token.GETPROP) {
+            functionCall.add((PropertyGet) node);
         } else if (node instanceof StringLiteral && node.depth() == 3) {
             firstArgument = (StringLiteral) node;
         }
@@ -70,7 +70,7 @@ public class JSNodeVisitor implements NodeVisitor {
      * @return the Ext.define
      * @author rudiazma (8 de ago. de 2016)
      */
-    public PropertyGet getFunctionCall() {
+    public List<PropertyGet> getFunctionCall() {
         return functionCall;
     }
 
