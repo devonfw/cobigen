@@ -115,7 +115,7 @@ public class JSMerger implements Merger {
         // parsing the patch string
         nodesPatch = parseAst(nodePatch, patch, patch, env);
 
-        System.out.println("patch");
+        System.out.println(patch);
         // Auxiliar structures to build the resultant ast at the end
         List<ObjectProperty> listProps = new LinkedList<>();
 
