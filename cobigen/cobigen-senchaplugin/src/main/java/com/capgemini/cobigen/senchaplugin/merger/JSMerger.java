@@ -95,7 +95,7 @@ public class JSMerger implements Merger {
 
         Reader reader = null;
         String baseString;
-        System.out.println("va a abrir el base");
+
         try {
             reader = new FileReader(file);
             baseString = IOUtils.toString(reader);
@@ -115,6 +115,7 @@ public class JSMerger implements Merger {
         // parsing the patch string
         nodesPatch = parseAst(nodePatch, patch, patch, env);
 
+        System.out.println("patch");
         // Auxiliar structures to build the resultant ast at the end
         List<ObjectProperty> listProps = new LinkedList<>();
 
