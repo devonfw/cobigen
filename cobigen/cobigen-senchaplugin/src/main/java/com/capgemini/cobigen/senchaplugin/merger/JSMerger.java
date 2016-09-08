@@ -317,16 +317,18 @@ public class JSMerger implements Merger {
         JSNodeVisitor resultAst = new JSNodeVisitor();
 
         ast.visitAll(resultAst);
-        ExpressionStatement first = (ExpressionStatement) ast.getFirstChild();
-        FunctionCall call = (FunctionCall) first.getExpression();
-        result = result + call.getTarget().toSource() + '(' + call.getArguments().get(0).toSource() + ", {\n";
+        /*
+         * ExpressionStatement first = (ExpressionStatement) ast.getFirstChild(); FunctionCall call =
+         * (FunctionCall) first.getExpression(); result = result + call.getTarget().toSource() + '(' +
+         * call.getArguments().get(0).toSource() + ", {\n";
+         */
         /*
          * int propertyPos = 0; for (ObjectProperty property : resultAst.getPropertyNodes()) { if
          * (property.getRight() instanceof StringLiteral) { result = result + indent +
          * property.getLeft().toSource() + ": "; if (propertyPos < resultAst.getPropertyNodes().size() - 1) {
          * result = result + property.getRight().toSource() + ',' + '\n'; } else { result = result +
          * property.getRight().toSource() + '\n'; }
-         * 
+         *
          * } else if (property.getRight() instanceof ArrayLiteral) { ArrayLiteral rightSide = (ArrayLiteral)
          * property.getRight(); result = result + indent + property.getLeft().toSource() + " : [\n"; int
          * position = 0; for (Iterator<AstNode> iterator = rightSide.getElements().iterator();
@@ -335,13 +337,13 @@ public class JSMerger implements Merger {
          * result + indent + indent + rightSide.getElement(position).toSource() + '\n'; if (propertyPos <
          * resultAst.getPropertyNodes().size() - 1) { result = result + indent + "],\n"; } else { result =
          * result + indent + "]\n"; } } }
-         * 
+         *
          * } else if (property.getRight() instanceof ObjectLiteral) { result = result + indent +
          * property.getLeft().toSource() + " : {\n"; ObjectLiteral obj = (ObjectLiteral) property.getRight();
          * result = result + indent + objectLiteralIterate(obj, indent, 1); if (propertyPos <
          * resultAst.getPropertyNodes().size() - 1) { result = result + indent + "},\n"; } else { result =
          * result + indent + "}\n"; }
-         * 
+         *
          * } else if (property.getRight() instanceof FunctionNode && property.depth() <= 1) { FunctionNode
          * func = (FunctionNode) property.getRight(); result = result + indent + property.getLeft().toSource()
          * + ": function() {\n"; result = result + indent + indent + func.getBody().getFirstChild(); if
