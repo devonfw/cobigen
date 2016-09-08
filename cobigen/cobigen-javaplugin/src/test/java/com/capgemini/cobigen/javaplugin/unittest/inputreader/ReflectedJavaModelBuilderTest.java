@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +17,7 @@ import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
@@ -103,6 +105,34 @@ public class ReflectedJavaModelBuilderTest {
             JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
         Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
             JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE));
+    }
+
+    /**
+     * Tests whether no {@link NullPointerException} will be thrown if an interface taken as an input extends
+     * another interface
+     * @Issue #250
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyInterpretingInterfaceInheritance() throws Exception {
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        javaModelBuilder.createModel(TestInterfaceInheritance.class);
+    }
+
+    /**
+     * Tests whether inherited methods will be resolved as well.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyExtractingMethodsInInterfaceInheritance() throws Exception {
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        Map<String, Object> model = javaModelBuilder.createModel(TestInterfaceInheritance.class);
+
+        assertThat(JavaModelUtil.getMethods(model)).hasSize(2);
     }
 
     /**

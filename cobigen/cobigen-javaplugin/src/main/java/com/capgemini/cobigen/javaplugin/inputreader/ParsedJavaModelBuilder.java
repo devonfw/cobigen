@@ -25,19 +25,13 @@ import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser
- *
- * @author mbrunnli (03.06.2014)
  */
 public class ParsedJavaModelBuilder {
 
-    /**
-     * Cached input pojo class in order to avoid unnecessary efforts
-     */
+    /** Cached input pojo class in order to avoid unnecessary efforts */
     private JavaClass cachedPojo;
 
-    /**
-     * Cached model related to the cached input pojo
-     */
+    /** Cached model related to the cached input pojo */
     private Map<String, Object> cachedModel;
 
     /**
@@ -48,7 +42,6 @@ public class ParsedJavaModelBuilder {
      * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
      *         corresponding information. Learn more about the FreeMarker data model at http
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
-     * @author mbrunnli (06.02.2013)
      */
     Map<String, Object> createModel(final JavaClass javaClass) {
 
@@ -104,7 +97,6 @@ public class ParsedJavaModelBuilder {
      * @param javaClass
      *            source {@link JavaClass} to determine all fields accessible via methods from
      * @return a list of field properties equivalently to {@link #extractFields(JavaClass)}
-     * @author mbrunnli (25.01.2015)
      */
     private List<Map<String, Object>> extractMethodAccessibleFields(JavaClass javaClass) {
         List<Map<String, Object>> fields = Lists.newLinkedList();
@@ -124,7 +116,6 @@ public class ParsedJavaModelBuilder {
      * @param javaClass
      *            input java class
      * @return a {@link List} of methods mapping each property to its value
-     * @author mbrunnli (04.06.2014)
      */
     private List<Map<String, Object>> extractMethods(JavaClass javaClass) {
 
@@ -153,7 +144,6 @@ public class ParsedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author mbrunnli (06.02.2013)
      */
     private List<Map<String, Object>> extractFields(JavaClass pojo) {
 
@@ -176,7 +166,6 @@ public class ParsedJavaModelBuilder {
      * @param annotatedElement
      *            Annotated Element the field type is source of
      * @return the mapping of property names to their values
-     * @author mbrunnli (25.01.2015)
      */
     private Map<String, Object> extractField(String fieldName, JavaType field,
         JavaAnnotatedElement annotatedElement) {
@@ -201,30 +190,32 @@ public class ParsedJavaModelBuilder {
      * Extracts the superclass from the given POJO
      *
      * @param pojo
-     *            {@link Class} object of the POJO the supertype should be retrieved from
-     * @return the supertype, represented by a {@link Map} of a {@link String} key to the corresponding
-     *         {@link String} value of meta information
-     * @author fkreis (24.09.2014)
+     *            {@link Class} object of the POJO the super type should be retrieved from
+     * @return the super type, represented by a {@link Map} of a {@link String} key to the corresponding
+     *         {@link String} value of meta information or {@code null} if no superclass exist
      */
     private Map<String, Object> extractSuperclass(JavaClass pojo) {
 
         Map<String, Object> superclassModel = new HashMap<>();
 
         JavaClass superclass = pojo.getSuperJavaClass();
-        superclassModel.put(ModelConstant.NAME, superclass.getName());
-        superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
-        if (superclass.getPackage() != null) {
-            superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+        if (superclass != null) {
+            superclassModel.put(ModelConstant.NAME, superclass.getName());
+            superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
+            if (superclass.getPackage() != null) {
+                superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+            } else {
+                superclassModel.put(ModelConstant.PACKAGE, "");
+            }
+
+            Map<String, String> javaDoc = extractJavaDoc(superclass);
+            if (javaDoc != null) {
+                superclassModel.put(ModelConstant.JAVADOC, javaDoc);
+            }
+            return superclassModel;
         } else {
-            superclassModel.put(ModelConstant.PACKAGE, "");
+            return null;
         }
-
-        Map<String, String> javaDoc = extractJavaDoc(superclass);
-        if (javaDoc != null) {
-            superclassModel.put(ModelConstant.JAVADOC, javaDoc);
-        }
-
-        return superclassModel;
     }
 
     /**
@@ -234,7 +225,6 @@ public class ParsedJavaModelBuilder {
      *            {@link Class} object of the POJO the interfaces should be retrieved from
      * @return a {@link Set} of implementedTypes (interfaces), where each is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author fkreis (24.09.2014)
      */
     private List<Map<String, Object>> extractInterfaces(JavaClass pojo) {
 
@@ -268,7 +258,6 @@ public class ParsedJavaModelBuilder {
      *            class for which the setter and getter should be evaluated according to their annotations
      * @param attributes
      *            list of attribute meta data for the generation (object model)
-     * @author mbrunnli (01.04.2014)
      */
     private void collectAnnotations(JavaClass javaClass, List<Map<String, Object>> attributes) {
 
@@ -314,8 +303,7 @@ public class ParsedJavaModelBuilder {
      * @param annotationsMap
      *            object model for annotations
      * @param annotations
-     *            to be analysed
-     * @author mbrunnli (01.04.2014)
+     *            to be analyzed
      */
     @SuppressWarnings("unchecked")
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap,
@@ -371,7 +359,6 @@ public class ParsedJavaModelBuilder {
      *            Annotated element, which javaDoc should be parsed
      * @return the mapping of javaDoc elements to its values or <code>null</code> if the element does not
      *         declare javaDoc
-     * @author mbrunnli (30.01.2015)
      */
     private Map<String, String> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
         if (annotatedElement.getComment() == null) {
@@ -395,7 +382,6 @@ public class ParsedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @param attributes
      *            a {@link List} of all attributes and their properties
-     * @author mbrunnli (12.02.2013)
      */
     @Deprecated
     private void determinePojoIds(JavaClass javaClass, List<Map<String, Object>> attributes) {

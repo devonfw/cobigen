@@ -203,25 +203,29 @@ public class ReflectedJavaModelBuilder {
      * Extracts the superclass from the given POJO
      *
      * @param pojo
-     *            {@link Class} object of the POJO the supertype should be retrieved from
-     * @return the supertype, represented by a {@link Map} of a {@link String} key to the corresponding
-     *         {@link String} value of meta information
-     * @author fkreis (24.09.2014)
+     *            {@link Class} object of the POJO the super type should be retrieved from
+     * @return the super type, represented by a {@link Map} of a {@link String} key to the corresponding
+     *         {@link String} value of meta information or {@code null} if there is no super class (e.g. for
+     *         interfaces)
      */
     private Map<String, Object> extractSuperclass(Class<?> pojo) {
 
         Map<String, Object> superclassModel = new HashMap<>();
 
         Class<?> superclass = pojo.getSuperclass();
-        superclassModel.put(ModelConstant.NAME, superclass.getSimpleName());
-        superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
-        if (superclass.getPackage() != null) {
-            superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
-        } else {
-            superclassModel.put(ModelConstant.PACKAGE, "");
-        }
+        if (superclass != null) {
+            superclassModel.put(ModelConstant.NAME, superclass.getSimpleName());
+            superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
+            if (superclass.getPackage() != null) {
+                superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+            } else {
+                superclassModel.put(ModelConstant.PACKAGE, "");
+            }
 
-        return superclassModel;
+            return superclassModel;
+        } else {
+            return null;
+        }
     }
 
     /**

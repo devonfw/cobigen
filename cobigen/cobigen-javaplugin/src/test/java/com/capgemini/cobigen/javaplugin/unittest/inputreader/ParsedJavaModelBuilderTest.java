@@ -65,7 +65,8 @@ public class ParsedJavaModelBuilderTest {
     }
 
     /**
-     * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
+     * Tests whether super types (extended Type and implemented Types) will be extracted correctly to the
+     * model
      *
      * @throws Exception
      *             test fails
@@ -102,7 +103,6 @@ public class ParsedJavaModelBuilderTest {
      * package
      * @throws Exception
      *             test fails
-     * @author mbrunnli (30.09.2014)
      */
     @Test
     public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration() throws Exception {
@@ -118,10 +118,25 @@ public class ParsedJavaModelBuilderTest {
     }
 
     /**
+     * Tests whether no {@link NullPointerException} will be thrown if an interface taken as an input extends
+     * another interface
+     * @Issue #250
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyInterpretingInterfaceInheritance() throws Exception {
+
+        File noPackageFile = new File(testFileRootPath + "TestInterface.java");
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
+    }
+
+    /**
      * Tests whether the inherited type will be correctly extracted and put into the model
      * @throws Exception
      *             test fails
-     * @author mbrunnli (30.09.2014)
      */
     @Test
     public void testCorrectlyExtractedInheritedType() throws Exception {
