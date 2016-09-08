@@ -159,6 +159,7 @@ public class JSMerger implements Merger {
                                  */
                                 arrayObjects.add(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
+                                System.out.println(objArrayBase.toSource() + " agregado");
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
