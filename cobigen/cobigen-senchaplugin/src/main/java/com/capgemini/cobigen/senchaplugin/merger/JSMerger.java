@@ -115,7 +115,6 @@ public class JSMerger implements Merger {
         // parsing the patch string
         nodesPatch = parseAst(nodePatch, patch, patch, env);
 
-        System.out.println(patch);
         // Auxiliar structures to build the resultant ast at the end
         List<ObjectProperty> listProps = new LinkedList<>();
 
@@ -163,7 +162,9 @@ public class JSMerger implements Merger {
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
+                                System.out.println(objArrayPatch.toSource());
                                 if (!arrayObjects.contains(objArrayPatch.toSource())) {
+                                    System.out.println("lo agrega");
                                     resultArray.addElement(objArrayPatch);
                                 }
                                 /*
