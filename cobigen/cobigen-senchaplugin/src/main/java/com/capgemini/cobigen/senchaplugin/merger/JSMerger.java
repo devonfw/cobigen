@@ -110,11 +110,9 @@ public class JSMerger implements Merger {
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
         // parsing the base
-        System.out.println("va a parsear el base");
         nodesBase = parseAst(nodeBase, baseString, file, env);
 
         // parsing the patch string
-        System.out.println("va a parsear el string patch");
         nodesPatch = parseAst(nodePatch, patch, patch, env);
 
         // Auxiliar structures to build the resultant ast at the end
@@ -123,7 +121,6 @@ public class JSMerger implements Merger {
         // This list is used to store the field "name" of each property
         List<String> propsNames = new LinkedList<>();
 
-        System.out.println("lo ha parseado todo");
         // add to the auxiliar list all the properties of the base
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             listProps.add(propertyBase);
@@ -154,22 +151,18 @@ public class JSMerger implements Merger {
                         if (rightBase.getElement(0) instanceof ObjectLiteral) {
                             for (AstNode objArrayBase : rightBase.getElements()) {
                                 ObjectLiteral obj = (ObjectLiteral) objArrayBase;
-                                System.out.println(obj.toSource());
                                 /*
                                  * int position = searchForNameField(obj); if (position <
                                  * obj.getElements().size()) {
                                  * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
                                  * System.out.println(objArrayBase.toSource());
                                  */
-                                System.out.println(objArrayBase.toSource());
                                 arrayObjects.add(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
                             }
                             for (AstNode objArrayPatch : rightPatch.getElements()) {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
-                                System.out.println(objArrayPatch.toSource());
                                 if (!arrayObjects.contains(objArrayPatch.toSource())) {
-                                    System.out.println("added");
                                     resultArray.addElement(objArrayPatch);
                                 }
                                 /*
@@ -230,6 +223,7 @@ public class JSMerger implements Merger {
 
         // Building the resultant ast following the structure of a sencha file
         PropertyGet prop = nodesBase.getFunctionCall();
+        System.out.println(prop.toSource());
         StringLiteral firstArgument = nodesBase.getFirstArgument();
         FunctionCall newCall = new FunctionCall();
         ExpressionStatement newExpr = new ExpressionStatement();
@@ -244,7 +238,6 @@ public class JSMerger implements Merger {
         newExpr.setExpression(newCall);
         resultado.addChild(newExpr);
 
-        System.out.println("antes del result");
         // result = astToStringWithFormat(resultado, " ");
 
         return resultado.toSource();
@@ -270,7 +263,7 @@ public class JSMerger implements Merger {
         try {
             ast = new Parser(env).parse(reader, file, 1);
         } catch (EvaluatorException e) {
-            throw new JSParseError(e.details() + " Line: " + e.lineNumber() + " -> " + e.lineSource());
+            throw new JSParseError(e.getMessage() + " Line: " + e.lineNumber() + " -> " + e.lineSource());
         }
 
         JSNodeVisitor nodes = new JSNodeVisitor();
