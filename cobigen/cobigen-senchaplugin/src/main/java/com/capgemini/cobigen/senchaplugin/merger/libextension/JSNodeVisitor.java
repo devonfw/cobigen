@@ -49,7 +49,7 @@ public class JSNodeVisitor implements NodeVisitor {
         if (node instanceof ObjectProperty && node.depth() == 4) {
             ObjectProperty obj = (ObjectProperty) node;
             propertyNodes.add(obj);
-        } else if (node.getType() == Token.GETPROP && node.depth() == 1) {
+        } else if (node.getType() == Token.GETPROP && node.depth() == 0) {
             functionCall = (PropertyGet) node;
         } else if (node instanceof StringLiteral && node.depth() == 3) {
             firstArgument = (StringLiteral) node;
