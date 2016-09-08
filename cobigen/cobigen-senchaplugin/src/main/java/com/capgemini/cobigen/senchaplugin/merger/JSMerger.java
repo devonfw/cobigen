@@ -247,9 +247,9 @@ public class JSMerger implements Merger {
         newExpr.setExpression(newCall);
         resultado.addChild(newExpr);
 
-        // result = astToStringWithFormat(resultado, " ");
+        result = astToStringWithFormat(resultado, " ");
 
-        return resultado.toSource();
+        return result;
 
     }
 
