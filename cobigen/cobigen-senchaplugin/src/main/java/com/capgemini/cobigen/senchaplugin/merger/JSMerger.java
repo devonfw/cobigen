@@ -148,65 +148,59 @@ public class JSMerger implements Merger {
                         List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
-                        System.out.println(rightBase.getElement(0).getClass().toString());
-                        if (rightBase.getElement(0) instanceof ObjectLiteral
-                            || rightBase.getElement(0) instanceof ObjectProperty) {
+                        for (AstNode objArrayBase : rightBase.getElements()) {
+                            ObjectLiteral obj = (ObjectLiteral) objArrayBase;
+                            /*
+                             * int position = searchForNameField(obj); if (position <
+                             * obj.getElements().size()) {
+                             * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
+                             * System.out.println(objArrayBase.toSource());
+                             */
+                            arrayObjects.add(objArrayBase.toSource());
+                            resultArray.addElement(objArrayBase);
+                        }
+                        for (AstNode objArrayPatch : rightPatch.getElements()) {
+                            // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
+                            if (!arrayObjects.contains(objArrayPatch.toSource())) {
+                                resultArray.addElement(objArrayPatch);
+                            }
+                            /*
+                             * int position = searchForNameField(obj); if (position <
+                             * obj.getElements().size()) { if (!arrayNames
+                             * .contains(obj.getElements().get(position).getRight().toSource())) {
+                             * resultArray.addElement(objArrayPatch); } } else {
+                             * resultArray.addElement(objArrayPatch); }
+                             */
+                        }
+                        if (patchOverrides) {
                             for (AstNode objArrayBase : rightBase.getElements()) {
-                                ObjectLiteral obj = (ObjectLiteral) objArrayBase;
-                                /*
-                                 * int position = searchForNameField(obj); if (position <
-                                 * obj.getElements().size()) {
-                                 * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
-                                 * System.out.println(objArrayBase.toSource());
-                                 */
-                                arrayObjects.add(objArrayBase.toSource());
-                                resultArray.addElement(objArrayBase);
-                                System.out.println(objArrayBase.toSource() + " agregado");
-                            }
-                            for (AstNode objArrayPatch : rightPatch.getElements()) {
-                                // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
-                                System.out.println(objArrayPatch.toSource());
-                                if (!arrayObjects.contains(objArrayPatch.toSource())) {
-                                    System.out.println("lo agrega");
-                                    resultArray.addElement(objArrayPatch);
-                                }
-                                /*
-                                 * int position = searchForNameField(obj); if (position <
-                                 * obj.getElements().size()) { if (!arrayNames
-                                 * .contains(obj.getElements().get(position).getRight().toSource())) {
-                                 * resultArray.addElement(objArrayPatch); } } else {
-                                 * resultArray.addElement(objArrayPatch); }
-                                 */
-                            }
-                            if (patchOverrides) {
-                                for (AstNode objArrayBase : rightBase.getElements()) {
-                                    for (AstNode objArrayPatch : rightPatch.getElements()) {
-                                        ObjectLiteral objBase = (ObjectLiteral) objArrayBase;
-                                        ObjectLiteral objPatch = (ObjectLiteral) objArrayPatch;
-                                        if (objBase.getElements().get(searchForNameField(objBase)).getRight()
-                                            .toSource().equals(objPatch.getElements()
-                                                .get(searchForNameField(objPatch)).getRight().toSource())) {
-                                            resultArray.getElements().remove(objArrayBase);
-                                            resultArray.addElement(objArrayPatch);
-                                            break;
-                                        }
+                                for (AstNode objArrayPatch : rightPatch.getElements()) {
+                                    ObjectLiteral objBase = (ObjectLiteral) objArrayBase;
+                                    ObjectLiteral objPatch = (ObjectLiteral) objArrayPatch;
+                                    if (objBase.getElements().get(searchForNameField(objBase)).getRight()
+                                        .toSource().equals(objPatch.getElements()
+                                            .get(searchForNameField(objPatch)).getRight().toSource())) {
+                                        resultArray.getElements().remove(objArrayBase);
+                                        resultArray.addElement(objArrayPatch);
+                                        break;
                                     }
-                                    ObjectProperty toAdd = new ObjectProperty();
-                                    toAdd.setLeft(propertyBase.getLeft());
-                                    toAdd.setRight(resultArray);
-                                    listProps.remove(propertyBase);
-                                    listProps.add(toAdd);
-                                    break;
                                 }
-                            } else {
                                 ObjectProperty toAdd = new ObjectProperty();
                                 toAdd.setLeft(propertyBase.getLeft());
                                 toAdd.setRight(resultArray);
                                 listProps.remove(propertyBase);
                                 listProps.add(toAdd);
+                                break;
                             }
-                            break;
+                        } else {
+                            ObjectProperty toAdd = new ObjectProperty();
+                            toAdd.setLeft(propertyBase.getLeft());
+                            toAdd.setRight(resultArray);
+                            listProps.remove(propertyBase);
+                            listProps.add(toAdd);
                         }
+                        break;
+
                         // At the case of non array, and if patchOverrides is true, just replace the
                         // entire
                         // property
