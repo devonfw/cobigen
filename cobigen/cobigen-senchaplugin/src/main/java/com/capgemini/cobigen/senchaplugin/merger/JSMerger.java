@@ -127,7 +127,6 @@ public class JSMerger implements Merger {
             System.out.println(propertyBase.getLeft().toSource());
             propsNames.add(propertyBase.getLeft().toSource());
         }
-        System.out.println();
         // add all the patch properties that does not have any conflicts with the property already stored
         for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
             if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
@@ -203,6 +202,7 @@ public class JSMerger implements Merger {
                                 toAdd.setRight(resultArray);
                                 listProps.remove(propertyBase);
                                 listProps.add(toAdd);
+                                resultArray = new ArrayLiteral();
                                 break;
                             }
                         } else {
@@ -211,6 +211,7 @@ public class JSMerger implements Merger {
                             toAdd.setRight(resultArray);
                             listProps.remove(propertyBase);
                             listProps.add(toAdd);
+                            resultArray = new ArrayLiteral();
                         }
                         break;
 
