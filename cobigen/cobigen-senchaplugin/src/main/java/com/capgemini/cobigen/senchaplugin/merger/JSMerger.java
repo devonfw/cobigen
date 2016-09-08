@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -149,7 +148,7 @@ public class JSMerger implements Merger {
                     // elements
                     // of the patch file
                     if (propertyRight instanceof ArrayLiteral) {
-                        ArrayList<String> arrayObjects = new ArrayList();
+                        List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
                         if (rightBase.getElement(0) instanceof ObjectLiteral) {
@@ -170,6 +169,7 @@ public class JSMerger implements Merger {
                                 // ObjectLiteral obj = (ObjectLiteral) objArrayPatch;
                                 System.out.println(objArrayPatch.toSource());
                                 if (!arrayObjects.contains(objArrayPatch.toSource())) {
+                                    System.out.println("added");
                                     resultArray.addElement(objArrayPatch);
                                 }
                                 /*
