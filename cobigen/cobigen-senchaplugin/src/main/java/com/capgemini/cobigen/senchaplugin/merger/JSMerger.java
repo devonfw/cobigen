@@ -222,15 +222,15 @@ public class JSMerger implements Merger {
         }
 
         // Building the resultant ast following the structure of a sencha file
-        PropertyGet prop = nodesBase.getFunctionCall();
-        System.out.println(prop.toSource());
+        List<PropertyGet> prop = nodesBase.getFunctionCall();
+
         StringLiteral firstArgument = nodesBase.getFirstArgument();
         FunctionCall newCall = new FunctionCall();
         ExpressionStatement newExpr = new ExpressionStatement();
         ObjectLiteral newObj = new ObjectLiteral();
 
         List<AstNode> arguments = new LinkedList<>();
-        newCall.setTarget(prop);
+        newCall.setTarget(prop.get(0));
         arguments.add(0, firstArgument);
         newObj.setElements(listProps);
         arguments.add(1, newObj);
