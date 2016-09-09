@@ -3,7 +3,6 @@ package com.capgemini.cobigen.eclipse.wizard.generate.control;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -106,7 +105,7 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                             StringBuilder strBuilder = new StringBuilder();
                             int counter = 0;
                             for (String warning : generationReport.getWarnings()) {
-                                strBuilder.append(counter++);
+                                strBuilder.append(++counter);
                                 strBuilder.append(". ");
                                 strBuilder.append(warning);
                                 strBuilder.append("\n");
@@ -135,10 +134,12 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                 PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        Entry<String, Throwable> firstError =
-                            generationReport.getErrors().entrySet().iterator().next();
-                        PlatformUIUtil.openErrorDialog("Generation exited with errors.", firstError.getKey(),
-                            firstError.getValue());
+                        Throwable firstError = generationReport.getErrors().get(0);
+                        PlatformUIUtil.openErrorDialog("Generation exited with errors.",
+                            "There are " + generationReport.getErrors().size()
+                                + " errors in total. Below, there is just the stack trace of the first error."
+                                + " Please see the Log File to view all errors.",
+                            firstError);
                     }
                 });
             }
