@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
@@ -133,10 +134,9 @@ public class GenerationProcessor {
                     configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId()));
                 generate(template, triggerInterpreter);
             } catch (CobiGenRuntimeException e) {
-                generationReport.addError(e.getMessage(), e);
+                generationReport.addError(e);
             } catch (Throwable e) {
-                generationReport.addError("Something unexpected happened. [" + e.getClass().getSimpleName()
-                    + ": " + e.getMessage() + "]", e);
+                generationReport.addError(new CobiGenRuntimeException("Something unexpected happened.", e));
             }
         }
 
@@ -247,6 +247,9 @@ public class GenerationProcessor {
                             throw new PluginProcessingException("Merger " + merger.getType()
                                 + " returned null on merge(...), which is not allowed.");
                         }
+                    } catch (MergeException e) {
+                        // enrich merge exception to provide template ID
+                        throw new MergeException(e, templateIntern.getName());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
                             "Could not write file " + originalFile.toURI().toString() + " after merge.", e);
