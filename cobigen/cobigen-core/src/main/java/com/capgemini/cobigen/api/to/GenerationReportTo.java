@@ -1,11 +1,11 @@
 package com.capgemini.cobigen.api.to;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -14,21 +14,19 @@ import com.google.common.collect.Sets;
  */
 public class GenerationReportTo {
 
-    /** Error messages */
-    private SortedMap<String, Throwable> errors = Maps.newTreeMap();
+    /** Error messages mapping from message to cause to avoid duplicates. */
+    private Map<String, Throwable> errors = Maps.newHashMap();
 
-    /** Warnings */
-    private Set<String> warnings = Sets.newTreeSet();
+    /** Warnings in a hash set to remove duplicates */
+    private Set<String> warnings = Sets.newHashSet();
 
     /**
      * Adds a new error message to the report.
-     * @param message
-     *            error message.
      * @param cause
      *            cause of the error.
      */
-    public void addError(String message, Throwable cause) {
-        errors.put(message, cause);
+    public void addError(Throwable cause) {
+        errors.put(cause.getMessage(), cause);
     }
 
     /**
@@ -51,11 +49,13 @@ public class GenerationReportTo {
 
     /**
      * Adds the new error messages to the report.
-     * @param messages
+     * @param errors
      *            error messages.
      */
-    public void addAllErrors(Collection<String> messages) {
-        warnings.addAll(messages);
+    public void addAllErrors(List<Throwable> errors) {
+        for (Throwable t : errors) {
+            this.errors.put(t.getMessage(), t);
+        }
     }
 
     /**
@@ -64,42 +64,24 @@ public class GenerationReportTo {
      *            {@link GenerationReportTo} to be aggregated
      */
     public void aggregate(GenerationReportTo report) {
-        addAllErrors(report.getErrorMessages());
+        addAllErrors(report.getErrors());
         addAllWarnings(report.getWarnings());
     }
 
     /**
-     * Returns all error messages occurred.
-     * @return {@link TreeSet} of error messages.
+     * Returns the {@link List} of occurred errors.
+     * @return the {@link List} of occurred errors.
      */
-    public SortedSet<String> getErrorMessages() {
-        return Sets.newTreeSet(errors.keySet());
-    }
-
-    /**
-     * Returns the cause of the error with the given error message
-     * @param message
-     *            error message to the the cause for
-     * @return the cause of the error with the given error message
-     */
-    public Throwable getErrorCause(String message) {
-        return errors.get(message);
-    }
-
-    /**
-     * Returns a sorted error message to cause mapping.
-     * @return a {@link TreeSet} error message to cause mapping.
-     */
-    public SortedMap<String, Throwable> getErrors() {
-        return Maps.newTreeMap(errors);
+    public List<Throwable> getErrors() {
+        return Lists.newArrayList(errors.values());
     }
 
     /**
      * Returns all warnings created during generation.
-     * @return {@link TreeSet} of warnings.
+     * @return {@link List} of warnings.
      */
-    public SortedSet<String> getWarnings() {
-        return Sets.newTreeSet(warnings);
+    public List<String> getWarnings() {
+        return Lists.newArrayList(warnings);
     }
 
     /**
