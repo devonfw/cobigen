@@ -136,9 +136,12 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                     public void run() {
                         Throwable firstError = generationReport.getErrors().get(0);
                         PlatformUIUtil.openErrorDialog("Generation exited with errors.",
-                            "There are " + generationReport.getErrors().size()
-                                + " errors in total. Below, there is just the stack trace of the first error."
-                                + " Please see the Log File to view all errors.",
+                            generationReport.getErrors().size() > 1
+                                ? "Multiple errors occurred during generation. There are "
+                                    + generationReport.getErrors().size()
+                                    + " errors in total. See the stack trace of the first error only below."
+                                    + " Please investigate the Log file to view all errors if needed."
+                                : "An error occurred during generation.",
                             firstError);
                     }
                 });
