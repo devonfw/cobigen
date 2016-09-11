@@ -290,7 +290,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param consideredIncrements
      *            increments which should be considered for fetching templates
      * @return the {@link List} of templates, which generates the given file
-     * @author mbrunnli (14.02.2013)
      */
     public List<TemplateTo> getTemplatesForFilePath(String filePath, Set<IncrementTo> consideredIncrements) {
         List<TemplateTo> templates = Lists.newLinkedList();

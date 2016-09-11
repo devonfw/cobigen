@@ -78,7 +78,6 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      *
      * @param dialog
      *            {@link ProgressMonitorDialog} which should be used for reporting the progress
-     * @author trippl (22.04.2013)
      */
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {

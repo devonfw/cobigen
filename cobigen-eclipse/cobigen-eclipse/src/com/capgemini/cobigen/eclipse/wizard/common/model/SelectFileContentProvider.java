@@ -71,10 +71,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Filters the {@link TreeViewer} contents by the given paths
-     *
      * @param paths
      *            to be filtered
-     * @author mbrunnli (14.02.2013)
      */
     public void filter(Set<String> paths) {
 

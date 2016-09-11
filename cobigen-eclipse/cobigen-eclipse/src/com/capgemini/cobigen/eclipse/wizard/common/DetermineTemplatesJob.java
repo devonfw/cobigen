@@ -16,8 +16,7 @@ import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (Jan 10, 2016)
+ * Job which determines the templates to be generated.
  */
 public class DetermineTemplatesJob extends AbstractCobiGenJob {
 
@@ -41,7 +40,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
      *            of the generate wizard
      * @param cobiGenWrapper
      *            {@link CobiGenWrapper} instance
-     * @author mbrunnli (Jan 10, 2016)
      */
     public DetermineTemplatesJob(Set<String> filePathsToBeGenerated, Set<IncrementTo> selectedIncrements,
         CobiGenWrapper cobiGenWrapper) {
@@ -71,7 +69,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
     /**
      * Returns the determined templates as a result.
      * @return the determined templates as a result.
-     * @author mbrunnli (Jan 10, 2016)
      */
     public List<TemplateTo> getResultTemplates() {
         return templates;

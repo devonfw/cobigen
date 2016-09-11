@@ -35,10 +35,8 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.google.common.collect.Lists;
 
 /**
- * This {@link CheckStateListener} provides the check / uncheck of the generation packages list and the
- * generation resource tree and synchronizes both in order to get a consistent view
- *
- * @author mbrunnli (19.02.2013)
+ * This {@link CheckStateListener} provides the check / uncheck of the increments list and the generation
+ * resource tree and synchronizes both in order to get a consistent view
  */
 public class CheckStateListener implements ICheckStateListener, SelectionListener {
 
@@ -74,7 +72,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      *            current {@link SelectFilesPage} reference
      * @param batch
      *            states whether the check state listener should run in batch mode
-     * @author mbrunnli (25.02.2013)
      */
     public CheckStateListener(CobiGenWrapper cobigenWrapper, SelectFilesPage page, boolean batch) {
 
@@ -89,16 +86,17 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         LOG.info("Increment selection changed. Calculating generation preview file tree...");
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        CheckboxTreeViewer packageSelector = page.getPackageSelector();
+        CheckboxTreeViewer incrementSelector = page.getPackageSelector();
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
                 .setCheckedResources(resourcesTree.getCheckedElements());
             refreshNodes(event);
-        } else if (event.getSource().equals(packageSelector)) {
-            performCheckLogic(event, packageSelector);
-            Set<Object> checkedElements = new HashSet<>(Arrays.asList(packageSelector.getCheckedElements()));
-            performCheckLogicForALLPackage(packageSelector, checkedElements);
+        } else if (event.getSource().equals(incrementSelector)) {
+            performCheckLogic(event, incrementSelector);
+            Set<Object> checkedElements =
+                new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
+            performCheckLogicForALLPackage(incrementSelector, checkedElements);
 
             Set<String> paths = getSelectedGenerationPaths();
             ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths);
@@ -122,8 +120,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Checks whether there are resources selected for generation and sets the {@link WizardPage} to be
      * completed if there is at least one selected resource
-     *
-     * @author mbrunnli (28.04.2013)
      */
     private void checkPageComplete() {
 
@@ -198,9 +194,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
     /**
      * Returns all generation paths of the currently selected generation packages
-     *
      * @return all generation paths of the currently selected generation packages
-     * @author mbrunnli (26.02.2013)
      */
     private Set<String> getSelectedGenerationPaths() {
 
