@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGenFactory;
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
