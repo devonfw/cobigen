@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
@@ -77,6 +77,9 @@ public class TemplatesConfigurationReader {
 
     /** Cache to find all templates by name for each template scan */
     private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
+
+    /** The file extension of the template files. */
+    private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -312,9 +315,9 @@ public class TemplatesConfigurationReader {
                 } else {
                     String templateFileName = next.getFileName().toString();
                     String templateNameWithoutExtension = templateFileName;
-                    if (templateFileName.endsWith(ConfigurationConstants.TEMPLATE_EXTENSION)) {
-                        templateNameWithoutExtension = templateFileName.substring(0,
-                            templateFileName.length() - ConfigurationConstants.TEMPLATE_EXTENSION.length());
+                    if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
+                        templateNameWithoutExtension = templateFileName.substring(0, templateFileName.length()
+                            - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
                     }
                     String templateName =
                         (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")

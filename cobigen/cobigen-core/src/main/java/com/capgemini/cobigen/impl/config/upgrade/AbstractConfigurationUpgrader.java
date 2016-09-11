@@ -27,11 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
-import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
 
 /**
@@ -62,6 +61,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
     /** JAXB root object class of the configuration for (un-)marshalling */
     private Class<?> configurationJaxbRootNode;
+
+    /**
+     * Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification)
+     */
+    private static final String JAXB_PACKAGE_PREFIX = "com.capgemini.cobigen.impl.config.entity.io";
 
     /**
      * Creates a new instance for the abstract implementation of an configuration upgrader.
@@ -321,8 +325,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      */
     private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
         Class<?> configurationClass =
-            getClass().getClassLoader().loadClass(ConfigurationConstants.JAXB_PACKAGE_PREFIX + "." + lv.name()
-                + "." + configurationJaxbRootNode.getSimpleName());
+            getClass().getClassLoader().loadClass(AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX + "."
+                + lv.name() + "." + configurationJaxbRootNode.getSimpleName());
         return configurationClass;
     }
 

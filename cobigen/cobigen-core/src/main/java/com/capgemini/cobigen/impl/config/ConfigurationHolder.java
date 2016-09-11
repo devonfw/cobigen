@@ -3,8 +3,8 @@ package com.capgemini.cobigen.impl.config;
 import java.nio.file.Path;
 import java.util.Map;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.google.common.collect.Maps;
