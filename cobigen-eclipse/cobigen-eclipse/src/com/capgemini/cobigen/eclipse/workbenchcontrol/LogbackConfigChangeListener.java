@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -24,8 +24,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
  * {@link IResourceChangeListener} for the generator configuration project
- *
- * @author mbrunnli (10.04.2013)
  */
 public class LogbackConfigChangeListener implements IResourceChangeListener {
 

@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -174,7 +175,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         // boundary case: multiple templates target one path, which are not mergable... does not make sense
         List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, null);
         for (TemplateTo template : templates) {
-            if (path != null && template.getMergeStrategy() != null) {
+            if (path != null && template.getMergeStrategy() != null
+                && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
                 return true;
             }
         }
