@@ -216,10 +216,8 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Builds the {@link TreeViewer} providing the tree of resources to be generated
-     *
      * @param customizable
      *            states whether the checkboxes of the tree should be displayed or not
-     * @author mbrunnli (12.03.2013)
      */
     public void buildResourceTreeViewer(boolean customizable) {
 
@@ -233,6 +231,7 @@ public class SelectFilesPage extends WizardPage {
         } else {
             cp = new SelectFileContentProvider();
             lp = new SelectFileLabelProvider(cobigenWrapper, batch);
+            incrementSelector.addCheckStateListener((SelectFileLabelProvider) lp);
             checkedElements = new Object[0];
         }
 
@@ -273,7 +272,6 @@ public class SelectFilesPage extends WizardPage {
      * Returns the set of all paths to files which should be generated
      *
      * @return the set of all paths to files which should be generated
-     * @author mbrunnli (14.02.2013)
      */
     public Set<String> getFilePathsToBeGenerated() {
 
@@ -292,9 +290,7 @@ public class SelectFilesPage extends WizardPage {
     /**
      * Returns a {@link Set} containing the {@link Template}s, that are included in the selected
      * {@link ComparableIncrement}s
-     *
      * @return the {@link Set} of {@link Template}s
-     * @author trippl (24.04.2013)
      */
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
@@ -310,20 +306,11 @@ public class SelectFilesPage extends WizardPage {
             new DetermineTemplatesJob(getFilePathsToBeGenerated(), selectedIncrements, cobigenWrapper);
         try {
             dialog.run(true, false, job);
-        } catch (InvocationTargetException e) {
-            LOG.error(
-                "An internal error occured while invoking the job for determining the templates to generate.",
-                e);
-            throw new CobiGenEclipseRuntimeException(
-                "An internal error occured while invoking the job for determining the templates to generate",
-                e);
-        } catch (InterruptedException e) {
-            LOG.warn(
-                "The working thread doing the job for determining the templates to generate has been interrupted.",
-                e);
-            throw new CobiGenEclipseRuntimeException(
-                "The working thread doing the job for determining the templates to generate has been interrupted",
-                e);
+        } catch (InvocationTargetException | InterruptedException e) {
+            String message =
+                "An internal error occured while invoking the job for determining the templates to generate.";
+            LOG.error(message, e);
+            throw new CobiGenEclipseRuntimeException(message, e);
         }
 
         // forward potential occurred exception

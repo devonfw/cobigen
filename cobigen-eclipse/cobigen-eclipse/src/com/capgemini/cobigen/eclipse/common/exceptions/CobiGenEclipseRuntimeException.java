@@ -1,8 +1,7 @@
 package com.capgemini.cobigen.eclipse.common.exceptions;
 
 /**
- *
- * @author mbrunnli (Jan 10, 2016)
+ * {@link RuntimeException} of CobiGen eclipse plug-in.
  */
 public class CobiGenEclipseRuntimeException extends RuntimeException {
 
@@ -15,9 +14,17 @@ public class CobiGenEclipseRuntimeException extends RuntimeException {
      * Creates a new {@link CobiGenEclipseRuntimeException} for the given message and cause.
      * @param message
      *            error message
+     */
+    public CobiGenEclipseRuntimeException(String message) {
+        super(message);
+    }
+
+    /**
+     * Creates a new {@link CobiGenEclipseRuntimeException} for the given message and cause.
+     * @param message
+     *            error message
      * @param cause
      *            of the exception
-     * @author mbrunnli (Jan 10, 2016)
      */
     public CobiGenEclipseRuntimeException(String message, Throwable cause) {
         super(message, cause);
