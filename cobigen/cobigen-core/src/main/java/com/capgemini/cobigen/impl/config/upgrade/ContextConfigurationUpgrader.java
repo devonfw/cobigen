@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 
 import org.dozer.DozerBeanMapper;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 

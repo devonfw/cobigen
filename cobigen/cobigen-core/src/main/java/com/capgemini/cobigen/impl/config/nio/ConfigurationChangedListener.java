@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
-import com.capgemini.cobigen.impl.config.constant.ConfigurationConstants;
 import com.google.common.collect.Lists;
 
 /**

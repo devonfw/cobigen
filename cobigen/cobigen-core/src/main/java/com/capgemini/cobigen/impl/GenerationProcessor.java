@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
@@ -224,7 +225,8 @@ public class GenerationProcessor {
 
             File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(generatorInput));
             if (originalFile.exists()) {
-                if (forceOverride || templateIntern.getMergeStrategy() == null) {
+                if (forceOverride || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
+                    .equals(templateIntern.getMergeStrategy())) {
                     generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
                         inputReader, generatorInput);
                 } else {
