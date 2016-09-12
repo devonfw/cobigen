@@ -4,15 +4,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.mozilla.javascript.CompilerEnvirons;
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ast.ArrayLiteral;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
@@ -36,6 +39,11 @@ import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
  */
 
 public class JSMerger implements Merger {
+
+    /**
+     * Path for the JS Beautifier script
+     */
+    public static final String BEAUTIFY_JS = "/beautify.js";
 
     /**
      * Merger Type to be registered
@@ -63,9 +71,6 @@ public class JSMerger implements Merger {
         this.patchOverrides = patchOverrides;
     }
 
-    /**
-     * @author rudiazma (26 de jul. de 2016)
-     */
     @Override
     public String getType() {
 
@@ -84,10 +89,10 @@ public class JSMerger implements Merger {
         env.setAllowSharpComments(true);
         env.setRecordingComments(true);
 
-        String result = null;
+        // String result = null;
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
-        AstRoot resultado = new AstRoot();
+        AstRoot out = new AstRoot();
 
         String file = base.getAbsolutePath();
 
@@ -122,13 +127,11 @@ public class JSMerger implements Merger {
         // add to the auxiliar list all the properties of the base
         for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
             listProps.add(propertyBase);
-            System.out.println(propertyBase.getLeft().toSource());
             propsNames.add(propertyBase.getLeft().toSource());
         }
         // add all the patch properties that does not have any conflicts with the property already stored
         for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
             if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
-                System.out.println(propertyPatch.getLeft().toSource());
                 listProps.add(propertyPatch);
             }
         }
@@ -149,18 +152,15 @@ public class JSMerger implements Merger {
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
                         for (AstNode objArrayBase : rightBase.getElements()) {
-                            /*
-                             * int position = searchForNameField(obj); if (position <
-                             * obj.getElements().size()) {
-                             * arrayNames.add(obj.getElements().get(position).getRight().toSource()); }
-                             * System.out.println(objArrayBase.toSource());
-                             */
                             if (objArrayBase instanceof ObjectLiteral) {
                                 ObjectLiteral objL = (ObjectLiteral) objArrayBase;
-                                if (!objL.getElements().get(0).getRight().toSource().equals("'grid'")) {
-                                    arrayObjects.add(objArrayBase.toSource());
-                                    resultArray.addElement(objArrayBase);
+                                for (ObjectProperty property : objL.getElements()) {
+                                    if (!property.getRight().toSource().equals("'grid'")) {
+                                        arrayObjects.add(objArrayBase.toSource());
+                                        resultArray.addElement(objArrayBase);
+                                    }
                                 }
+
                             } else {
                                 arrayObjects.add(objArrayBase.toSource());
                                 resultArray.addElement(objArrayBase);
@@ -171,22 +171,15 @@ public class JSMerger implements Merger {
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                 resultArray.addElement(objArrayPatch);
                             }
-                            /*
-                             * int position = searchForNameField(obj); if (position <
-                             * obj.getElements().size()) { if (!arrayNames
-                             * .contains(obj.getElements().get(position).getRight().toSource())) {
-                             * resultArray.addElement(objArrayPatch); } } else {
-                             * resultArray.addElement(objArrayPatch); }
-                             */
                         }
                         if (patchOverrides) {
                             for (AstNode objArrayBase : rightBase.getElements()) {
                                 for (AstNode objArrayPatch : rightPatch.getElements()) {
                                     ObjectLiteral objBase = (ObjectLiteral) objArrayBase;
                                     ObjectLiteral objPatch = (ObjectLiteral) objArrayPatch;
-                                    if (objBase.getElements().get(searchForNameField(objBase)).getRight()
-                                        .toSource().equals(objPatch.getElements()
-                                            .get(searchForNameField(objPatch)).getRight().toSource())) {
+                                    if (objBase.getElements().get(searchForNameField(objBase)).getRight().toSource()
+                                        .equals(objPatch.getElements().get(searchForNameField(objPatch)).getRight()
+                                            .toSource())) {
                                         resultArray.getElements().remove(objArrayBase);
                                         resultArray.addElement(objArrayPatch);
                                         break;
@@ -243,12 +236,39 @@ public class JSMerger implements Merger {
         arguments.add(1, newObj);
         newCall.setArguments(arguments);
         newExpr.setExpression(newCall);
-        resultado.addChild(newExpr);
+        out.addChild(newExpr);
 
-        result = astToStringWithFormat(resultado, " ");
+        int indent = 4;
+        return jsBeautify(out.toSource(), indent);
 
-        return result;
+    }
 
+    /**
+     * Usues the JSBeautifier script to format the source code
+     *
+     * @param source
+     *            to format
+     * @param indent
+     *            the indentation for tabulations
+     * @return the formated source code
+     * @author rudiazma (12 de sept. de 2016)
+     */
+    private String jsBeautify(String source, int indent) {
+        Context cx = Context.enter();
+
+        Scriptable scope = cx.initStandardObjects();
+        InputStream resourceAsStream = JSMerger.class.getResourceAsStream(BEAUTIFY_JS);
+
+        try {
+            Reader reader = new InputStreamReader(resourceAsStream);
+            cx.evaluateReader(scope, reader, "__beautify.js", 1, null);
+            reader.close();
+        } catch (IOException e) {
+            throw new Error("Error reading " + "beautify.js");
+        }
+        scope.put("jsCode", scope, source);
+        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})", "inline", 1,
+            null);
     }
 
     /**
@@ -299,101 +319,4 @@ public class JSMerger implements Merger {
         return position;
     }
 
-    /**
-     * Convert an AstRoot into a String with format
-     * @param ast
-     *            the AstRoot to parse to String
-     * @param indent
-     *            the indent spaces
-     * @return result the source of the ast as String
-     * @author rudiazma (28 de jul. de 2016)
-     *
-     */
-    public String astToStringWithFormat(AstRoot ast, String indent) {
-        String result = "";
-        if (indent == null) {
-            indent = "";
-        }
-        JSNodeVisitor resultAst = new JSNodeVisitor();
-
-        ast.visitAll(resultAst);
-        /*
-         * ExpressionStatement first = (ExpressionStatement) ast.getFirstChild(); FunctionCall call =
-         * (FunctionCall) first.getExpression(); result = result + call.getTarget().toSource() + '(' +
-         * call.getArguments().get(0).toSource() + ", {\n";
-         */
-        /*
-         * int propertyPos = 0; for (ObjectProperty property : resultAst.getPropertyNodes()) { if
-         * (property.getRight() instanceof StringLiteral) { result = result + indent +
-         * property.getLeft().toSource() + ": "; if (propertyPos < resultAst.getPropertyNodes().size() - 1) {
-         * result = result + property.getRight().toSource() + ',' + '\n'; } else { result = result +
-         * property.getRight().toSource() + '\n'; }
-         *
-         * } else if (property.getRight() instanceof ArrayLiteral) { ArrayLiteral rightSide = (ArrayLiteral)
-         * property.getRight(); result = result + indent + property.getLeft().toSource() + " : [\n"; int
-         * position = 0; for (Iterator<AstNode> iterator = rightSide.getElements().iterator();
-         * iterator.hasNext();) { if (position < rightSide.getElements().size() - 1) { result = result +
-         * indent + indent + rightSide.getElement(position).toSource() + ",\n"; position++; } else { result =
-         * result + indent + indent + rightSide.getElement(position).toSource() + '\n'; if (propertyPos <
-         * resultAst.getPropertyNodes().size() - 1) { result = result + indent + "],\n"; } else { result =
-         * result + indent + "]\n"; } } }
-         *
-         * } else if (property.getRight() instanceof ObjectLiteral) { result = result + indent +
-         * property.getLeft().toSource() + " : {\n"; ObjectLiteral obj = (ObjectLiteral) property.getRight();
-         * result = result + indent + objectLiteralIterate(obj, indent, 1); if (propertyPos <
-         * resultAst.getPropertyNodes().size() - 1) { result = result + indent + "},\n"; } else { result =
-         * result + indent + "}\n"; }
-         *
-         * } else if (property.getRight() instanceof FunctionNode && property.depth() <= 1) { FunctionNode
-         * func = (FunctionNode) property.getRight(); result = result + indent + property.getLeft().toSource()
-         * + ": function() {\n"; result = result + indent + indent + func.getBody().getFirstChild(); if
-         * (propertyPos < resultAst.getPropertyNodes().size() - 1) { result = result +
-         * property.getRight().toSource() + ',' + '\n'; } else { result = result +
-         * property.getRight().toSource() + '\n'; } } else { result = result + indent +
-         * property.getLeft().toSource() + ": "; if (propertyPos < resultAst.getPropertyNodes().size() - 1) {
-         * result = result + property.getRight().toSource() + ',' + '\n'; } else { result = result +
-         * property.getRight().toSource() + '\n'; } } propertyPos++; }
-         */
-        result = result + "});";
-        return result;
-    }
-
-    /**
-     *
-     * @param obj
-     *            the object to iterate
-     * @param indent
-     *            the indent spaces
-     * @param tab
-     *            the tabulations needed
-     * @return result
-     * @author rudiazma (Aug 11, 2016)
-     */
-    private String objectLiteralIterate(ObjectLiteral obj, String indent, int tab) {
-        String result = "";
-        int position = 0;
-        for (ObjectProperty objProp : obj.getElements()) {
-            result = result + StringUtils.repeat(indent, tab) + objProp.getLeft().toSource() + ": ";
-            tab = tab + 1;
-            if (objProp.getRight() instanceof ObjectLiteral) {
-                result = result + "{\n";
-                ObjectLiteral right = (ObjectLiteral) objProp.getRight();
-                result = result + indent + objectLiteralIterate(right, indent, tab);
-                if (position <= obj.getElements().size() - 1) {
-                    result = result + StringUtils.repeat(indent, tab) + "}\n";
-                } else {
-                    result = result + StringUtils.repeat(indent, tab) + "},\n";
-                }
-            } else {
-                result = result + objProp.getRight().toSource();
-                if (position < obj.getElements().size() - 1) {
-                    result = result + ",\n";
-                } else {
-                    result = result + "\n";
-                }
-            }
-            position++;
-        }
-        return result;
-    }
 }
