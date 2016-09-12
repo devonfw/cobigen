@@ -190,16 +190,23 @@ public class JavaInputReader implements InputReader {
     private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 
         List<File> files = new LinkedList<>();
+        List<File> isDirectory = new LinkedList<>();
         if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
-                if (f.isDirectory() && recursively) {
-                    files.addAll(retrieveAllJavaSourceFiles(f, recursively));
-                } else if (f.isFile() && f.getName().endsWith(".java")) {
+                if (f.isFile() && f.getName().endsWith(".java")) {
                     files.add(f);
+                } else if (f.isDirectory()) {
+                    isDirectory.add(f);
+                }
+            }
+            if (recursively) {
+                for (File dir : isDirectory) {
+                    files.addAll(retrieveAllJavaSourceFiles(dir, recursively));
                 }
             }
         }
         return files;
+
     }
 
     @Override

@@ -1,19 +1,24 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.Charsets;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotations;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
@@ -22,6 +27,7 @@ import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
+import com.google.common.collect.Lists;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
@@ -271,6 +277,31 @@ public class JavaInputReaderTest {
         assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey(
             "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation"));
 
+    }
+
+    /**
+     * Test if the method input list returned by
+     * {@link JavaInputReader#getInputObjectsRecursively(Object, Charset)} has a proper order to match the
+     * expected preview at any time
+     */
+    @Test
+    public void testGetInputObjectsRecursively_resultOrder() {
+        File javaSourceFile = new File(testFileRootPath + "packageFolder");
+        PackageFolder pkg = new PackageFolder(javaSourceFile.toURI(), "notOfInterest");
+        Assert.assertNotNull(pkg);
+
+        JavaInputReader input = new JavaInputReader();
+
+        List<Object> list = input.getInputObjectsRecursively(pkg, Charsets.UTF_8);
+        assertThat(list).hasSize(3);
+
+        List<String> simpleNames = Lists.newArrayList();
+        for (Object o : list) {
+            if (o instanceof JavaClass) {
+                simpleNames.add(((JavaClass) o).getName());
+            }
+        }
+        assertThat(simpleNames).containsExactly("RootClass", "SuperClass1", "SuperClass2");
     }
 
 }
