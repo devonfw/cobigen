@@ -1,11 +1,13 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,7 @@ import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
+import com.google.common.collect.Lists;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
@@ -278,23 +281,27 @@ public class JavaInputReaderTest {
 
     /**
      * Test if the method input list returned by
-     * {@link JavaInputReader#retrieveAllJavaSourceFiles(File, boolean)} has a proper order to match the
+     * {@link JavaInputReader#getInputObjectsRecursively(Object, Charset)} has a proper order to match the
      * expected preview at any time
-     * @author rudiazma (Aug 3, 2016)
      */
     @Test
-    public void testInputAndOrder() {
+    public void testGetInputObjectsRecursively_resultOrder() {
         File javaSourceFile = new File(testFileRootPath + "packageFolder");
-        PackageFolder pkg = new PackageFolder(javaSourceFile.toURI(), javaSourceFile.toString());
+        PackageFolder pkg = new PackageFolder(javaSourceFile.toURI(), "notOfInterest");
         Assert.assertNotNull(pkg);
 
         JavaInputReader input = new JavaInputReader();
 
         List<Object> list = input.getInputObjectsRecursively(pkg, Charsets.UTF_8);
-        assertTrue(list.size() == 3);
-        assertTrue(
-            (list.get(0).toString().contains("RootClass") || list.get(1).toString().contains("SuperClass1"))
-                && list.get(2).toString().contains("SuperClass2"));
+        assertThat(list).hasSize(3);
+
+        List<String> simpleNames = Lists.newArrayList();
+        for (Object o : list) {
+            if (o instanceof JavaClass) {
+                simpleNames.add(((JavaClass) o).getName());
+            }
+        }
+        assertThat(simpleNames).containsExactly("RootClass", "SuperClass1", "SuperClass2");
     }
 
 }
