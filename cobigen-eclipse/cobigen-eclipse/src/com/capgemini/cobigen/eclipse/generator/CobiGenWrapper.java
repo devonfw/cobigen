@@ -197,15 +197,16 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
             monitor.beginTask("Generating files...", templates.size());
+            List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
             GenerationReportTo reportSummary = new GenerationReportTo();
             for (TemplateTo template : templates) {
                 monitor.subTask(template.getId());
                 GenerationReportTo report;
                 if (template.getMergeStrategy() == null) {
-                    report = generate(template, true);
+                    report = generate(template, true, utilClasses);
                 } else {
-                    report = generate(template, false);
+                    report = generate(template, false, utilClasses);
                 }
                 reportSummary.aggregate(report);
                 monitor.worked(1);
@@ -227,11 +228,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            {@link TemplateTo} to be generated
      * @param forceOverride
      *            forces the generator to override the maybe existing target file of the template
+     * @param templateUtilClasses
+     *            util classes to be provided for template processing
      * @return {@link GenerationReportTo generation report} of CobiGen
      * @throws Exception
      *             if anything during classpath resolving and class loading fails.
      */
-    private GenerationReportTo generate(TemplateTo template, boolean forceOverride) throws Exception {
+    private GenerationReportTo generate(TemplateTo template, boolean forceOverride,
+        List<Class<?>> templateUtilClasses) throws Exception {
 
         GenerationReportTo report;
         if (singleNonContainerInput) {
@@ -239,10 +243,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
-            report =
-                cobiGen.generate(inputs.get(0), template, forceOverride, resolveTemplateUtilClasses(), model);
+            report = cobiGen.generate(inputs.get(0), template, forceOverride, templateUtilClasses, model);
         } else {
-            report = cobiGen.generate(inputs, template, forceOverride, resolveTemplateUtilClasses());
+            report = cobiGen.generate(inputs, template, forceOverride, templateUtilClasses);
         }
         return report;
     }
