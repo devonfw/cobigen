@@ -29,7 +29,6 @@ public class PathExpressionResolver {
      *
      * @param variables
      *            Map of current settings
-     * @author mbrunnli (18.02.2013)
      */
     public PathExpressionResolver(Map<String, String> variables) {
 
@@ -37,16 +36,16 @@ public class PathExpressionResolver {
         for (String key : variables.keySet()) {
             this.variables.put("variables." + key, variables.get(key));
         }
-        adaptVariables();
+        // also add the variables directly enable path shortening
+        this.variables.putAll(variables);
+        transformPackageValuesToPathValues();
     }
 
     /**
      * Adapts the current variable values such that each dot will be replaced by a slash such that the
      * variables can be used to construct paths
-     *
-     * @author mbrunnli (15.04.2013)
      */
-    private void adaptVariables() {
+    private void transformPackageValuesToPathValues() {
 
         HashMap<String, String> newVariables = new HashMap<>();
         for (String var : variables.keySet()) {
@@ -69,7 +68,6 @@ public class PathExpressionResolver {
      *             if there is an unknown variable modifier
      * @throws UnknownContextVariableException
      *             if there is a unknown context variable used in the string
-     * @author mbrunnli (11.03.2013)
      */
     public void checkExpressions(String in)
         throws UnknownExpressionException, UnknownContextVariableException {
@@ -85,7 +83,6 @@ public class PathExpressionResolver {
      * @return the given {@link String} where all variable expressions are replaced by its values
      * @throws UnknownContextVariableException
      *             if a context variable could not be resolved
-     * @author mbrunnli (18.02.2013)
      */
     public String evaluateExpressions(String in) throws UnknownContextVariableException {
 
@@ -121,7 +118,7 @@ public class PathExpressionResolver {
         }
         m.appendTail(out);
 
-        // Cleanup empty path segements
+        // Cleanup empty path segments
         String rawPath = out.toString();
         return rawPath.replaceAll("/+", "/");
     }
@@ -136,7 +133,6 @@ public class PathExpressionResolver {
      * @return the modified {@link String}
      * @throws UnknownExpressionException
      *             if there is an unknown variable modifier
-     * @author mbrunnli (18.02.2013)
      */
     private String applyStringModifier(String modifierName, String string) throws UnknownExpressionException {
 
