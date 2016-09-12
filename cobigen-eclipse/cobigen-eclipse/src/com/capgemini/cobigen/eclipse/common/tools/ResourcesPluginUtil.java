@@ -47,7 +47,6 @@ public class ResourcesPluginUtil {
      *             exists
      * @throws CoreException
      *             if an existing generator configuration project could not be opened
-     * @author mbrunnli (08.04.2013)
      */
     public static IProject getGeneratorConfigurationProject()
         throws GeneratorProjectNotExistentException, CoreException {
