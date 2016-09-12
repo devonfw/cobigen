@@ -44,7 +44,7 @@ public class ReflectedJavaModelBuilderTest {
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
-        Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
+        Assert.assertNotNull(ModelConstant.MODEL_ROOT + " is not accessible in model", pojoMap);
         List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
         Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
 

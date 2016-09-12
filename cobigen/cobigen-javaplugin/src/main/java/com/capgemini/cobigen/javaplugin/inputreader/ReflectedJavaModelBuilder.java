@@ -101,7 +101,8 @@ public class ReflectedJavaModelBuilder {
         pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
-        cachedModel.put(ModelConstant.ROOT, pojoModel);
+        cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
+        cachedModel.put(ModelConstant.CLASS_OBJECT, pojo);
 
         return new HashMap<>(cachedModel);
     }

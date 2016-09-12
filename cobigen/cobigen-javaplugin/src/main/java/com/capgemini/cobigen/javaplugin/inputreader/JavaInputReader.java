@@ -272,7 +272,6 @@ public class JavaInputReader implements InputReader {
      *            model created by reflection to be merged
      * @return the merged model. Due to implementation restrictions a {@link Map} of {@link String} to
      *         {@link Object}
-     * @author mbrunnli (17.11.2014)
      */
     @SuppressWarnings("unchecked")
     private Object mergeModelsRecursively(Object parsedModel, Object reflectionModel) {

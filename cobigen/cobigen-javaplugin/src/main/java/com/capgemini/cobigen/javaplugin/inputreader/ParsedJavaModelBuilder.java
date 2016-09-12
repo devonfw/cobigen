@@ -87,7 +87,7 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
-        cachedModel.put(ModelConstant.ROOT, pojoModel);
+        cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
 
         return new HashMap<>(cachedModel);
     }
