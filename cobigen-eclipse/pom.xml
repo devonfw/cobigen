@@ -136,7 +136,7 @@
                 </goals>
                 <configuration>
                   <fromDir>${project.build.directory}</fromDir>
-                  <includes>cobigen-eclipse-*SNAPSHOT.zip</includes>
+                  <includes>com.capgemini.cobigen.eclipse.updatesite-*SNAPSHOT.zip</includes>
                   <url>file://localhost///de-file10/ClientPE/OASP</url>
                   <toDir>CobiGenerator/Releases/snapshot</toDir>
                 </configuration>
@@ -162,7 +162,7 @@
                 </goals>
                 <configuration>
                   <fromDir>${project.build.directory}</fromDir>
-                  <includes>cobigen-eclipse-*.zip</includes>
+                  <includes>com.capgemini.cobigen.eclipse.updatesite-*.zip</includes>
                   <url>file://localhost///de-file10/ClientPE/OASP</url>
                   <toDir>CobiGenerator/Releases/stable</toDir>
                 </configuration>
