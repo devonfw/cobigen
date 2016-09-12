@@ -12,7 +12,18 @@ import java.util.Set;
 import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -26,9 +37,13 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
+import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
+import com.capgemini.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
@@ -167,6 +182,45 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Generates the the list of templates based on the given {@link #inputs}.
+     * @param templates
+     *            to be generated
+     * @param monitor
+     *            to track the progress
+     * @return the {@link GenerationReportTo generation report of CobiGen}
+     * @throws Exception
+     *             if anything during generation fails.
+     */
+    public GenerationReportTo generate(List<TemplateTo> templates, IProgressMonitor monitor)
+        throws Exception {
+
+        final IProject proj = getGenerationTargetProject();
+        if (proj != null) {
+            monitor.beginTask("Generating files...", templates.size());
+
+            GenerationReportTo reportSummary = new GenerationReportTo();
+            for (TemplateTo template : templates) {
+                monitor.subTask(template.getId());
+                GenerationReportTo report;
+                if (template.getMergeStrategy() == null) {
+                    report = generate(template, true);
+                } else {
+                    report = generate(template, false);
+                }
+                reportSummary.aggregate(report);
+                monitor.worked(1);
+            }
+
+            proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+            monitor.done();
+            LOG.info("Generation finished successfully.");
+            return reportSummary;
+        } else {
+            throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
+        }
+    }
+
+    /**
      * Generates the given template for all inputs set
      *
      * @param template
@@ -174,8 +228,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param forceOverride
      *            forces the generator to override the maybe existing target file of the template
      * @return {@link GenerationReportTo generation report} of CobiGen
+     * @throws Exception
+     *             if anything during classpath resolving and class loading fails.
      */
-    public GenerationReportTo generate(TemplateTo template, boolean forceOverride) {
+    private GenerationReportTo generate(TemplateTo template, boolean forceOverride) throws Exception {
 
         GenerationReportTo report;
         if (singleNonContainerInput) {
@@ -183,11 +239,46 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
-            report = cobiGen.generate(inputs.get(0), template, forceOverride, null, model);
+            report =
+                cobiGen.generate(inputs.get(0), template, forceOverride, resolveTemplateUtilClasses(), model);
         } else {
-            report = cobiGen.generate(inputs, template, forceOverride);
+            report = cobiGen.generate(inputs, template, forceOverride, resolveTemplateUtilClasses());
         }
         return report;
+    }
+
+    /**
+     * Resolves all classes, which have been defined in the template configuration folder.
+     * @return the list of classes
+     * @throws Exception
+     *             if anything during classpath resolving and class loading fails.
+     */
+    private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
+        List<Class<?>> classes = Lists.newArrayList();
+
+        IProject configurationProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
+        IJavaProject project = JavaCore.create(configurationProject);
+        ClassLoader classLoader = ClassLoaderUtil.getProjectClassLoader(project);
+
+        for (IPackageFragmentRoot roots : project.getPackageFragmentRoots()) {
+            for (IJavaElement e : roots.getChildren()) {
+                if (e instanceof IPackageFragment) {
+                    for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
+                        IType type = EclipseJavaModelUtil.getJavaClassType(cu);
+                        classes.add(classLoader.loadClass(type.getFullyQualifiedName()));
+                    }
+                }
+            }
+
+        }
+
+        for (IClasspathEntry ce : project.getRawClasspath()) {
+            if (ce.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+
+            }
+        }
+
+        return classes;
     }
 
     /**
@@ -196,7 +287,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * not a container.
      * @param model
      *            template model
-     * @author mbrunnli (06.12.2014)
      */
     protected abstract void adaptModel(Map<String, Object> model);
 
