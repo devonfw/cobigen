@@ -2,7 +2,7 @@
 <feature
       id="com.capgemini.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="1.4.3"
+      version="2.0.0.qualifier"
       provider-name="Capgemini">
 
    <description>
