@@ -133,7 +133,11 @@ public class JSMerger implements Merger {
         for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
             if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
                 listProps.add(propertyPatch);
-            }
+            } /*
+               * else { if (patchOverrides) { int index =
+               * listProps.indexOf(propertyPatch.getLeft().toSource()); listProps.remove(index);
+               * listProps.add(index, propertyPatch); } }
+               */
         }
 
         // Resolve the conflicted properties
@@ -154,8 +158,10 @@ public class JSMerger implements Merger {
                         for (AstNode objArrayBase : rightBase.getElements()) {
                             if (objArrayBase instanceof ObjectLiteral) {
                                 ObjectLiteral objL = (ObjectLiteral) objArrayBase;
+
                                 for (ObjectProperty property : objL.getElements()) {
-                                    if (!property.getRight().toSource().equals("'grid'")) {
+                                    if (!(property.getRight().toSource().equals("'grid'")
+                                        && property.getLeft().toSource().equals("xtype"))) {
                                         arrayObjects.add(objArrayBase.toSource());
                                         resultArray.addElement(objArrayBase);
                                     }
@@ -171,35 +177,42 @@ public class JSMerger implements Merger {
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                 resultArray.addElement(objArrayPatch);
                             }
+                            // } else {
+                            // if (patchOverrides) {
+                            // int index = arrayObjects.indexOf(objArrayPatch.toSource());
+                            // resultArray.getElements().remove(index);
+                            // resultArray.addElement(objArrayPatch);
+                            // }
+                            // }
                         }
-                        if (patchOverrides) {
-                            for (AstNode objArrayBase : rightBase.getElements()) {
-                                for (AstNode objArrayPatch : rightPatch.getElements()) {
-                                    ObjectLiteral objBase = (ObjectLiteral) objArrayBase;
-                                    ObjectLiteral objPatch = (ObjectLiteral) objArrayPatch;
-                                    if (objBase.getElements().get(searchForNameField(objBase)).getRight().toSource()
-                                        .equals(objPatch.getElements().get(searchForNameField(objPatch)).getRight()
-                                            .toSource())) {
-                                        resultArray.getElements().remove(objArrayBase);
-                                        resultArray.addElement(objArrayPatch);
-                                        break;
-                                    }
-                                }
-                                ObjectProperty toAdd = new ObjectProperty();
-                                toAdd.setLeft(propertyBase.getLeft());
-                                toAdd.setRight(resultArray);
-                                listProps.remove(propertyBase);
-                                listProps.add(toAdd);
-                                break;
-                            }
-                        } else {
-                            ObjectProperty toAdd = new ObjectProperty();
-                            toAdd.setLeft(propertyBase.getLeft());
-                            toAdd.setRight(resultArray);
-                            listProps.remove(propertyBase);
-                            listProps.add(toAdd);
-                            resultArray = new ArrayLiteral();
-                        }
+                        // if (patchOverrides) {
+                        // for (AstNode objArrayBase : rightBase.getElements()) {
+                        // for (AstNode objArrayPatch : rightPatch.getElements()) {
+                        // ObjectLiteral objBase = (ObjectLiteral) objArrayBase;
+                        // ObjectLiteral objPatch = (ObjectLiteral) objArrayPatch;
+                        // if (objBase.getElements().get(searchForNameField(objBase)).getRight().toSource()
+                        // .equals(objPatch.getElements().get(searchForNameField(objPatch)).getRight()
+                        // .toSource())) {
+                        // resultArray.getElements().remove(objArrayBase);
+                        // resultArray.addElement(objArrayPatch);
+                        // break;
+                        // }
+                        // }
+                        // ObjectProperty toAdd = new ObjectProperty();
+                        // toAdd.setLeft(propertyBase.getLeft());
+                        // toAdd.setRight(resultArray);
+                        // listProps.remove(propertyBase);
+                        // listProps.add(toAdd);
+                        // break;
+                        // }
+                        // } else {
+                        ObjectProperty toAdd = new ObjectProperty();
+                        toAdd.setLeft(propertyBase.getLeft());
+                        toAdd.setRight(resultArray);
+                        listProps.remove(propertyBase);
+                        listProps.add(toAdd);
+                        resultArray = new ArrayLiteral();
+
                         break;
 
                         // At the case of non array, and if patchOverrides is true, just replace the
@@ -225,8 +238,11 @@ public class JSMerger implements Merger {
         List<PropertyGet> prop = nodesBase.getFunctionCall();
 
         StringLiteral firstArgument = nodesBase.getFirstArgument();
+
         FunctionCall newCall = new FunctionCall();
+
         ExpressionStatement newExpr = new ExpressionStatement();
+
         ObjectLiteral newObj = new ObjectLiteral();
 
         List<AstNode> arguments = new LinkedList<>();
@@ -238,8 +254,12 @@ public class JSMerger implements Merger {
         newExpr.setExpression(newCall);
         out.addChild(newExpr);
 
+        // Establish the indentation index for the code beautifier
         int indent = 4;
-        return jsBeautify(out.toSource(), indent);
+
+        return
+
+        jsBeautify(out.toSource(), indent);
 
     }
 
@@ -254,9 +274,10 @@ public class JSMerger implements Merger {
      * @author rudiazma (12 de sept. de 2016)
      */
     private String jsBeautify(String source, int indent) {
-        Context cx = Context.enter();
 
+        Context cx = Context.enter();
         Scriptable scope = cx.initStandardObjects();
+
         InputStream resourceAsStream = JSMerger.class.getResourceAsStream(BEAUTIFY_JS);
 
         try {
@@ -299,24 +320,24 @@ public class JSMerger implements Merger {
         return nodes;
     }
 
-    /**
-     * Used to search the 'name' field position inside the {@link ObjectLiteral}
-     * @param obj
-     *            the {@link ObjectLiteral} to scan for
-     * @return the position of the 'name' field
-     * @author rudiazma (11 de ago. de 2016)
-     */
-    public int searchForNameField(ObjectLiteral obj) {
-        int position = 0;
-        for (ObjectProperty field : obj.getElements()) {
-            String name = field.getLeft().toSource();
-            if (name.equals("name")) {
-                break;
-            } else {
-                position++;
-            }
-        }
-        return position;
-    }
+    // /**
+    // * Used to search the 'name' field position inside the {@link ObjectLiteral}
+    // * @param obj
+    // * the {@link ObjectLiteral} to scan for
+    // * @return the position of the 'name' field
+    // * @author rudiazma (11 de ago. de 2016)
+    // */
+    // public int searchForNameField(ObjectLiteral obj) {
+    // int position = 0;
+    // for (ObjectProperty field : obj.getElements()) {
+    // String name = field.getLeft().toSource();
+    // if (name.equals("name")) {
+    // break;
+    // } else {
+    // position++;
+    // }
+    // }
+    // return position;
+    // }
 
 }
