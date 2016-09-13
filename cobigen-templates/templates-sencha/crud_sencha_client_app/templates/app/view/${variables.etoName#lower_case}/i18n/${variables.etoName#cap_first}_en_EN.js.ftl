@@ -1,3 +1,4 @@
+<#include '/functions.ftl'>
 Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN', {
     extend: 'Devon.I18nBundle',
     singleton: true,
@@ -17,7 +18,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
             }
         },
 
-        tableEdit: {
+        ${variables.etoName?lower_case}Edit: {
             title: 'Table: ',
             newTitle: 'New table',
             status: 'STATUS',
@@ -33,10 +34,9 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
             }
         },
 
-        tableCrud: {
+        ${variables.etoName?lower_case}Crud: {
             title: 'Fill data',
-            number: 'Number',
-            state: 'State',
+            <@generateCrud/>
             submit: 'Submit',
             cancel: 'Cancel'
         }

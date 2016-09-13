@@ -1,4 +1,4 @@
-Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_en_EN', {
+Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${variables.etoName?cap_first}_es_ES', {
     extend: 'Devon.I18nBundle',
     singleton: true,
     i18n: {
@@ -33,7 +33,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.i18n.${vari
             }
         },
 
-        tableCrud: {
+        ${variables.etoName?lower_case}Crud: {
             title: 'Complete los datos',
             number: 'Número',
             state: 'Estado',

@@ -20,7 +20,7 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
             uriParams: {
                 id: id
             },
-            success:
+            success: 'do something'
         });
     },
 

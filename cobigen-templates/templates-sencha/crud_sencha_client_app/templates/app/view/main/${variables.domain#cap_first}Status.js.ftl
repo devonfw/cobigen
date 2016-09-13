@@ -1,4 +1,4 @@
-Ext.define('${variables.domain}.view.main.Status', {
+Ext.define('${variables.domain}.view.main.${variables.etoName?cap_first}Status', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.main-${variables.domain}-status',
     requires:['videogames.view.main.StatusVC'],

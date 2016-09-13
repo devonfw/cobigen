@@ -150,3 +150,10 @@
   </#list>
 </#macro>
 
+<#macro generateCrud>
+  <#list pojo.fields as field>
+      ${field.name}: ${field.name?upper_case},
+  </#list>
+</#macro>
+
+

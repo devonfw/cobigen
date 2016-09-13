@@ -1,3 +1,4 @@
+<#include '/functions.ftl'>
 Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}CrudVM', {
     extend: 'Ext.app.ViewModel',
 
