@@ -21,7 +21,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
      * Creates a new Java Interpreter
      * @param type
      *            to be registered
-     * @author mbrunnli (08.04.2014)
+     * @author rudiazma (26 de jul. de 2016)
      */
     public JSTriggerInterpreter(String type) {
         this.type = type;

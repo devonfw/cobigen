@@ -46,6 +46,12 @@ public class JSMerger implements Merger {
     public static final String BEAUTIFY_JS = "/beautify.js";
 
     /**
+     * Establish the indentation index for the code beautifier
+     *
+     */
+    public int indent = 4;
+
+    /**
      * Merger Type to be registered
      */
     private String type;
@@ -63,7 +69,7 @@ public class JSMerger implements Merger {
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author mbrunnli (19.03.2013)
+     * @author rudiazma (26 de jul. de 2016)
      */
     public JSMerger(String type, boolean patchOverrides) {
 
@@ -133,11 +139,13 @@ public class JSMerger implements Merger {
         for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
             if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
                 listProps.add(propertyPatch);
-            } /*
-               * else { if (patchOverrides) { int index =
-               * listProps.indexOf(propertyPatch.getLeft().toSource()); listProps.remove(index);
-               * listProps.add(index, propertyPatch); } }
-               */
+            } else {
+                if (patchOverrides) {
+                    int index = listProps.indexOf(propertyPatch.getLeft().toSource());
+                    listProps.remove(index);
+                    listProps.add(index, propertyPatch);
+                }
+            }
         }
 
         // Resolve the conflicted properties
@@ -155,16 +163,22 @@ public class JSMerger implements Merger {
                         List<String> arrayObjects = new LinkedList<>();
                         ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
                         ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
+
                         for (AstNode objArrayBase : rightBase.getElements()) {
                             if (objArrayBase instanceof ObjectLiteral) {
                                 ObjectLiteral objL = (ObjectLiteral) objArrayBase;
+                                boolean noGrid = true;
 
                                 for (ObjectProperty property : objL.getElements()) {
-                                    if (!(property.getRight().toSource().equals("'grid'")
-                                        && property.getLeft().toSource().equals("xtype"))) {
-                                        arrayObjects.add(objArrayBase.toSource());
-                                        resultArray.addElement(objArrayBase);
+                                    if (property.getRight().toSource().equals("'grid'")
+                                        && property.getLeft().toSource().equals("xtype")) {
+                                        noGrid = false;
+                                        break;
                                     }
+                                }
+                                if (noGrid) {
+                                    arrayObjects.add(objArrayBase.toSource());
+                                    resultArray.addElement(objArrayBase);
                                 }
 
                             } else {
@@ -176,14 +190,13 @@ public class JSMerger implements Merger {
                         for (AstNode objArrayPatch : rightPatch.getElements()) {
                             if (!arrayObjects.contains(objArrayPatch.toSource())) {
                                 resultArray.addElement(objArrayPatch);
+                            } else {
+                                if (patchOverrides) {
+                                    int index = arrayObjects.indexOf(objArrayPatch.toSource());
+                                    resultArray.getElements().remove(index);
+                                    resultArray.addElement(objArrayPatch);
+                                }
                             }
-                            // } else {
-                            // if (patchOverrides) {
-                            // int index = arrayObjects.indexOf(objArrayPatch.toSource());
-                            // resultArray.getElements().remove(index);
-                            // resultArray.addElement(objArrayPatch);
-                            // }
-                            // }
                         }
                         // if (patchOverrides) {
                         // for (AstNode objArrayBase : rightBase.getElements()) {
@@ -254,17 +267,11 @@ public class JSMerger implements Merger {
         newExpr.setExpression(newCall);
         out.addChild(newExpr);
 
-        // Establish the indentation index for the code beautifier
-        int indent = 4;
-
-        return
-
-        jsBeautify(out.toSource(), indent);
-
+        return jsBeautify(out.toSource(), indent);
     }
 
     /**
-     * Usues the JSBeautifier script to format the source code
+     * Uses the JSBeautifier script to format the source code
      *
      * @param source
      *            to format
