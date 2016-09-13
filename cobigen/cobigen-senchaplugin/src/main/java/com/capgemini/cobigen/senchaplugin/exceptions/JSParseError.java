@@ -15,7 +15,7 @@ public class JSParseError extends RuntimeException {
      * Creates an exception with the given message
      * @param msg
      *            error message
-     * @author mbrunnli (18.06.2013)
+     * @author rudiazma (12 de sept. de 2016)
      */
     public JSParseError(String msg) {
         super(msg);
@@ -27,7 +27,7 @@ public class JSParseError extends RuntimeException {
      *            error message
      * @param cause
      *            root cause
-     * @author mbrunnli (Jun 25, 2015)
+     * @author rudiazma (12 de sept. de 2016)
      */
     public JSParseError(String msg, Throwable cause) {
         super(msg, cause);

@@ -10,13 +10,13 @@ import com.google.common.collect.Lists;
 
 /**
  *
- * @author mbrunnli (06.04.2014)
+ * @author rudiazma (26 de jul. de 2016)
  */
 public class JSPluginActivator implements GeneratorPluginActivator {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
+     * @author rudiazma (26 de jul. de 2016)
      */
     @Override
     public List<Merger> bindMerger() {
@@ -28,7 +28,7 @@ public class JSPluginActivator implements GeneratorPluginActivator {
 
     /**
      * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
+     * @author rudiazma (26 de jul. de 2016)
      */
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
