@@ -142,8 +142,13 @@ public class JSMerger implements Merger {
             } else {
                 if (patchOverrides) {
                     int index = listProps.indexOf(propertyPatch.getLeft().toSource());
-                    listProps.remove(index);
-                    listProps.add(index, propertyPatch);
+                    if (index >= 0) {
+                        listProps.remove(index);
+                        listProps.add(index, propertyPatch);
+                    } else {
+                        listProps.add(propertyPatch);
+                    }
+
                 }
             }
         }
