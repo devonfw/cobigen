@@ -4,13 +4,9 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.senchaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -21,21 +17,13 @@ import com.google.common.collect.Sets;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
- * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Java classes into
- * FreeMarker models
  *
- * @author mbrunnli (15.10.2013)
+ * @author rudiazma (4 de ago. de 2016)
  */
-public class JSInputReader implements InputReader {
-
-    /**
-     * Logger instance
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(JSInputReader.class);
+public class __JSInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-
         if (input instanceof Class<?> || input instanceof JavaClass) {
             return true;
         } else if (input instanceof Object[]) {
@@ -60,16 +48,15 @@ public class JSInputReader implements InputReader {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> createModel(Object o) {
-
-        if (o instanceof Class<?>) {
-            return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
+    public Map<String, Object> createModel(Object input) {
+        if (input instanceof Class<?>) {
+            return new ReflectedJavaModelBuilder().createModel((Class<?>) input);
         }
-        if (o instanceof JavaClass) {
-            return new ParsedJavaModelBuilder().createModel((JavaClass) o);
+        if (input instanceof JavaClass) {
+            return new ParsedJavaModelBuilder().createModel((JavaClass) input);
         }
-        if (o instanceof Object[] && isValidInput(o)) {
-            Object[] inputArr = (Object[]) o;
+        if (input instanceof Object[] && isValidInput(input)) {
+            Object[] inputArr = (Object[]) input;
             Object parsedModel;
             Object reflectionModel;
             if (inputArr[0] instanceof JavaClass) {
@@ -91,13 +78,12 @@ public class JSInputReader implements InputReader {
 
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
-        List<Object> emptyList = new LinkedList<>();
-        return emptyList;
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public Map<String, Object> getTemplateMethods(Object input) {
-
         // prepare result
         Map<String, Object> methodMap = new HashMap<>();
         ClassLoader classloader = null;
@@ -262,7 +248,7 @@ public class JSInputReader implements InputReader {
 
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
-        return null;
+        return getInputObjects(input, inputCharset, true);
     }
 
 }
