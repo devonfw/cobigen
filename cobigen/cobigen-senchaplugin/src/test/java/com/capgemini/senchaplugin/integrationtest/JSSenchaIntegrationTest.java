@@ -67,7 +67,7 @@ public class JSSenchaIntegrationTest {
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("testField", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("{name: 'testField', type: 'String'}", FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
