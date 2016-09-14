@@ -13,8 +13,6 @@ import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.senchaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.senchaplugin.matcher.resolver.TriggerExpressionResolver;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.JavaClass;
 
@@ -37,11 +35,7 @@ public class JSMatcher implements MatcherInterpreter {
      */
     private enum MatcherType {
         /** Full Qualified Name Matching */
-        FQN,
-        /** Package Name Matching */
-        PACKAGE,
-        /** Expression interpretation */
-        EXPRESSION
+        FQN
     }
 
     /**
@@ -70,29 +64,6 @@ public class JSMatcher implements MatcherInterpreter {
             case FQN:
                 String fqn = getFqn(matcher);
                 return fqn != null && fqn.matches(matcher.getValue());
-            case PACKAGE:
-                return matcher.getTarget() instanceof PackageFolder
-                    && ((PackageFolder) matcher.getTarget()).getPackageName().matches(matcher.getValue());
-            case EXPRESSION:
-                Object target = matcher.getTarget();
-                if (target instanceof Object[]) {
-                    // in this case we get the java class and the java source, so pick the right one to
-                    // resolve the
-                    // expression
-                    if (((Object[]) target)[0] instanceof Class<?>) {
-                        target = ((Object[]) target)[0];
-                    } else {
-                        target = ((Object[]) target)[1];
-                    }
-                }
-                if (target instanceof Class<?>) {
-                    TriggerExpressionResolver resolver = new TriggerExpressionResolver((Class<?>) target);
-                    return resolver.evaluateExpression(matcher.getValue());
-                }
-                if (target instanceof JavaClass) {
-                    TriggerExpressionResolver resolver = new TriggerExpressionResolver((JavaClass) target);
-                    return resolver.evaluateExpression(matcher.getValue());
-                }
             }
         } catch (IllegalArgumentException e) {
             LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
@@ -106,8 +77,8 @@ public class JSMatcher implements MatcherInterpreter {
      * @author mbrunnli (08.04.2014)
      */
     @Override
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException {
 
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
@@ -163,9 +134,8 @@ public class JSMatcher implements MatcherInterpreter {
      *             if some of the matcher type and variable type combinations are not supported
      * @author mbrunnli (15.04.2013)
      */
-    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue,
-        String stringToMatch, List<VariableAssignmentTo> variableAssignments)
-        throws InvalidConfigurationException {
+    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue, String stringToMatch,
+        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
 
         Map<String, String> resolvedVariables = new HashMap<>();
         for (VariableAssignmentTo va : variableAssignments) {
@@ -175,8 +145,7 @@ public class JSMatcher implements MatcherInterpreter {
                 resolvedVariables.put(va.getVarName(), va.getValue());
                 break;
             case REGEX:
-                resolvedVariables.put(va.getVarName(),
-                    resolveRegexValue(matcherType, matcherValue, stringToMatch, va));
+                resolvedVariables.put(va.getVarName(), resolveRegexValue(matcherType, matcherValue, stringToMatch, va));
                 break;
             }
         }
@@ -217,8 +186,8 @@ public class JSMatcher implements MatcherInterpreter {
                         "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
                             + " representing a regular expression group.\nCurrent value: '{}'",
                         va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException("The VariableAssignment '"
-                        + va.getType().toUpperCase() + "' of Matcher of type '" + matcherType.toString()
+                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
+                        + "' of Matcher of type '" + matcherType.toString()
                         + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
                         + va.getValue() + "'");
                 } catch (IndexOutOfBoundsException e) {
@@ -226,10 +195,10 @@ public class JSMatcher implements MatcherInterpreter {
                         "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
                             + " group not in range.\nCurrent value: '{}'",
                         va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException("The VariableAssignment '"
-                        + va.getType().toUpperCase() + "' of Matcher of type '" + matcherType.toString()
-                        + "' declares a regular expression group not in range.\nCurrent value: '"
-                        + va.getValue() + "'");
+                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
+                        + "' of Matcher of type '" + matcherType.toString()
+                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue()
+                        + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {
