@@ -14,8 +14,8 @@ import org.junit.Test;
 import com.capgemini.cobigen.CobiGen;
 import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.extension.to.TemplateTo;
-import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.capgemini.cobigen.senchaplugin.util.JavaModelUtil;
+import com.capgemini.cobigen.senchaplugin.util.JavaParserUtil;
 
 /**
  *
@@ -23,6 +23,6 @@ import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
  */
 public class ModelCreationTest extends AbstractIntegrationTest {
 
-    private List<String> testField;
+    private String testField;
 
 }
