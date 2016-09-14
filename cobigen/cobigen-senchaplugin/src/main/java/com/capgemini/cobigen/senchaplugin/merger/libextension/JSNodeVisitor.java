@@ -67,7 +67,7 @@ public class JSNodeVisitor implements NodeVisitor {
     }
 
     /**
-     * @return the Ext.define
+     * @return Ext.define
      * @author rudiazma (8 de ago. de 2016)
      */
     public List<PropertyGet> getFunctionCall() {
