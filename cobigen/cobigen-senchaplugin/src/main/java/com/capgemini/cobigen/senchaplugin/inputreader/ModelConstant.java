@@ -12,16 +12,6 @@ import java.util.Map;
 public class ModelConstant {
 
     /**
-     * ID for object Model of Sencha Architect
-     */
-    public static final String MODELID = "modelId";
-
-    /**
-     * ID for object Controller of Sencha Architect
-     */
-    public static final String CONTROLLERID = "controllerId";
-
-    /**
      * Node for hand-written template utils
      */
     public static final String UTILS = "utils";
