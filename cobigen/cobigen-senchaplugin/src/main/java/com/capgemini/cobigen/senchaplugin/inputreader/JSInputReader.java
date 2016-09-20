@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -33,6 +32,20 @@ public class JSInputReader implements InputReader {
      * Logger instance
      */
     private static final Logger LOG = LoggerFactory.getLogger(JSInputReader.class);
+
+    private String modelId;
+
+    private String controllerId;
+
+    private String storeId;
+
+    private String viewId;
+
+    public JSInputReader(String modelId, String controllerId, String storeId, String viewId) {
+        super();
+        this.modelId = modelId;
+        this.controllerId = controllerId;
+    }
 
     @Override
     public boolean isValidInput(Object input) {
@@ -63,18 +76,17 @@ public class JSInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object o) {
 
-        System.out.println("entr una vez");
         Map<String, Object> model = new HashMap<>();
         if (o instanceof Class<?>) {
             model = new ReflectedJavaModelBuilder().createModel((Class<?>) o);
-            model.put(ModelConstant.MODELID, createRandomString(32));
-            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            model.put(ModelConstant.MODELID, modelId);
+            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         if (o instanceof JavaClass) {
             model = new ParsedJavaModelBuilder().createModel((JavaClass) o);
-            model.put(ModelConstant.MODELID, createRandomString(32));
-            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            model.put(ModelConstant.MODELID, modelId);
+            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         if (o instanceof Object[] && isValidInput(o)) {
@@ -89,30 +101,11 @@ public class JSInputReader implements InputReader {
                 reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
             model = (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
-            model.put(ModelConstant.MODELID, createRandomString(32));
-            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            model.put(ModelConstant.MODELID, modelId);
+            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         return null;
-    }
-
-    /**
-     * Generates random hexadecimal ID for Architect objects
-     * @param length
-     *            of the ID
-     * @return id
-     * @author rudiazma (Sep 19, 2016)
-     */
-    public static String createRandomString(int length) {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length) {
-            sb.append(Integer.toHexString(random.nextInt()));
-        }
-        String id = sb.toString();
-        String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
-            + id.substring(16, 20) + '-' + id.substring(20, 32);
-        return resultId;
     }
 
     @Override
