@@ -33,20 +33,6 @@ public class JSInputReader implements InputReader {
      */
     private static final Logger LOG = LoggerFactory.getLogger(JSInputReader.class);
 
-    private String modelId;
-
-    private String controllerId;
-
-    private String storeId;
-
-    private String viewId;
-
-    public JSInputReader(String modelId, String controllerId, String storeId, String viewId) {
-        super();
-        this.modelId = modelId;
-        this.controllerId = controllerId;
-    }
-
     @Override
     public boolean isValidInput(Object input) {
 
@@ -79,14 +65,10 @@ public class JSInputReader implements InputReader {
         Map<String, Object> model = new HashMap<>();
         if (o instanceof Class<?>) {
             model = new ReflectedJavaModelBuilder().createModel((Class<?>) o);
-            model.put(ModelConstant.MODELID, modelId);
-            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         if (o instanceof JavaClass) {
             model = new ParsedJavaModelBuilder().createModel((JavaClass) o);
-            model.put(ModelConstant.MODELID, modelId);
-            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         if (o instanceof Object[] && isValidInput(o)) {
@@ -101,8 +83,6 @@ public class JSInputReader implements InputReader {
                 reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
             model = (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
-            model.put(ModelConstant.MODELID, modelId);
-            model.put(ModelConstant.CONTROLLERID, controllerId);
             return model;
         }
         return null;
