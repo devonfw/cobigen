@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -62,11 +63,19 @@ public class JSInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object o) {
 
+        System.out.println("entr una vez");
+        Map<String, Object> model = new HashMap<>();
         if (o instanceof Class<?>) {
-            return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
+            model = new ReflectedJavaModelBuilder().createModel((Class<?>) o);
+            model.put(ModelConstant.MODELID, createRandomString(32));
+            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            return model;
         }
         if (o instanceof JavaClass) {
-            return new ParsedJavaModelBuilder().createModel((JavaClass) o);
+            model = new ParsedJavaModelBuilder().createModel((JavaClass) o);
+            model.put(ModelConstant.MODELID, createRandomString(32));
+            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            return model;
         }
         if (o instanceof Object[] && isValidInput(o)) {
             Object[] inputArr = (Object[]) o;
@@ -79,9 +88,31 @@ public class JSInputReader implements InputReader {
                 parsedModel = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
                 reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
-            return (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
+            model = (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
+            model.put(ModelConstant.MODELID, createRandomString(32));
+            model.put(ModelConstant.CONTROLLERID, createRandomString(32));
+            return model;
         }
         return null;
+    }
+
+    /**
+     * Generates random hexadecimal ID for Architect objects
+     * @param length
+     *            of the ID
+     * @return id
+     * @author rudiazma (Sep 19, 2016)
+     */
+    public static String createRandomString(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length) {
+            sb.append(Integer.toHexString(random.nextInt()));
+        }
+        String id = sb.toString();
+        String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
+            + id.substring(16, 20) + '-' + id.substring(20, 32);
+        return resultId;
     }
 
     @Override

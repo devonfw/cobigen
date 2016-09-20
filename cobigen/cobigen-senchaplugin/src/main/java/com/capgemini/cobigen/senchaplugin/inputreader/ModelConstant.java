@@ -4,12 +4,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * String constants of the java object model for generation. Outcome of the {@link __JSInputReader}.
+ * String constants of the java object model for generation. Outcome of the {@link JSInputReader}.
  *
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
 public class ModelConstant {
+
+    /**
+     * ID for object Model of Sencha Architect
+     */
+    public static final String MODELID = "modelId";
+
+    /**
+     * ID for object Controller of Sencha Architect
+     */
+    public static final String CONTROLLERID = "controllerId";
 
     /**
      * Node for hand-written template utils
