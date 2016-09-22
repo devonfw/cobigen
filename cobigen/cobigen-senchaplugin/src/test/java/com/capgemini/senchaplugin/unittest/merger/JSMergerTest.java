@@ -238,4 +238,13 @@ public class JSMergerTest {
         assertTrue(array.getElement(0).toSource().equals("'element4'"));
     }
 
+    @Test
+    public void isJSON() {
+        File jsBaseFile = new File(testFileRootPath + "project.xds");
+        String file = jsBaseFile.getAbsolutePath();
+        // String mergedContents = new JSMerger("js", false).merge(jsBaseFile, null, "UTF-8");
+        assertTrue(file.contains(".xds"));
+
+    }
+
 }
