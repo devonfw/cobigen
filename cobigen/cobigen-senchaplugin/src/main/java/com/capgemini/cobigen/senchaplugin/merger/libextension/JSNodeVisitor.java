@@ -40,7 +40,7 @@ public class JSNodeVisitor implements NodeVisitor {
     public JSNodeVisitor() {
         propertyNodes = new LinkedList<>();
         functionCall = new LinkedList<>();
-        firstArgument = new StringLiteral();
+        firstArgument = null;
 
     }
 
@@ -52,6 +52,7 @@ public class JSNodeVisitor implements NodeVisitor {
         } else if (node.getType() == Token.GETPROP) {
             functionCall.add((PropertyGet) node);
         } else if (node instanceof StringLiteral && node.depth() == 3) {
+            firstArgument = new StringLiteral();
             firstArgument = (StringLiteral) node;
         }
 
