@@ -32,6 +32,9 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      */
     private final static Logger LOG = LoggerFactory.getLogger(LogbackConfigChangeListener.class);
 
+    /** Logback configuration file name */
+    public final static String LOGBACK_FILENAME = "logback.xml";
+
     /**
      * Generator configuration project
      */
@@ -52,7 +55,7 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
     public LogbackConfigChangeListener(IProject generatorConfProj) {
 
         this.generatorConfProj = generatorConfProj;
-        logbackXmlFile = generatorConfProj.getFile("logback.xml");
+        logbackXmlFile = generatorConfProj.getFile(LOGBACK_FILENAME);
         try {
             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
         } catch (IOException | JoranException e) {
