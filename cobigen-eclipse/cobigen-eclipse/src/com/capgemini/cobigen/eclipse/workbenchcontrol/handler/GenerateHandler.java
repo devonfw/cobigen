@@ -42,10 +42,6 @@ public class GenerateHandler extends AbstractHandler {
      */
     private static final Logger LOG = LoggerFactory.getLogger(GenerateHandler.class);
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (13.02.2013), updated by sholzer (22.09.2015)
-     */
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -61,8 +57,7 @@ public class GenerateHandler extends AbstractHandler {
 
             try {
                 LOG.info("Initiating CobiGen...");
-                CobiGenWrapper generator =
-                    GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
+                CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
                 if (generator == null) {
                     MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
                         "The current selection is currently not supported as valid input.");
@@ -81,8 +76,8 @@ public class GenerateHandler extends AbstractHandler {
 
                 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
                     && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
-                    WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(event),
-                        new GenerateBatchWizard(generator));
+                    WizardDialog wiz =
+                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
                     LOG.info("Generate Wizard (Batchmode) opened.");
@@ -97,26 +92,24 @@ public class GenerateHandler extends AbstractHandler {
             } catch (InvalidConfigurationException e) {
                 openInvalidConfigurationErrorDialog(e);
             } catch (CobiGenRuntimeException e) {
-                PlatformUIUtil.openErrorDialog("CobiGen Error", e.getMessage(), e);
+                PlatformUIUtil.openErrorDialog(e.getMessage(), e);
                 LOG.error("CobiGen Error: {}", e.getMessage(), e);
             } catch (GeneratorProjectNotExistentException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event),
-                    "Generator configuration project not found!",
+                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator configuration project not found!",
                     "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
                         + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
                 LOG.error(
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
                     ResourceConstants.CONFIG_PROJECT_NAME, e);
             } catch (GeneratorCreationException e) {
-                PlatformUIUtil.openErrorDialog("Error",
-                    "Could not initialize CobiGen for the given selectio: " + e.getMessage(), e);
+                PlatformUIUtil.openErrorDialog("Could not initialize CobiGen for the given selectio: " + e.getMessage(),
+                    e);
                 LOG.error("Could not create an instance of the generator.", e);
             } catch (InvalidInputException e) {
-                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection",
-                    e.getMessage());
+                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
                 LOG.info("Invalid input selected for generation: {}", e.getMessage());
             } catch (Throwable e) {
-                PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
+                PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);
             }
         }

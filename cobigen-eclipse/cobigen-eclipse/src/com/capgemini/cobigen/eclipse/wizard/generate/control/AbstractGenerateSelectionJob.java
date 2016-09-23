@@ -30,6 +30,7 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
@@ -65,8 +66,7 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper,
-        List<TemplateTo> templatesToBeGenerated) {
+    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
 
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
@@ -111,22 +111,19 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                                 strBuilder.append("\n");
                             }
 
-                            MessageDialog.openWarning(
-                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
-                                "Success with warnings!",
+                            MessageDialog.openWarning(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
+                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED_W_WARNINGS,
                                 "Contents from " + templatesToBeGenerated.size()
-                                    + " templates have been generated.\n\nWarnings:\n"
-                                    + strBuilder.toString());
+                                    + " templates have been generated.\n\nWarnings:\n" + strBuilder.toString());
                         }
                     });
                 } else {
                     PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            MessageDialog.openInformation(
-                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(), "Success!",
-                                "Contents from " + templatesToBeGenerated.size()
-                                    + " templates have been generated.");
+                            MessageDialog.openInformation(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
+                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED,
+                                "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
                         }
                     });
                 }
@@ -135,28 +132,24 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                     @Override
                     public void run() {
                         Throwable firstError = generationReport.getErrors().get(0);
-                        PlatformUIUtil.openErrorDialog("Generation exited with errors.",
-                            generationReport.getErrors().size() > 1
-                                ? "Multiple errors occurred during generation. There are "
-                                    + generationReport.getErrors().size()
-                                    + " errors in total. See the stack trace of the first error only below."
-                                    + " Please investigate the Log file to view all errors if needed."
-                                : "An error occurred during generation.",
-                            firstError);
+                        PlatformUIUtil.openErrorDialog(generationReport.getErrors().size() > 1
+                            ? "Multiple errors occurred during generation. There are "
+                                + generationReport.getErrors().size()
+                                + " errors in total. See the stack trace of the first error only below."
+                                + " Please investigate the Log file to view all errors if needed."
+                            : "An error occurred during generation.", firstError);
                     }
                 });
             }
         } catch (CoreException e) {
-            PlatformUIUtil.openErrorDialog("Eclipse internal Exception",
-                "An eclipse internal exception occurred during processing:\n" + e.getMessage()
-                    + "\n If this problem persists please report it to the CobiGen developers.",
-                e);
+            PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
+                + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.", e);
             LOG.error("Eclipse internal Exception", e);
         } catch (CobiGenRuntimeException e) {
-            PlatformUIUtil.openErrorDialog("CobiGen Error", e.getMessage(), e);
+            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
             LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
         } catch (Throwable e) {
-            PlatformUIUtil.openErrorDialog("Error", "An unexpected exception occurred!", e);
+            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
         } finally {
             LOG.info("Finished processing generation.");
@@ -185,7 +178,6 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
      *
      * @param cus
      *            {@link CompilationUnit}s to be organized
-     * @author mbrunnli (12.03.2013)
      */
     private void organizeImports(final ICompilationUnit[] cus) {
 

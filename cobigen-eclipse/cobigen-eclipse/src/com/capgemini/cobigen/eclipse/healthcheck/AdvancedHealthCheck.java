@@ -31,12 +31,8 @@ public class AdvancedHealthCheck {
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(AdvancedHealthCheck.class);
 
-    /** Commonly used dialog title for the Advanced Health Check */
-    static final String COMMON_DIALOG_TITLE = "Advanced Health Check";
-
     /**
      * Executes the Advanced Health Check.
-     * @author mbrunnli (Jun 24, 2015)
      */
     public void execute() {
 
@@ -68,8 +64,8 @@ public class AdvancedHealthCheck {
                     if (templatesConfigurationFile.canWrite()) {
                         isAccessible.add(expectedTemplateFolder);
 
-                        TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
-                            .resolveLatestCompatibleSchemaVersion(templateFolder);
+                        TemplatesConfigurationVersion resolvedVersion =
+                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(templateFolder);
                         if (resolvedVersion != null) {
                             if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
                                 upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
@@ -89,12 +85,9 @@ public class AdvancedHealthCheck {
             advancedHealthCheckDialog.open();
 
         } catch (CoreException e) {
-            PlatformUIUtil.openErrorDialog(COMMON_DIALOG_TITLE,
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
-            LOG.error(
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
+            PlatformUIUtil.openErrorDialog(
+                "An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
+            LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
         }
     }
 }
