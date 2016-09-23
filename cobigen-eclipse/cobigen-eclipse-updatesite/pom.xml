@@ -18,7 +18,7 @@
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-packaging-plugin</artifactId>
-        <version>${tycho-extras.version}</version>
+        <version>${tycho.version}</version>
         <configuration>
           <archiveSite>true</archiveSite>
         </configuration>
@@ -44,5 +44,60 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>uploadSnapshot</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-snapshot</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}</fromDir>
+                  <includes>com.capgemini.cobigen.eclipse.updatesite-*SNAPSHOT.zip</includes>
+                  <url>file://localhost///de-file10/ClientPE/OASP</url>
+                  <toDir>CobiGenerator/Releases/snapshot</toDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>uploadRelease</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-release</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}</fromDir>
+                  <includes>com.capgemini.cobigen.eclipse.updatesite-*.zip</includes>
+                  <url>file://localhost///de-file10/ClientPE/OASP</url>
+                  <toDir>CobiGenerator/Releases/stable</toDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
