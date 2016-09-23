@@ -6,12 +6,11 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.launching.JavaRuntime;
 
 /**
  * Util functionality for {@link ClassLoader} issues
@@ -29,24 +28,28 @@ public class ClassLoaderUtil {
      *             if the Java runtime class path could not be determined
      * @throws MalformedURLException
      *             if a path of one of the class path entries is not a valid URL
-     * @author mbrunnli (05.02.2013)
      */
-    public static URLClassLoader getProjectClassLoader(IJavaProject proj)
-        throws CoreException, MalformedURLException {
+    public static URLClassLoader getProjectClassLoader(IJavaProject proj) throws CoreException, MalformedURLException {
         IClasspathEntry[] classPathEntries = proj.getResolvedClasspath(true);
+        proj.readRawClasspath();
 
         List<URL> urlList = new ArrayList<>();
         for (IClasspathEntry entry : classPathEntries) {
-            IPath path = entry.getPath();
             if (entry.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                urlList.add(path.toFile().toURI().toURL());
+                urlList.add(entry.getPath().toFile().toURI().toURL());
+            } else {
+                IPath outputLocation;
+                if (entry.getOutputLocation() != null) {
+                    outputLocation = entry.getOutputLocation();
+                } else {
+                    outputLocation = proj.getOutputLocation();
+                }
+                urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(outputLocation).toFile()
+                    .toURI().toURL());
             }
         }
-
-        String[] sourceClassPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(proj);
-        for (String entry : sourceClassPathEntries) {
-            urlList.add(new Path(entry).toFile().toURI().toURL());
-        }
+        urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(proj.readOutputLocation()).toFile()
+            .toURI().toURL());
 
         ClassLoader parentClassLoader = proj.getClass().getClassLoader();
         URL[] urls = urlList.toArray(new URL[urlList.size()]);
