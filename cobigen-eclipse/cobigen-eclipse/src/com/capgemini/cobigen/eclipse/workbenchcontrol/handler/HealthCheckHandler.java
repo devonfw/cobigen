@@ -31,7 +31,7 @@ public class HealthCheckHandler extends AbstractHandler {
             new HealthCheck().execute();
         } catch (Throwable e) {
             LOG.error("An unexpected error occurred while processing the health check. This is a bug.", e);
-            PlatformUIUtil.openErrorDialog("Error",
+            PlatformUIUtil.openErrorDialog(
                 "An unexpected error occurred while processing the health check. This might be a bug.", e);
         }
 
