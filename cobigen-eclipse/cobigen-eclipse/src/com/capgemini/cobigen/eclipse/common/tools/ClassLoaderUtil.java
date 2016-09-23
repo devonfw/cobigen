@@ -21,17 +21,20 @@ public class ClassLoaderUtil {
 
     /**
      * Returns the java {@link ClassLoader} of the {@link IJavaProject} passed
-     * @param proj
+     * @param project
      *            {@link IJavaProject} for which the {@link ClassLoader} should be returned
+     * @param parentClassLoader
+     *            parent {@link ClassLoader} to be registered
      * @return the java {@link ClassLoader} of the {@link IJavaProject} passed
      * @throws CoreException
      *             if the Java runtime class path could not be determined
      * @throws MalformedURLException
      *             if a path of one of the class path entries is not a valid URL
      */
-    public static URLClassLoader getProjectClassLoader(IJavaProject proj) throws CoreException, MalformedURLException {
-        IClasspathEntry[] classPathEntries = proj.getResolvedClasspath(true);
-        proj.readRawClasspath();
+    public static URLClassLoader getProjectClassLoader(IJavaProject project, ClassLoader parentClassLoader)
+        throws CoreException, MalformedURLException {
+        IClasspathEntry[] classPathEntries = project.getResolvedClasspath(true);
+        project.readRawClasspath();
 
         List<URL> urlList = new ArrayList<>();
         for (IClasspathEntry entry : classPathEntries) {
@@ -42,17 +45,31 @@ public class ClassLoaderUtil {
                 if (entry.getOutputLocation() != null) {
                     outputLocation = entry.getOutputLocation();
                 } else {
-                    outputLocation = proj.getOutputLocation();
+                    outputLocation = project.getOutputLocation();
                 }
-                urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(outputLocation).toFile()
-                    .toURI().toURL());
+                urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(outputLocation)
+                    .toFile().toURI().toURL());
             }
         }
-        urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(proj.readOutputLocation()).toFile()
-            .toURI().toURL());
+        urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation()
+            .append(project.readOutputLocation()).toFile().toURI().toURL());
 
-        ClassLoader parentClassLoader = proj.getClass().getClassLoader();
         URL[] urls = urlList.toArray(new URL[urlList.size()]);
         return new URLClassLoader(urls, parentClassLoader);
+    }
+
+    /**
+     * Returns the java {@link ClassLoader} of the {@link IJavaProject} passed
+     * @param project
+     *            {@link IJavaProject} for which the {@link ClassLoader} should be returned
+     * @return the java {@link ClassLoader} of the {@link IJavaProject} passed
+     * @throws CoreException
+     *             if the Java runtime class path could not be determined
+     * @throws MalformedURLException
+     *             if a path of one of the class path entries is not a valid URL
+     */
+    public static URLClassLoader getProjectClassLoader(IJavaProject project)
+        throws CoreException, MalformedURLException {
+        return getProjectClassLoader(project, null);
     }
 }
