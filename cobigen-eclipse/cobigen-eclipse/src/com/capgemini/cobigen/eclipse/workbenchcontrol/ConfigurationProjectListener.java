@@ -88,11 +88,11 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
      * Registers the {@link LogbackConfigChangeListener} if not already set
      * @param cobigenConfigFolder
      *            CobiGens configuration project in the workspace
-     * @author mbrunnli (Jan 10, 2016)
      */
     private void registerLogbackConfigListenerIfNotAlreadyDone(IProject cobigenConfigFolder) {
         synchronized (logbackConfigListenerSync) {
-            if (logbackConfigListener == null) {
+            if (logbackConfigListener == null
+                && cobigenConfigFolder.getFile(LogbackConfigChangeListener.LOGBACK_FILENAME).exists()) {
                 logbackConfigListener = new LogbackConfigChangeListener(cobigenConfigFolder);
                 ResourcesPlugin.getWorkspace().addResourceChangeListener(logbackConfigListener);
             }
