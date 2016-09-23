@@ -257,24 +257,47 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
         List<Class<?>> classes = Lists.newArrayList();
 
-        IProject configurationProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
-        IJavaProject project = JavaCore.create(configurationProject);
-        if (project != null && project.exists()) { // if it is not a Java project, do not try to load anything
-            ClassLoader classLoader = ClassLoaderUtil.getProjectClassLoader(project);
+        IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
+        IJavaProject configJavaProject = JavaCore.create(configProject);
 
-            for (IPackageFragmentRoot roots : project.getPackageFragmentRoots()) {
+        // if it is not a Java project, do not try to load anything
+        if (configJavaProject != null && configJavaProject.exists()) {
+            ClassLoader inputClassLoader = getInputClassloader();
+            // create classpath for the configuration project while keeping the input's classpath
+            // as the parent classpath to prevent classpath shading.
+            inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
+
+            for (IPackageFragmentRoot roots : configJavaProject.getPackageFragmentRoots()) {
                 for (IJavaElement e : roots.getChildren()) {
                     if (e instanceof IPackageFragment) {
                         for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
                             IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                            classes.add(classLoader.loadClass(type.getFullyQualifiedName()));
+                            classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
                         }
                     }
                 }
             }
         }
-
         return classes;
+    }
+
+    /**
+     * Retrieves the {@link ClassLoader} of the input.
+     * @return the {@link ClassLoader} of the input or a newly created one of the input's project
+     */
+    private ClassLoader getInputClassloader() {
+        Object firstInput = inputs.get(0);
+        if (firstInput instanceof Class<?>) {
+            return ((Class<?>) firstInput).getClassLoader();
+        } else if (firstInput instanceof Object[]) {
+            Object[] arrInput = (Object[]) firstInput;
+            if (arrInput[0] instanceof Class<?>) {
+                return ((Class<?>) arrInput[0]).getClassLoader();
+            } else if (arrInput[1] instanceof Class<?>) {
+                return ((Class<?>) arrInput[1]).getClassLoader();
+            }
+        }
+        return null;
     }
 
     /**
@@ -398,7 +421,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 }
             }
         }
-
         return templates;
     }
 
