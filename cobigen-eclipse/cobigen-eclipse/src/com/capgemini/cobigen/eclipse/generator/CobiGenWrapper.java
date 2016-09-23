@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -50,7 +49,6 @@ import com.google.common.collect.Lists;
 
 /**
  * Wrapper for CobiGen providing an eclipse compliant API.
- * @author mbrunnli (02.12.2014)
  */
 public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
@@ -261,23 +259,18 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         IProject configurationProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
         IJavaProject project = JavaCore.create(configurationProject);
-        ClassLoader classLoader = ClassLoaderUtil.getProjectClassLoader(project);
+        if (project != null && project.exists()) { // if it is not a Java project, do not try to load anything
+            ClassLoader classLoader = ClassLoaderUtil.getProjectClassLoader(project);
 
-        for (IPackageFragmentRoot roots : project.getPackageFragmentRoots()) {
-            for (IJavaElement e : roots.getChildren()) {
-                if (e instanceof IPackageFragment) {
-                    for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                        IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                        classes.add(classLoader.loadClass(type.getFullyQualifiedName()));
+            for (IPackageFragmentRoot roots : project.getPackageFragmentRoots()) {
+                for (IJavaElement e : roots.getChildren()) {
+                    if (e instanceof IPackageFragment) {
+                        for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
+                            IType type = EclipseJavaModelUtil.getJavaClassType(cu);
+                            classes.add(classLoader.loadClass(type.getFullyQualifiedName()));
+                        }
                     }
                 }
-            }
-
-        }
-
-        for (IClasspathEntry ce : project.getRawClasspath()) {
-            if (ce.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-
             }
         }
 
