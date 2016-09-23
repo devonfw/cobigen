@@ -44,6 +44,7 @@ import com.google.common.collect.Maps;
 
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
 /**
@@ -466,10 +467,13 @@ public class GenerationProcessor {
                     }
                 }
                 env.process();
+            } catch (TemplateException e) {
+                throw new CobiGenRuntimeException("An error occurred while generating the template with id '"
+                    + template.getName() + "':\n" + e.getMessage(), e);
             } catch (Throwable e) {
                 throw new CobiGenRuntimeException(
-                    "An error occured while processing FreeMarkers generation environment for generating the template with id '"
-                        + template.getName() + "'.",
+                    "An unkonwn error occurred while generating the template with id '" + template.getName()
+                        + "'.",
                     e);
             }
         }
