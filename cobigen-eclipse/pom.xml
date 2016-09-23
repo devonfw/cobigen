@@ -19,6 +19,7 @@
 
   <modules>
     <module>cobigen-eclipse</module>
+    <module>cobigen-eclipse-test</module>
     <module>cobigen-eclipse-feature</module>
     <module>cobigen-eclipse-updatesite</module>
   </modules>
