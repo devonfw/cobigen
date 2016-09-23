@@ -44,3 +44,5 @@ Bundle-ClassPath: .,
  lib/cobigen-javaplugin-1.4.0-SNAPSHOT.jar,
  lib/cobigen-propertyplugin-1.1.0-SNAPSHOT.jar,
  lib/cobigen-textmerger-1.1.0-SNAPSHOT.jar
+Export-Package: com.capgemini.cobigen.eclipse.common.constants,
+ com.capgemini.cobigen.eclipse.common.constants.external
