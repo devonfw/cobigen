@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,6 @@ public class JavaInputConverter {
      * @return the corresponding {@link List} of inputs for the {@link CobiGen generator}
      * @throws GeneratorCreationException
      *             if any exception occurred during converting the inputs or creating the generator
-     * @author mbrunnli (04.12.2014)
      */
     public static List<Object> convertInput(List<Object> javaElements) throws GeneratorCreationException {
         List<Object> convertedInputs = Lists.newLinkedList();
@@ -52,15 +50,12 @@ public class JavaInputConverter {
                     IPackageFragment frag = (IPackageFragment) elem;
                     PackageFolder packageFolder =
                         new PackageFolder(frag.getResource().getLocationURI(), frag.getElementName());
-                    packageFolder
-                        .setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
+                    packageFolder.setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
-                    LOG.error("An internal exception occurred while building the project class loader.", e);
                     throw new GeneratorCreationException(
                         "An internal exception occurred while building the project class loader.", e);
                 } catch (CoreException e) {
-                    LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 }
             } else if (elem instanceof ICompilationUnit) {
@@ -78,25 +73,16 @@ public class JavaInputConverter {
                                 new StringReader(((ICompilationUnit) elem).getSource())) };
                         convertedInputs.add(inputSourceAndClass);
                     } catch (MalformedURLException e) {
-                        LOG.error("An internal exception occurred while loading Java class {}",
-                            rootType.getFullyQualifiedName(), e);
-                        throw new GeneratorCreationException(
-                            "An internal exception occurred while loading Java class "
-                                + rootType.getFullyQualifiedName(),
-                            e);
+                        throw new GeneratorCreationException("An internal exception occurred while loading Java class "
+                            + rootType.getFullyQualifiedName(), e);
                     } catch (ClassNotFoundException e) {
-                        LOG.error("Could not instantiate Java class {}", rootType.getFullyQualifiedName(), e);
                         throw new GeneratorCreationException(
                             "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     }
                 } catch (MergeException e) {
                     throw new GeneratorCreationException("Could not parse Java base file: "
                         + ((ICompilationUnit) elem).getElementName() + ":\n" + e.getMessage(), e);
-                } catch (JavaModelException e) {
-                    LOG.error("An eclipse internal exception occurred while accessing the java model.", e);
-                    throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 } catch (CoreException e) {
-                    LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 }
             }
