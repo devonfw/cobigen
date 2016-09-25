@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,7 +25,6 @@ import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
@@ -264,8 +264,6 @@ public class XmlPluginIntegrationTest {
         if (!tmpFolderCobiGen.exists()) {
             tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         }
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            tmpFolderCobiGen.getAbsolutePath());
 
         // read xml File as Document
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -277,7 +275,8 @@ public class XmlPluginIntegrationTest {
         boolean templateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
-                cobiGen.generate(inputDocument, template, false);
+                cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
+                    false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
 
