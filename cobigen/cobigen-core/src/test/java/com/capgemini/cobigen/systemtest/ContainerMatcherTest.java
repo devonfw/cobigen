@@ -15,6 +15,7 @@ import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Assert;
@@ -31,7 +32,6 @@ import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.google.common.collect.ImmutableMap;
@@ -130,12 +130,11 @@ public class ContainerMatcherTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
-        GenerationReportTo report = target.generate(containerInput, templates.get(0), false);
+        GenerationReportTo report =
+            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false);
 
         // assertion
         assertThat(report).isSuccessful();
@@ -265,10 +264,9 @@ public class ContainerMatcherTest extends AbstractApiTest {
         File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         File folder = tmpFolder.newFolder();
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath, folder.getAbsolutePath());
 
         // Execution
-        target.generate(container, templateTo, false);
+        target.generate(container, templateTo, Paths.get(folder.toURI()), false);
 
         // Verification
         assertNotNull(folder.list());

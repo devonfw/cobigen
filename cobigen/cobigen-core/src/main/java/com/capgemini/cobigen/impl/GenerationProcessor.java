@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +26,6 @@ import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
@@ -79,6 +79,9 @@ public class GenerationProcessor {
     /** Report to be returned after generation processing */
     private GenerationReportTo generationReport;
 
+    /** Target root path to resolve dependent templates' destination path with */
+    private Path targetRootPath;
+
     /**
      * Creates a new {@link GenerationProcessor} instance. Due to caching, one instance should only be used
      * for one generation request.
@@ -91,6 +94,9 @@ public class GenerationProcessor {
      *            generator input object
      * @param generableArtifacts
      *            a {@link List} of artifacts to be generated
+     * @param targetRootPath
+     *            target root path to generate to (to be used to resolve the dependent template destination
+     *            paths)
      * @param forceOverride
      *            if <code>true</code> and the destination path is already existent, the contents will be
      *            overwritten by the generated ones iff there is no merge strategy defined by the templates
@@ -102,7 +108,7 @@ public class GenerationProcessor {
      *            externally adapted model to be used for generation.
      */
     public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig,
-        Object input, List<GenerableArtifact> generableArtifacts, boolean forceOverride,
+        Object input, List<GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
@@ -114,6 +120,7 @@ public class GenerationProcessor {
         this.generableArtifacts = generableArtifacts;
         this.logicClasses = logicClasses;
         this.rawModel = rawModel;
+        this.targetRootPath = targetRootPath;
 
         generationReport = new GenerationReportTo();
     }
@@ -224,7 +231,8 @@ public class GenerationProcessor {
             String targetCharset = templateIntern.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateIntern.getName(), generatorInput);
 
-            File originalFile = getDestinationFile(templateIntern.resolveDestinationPath(generatorInput));
+            File originalFile =
+                targetRootPath.resolve(templateIntern.resolveDestinationPath(generatorInput)).toFile();
             if (originalFile.exists()) {
                 if (forceOverride || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
                     .equals(templateIntern.getMergeStrategy())) {
@@ -502,31 +510,5 @@ public class GenerationProcessor {
             throw new UnknownTemplateException(templateTo.getId());
         }
         return template;
-    }
-
-    /**
-     * Determines the destination file and creates the path to the file if necessary
-     *
-     * @param relDestinationPath
-     *            relative destination path from {@link ContextSetting#GenerationTargetRootPath}
-     * @return the destination file (might not be existent)
-     */
-    private File getDestinationFile(String relDestinationPath) {
-
-        String rootPath =
-            configurationHolder.readContextConfiguration().get(ContextSetting.GenerationTargetRootPath);
-        if (!rootPath.endsWith("/")) {
-            rootPath += "/";
-        }
-
-        String relDest = relDestinationPath;
-        int i = relDest.lastIndexOf("/");
-        String relFolderPath = relDest.substring(0, (i == -1) ? 0 : i);
-
-        File folder = new File(rootPath + relFolderPath);
-        folder.mkdirs();
-
-        File originalFile = new File(rootPath + relDest);
-        return originalFile;
     }
 }

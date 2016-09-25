@@ -12,6 +12,7 @@ import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.common.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.common.matchers.VariableAssignmentToMatcher;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.capgemini.cobigen.systemtest.testdata.IsSubtypeOfMethod;
 import com.google.common.collect.ImmutableMap;
@@ -63,12 +63,11 @@ public class TemplateMethodsTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath + "templates");
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
         // Execution
-        GenerationReportTo report = target.generate(containerInput, templates.get(0), false);
+        GenerationReportTo report =
+            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false);
 
         // Assertion
         assertThat(report).isSuccessful();

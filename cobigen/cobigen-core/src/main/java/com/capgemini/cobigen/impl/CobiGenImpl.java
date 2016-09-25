@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.impl;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,6 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
@@ -56,63 +56,57 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts) {
-        return generate(input, generableArtifacts, false, null, null);
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        Path targetRootPath) {
+        return generate(input, generableArtifacts, targetRootPath, false, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride) {
-        return generate(input, generableArtifacts, forceOverride, null, null);
+        Path targetRootPath, boolean forceOverride) {
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses) {
-        return generate(input, generableArtifacts, forceOverride, logicClasses, null);
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses) {
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses,
+        Map<String, Object> additionalModelValues) {
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            generableArtifacts, forceOverride, logicClasses, additionalModelValues);
+            generableArtifacts, targetRootPath, forceOverride, logicClasses, additionalModelValues);
         return gp.generate();
     }
 
     @Override
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact) {
-        return generate(input, generableArtifact, false, null, null);
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        Path targetRootPath) {
+        return generate(input, generableArtifact, targetRootPath, false, null, null);
     }
 
     @Override
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride) {
-        return generate(input, generableArtifact, forceOverride, null, null);
+        return generate(input, generableArtifact, targetRootPath, forceOverride, null, null);
     }
 
     @Override
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride, List<Class<?>> logicClasses) {
-        return generate(input, generableArtifact, forceOverride, logicClasses, null);
+        return generate(input, generableArtifact, targetRootPath, forceOverride, logicClasses, null);
     }
 
     @Override
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            Lists.newArrayList(generableArtifact), forceOverride, logicClasses, additionalModelValues);
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses,
+            additionalModelValues);
         return gp.generate();
-    }
-
-    @Override
-    public void setContextSetting(ContextSetting contextSetting, String value) {
-        configurationHolder.readContextConfiguration().set(contextSetting, value);
-    }
-
-    @Override
-    public void getContextSetting(ContextSetting contextSetting) {
-        configurationHolder.readContextConfiguration().get(contextSetting);
     }
 
     @Override
