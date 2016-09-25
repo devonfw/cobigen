@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
@@ -33,15 +33,13 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            tmpFolderCobiGen.getAbsolutePath());
 
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(this.getClass());
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("isAbstract.txt")) {
-                cobiGen.generate(getClass(), template, false);
+                cobiGen.generate(getClass(), template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isAbstract.txt");
                 assertThat(expectedFile).exists();
@@ -66,15 +64,13 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            tmpFolderCobiGen.getAbsolutePath());
 
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(this.getClass());
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("isSubtypeOf.txt")) {
-                cobiGen.generate(getClass(), template, false);
+                cobiGen.generate(getClass(), template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isSubtypeOf.txt");
                 assertThat(expectedFile).exists();
@@ -99,8 +95,6 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
 
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            tmpFolderCobiGen.getAbsolutePath());
 
         Object[] inputArr = new Object[2];
         File thisClassFile =
@@ -114,7 +108,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("emptyTemplate.txt")) {
-                cobiGen.generate(inputArr, template, false);
+                cobiGen.generate(inputArr, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "emptyTemplate.txt");
                 assertThat(expectedFile).exists();

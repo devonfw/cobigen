@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
@@ -41,8 +41,6 @@ public class ModelCreationTest extends AbstractIntegrationTest {
     public void testCorrectGenericTypeExtraction() throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            tmpFolderCobiGen.getAbsolutePath());
 
         Object[] input = new Object[] { this.getClass(),
             JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
@@ -52,7 +50,7 @@ public class ModelCreationTest extends AbstractIntegrationTest {
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("genericTypes.txt")) {
-                cobiGen.generate(input, template, false);
+                cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
                 assertThat(expectedFile).exists();
