@@ -1,9 +1,10 @@
 package com.capgemini.cobigen.javaplugin.unittest.merger.libextension;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileReader;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -14,9 +15,6 @@ import com.thoughtworks.qdox.model.JavaField;
 
 /**
  * The class <code>CustomModelWriterTest</code> contains tests for the class {@link CustomModelWriter}
- *
- * @author mbrunnli (12.04.2013)
- *
  */
 public class CustomModelWriterTest {
 
@@ -39,7 +37,7 @@ public class CustomModelWriterTest {
         JavaField field =
             JavaParserUtil.getFirstJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
         target.writeField(field);
-        Assert.assertEquals("private int baseFieldUndefined;", target.toString().trim());
+        assertThat(target.toString().trim()).isEqualTo("private int baseFieldUndefined;");
     }
 
     /**
@@ -47,7 +45,6 @@ public class CustomModelWriterTest {
      *
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.04.2013)
      */
     @Test
     @Ignore("Not yet implemented --> QDox ignores comments while parsing")
@@ -57,7 +54,7 @@ public class CustomModelWriterTest {
         CustomModelWriter target = new CustomModelWriter();
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeSource(parsedClass.getSource());
-        Assert.assertTrue(target.toString().contains("/* HEADER */"));
+        assertThat(target.toString()).contains("/* HEADER */");
     }
 
     /**
@@ -65,7 +62,6 @@ public class CustomModelWriterTest {
      *
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.04.2013)
      */
     @Test
     public void testCorrectlyWrittenGenerics() throws Exception {
@@ -75,11 +71,11 @@ public class CustomModelWriterTest {
         JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
         target.writeClass(parsedClass);
 
-        Assert.assertTrue(target.toString().contains("class Clazz<T extends Object, Z extends Clazz>"));
-        Assert.assertTrue(target.toString().contains("Map<String,T>"));
-        Assert.assertTrue(target.toString().contains("private T t;"));
-        Assert.assertTrue(target.toString().contains("public T get()"));
-        Assert.assertTrue(target.toString().contains("public <U extends Number> void inspect(U u)"));
+        assertThat(target.toString()).contains("class Clazz<T extends Object, Z extends Clazz>");
+        assertThat(target.toString()).contains("Map<String,T>");
+        assertThat(target.toString()).contains("private T t;");
+        assertThat(target.toString()).contains("public T get()");
+        assertThat(target.toString()).contains("public <U extends Number> void inspect(U u)");
     }
 
     /**
@@ -87,7 +83,6 @@ public class CustomModelWriterTest {
      *
      * @throws Exception
      *             test fails
-     * @author mbrunnli (17.06.2013)
      */
     @Test
     // @Ignore("Not yet implemented --> QDox defect")
@@ -99,10 +94,10 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        Assert.assertTrue(reprintedClass.contains("public final class FooBar"));
-        Assert.assertTrue(reprintedClass.contains("private static final volatile int baseFieldUndefined"));
-        Assert.assertTrue(reprintedClass.contains("public final void method1(String parameter)"));
-        Assert.assertTrue(reprintedClass.contains("method2(final String parameter)"));
+        assertThat(reprintedClass).contains("public final class FooBar");
+        assertThat(reprintedClass).contains("private static final volatile int baseFieldUndefined");
+        assertThat(reprintedClass).contains("public final void method1(String parameter)");
+        assertThat(reprintedClass).contains("method2(final String parameter)");
     }
 
     /**
@@ -110,7 +105,6 @@ public class CustomModelWriterTest {
      * See https://github.com/devonfw/tools-cobigen/issues/143
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 26, 2015)
      */
     @Test
     public void testDoNotWriteDefaultValueIdentifierOfAnnotations() throws Exception {
@@ -120,7 +114,7 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        Assert.assertTrue(reprintedClass.contains("@SuppressWarnings(\"unchecked\")"));
+        assertThat(reprintedClass).contains("@SuppressWarnings(\"unchecked\")");
     }
 
     /**
@@ -136,7 +130,6 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        System.out.println(reprintedClass);
-        Assert.assertTrue(reprintedClass.contains("@Multipart(value=\"binaryObjectEto\""));
+        assertThat(reprintedClass).contains("@Multipart(value=\"binaryObjectEto\"");
     }
 }

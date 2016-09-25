@@ -1,12 +1,12 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
@@ -20,7 +20,6 @@ import junit.framework.AssertionFailedError;
 
 /**
  * Test suite for testing the provided template methods correctly integrated with cobigen-core
- * @author mbrunnli (25.10.2014)
  */
 public class TemplateMethodsTest extends AbstractIntegrationTest {
 
@@ -28,7 +27,6 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
      * Tests the isAbstract template method integration
      * @throws Exception
      *             test fails
-     * @author mbrunnli (25.10.2014)
      */
     @Test
     public void testIsAbstractMethod() throws Exception {
@@ -46,8 +44,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isAbstract.txt");
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("falsetruetrue", FileUtils.readFileToString(expectedFile));
+                assertThat(expectedFile).exists();
+                assertThat(expectedFile).hasContent("falsetruetrue");
                 methodTemplateFound = true;
                 break;
             }
@@ -62,7 +60,6 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
      * Tests the isSubtypeOf template method integration
      * @throws Exception
      *             test fails
-     * @author mbrunnli (25.10.2014)
      */
     @Test
     public void testIsSubtypeOfMethod() throws Exception {
@@ -80,8 +77,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
                 cobiGen.generate(getClass(), template, false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isSubtypeOf.txt");
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("truetruefalsefalsefalse", FileUtils.readFileToString(expectedFile));
+                assertThat(expectedFile).exists();
+                assertThat(expectedFile).hasContent("truetruefalsefalsefalse");
                 methodTemplateFound = true;
                 break;
             }
@@ -96,7 +93,6 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
      * Tests whether the methods could be also retrieved for array inputs
      * @throws Exception
      *             test fails
-     * @author mbrunnli (29.10.2014)
      */
     @Test
     public void testCorrectClassLoaderForMethods() throws Exception {
@@ -121,7 +117,7 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
                 cobiGen.generate(inputArr, template, false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "emptyTemplate.txt");
-                Assert.assertTrue(expectedFile.exists());
+                assertThat(expectedFile).exists();
                 methodTemplateFound = true;
                 break;
             }
