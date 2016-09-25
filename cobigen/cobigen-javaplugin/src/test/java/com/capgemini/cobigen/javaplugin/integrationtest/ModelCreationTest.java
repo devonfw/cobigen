@@ -1,12 +1,12 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
@@ -55,8 +55,8 @@ public class ModelCreationTest extends AbstractIntegrationTest {
                 cobiGen.generate(input, template, false);
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
-                Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("List<String> testField", FileUtils.readFileToString(expectedFile));
+                assertThat(expectedFile).exists();
+                assertThat(expectedFile).hasContent("List<String> testField");
                 methodTemplateFound = true;
                 break;
             }
