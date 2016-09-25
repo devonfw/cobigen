@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.capgemini.cobigen.systemtest.util.PluginMockFactory;
 
@@ -46,8 +46,6 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -56,7 +54,7 @@ public class TemplateScanTest extends AbstractApiTest {
         Assert.assertNotNull(targetTemplate);
 
         // Execution
-        target.generate(input, targetTemplate, false);
+        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
@@ -104,8 +102,6 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -113,7 +109,7 @@ public class TemplateScanTest extends AbstractApiTest {
         Assert.assertNotNull(targetTemplate);
 
         // Execution
-        target.generate(input, targetTemplate, false);
+        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
@@ -139,8 +135,6 @@ public class TemplateScanTest extends AbstractApiTest {
         // pre-processing
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        target.setContextSetting(ContextSetting.GenerationTargetRootPath,
-            generationRootFolder.getAbsolutePath());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
         Assert.assertNotNull(templates);
 
@@ -148,7 +142,7 @@ public class TemplateScanTest extends AbstractApiTest {
         Assert.assertNotNull(targetTemplate);
 
         // Execution
-        target.generate(input, targetTemplate, false);
+        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"

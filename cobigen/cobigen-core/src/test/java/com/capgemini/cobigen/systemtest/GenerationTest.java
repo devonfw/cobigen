@@ -4,6 +4,7 @@ import static com.capgemini.cobigen.common.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -13,7 +14,6 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.capgemini.cobigen.systemtest.util.PluginMockFactory;
 
@@ -41,12 +41,11 @@ public class GenerationTest extends AbstractApiTest {
         FileUtils.write(target, "base");
 
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
-        cobigen.setContextSetting(ContextSetting.GenerationTargetRootPath, folder.getAbsolutePath());
         List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
         assertThat(templates).hasSize(1);
 
-        GenerationReportTo report = cobigen.generate(input, templates.get(0));
+        GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
 
         assertThat(report).isSuccessful();
         assertThat(target).hasContent("overwritten");

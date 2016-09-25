@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.api;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,6 @@ import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.impl.annotation.ExceptionFacade;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 
 /**
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
@@ -16,24 +16,25 @@ import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 public interface CobiGen extends ConfigurationInterpreter {
 
     /**
-     * @see #generate(Object, List, boolean, List, Map)
-     */
-    @SuppressWarnings("javadoc")
-    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts);
-
-    /**
-     * @see #generate(Object, List, boolean, List, Map)
+     * @see #generate(Object, List, Path, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride);
+        Path targetRootPath);
 
     /**
-     * @see #generate(Object, List, boolean, List, Map)
+     * @see #generate(Object, List, Path, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses);
+        Path targetRootPath, boolean forceOverride);
+
+    /**
+     * @see #generate(Object, List, Path, boolean, List, Map)
+     */
+    @SuppressWarnings("javadoc")
+    public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses);
 
     /**
      * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
@@ -42,6 +43,9 @@ public interface CobiGen extends ConfigurationInterpreter {
      *            generator input object
      * @param generableArtifacts
      *            a {@link List} of artifacts to be generated
+     * @param targetRootPath
+     *            target root path to generate to (to be used to resolve the dependent template destination
+     *            paths)
      * @param forceOverride
      *            if <code>true</code> and the destination path is already existent, the contents will be
      *            overwritten by the generated ones iff there is no merge strategy defined by the templates
@@ -55,26 +59,28 @@ public interface CobiGen extends ConfigurationInterpreter {
      *         of warnings, as well as a list of error messages.
      */
     public GenerationReportTo generate(Object input, List<GenerableArtifact> generableArtifacts,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses,
+        Map<String, Object> rawModel);
 
     /**
-     * @see #generate(Object, GenerableArtifact, boolean, List, Map)
-     */
-    @SuppressWarnings("javadoc")
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact);
-
-    /**
-     * @see #generate(Object, GenerableArtifact, boolean, List, Map)
+     * @see #generate(Object, GenerableArtifact,Path, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+        Path targetRootPath);
+
+    /**
+     * @see #generate(Object, GenerableArtifact,Path, boolean, List, Map)
+     */
+    @SuppressWarnings("javadoc")
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride);
 
     /**
-     * @see #generate(Object, GenerableArtifact, boolean, List, Map)
+     * @see #generate(Object, GenerableArtifact, Path, boolean, List, Map)
      */
     @SuppressWarnings("javadoc")
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride, List<Class<?>> logicClasses);
 
     /**
@@ -84,6 +90,9 @@ public interface CobiGen extends ConfigurationInterpreter {
      *            generator input object
      * @param generableArtifact
      *            the artifact to be generated
+     * @param targetRootPath
+     *            target root path to generate to (to be used to resolve the dependent template destination
+     *            paths)
      * @param forceOverride
      *            if <code>true</code> and the destination path is already existent, the contents will be
      *            overwritten by the generated ones iff there is no merge strategy defined by the templates
@@ -96,26 +105,8 @@ public interface CobiGen extends ConfigurationInterpreter {
      * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list
      *         of warnings, as well as a list of error messages.
      */
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
-
-    /**
-     * Set a {@link ContextSetting}
-     *
-     * @param contextSetting
-     *            {@link ContextSetting} to be set
-     * @param value
-     *            to be set
-     */
-    public void setContextSetting(ContextSetting contextSetting, String value);
-
-    /**
-     * Returns the requested context setting
-     *
-     * @param contextSetting
-     *            requested {@link ContextSetting}
-     */
-    public void getContextSetting(ContextSetting contextSetting);
 
     /**
      * Returns a new {@link ModelBuilder} instance for the given input object and its matching trigger id
