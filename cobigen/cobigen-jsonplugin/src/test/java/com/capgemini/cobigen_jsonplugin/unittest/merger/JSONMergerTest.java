@@ -49,7 +49,8 @@ public class JSONMergerTest {
         } catch (FileNotFoundException e) {
             throw new MergeException(jsonPatchFile, "Can not read file " + jsonPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsonPatchFile, "Can not read the base file " + jsonPatchFile.getAbsolutePath());
+            throw new MergeException(jsonPatchFile,
+                "Can not read the base file " + jsonPatchFile.getAbsolutePath());
         }
 
         try {
@@ -59,12 +60,14 @@ public class JSONMergerTest {
         } catch (FileNotFoundException e) {
             throw new MergeException(jsonResultFile, "Can not read file " + jsonResultFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsonResultFile, "Can not read the base file " + jsonResultFile.getAbsolutePath());
+            throw new MergeException(jsonResultFile,
+                "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
         String mergedContents = new JSONMerger("json", false).merge(jsonBaseFile, patchString, "UTF-8");
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
+        System.out.println(mergedContents);
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
     }
 
@@ -91,7 +94,8 @@ public class JSONMergerTest {
         } catch (FileNotFoundException e) {
             throw new MergeException(jsonPatchFile, "Can not read file " + jsonPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsonPatchFile, "Can not read the base file " + jsonPatchFile.getAbsolutePath());
+            throw new MergeException(jsonPatchFile,
+                "Can not read the base file " + jsonPatchFile.getAbsolutePath());
         }
 
         try {
@@ -101,13 +105,15 @@ public class JSONMergerTest {
         } catch (FileNotFoundException e) {
             throw new MergeException(jsonResultFile, "Can not read file " + jsonResultFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsonResultFile, "Can not read the base file " + jsonResultFile.getAbsolutePath());
+            throw new MergeException(jsonResultFile,
+                "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
         String mergedContents = new JSONMerger("json", true).merge(jsonBaseFile, patchString, "UTF-8");
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
-        JSONArray toComp = jsonResult.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
+        JSONArray toComp =
+            jsonResult.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
         JSONTokener tokensJson = new JSONTokener(mergedContents);
         JSONObject json = new JSONObject(tokensJson);
         JSONArray toCompRes = json.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");

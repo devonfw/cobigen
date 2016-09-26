@@ -139,7 +139,7 @@ public class JSONMerger implements Merger {
                     } else {
                         // add patch elements without add the duplicates
                         int size = rightArr.size();
-
+                        System.out.println("no override");
                         boolean exist = false;
                         int posToAdd = 0;
                         for (int i = 0; i < size; i++) {
@@ -155,6 +155,7 @@ public class JSONMerger implements Merger {
                             if (!exist) {
                                 leftArr.add(rightArr.get(posToAdd));
                             }
+                            exist = false;
                         }
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
