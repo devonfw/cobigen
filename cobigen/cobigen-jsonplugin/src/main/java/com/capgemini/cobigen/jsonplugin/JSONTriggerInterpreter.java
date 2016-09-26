@@ -16,6 +16,12 @@ public class JSONTriggerInterpreter implements TriggerInterpreter {
      */
     public String type;
 
+    /**
+     * Creates a new JSON Interpreter
+     * @param type
+     *            to be registered
+     * @author rudiazma (26 de jul. de 2016)
+     */
     public JSONTriggerInterpreter(String type) {
         this.type = type;
     }
