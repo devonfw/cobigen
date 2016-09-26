@@ -5,7 +5,6 @@ import java.util.List;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.common.collect.Lists;
 
 /**
@@ -24,7 +23,7 @@ public class JSONPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new JSONTriggerInterpreter("json"));
+        return null;
     }
 
 }
