@@ -23,8 +23,10 @@ import com.capgemini.cobigen.jsonplugin.JSONMerger;
  */
 public class JSONMergerTest {
 
+    @SuppressWarnings("javadoc")
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
+    @SuppressWarnings("javadoc")
     @Test
     public void jsonMergeTest_NoOverride() {
         File jsonBaseFile = new File(testFileRootPath + "Base_json");
@@ -66,6 +68,7 @@ public class JSONMergerTest {
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
     }
 
+    @SuppressWarnings("javadoc")
     @Test
     public void jsonMergeTest_Override() {
         File jsonBaseFile = new File(testFileRootPath + "Base_json");
