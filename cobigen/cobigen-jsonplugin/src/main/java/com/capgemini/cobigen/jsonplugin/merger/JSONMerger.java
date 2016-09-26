@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin;
+package com.capgemini.cobigen.jsonplugin.merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
