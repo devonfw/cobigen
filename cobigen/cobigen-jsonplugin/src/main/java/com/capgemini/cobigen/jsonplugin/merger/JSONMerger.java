@@ -139,7 +139,6 @@ public class JSONMerger implements Merger {
                     } else {
                         // add patch elements without add the duplicates
                         int size = rightArr.size();
-                        System.out.println("no override");
                         boolean exist = false;
                         int posToAdd = 0;
                         for (int i = 0; i < size; i++) {
