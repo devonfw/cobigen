@@ -1,0 +1,32 @@
+{
+    "descriptor": {
+        "app2": {
+            "age": 29,
+            "name": "mkyong",
+            "messages": [
+                "msg 11",
+                "msg 22",
+                "msg 33"
+            ]
+        },
+        "app1": {
+            "age": 21,
+            "name": "mehdi",
+            "messages": [
+                "msg 1",
+                "msg 2",
+                "msg 3"
+            ]
+        },
+        "app3": {
+            "age": 23,
+            "name": "amine",
+            "messages": [
+                "msg 111",
+                "msg 222",
+                "msg 333"
+            ]
+        }
+    },
+    "name": "baseName"
+}
