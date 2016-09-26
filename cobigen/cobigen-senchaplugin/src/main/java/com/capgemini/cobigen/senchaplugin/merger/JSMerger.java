@@ -28,7 +28,6 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.jsonplugin.JSONMerger;
 import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
 
@@ -115,185 +114,152 @@ public class JSMerger implements Merger {
             throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
         }
 
-        if (file.endsWith(".xds") || file.endsWith("Application")) {
-            // JSONTokener tokensBase = new JSONTokener(baseString);
-            // JSONObject jsonBase = new JSONObject(tokensBase);
-            // JSONObject jsonNodeBase = jsonBase.getJSONObject("viewOrderMap");
-            // JSONArray modelBase = jsonNodeBase.getJSONArray("model");
-            // JSONArray controllerBase = jsonNodeBase.getJSONArray("controller");
-            // JSONArray viewBase = jsonNodeBase.getJSONArray("view");
-            // JSONArray storeBase = jsonNodeBase.getJSONArray("store");
-            // jsonBase.remove("viewOrderMap");
-            // JSONTokener tokensPatch = new JSONTokener(patch);
-            // JSONObject jsonPatch = new JSONObject(tokensPatch);
-            // JSONObject jsonNodePatch = jsonPatch.getJSONObject("viewOrderMap");
-            // JSONArray modelPatch = jsonNodePatch.getJSONArray("model");
-            // JSONArray controllerPatch = jsonNodePatch.getJSONArray("controller");
-            // JSONArray viewPatch = jsonNodePatch.getJSONArray("view");
-            // JSONArray storePatch = jsonNodePatch.getJSONArray("store");
-            //
-            // JSONObject newMap = new JSONObject();
-            // newMap.put("model", modelBase.put(modelPatch.get(0)));
-            // System.out.println(modelPatch.get(0));
-            // newMap.put("controller", controllerBase.put(controllerPatch.get(0)));
-            // System.out.println(controllerPatch.get(0));
-            // newMap.put("view", viewBase.put(viewPatch.get(0)));
-            // newMap.put("store", storeBase.put(storePatch.get(0)));
-            // newMap.put("resource", jsonNodeBase.getJSONArray("resource"));
-            // newMap.put("app", jsonNodeBase.getJSONArray("app"));
-            // jsonBase.put("viewOrderMap", newMap);
+        JSNodeVisitor nodesBase = new JSNodeVisitor();
+        JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
-            JSONMerger jsonMerger = new JSONMerger("jsonmerge", patchOverrides);
-            return jsonMerger.merge(base, patch, targetCharset);
+        // parsing the base
+        nodesBase = parseAst(nodeBase, baseString, file, env);
 
-        } else {
-            JSNodeVisitor nodesBase = new JSNodeVisitor();
-            JSNodeVisitor nodesPatch = new JSNodeVisitor();
+        // parsing the patch string
+        nodesPatch = parseAst(nodePatch, patch, patch, env);
 
-            // parsing the base
-            nodesBase = parseAst(nodeBase, baseString, file, env);
+        // Auxiliar structures to build the resultant ast at the end
+        List<ObjectProperty> listProps = new LinkedList<>();
 
-            // parsing the patch string
-            nodesPatch = parseAst(nodePatch, patch, patch, env);
+        // This list is used to store the field "name" of each property
+        List<String> propsNames = new LinkedList<>();
 
-            // Auxiliar structures to build the resultant ast at the end
-            List<ObjectProperty> listProps = new LinkedList<>();
-
-            // This list is used to store the field "name" of each property
-            List<String> propsNames = new LinkedList<>();
-
-            // add to the auxiliar list all the properties of the base
-            for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
-                listProps.add(propertyBase);
-                propsNames.add(propertyBase.getLeft().toSource());
-            }
-            // add all the patch properties that does not have any conflicts with the property already stored
-            for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
-                if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
-                    listProps.add(propertyPatch);
-                } else {
-                    if (patchOverrides) {
-                        int index = listProps.indexOf(propertyPatch.getLeft().toSource());
-                        if (index >= 0) {
-                            listProps.remove(index);
-                            listProps.add(index, propertyPatch);
-                        } else {
-                            listProps.add(propertyPatch);
-                        }
-
+        // add to the auxiliar list all the properties of the base
+        for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
+            listProps.add(propertyBase);
+            propsNames.add(propertyBase.getLeft().toSource());
+        }
+        // add all the patch properties that does not have any conflicts with the property already stored
+        for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
+            if (!propsNames.contains(propertyPatch.getLeft().toSource())) {
+                listProps.add(propertyPatch);
+            } else {
+                if (patchOverrides) {
+                    int index = listProps.indexOf(propertyPatch.getLeft().toSource());
+                    if (index >= 0) {
+                        listProps.remove(index);
+                        listProps.add(index, propertyPatch);
+                    } else {
+                        listProps.add(propertyPatch);
                     }
+
                 }
             }
+        }
 
-            // Resolve the conflicted properties
+        // Resolve the conflicted properties
 
-            for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
-                for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
-                    // Do something only if there is a conflicted property
-                    if (propertyBase.getLeft().toSource().equals(propertyPatch.getLeft().toSource())) {
-                        Object propertyRight = propertyBase.getRight();
-                        // If the right part of the property is an array, add to the base the non existent
-                        // elements
-                        // of the patch file
-                        if (propertyRight instanceof ArrayLiteral) {
-                            ArrayLiteral resultArray = new ArrayLiteral();
-                            List<String> arrayObjects = new LinkedList<>();
-                            ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
-                            ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
+        for (ObjectProperty propertyBase : nodesBase.getPropertyNodes()) {
+            for (ObjectProperty propertyPatch : nodesPatch.getPropertyNodes()) {
+                // Do something only if there is a conflicted property
+                if (propertyBase.getLeft().toSource().equals(propertyPatch.getLeft().toSource())) {
+                    Object propertyRight = propertyBase.getRight();
+                    // If the right part of the property is an array, add to the base the non existent
+                    // elements
+                    // of the patch file
+                    if (propertyRight instanceof ArrayLiteral) {
+                        ArrayLiteral resultArray = new ArrayLiteral();
+                        List<String> arrayObjects = new LinkedList<>();
+                        ArrayLiteral rightBase = (ArrayLiteral) propertyRight;
+                        ArrayLiteral rightPatch = (ArrayLiteral) propertyPatch.getRight();
 
-                            for (AstNode objArrayBase : rightBase.getElements()) {
-                                if (objArrayBase instanceof ObjectLiteral) {
-                                    ObjectLiteral objL = (ObjectLiteral) objArrayBase;
-                                    boolean noGrid = true;
+                        for (AstNode objArrayBase : rightBase.getElements()) {
+                            if (objArrayBase instanceof ObjectLiteral) {
+                                ObjectLiteral objL = (ObjectLiteral) objArrayBase;
+                                boolean noGrid = true;
 
-                                    for (ObjectProperty property : objL.getElements()) {
-                                        if (property.getRight().toSource().equals("'grid'")
-                                            && property.getLeft().toSource().equals("xtype")) {
-                                            noGrid = false;
-                                            break;
-                                        }
+                                for (ObjectProperty property : objL.getElements()) {
+                                    if (property.getRight().toSource().equals("'grid'")
+                                        && property.getLeft().toSource().equals("xtype")) {
+                                        noGrid = false;
+                                        break;
                                     }
-                                    if (noGrid) {
-                                        arrayObjects.add(objArrayBase.toSource());
-                                        resultArray.addElement(objArrayBase);
-                                    }
-
-                                } else {
+                                }
+                                if (noGrid) {
                                     arrayObjects.add(objArrayBase.toSource());
                                     resultArray.addElement(objArrayBase);
                                 }
 
+                            } else {
+                                arrayObjects.add(objArrayBase.toSource());
+                                resultArray.addElement(objArrayBase);
                             }
-                            for (AstNode objArrayPatch : rightPatch.getElements()) {
-                                if (!arrayObjects.contains(objArrayPatch.toSource())) {
+
+                        }
+                        for (AstNode objArrayPatch : rightPatch.getElements()) {
+                            if (!arrayObjects.contains(objArrayPatch.toSource())) {
+                                resultArray.addElement(objArrayPatch);
+                            } else {
+                                if (patchOverrides) {
+                                    int index = arrayObjects.indexOf(objArrayPatch.toSource());
+                                    resultArray.getElements().remove(index);
                                     resultArray.addElement(objArrayPatch);
-                                } else {
-                                    if (patchOverrides) {
-                                        int index = arrayObjects.indexOf(objArrayPatch.toSource());
-                                        resultArray.getElements().remove(index);
-                                        resultArray.addElement(objArrayPatch);
-                                    }
                                 }
                             }
-                            ObjectProperty toAdd = new ObjectProperty();
-                            toAdd.setLeft(propertyBase.getLeft());
-                            toAdd.setRight(resultArray);
+                        }
+                        ObjectProperty toAdd = new ObjectProperty();
+                        toAdd.setLeft(propertyBase.getLeft());
+                        toAdd.setRight(resultArray);
+                        listProps.remove(propertyBase);
+                        listProps.add(toAdd);
+                        resultArray = new ArrayLiteral();
+
+                        break;
+
+                        // At the case of non array, and if patchOverrides is true, just replace the
+                        // entire
+                        // property
+                        // not doing nothing in case of patchOverrides is false, because the base property
+                        // is
+                        // already added
+
+                    } else {
+                        if (patchOverrides) {
+                            int index = listProps.indexOf(propertyBase);
                             listProps.remove(propertyBase);
-                            listProps.add(toAdd);
-                            resultArray = new ArrayLiteral();
-
-                            break;
-
-                            // At the case of non array, and if patchOverrides is true, just replace the
-                            // entire
-                            // property
-                            // not doing nothing in case of patchOverrides is false, because the base property
-                            // is
-                            // already added
-
-                        } else {
-                            if (patchOverrides) {
-                                int index = listProps.indexOf(propertyBase);
-                                listProps.remove(propertyBase);
-                                listProps.add(index, propertyPatch);
-                            }
+                            listProps.add(index, propertyPatch);
                         }
                     }
                 }
-
             }
 
-            // Building the resultant ast following the structure of a sencha file
-            List<PropertyGet> prop = nodesBase.getFunctionCall();
-
-            StringLiteral firstArgument = nodesBase.getFirstArgument();
-
-            FunctionCall newCall = new FunctionCall();
-
-            ExpressionStatement newExpr = new ExpressionStatement();
-
-            ObjectLiteral newObj = new ObjectLiteral();
-
-            List<AstNode> arguments = new LinkedList<>();
-            newCall.setTarget(prop.get(0));
-
-            if (firstArgument != null) {
-                arguments.add(0, firstArgument);
-                newObj.setElements(listProps);
-                arguments.add(1, newObj);
-                newCall.setArguments(arguments);
-                newExpr.setExpression(newCall);
-
-            } else {
-                newObj.setElements(listProps);
-                arguments.add(0, newObj);
-                newCall.setArguments(arguments);
-                newExpr.setExpression(newCall);
-            }
-            out.addChild(newExpr);
-
-            return jsBeautify(out.toSource(), indent);
         }
+
+        // Building the resultant ast following the structure of a sencha file
+        List<PropertyGet> prop = nodesBase.getFunctionCall();
+
+        StringLiteral firstArgument = nodesBase.getFirstArgument();
+
+        FunctionCall newCall = new FunctionCall();
+
+        ExpressionStatement newExpr = new ExpressionStatement();
+
+        ObjectLiteral newObj = new ObjectLiteral();
+
+        List<AstNode> arguments = new LinkedList<>();
+        newCall.setTarget(prop.get(0));
+
+        if (firstArgument != null) {
+            arguments.add(0, firstArgument);
+            newObj.setElements(listProps);
+            arguments.add(1, newObj);
+            newCall.setArguments(arguments);
+            newExpr.setExpression(newCall);
+
+        } else {
+            newObj.setElements(listProps);
+            arguments.add(0, newObj);
+            newCall.setArguments(arguments);
+            newExpr.setExpression(newCall);
+        }
+        out.addChild(newExpr);
+
+        return jsBeautify(out.toSource(), indent);
 
     }
 
