@@ -72,9 +72,11 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
         String mergedContents = new JSMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
@@ -115,9 +117,11 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
         String mergedContents = new JSMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
@@ -158,9 +162,11 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
         String mergedContents = new JSMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
@@ -210,9 +216,11 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile, "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(jsPatchFile,
+                "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
         String mergedContents = new JSMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
@@ -237,14 +245,4 @@ public class JSMergerTest {
         assertTrue(array.getElements().size() == 1);
         assertTrue(array.getElement(0).toSource().equals("'element4'"));
     }
-
-    @Test
-    public void isJSON() {
-        File jsBaseFile = new File(testFileRootPath + "project.xds");
-        String file = jsBaseFile.getAbsolutePath();
-        // String mergedContents = new JSMerger("js", false).merge(jsBaseFile, null, "UTF-8");
-        assertTrue(file.contains(".xds"));
-
-    }
-
 }

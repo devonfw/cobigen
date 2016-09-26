@@ -47,9 +47,9 @@ public class JSSenchaIntegrationTest {
     }
 
     /**
-     * @throws Exception
      * @author rudiazma (Sep 13, 2016)
      */
+    @SuppressWarnings("javadoc")
     @Test
     public void testCorrectModelGeneration() throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
