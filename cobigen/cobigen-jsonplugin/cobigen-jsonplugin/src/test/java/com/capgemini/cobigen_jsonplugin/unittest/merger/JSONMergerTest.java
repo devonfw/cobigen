@@ -15,7 +15,7 @@ import org.json.JSONTokener;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
+import com.capgemini.cobigen.jsonplugin.JSONMerger;
 
 /**
  *
