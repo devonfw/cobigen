@@ -11,9 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
@@ -31,6 +28,7 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.jsonplugin.JSONMerger;
 import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
 
@@ -117,61 +115,37 @@ public class JSMerger implements Merger {
             throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
         }
 
-        if (file.endsWith(".xds")) {
-            JSONTokener tokensBase = new JSONTokener(baseString);
-            JSONObject jsonBase = new JSONObject(tokensBase);
-            JSONObject jsonNodeBase = jsonBase.getJSONObject("viewOrderMap");
-            JSONArray modelBase = jsonNodeBase.getJSONArray("model");
-            JSONArray controllerBase = jsonNodeBase.getJSONArray("controller");
-            JSONArray viewBase = jsonNodeBase.getJSONArray("view");
-            JSONArray storeBase = jsonNodeBase.getJSONArray("store");
-            jsonBase.remove("viewOrderMap");
-            JSONTokener tokensPatch = new JSONTokener(patch);
-            JSONObject jsonPatch = new JSONObject(tokensPatch);
-            JSONObject jsonNodePatch = jsonPatch.getJSONObject("viewOrderMap");
-            JSONArray modelPatch = jsonNodePatch.getJSONArray("model");
-            JSONArray controllerPatch = jsonNodePatch.getJSONArray("controller");
-            JSONArray viewPatch = jsonNodePatch.getJSONArray("view");
-            JSONArray storePatch = jsonNodePatch.getJSONArray("store");
+        if (file.endsWith(".xds") || file.endsWith("Application")) {
+            // JSONTokener tokensBase = new JSONTokener(baseString);
+            // JSONObject jsonBase = new JSONObject(tokensBase);
+            // JSONObject jsonNodeBase = jsonBase.getJSONObject("viewOrderMap");
+            // JSONArray modelBase = jsonNodeBase.getJSONArray("model");
+            // JSONArray controllerBase = jsonNodeBase.getJSONArray("controller");
+            // JSONArray viewBase = jsonNodeBase.getJSONArray("view");
+            // JSONArray storeBase = jsonNodeBase.getJSONArray("store");
+            // jsonBase.remove("viewOrderMap");
+            // JSONTokener tokensPatch = new JSONTokener(patch);
+            // JSONObject jsonPatch = new JSONObject(tokensPatch);
+            // JSONObject jsonNodePatch = jsonPatch.getJSONObject("viewOrderMap");
+            // JSONArray modelPatch = jsonNodePatch.getJSONArray("model");
+            // JSONArray controllerPatch = jsonNodePatch.getJSONArray("controller");
+            // JSONArray viewPatch = jsonNodePatch.getJSONArray("view");
+            // JSONArray storePatch = jsonNodePatch.getJSONArray("store");
+            //
+            // JSONObject newMap = new JSONObject();
+            // newMap.put("model", modelBase.put(modelPatch.get(0)));
+            // System.out.println(modelPatch.get(0));
+            // newMap.put("controller", controllerBase.put(controllerPatch.get(0)));
+            // System.out.println(controllerPatch.get(0));
+            // newMap.put("view", viewBase.put(viewPatch.get(0)));
+            // newMap.put("store", storeBase.put(storePatch.get(0)));
+            // newMap.put("resource", jsonNodeBase.getJSONArray("resource"));
+            // newMap.put("app", jsonNodeBase.getJSONArray("app"));
+            // jsonBase.put("viewOrderMap", newMap);
 
-            JSONObject newMap = new JSONObject();
-            newMap.put("model", modelBase.put(modelPatch.get(0)));
-            System.out.println(modelPatch.get(0));
-            newMap.put("controller", controllerBase.put(controllerPatch.get(0)));
-            System.out.println(controllerPatch.get(0));
-            newMap.put("view", viewBase.put(viewPatch.get(0)));
-            newMap.put("store", storeBase.put(storePatch.get(0)));
-            newMap.put("resource", jsonNodeBase.getJSONArray("resource"));
-            newMap.put("app", jsonNodeBase.getJSONArray("app"));
-            jsonBase.put("viewOrderMap", newMap);
+            JSONMerger jsonMerger = new JSONMerger("jsonmerge", patchOverrides);
+            return jsonMerger.merge(base, patch, targetCharset);
 
-            return jsonBase.toString(4);
-
-        } else if (file.endsWith("Application")) {
-            JSONTokener tokensBase = new JSONTokener(baseString);
-            JSONObject jsonBase = new JSONObject(tokensBase);
-            JSONObject jsonNodeBase = jsonBase.getJSONObject("userConfig");
-            // JSONArray modelBase = (JSONArray) ((JSONObject) jsonBase.get("userConfig")).get("models");
-            JSONArray modelBase = jsonNodeBase.getJSONArray("models");
-            JSONArray controllerBase = jsonNodeBase.getJSONObject("userConfig").getJSONArray("controllers");
-            JSONArray viewBase = jsonNodeBase.getJSONObject("userConfig").getJSONArray("views");
-            JSONArray storeBase = jsonNodeBase.getJSONObject("userConfig").getJSONArray("stores");
-            jsonBase.remove("userConfig");
-            JSONTokener tokensPatch = new JSONTokener(patch);
-            JSONObject jsonPatch = new JSONObject(tokensPatch);
-            JSONObject jsonNodePatch = jsonPatch.getJSONObject("userConfig");
-            JSONArray modelPatch = jsonNodePatch.getJSONArray("models");
-            JSONArray controllerPatch = jsonNodePatch.getJSONArray("controllers");
-            JSONArray viewPatch = jsonNodePatch.getJSONArray("views");
-            JSONArray storePatch = jsonNodePatch.getJSONArray("stores");
-            JSONObject newMap = new JSONObject();
-            newMap.put("models", modelBase.put(modelPatch.get(0)));
-            newMap.put("controllers", controllerBase.put(controllerPatch.get(0)));
-            newMap.put("views", viewBase.put(viewPatch.get(0)));
-            newMap.put("stores", storeBase.put(storePatch.get(0)));
-            jsonBase.put("userConfig", newMap);
-
-            return jsonBase.toString(4);
         } else {
             JSNodeVisitor nodesBase = new JSNodeVisitor();
             JSNodeVisitor nodesPatch = new JSNodeVisitor();
@@ -348,8 +322,8 @@ public class JSMerger implements Merger {
             throw new Error("Error reading " + "beautify.js");
         }
         scope.put("jsCode", scope, source);
-        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})", "inline", 1,
-            null);
+        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})",
+            "inline", 1, null);
     }
 
     /**
