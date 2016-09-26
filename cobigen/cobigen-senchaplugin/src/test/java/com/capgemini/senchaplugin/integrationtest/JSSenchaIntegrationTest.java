@@ -2,6 +2,7 @@ package com.capgemini.senchaplugin.integrationtest;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -16,7 +17,6 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.CobiGenFactory;
 import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.config.ContextConfiguration.ContextSetting;
 import com.capgemini.cobigen.senchaplugin.JSPluginActivator;
 import com.capgemini.cobigen.senchaplugin.util.JavaParserUtil;
 
@@ -54,20 +54,21 @@ public class JSSenchaIntegrationTest {
     public void testCorrectModelGeneration() throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, tmpFolderCobiGen.getAbsolutePath());
 
-        Object[] input = new Object[] { this.getClass(), JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(),
-            new FileReader(new File("src/test/resources/testdata/integrationtest/javaSources/testEto.java"))) };
+        Object[] input = new Object[] { this.getClass(),
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
+                new File("src/test/resources/testdata/integrationtest/javaSources/testEto.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("testModel.js")) {
-                cobiGen.generate(input, template, false);
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
+                cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+                File expectedFile = new File(
+                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("{name: 'testField', type: 'String'}", FileUtils.readFileToString(expectedFile));
+                Assert.assertEquals("{name: 'testField', type: 'String'}",
+                    FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
             }
