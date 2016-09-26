@@ -31,6 +31,7 @@ public class JSInputReader implements InputReader {
     /**
      * Logger instance
      */
+    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(JSInputReader.class);
 
     @Override
@@ -196,8 +197,10 @@ public class JSInputReader implements InputReader {
             // Case: List<Map<String, Object>> available in attributes and methods
             else if (parsedModel instanceof List && reflectionModel instanceof List) {
                 if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
-                    || !((List<?>) reflectionModel).isEmpty() && ((List<?>) reflectionModel).get(0) instanceof Map) {
-                    List<Map<String, Object>> model1List = Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
+                    || !((List<?>) reflectionModel).isEmpty()
+                        && ((List<?>) reflectionModel).get(0) instanceof Map) {
+                    List<Map<String, Object>> model1List =
+                        Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
                     List<Map<String, Object>> model2List =
                         Lists.newLinkedList((List<Map<String, Object>>) reflectionModel);
                     List<Object> mergedModel = Lists.newLinkedList();
@@ -212,7 +215,8 @@ public class JSInputReader implements InputReader {
                             Map<String, Object> model2Entry = model2ListIt.next();
                             // valid merging for fields and methods
                             if (model1Entry.get(ModelConstant.NAME) != null) {
-                                if (model1Entry.get(ModelConstant.NAME).equals(model2Entry.get(ModelConstant.NAME))) {
+                                if (model1Entry.get(ModelConstant.NAME)
+                                    .equals(model2Entry.get(ModelConstant.NAME))) {
                                     mergedModel.add(mergeModelsRecursively(model1Entry, model2Entry));
 
                                     // remove both entries as they have been matched and recursively merged
@@ -223,7 +227,8 @@ public class JSInputReader implements InputReader {
                             } else
                             // this is the case for merging recursive annotation arrays
                             if (model1Entry.size() == 1 && model2Entry.size() == 1) {
-                                mergeModelsRecursively(model1Entry.get(model1Entry.keySet().iterator().next()),
+                                mergeModelsRecursively(
+                                    model1Entry.get(model1Entry.keySet().iterator().next()),
                                     model2Entry.get(model2Entry.keySet().iterator().next()));
                             } else {
                                 throw new IllegalStateException(
@@ -240,7 +245,8 @@ public class JSInputReader implements InputReader {
                 // we will prefer parsed model if the values of the parsed result list are of type String.
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
-                else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
+                else if (!((List<?>) parsedModel).isEmpty()
+                    && ((List<?>) parsedModel).get(0) instanceof String) {
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
