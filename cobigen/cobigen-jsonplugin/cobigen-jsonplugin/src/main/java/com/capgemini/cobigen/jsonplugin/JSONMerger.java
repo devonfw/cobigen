@@ -33,9 +33,9 @@ public class JSONMerger implements Merger {
      */
     private boolean patchOverrides;
 
-    private JsonObject objBase;
+    // private JsonObject objBase;
 
-    private JsonObject objPatch;
+    // private JsonObject objPatch;
 
     /**
      * Creates a new {@link JSONMerger}
@@ -61,8 +61,10 @@ public class JSONMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String file = base.getAbsolutePath();
+        JsonObject objBase = null;
+        ;
+        JsonObject objPatch = null;
 
-        objBase = null;
         try {
             JsonParser parser = new JsonParser();
             JsonElement jsonBase = parser.parse(new FileReader(file));
@@ -80,21 +82,42 @@ public class JSONMerger implements Merger {
             e.printStackTrace();
         }
 
-        String result = extendJsonObject(objBase, patchOverrides, objPatch);
+        String result = jsonObjectMerge(objBase, patchOverrides, objPatch);
         JSONTokener tokensBase = new JSONTokener(result);
         JSONObject jsonBase = new JSONObject(tokensBase);
         return jsonBase.toString(4);
     }
 
-    public String extendJsonObject(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
+    /**
+     * @param destinationObject
+     *            the destination Json Object
+     * @param patchOverrides
+     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+     *            if <code>false</code>, conflicts will be resolved by using the base contents
+     * @param objs
+     *            collection of patches
+     * @return the result string of the merge
+     * @author rudiazma (26 de sept. de 2016)
+     */
+    public String jsonObjectMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            extendJsonObject(destinationObject, obj.getAsJsonObject(), patchOverrides);
+            jsonObjectMerge(destinationObject, obj.getAsJsonObject(), patchOverrides);
         }
 
         return destinationObject.toString();
     }
 
-    private void extendJsonObject(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
+    /**
+     * @param leftObj
+     *            The patch object
+     * @param rightObj
+     *            the base object
+     * @param patchOverrides
+     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+     *            if <code>false</code>, conflicts will be resolved by using the base contents
+     * @author rudiazma (26 de sept. de 2016)
+     */
+    private void jsonObjectMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -136,21 +159,15 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    extendJsonObject(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
+                    jsonObjectMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
-                    handleMergeConflict(rightKey, leftObj, leftVal, rightVal, patchOverrides);
+                    if (patchOverrides) {
+                        leftObj.add(rightKey, rightVal);// right side auto-wins, replace left val with its val
+                    }
                 }
             } else {// no conflict, add to the object
                 leftObj.add(rightKey, rightVal);
             }
-        }
-    }
-
-    private void handleMergeConflict(String key, JsonObject leftObj, JsonElement leftVal, JsonElement rightVal,
-        boolean patchOverrides) {
-
-        if (patchOverrides) {
-            leftObj.add(key, rightVal);// right side auto-wins, replace left val with its val
         }
     }
 }
