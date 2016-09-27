@@ -30,6 +30,7 @@ public class ReflectedJavaModelBuilderTest {
      * Tests whether parametric attribute types will be extracted correctly to the model
      */
     @Test
+    @SuppressWarnings("null")
     public void testCorrectlyExtractedAttributeTypes() {
 
         JavaInputReader javaModelBuilder = new JavaInputReader();

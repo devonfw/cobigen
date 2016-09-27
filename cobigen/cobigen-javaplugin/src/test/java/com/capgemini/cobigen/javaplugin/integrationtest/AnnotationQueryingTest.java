@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
+import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -11,8 +12,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.CobiGenFactory;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
@@ -44,9 +46,11 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("annotationQuerying.txt")) {
-                cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+                GenerationReportTo report =
+                    cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
                     + "annotationQuerying.txt");
+                assertThat(report).isSuccessful();
                 assertThat(expectedFile).exists();
                 assertThat(expectedFile).hasContent(
                     "TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");

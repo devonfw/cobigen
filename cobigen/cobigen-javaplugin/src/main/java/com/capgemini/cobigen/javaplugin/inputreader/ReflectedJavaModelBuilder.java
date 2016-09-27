@@ -32,8 +32,6 @@ import com.google.common.collect.Maps;
 
 /**
  * The {@link ReflectedJavaModelBuilder} creates a new model for a given input pojo class
- *
- * @author mbrunnli (12.03.2013)
  */
 public class ReflectedJavaModelBuilder {
 
@@ -60,7 +58,6 @@ public class ReflectedJavaModelBuilder {
      * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
      *         corresponding information. Learn more about the FreeMarker data model at http
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
-     * @author mbrunnli (06.02.2013)
      */
     Map<String, Object> createModel(final Class<?> pojo) {
 
@@ -112,7 +109,6 @@ public class ReflectedJavaModelBuilder {
      * @param pojo
      *            source {@link Class} to determine all fields accessible via methods from
      * @return a list of field properties equivalently to {@link #extractFields(Class)}
-     * @author mbrunnli (14.11.2014)
      */
     private List<Map<String, Object>> extractMethodAccessibleFields(Class<?> pojo) {
         PojoDescriptorBuilder pojoFieldDescriptorBuilder =
@@ -158,7 +154,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author mbrunnli (06.02.2013)
      */
     private List<Map<String, Object>> extractFields(Class<?> pojo) {
 
@@ -177,7 +172,6 @@ public class ReflectedJavaModelBuilder {
      * @param field
      *            the values should be extracted for
      * @return the mapping of property names to their values
-     * @author mbrunnli (17.11.2014)
      */
     private Map<String, Object> extractFieldProperties(Field field) {
         Map<String, Object> fieldValues = new HashMap<>();
@@ -236,7 +230,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the interfaces should be retrieved from
      * @return a {@link Set} of implementedTypes (interfaces), where each is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author fkreis (24.09.2014)
      */
     private List<Map<String, Object>> extractInterfaces(Class<?> pojo) {
 
@@ -264,7 +257,6 @@ public class ReflectedJavaModelBuilder {
      * @param pojo
      *            java class
      * @return a {@link List} of attributes for all methods
-     * @author mbrunnli (04.06.2014)
      */
     private List<Map<String, Object>> extractMethods(Class<?> pojo) {
 
@@ -289,7 +281,6 @@ public class ReflectedJavaModelBuilder {
      *            class for which the setter and getter should be evaluated according to their annotations
      * @param attributes
      *            list of attribute meta data for the generation (object model)
-     * @author mbrunnli (01.04.2014)
      */
     private void collectAnnotations(Class<?> pojo, List<Map<String, Object>> attributes) {
 
@@ -373,7 +364,6 @@ public class ReflectedJavaModelBuilder {
      *            object model for annotations
      * @param annotations
      *            to be analyzed
-     * @author mbrunnli (01.04.2014)
      */
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap, Annotation[] annotations) {
 
@@ -436,7 +426,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @param attributes
      *            a {@link List} of all attributes and their properties
-     * @author mbrunnli (12.02.2013)
      */
     private void determinePojoIds(Class<?> pojo, List<Map<String, Object>> attributes) {
 
