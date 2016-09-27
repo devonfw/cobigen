@@ -1,0 +1,56 @@
+package com.capgemini.cobigen.api;
+
+import java.util.List;
+
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
+
+/**
+ * The configuration interpreter is responsible to interpret the underlying CobiGen configuration and e.g.
+ * retrieve templates and increment for a specific input.
+ */
+public interface ConfigurationInterpreter {
+
+    /**
+     * Returns all matching trigger ids for a given input object
+     *
+     * @param matcherInput
+     *            object
+     * @return the {@link List} of matching trigger ids
+     */
+    public List<String> getMatchingTriggerIds(Object matcherInput);
+
+    /**
+     * Returns all matching increments for a given input object
+     *
+     * @param matcherInput
+     *            object
+     * @return this {@link List} of matching increments
+     * @throws InvalidConfigurationException
+     *             if the configuration of CobiGen is not valid
+     */
+    public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException;
+
+    /**
+     * Returns the {@link List} of matching templates for the given input object
+     *
+     * @param matcherInput
+     *            input object activates a matcher and thus is target for context variable extraction.
+     *            Possibly a combined or wrapping object for multiple input objects
+     * @return the {@link List} of matching templates
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
+     */
+    public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException;
+
+    /**
+     * Checks whether there is at least one input reader, which interprets the given input as combined input.
+     * @param input
+     *            object
+     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
+     *         combined input,<code>false</code>, otherwise
+     */
+    public boolean combinesMultipleInputs(Object input);
+
+}

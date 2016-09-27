@@ -84,46 +84,6 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.7.7</version>
     </dependency>
-
-    <!-- Test-Dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- Mocking Library for developer tests -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.10.19</version>
-      <scope>test</scope>
-      <!-- Hamcrest wird ausgeschlossen, weil JUnit die Hamcrest-Klassen beinhaltet. -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>2.1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <version>1.6</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
