@@ -2,10 +2,10 @@ package com.capgemini.cobigen.propertyplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.google.common.collect.Lists;
 
 /**
