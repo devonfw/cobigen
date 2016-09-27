@@ -2,10 +2,10 @@ package com.capgemini.cobigen.xmlplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
 import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 import com.google.common.collect.Lists;

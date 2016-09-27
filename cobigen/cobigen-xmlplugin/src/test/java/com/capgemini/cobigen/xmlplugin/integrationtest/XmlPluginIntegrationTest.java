@@ -21,11 +21,11 @@ import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.CobiGenFactory;
-import com.capgemini.cobigen.api.PluginRegistry;
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
 import junit.framework.AssertionFailedError;
