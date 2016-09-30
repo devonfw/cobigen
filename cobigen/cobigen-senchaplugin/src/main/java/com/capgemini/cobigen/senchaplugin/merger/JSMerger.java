@@ -210,15 +210,15 @@ public class JSMerger implements Merger {
                         resultArray = new ArrayLiteral();
 
                         break;
-
+                        // Here will check if the right side of the property is an ObjectExpression, and make
+                        // it recursive in that case
+                    } else {
                         // At the case of non array, and if patchOverrides is true, just replace the
                         // entire
                         // property
                         // not doing nothing in case of patchOverrides is false, because the base property
                         // is
                         // already added
-
-                    } else {
                         if (patchOverrides) {
                             int index = listProps.indexOf(propertyBase);
                             listProps.remove(propertyBase);
