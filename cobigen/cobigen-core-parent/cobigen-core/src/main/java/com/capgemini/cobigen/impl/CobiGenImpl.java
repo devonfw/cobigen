@@ -138,4 +138,9 @@ public class CobiGenImpl implements CobiGen {
     public List<String> getMatchingTriggerIds(Object matcherInput) {
         return configurationInterpreter.getMatchingTriggerIds(matcherInput);
     }
+
+    @Override
+    public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
+        return configurationInterpreter.resolveTemplateDestinationPath(targetRootPath, template, input);
+    }
 }
