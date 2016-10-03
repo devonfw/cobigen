@@ -25,14 +25,12 @@ import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 
 /**
  * Tests if the used XML patchPreferingMerger behaves as desired.
- * @author sholzer (Aug 27, 2015)
  */
 public class XmlPluginMergerIntegrationTest {
 
     /**
      * The merger under test, prefers patch values over base values
      */
-    @SuppressWarnings("unused")
     private Merger patchPreferingMerger;
 
     /**
@@ -52,7 +50,6 @@ public class XmlPluginMergerIntegrationTest {
 
     /**
      * Sets up a patchPreferingMerger and a basePreferingMerger without validation
-     * @author sholzer (Aug 27, 2015)
      */
     @Before
     public void setUp() {
@@ -66,7 +63,6 @@ public class XmlPluginMergerIntegrationTest {
     /**
      * @throws Exception
      *             test fails
-     * @author sholzer (Aug 28, 2015)
      */
     @Test
     public void mergeDoesNotDestroySchemaLocation() throws Exception {
@@ -96,12 +92,10 @@ public class XmlPluginMergerIntegrationTest {
         String patchString = readFile(patchPath, charset);
         String mergedDoc = basePreferingMerger.merge(baseFile, patchString, charset);
 
-        Assert.assertTrue("Merged document does not contain schema locations defined in base.",
-            mergedDoc.contains(
-                "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
-        Assert.assertTrue("Merged document does not contain schema locations defined in patch.",
-            mergedDoc.contains(
-                "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
+        Assert.assertTrue("Merged document does not contain schema locations defined in base.", mergedDoc.contains(
+            "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"));
+        Assert.assertTrue("Merged document does not contain schema locations defined in patch.", mergedDoc.contains(
+            "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"));
     }
 
     /**
@@ -175,8 +169,8 @@ public class XmlPluginMergerIntegrationTest {
         // honest I can't tell why but the document remains valid
         Assert.assertEquals(1, mergeDoc.getElementsByTagName("ui:composition").getLength());
         Assert.assertEquals(4, mergeDoc.getElementsByTagName("ui:define").getLength());
-        Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(1))
-            .getElementsByTagName("title").getLength());
+        Assert.assertEquals(1,
+            ((Element) mergeDoc.getElementsByTagName("ui:define").item(1)).getElementsByTagName("title").getLength());
         Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(0))
             .getElementsByTagName("ui:include").getLength());
         Assert.assertEquals(1, ((Element) mergeDoc.getElementsByTagName("ui:define").item(2))
@@ -206,8 +200,7 @@ public class XmlPluginMergerIntegrationTest {
 
     /**
      * @throws Exception
-     *             tets fails
-     * @author sholzer (Aug 28, 2015)
+     *             test fails
      */
     @Test
     public void xhtmlTableTest() throws Exception {
@@ -222,16 +215,14 @@ public class XmlPluginMergerIntegrationTest {
 
         Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("div").getLength());
         Assert.assertEquals(1, mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").getLength());
-        Assert.assertEquals(7,
-            ((Element) mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").item(0))
-                .getElementsByTagName("h:column").getLength());
+        Assert.assertEquals(7, ((Element) mergeDoc.getDocumentElement().getElementsByTagName("h:dataTable").item(0))
+            .getElementsByTagName("h:column").getLength());
     }
 
     /**
      * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
      * @throws Exception
      *             when something goes wrong
-     * @author sholzer (Aug 28, 2015)
      */
     @Test
     public void testMergeDozerMapping() throws Exception {
@@ -249,7 +240,6 @@ public class XmlPluginMergerIntegrationTest {
      * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
      * @throws Exception
      *             when something goes wrong
-     * @author sholzer (Aug 28, 2015)
      */
     @Test
     public void testMergeJaxrsServiceBeans() throws Exception {
@@ -265,11 +255,10 @@ public class XmlPluginMergerIntegrationTest {
     }
 
     /**
-     * Tests the correct merge behaviour with Spring Beans. Test files are used from XmlLawMerger test
+     * Tests the correct merge behavior with Spring Beans. Test files are used from XmlLawMerger test
      * resources
      * @throws Exception
      *             should not happen
-     * @author sholzer (Jan 11, 2016)
      */
     @Test
     public void testBeans() throws Exception {
@@ -287,8 +276,7 @@ public class XmlPluginMergerIntegrationTest {
     /**
      * Test for Issue #189. Tests if maven configurations can be merged to accumulate dependencies
      * @throws Exception
-     *             shouldn#t happen
-     * @author sholzer (Jan 19, 2016)
+     *             shouldn't happen
      */
     @Test
     public void testMavenAddDependency() throws Exception {
@@ -299,8 +287,7 @@ public class XmlPluginMergerIntegrationTest {
         String mergedDoc = patchPreferingMerger.merge(baseFile, patchString, charset);
         assertEquals("Not the expected number of dependencies elements", 1,
             mergedDoc.split("<dependencies").length - 1);
-        assertEquals("Not the expected number of dependency elements", 4,
-            mergedDoc.split("<dependency").length - 1);
+        assertEquals("Not the expected number of dependency elements", 4, mergedDoc.split("<dependency").length - 1);
     }
 
     // utils
@@ -314,7 +301,6 @@ public class XmlPluginMergerIntegrationTest {
      * @return String
      * @throws IOException
      *             when the file can't be read
-     * @author sholzer (Aug 26, 2015)
      */
     public String readFile(String path, String charset) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
@@ -328,7 +314,6 @@ public class XmlPluginMergerIntegrationTest {
      * @return Document
      * @throws Exception
      *             shouldn't happen
-     * @author sholzer (Aug 28, 2015)
      */
     public org.w3c.dom.Document parseString(String string) throws Exception {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
