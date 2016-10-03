@@ -2,6 +2,8 @@ package com.capgemini.cobigen.eclipse.generator;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
@@ -42,8 +46,6 @@ import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
-import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
-import com.capgemini.cobigen.impl.exceptions.InvalidConfigurationException;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
 
@@ -87,7 +89,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
-     * @author mbrunnli (03.12.2014)
      */
     public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
         InvalidConfigurationException, IOException {
@@ -118,7 +119,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * Sets the given input object for generation
      * @param input
      *            input object for generation
-     * @author mbrunnli (03.12.2014)
      */
     public void setInput(Object input) {
         if (input != null) {
@@ -140,7 +140,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * Sets the given input objects for generation
      * @param inputs
      *            input objects for generation
-     * @author mbrunnli (03.12.2014)
      */
     public void setInputs(List<Object> inputs) {
         this.inputs = inputs;
@@ -241,9 +240,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
-            report = cobiGen.generate(inputs.get(0), template, forceOverride, templateUtilClasses, model);
+            report = cobiGen.generate(inputs.get(0), template,
+                Paths.get(getGenerationTargetProject().getLocationURI()), forceOverride, templateUtilClasses,
+                model);
         } else {
-            report = cobiGen.generate(inputs, template, forceOverride, templateUtilClasses);
+            report = cobiGen.generate(inputs, template,
+                Paths.get(getGenerationTargetProject().getLocationURI()), forceOverride, templateUtilClasses);
         }
         return report;
     }
@@ -311,9 +313,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * Returns all matching trigger ids for the currently stored input
-     *
      * @return a list of matching trigger ids
-     * @author mbrunnli (03.06.2014)
      */
     public List<String> getMatchingTriggerIds() {
         if (initialized) {
@@ -325,9 +325,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * Returns all available generation packages
-     *
      * @return all available generation packages
-     * @author mbrunnli (25.02.2013)
      */
     public ComparableIncrement[] getAllIncrements() {
 
@@ -357,9 +355,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * Returns all available generation packages (sorted and element "all" added on top)
-     *
      * @return all available generation packages
-     * @author mbrunnli (25.02.2013)
      */
     public List<TemplateTo> getAllTemplates() {
 
@@ -376,7 +372,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            the trigger id
      * @return the template, which has the given id<br>
      *         <code>null</code>, if there is no template with the given id
-     * @author trippl (22.04.2013)
      */
     public TemplateTo getTemplateForId(String templateId, String triggerId) {
 
@@ -392,7 +387,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * Returns the {@link List} of templates, which target to the given path.
+     * Returns the {@link List} of templates, which target to the given path. (just of
+     * {@link #getCurrentRepresentingInput()})
      *
      * @param filePath
      *            for which templates should be retrieved
@@ -406,8 +402,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             for (IncrementTo increment : getAllIncrements()) {
                 if (consideredIncrements.contains(increment)) {
                     for (TemplateTo tmp : increment.getTemplates()) {
-                        if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
-                            .equals(PathUtil.getProjectDependendFilePath(filePath))) {
+                        Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
+                            getGenerationTargetProjectPath(), tmp, getCurrentRepresentingInput());
+                        String projectDependentPath = PathUtil
+                            .getProjectDependentFilePath(getGenerationTargetProject(), targetAbsolutePath);
+                        if (projectDependentPath.equals(PathUtil.getProjectDependendFilePath(filePath))) {
                             templates.add(tmp);
                         }
                     }
@@ -415,8 +414,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
         } else {
             for (TemplateTo tmp : getAllTemplates()) {
-                if (tmp.resolveDestinationPath(getCurrentRepresentingInput())
-                    .equals(PathUtil.getProjectDependendFilePath(filePath))) {
+                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
+                    getGenerationTargetProjectPath(), tmp, getCurrentRepresentingInput());
+                String projectDependentPath =
+                    PathUtil.getProjectDependentFilePath(getGenerationTargetProject(), targetAbsolutePath);
+                if (projectDependentPath.equals(PathUtil.getProjectDependendFilePath(filePath))) {
                     templates.add(tmp);
                 }
             }
@@ -425,10 +427,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * Returns project dependent paths of all resources which are marked to be mergeable
-     *
+     * Returns project dependent paths of all resources which are marked to be mergeable (just of
+     * {@link #getCurrentRepresentingInput()})
      * @return The set of all mergeable project dependent file paths
-     * @author mbrunnli (15.03.2013)
      */
     public Set<IFile> getMergeableFiles() {
 
@@ -436,8 +437,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
-                mergeableFiles
-                    .add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
+                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
+                    getGenerationTargetProjectPath(), t, getCurrentRepresentingInput());
+                mergeableFiles.add(PathUtil.getProjectDependentFile(targetProjet, targetAbsolutePath));
             }
         }
         return mergeableFiles;
@@ -448,7 +450,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param templateIds
      *            a {@link List} of template, the list of all templates should be filtered with
      * @return all templates, which id's match one of the given template ids
-     * @author mbrunnli (12.10.2014)
      */
     public List<TemplateTo> getTemplates(List<String> templateIds) {
         List<TemplateTo> templates = Lists.newLinkedList();
@@ -463,25 +464,23 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     /**
      * Returns project dependent paths of all possible generated resources for the first input in case of
      * batch generation
-     *
      * @return project dependent paths of all possible generated resources
-     * @author mbrunnli (26.04.2013)
      */
     public Set<IFile> getAllTargetFilesOfFirstInput() {
 
         Set<IFile> files = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
-            files.add(targetProjet.getFile(t.resolveDestinationPath(getCurrentRepresentingInput())));
+            Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(),
+                t, getCurrentRepresentingInput());
+            files.add(PathUtil.getProjectDependentFile(targetProjet, targetAbsolutePath));
         }
         return files;
     }
 
     /**
      * Returns project dependent paths of all possible generated resources
-     *
      * @return project dependent paths of all possible generated resources
-     * @author mbrunnli (26.04.2013)
      */
     public Set<IFile> getAllTargetFiles() {
         if (!initialized) {
@@ -492,13 +491,19 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(inputs.get(0));
         for (TemplateTo t : getAllTemplates()) {
             if (combinesMultipleInputs) {
-                List<Object> children = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
-                for (Object child : children) {
-                    files.add(getGenerationTargetProject().getFile(t.resolveDestinationPath(child)));
+                List<Object> cInputs = new JavaInputReader().getInputObjects(inputs.get(0), Charsets.UTF_8);
+                for (Object input : cInputs) {
+                    Path targetAbsolutePath =
+                        cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t, input);
+                    files.add(
+                        PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
                 }
             } else {
                 for (Object input : inputs) {
-                    files.add(getGenerationTargetProject().getFile(t.resolveDestinationPath(input)));
+                    Path targetAbsolutePath =
+                        cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t, input);
+                    files.add(
+                        PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
                 }
             }
         }
@@ -508,7 +513,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     /**
      * Returns the currently set input to be generated with
      * @return the currently set input to be generated with
-     * @author mbrunnli (16.10.2014)
      */
     public Object getCurrentRepresentingInput() {
         if (inputs == null || inputs.size() == 0) {
@@ -531,7 +535,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param loadClass
      *            the object to be loaded
      * @return the list of matching trigger id's
-     * @author sholzer (Sep 23, 2015)
      */
     public List<String> getMatchingTriggerIds(Object loadClass) {
         if (initialized) {
@@ -559,5 +562,17 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the input could not be read as expected
      */
     public abstract boolean isValidInput(IStructuredSelection selection) throws InvalidInputException;
+
+    /**
+     * Resolves the template's destination paths by while using the {@link #getCurrentRepresentingInput()} as
+     * input
+     * @param template
+     *            the destination path should be resolved for
+     * @return the destination {@link Path}
+     */
+    public Path resolveTemplateDestinationPath(TemplateTo template) {
+        return cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), template,
+            getCurrentRepresentingInput());
+    }
 
 }

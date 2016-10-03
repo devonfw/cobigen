@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 
 /**

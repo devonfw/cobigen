@@ -15,27 +15,19 @@ import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateSelectionJo
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
- *
- * @author mbrunnli (15.02.2013)
  */
 public class GenerateWizard extends AbstractGenerateWizard {
 
-    /**
-     * The second page of the Wizard
-     */
+    /** The second page of the Wizard */
     private SelectAttributesPage page2;
 
-    /**
-     * Assigning logger to GenerateWizard
-     */
+    /** Assigning logger to GenerateWizard */
     private static final Logger LOG = LoggerFactory.getLogger(GenerateWizard.class);
 
     /**
      * The {@link GenerateWizard} guides through the generation process
-     *
      * @param generator
      *            {@link CobiGenWrapper} to be used for generation
-     * @author mbrunnli (15.02.2013)
      */
     public GenerateWizard(CobiGenWrapper generator) {
 
@@ -50,8 +42,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
         super.initializeWizard();
 
         if (cobigenWrapper instanceof JavaGeneratorWrapper) {
-            page2 = new SelectAttributesPage(
-                ((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
+            page2 =
+                new SelectAttributesPage(((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
         }
     }
 
@@ -66,10 +58,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
 
     /**
      * Generates the contents to be generated and reports the progress to the user
-     *
      * @param dialog
      *            {@link ProgressMonitorDialog} which should be used for reporting the progress
-     * @author mbrunnli (25.02.2013)
      */
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
@@ -81,8 +71,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
         }
 
         LOG.info("Start generation process job...");
-        GenerateSelectionJob job =
-            new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
+        GenerateSelectionJob job = new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(true, false, job);
         } catch (InvocationTargetException e) {

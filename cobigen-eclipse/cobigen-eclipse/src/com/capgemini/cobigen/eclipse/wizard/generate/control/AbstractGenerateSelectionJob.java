@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
@@ -33,29 +34,19 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.impl.exceptions.CobiGenRuntimeException;
 
 /**
  * Abstract implementation for processing generation
- *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
- * @version $Revision$
  */
 public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
-    /**
-     * Logger instance
-     */
+    /** Logger instance */
     protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    /**
-     * Generator instance with which to generate the contents
-     */
+    /** Generator instance with which to generate the contents */
     protected CobiGenWrapper cobigenWrapper;
 
-    /**
-     * The {@link Set} of paths to be generated
-     */
+    /** The {@link Set} of paths to be generated */
     protected List<TemplateTo> templatesToBeGenerated;
 
     /**
@@ -140,6 +131,9 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                             : "An error occurred during generation.", firstError);
                     }
                 });
+                for (Throwable e : generationReport.getErrors()) {
+                    LOG.error("An error occurred during generation:", e);
+                }
             }
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
@@ -175,7 +169,6 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Organizes the imports by calling the {@link OrganizeImportsAction}
-     *
      * @param cus
      *            {@link CompilationUnit}s to be organized
      */
@@ -194,10 +187,8 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Formats source code of all java files which have been generated or merged
-     *
      * @param cus
      *            {@link CompilationUnit}s to be formatted
-     * @author mbrunnli (27.03.2013)
      */
     private void formatSourceCode(final ICompilationUnit[] cus) {
 
@@ -214,9 +205,7 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Retrieves all {@link ICompilationUnit}s targeted by the generated paths
-     *
      * @return an array of {@link ICompilationUnit}s, which are targeted by the generated paths
-     * @author mbrunnli (04.06.2014)
      */
     private ICompilationUnit[] getGeneratedCompilationUnits() {
 

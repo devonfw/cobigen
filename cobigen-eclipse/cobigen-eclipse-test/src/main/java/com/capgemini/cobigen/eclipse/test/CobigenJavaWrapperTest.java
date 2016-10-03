@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.test.common.EclipseCobiGenUtils;
 import com.capgemini.cobigen.eclipse.test.common.EclipseUtils;
 import com.capgemini.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
@@ -73,18 +73,21 @@ public class CobigenJavaWrapperTest {
         IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
         tmpMavenProjectRule.createPom(
             // @formatter:off
-            "<dependencies>" + "<dependency>" + "<groupId>javax.ws.rs</groupId>"
-                + "<artifactId>javax.ws.rs-api</artifactId>" + "<version>2.0</version>" + "</dependency>"
-                + "</dependencies>");
+          "<dependencies>"
+            + "<dependency>"
+              + "<groupId>javax.ws.rs</groupId>"
+              + "<artifactId>javax.ws.rs-api</artifactId>"
+              + "<version>2.0</version>"
+            + "</dependency>"
+          + "</dependencies>");
         // @formatter:on
-        FileUtils.copyFile(new File(resourcesRootPath + "input/JavaClass.java"), project
-            .getUnderlyingResource().getLocation().append("src/main/java/main/JavaClass.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/JavaClass.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/JavaClass.java").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule.updateProject();
 
         // import the configuration project for this test
-        EclipseUtils.importExistingGeneralProject(bot,
-            new File(resourcesRootPath + "templates").getAbsolutePath());
+        EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
         // expand the new file in the package explorer
@@ -101,7 +104,7 @@ public class CobigenJavaWrapperTest {
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IFile generationResult = project.getProject().getFile("TestOutput.txt");
         assertThat(IOUtils.toString(generationResult.getContents()))
-            .isEqualTo("@javax.ws.rs.Path(\"/PATH\") @javax.ws.rs.Path(\"/PATH\")");
+            .isEqualTo("@javax.ws.rs.Path(value=/PATH) @javax.ws.rs.Path(value=/PATH)");
     }
 
 }

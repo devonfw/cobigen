@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.test.common.junit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,17 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JUnit Rule for a temporary {@link IJavaProject}. Should be created in each test method by createProject
  * when it should be used.
  */
 public class TmpJavaProjectRule extends ExternalResource {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TmpJavaProjectRule.class);
 
     /**
      * Project reference
@@ -37,7 +43,11 @@ public class TmpJavaProjectRule extends ExternalResource {
                 javaProject.getProject().delete(true, new NullProgressMonitor());
             }
         } catch (CoreException e) {
-            e.printStackTrace();
+            LOG.warn("Was not able to delete project by workbench API. Try to delete it directly on file system.");
+            boolean deleted = new File(javaProject.getProject().getLocationURI()).delete();
+            if (!deleted) {
+                LOG.warn("Was not able to delete project by File IO API.");
+            }
         }
         super.after();
     }
@@ -77,8 +87,7 @@ public class TmpJavaProjectRule extends ExternalResource {
         createBinFolder();
         defineClassPathEntries();
 
-        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.CLEAN_BUILD,
-            new NullProgressMonitor());
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor());
         return javaProject;
     }
 
@@ -114,8 +123,7 @@ public class TmpJavaProjectRule extends ExternalResource {
         entries.add(JavaCore.newSourceEntry(sourceFolder.getFullPath()));
 
         // add libs to project class path
-        javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]),
-            new NullProgressMonitor());
+        javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), new NullProgressMonitor());
     }
 
 }

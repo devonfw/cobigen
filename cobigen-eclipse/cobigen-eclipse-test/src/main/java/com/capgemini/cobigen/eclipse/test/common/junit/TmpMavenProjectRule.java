@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.eclipse.test.common.junit;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.Random;
 
 import org.eclipse.core.resources.IFile;
@@ -16,6 +17,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.ui.internal.UpdateMavenProjectJob;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JUnit Rule for a temporary {@link IJavaProject}. Should be created in each test method by createProject
@@ -23,6 +26,9 @@ import org.junit.rules.ExternalResource;
  */
 @SuppressWarnings("restriction")
 public class TmpMavenProjectRule extends ExternalResource {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TmpMavenProjectRule.class);
 
     /**
      * Project reference
@@ -36,7 +42,11 @@ public class TmpMavenProjectRule extends ExternalResource {
                 javaProject.getProject().delete(true, new NullProgressMonitor());
             }
         } catch (CoreException e) {
-            e.printStackTrace();
+            LOG.warn("Was not able to delete project by workbench API. Try to delete it directly on file system.");
+            boolean deleted = new File(javaProject.getProject().getLocationURI()).delete();
+            if (!deleted) {
+                LOG.warn("Was not able to delete project by File IO API.");
+            }
         }
         super.after();
     }
@@ -87,6 +97,7 @@ public class TmpMavenProjectRule extends ExternalResource {
         // update maven project to implicitly set classpath and so on.
         new UpdateMavenProjectJob(new IProject[] { javaProject.getProject() })
             .runInWorkspace(new NullProgressMonitor());
+
     }
 
     /**

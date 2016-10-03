@@ -22,7 +22,6 @@ import com.capgemini.cobigen.eclipse.wizard.generate.model.SelectAttributesLabel
 /**
  * The {@link SelectAttributesPage} enables a specific generation of contents which should be shown in the
  * overview and detail pages
- * @author mbrunnli (12.03.2013)
  */
 public class SelectAttributesPage extends WizardPage {
 

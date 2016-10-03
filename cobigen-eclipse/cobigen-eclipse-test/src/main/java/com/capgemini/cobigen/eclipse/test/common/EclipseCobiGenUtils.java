@@ -1,5 +1,8 @@
 package com.capgemini.cobigen.eclipse.test.common;
 
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
@@ -20,20 +23,27 @@ public class EclipseCobiGenUtils {
      *            the {@link SWTWorkbenchBot} of the test
      * @param input
      *            input of cobigen to be selected
-     * @param increment
-     *            increment name to be generated.
+     * @param increments
+     *            increments to be generated.
+     * @throws Exception
+     *             test fails
      */
-    public static void processCobiGen(SWTWorkbenchBot bot, SWTBotTreeItem input, String increment) {
+    public static void processCobiGen(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments)
+        throws Exception {
 
         // Open generation wizard with new file as Input
         bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
-        bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive("CobiGen"), 300000);
+        bot.waitUntil(shellIsActive("CobiGen"), 300000);
 
         // select increment and generate
-        bot.tree().getTreeItem(increment).check();
+        for (String increment : increments) {
+            SWTBotTreeItem treeItem = bot.tree().getTreeItem(increment);
+            bot.waitUntil(widgetIsEnabled(treeItem));
+            treeItem.check();
+        }
         SWTBotButton finishButton = bot.button(IDialogConstants.FINISH_LABEL);
-        bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled(bot.button()));
+        bot.waitUntil(widgetIsEnabled(bot.button()));
         finishButton.click();
     }
 
@@ -44,14 +54,13 @@ public class EclipseCobiGenUtils {
      */
     public static void confirmSuccessfullGeneration(SWTWorkbenchBot bot) {
         try {
-            bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive("Organize Imports"));
+            bot.waitUntil(shellIsActive("Organize Imports"));
             bot.shell("Organize Imports").bot().button(IDialogConstants.OK_LABEL).click();
         } catch (TimeoutException e) {
             // dialog just optional
         }
         bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions
             .shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
-        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL)
-            .click();
+        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
     }
 }
