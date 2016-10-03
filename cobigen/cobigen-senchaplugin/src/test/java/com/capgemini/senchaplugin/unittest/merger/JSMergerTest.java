@@ -194,6 +194,7 @@ public class JSMergerTest {
                 }
             }
         }
+
         assertTrue(added);
     }
 
@@ -242,6 +243,7 @@ public class JSMergerTest {
                 break;
             }
         }
+
         assertTrue(array.getElements().size() == 1);
         assertTrue(array.getElement(0).toSource().equals("'element4'"));
     }

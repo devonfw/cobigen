@@ -6,6 +6,7 @@ import java.util.List;
 import org.mozilla.javascript.Token;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.NodeVisitor;
+import org.mozilla.javascript.ast.ObjectLiteral;
 import org.mozilla.javascript.ast.ObjectProperty;
 import org.mozilla.javascript.ast.PropertyGet;
 import org.mozilla.javascript.ast.StringLiteral;
@@ -35,12 +36,18 @@ public class JSNodeVisitor implements NodeVisitor {
 
     /**
      *
+     */
+    private ObjectLiteral root;
+
+    /**
+     *
      * @author rudiazma (26 de jul. de 2016)
      */
     public JSNodeVisitor() {
         propertyNodes = new LinkedList<>();
         functionCall = new LinkedList<>();
         firstArgument = null;
+        root = new ObjectLiteral();
 
     }
 
@@ -54,6 +61,8 @@ public class JSNodeVisitor implements NodeVisitor {
         } else if (node instanceof StringLiteral && node.depth() == 3) {
             firstArgument = new StringLiteral();
             firstArgument = (StringLiteral) node;
+        } else if (node.depth() == 3) {
+            root = (ObjectLiteral) node;
         }
 
         return true;
@@ -76,11 +85,20 @@ public class JSNodeVisitor implements NodeVisitor {
     }
 
     /**
-     * @return the first argument of the Ext.define
+     * @return the first argument of the function
      *
      * @author rudiazma (8 de ago. de 2016)
      */
     public StringLiteral getFirstArgument() {
         return firstArgument;
+    }
+
+    /**
+     * @return the {@link ObjectLiteral} of the function argument
+     *
+     * @author rudiazma (3 de oct. de 2016)
+     */
+    public ObjectLiteral getRootNode() {
+        return root;
     }
 }
