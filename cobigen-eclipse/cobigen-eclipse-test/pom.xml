@@ -3,7 +3,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>com.capgemini.cobigen.eclipse.test</artifactId>
-  <name>CobiGen - Eclipse Plug-In  Tests</name>
+  <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
   <version>2.0.0-SNAPSHOT</version>
 
@@ -13,11 +13,15 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <tycho.testArgLine>-XX:MaxPermSize=256m</tycho.testArgLine>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>2.1.0</version>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core-test</artifactId>
+      <version>3.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -75,13 +79,18 @@
         <configuration>
           <dependency-resolution>
             <extraRequirements>
-            <requirement>
-            <type>p2-installable-unit</type>
-            <id>com.capgemini.cobigen.eclipse.feature.feature.group</id>
-            <versionRange>0.0.0</versionRange>
-            </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>org.eclipse.m2e.feature.feature.group</id>
+                <versionRange>[1.6.0,1.7.0)</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen.eclipse.feature.feature.group</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
             </extraRequirements>
-            </dependency-resolution>
+          </dependency-resolution>
         </configuration>
       </plugin>
 
@@ -121,6 +130,16 @@
         <repository>
           <id>eclipse-mars-sr2-test</id>
           <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>NeonBuild</id>
+      <repositories>
+        <repository>
+          <id>eclipse-neon-sr2-test</id>
+          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

@@ -53,59 +53,37 @@ import com.google.common.collect.Sets;
 /**
  * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation
  * process
- *
- * @author mbrunnli (14.02.2013)
  */
 public class SelectFilesPage extends WizardPage {
 
-    /**
-     * {@link TreeViewer} of the simulated generation targets
-     */
+    /** Assigning logger to SelectFilesPage */
+    private final static Logger LOG = LoggerFactory.getLogger(SelectFilesPage.class);
+
+    /** {@link TreeViewer} of the simulated generation targets */
     private CheckboxTreeViewer resourcesTree;
 
-    /**
-     * List of generation packages
-     */
+    /** List of generation packages */
     private CheckboxTreeViewer incrementSelector;
 
-    /**
-     * Container holding the right site of the UI, containing a label and the resources tree
-     */
+    /** Container holding the right site of the UI, containing a label and the resources tree */
     private Composite containerRight;
 
-    /**
-     * Checkbox for "Remember selection" functionality
-     */
+    /** Checkbox for "Remember selection" functionality */
     private Button rememberSelection;
 
-    /**
-     * Current used {@link CobiGenWrapper} instance
-     */
+    /** Current used {@link CobiGenWrapper} instance */
     private CobiGenWrapper cobigenWrapper;
 
-    /**
-     * Defines whether the {@link CobiGenWrapper} is in batch mode.
-     */
+    /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
 
-    /**
-     * Possible check states
-     */
+    /** Possible check states */
     public static enum CHECK_STATE {
-        /**
-         * checked
-         */
+        /** checked */
         CHECKED,
-        /**
-         * unchecked
-         */
+        /** unchecked */
         UNCHECKED
     }
-
-    /**
-     * Assigning logger to SelectFilesPage
-     */
-    private final static Logger LOG = LoggerFactory.getLogger(SelectFilesPage.class);
 
     /**
      * Creates a new {@link SelectFilesPage} which displays a resource tree of all resources that may be
@@ -115,7 +93,6 @@ public class SelectFilesPage extends WizardPage {
      *            the {@link CobiGenWrapper} instance
      * @param batch
      *            states whether the generation will run in batch mode
-     * @author mbrunnli (14.02.2013)
      */
     public SelectFilesPage(CobiGenWrapper cobigenWrapper, boolean batch) {
 
@@ -182,9 +159,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the resources tree
-     *
      * @return current {@link CheckboxTreeViewer} instance
-     * @author mbrunnli (12.03.2013)
      */
     public CheckboxTreeViewer getResourcesTree() {
 
@@ -193,9 +168,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the package selector
-     *
      * @return current {@link CheckboxTableViewer} instance
-     * @author mbrunnli (12.03.2013)
      */
     public CheckboxTreeViewer getPackageSelector() {
 
@@ -204,8 +177,6 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Disposes all children of the container control which holds the resource tree
-     *
-     * @author mbrunnli (12.03.2013)
      */
     private void disposeContainerRightChildren() {
 
@@ -270,7 +241,6 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns the set of all paths to files which should be generated
-     *
      * @return the set of all paths to files which should be generated
      */
     public Set<String> getFilePathsToBeGenerated() {
@@ -323,9 +293,7 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Returns all selected {@link IResource}s of the {@link TreeViewer}
-     *
      * @return all selected {@link IResource}s of the {@link TreeViewer}
-     * @author mbrunnli (18.02.2013)
      */
     public List<Object> getSelectedResources() {
 
@@ -341,8 +309,6 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Loads the last package selection
-     *
-     * @author trippl (18.04.2013)
      */
     private void loadSelection() {
 
@@ -369,8 +335,6 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Saves the current package selection
-     *
-     * @author trippl (18.04.2013)
      */
     public void saveSelection() {
 
@@ -407,10 +371,8 @@ public class SelectFilesPage extends WizardPage {
 
     /**
      * Checks whether the "rememberSelection" box is checked
-     *
      * @return <code>true</code> if "rememberSelection" is enabled<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (28.04.2013)
      */
     public boolean isSetRememberSelection() {
 

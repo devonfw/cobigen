@@ -26,31 +26,22 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
- *
- * @author mbrunnli (15.02.2013)
  */
 public abstract class AbstractGenerateWizard extends Wizard {
 
-    /**
-     * The first page of the Wizard
-     */
+    /** The first page of the Wizard */
     protected SelectFilesPage page1;
 
-    /**
-     * Wrapper for the {@link CobiGen}
-     */
+    /** Wrapper for the {@link CobiGen} */
     protected CobiGenWrapper cobigenWrapper;
 
-    /**
-     * Assigning logger to AbstractGenerateWizard
-     */
+    /** Assigning logger to AbstractGenerateWizard */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractGenerateWizard.class);
 
     /**
      * Initializes the {@link CobiGenWrapper generator} instance
      * @param generator
      *            {@link CobiGenWrapper generator} to be used for generation
-     * @author mbrunnli (06.12.2014)
      */
     public AbstractGenerateWizard(CobiGenWrapper generator) {
         cobigenWrapper = generator;
@@ -58,10 +49,8 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
     /**
      * Initializes the {@link JavaGeneratorWrapper}
-     * @author mbrunnli (18.02.2013)
      */
     protected void initializeWizard() {
-
         page1 = new SelectFilesPage(cobigenWrapper, false);
         LOG.info("AbstractGenerateWizard initialized");
     }
@@ -71,14 +60,19 @@ public abstract class AbstractGenerateWizard extends Wizard {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         LOG.info("Start performing wizard finish operation...");
 
-        ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+        try {
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 
-        if (!userConfirmed()) {
-            return false;
+            if (!userConfirmed()) {
+                return false;
+            }
+
+            page1.saveSelection();
+            generateContents(dialog);
+        } catch (Throwable e) {
+            LOG.error("An error occurred while finishing the wizard", e);
+            throw e;
         }
-
-        page1.saveSelection();
-        generateContents(dialog);
 
         LOG.info("Performing wizard finish operation completed.");
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
@@ -87,20 +81,16 @@ public abstract class AbstractGenerateWizard extends Wizard {
 
     /**
      * Generates the contents to be generated and reports the progress to the user
-     *
      * @param dialog
      *            {@link ProgressMonitorDialog} which should be used for reporting the progress
-     * @author mbrunnli (11.04.2014)
      */
     protected abstract void generateContents(ProgressMonitorDialog dialog);
 
     /**
      * Checks whether files will be overwritten by the generation process and whether the user is aware of
      * this behavior and confirms it
-     *
      * @return true, if the user confirms the changes being made or no files will be overwritten<br>
      *         false, otherwise
-     * @author mbrunnli (18.02.2013)
      */
     private boolean userConfirmed() {
         LOG.info("Check for necessary user confirmation to be displayed.");

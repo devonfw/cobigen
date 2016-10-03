@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 
 /**
  * {@link ConfigurationProjectListener} for starting / stopping the {@link LogbackConfigChangeListener}. This

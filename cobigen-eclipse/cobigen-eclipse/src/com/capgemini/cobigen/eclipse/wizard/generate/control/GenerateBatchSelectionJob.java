@@ -15,35 +15,26 @@ import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 /**
  * Running this process as issued in {@link IRunnableWithProgress} performs the generation tasks of the
  * generation wizard for each selected pojo.
- *
- * @author trippl (22.04.2013)
  */
 public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
 
-    /**
-     * {@link List} containing the types of the selected inputs
-     */
+    /** {@link List} containing the types of the selected inputs */
     private List<IType> inputTypes;
 
-    /**
-     * {@link IPackageFragment}, which should be the input for the generation process
-     */
+    /** {@link IPackageFragment}, which should be the input for the generation process */
     private IPackageFragment container;
 
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
-     *
      * @param javaGeneratorWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      * @param inputTypes
      *            {@link List} containing the types of the selected pojos
-     *
-     * @author trippl (22.04.2013)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
-        List<TemplateTo> templatesToBeGenerated, List<IType> inputTypes) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
+        List<IType> inputTypes) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.inputTypes = inputTypes;
@@ -51,17 +42,15 @@ public class GenerateBatchSelectionJob extends AbstractGenerateSelectionJob {
 
     /**
      * Creates a new process ({@link IRunnableWithProgress}) for performing the generation tasks
-     *
      * @param javaGeneratorWrapper
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      * @param container
      *            selected {@link IPackageFragment} for the generation
-     * @author mbrunnli (04.06.2014)
      */
-    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper,
-        List<TemplateTo> templatesToBeGenerated, IPackageFragment container) {
+    public GenerateBatchSelectionJob(CobiGenWrapper javaGeneratorWrapper, List<TemplateTo> templatesToBeGenerated,
+        IPackageFragment container) {
 
         super(javaGeneratorWrapper, templatesToBeGenerated);
         this.container = container;

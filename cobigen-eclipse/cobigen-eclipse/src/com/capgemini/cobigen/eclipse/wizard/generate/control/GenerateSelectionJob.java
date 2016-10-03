@@ -13,8 +13,6 @@ import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 /**
  * Running this this process as issued in {@link IRunnableWithProgress} performs the generation tasks of the
  * generation wizard
- *
- * @author mbrunnli (12.03.2013)
  */
 public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
 
@@ -25,10 +23,8 @@ public class GenerateSelectionJob extends AbstractGenerateSelectionJob {
      *            with which to generate the contents
      * @param templatesToBeGenerated
      *            {@link Set} of templates to be generated
-     * @author mbrunnli (12.03.2013)
      */
     public GenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
-
         super(cobigenWrapper, templatesToBeGenerated);
     }
 
