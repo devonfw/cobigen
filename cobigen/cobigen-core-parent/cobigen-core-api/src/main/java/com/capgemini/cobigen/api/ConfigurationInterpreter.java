@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.api;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -52,5 +53,18 @@ public interface ConfigurationInterpreter {
      *         combined input,<code>false</code>, otherwise
      */
     public boolean combinesMultipleInputs(Object input);
+
+    /**
+     * Resolves the {@link TemplateTo#getUnresolvedDestinationPath() raw destination path} of a template for a
+     * given root path to generate to as well as a given input to be used for variable resolution.
+     * @param targetRootPath
+     *            root path to generate to
+     * @param template
+     *            {@link TemplateTo} to resolve the path for
+     * @param input
+     *            the generator input to be used.
+     * @return the full {@link Path} of the targeted file by the template
+     */
+    public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input);
 
 }

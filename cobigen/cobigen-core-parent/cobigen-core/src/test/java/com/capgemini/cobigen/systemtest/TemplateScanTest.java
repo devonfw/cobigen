@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.systemtest;
 
+import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -13,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
@@ -20,7 +23,6 @@ import com.capgemini.cobigen.systemtest.util.PluginMockFactory;
 
 /**
  * Test suite for template-scan related system tests
- * @author mbrunnli (07.12.2014)
  */
 public class TemplateScanTest extends AbstractApiTest {
 
@@ -33,7 +35,6 @@ public class TemplateScanTest extends AbstractApiTest {
      * Tests the correct destination resolution for resources obtained by template-scans
      * @throws Exception
      *             test fails
-     * @author mbrunnli (07.12.2014)
      */
     @Test
     public void testCorrectDestinationResoution() throws Exception {
@@ -58,16 +59,14 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")
-                .exists());
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java").exists());
     }
 
     /**
-     *
+     * Test template scan within an archive file.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (16.02.2015)
      */
     @Test
     public void testScanTemplatesFromArchivFile() throws Exception {
@@ -89,7 +88,6 @@ public class TemplateScanTest extends AbstractApiTest {
      * empty path element
      * @throws Exception
      *             test fails
-     * @author mbrunnli (20.12.2015)
      */
     @Test
     public void testCorrectDestinationResoution_emptyPathElement() throws Exception {
@@ -113,8 +111,8 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
     }
 
     /**
@@ -122,7 +120,6 @@ public class TemplateScanTest extends AbstractApiTest {
      * multiple empty path elements
      * @throws Exception
      *             test fails
-     * @author mbrunnli (20.12.2015)
      */
     @Test
     public void testCorrectDestinationResoution_emptyPathElements() throws Exception {
@@ -136,18 +133,20 @@ public class TemplateScanTest extends AbstractApiTest {
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
-        Assert.assertNotNull(templates);
+        assertThat(templates).isNotNull();
 
         TemplateTo targetTemplate = getTemplateById(templates, "prefix_MultiEmpty.java");
-        Assert.assertNotNull(targetTemplate);
+        assertThat(targetTemplate).isNotNull();
 
         // Execution
-        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+        GenerationReportTo report =
+            target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+        assertThat(report).isSuccessful();
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java").exists());
+        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
     }
 
 }

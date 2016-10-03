@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 
@@ -12,6 +13,19 @@ import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
  * The {@link InputValidator} takes care of valid API user input, e.g., checks for null references
  */
 public class InputValidator {
+
+    /**
+     * Validates the trigger to be not null as well as to be connected to any trigger interpreter.
+     * @param trigger
+     *            {@link Trigger} to be validated
+     */
+    public static void validateTrigger(Trigger trigger) {
+        if (trigger == null) {
+            throw new IllegalArgumentException("Invalid trigger == null");
+        }
+        TriggerInterpreter interpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+        validateTriggerInterpreterInternal(interpreter, trigger.getType());
+    }
 
     /**
      * Validates an {@link TriggerInterpreter} and the corresponding {@link Trigger} for null references

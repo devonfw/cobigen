@@ -1,9 +1,10 @@
 package com.capgemini.cobigen.impl;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,10 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.validator.InputValidator;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 /**
@@ -100,6 +104,20 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
             return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
         }
         return false;
+    }
+
+    @Override
+    public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+        InputValidator.validateTrigger(trigger);
+
+        TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+        Map<String, String> variables =
+            new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
+        String resolvedDesitinationPath = new PathExpressionResolver(variables)
+            .evaluateExpressions(template.getUnresolvedDestinationPath());
+        return targetRootPath.resolve(resolvedDesitinationPath);
+
     }
 
     /**
