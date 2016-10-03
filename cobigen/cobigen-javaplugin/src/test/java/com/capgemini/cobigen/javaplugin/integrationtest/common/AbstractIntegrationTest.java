@@ -10,8 +10,7 @@ import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 
 /**
- *
- * @author mbrunnli (06.12.2014)
+ * Common Integration test implementation.
  */
 public abstract class AbstractIntegrationTest {
 
