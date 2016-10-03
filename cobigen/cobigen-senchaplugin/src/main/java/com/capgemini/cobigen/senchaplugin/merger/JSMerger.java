@@ -163,6 +163,7 @@ public class JSMerger implements Merger {
      *            nodes to patch
      * @param patchOverrides
      *            merge strategy
+     * @author rudiazma (Oct 3, 2016)
      */
     private void JSMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
         Map<String, AstNode> entryPatch = new HashMap<>();
@@ -240,6 +241,8 @@ public class JSMerger implements Merger {
      *            the value to patch
      * @param patchKey
      *            the key of the value to patch
+     *
+     * @author rudiazma (Oct 3, 2016)
      */
     private void handleConflictOverride(ObjectLiteral nodesBase, AstNode patchValue, String patchKey) {
         for (AstNode node : nodesBase.getElements()) {
@@ -291,6 +294,7 @@ public class JSMerger implements Merger {
      * @param ast
      *            the ast to store the parse result
      * @return ast the ast parsed
+     *
      * @author rudiazma (8 de ago. de 2016)
      */
     private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env) {
