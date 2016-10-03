@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.CobiGenFactory;
-import com.capgemini.cobigen.api.PluginRegistry;
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.senchaplugin.JSPluginActivator;
 import com.capgemini.cobigen.senchaplugin.util.JavaParserUtil;
 
