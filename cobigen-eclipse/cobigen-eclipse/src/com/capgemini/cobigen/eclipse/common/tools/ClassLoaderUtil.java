@@ -14,8 +14,6 @@ import org.eclipse.jdt.core.IJavaProject;
 
 /**
  * Util functionality for {@link ClassLoader} issues
- *
- * @author mbrunnli (08.04.2013)
  */
 public class ClassLoaderUtil {
 
@@ -47,12 +45,14 @@ public class ClassLoaderUtil {
                 } else {
                     outputLocation = project.getOutputLocation();
                 }
-                urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation().append(outputLocation)
-                    .toFile().toURI().toURL());
+                urlList.add(project.getProject().getLocation()
+                    .append(PathUtil.getProjectDependendFilePath(outputLocation.toString())).toFile().toURI()
+                    .toURL());
             }
         }
         urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation()
-            .append(project.readOutputLocation()).toFile().toURI().toURL());
+            .append(PathUtil.getProjectDependendFilePath(project.readOutputLocation().toString())).toFile()
+            .toURI().toURL());
 
         URL[] urls = urlList.toArray(new URL[urlList.size()]);
         return new URLClassLoader(urls, parentClassLoader);

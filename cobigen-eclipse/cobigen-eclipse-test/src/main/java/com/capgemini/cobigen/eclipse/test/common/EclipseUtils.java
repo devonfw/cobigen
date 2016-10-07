@@ -1,5 +1,8 @@
 package com.capgemini.cobigen.eclipse.test.common;
 
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
+
 import java.io.ByteArrayInputStream;
 
 import org.eclipse.core.resources.IContainer;
@@ -27,13 +30,26 @@ import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 public class EclipseUtils {
 
     /**
+     * @see #importExistingGeneralProject(SWTWorkbenchBot, String, boolean)
+     *      importExistingGeneralProject(SWTWorkbenchBot, String, boolean) with
+     *      {@code copyIntoWorkspace=false}
+     */
+    @SuppressWarnings("javadoc")
+    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) {
+        importExistingGeneralProject(bot, projectPath, true);
+    }
+
+    /**
      * Imports the an existing general (non-java/non-maven) project to the workspace.
      * @param bot
      *            the {@link SWTWorkbenchBot} of the test
      * @param projectPath
      *            absolute path of the project on file system
+     * @param copyIntoWorkspace
+     *            state if the project sources should be copied into workspace while importing
      */
-    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) {
+    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath,
+        boolean copyIntoWorkspace) {
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         view.show();
         view.setFocus();
@@ -47,11 +63,18 @@ public class EclipseUtils {
         comboBox.setText(projectPath);
 
         SWTBotCheckBox cbCopyProjects = bot.checkBox("Copy projects into workspace");
-        cbCopyProjects.setFocus(); // just to trigger project scanning
-        cbCopyProjects.click();
+        SWTBotButton selectAll = bot.button("Select All");
+        selectAll.setFocus();
+        bot.waitUntil(widgetIsEnabled(selectAll));
+        selectAll.click(); // just to trigger project scanning, correct logic will be set below
+
+        if (copyIntoWorkspace && !cbCopyProjects.isChecked()
+            || !copyIntoWorkspace && cbCopyProjects.isChecked()) {
+            cbCopyProjects.click();
+        }
 
         SWTBotButton finishButton = bot.button("Finish");
-        bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled(finishButton));
+        bot.waitUntil(widgetIsEnabled(finishButton));
         finishButton.click();
     }
 
@@ -66,7 +89,7 @@ public class EclipseUtils {
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
         configurationProject.contextMenu("Maven").menu("Update Project...").click();
-        bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive("Update Maven Project"));
+        bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
         bot.waitUntil(new AllJobsAreFinished(), 20000);
     }
