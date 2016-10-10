@@ -9,15 +9,10 @@ import com.capgemini.cobigen.senchaplugin.merger.SenchaMerger;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author rudiazma (26 de jul. de 2016)
+ * Sencha Plug-in Activator to be registered in the PluginRegistry of CobiGen.
  */
 public class SenchaPluginActivator implements GeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * @author rudiazma (26 de jul. de 2016)
-     */
     @Override
     public List<Merger> bindMerger() {
         List<Merger> merger = Lists.newLinkedList();
@@ -26,13 +21,9 @@ public class SenchaPluginActivator implements GeneratorPluginActivator {
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author rudiazma (26 de jul. de 2016)
-     */
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new SenchaTriggerInterpreter("sencha"));
+        return null;
     }
 
 }
