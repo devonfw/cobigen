@@ -17,7 +17,7 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
-import com.capgemini.cobigen.senchaplugin.JSPluginActivator;
+import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.senchaplugin.util.JavaParserUtil;
 
 /**
@@ -43,7 +43,7 @@ public class JSSenchaIntegrationTest {
      */
     @Before
     public void setup() {
-        PluginRegistry.loadPlugin(JSPluginActivator.class);
+        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
     }
 
     /**

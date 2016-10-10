@@ -31,16 +31,16 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
- * The {@link JSMerger} merges a patch and the base JS file of the same file. This merge is a structural merge
+ * The {@link SenchaMerger} merges a patch and the base JS file of the same file. This merge is a structural merge
  * considering code blocks of functions, variables, function calls and expressions. There will be no merging
  * on statement level
  * @author rudiazma (26 de jul. de 2016)
  */
 
-public class JSMerger implements Merger {
+public class SenchaMerger implements Merger {
 
     /**
      * Path for the JS Beautifier script
@@ -64,7 +64,7 @@ public class JSMerger implements Merger {
     private boolean patchOverrides;
 
     /**
-     * Creates a new {@link JSMerger}
+     * Creates a new {@link SenchaMerger}
      *
      * @param type
      *            merger type
@@ -73,7 +73,7 @@ public class JSMerger implements Merger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @author rudiazma (26 de jul. de 2016)
      */
-    public JSMerger(String type, boolean patchOverrides) {
+    public SenchaMerger(String type, boolean patchOverrides) {
 
         this.type = type;
         this.patchOverrides = patchOverrides;
@@ -111,8 +111,8 @@ public class JSMerger implements Merger {
             throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
         }
 
-        JSNodeVisitor nodesBase = new JSNodeVisitor();
-        JSNodeVisitor nodesPatch = new JSNodeVisitor();
+        SenchaNodeVisitor nodesBase = new SenchaNodeVisitor();
+        SenchaNodeVisitor nodesPatch = new SenchaNodeVisitor();
 
         // parsing the base
         try {
@@ -279,7 +279,7 @@ public class JSMerger implements Merger {
         Context cx = Context.enter();
         Scriptable scope = cx.initStandardObjects();
 
-        InputStream resourceAsStream = JSMerger.class.getResourceAsStream(BEAUTIFY_JS);
+        InputStream resourceAsStream = SenchaMerger.class.getResourceAsStream(BEAUTIFY_JS);
 
         try {
             Reader reader = new InputStreamReader(resourceAsStream);
@@ -310,12 +310,12 @@ public class JSMerger implements Merger {
      *
      * @author rudiazma (8 de ago. de 2016)
      */
-    private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env)
+    private SenchaNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env)
         throws EvaluatorException {
 
         ast = new Parser(env).parse(reader, file, 1);
 
-        JSNodeVisitor nodes = new JSNodeVisitor();
+        SenchaNodeVisitor nodes = new SenchaNodeVisitor();
 
         ast.visitAll(nodes);
         return nodes;

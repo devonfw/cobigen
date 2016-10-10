@@ -34,12 +34,12 @@ import com.thoughtworks.qdox.model.JavaSource;
  *
  * @author mbrunnli (15.10.2013)
  */
-public class JSInputReader implements InputReader {
+public class SenchaInputReader implements InputReader {
 
     /**
      * Logger instance
      */
-    private static final Logger LOG = LoggerFactory.getLogger(JSInputReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SenchaInputReader.class);
 
     /**
      * {@inheritDoc}

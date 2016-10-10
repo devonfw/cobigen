@@ -23,12 +23,12 @@ import com.thoughtworks.qdox.model.JavaClass;
  *
  * @author mbrunnli (08.04.2014)
  */
-public class JSMatcher implements MatcherInterpreter {
+public class SenchaMatcher implements MatcherInterpreter {
 
     /**
      * Assigning logger to JavaClassMatcher
      */
-    private static final Logger LOG = LoggerFactory.getLogger(JSMatcher.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SenchaMatcher.class);
 
     /**
      * Currently supported matcher types
