@@ -29,7 +29,7 @@ import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
  *
  * @author rudiazma (Sep 13, 2016)
  */
-public class JSMergerTest {
+public class SenchaMergerTest {
 
     /**
      * Root path to all resources used in this test case
@@ -48,9 +48,9 @@ public class JSMergerTest {
     @Before
     public void SetEnv() {
         env = new CompilerEnvirons();
-        env.setRecordingLocalJsDocComments(true);
-        env.setAllowSharpComments(true);
-        env.setRecordingComments(true);
+        // env.setRecordingLocalJsDocComments(true);
+        // env.setAllowSharpComments(true);
+        // env.setRecordingComments(true);
 
     }
 
@@ -59,10 +59,10 @@ public class JSMergerTest {
      */
     @Test
     public void addObjectPropertyTest_NoOverride() {
-        File jsBaseFile = new File(testFileRootPath + "Base_property.js");
-        File jsPatchFile = new File(testFileRootPath + "Patch_property.js");
+        File senchaBaseFile = new File(testFileRootPath + "Base_property.js");
+        File senchaPatchFile = new File(testFileRootPath + "Patch_property.js");
 
-        String file = jsPatchFile.getAbsolutePath();
+        String file = senchaPatchFile.getAbsolutePath();
 
         Reader reader = null;
         String patchString;
@@ -72,14 +72,15 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new SenchaMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
@@ -104,10 +105,10 @@ public class JSMergerTest {
      */
     @Test
     public void addObjectPropertyTest_Override() {
-        File jsBaseFile = new File(testFileRootPath + "Base_property.js");
-        File jsPatchFile = new File(testFileRootPath + "Patch_property.js");
+        File senchaBaseFile = new File(testFileRootPath + "Base_property.js");
+        File senchaPatchFile = new File(testFileRootPath + "Patch_property.js");
 
-        String file = jsPatchFile.getAbsolutePath();
+        String file = senchaPatchFile.getAbsolutePath();
 
         Reader reader = null;
         String patchString;
@@ -117,14 +118,15 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new SenchaMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new SenchaMerger("senchamerge_override", true).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
@@ -149,10 +151,10 @@ public class JSMergerTest {
      */
     @Test
     public void addArrayElementTest_NoOverride() {
-        File jsBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");
-        File jsPatchFile = new File(testFileRootPath + "Patch_ArrayElement.js");
+        File senchaBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");
+        File senchaPatchFile = new File(testFileRootPath + "Patch_ArrayElement.js");
 
-        String file = jsPatchFile.getAbsolutePath();
+        String file = senchaPatchFile.getAbsolutePath();
 
         Reader reader = null;
         String patchString;
@@ -162,14 +164,15 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new SenchaMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
@@ -204,10 +207,10 @@ public class JSMergerTest {
      */
     @Test
     public void addArrayElementTest_Override() {
-        File jsBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");
-        File jsPatchFile = new File(testFileRootPath + "Patch_ArrayElementOverride.js");
+        File senchaBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");
+        File senchaPatchFile = new File(testFileRootPath + "Patch_ArrayElementOverride.js");
 
-        String file = jsPatchFile.getAbsolutePath();
+        String file = senchaPatchFile.getAbsolutePath();
 
         Reader reader = null;
         String patchString;
@@ -217,14 +220,15 @@ public class JSMergerTest {
             patchString = IOUtils.toString(reader);
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         } catch (IOException e) {
-            throw new MergeException(jsPatchFile,
-                "Can not read the base file " + jsPatchFile.getAbsolutePath());
+            throw new MergeException(senchaPatchFile,
+                "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new SenchaMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new SenchaMerger("senchamerge_override", true).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
