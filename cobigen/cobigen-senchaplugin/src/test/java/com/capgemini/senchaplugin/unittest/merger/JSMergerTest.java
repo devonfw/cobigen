@@ -22,8 +22,8 @@ import org.mozilla.javascript.ast.ObjectProperty;
 import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.senchaplugin.merger.JSMerger;
-import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
+import com.capgemini.cobigen.senchaplugin.merger.SenchaMerger;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
  *
@@ -79,9 +79,9 @@ public class JSMergerTest {
                 "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
 
-        JSNodeVisitor nodesResultVisit = new JSNodeVisitor();
+        SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
         AstRoot nodesResult = new AstRoot();
 
@@ -124,9 +124,9 @@ public class JSMergerTest {
                 "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
 
-        JSNodeVisitor nodesResultVisit = new JSNodeVisitor();
+        SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
         AstRoot nodesResult = new AstRoot();
 
@@ -169,9 +169,9 @@ public class JSMergerTest {
                 "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("js", false).merge(jsBaseFile, patchString, "UTF-8");
 
-        JSNodeVisitor nodesResultVisit = new JSNodeVisitor();
+        SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
         AstRoot nodesResult = new AstRoot();
 
@@ -224,9 +224,9 @@ public class JSMergerTest {
                 "Can not read the base file " + jsPatchFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("js", true).merge(jsBaseFile, patchString, "UTF-8");
 
-        JSNodeVisitor nodesResultVisit = new JSNodeVisitor();
+        SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
         AstRoot nodesResult = new AstRoot();
 

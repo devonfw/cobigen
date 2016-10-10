@@ -17,7 +17,7 @@ import org.mozilla.javascript.ast.StringLiteral;
  *
  */
 
-public class JSNodeVisitor implements NodeVisitor {
+public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      *
@@ -43,7 +43,7 @@ public class JSNodeVisitor implements NodeVisitor {
      *
      * @author rudiazma (26 de jul. de 2016)
      */
-    public JSNodeVisitor() {
+    public SenchaNodeVisitor() {
         propertyNodes = new LinkedList<>();
         functionCall = new LinkedList<>();
         firstArgument = null;

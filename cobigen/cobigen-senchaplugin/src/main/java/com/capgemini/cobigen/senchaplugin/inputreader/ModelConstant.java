@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * String constants of the java object model for generation. Outcome of the {@link JSInputReader}.
+ * String constants of the java object model for generation. Outcome of the {@link SenchaInputReader}.
  *
  * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$

@@ -5,14 +5,14 @@ import java.util.Random;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.senchaplugin.inputreader.JSInputReader;
-import com.capgemini.cobigen.senchaplugin.matcher.JSMatcher;
+import com.capgemini.cobigen.senchaplugin.inputreader.SenchaInputReader;
+import com.capgemini.cobigen.senchaplugin.matcher.SenchaMatcher;
 
 /**
  * {@link TriggerInterpreter} implementation of a Java Interpreter
  * @author rudiazma (28 de jul. de 2016)
  */
-public class JSTriggerInterpreter implements TriggerInterpreter {
+public class SenchaTriggerInterpreter implements TriggerInterpreter {
 
     /**
      * {@link TriggerInterpreter} type to be registered
@@ -25,7 +25,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
      *            to be registered
      * @author rudiazma (26 de jul. de 2016)
      */
-    public JSTriggerInterpreter(String type) {
+    public SenchaTriggerInterpreter(String type) {
         this.type = type;
     }
 
@@ -44,7 +44,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
      */
     @Override
     public InputReader getInputReader() {
-        return new JSInputReader();
+        return new SenchaInputReader();
     }
 
     /**
@@ -53,7 +53,7 @@ public class JSTriggerInterpreter implements TriggerInterpreter {
      */
     @Override
     public MatcherInterpreter getMatcher() {
-        return new JSMatcher();
+        return new SenchaMatcher();
     }
 
     /**

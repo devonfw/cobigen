@@ -12,7 +12,7 @@ import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ast.AstRoot;
 
-import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
  *
@@ -53,7 +53,7 @@ public class JSNodeVisitorTest {
     public void nodesTest() throws IOException {
         File jsBaseFile = new File(testFileRootPath + "Base_property.js");
 
-        JSNodeVisitor nodesVisit = new JSNodeVisitor();
+        SenchaNodeVisitor nodesVisit = new SenchaNodeVisitor();
 
         AstRoot nodes = new AstRoot();
 
