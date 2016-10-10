@@ -34,9 +34,9 @@ import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
- * The {@link SenchaMerger} merges a patch and the base JS file of the same file. This merge is a structural merge
- * considering code blocks of functions, variables, function calls and expressions. There will be no merging
- * on statement level
+ * The {@link SenchaMerger} merges a patch and the base Sencha file of the same file. This merge is a
+ * structural merge considering code blocks of functions, variables, function calls and expressions. There
+ * will be no merging on statement level
  * @author rudiazma (26 de jul. de 2016)
  */
 
@@ -129,7 +129,7 @@ public class SenchaMerger implements Merger {
                 "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
         }
         // Merge process
-        JSMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+        SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
 
         // Build the resultant AST
         List<PropertyGet> prop = nodesBase.getFunctionCall();
@@ -177,7 +177,7 @@ public class SenchaMerger implements Merger {
      *            merge strategy
      * @author rudiazma (Oct 3, 2016)
      */
-    private void JSMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
+    private void SenchaMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
         Map<String, AstNode> entryPatch = new HashMap<>();
         Map<String, AstNode> entryBase = new HashMap<>();
 
@@ -197,8 +197,8 @@ public class SenchaMerger implements Merger {
                     && entryBase.get(patchKey) instanceof ObjectLiteral) { // If is another ObjectLiteral -->
                                                                            // Recursion
 
-                    JSMerge((ObjectLiteral) entryBase.get(patchKey), (ObjectLiteral) entryPatch.get(patchKey),
-                        patchOverrides);
+                    SenchaMerge((ObjectLiteral) entryBase.get(patchKey),
+                        (ObjectLiteral) entryPatch.get(patchKey), patchOverrides);
 
                 } else if (entryPatch.get(patchKey) instanceof ArrayLiteral
                     && entryBase.get(patchKey) instanceof ArrayLiteral) {

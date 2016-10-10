@@ -1,7 +1,5 @@
 package com.capgemini.cobigen.senchaplugin;
 
-import java.util.Random;
-
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
@@ -54,24 +52,5 @@ public class SenchaTriggerInterpreter implements TriggerInterpreter {
     @Override
     public MatcherInterpreter getMatcher() {
         return new SenchaMatcher();
-    }
-
-    /**
-     * Generates random hexadecimal ID for Architect objects
-     * @param length
-     *            of the ID
-     * @return id
-     * @author rudiazma (Sep 19, 2016)
-     */
-    public static String createRandomString(int length) {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length) {
-            sb.append(Integer.toHexString(random.nextInt()));
-        }
-        String id = sb.toString();
-        String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
-            + id.substring(16, 20) + '-' + id.substring(20, 32);
-        return resultId;
     }
 }
