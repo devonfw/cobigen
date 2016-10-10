@@ -31,7 +31,6 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
 
 /**
@@ -90,11 +89,10 @@ public class JSMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) {
 
         CompilerEnvirons env = new CompilerEnvirons();
-        env.setRecordingLocalJsDocComments(true);
-        env.setAllowSharpComments(true);
-        env.setRecordingComments(true);
+        // env.setRecordingLocalJsDocComments(true);
+        // env.setAllowSharpComments(true);
+        // env.setRecordingComments(true);
 
-        // String result = null;
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
         AstRoot out = new AstRoot();
@@ -117,17 +115,31 @@ public class JSMerger implements Merger {
         JSNodeVisitor nodesPatch = new JSNodeVisitor();
 
         // parsing the base
-        nodesBase = parseAst(nodeBase, baseString, file, env);
+        try {
+            nodesBase = parseAst(nodeBase, baseString, file, env);
+        } catch (EvaluatorException e) {
+            throw new MergeException(base,
+                "Syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+        }
         // parsing the patch
-        nodesPatch = parseAst(nodePatch, patch, patch, env);
-
+        try {
+            nodesPatch = parseAst(nodePatch, patch, patch, env);
+        } catch (EvaluatorException e) {
+            throw new MergeException(base,
+                "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+        }
         // Merge process
-        JSMerge(nodesBase.getRootNode(), nodesPatch.getRootNode(), patchOverrides);
+        JSMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
 
         // Build the resultant AST
         List<PropertyGet> prop = nodesBase.getFunctionCall();
 
-        StringLiteral firstArgument = nodesBase.getFirstArgument();
+        StringLiteral firstArgument = null;
+        if (patchOverrides) {
+            firstArgument = nodesPatch.getFirstArgument();
+        } else {
+            firstArgument = nodesBase.getFirstArgument();
+        }
 
         FunctionCall newCall = new FunctionCall();
 
@@ -140,19 +152,19 @@ public class JSMerger implements Merger {
 
         if (firstArgument != null) {
             arguments.add(0, firstArgument);
-            newObj = nodesBase.getRootNode();
+            newObj = nodesBase.getSecondArgument();
             arguments.add(1, newObj);
             newCall.setArguments(arguments);
             newExpr.setExpression(newCall);
         } else {
-            newObj = nodesBase.getRootNode();
+            newObj = nodesBase.getSecondArgument();
             arguments.add(0, newObj);
             newCall.setArguments(arguments);
             newExpr.setExpression(newCall);
         }
         out.addChild(newExpr);
 
-        return jsBeautify(out.toSource(), indent);
+        return jsBeautify(out.toSource(4), indent);
 
     }
 
@@ -241,7 +253,6 @@ public class JSMerger implements Merger {
      *            the value to patch
      * @param patchKey
      *            the key of the value to patch
-     *
      * @author rudiazma (Oct 3, 2016)
      */
     private void handleConflictOverride(ObjectLiteral nodesBase, AstNode patchValue, String patchKey) {
@@ -275,7 +286,7 @@ public class JSMerger implements Merger {
             cx.evaluateReader(scope, reader, "__beautify.js", 1, null);
             reader.close();
         } catch (IOException e) {
-            throw new Error("Error reading " + "beautify.js");
+            throw new MergeException(new File(""), "Error reading " + "beautify.js");
         }
         scope.put("jsCode", scope, source);
         return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})",
@@ -293,17 +304,16 @@ public class JSMerger implements Merger {
      *            the enviroment config
      * @param ast
      *            the ast to store the parse result
-     * @return ast the ast parsed
+     * @throws EvaluatorException
+     *             if there are any syntax error
+     * @return nodes the node visitor
      *
      * @author rudiazma (8 de ago. de 2016)
      */
-    private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env) {
+    private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env)
+        throws EvaluatorException {
 
-        try {
-            ast = new Parser(env).parse(reader, file, 1);
-        } catch (EvaluatorException e) {
-            throw new JSParseError(e.getMessage() + " Line: " + e.lineNumber() + " -> " + e.lineSource());
-        }
+        ast = new Parser(env).parse(reader, file, 1);
 
         JSNodeVisitor nodes = new JSNodeVisitor();
 
