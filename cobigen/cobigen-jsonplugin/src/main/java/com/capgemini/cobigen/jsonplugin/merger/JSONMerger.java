@@ -33,10 +33,6 @@ public class JSONMerger implements Merger {
      */
     private boolean patchOverrides;
 
-    // private JsonObject objBase;
-
-    // private JsonObject objPatch;
-
     /**
      * Creates a new {@link JSONMerger}
      *
@@ -62,24 +58,29 @@ public class JSONMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String file = base.getAbsolutePath();
         JsonObject objBase = null;
-        ;
+
         JsonObject objPatch = null;
 
         try {
             JsonParser parser = new JsonParser();
             JsonElement jsonBase = parser.parse(new FileReader(file));
-            JsonElement jsonPatch = parser.parse(patch);
-            objPatch = jsonPatch.getAsJsonObject();
             objBase = jsonBase.getAsJsonObject();
         } catch (JsonIOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MergeException(base, "Not JSON file");
         } catch (JsonSyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MergeException(base, "JSON syntax error. " + e.getMessage());
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new MergeException(base, "File not found");
+        }
+
+        try {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonPatch = parser.parse(patch);
+            objPatch = jsonPatch.getAsJsonObject();
+        } catch (JsonIOException e) {
+            throw new MergeException(base, "Not JSON patch code");
+        } catch (JsonSyntaxException e) {
+            throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
         }
 
         String result = jsonObjectMerge(objBase, patchOverrides, objPatch);
