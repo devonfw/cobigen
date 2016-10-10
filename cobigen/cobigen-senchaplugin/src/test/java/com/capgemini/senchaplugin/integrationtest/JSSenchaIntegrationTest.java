@@ -17,8 +17,12 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
+import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
-import com.capgemini.cobigen.senchaplugin.util.JavaParserUtil;
+import com.capgemini.senchaplugin.integrationtest.testdata.ModelCreationTest;
+
+import junit.framework.AssertionFailedError;
 
 /**
  *
@@ -52,12 +56,16 @@ public class JSSenchaIntegrationTest {
     @SuppressWarnings("javadoc")
     @Test
     public void testCorrectModelGeneration() throws Exception {
+
+        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
+        PluginRegistry.loadPlugin(JavaPluginActivator.class);
+
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/testEto.java"))) };
+        Object[] input = new Object[] { ModelCreationTest.class,
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
+                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -67,7 +75,7 @@ public class JSSenchaIntegrationTest {
                 File expectedFile = new File(
                     tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
                 Assert.assertTrue(expectedFile.exists());
-                Assert.assertEquals("{name: 'testField', type: 'String'}",
+                Assert.assertEquals(,
                     FileUtils.readFileToString(expectedFile));
                 methodTemplateFound = true;
                 break;
@@ -75,7 +83,7 @@ public class JSSenchaIntegrationTest {
         }
 
         if (!methodTemplateFound) {
-            // throw new AssertionFailedError("Test template not found");
+            throw new AssertionFailedError("Test template not found");
         }
     }
 
