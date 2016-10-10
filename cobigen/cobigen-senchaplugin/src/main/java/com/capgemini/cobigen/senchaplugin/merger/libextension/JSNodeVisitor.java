@@ -37,7 +37,7 @@ public class JSNodeVisitor implements NodeVisitor {
     /**
      *
      */
-    private ObjectLiteral root;
+    private ObjectLiteral secondArgument;
 
     /**
      *
@@ -47,7 +47,7 @@ public class JSNodeVisitor implements NodeVisitor {
         propertyNodes = new LinkedList<>();
         functionCall = new LinkedList<>();
         firstArgument = null;
-        root = new ObjectLiteral();
+        secondArgument = new ObjectLiteral();
 
     }
 
@@ -62,7 +62,7 @@ public class JSNodeVisitor implements NodeVisitor {
             firstArgument = new StringLiteral();
             firstArgument = (StringLiteral) node;
         } else if (node.depth() == 3) {
-            root = (ObjectLiteral) node;
+            secondArgument = (ObjectLiteral) node;
         }
 
         return true;
@@ -98,7 +98,7 @@ public class JSNodeVisitor implements NodeVisitor {
      *
      * @author rudiazma (3 de oct. de 2016)
      */
-    public ObjectLiteral getRootNode() {
-        return root;
+    public ObjectLiteral getSecondArgument() {
+        return secondArgument;
     }
 }
