@@ -57,7 +57,8 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
      * @param templatesToBeGenerated
      *            {@link Set} of template ids to be generated
      */
-    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper, List<TemplateTo> templatesToBeGenerated) {
+    public AbstractGenerateSelectionJob(CobiGenWrapper cobigenWrapper,
+        List<TemplateTo> templatesToBeGenerated) {
 
         this.cobigenWrapper = cobigenWrapper;
         this.templatesToBeGenerated = templatesToBeGenerated;
@@ -69,6 +70,7 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
         LOG.info("Start generation process...");
 
         if (templatesToBeGenerated.size() == 0) {
+            LOG.warn("No templates determined to be generated... This might be a bug.");
             return;
         }
 
@@ -102,19 +104,22 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                                 strBuilder.append("\n");
                             }
 
-                            MessageDialog.openWarning(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
+                            MessageDialog.openWarning(
+                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
                                 CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED_W_WARNINGS,
                                 "Contents from " + templatesToBeGenerated.size()
-                                    + " templates have been generated.\n\nWarnings:\n" + strBuilder.toString());
+                                    + " templates have been generated.\n\nWarnings:\n"
+                                    + strBuilder.toString());
                         }
                     });
                 } else {
                     PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            MessageDialog.openInformation(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
-                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED,
-                                "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
+                            MessageDialog.openInformation(
+                                PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
+                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED, "Contents from "
+                                    + templatesToBeGenerated.size() + " templates have been generated.");
                         }
                     });
                 }
@@ -137,7 +142,8 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
             }
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
-                + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.", e);
+                + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.",
+                e);
             LOG.error("Eclipse internal Exception", e);
         } catch (CobiGenRuntimeException e) {
             PlatformUIUtil.openErrorDialog(e.getMessage(), e);

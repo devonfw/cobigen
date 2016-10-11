@@ -34,7 +34,7 @@ public class PathUtil {
      * @return the relativized path.
      */
     public static String getProjectDependentFilePath(IProject project, Path filePath) {
-        return Paths.get(project.getLocationURI()).relativize(filePath).toString();
+        return Paths.get(project.getLocationURI()).relativize(filePath).toString().replaceAll("\\\\", "/");
     }
 
     /**
@@ -69,7 +69,8 @@ public class PathUtil {
      *            project relative destination paths
      * @return the {@link Set} of all workspace relative paths
      */
-    public static Set<String> createWorkspaceRelativePaths(IProject proj, Set<String> relativeDestinationPaths) {
+    public static Set<String> createWorkspaceRelativePaths(IProject proj,
+        Set<String> relativeDestinationPaths) {
         Set<String> adaptedPaths = new HashSet<>();
         for (String p : relativeDestinationPaths) {
             adaptedPaths.add("/" + proj.getName() + "/" + p);
