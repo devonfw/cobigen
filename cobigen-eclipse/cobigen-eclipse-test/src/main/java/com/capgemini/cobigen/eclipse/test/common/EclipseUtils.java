@@ -76,6 +76,7 @@ public class EclipseUtils {
         SWTBotButton finishButton = bot.button("Finish");
         bot.waitUntil(widgetIsEnabled(finishButton));
         finishButton.click();
+        bot.waitUntil(new AllJobsAreFinished(), 20000);
     }
 
     /**

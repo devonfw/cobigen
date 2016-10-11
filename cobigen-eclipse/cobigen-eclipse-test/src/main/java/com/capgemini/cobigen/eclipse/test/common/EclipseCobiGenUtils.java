@@ -59,8 +59,8 @@ public class EclipseCobiGenUtils {
         } catch (TimeoutException e) {
             // dialog just optional
         }
-        bot.waitUntil(org.eclipse.swtbot.swt.finder.waits.Conditions
-            .shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
-        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
+        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
+        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL)
+            .click();
     }
 }
