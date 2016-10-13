@@ -129,35 +129,35 @@ public class JSONMerger implements Merger {
                     JsonArray leftArr = leftVal.getAsJsonArray();
                     JsonArray rightArr = rightVal.getAsJsonArray();
 
-                    // if (patchOverrides) {
-                    int size = leftArr.size();
-                    for (int i = 0; i < size; i++) {
-                        leftArr.remove(0);
+                    if (patchOverrides) {
+                        int size = leftArr.size();
+                        for (int i = 0; i < size; i++) {
+                            leftArr.remove(0);
+                        }
+                        for (int i = 0; i < rightArr.size(); i++) {
+                            leftArr.add(rightArr.get(i));
+                        }
+                    } else {
+                        // add patch elements without add the duplicates
+                        int size = rightArr.size();
+                        boolean exist = false;
+                        int posToAdd = 0;
+                        for (int i = 0; i < size; i++) {
+                            int size2 = leftArr.size();
+                            for (int j = 0; j < size2; j++) {
+                                if (leftArr.get(j).equals(rightArr.get(i))) {
+                                    exist = true;
+                                    break;
+                                } else {
+                                    posToAdd = i;
+                                }
+                            }
+                            if (!exist) {
+                                leftArr.add(rightArr.get(posToAdd));
+                            }
+                            exist = false;
+                        }
                     }
-                    for (int i = 0; i < rightArr.size(); i++) {
-                        leftArr.add(rightArr.get(i));
-                    }
-                    // } else {
-                    // // add patch elements without add the duplicates
-                    // int size = rightArr.size();
-                    // boolean exist = false;
-                    // int posToAdd = 0;
-                    // for (int i = 0; i < size; i++) {
-                    // int size2 = leftArr.size();
-                    // for (int j = 0; j < size2; j++) {
-                    // if (leftArr.get(j).equals(rightArr.get(i))) {
-                    // exist = true;
-                    // break;
-                    // } else {
-                    // posToAdd = i;
-                    // }
-                    // }
-                    // if (!exist) {
-                    // leftArr.add(rightArr.get(posToAdd));
-                    // }
-                    // exist = false;
-                    // }
-                    // }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
                     jsonObjectMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
