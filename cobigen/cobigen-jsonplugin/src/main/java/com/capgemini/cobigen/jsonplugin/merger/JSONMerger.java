@@ -165,11 +165,11 @@ public class JSONMerger implements Merger {
                     if (patchOverrides) {
                         leftObj.add(rightKey, rightVal);// right side auto-wins, replace left val with its val
                     }
-                    // if (rightKey.equals("designerId") || rightKey.equals("designerId")
-                    // || rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
-                    // || rightKey.equals("viewModelInstanceId")) {
-                    // leftObj.add(rightKey, rightVal);
-                    // }
+                    if (rightKey.equals("designerId")) {
+                        // || rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
+                        // || rightKey.equals("viewModelInstanceId")) {
+                        leftObj.add(rightKey, rightVal);
+                    }
 
                 }
             } else {// no conflict, add to the object
