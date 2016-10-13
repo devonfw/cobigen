@@ -84,10 +84,20 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
         }
 
-        String result = jsonObjectMerge(objBase, patchOverrides, objPatch);
+        String result = null;
+        switch (type) {
+        case "sencharchmerge":
+            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            break;
+        case "sencharchmerge_override":
+            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            break;
+        default:
+            throw new MergeException(base, "Merge strategy not yet supported!");
+        }
+
         JSONTokener tokensBase = new JSONTokener(result);
         JSONObject jsonBase = new JSONObject(tokensBase);
-        // System.out.println(jsonBase.toString(4));
         return jsonBase.toString(4);
     }
 
@@ -102,9 +112,9 @@ public class JSONMerger implements Merger {
      * @return the result string of the merge
      * @author rudiazma (26 de sept. de 2016)
      */
-    public String jsonObjectMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
+    public String senchArchMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            jsonObjectMerge(destinationObject, obj.getAsJsonObject(), patchOverrides);
+            senchArchMerge(destinationObject, obj.getAsJsonObject(), patchOverrides);
         }
 
         return destinationObject.toString();
@@ -120,7 +130,7 @@ public class JSONMerger implements Merger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @author rudiazma (26 de sept. de 2016)
      */
-    private void jsonObjectMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
+    private void senchArchMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -160,7 +170,7 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    jsonObjectMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
+                    senchArchMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
                     if (patchOverrides
                         && !(rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
