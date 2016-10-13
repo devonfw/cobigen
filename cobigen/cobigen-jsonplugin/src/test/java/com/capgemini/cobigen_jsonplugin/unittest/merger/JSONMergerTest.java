@@ -64,7 +64,8 @@ public class JSONMergerTest {
                 "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSONMerger("json", false).merge(jsonBaseFile, patchString, "UTF-8");
+        String mergedContents = new JSONMerger("jsonmerge", false).merge(jsonBaseFile, patchString, "UTF-8");
+        System.out.println(mergedContents);
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
@@ -108,7 +109,8 @@ public class JSONMergerTest {
                 "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSONMerger("json", true).merge(jsonBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new JSONMerger("jsonmerge_override", true).merge(jsonBaseFile, patchString, "UTF-8");
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
         JSONArray toComp =
