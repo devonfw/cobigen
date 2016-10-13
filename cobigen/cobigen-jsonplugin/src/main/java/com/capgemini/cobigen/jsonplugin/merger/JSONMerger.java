@@ -56,6 +56,7 @@ public class JSONMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
+        System.out.println(patch);
         String file = base.getAbsolutePath();
         JsonObject objBase = null;
 
@@ -86,7 +87,7 @@ public class JSONMerger implements Merger {
         String result = jsonObjectMerge(objBase, patchOverrides, objPatch);
         JSONTokener tokensBase = new JSONTokener(result);
         JSONObject jsonBase = new JSONObject(tokensBase);
-        System.out.println(jsonBase.toString(4));
+        // System.out.println(jsonBase.toString(4));
         return jsonBase.toString(4);
     }
 
@@ -136,7 +137,7 @@ public class JSONMerger implements Merger {
                             leftArr.remove(0);
                         }
                         leftArr.addAll(rightArr);
-                        System.out.println(leftArr.toString());
+                        // System.out.println(leftArr.toString());
                     } else {
                         // add patch elements without add the duplicates
                         int size = rightArr.size();
