@@ -65,7 +65,7 @@ public class JSONMergerTest {
         }
 
         String mergedContents = new JSONMerger("jsonmerge", false).merge(jsonBaseFile, patchString, "UTF-8");
-        System.out.println(mergedContents);
+        // System.out.println(mergedContents);
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
