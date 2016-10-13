@@ -24,7 +24,7 @@ public class JSONPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new JSONTriggerInterpreter("json"));
+        return null;
     }
 
 }
