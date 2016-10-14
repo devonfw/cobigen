@@ -23,10 +23,7 @@ import com.capgemini.senchaplugin.integrationtest.testdata.ModelCreationTest;
 
 import junit.framework.AssertionFailedError;
 
-/**
- *
- * @author rudiazma (Sep 13, 2016)
- */
+@SuppressWarnings("javadoc")
 public class SenchaIntegrationTest {
 
     /**
@@ -42,17 +39,12 @@ public class SenchaIntegrationTest {
 
     /**
      * Common test setup
-     * @author rudiazma (Sep 13, 2016)
      */
     @Before
     public void setup() {
         PluginRegistry.loadPlugin(SenchaPluginActivator.class);
     }
 
-    /**
-     * @author rudiazma (Sep 13, 2016)
-     */
-    @SuppressWarnings("javadoc")
     @Test
     public void testCorrectModelGeneration() throws Exception {
 
