@@ -18,8 +18,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
+ * The {@link JSONMerger} merges a patch and the base file of the same JS file. The merger is a recursive
+ * method that goes through all children of each {@link JsonElement} merging them if necessary
  *
- * @author rudiazma (Sep 22, 2016)
  */
 public class JSONMerger implements Merger {
 
@@ -41,7 +42,6 @@ public class JSONMerger implements Merger {
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author rudiazma (Sep 22, 2016)
      */
     public JSONMerger(String type, boolean patchOverrides) {
 
@@ -102,15 +102,15 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * Merge a collection of JSON patch files
      * @param destinationObject
-     *            the destination Json Object
+     *            the destination {@link JsonObject}
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @param objs
      *            collection of patches
      * @return the result string of the merge
-     * @author rudiazma (26 de sept. de 2016)
      */
     public String senchArchMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
@@ -128,7 +128,6 @@ public class JSONMerger implements Merger {
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author rudiazma (26 de sept. de 2016)
      */
     private void senchArchMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
