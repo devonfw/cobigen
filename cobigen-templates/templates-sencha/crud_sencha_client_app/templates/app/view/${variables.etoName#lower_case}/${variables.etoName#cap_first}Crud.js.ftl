@@ -1,4 +1,4 @@
-<#include '/functions.ftl'>
+<#include '/methods.ftl'>
 Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}Crud', {
     extend: "Ext.panel.Panel",
     alias: 'widget.${variables.etoName?lower_case}crud',

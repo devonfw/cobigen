@@ -1,4 +1,4 @@
-<#include '/functions.ftl'>
+<#include '/methods.ftl'>
 Ext.define('${variables.domain}.model.${variables.etoName?lower_case}.${variables.etoName?cap_first}', {
     extend: 'Ext.data.Model',
     fields: [
