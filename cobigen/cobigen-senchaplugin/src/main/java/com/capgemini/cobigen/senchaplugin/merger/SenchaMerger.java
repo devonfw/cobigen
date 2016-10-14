@@ -86,9 +86,6 @@ public class SenchaMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) {
 
         CompilerEnvirons env = new CompilerEnvirons();
-        // env.setRecordingLocalJsDocComments(true);
-        // env.setAllowSharpComments(true);
-        // env.setRecordingComments(true);
 
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
@@ -125,8 +122,19 @@ public class SenchaMerger implements Merger {
             throw new MergeException(base,
                 "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
         }
-        // Merge process
-        SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+
+        switch (type) {
+        case "senchamerge":
+            // Merge process
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            break;
+        case "senchamerge_override":
+            // Merge process
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            break;
+        default:
+            throw new MergeException(base, "Merge strategy not yet supported!");
+        }
 
         // Build the resultant AST
         List<PropertyGet> prop = nodesBase.getFunctionCall();
