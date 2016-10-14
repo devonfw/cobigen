@@ -25,10 +25,7 @@ import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.senchaplugin.merger.SenchaMerger;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
-/**
- *
- * @author rudiazma (Sep 13, 2016)
- */
+@SuppressWarnings("javadoc")
 public class SenchaMergerTest {
 
     /**
@@ -41,10 +38,6 @@ public class SenchaMergerTest {
      */
     private CompilerEnvirons env;
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Before
     public void SetEnv() {
         env = new CompilerEnvirons();
@@ -54,9 +47,6 @@ public class SenchaMergerTest {
 
     }
 
-    /**
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Test
     public void addObjectPropertyTest_NoOverride() {
         File senchaBaseFile = new File(testFileRootPath + "Base_property.js");
@@ -99,10 +89,6 @@ public class SenchaMergerTest {
         assertTrue(properties.contains("newProperty: 'added'"));
     }
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Test
     public void addObjectPropertyTest_Override() {
         File senchaBaseFile = new File(testFileRootPath + "Base_property.js");
@@ -145,10 +131,6 @@ public class SenchaMergerTest {
         assertTrue(properties.contains("newProperty: 'added'"));
     }
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Test
     public void addArrayElementTest_NoOverride() {
         File senchaBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");
@@ -201,10 +183,6 @@ public class SenchaMergerTest {
         assertTrue(added);
     }
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Test
     public void addArrayElementTest_Override() {
         File senchaBaseFile = new File(testFileRootPath + "Base_ArrayElement.js");

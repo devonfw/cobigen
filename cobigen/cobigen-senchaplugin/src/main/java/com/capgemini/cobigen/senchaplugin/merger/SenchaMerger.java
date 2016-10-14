@@ -35,9 +35,7 @@ import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
  * The {@link SenchaMerger} merges a patch and the base Sencha file of the same file. This merge is a
- * structural merge considering code blocks of functions, variables, function calls and expressions. There
- * will be no merging on statement level
- * @author rudiazma (26 de jul. de 2016)
+ * recursive merge that goes through all nodes and children merginf them if necessary
  */
 
 public class SenchaMerger implements Merger {
@@ -71,7 +69,6 @@ public class SenchaMerger implements Merger {
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author rudiazma (26 de jul. de 2016)
      */
     public SenchaMerger(String type, boolean patchOverrides) {
 
@@ -175,7 +172,6 @@ public class SenchaMerger implements Merger {
      *            nodes to patch
      * @param patchOverrides
      *            merge strategy
-     * @author rudiazma (Oct 3, 2016)
      */
     private void SenchaMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
         Map<String, AstNode> entryPatch = new HashMap<>();
@@ -253,7 +249,6 @@ public class SenchaMerger implements Merger {
      *            the value to patch
      * @param patchKey
      *            the key of the value to patch
-     * @author rudiazma (Oct 3, 2016)
      */
     private void handleConflictOverride(ObjectLiteral nodesBase, AstNode patchValue, String patchKey) {
         for (AstNode node : nodesBase.getElements()) {
@@ -272,7 +267,6 @@ public class SenchaMerger implements Merger {
      * @param indent
      *            the indentation for tabulations
      * @return the formated source code
-     * @author rudiazma (12 de sept. de 2016)
      */
     private String jsBeautify(String source, int indent) {
 
@@ -308,7 +302,6 @@ public class SenchaMerger implements Merger {
      *             if there are any syntax error
      * @return nodes the node visitor
      *
-     * @author rudiazma (8 de ago. de 2016)
      */
     private SenchaNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env)
         throws EvaluatorException {

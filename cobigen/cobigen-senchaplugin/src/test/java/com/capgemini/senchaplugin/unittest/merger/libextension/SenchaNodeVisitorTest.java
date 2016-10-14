@@ -14,11 +14,8 @@ import org.mozilla.javascript.ast.AstRoot;
 
 import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
-/**
- *
- * @author rudiazma (Sep 13, 2016)
- */
-public class JSNodeVisitorTest {
+@SuppressWarnings("javadoc")
+public class SenchaNodeVisitorTest {
 
     /**
      * Root path to all resources used in this test case
@@ -30,25 +27,11 @@ public class JSNodeVisitorTest {
      */
     private CompilerEnvirons env;
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     */
     @Before
     public void SetEnv() {
         env = new CompilerEnvirons();
-        env.setRecordingLocalJsDocComments(true);
-        env.setAllowSharpComments(true);
-        env.setRecordingComments(true);
-
     }
 
-    /**
-     *
-     * @author rudiazma (Sep 13, 2016)
-     * @throws IOException
-     *             if file not found
-     */
     @Test
     public void nodesTest() throws IOException {
         File jsBaseFile = new File(testFileRootPath + "Base_property.js");

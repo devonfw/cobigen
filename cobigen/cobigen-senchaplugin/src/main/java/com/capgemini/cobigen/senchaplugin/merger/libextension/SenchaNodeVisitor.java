@@ -12,37 +12,32 @@ import org.mozilla.javascript.ast.PropertyGet;
 import org.mozilla.javascript.ast.StringLiteral;
 
 /**
- *
- * @author rudiazma (Jul 7, 2016)
- *
+ * The {@link NodeVisitor} that retrieve the needed elements of the JS file
  */
 
 public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
-     *
+     * List of {@link ObjectProperty}'s of the first level
      */
     private List<ObjectProperty> propertyNodes;
 
     /**
-     *
+     * The Sencha funtion called
      */
     private List<PropertyGet> functionCall;
 
     /**
-     *
+     * The first argument of the function
      */
     private StringLiteral firstArgument;
 
     /**
-     *
+     * The second argument of the function
      */
     private ObjectLiteral secondArgument;
 
-    /**
-     *
-     * @author rudiazma (26 de jul. de 2016)
-     */
+    @SuppressWarnings("javadoc")
     public SenchaNodeVisitor() {
         propertyNodes = new LinkedList<>();
         functionCall = new LinkedList<>();
@@ -70,7 +65,6 @@ public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      * @return list of FunctionNode node type with depth 1
-     * @author rudiazma (26 de jul. de 2016)
      */
     public List<ObjectProperty> getPropertyNodes() {
         return propertyNodes;
@@ -78,7 +72,6 @@ public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      * @return Ext.define
-     * @author rudiazma (8 de ago. de 2016)
      */
     public List<PropertyGet> getFunctionCall() {
         return functionCall;
@@ -86,8 +79,6 @@ public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      * @return the first argument of the function
-     *
-     * @author rudiazma (8 de ago. de 2016)
      */
     public StringLiteral getFirstArgument() {
         return firstArgument;
@@ -95,8 +86,6 @@ public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      * @return the {@link ObjectLiteral} of the function argument
-     *
-     * @author rudiazma (3 de oct. de 2016)
      */
     public ObjectLiteral getSecondArgument() {
         return secondArgument;
