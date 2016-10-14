@@ -9,8 +9,7 @@ import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author rudiazma (Sep 22, 2016)
+ * Activator for JSON plugin
  */
 public class JSONPluginActivator implements GeneratorPluginActivator {
 
