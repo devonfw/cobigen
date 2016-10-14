@@ -18,7 +18,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link JSONMerger} merges a patch and the base file of the same JS file. The merger is a recursive
+ * The {@link JSONMerger} merges a patch and the base file of the same JSON file. The merger is a recursive
  * method that goes through all children of each {@link JsonElement} merging them if necessary
  *
  */
