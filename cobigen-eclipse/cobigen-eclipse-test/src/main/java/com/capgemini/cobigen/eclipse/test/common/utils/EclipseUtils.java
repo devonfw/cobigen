@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common;
+package com.capgemini.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
@@ -8,6 +8,10 @@ import java.io.ByteArrayInputStream;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -22,6 +26,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 
 /**
@@ -126,5 +131,38 @@ public class EclipseUtils {
             file.create(new ByteArrayInputStream(contents.getBytes()), true, new NullProgressMonitor());
         }
         return file;
+    }
+
+    /**
+     * Cleanup workspace by deleting all projects
+     * @param cleanCobiGenConfiguration
+     *            if <code>true</code>, the cobigen configuration project will be removed as well
+     * @throws Exception
+     *             test fails
+     */
+    public static void cleanWorkspace(boolean cleanCobiGenConfiguration) throws Exception {
+
+        int maxRetries = 10;
+
+        for (int i = 1; i <= maxRetries; i++) {
+            IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+            try {
+                for (IProject project : allProjects) {
+                    if (cleanCobiGenConfiguration
+                        || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
+                        project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                        project.close(new NullProgressMonitor());
+                        project.delete(true, true, new NullProgressMonitor());
+                    }
+                }
+                break;
+            } catch (Exception e) {
+                Thread.sleep(500);
+                if (i == maxRetries) {
+                    throw e;
+                }
+            }
+        }
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     }
 }

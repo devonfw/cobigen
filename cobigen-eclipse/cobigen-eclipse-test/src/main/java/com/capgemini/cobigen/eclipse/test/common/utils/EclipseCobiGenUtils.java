@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common;
+package com.capgemini.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
