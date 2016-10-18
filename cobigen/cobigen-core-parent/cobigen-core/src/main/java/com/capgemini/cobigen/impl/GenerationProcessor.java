@@ -145,7 +145,8 @@ public class GenerationProcessor {
             } catch (CobiGenRuntimeException e) {
                 generationReport.addError(e);
             } catch (Throwable e) {
-                generationReport.addError(new CobiGenRuntimeException("Something unexpected happened.", e));
+                generationReport.addError(new CobiGenRuntimeException("Something unexpected happened"
+                    + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
             }
         }
 
