@@ -34,7 +34,7 @@ public class EclipseCobiGenUtils {
         // Open generation wizard with new file as Input
         bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
-        bot.waitUntil(shellIsActive("CobiGen"), 300000);
+        bot.waitUntil(shellIsActive("CobiGen"), 10000);
 
         // select increment and generate
         for (String increment : increments) {

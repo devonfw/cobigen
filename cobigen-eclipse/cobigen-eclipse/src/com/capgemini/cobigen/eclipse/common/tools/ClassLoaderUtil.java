@@ -6,11 +6,13 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 
 /**
  * Util functionality for {@link ClassLoader} issues
@@ -35,10 +37,11 @@ public class ClassLoaderUtil {
         project.readRawClasspath();
 
         List<URL> urlList = new ArrayList<>();
+        List<ClassLoader> dependentProjectClassloaders = new ArrayList<>();
+        ClassLoader parentCl = parentClassLoader;
         for (IClasspathEntry entry : classPathEntries) {
-            if (entry.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                urlList.add(entry.getPath().toFile().toURI().toURL());
-            } else {
+            switch (entry.getEntryKind()) {
+            case IClasspathEntry.CPE_SOURCE:
                 IPath outputLocation;
                 if (entry.getOutputLocation() != null) {
                     outputLocation = entry.getOutputLocation();
@@ -48,14 +51,24 @@ public class ClassLoaderUtil {
                 urlList.add(project.getProject().getLocation()
                     .append(PathUtil.getProjectDependendFilePath(outputLocation.toString())).toFile().toURI()
                     .toURL());
+                break;
+            case IClasspathEntry.CPE_PROJECT:
+                IProject projectDependency =
+                    ResourcesPlugin.getWorkspace().getRoot().getProject(entry.getPath().lastSegment());
+                IJavaProject javaProjectDependency = JavaCore.create(projectDependency);
+                if (javaProjectDependency != null) {
+                    parentCl = getProjectClassLoader(javaProjectDependency, parentCl);
+                    dependentProjectClassloaders.add(parentCl);
+                }
+                break;
+            default:
+                urlList.add(entry.getPath().toFile().toURI().toURL());
+                break;
             }
         }
-        urlList.add(ResourcesPlugin.getWorkspace().getRoot().getLocation()
-            .append(PathUtil.getProjectDependendFilePath(project.readOutputLocation().toString())).toFile()
-            .toURI().toURL());
 
         URL[] urls = urlList.toArray(new URL[urlList.size()]);
-        return new URLClassLoader(urls, parentClassLoader);
+        return new URLClassLoader(urls, parentCl);
     }
 
     /**
