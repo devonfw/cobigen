@@ -86,4 +86,42 @@ public class ClassPathLoadingTest extends SystemTest {
         }
     }
 
+    /**
+     * Tests the correct class path resolution for Java classes used as input for generation, especially if
+     * the input class depends on any maven imported dependency.
+     * @throws Exception
+     *             Test fails
+     */
+    @Test
+    public void testClassPathResolutionOnInput_dependsOnMavenDependency() throws Exception {
+
+        // create a new temporary java project and copy java class used as an input for CobiGen
+        String testProjectName = "TestInputProj";
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
+        tmpMavenProjectRule.createPom(
+            // @formatter:off
+            "<dependencies>" + "<dependency>" + "<groupId>io.oasp.java.modules</groupId>"
+                + "<artifactId>oasp4j-jpa</artifactId>" + "<version>2.1.1</version>" + "</dependency>"
+                + "</dependencies>");
+        // @formatter:on
+        FileUtils.copyFile(new File(resourcesRootPath + "input/SampleEntity.java"), project
+            .getUnderlyingResource().getLocation().append("src/main/java/main/SampleEntity.java").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        tmpMavenProjectRule.updateProject();
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        SWTBotTreeItem javaClassItem =
+            view.bot().tree().expandNode(testProjectName, "src/main/java", "main", "SampleEntity.java");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IFile generationResult = project.getProject().getFile("TestOutput.txt");
+        assertThat(generationResult.exists()).isTrue();
+    }
 }
