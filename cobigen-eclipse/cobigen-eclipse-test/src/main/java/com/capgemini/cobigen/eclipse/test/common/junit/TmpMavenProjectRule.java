@@ -35,6 +35,9 @@ public class TmpMavenProjectRule extends ExternalResource {
      */
     private IJavaProject javaProject;
 
+    /** Maven Project specification containing group id, artifact id, and version as a pom xml description */
+    private String mvnProjectSpecification;
+
     @Override
     protected void after() {
         try {
@@ -42,11 +45,21 @@ public class TmpMavenProjectRule extends ExternalResource {
                 javaProject.getProject().delete(true, new NullProgressMonitor());
             }
         } catch (CoreException e) {
-            LOG.warn("Was not able to delete project by workbench API. Try to delete it directly on file system.");
+            LOG.warn(
+                "Was not able to delete project by workbench API. Try to delete it directly on file system.");
             boolean deleted = new File(javaProject.getProject().getLocationURI()).delete();
             if (!deleted) {
                 LOG.warn("Was not able to delete project by File IO API.");
+            } else {
+                try {
+                    ResourcesPlugin.getWorkspace().getRoot().refreshLocal(1, new NullProgressMonitor());
+                } catch (CoreException e1) {
+                    LOG.warn("Was not able to refresh workspace after deleting Project on disk.");
+                }
             }
+        } finally {
+            javaProject = null;
+            mvnProjectSpecification = null;
         }
         super.after();
     }
@@ -110,14 +123,15 @@ public class TmpMavenProjectRule extends ExternalResource {
     public void createPom(String dependencies) throws CoreException {
         IFile pom = javaProject.getProject().getFile("pom.xml");
 
+        mvnProjectSpecification = "<groupId>generated</groupId>" + "<artifactId>generated."
+            + new Random().nextInt() + "</artifactId>" + "<version>1.0.0</version>";
+
         // @formatter:off
         byte[] pomBytes = ("<?xml version='1.0' encoding='UTF-8'?>"
             + "<project xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'"
             + "xmlns='http://maven.apache.org/POM/4.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-            + "<modelVersion>4.0.0</modelVersion>" + "<groupId>generated</groupId>" + "<artifactId>generated."
-            + new Random().nextInt() + "</artifactId>" + "<version>1.0.0</version>"
-            + "<packaging>jar</packaging>" + ((dependencies != null) ? dependencies : "") + "</project>")
-                .getBytes();
+            + "<modelVersion>4.0.0</modelVersion>" + mvnProjectSpecification + "<packaging>jar</packaging>"
+            + ((dependencies != null) ? dependencies : "") + "</project>").getBytes();
         // @formatter:on
 
         if (pom.exists()) {
@@ -125,6 +139,16 @@ public class TmpMavenProjectRule extends ExternalResource {
         } else {
             pom.create(new ByteArrayInputStream(pomBytes), true, new NullProgressMonitor());
         }
+    }
+
+    /**
+     * Returns the current maven project specification containing group id, artifact id, and version as a pom
+     * xml description. May be directly passed to {@link #createPom(String)} to create a dependency between
+     * two test projects.
+     * @return the dependency xml for this project.
+     */
+    public String getMavenProjectSpecification() {
+        return mvnProjectSpecification;
     }
 
     /**

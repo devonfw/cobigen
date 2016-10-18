@@ -15,10 +15,12 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.test.common.SystemTest;
+import com.capgemini.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
 import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.capgemini.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.capgemini.cobigen.eclipse.test.common.utils.EclipseUtils;
@@ -30,6 +32,10 @@ public class ClassPathLoadingTest extends SystemTest {
 
     /** Root path of the Test Resources */
     private static final String resourcesRootPath = "src/main/resources/ClassPathLoadingTest/";
+
+    /** Rule for creating temporary {@link IJavaProject}s per test. */
+    @Rule
+    public TmpMavenProjectRule tmpMavenProjectRule2 = new TmpMavenProjectRule();
 
     /**
      * Setup workbench appropriately for tests
@@ -122,6 +128,52 @@ public class ClassPathLoadingTest extends SystemTest {
         // check assertions
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IFile generationResult = project.getProject().getFile("TestOutput.txt");
+        assertThat(generationResult.exists()).isTrue();
+    }
+
+    /**
+     * Tests the correct class path resolution for Java classes used as input for generation, especially if
+     * the input class depends on any maven imported project of the workspace.
+     * @throws Exception
+     *             Test fails
+     */
+    @Test
+    public void testClassPathResolutionOnInput_dependsOnMavenProject() throws Exception {
+
+        // create a new temporary java project and copy java class used as an input for CobiGen
+        IJavaProject projectDependency = tmpMavenProjectRule2.createProject("CommonTestProj");
+        FileUtils.copyFile(new File(resourcesRootPath + "input/AnyImportedEntity.java"),
+            projectDependency.getUnderlyingResource().getLocation()
+                .append("src/main/java/dependent/AnyImportedEntity.java").toFile());
+        projectDependency.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        tmpMavenProjectRule2.updateProject();
+
+        String testProjectName = "TestInputProj";
+        IJavaProject mainProject = tmpMavenProjectRule.createProject(testProjectName);
+        tmpMavenProjectRule.createPom(
+            // @formatter:off
+            "<dependencies>" + "<dependency>" + tmpMavenProjectRule2.getMavenProjectSpecification()
+                + "</dependency>" + "</dependencies>");
+        // @formatter:on
+        FileUtils.copyFile(new File(resourcesRootPath + "input/DependentEntity.java"),
+            mainProject.getUnderlyingResource().getLocation()
+                .append("src/main/java/main/DependentEntity.java").toFile());
+        mainProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        tmpMavenProjectRule.updateProject();
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        SWTBotTreeItem javaClassItem =
+            view.bot().tree().expandNode(testProjectName, "src/main/java", "main", "DependentEntity.java");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IFile generationResult = mainProject.getProject().getFile("TestOutput.txt");
         assertThat(generationResult.exists()).isTrue();
     }
 }
