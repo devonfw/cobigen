@@ -31,17 +31,14 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.senchaplugin.exceptions.JSParseError;
-import com.capgemini.cobigen.senchaplugin.merger.libextension.JSNodeVisitor;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
- * The {@link JSMerger} merges a patch and the base JS file of the same file. This merge is a structural merge
- * considering code blocks of functions, variables, function calls and expressions. There will be no merging
- * on statement level
- * @author rudiazma (26 de jul. de 2016)
+ * The {@link SenchaMerger} merges a patch and the base Sencha file of the same file. This merge is a
+ * recursive merge that goes through all nodes and children merginf them if necessary
  */
 
-public class JSMerger implements Merger {
+public class SenchaMerger implements Merger {
 
     /**
      * Path for the JS Beautifier script
@@ -65,16 +62,15 @@ public class JSMerger implements Merger {
     private boolean patchOverrides;
 
     /**
-     * Creates a new {@link JSMerger}
+     * Creates a new {@link SenchaMerger}
      *
      * @param type
      *            merger type
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author rudiazma (26 de jul. de 2016)
      */
-    public JSMerger(String type, boolean patchOverrides) {
+    public SenchaMerger(String type, boolean patchOverrides) {
 
         this.type = type;
         this.patchOverrides = patchOverrides;
@@ -90,11 +86,7 @@ public class JSMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) {
 
         CompilerEnvirons env = new CompilerEnvirons();
-        env.setRecordingLocalJsDocComments(true);
-        env.setAllowSharpComments(true);
-        env.setRecordingComments(true);
 
-        // String result = null;
         AstRoot nodeBase = new AstRoot();
         AstRoot nodePatch = new AstRoot();
         AstRoot out = new AstRoot();
@@ -113,21 +105,46 @@ public class JSMerger implements Merger {
             throw new MergeException(base, "Can not read the base file " + base.getAbsolutePath());
         }
 
-        JSNodeVisitor nodesBase = new JSNodeVisitor();
-        JSNodeVisitor nodesPatch = new JSNodeVisitor();
+        SenchaNodeVisitor nodesBase = new SenchaNodeVisitor();
+        SenchaNodeVisitor nodesPatch = new SenchaNodeVisitor();
 
         // parsing the base
-        nodesBase = parseAst(nodeBase, baseString, file, env);
+        try {
+            nodesBase = parseAst(nodeBase, baseString, file, env);
+        } catch (EvaluatorException e) {
+            throw new MergeException(base,
+                "Syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+        }
         // parsing the patch
-        nodesPatch = parseAst(nodePatch, patch, patch, env);
+        try {
+            nodesPatch = parseAst(nodePatch, patch, patch, env);
+        } catch (EvaluatorException e) {
+            throw new MergeException(base,
+                "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+        }
 
-        // Merge process
-        JSMerge(nodesBase.getRootNode(), nodesPatch.getRootNode(), patchOverrides);
+        switch (type) {
+        case "senchamerge":
+            // Merge process
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            break;
+        case "senchamerge_override":
+            // Merge process
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            break;
+        default:
+            throw new MergeException(base, "Merge strategy not yet supported!");
+        }
 
         // Build the resultant AST
         List<PropertyGet> prop = nodesBase.getFunctionCall();
 
-        StringLiteral firstArgument = nodesBase.getFirstArgument();
+        StringLiteral firstArgument = null;
+        if (patchOverrides) {
+            firstArgument = nodesPatch.getFirstArgument();
+        } else {
+            firstArgument = nodesBase.getFirstArgument();
+        }
 
         FunctionCall newCall = new FunctionCall();
 
@@ -140,19 +157,19 @@ public class JSMerger implements Merger {
 
         if (firstArgument != null) {
             arguments.add(0, firstArgument);
-            newObj = nodesBase.getRootNode();
+            newObj = nodesBase.getSecondArgument();
             arguments.add(1, newObj);
             newCall.setArguments(arguments);
             newExpr.setExpression(newCall);
         } else {
-            newObj = nodesBase.getRootNode();
+            newObj = nodesBase.getSecondArgument();
             arguments.add(0, newObj);
             newCall.setArguments(arguments);
             newExpr.setExpression(newCall);
         }
         out.addChild(newExpr);
 
-        return jsBeautify(out.toSource(), indent);
+        return jsBeautify(out.toSource(4), indent);
 
     }
 
@@ -163,9 +180,8 @@ public class JSMerger implements Merger {
      *            nodes to patch
      * @param patchOverrides
      *            merge strategy
-     * @author rudiazma (Oct 3, 2016)
      */
-    private void JSMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
+    private void SenchaMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
         Map<String, AstNode> entryPatch = new HashMap<>();
         Map<String, AstNode> entryBase = new HashMap<>();
 
@@ -185,8 +201,8 @@ public class JSMerger implements Merger {
                     && entryBase.get(patchKey) instanceof ObjectLiteral) { // If is another ObjectLiteral -->
                                                                            // Recursion
 
-                    JSMerge((ObjectLiteral) entryBase.get(patchKey), (ObjectLiteral) entryPatch.get(patchKey),
-                        patchOverrides);
+                    SenchaMerge((ObjectLiteral) entryBase.get(patchKey),
+                        (ObjectLiteral) entryPatch.get(patchKey), patchOverrides);
 
                 } else if (entryPatch.get(patchKey) instanceof ArrayLiteral
                     && entryBase.get(patchKey) instanceof ArrayLiteral) {
@@ -241,8 +257,6 @@ public class JSMerger implements Merger {
      *            the value to patch
      * @param patchKey
      *            the key of the value to patch
-     *
-     * @author rudiazma (Oct 3, 2016)
      */
     private void handleConflictOverride(ObjectLiteral nodesBase, AstNode patchValue, String patchKey) {
         for (AstNode node : nodesBase.getElements()) {
@@ -261,21 +275,20 @@ public class JSMerger implements Merger {
      * @param indent
      *            the indentation for tabulations
      * @return the formated source code
-     * @author rudiazma (12 de sept. de 2016)
      */
     private String jsBeautify(String source, int indent) {
 
         Context cx = Context.enter();
         Scriptable scope = cx.initStandardObjects();
 
-        InputStream resourceAsStream = JSMerger.class.getResourceAsStream(BEAUTIFY_JS);
+        InputStream resourceAsStream = SenchaMerger.class.getResourceAsStream(BEAUTIFY_JS);
 
         try {
             Reader reader = new InputStreamReader(resourceAsStream);
             cx.evaluateReader(scope, reader, "__beautify.js", 1, null);
             reader.close();
         } catch (IOException e) {
-            throw new Error("Error reading " + "beautify.js");
+            throw new MergeException(new File(""), "Error reading " + "beautify.js");
         }
         scope.put("jsCode", scope, source);
         return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})",
@@ -293,19 +306,17 @@ public class JSMerger implements Merger {
      *            the enviroment config
      * @param ast
      *            the ast to store the parse result
-     * @return ast the ast parsed
+     * @throws EvaluatorException
+     *             if there are any syntax error
+     * @return nodes the node visitor
      *
-     * @author rudiazma (8 de ago. de 2016)
      */
-    private JSNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env) {
+    private SenchaNodeVisitor parseAst(AstRoot ast, String reader, String file, CompilerEnvirons env)
+        throws EvaluatorException {
 
-        try {
-            ast = new Parser(env).parse(reader, file, 1);
-        } catch (EvaluatorException e) {
-            throw new JSParseError(e.getMessage() + " Line: " + e.lineNumber() + " -> " + e.lineSource());
-        }
+        ast = new Parser(env).parse(reader, file, 1);
 
-        JSNodeVisitor nodes = new JSNodeVisitor();
+        SenchaNodeVisitor nodes = new SenchaNodeVisitor();
 
         ast.visitAll(nodes);
         return nodes;
