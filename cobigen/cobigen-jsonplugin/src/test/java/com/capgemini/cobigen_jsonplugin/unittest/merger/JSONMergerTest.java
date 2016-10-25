@@ -17,16 +17,11 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
 
-/**
- *
- * @author rudiazma (Sep 22, 2016)
- */
+@SuppressWarnings("javadoc")
 public class JSONMergerTest {
 
-    @SuppressWarnings("javadoc")
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
-    @SuppressWarnings("javadoc")
     @Test
     public void jsonMergeTest_NoOverride() {
         File jsonBaseFile = new File(testFileRootPath + "Base_json");
@@ -64,14 +59,14 @@ public class JSONMergerTest {
                 "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSONMerger("json", false).merge(jsonBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new JSONMerger("sencharchmerge", false).merge(jsonBaseFile, patchString, "UTF-8");
+        // System.out.println(mergedContents);
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
-        System.out.println(mergedContents);
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
     }
 
-    @SuppressWarnings("javadoc")
     @Test
     public void jsonMergeTest_Override() {
         File jsonBaseFile = new File(testFileRootPath + "Base_json");
@@ -109,7 +104,8 @@ public class JSONMergerTest {
                 "Can not read the base file " + jsonResultFile.getAbsolutePath());
         }
 
-        String mergedContents = new JSONMerger("json", true).merge(jsonBaseFile, patchString, "UTF-8");
+        String mergedContents =
+            new JSONMerger("sencharchmerge_override", true).merge(jsonBaseFile, patchString, "UTF-8");
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
         JSONArray toComp =

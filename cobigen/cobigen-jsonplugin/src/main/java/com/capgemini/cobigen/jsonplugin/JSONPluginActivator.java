@@ -9,22 +9,21 @@ import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author rudiazma (Sep 22, 2016)
+ * JSON Plug-in Activator to be registered in the PluginRegistry of CobiGen.
  */
 public class JSONPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<Merger> bindMerger() {
         List<Merger> merger = Lists.newLinkedList();
-        merger.add(new JSONMerger("jsonmerge", false));
-        merger.add(new JSONMerger("jsonmerge_override", true));
+        merger.add(new JSONMerger("sencharchmerge", false));
+        merger.add(new JSONMerger("sencharchmerge_override", true));
         return merger;
     }
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new JSONTriggerInterpreter("json"));
+        return null;
     }
 
 }
