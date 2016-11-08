@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
@@ -48,19 +47,20 @@ public class TemplateScanTest extends AbstractApiTest {
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
-        Assert.assertNotNull(templates);
+        assertThat(templates).isNotNull();
 
         TemplateTo targetTemplate =
             getTemplateById(templates, "prefix_${variables.component#cap_first#replace('1','ONE')}.java");
-        Assert.assertNotNull(targetTemplate);
+        assertThat(targetTemplate).isNotNull();
 
         // Execution
         target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java").exists());
+        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
+            + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java"))
+                .exists();
     }
 
     /**
@@ -101,18 +101,18 @@ public class TemplateScanTest extends AbstractApiTest {
         File templatesFolder = new File(testFileRootPath);
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(input);
-        Assert.assertNotNull(templates);
+        assertThat(templates).isNotNull();
 
         TemplateTo targetTemplate = getTemplateById(templates, "prefix_Test.java");
-        Assert.assertNotNull(targetTemplate);
+        assertThat(targetTemplate).isNotNull();
 
         // Execution
         target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
         // Validation
-        Assert.assertTrue(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "base" + SystemUtils.FILE_SEPARATOR + "Test.java").exists());
+        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
+            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
     }
 
     /**
@@ -145,8 +145,8 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
+            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
     }
 
 }

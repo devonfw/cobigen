@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +41,7 @@ import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
+import com.capgemini.cobigen.impl.util.CopyDirectoryVisitor;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -79,6 +82,9 @@ public class GenerationProcessor {
 
     /** Report to be returned after generation processing */
     private GenerationReportTo generationReport;
+
+    /** Temporary target root path to resolve dependent templates' destination path with */
+    private Path tmpTargetRootPath;
 
     /** Target root path to resolve dependent templates' destination path with */
     private Path targetRootPath;
@@ -121,6 +127,11 @@ public class GenerationProcessor {
         this.generableArtifacts = generableArtifacts;
         this.logicClasses = logicClasses;
         this.rawModel = rawModel;
+        try {
+            tmpTargetRootPath = Files.createTempDirectory("cobigen-");
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Could not create temporary folder.", e);
+        }
         this.targetRootPath = targetRootPath;
 
         generationReport = new GenerationReportTo();
@@ -148,6 +159,19 @@ public class GenerationProcessor {
                 generationReport.addError(new CobiGenRuntimeException("Something unexpected happened"
                     + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
             }
+        }
+
+        if (generationReport.isSuccessful()) {
+            try {
+                Files.walkFileTree(tmpTargetRootPath, new CopyDirectoryVisitor(tmpTargetRootPath, targetRootPath,
+                    StandardCopyOption.REPLACE_EXISTING));
+                tmpTargetRootPath.toFile().delete();
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
+            }
+        } else {
+            LOG.warn("Generation finished non-successful. Generated contents can be reviewed in "
+                + tmpTargetRootPath.toUri());
         }
 
         return generationReport;
@@ -237,10 +261,19 @@ public class GenerationProcessor {
             String resolvedDesitinationPath = new PathExpressionResolver(variables)
                 .evaluateExpressions(template.getUnresolvedDestinationPath());
             File originalFile = targetRootPath.resolve(resolvedDesitinationPath).toFile();
+            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedDesitinationPath).toFile();
+
             if (originalFile.exists()) {
+                try {
+                    FileUtils.copyFile(originalFile, tmpOriginalFile);
+                } catch (IOException e) {
+                    throw new CobiGenRuntimeException("Could not copy file " + originalFile.getPath()
+                        + " to tmp generation directory! Generation skipped.", e);
+                }
+
                 if (forceOverride || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
                     .equals(templateIntern.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset,
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
                         inputReader, generatorInput);
                 } else {
                     try (Writer out = new StringWriter()) {
@@ -249,15 +282,15 @@ public class GenerationProcessor {
                         String result = null;
                         Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
                         if (merger != null) {
-                            result = merger.merge(originalFile, out.toString(), targetCharset);
+                            result = merger.merge(tmpOriginalFile, out.toString(), targetCharset);
                         } else {
                             throw new InvalidConfigurationException("No merger for merge strategy '"
                                 + templateIntern.getMergeStrategy() + "' found.");
                         }
 
                         if (result != null) {
-                            LOG.debug("Merge {} with char set {}.", originalFile.getName(), targetCharset);
-                            FileUtils.writeStringToFile(originalFile, result, targetCharset);
+                            LOG.debug("Merge {} with char set {}.", tmpOriginalFile.getName(), targetCharset);
+                            FileUtils.writeStringToFile(tmpOriginalFile, result, targetCharset);
                         } else {
                             throw new PluginProcessingException("Merger " + merger.getType()
                                 + " returned null on merge(...), which is not allowed.");
@@ -267,13 +300,14 @@ public class GenerationProcessor {
                         throw new MergeException(e, templateIntern.getName());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
-                            "Could not write file " + originalFile.toURI().toString() + " after merge.", e);
+                            "Could not write file " + tmpOriginalFile.toURI().toString() + " after merge.",
+                            e);
                     }
                 }
             } else {
-                LOG.info("Create new File {} with charset {}.", originalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(originalFile, templateIntern, model, targetCharset, inputReader,
-                    generatorInput);
+                LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
+                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
+                    inputReader, generatorInput);
             }
         }
     }
@@ -365,7 +399,6 @@ public class GenerationProcessor {
      *            to called for checking retrieving the matchers matching result
      * @return <code>true</code> if the given matcher input matches the matcher list<br>
      *         <code>false</code>, otherwise
-     * @author mbrunnli (22.02.2015)
      */
     public static boolean matches(Object matcherInput, List<Matcher> matcherList,
         TriggerInterpreter triggerInterpreter) {
