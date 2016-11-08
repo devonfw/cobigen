@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.io.Charsets;
@@ -74,6 +75,16 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     private List<Object> inputs;
 
+    private String modelId;
+
+    private String viewControllerId;
+
+    private String viewId;
+
+    private String viewModelId;
+
+    private String controllerId;
+
     /**
      * All matching templates for the currently configured {@link #inputs input objects}
      */
@@ -93,6 +104,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
         InvalidConfigurationException, IOException {
         super();
+        modelId = createRandomString(32);
+        controllerId = createRandomString(32);
+        viewId = createRandomString(32);
+        viewControllerId = createRandomString(32);
+        viewModelId = createRandomString(32);
     }
 
     /**
@@ -113,6 +129,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         InvalidConfigurationException, IOException {
         super();
         setInputs(inputs);
+        modelId = createRandomString(32);
+        controllerId = createRandomString(32);
+        viewId = createRandomString(32);
+        viewControllerId = createRandomString(32);
+        viewModelId = createRandomString(32);
     }
 
     /**
@@ -240,6 +261,13 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             Map<String, Object> model =
                 cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
             adaptModel(model);
+
+            model.put("modelId", modelId);
+            model.put("controllerId", controllerId);
+            model.put("viewId", viewId);
+            model.put("viewControllerId", viewControllerId);
+            model.put("viewModelId", viewModelId);
+
             report = cobiGen.generate(inputs.get(0), template,
                 Paths.get(getGenerationTargetProject().getLocationURI()), forceOverride, templateUtilClasses,
                 model);
@@ -573,6 +601,25 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     public Path resolveTemplateDestinationPath(TemplateTo template) {
         return cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), template,
             getCurrentRepresentingInput());
+    }
+
+    /**
+     * Generates random hexadecimal ID for Architect objects
+     * @param length
+     *            of the ID
+     * @return id
+     * @author rudiazma (Sep 19, 2016)
+     */
+    public static String createRandomString(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length) {
+            sb.append(Integer.toHexString(random.nextInt()));
+        }
+        String id = sb.toString();
+        String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
+            + id.substring(16, 20) + '-' + id.substring(20, 32);
+        return resultId;
     }
 
 }
