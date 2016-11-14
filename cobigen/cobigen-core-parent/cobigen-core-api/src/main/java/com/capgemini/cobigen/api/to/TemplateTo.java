@@ -18,6 +18,12 @@ public class TemplateTo implements GenerableArtifact {
     private String triggerId;
 
     /**
+     * Forces conflicting contents (In case of {@code #mergeStrategy == null}) or the whole file to be
+     * overwritten.
+     */
+    private boolean forceOverride;
+
+    /**
      * Creates a new templates transfer object with the given properties
      *
      * @param id
@@ -75,6 +81,24 @@ public class TemplateTo implements GenerableArtifact {
      */
     public void setUnresolvedDestinationPath(String unresolvedDestinationPath) {
         this.unresolvedDestinationPath = unresolvedDestinationPath;
+    }
+
+    /**
+     * Check if the template has been marked to be overriding.
+     * @return if the template has been marked to be overriding
+     */
+    public boolean isForceOverride() {
+        return forceOverride;
+    }
+
+    /**
+     * Set the force override property. Forces conflicting contents (In case of {@code #mergeStrategy == null}
+     * ) or the whole file to be overwritten.
+     * @param forceOverride
+     *            value to be set
+     */
+    public void setForceOverride(boolean forceOverride) {
+        this.forceOverride = forceOverride;
     }
 
     @Override
