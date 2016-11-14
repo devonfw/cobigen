@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.InputReader;
@@ -48,21 +47,6 @@ public class ModelBuilderImpl implements ModelBuilder {
         }
         this.generatorInput = generatorInput;
         this.trigger = trigger;
-    }
-
-    /**
-     * Creates a new model by using the given {@link TriggerInterpreter} to retrieve the {@link InputReader}
-     * and {@link MatcherInterpreter} from. Furthermore, the model will be directly converted to the DOM
-     * representation to enable xPath within for FreeMarker.
-     * @param triggerInterpreter
-     *            to be used
-     * @return the created model
-     * @throws InvalidConfigurationException
-     *             if there are {@link VariableAssignment}s, which could not be resolved
-     */
-    public Document createModelAndConvertToDOM(TriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
-        return new ModelConverter(createModel(triggerInterpreter)).convertToDOM();
     }
 
     /**
