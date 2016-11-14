@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -276,13 +277,15 @@ public class GenerationProcessor {
                     generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
                         inputReader, generatorInput);
                 } else {
+                    String patch = null;
                     try (Writer out = new StringWriter()) {
                         generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
                             generatorInput);
+                        patch = out.toString();
                         String result = null;
                         Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
                         if (merger != null) {
-                            result = merger.merge(tmpOriginalFile, out.toString(), targetCharset);
+                            result = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
                             throw new InvalidConfigurationException("No merger for merge strategy '"
                                 + templateIntern.getMergeStrategy() + "' found.");
@@ -296,6 +299,7 @@ public class GenerationProcessor {
                                 + " returned null on merge(...), which is not allowed.");
                         }
                     } catch (MergeException e) {
+                        writeBrokenPatchFile(targetCharset, tmpOriginalFile, patch);
                         // enrich merge exception to provide template ID
                         throw new MergeException(e, templateIntern.getName());
                     } catch (IOException e) {
@@ -308,6 +312,41 @@ public class GenerationProcessor {
                 LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
                 generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
                     inputReader, generatorInput);
+            }
+        }
+    }
+
+    /**
+     * Writes a broken patch file to the file system. As an invalid generation will not lead to a merge into
+     * the code base, we simply can generate it next to the target file.
+     * @param targetCharset
+     *            target charset to write the file with.
+     * @param tmpOriginalFile
+     *            the temporary file to originally merge to
+     * @param patch
+     *            the generated patch
+     */
+    private void writeBrokenPatchFile(String targetCharset, File tmpOriginalFile, String patch) {
+
+        boolean written = false;
+        int i = 0;
+        while (!written) {
+            String fileextension = FilenameUtils.getExtension(tmpOriginalFile.getName());
+            String baseName = FilenameUtils.getBaseName(tmpOriginalFile.getName());
+            Path newPatchFile = tmpOriginalFile.toPath().getParent()
+                .resolve(baseName + ".patch." + i++ + "." + fileextension);
+            if (newPatchFile.toFile().exists()) {
+                continue;
+            } else {
+                try {
+                    FileUtils.writeStringToFile(newPatchFile.toFile(), patch, targetCharset);
+                } catch (IOException e) {
+                    // Just log as this should not happen and is not a direct error of generation
+                    LOG.error("Could not write broken patch to file {}", newPatchFile, e);
+                } finally {
+                    // just to assure to not end up in an infinite execution
+                    written = true;
+                }
             }
         }
     }
