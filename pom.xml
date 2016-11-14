@@ -276,14 +276,14 @@
 
   <distributionManagement>
     <repository>
-      <id>oasp.releases</id>
-      <name>OASP Nexus Releases</name>
-      <url>http://oasp-ci.cloudapp.net/nexus/content/repositories/releases/</url>
+      <id>devon.releases</id>
+      <name>Devon Nexus Releases</name>
+      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>oasp.snapshots</id>
-      <name>OASP Nexus Snapshots</name>
-      <url>http://oasp-ci.cloudapp.net/nexus/content/repositories/snapshots/</url>
+      <id>devon.snapshots</id>
+      <name>Devon Nexus Snapshots</name>
+      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
