@@ -109,6 +109,18 @@ public interface CobiGen extends ConfigurationInterpreter {
         boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
 
     /**
+     * Returns a new {@link ModelBuilder} instance for the given input object. <i>Caution: this method will
+     * retrieve the first matching trigger to resolve the input reader. Thus, in an environment with multiple
+     * trigger with different input reader for the same data format, this method may end up in a
+     * non-deterministic result. As long as there is no use case for that, this is neglectable.</i>
+     *
+     * @param generatorInput
+     *            object, models should be created for
+     * @return a new {@link ModelBuilder} instance
+     */
+    public ModelBuilder getModelBuilder(Object generatorInput);
+
+    /**
      * Returns a new {@link ModelBuilder} instance for the given input object and its matching trigger id
      *
      * @param generatorInput

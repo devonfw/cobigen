@@ -77,6 +77,19 @@ public class ModelBuilderImpl implements ModelBuilder {
         throws InvalidConfigurationException {
         Map<String, Object> model =
             new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
+        return model;
+    }
+
+    /**
+     * Enriches the model by the context variables of the trigger.
+     * @param model
+     *            to be enriched
+     * @param triggerInterpreter
+     *            {@link TriggerInterpreter} to resolve the variables
+     * @return the adapted model reference.
+     */
+    public Map<String, Object> enrichByContextVariables(Map<String, Object> model,
+        TriggerInterpreter triggerInterpreter) {
         model.put("variables",
             new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
         return model;

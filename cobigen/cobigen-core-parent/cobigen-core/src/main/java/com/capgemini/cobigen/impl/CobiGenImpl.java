@@ -110,6 +110,16 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
+    public ModelBuilder getModelBuilder(Object input) {
+
+        List<String> matchingTriggerIds = getMatchingTriggerIds(input);
+        // Just take the first trigger as all trigger should have the same input reader. See javadoc.
+        Trigger trigger =
+            configurationHolder.readContextConfiguration().getTrigger(matchingTriggerIds.get(0));
+        return new ModelBuilderImpl(input, trigger);
+    }
+
+    @Override
     public ModelBuilder getModelBuilder(Object generatorInput, String triggerId) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(triggerId);

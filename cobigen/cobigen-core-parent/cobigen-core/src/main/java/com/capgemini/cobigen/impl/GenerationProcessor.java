@@ -371,6 +371,7 @@ public class GenerationProcessor {
         } else {
             model = modelBuilderImpl.createModel(triggerInterpreter);
         }
+        modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter);
         if (logicClasses != null) {
             modelBuilderImpl.enrichByLogicBeans(model, logicClasses);
         }
