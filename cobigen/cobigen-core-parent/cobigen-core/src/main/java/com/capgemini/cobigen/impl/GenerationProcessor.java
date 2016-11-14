@@ -155,8 +155,10 @@ public class GenerationProcessor {
                 InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
                 generate(template, triggerInterpreter);
             } catch (CobiGenRuntimeException e) {
+                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 generationReport.addError(e);
             } catch (Throwable e) {
+                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 generationReport.addError(new CobiGenRuntimeException("Something unexpected happened"
                     + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
             }
@@ -168,9 +170,11 @@ public class GenerationProcessor {
                     StandardCopyOption.REPLACE_EXISTING));
                 tmpTargetRootPath.toFile().delete();
             } catch (IOException e) {
+                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
             }
         } else {
+            generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
             LOG.warn("Generation finished non-successful. Generated contents can be reviewed in "
                 + tmpTargetRootPath.toUri());
         }
