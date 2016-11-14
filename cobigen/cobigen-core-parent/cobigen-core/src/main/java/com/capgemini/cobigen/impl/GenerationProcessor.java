@@ -272,8 +272,9 @@ public class GenerationProcessor {
                         + " to tmp generation directory! Generation skipped.", e);
                 }
 
-                if (forceOverride || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
-                    .equals(templateIntern.getMergeStrategy())) {
+                if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
+                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
+                        .equals(templateIntern.getMergeStrategy())) {
                     generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
                         inputReader, generatorInput);
                 } else {
