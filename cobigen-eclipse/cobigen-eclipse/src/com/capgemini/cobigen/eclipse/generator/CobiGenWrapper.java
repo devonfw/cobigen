@@ -221,7 +221,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             monitor.done();
             LOG.info("Generation finished successfully.");
             return report;
-            // return reportSummary;
         } else {
             throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
         }
