@@ -307,7 +307,7 @@ public class JavaInputReader implements InputReader {
                 }
                 return mergedModel;
             }
-            // Case: List<Map<String, Object>> available in attributes and methods
+            // Case: List<Map<String, Object>> available in fields and methods
             else if (parsedModel instanceof List && reflectionModel instanceof List) {
                 if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
                     || !((List<?>) reflectionModel).isEmpty()
