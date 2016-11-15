@@ -306,7 +306,7 @@ public class GenerationProcessor {
                     } catch (MergeException e) {
                         writeBrokenPatchFile(targetCharset, tmpOriginalFile, patch);
                         // enrich merge exception to provide template ID
-                        throw new MergeException(e, templateIntern.getName());
+                        throw new MergeException(e, templateIntern.getAbsoluteTemplatePath());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
                             "Could not write file " + tmpOriginalFile.toURI().toString() + " after merge.",
@@ -531,7 +531,7 @@ public class GenerationProcessor {
 
         freemarker.template.Template fmTemplate = null;
         try {
-            fmTemplate = freeMarkerConfig.getTemplate(template.getTemplateFile());
+            fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
         } catch (Throwable e) {
             String message = "An error occured while retrieving the FreeMarker template with id '"
                 + template.getName() + "' from the FreeMarker configuration.";

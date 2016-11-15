@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.impl.config.entity;
 
+import java.nio.file.Path;
+
 /** Storage class for template data provided within the config.xml */
 public class Template {
 
@@ -7,7 +9,7 @@ public class Template {
     private String name;
 
     /** Relative path to the template file. */
-    private String templateFile;
+    private String relativeTemplatePath;
 
     /** Determines the required strategy to merge the {@link Template} */
     private String mergeStrategy;
@@ -18,26 +20,32 @@ public class Template {
     /** Relative path for the result. */
     private String unresolvedDestinationPath;
 
+    /** Absolute path to the template file */
+    private Path absoluteTemplatePath;
+
     /**
      * Creates a new {@link Template} for the given data
      * @param name
      *            template name
      * @param unresolvedDestinationPath
      *            path of the destination file
-     * @param templateFile
-     *            relative path of the template file
+     * @param relativeTemplatePath
+     *            path of the template file relative to the template folder
      * @param mergeStrategy
      *            for the template
      * @param outputCharset
      *            output charset for the generated contents
+     * @param absoluteTemplatePath
+     *            absolute file path pointing to the template file.
      */
-    public Template(String name, String unresolvedDestinationPath, String templateFile, String mergeStrategy,
-        String outputCharset) {
+    public Template(String name, String unresolvedDestinationPath, String relativeTemplatePath,
+        String mergeStrategy, String outputCharset, Path absoluteTemplatePath) {
         this.name = name;
-        this.templateFile = templateFile;
+        this.relativeTemplatePath = relativeTemplatePath;
         this.mergeStrategy = mergeStrategy;
         targetCharset = outputCharset;
         this.unresolvedDestinationPath = unresolvedDestinationPath;
+        this.absoluteTemplatePath = absoluteTemplatePath;
     }
 
     /**
@@ -49,11 +57,11 @@ public class Template {
     }
 
     /**
-     * Returns the path to the {@link #templateFile}
+     * Returns the path to the {@link #relativeTemplatePath}
      * @return the relative path to the templateFile
      */
-    public String getTemplateFile() {
-        return templateFile;
+    public String getRelativeTemplatePath() {
+        return relativeTemplatePath;
     }
 
     /**
@@ -105,6 +113,14 @@ public class Template {
      */
     public void setUnresolvedDestinationPath(String unresolvedDestinationPath) {
         this.unresolvedDestinationPath = unresolvedDestinationPath;
+    }
+
+    /**
+     * Returns the absolute file path to the template
+     * @return the absolute file path to the template
+     */
+    public Path getAbsoluteTemplatePath() {
+        return absoluteTemplatePath;
     }
 
     @Override
