@@ -133,7 +133,12 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                                 + generationReport.getErrors().size()
                                 + " errors in total. See the stack trace of the first error only below."
                                 + " Please investigate the Log file to view all errors if needed."
-                            : "An error occurred during generation.", firstError);
+                            : "An error occurred during generation. The merge of generated contents to the "
+                                + "target code base has been aborted. Please find the errorneous generation "
+                                + "results in the following temporary folder for further investigation: "
+                        // href='" + generationReport.getIncompleteGenerationPath() + "'
+                                + "<a>" + generationReport.getIncompleteGenerationPath() + "</a>",
+                            firstError);
                     }
                 });
                 for (Throwable e : generationReport.getErrors()) {

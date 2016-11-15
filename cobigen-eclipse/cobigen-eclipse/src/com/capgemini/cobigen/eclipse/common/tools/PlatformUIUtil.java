@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -15,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
+import com.capgemini.cobigen.eclipse.common.ui.LinkErrorDialog;
 import com.google.common.collect.Lists;
 
 /**
@@ -74,7 +74,7 @@ public class PlatformUIUtil {
                     MessageDialog.openError(Display.getDefault().getActiveShell(),
                         CobiGenDialogConstants.DIALOG_TITLE_ERROR, message);
                 } else {
-                    ErrorDialog.openError(Display.getDefault().getActiveShell(),
+                    LinkErrorDialog.openError(Display.getDefault().getActiveShell(),
                         CobiGenDialogConstants.DIALOG_TITLE_ERROR, message, createMultiStatus(cause));
                 }
             }
@@ -103,8 +103,8 @@ public class PlatformUIUtil {
             childStatus.add(createMultiStatus(t.getCause()));
         }
 
-        MultiStatus ms =
-            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]), t.toString(), t);
+        MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
+            childStatus.toArray(new Status[0]), t.toString(), t);
         return ms;
     }
 }

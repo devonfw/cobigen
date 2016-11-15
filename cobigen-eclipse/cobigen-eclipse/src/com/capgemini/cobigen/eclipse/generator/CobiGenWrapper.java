@@ -196,58 +196,35 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
-            GenerationReportTo reportSummary = new GenerationReportTo();
+            // set override flags individually for every template
             for (TemplateTo template : templates) {
-                monitor.subTask(template.getId());
-                GenerationReportTo report;
+                // if template is resolved to be generated (it has been selected manually in the generate
+                // wizard and does not declare any merge strategy), the complete file should be overwritten
                 if (template.getMergeStrategy() == null) {
-                    report = generate(template, true, utilClasses);
-                } else {
-                    report = generate(template, false, utilClasses);
+                    template.setForceOverride(true);
                 }
-                reportSummary.aggregate(report);
-                monitor.worked(1);
+            }
+
+            GenerationReportTo report;
+            if (singleNonContainerInput) {
+                // if we only consider one input, we want to allow some customizations of the generation
+                Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
+                adaptModel(model);
+                report = cobiGen.generate(inputs.get(0), templates,
+                    Paths.get(getGenerationTargetProject().getLocationURI()), false, utilClasses, model);
+            } else {
+                report = cobiGen.generate(inputs, templates,
+                    Paths.get(getGenerationTargetProject().getLocationURI()), false, utilClasses);
             }
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             monitor.done();
             LOG.info("Generation finished successfully.");
-            return reportSummary;
+            return report;
+            // return reportSummary;
         } else {
             throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
         }
-    }
-
-    /**
-     * Generates the given template for all inputs set
-     *
-     * @param template
-     *            {@link TemplateTo} to be generated
-     * @param forceOverride
-     *            forces the generator to override the maybe existing target file of the template
-     * @param templateUtilClasses
-     *            util classes to be provided for template processing
-     * @return {@link GenerationReportTo generation report} of CobiGen
-     * @throws Exception
-     *             if anything during classpath resolving and class loading fails.
-     */
-    private GenerationReportTo generate(TemplateTo template, boolean forceOverride,
-        List<Class<?>> templateUtilClasses) throws Exception {
-
-        GenerationReportTo report;
-        if (singleNonContainerInput) {
-            // if we only consider one input, we want to allow some customizations of the generation
-            Map<String, Object> model =
-                cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
-            adaptModel(model);
-            report = cobiGen.generate(inputs.get(0), template,
-                Paths.get(getGenerationTargetProject().getLocationURI()), forceOverride, templateUtilClasses,
-                model);
-        } else {
-            report = cobiGen.generate(inputs, template,
-                Paths.get(getGenerationTargetProject().getLocationURI()), forceOverride, templateUtilClasses);
-        }
-        return report;
     }
 
     /**
