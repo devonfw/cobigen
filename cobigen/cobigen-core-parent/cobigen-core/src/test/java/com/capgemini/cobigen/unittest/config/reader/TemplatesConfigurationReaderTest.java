@@ -83,7 +83,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateSpringCommon = templates.get(templateIdSpringCommon);
         assertThat(templateSpringCommon).isNotNull();
         assertThat(templateSpringCommon.getName()).isEqualTo(templateIdSpringCommon);
-        assertThat(templateSpringCommon.getTemplateFile())
+        assertThat(templateSpringCommon.getRelativeTemplatePath())
             .isEqualTo("resources/resources/spring/common.xml.ftl");
         assertThat(templateSpringCommon.getUnresolvedDestinationPath())
             .isEqualTo("src/main/resources/resources/spring/common.xml");
@@ -93,7 +93,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateFooClass = templates.get(templateIdFooClass);
         assertThat(templateFooClass).isNotNull();
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
-        assertThat(templateFooClass.getTemplateFile()).isEqualTo("foo/FooClass.java.ftl");
+        assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
         assertThat(templateFooClass.getUnresolvedDestinationPath())
             .isEqualTo("src/main/java/foo/FooClass.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
@@ -124,7 +124,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateFoo2Class = templates.get(templateIdFoo2Class);
         assertThat(templateFoo2Class).isNotNull();
         assertThat(templateFoo2Class.getName()).isEqualTo(templateIdFoo2Class);
-        assertThat(templateFoo2Class.getTemplateFile()).isEqualTo("foo/Foo2Class.java.ftl");
+        assertThat(templateFoo2Class.getRelativeTemplatePath()).isEqualTo("foo/Foo2Class.java.ftl");
         assertThat(templateFoo2Class.getUnresolvedDestinationPath())
             .isEqualTo("src/main/java/foo/Foo2Class${variable}.java");
         assertThat(templateFoo2Class.getMergeStrategy()).isEqualTo("javamerge");
@@ -133,7 +133,7 @@ public class TemplatesConfigurationReaderTest {
         Template templateBarClass = templates.get(templateIdBarClass);
         assertThat(templateBarClass).isNotNull();
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
-        assertThat(templateBarClass.getTemplateFile()).isEqualTo("foo/bar/BarClass.java.ftl");
+        assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("foo/bar/BarClass.java.ftl");
         assertThat(templateBarClass.getUnresolvedDestinationPath())
             .isEqualTo("src/main/java/foo/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
@@ -167,7 +167,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateBarClass).isNotNull();
         // template-scan defaults
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
-        assertThat(templateBarClass.getTemplateFile()).isEqualTo("bar/BarClass.java.ftl");
+        assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("bar/BarClass.java.ftl");
         assertThat(templateBarClass.getUnresolvedDestinationPath())
             .isEqualTo("src/main/java/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
@@ -179,7 +179,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateFooClass).isNotNull();
         // template-scan defaults
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
-        assertThat(templateFooClass.getTemplateFile()).isEqualTo("bar/FooClass.java.ftl");
+        assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("bar/FooClass.java.ftl");
         // overwritten by templateExtension
         assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("adapted/path/FooClass.java");
         assertThat(templateFooClass.getMergeStrategy()).isEqualTo("javamerge");
@@ -211,7 +211,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateFooClass).isNotNull();
         // template-scan defaults
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
-        assertThat(templateFooClass.getTemplateFile()).isEqualTo("bar/Foo2Class.java.ftl");
+        assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("bar/Foo2Class.java.ftl");
         assertThat(templateFooClass.getUnresolvedDestinationPath())
             .isEqualTo("src/main/java/bar/Foo2Class.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
