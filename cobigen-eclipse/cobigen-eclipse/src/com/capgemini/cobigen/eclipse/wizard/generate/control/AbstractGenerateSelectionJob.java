@@ -128,17 +128,20 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                     @Override
                     public void run() {
                         Throwable firstError = generationReport.getErrors().get(0);
-                        PlatformUIUtil.openErrorDialog(generationReport.getErrors().size() > 1
-                            ? "Multiple errors occurred during generation. There are "
-                                + generationReport.getErrors().size()
-                                + " errors in total. See the stack trace of the first error only below."
-                                + " Please investigate the Log file to view all errors if needed."
-                            : "An error occurred during generation. The merge of generated contents to the "
-                                + "target code base has been aborted. Please find the errorneous generation "
-                                + "results in the following temporary folder for further investigation: "
-                        // href='" + generationReport.getIncompleteGenerationPath() + "'
-                                + "<a>" + generationReport.getIncompleteGenerationPath() + "</a>",
-                            firstError);
+                        String tempGenMessage = "The merge of generated contents to the "
+                            + "target code base has been aborted. Please find the errorneous generation "
+                            + "results in the following temporary folder for further investigation: " + "<a>"
+                            + generationReport.getIncompleteGenerationPath() + "</a>";
+                        PlatformUIUtil
+                            .openErrorDialog(
+                                generationReport.getErrors().size() > 1
+                                    ? "Multiple errors occurred during generation. There are "
+                                        + generationReport.getErrors().size()
+                                        + " errors in total. See the stack trace only of the first error below."
+                                        + " Please investigate the Log file to view all errors if needed. "
+                                        + tempGenMessage
+                                    : "An error occurred during generation. " + tempGenMessage,
+                                firstError);
                     }
                 });
                 for (Throwable e : generationReport.getErrors()) {
