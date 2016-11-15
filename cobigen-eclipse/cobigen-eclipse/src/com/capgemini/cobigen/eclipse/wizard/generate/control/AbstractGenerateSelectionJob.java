@@ -130,8 +130,8 @@ public abstract class AbstractGenerateSelectionJob extends AbstractCobiGenJob {
                         Throwable firstError = generationReport.getErrors().get(0);
                         String tempGenMessage = "The merge of generated contents to the "
                             + "target code base has been aborted. Please find the errorneous generation "
-                            + "results in the following temporary folder for further investigation: " + "<a>"
-                            + generationReport.getIncompleteGenerationPath() + "</a>";
+                            + "results in the following temporary folder for further investigation: "
+                            + generationReport.getIncompleteGenerationPath();
                         PlatformUIUtil
                             .openErrorDialog(
                                 generationReport.getErrors().size() > 1

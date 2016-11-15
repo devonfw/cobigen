@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.eclipse.common.tools;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -90,21 +92,19 @@ public class PlatformUIUtil {
      */
     public static MultiStatus createMultiStatus(Throwable t) {
 
-        List<Status> childStatus = Lists.newArrayList();
-        StackTraceElement[] stackTraceElements = t.getStackTrace();
-        for (int i = 0; i < stackTraceElements.length; i++) {
-            StackTraceElement element = stackTraceElements[i];
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, element.toString());
-            childStatus.add(status);
-        }
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
 
-        if (t.getCause() != null) {
-            childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Caused by"));
-            childStatus.add(createMultiStatus(t.getCause()));
+        final String trace = sw.toString();
+
+        List<Status> childStatus = Lists.newArrayList();
+        for (String line : trace.split(System.getProperty("line.separator"))) {
+            childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
         }
 
         MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
-            childStatus.toArray(new Status[0]), t.toString(), t);
+            childStatus.toArray(new Status[0]), t.getMessage(), t);
         return ms;
     }
 }
