@@ -2,24 +2,25 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
   <artifactId>cobigen-templates-parent</artifactId>
-  <version>1.0.0</version>
   <name>CobiGen Templates - Parent</name>
   <packaging>pom</packaging>
 
+  <!-- parent is just for pom flatten/deployment issues. However, as a project,
+    you might change the project deployment, so you can simply remove the parent inheritance -->
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-master-parent</artifactId>
-    <version>1.1.1</version>
+    <version>dev-SNAPSHOT</version>
   </parent>
 
   <modules>
-    <module>templates-oasp</module>
+    <module>templates-oasp4j</module>
+    <module>templates-oasp4js</module>
     <module>templates-rf</module>
   </modules>
- 
-   <build>
+
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -37,7 +38,7 @@
         <includes>
           <include>**/*.ftl</include>
           <include>**/*.xml</include>
-		  <include>**/LICENSE.CobiGen</include>
+          <include>**/LICENSE.CobiGen</include>
         </includes>
         <excludes>
           <exclude>pom.xml</exclude>
@@ -45,5 +46,5 @@
       </resource>
     </resources>
   </build>
- 
+
 </project>
