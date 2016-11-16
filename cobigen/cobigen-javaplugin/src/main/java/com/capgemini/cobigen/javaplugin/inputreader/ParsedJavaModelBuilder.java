@@ -342,6 +342,11 @@ public class ParsedJavaModelBuilder {
                     || value instanceof Long || value instanceof Float || value instanceof Double
                     || value instanceof Boolean || value instanceof Character) {
                     annotationParameters.put(propertyName, value);
+                } else if (value instanceof String) {
+                    if (((String) value).matches("\".*\"")) {
+                        value = ((String) value).replaceFirst("\"(.*)\"", "$1");
+                    }
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
                     // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we
