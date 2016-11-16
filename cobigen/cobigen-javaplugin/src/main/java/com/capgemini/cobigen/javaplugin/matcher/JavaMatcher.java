@@ -163,8 +163,8 @@ public class JavaMatcher implements MatcherInterpreter {
                 resolvedVariables.put(va.getVarName(), va.getValue());
                 break;
             case REGEX:
-                resolvedVariables.put(va.getVarName(),
-                    resolveRegexValue(matcherType, matcherValue, stringToMatch, va));
+                String resolvedRegexValue = resolveRegexValue(matcherType, matcherValue, stringToMatch, va);
+                resolvedVariables.put(va.getVarName(), resolvedRegexValue != null ? resolvedRegexValue : "");
                 break;
             }
         }

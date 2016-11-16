@@ -1,14 +1,12 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
 import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
@@ -17,47 +15,40 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.thoughtworks.qdox.model.JavaClass;
 
 import junit.framework.AssertionFailedError;
 
 /**
- * This test suite includes all tests, which focus on the correct model creation including correct extraction
- * of Java inheritance, generic type resolving etc.
- * @author mbrunnli (22.01.2015)
+ * Test suite for variable resolution.
  */
-public class ModelCreationTest extends AbstractIntegrationTest {
+public class VariablesResolutionTest extends AbstractIntegrationTest {
 
     /**
-     * Field for testing purposes
-     */
-    @SuppressWarnings("unused")
-    private List<String> testField;
-
-    /**
-     * Tests the correct reading and writing of parametric types as found in the input sources.
+     * Tests that the path resolution is performed successfully in case of including path variables derived
+     * from variable assignments retrieved by regex groups, which have been resolved to null. This bug has
+     * been introduced by changing the model building from DOM to Bean model. The latter required to
+     * explicitly not to set <code>null</code> as a value for variable resolution. Basically, this is odd, but
+     * we have to comply with backward compatibility and the issue that we cannot encode unary-operators like
+     * ?? in a file path sufficiently.
      * @throws Exception
      *             test fails
      */
     @Test
-    public void testCorrectGenericTypeExtraction() throws Exception {
+    public void testSuccessfulPathResolution_variableEqNull() throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+        JavaClass input = JavaParserUtil.getFirstJavaClass(new FileReader(
+            new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java")));
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("genericTypes.txt")) {
+            if (template.getId().equals("${variables.entityName}.java")) {
                 GenerationReportTo report =
                     cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 assertThat(report).isSuccessful();
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
-                assertThat(expectedFile).exists();
-                assertThat(expectedFile).hasContent("List<String> testField");
                 methodTemplateFound = true;
                 break;
             }
@@ -67,5 +58,4 @@ public class ModelCreationTest extends AbstractIntegrationTest {
             throw new AssertionFailedError("Test template not found");
         }
     }
-
 }
