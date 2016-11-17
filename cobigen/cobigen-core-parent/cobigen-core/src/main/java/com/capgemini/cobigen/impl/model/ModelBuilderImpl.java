@@ -1,11 +1,7 @@
 package com.capgemini.cobigen.impl.model;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.InputReader;
@@ -23,9 +19,6 @@ import com.capgemini.cobigen.impl.validator.InputValidator;
  * {@link MatcherInterpreter}s
  */
 public class ModelBuilderImpl implements ModelBuilder {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ModelBuilderImpl.class);
 
     /** Input object for which a new object model should be created */
     private Object generatorInput;
@@ -93,25 +86,6 @@ public class ModelBuilderImpl implements ModelBuilder {
         model.put("variables",
             new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
         return model;
-    }
-
-    /**
-     * Enriches the model by reference by additional logic providing beans.
-     * @param model
-     *            to be enriched
-     * @param logicClasses
-     *            logic implementing beans to be made accessible
-     */
-    public void enrichByLogicBeans(Map<String, Object> model, List<Class<?>> logicClasses) {
-        for (Class<?> logicClass : logicClasses) {
-            try {
-                model.put(logicClass.getSimpleName(), logicClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                LOG.warn(
-                    "The Java class '{}' could not been instantiated for template processing and thus will be missing in the model.",
-                    logicClass.getCanonicalName());
-            }
-        }
     }
 
 }
