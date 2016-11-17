@@ -75,8 +75,8 @@ public class GenerationProcessor {
     /** Artifacts to generate, e.g. templates or increments */
     private List<? extends GenerableArtifact> generableArtifacts;
 
-    /** Java classes to be served by the model implementing template logic */
-    private List<Class<?>> logicClasses;
+    /** Singletons of the Java classes to be served by the model implementing template logic */
+    private Map<String, Object> logicClassesModel;
 
     /** Externally provided model to be used for generation */
     private Map<String, Object> rawModel;
@@ -126,7 +126,9 @@ public class GenerationProcessor {
         this.forceOverride = forceOverride;
         this.input = input;
         this.generableArtifacts = generableArtifacts;
-        this.logicClasses = logicClasses;
+        if (logicClasses != null) {
+            loadLogicClasses(logicClasses);
+        }
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
@@ -136,6 +138,25 @@ public class GenerationProcessor {
         this.targetRootPath = targetRootPath;
 
         generationReport = new GenerationReportTo();
+    }
+
+    /**
+     * Loads the logic classes passed to assure a singleton instance for the complete generation. Mapping from
+     * simple type to instance.
+     * @param logicClasses
+     *            logic classes to instantiate.
+     */
+    private void loadLogicClasses(List<Class<?>> logicClasses) {
+        logicClassesModel = Maps.newHashMap();
+        for (Class<?> logicClass : logicClasses) {
+            try {
+                logicClassesModel.put(logicClass.getSimpleName(), logicClass.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                LOG.warn(
+                    "The Java class '{}' could not been instantiated for template processing and thus will be missing in the model.",
+                    logicClass.getCanonicalName());
+            }
+        }
     }
 
     /**
@@ -166,8 +187,8 @@ public class GenerationProcessor {
 
         if (generationReport.isSuccessful()) {
             try {
-                Files.walkFileTree(tmpTargetRootPath, new CopyDirectoryVisitor(tmpTargetRootPath, targetRootPath,
-                    StandardCopyOption.REPLACE_EXISTING));
+                Files.walkFileTree(tmpTargetRootPath, new CopyDirectoryVisitor(tmpTargetRootPath,
+                    targetRootPath, StandardCopyOption.REPLACE_EXISTING));
                 tmpTargetRootPath.toFile().delete();
             } catch (IOException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
@@ -370,15 +391,14 @@ public class GenerationProcessor {
         Object generatorInput) {
         ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger);
         Map<String, Object> model;
-
         if (rawModel != null) {
             model = rawModel;
         } else {
             model = modelBuilderImpl.createModel(triggerInterpreter);
         }
         modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter);
-        if (logicClasses != null) {
-            modelBuilderImpl.enrichByLogicBeans(model, logicClasses);
+        if (logicClassesModel != null) {
+            model.putAll(logicClassesModel);
         }
         return model;
     }
