@@ -39,5 +39,9 @@ public class TestUtil {
         }
         return annotation;
       }
+      
+      public String loadInternalClass() {
+          return Path.class.getCanonicalName();
+      }
 
 }
