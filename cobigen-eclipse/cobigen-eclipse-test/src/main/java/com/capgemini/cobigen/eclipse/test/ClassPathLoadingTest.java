@@ -176,4 +176,38 @@ public class ClassPathLoadingTest extends SystemTest {
         IFile generationResult = mainProject.getProject().getFile("TestOutput.txt");
         assertThat(generationResult.exists()).isTrue();
     }
+
+    /**
+     * Tests class resolution of classes of template only dependencies.
+     * @throws Exception
+     *             Test fails
+     */
+    @Test
+    public void testClassloadingOfTemplateDependencies() throws Exception {
+
+        // create a new temporary java project and copy java class used as an input for CobiGen
+        String testProjectName = "TestInputProj";
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
+        FileUtils.copyFile(new File(resourcesRootPath + "input/PlainInput.java"), project
+            .getUnderlyingResource().getLocation().append("src/main/java/main/PlainInput.java").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        tmpMavenProjectRule.updateProject();
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        SWTBotTreeItem javaClassItem =
+            view.bot().tree().expandNode(testProjectName, "src/main/java", "main", "PlainInput.java");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment2");
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IFile generationResult = project.getProject().getFile("InternalClassloading.txt");
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in)).isEqualTo("javax.ws.rs.Path");
+        }
+    }
 }
