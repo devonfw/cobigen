@@ -330,8 +330,7 @@ public class GenerationProcessor {
                         throw new MergeException(e, templateIntern.getAbsoluteTemplatePath());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
-                            "Could not write file " + tmpOriginalFile.toURI().toString() + " after merge.",
-                            e);
+                            "Could not write file " + tmpOriginalFile.toPath() + " after merge.", e);
                     }
                 }
             } else {
@@ -524,7 +523,7 @@ public class GenerationProcessor {
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
             throw new CobiGenRuntimeException(
-                "Could not write file while processing template with id '" + template.getName() + "'", e);
+                "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
         }
     }
 
@@ -553,8 +552,8 @@ public class GenerationProcessor {
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
         } catch (Throwable e) {
-            String message = "An error occured while retrieving the FreeMarker template with id '"
-                + template.getName() + "' from the FreeMarker configuration.";
+            String message = "An error occured while retrieving the FreeMarker template "
+                + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.";
             throw new CobiGenRuntimeException(message, e);
         }
 
@@ -578,13 +577,11 @@ public class GenerationProcessor {
                 }
                 env.process();
             } catch (TemplateException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template with id '"
-                    + template.getName() + "':\n" + e.getMessage(), e);
+                throw new CobiGenRuntimeException("An error occurred while generating the template "
+                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
             } catch (Throwable e) {
-                throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template with id '" + template.getName()
-                        + "'.",
-                    e);
+                throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template "
+                    + template.getAbsoluteTemplatePath(), e);
             }
         }
     }
