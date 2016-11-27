@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
-import com.capgemini.cobigen.eclipse.common.ui.LinkErrorDialog;
+import com.capgemini.cobigen.eclipse.common.widget.LinkErrorDialog;
 import com.google.common.collect.Lists;
 
 /**

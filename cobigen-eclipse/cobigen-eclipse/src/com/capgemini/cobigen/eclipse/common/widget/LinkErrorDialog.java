@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.common.ui;
+package com.capgemini.cobigen.eclipse.common.widget;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
@@ -30,7 +30,7 @@ public class LinkErrorDialog extends ErrorDialog {
 
         // mark any file path as link
         this.message = this.message.replaceAll(
-            "(?:[a-zA-Z]\\:)\\\\([\\w-\\.\\$\\{\\}]+\\\\)*[\\w\\$]([\\w-\\.\\$\\{\\}])+", "<a>$0</a>");
+            "(?:[a-zA-Z]\\:)\\\\([\\w-\\.\\$\\{\\}#]+\\\\)*[\\w\\$]([\\w-\\.\\$\\{\\}#])+", "<a>$0</a>");
     }
 
     /**

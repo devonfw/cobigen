@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.common.ui;
+package com.capgemini.cobigen.eclipse.common.widget;
 
 import java.awt.Desktop;
 import java.io.File;
