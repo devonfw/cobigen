@@ -13,7 +13,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath="sencha_architect"/>
+    <templateScan templatePath="templates" destinationPath=""/>
   </templateScans>
 
   <increments>
