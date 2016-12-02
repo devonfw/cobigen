@@ -45,5 +45,10 @@ Bundle-ClassPath: .,
  lib/cobigen-javaplugin-1.4.0-SNAPSHOT.jar,
  lib/cobigen-propertyplugin-1.1.0-SNAPSHOT.jar,
  lib/cobigen-textmerger-1.1.0-SNAPSHOT.jar,
- lib/cobigen-core-api-3.0.0-SNAPSHOT.jar
+ lib/cobigen-core-api-3.0.0-SNAPSHOT.jar,
+ lib/cobigen-jsonplugin-1.0.0-SNAPSHOT.jar,
+ lib/cobigen-senchaplugin-1.0.0-SNAPSHOT.jar,
+ lib/gson-2.7.jar,
+ lib/json-20160810.jar,
+ lib/rhino-1.7R4.jar
 Export-Package: com.capgemini.cobigen.eclipse.common.constants.external

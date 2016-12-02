@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-jsonplugin-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-senchaplugin-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson-2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-20160810.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rhino-1.7R4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-3.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-3.0.0-SNAPSHOT.jar" sourcepath="/cobigen-core"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.4.0-SNAPSHOT.jar"/>
