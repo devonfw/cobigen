@@ -227,7 +227,7 @@ public class SenchaMerger implements Merger {
                                             System.out.println("es tabla");
                                             int index = arrayBase.getElements().indexOf(contains);
                                             arrayBase.getElements().remove(index);
-                                            arrayBase.getElements().add(index, node);
+                                            arrayBase.getElements().add(node);
                                         }
                                     }
                                 }
