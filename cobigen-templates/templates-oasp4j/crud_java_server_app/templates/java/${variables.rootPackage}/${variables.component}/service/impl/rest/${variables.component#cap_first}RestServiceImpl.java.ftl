@@ -17,7 +17,7 @@ import javax.ws.rs.NotFoundException;
  * The service implementation for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
  */
 @Named("${variables.component?cap_first}RestService")
-public class ${variables.component?cap_first}RestServiceImpl extends ${variables.component?cap_first}RestService{
+public class ${variables.component?cap_first}RestServiceImpl implements ${variables.component?cap_first}RestService{
 
   @Inject
   private ${variables.component?cap_first} ${variables.component?lower_case};
