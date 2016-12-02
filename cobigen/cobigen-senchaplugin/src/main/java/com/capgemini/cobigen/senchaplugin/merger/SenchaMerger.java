@@ -231,6 +231,7 @@ public class SenchaMerger implements Merger {
                                             System.out.println(arrayBase.getElements().size());
                                             arrayBase.getElements().add(node);
                                             System.out.println(arrayBase.getElements().size());
+                                            break;
                                         }
                                     }
                                 }
