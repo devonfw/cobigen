@@ -219,10 +219,11 @@ public class SenchaMerger implements Merger {
                         for (AstNode node : arrayPatch.getElements()) {
                             boolean exists = false;
                             for (AstNode contains : arrayBase.getElements()) {
-                                System.out.println(contains.getClass().getName());
+                                System.out.println(contains.toSource());
                                 if (!(contains instanceof StringLiteral)) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
+                                        System.out.println(prop.toSource());
                                         if (prop.toSource().equals("reference")
                                             && prop.toSource().contains("grid")) {
                                             int index = arrayBase.getElements().indexOf(contains);
