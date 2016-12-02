@@ -226,8 +226,11 @@ public class SenchaMerger implements Merger {
                                             && prop.getRight().toSource().contains("grid")) {
                                             System.out.println("es tabla");
                                             int index = arrayBase.getElements().indexOf(contains);
+                                            System.out.println(arrayBase.getElements().size());
                                             arrayBase.getElements().remove(index);
+                                            System.out.println(arrayBase.getElements().size());
                                             arrayBase.getElements().add(node);
+                                            System.out.println(arrayBase.getElements().size());
                                         }
                                     }
                                 }
