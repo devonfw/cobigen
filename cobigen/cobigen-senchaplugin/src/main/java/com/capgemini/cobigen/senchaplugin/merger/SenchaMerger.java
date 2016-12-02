@@ -222,8 +222,8 @@ public class SenchaMerger implements Merger {
                                 if (!(contains instanceof StringLiteral)) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
-                                        if (prop.toSource().equals("reference")
-                                            && prop.toSource().contains("grid")) {
+                                        if (prop.getLeft().toSource().equals("reference")
+                                            && prop.getRight().toSource().contains("grid")) {
                                             System.out.println("es tabla");
                                             int index = arrayBase.getElements().indexOf(contains);
                                             arrayBase.getElements().remove(index);
