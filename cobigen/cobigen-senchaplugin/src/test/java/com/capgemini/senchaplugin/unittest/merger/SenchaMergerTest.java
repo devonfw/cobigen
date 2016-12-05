@@ -180,7 +180,7 @@ public class SenchaMergerTest {
             }
         }
 
-        assertTrue(true);
+        assertTrue(added);
     }
 
     @Test

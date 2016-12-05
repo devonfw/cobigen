@@ -31,6 +31,7 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.Grids;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
@@ -126,11 +127,13 @@ public class SenchaMerger implements Merger {
         switch (type) {
         case "senchamerge":
             // Merge process
-            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), nodesBase, nodesPatch,
+                patchOverrides);
             break;
         case "senchamerge_override":
             // Merge process
-            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), patchOverrides);
+            SenchaMerge(nodesBase.getSecondArgument(), nodesPatch.getSecondArgument(), nodesBase, nodesPatch,
+                patchOverrides);
             break;
         default:
             throw new MergeException(base, "Merge strategy not yet supported!");
@@ -178,10 +181,13 @@ public class SenchaMerger implements Merger {
      *            the destination of the merge result
      * @param nodesPatch
      *            nodes to patch
+     * @param visitorBase
+     * @param visitorPatch
      * @param patchOverrides
      *            merge strategy
      */
-    private void SenchaMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, boolean patchOverrides) {
+    private void SenchaMerge(ObjectLiteral nodesBase, ObjectLiteral nodesPatch, SenchaNodeVisitor visitorBase,
+        SenchaNodeVisitor visitorPatch, boolean patchOverrides) {
         Map<String, AstNode> entryPatch = new HashMap<>();
         Map<String, AstNode> entryBase = new HashMap<>();
 
@@ -202,7 +208,7 @@ public class SenchaMerger implements Merger {
                                                                            // Recursion
 
                     SenchaMerge((ObjectLiteral) entryBase.get(patchKey),
-                        (ObjectLiteral) entryPatch.get(patchKey), patchOverrides);
+                        (ObjectLiteral) entryPatch.get(patchKey), visitorBase, visitorPatch, patchOverrides);
 
                 } else if (entryPatch.get(patchKey) instanceof ArrayLiteral
                     && entryBase.get(patchKey) instanceof ArrayLiteral) {
@@ -215,36 +221,52 @@ public class SenchaMerger implements Merger {
 
                         ArrayLiteral arrayPatch = (ArrayLiteral) entryPatch.get(patchKey);
                         ArrayLiteral arrayBase = (ArrayLiteral) entryBase.get(patchKey);
-
+                        // if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
+                        // for (Map.Entry<String, AstNode> grid : visitorPatch.getGrids().getGrids()
+                        // .entrySet()) {
+                        // String gridKey = grid.getKey();
+                        // AstNode gridValue = grid.getValue();
+                        // mergeGrids(visitorBase.getGrids(), gridKey, gridValue);
+                        // }
+                        // }
                         for (AstNode node : arrayPatch.getElements()) {
                             boolean exists = false;
+                            boolean mergeGrid = false;
+                            AstNode grid = null;
+                            int index = 0;
                             for (AstNode contains : arrayBase.getElements()) {
                                 if (!(contains instanceof StringLiteral)) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
                                         if (prop.getLeft().toSource().equals("reference")
                                             && prop.getRight().toSource().contains("grid")) {
-                                            System.out.println("es tabla");
-                                            int index = arrayBase.getElements().indexOf(contains);
-                                            System.out.println(arrayBase.getElements().size());
-                                            arrayBase.getElements().remove(index);
-                                            System.out.println(arrayBase.getElements().size());
-                                            arrayBase.getElements().add(node);
-                                            System.out.println(arrayBase.getElements().size());
-                                            break;
+                                            if (visitorPatch.getGrids().getGridsCollection()
+                                                .contains(visitorPatch.getGrids().getGrids()
+                                                    .get(prop.getRight().toSource()))) {
+                                                // arrayBase.getElements().add(contains);
+                                                exists = true;
+                                                mergeGrid = true;
+                                                index = arrayBase.getElements().indexOf(objLB);
+                                                grid = arrayBase.getElements().get(index);
+                                                break;
+                                            }
                                         }
                                     }
+                                } else if (contains.toSource().equals(node.toSource())) {
+                                    exists = true;
+                                    break;
                                 }
 
-                                // if (contains.toSource().equals(node.toSource())) {
-                                // exists = true;
-                                // break;
-                                // }
                             }
-                            // if (!exists) {
-                            // arrayBase.getElements().add(node);
-                            // }
+                            if (!exists) {
+                                arrayBase.getElements().add(node);
+                            }
+                            if (mergeGrid) {
+                                SenchaMerge((ObjectLiteral) grid, (ObjectLiteral) node, visitorBase,
+                                    visitorPatch, patchOverrides);
+                            }
                         }
+
                     }
 
                 } else if (entryPatch.get(patchKey) instanceof StringLiteral
@@ -265,6 +287,15 @@ public class SenchaMerger implements Merger {
                 nodesBase.getElements().add(toAdd);
             }
         }
+    }
+
+    /**
+     * @param grids
+     * @param gridKey
+     * @param gridValue
+     */
+    private void mergeGrids(Grids gridsBase, String gridKey, AstNode gridValue) {
+
     }
 
     /**
