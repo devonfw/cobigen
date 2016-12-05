@@ -67,7 +67,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
             secondArgument = (ObjectLiteral) node;
         } else if (node instanceof ArrayLiteral) {
             for (AstNode contains : ((ArrayLiteral) node).getElements()) {
-                if (!(contains instanceof StringLiteral)) {
+                if ((contains instanceof ObjectLiteral)) {
                     ObjectLiteral objL = (ObjectLiteral) contains;
                     for (ObjectProperty prop : objL.getElements()) {
                         if (prop.getLeft().toSource().equals("reference")
