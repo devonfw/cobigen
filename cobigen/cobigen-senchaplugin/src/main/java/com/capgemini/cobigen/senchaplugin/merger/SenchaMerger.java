@@ -232,23 +232,29 @@ public class SenchaMerger implements Merger {
                         for (AstNode node : arrayPatch.getElements()) {
                             boolean exists = false;
                             boolean mergeGrid = false;
-                            AstNode grid = null;
+                            ObjectLiteral gridBase = null;
+                            ObjectLiteral gridPatch = null;
                             int index = 0;
                             for (AstNode contains : arrayBase.getElements()) {
-                                if (!(contains instanceof StringLiteral)) {
+                                if (contains instanceof ObjectLiteral) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
                                         if (prop.getLeft().toSource().equals("reference")
                                             && prop.getRight().toSource().contains("grid")) {
-                                            if (visitorPatch.getGrids().getGridsCollection()
-                                                .contains(visitorPatch.getGrids().getGrids()
-                                                    .get(prop.getRight().toSource()))) {
-                                                // arrayBase.getElements().add(contains);
-                                                exists = true;
-                                                mergeGrid = true;
-                                                index = arrayBase.getElements().indexOf(objLB);
-                                                grid = arrayBase.getElements().get(index);
-                                                break;
+                                            if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
+                                                if (visitorPatch.getGrids().getGridsCollection()
+                                                    .contains(visitorPatch.getGrids().getGrids()
+                                                        .get(prop.getRight().toSource()))) {
+                                                    gridPatch = (ObjectLiteral) visitorPatch.getGrids()
+                                                        .getGrids().get(prop.getRight().toSource());
+                                                    // arrayBase.getElements().add(contains);
+                                                    exists = true;
+                                                    mergeGrid = true;
+                                                    index = arrayBase.getElements().indexOf(objLB);
+                                                    gridBase =
+                                                        (ObjectLiteral) arrayBase.getElements().get(index);
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -262,8 +268,8 @@ public class SenchaMerger implements Merger {
                                 arrayBase.getElements().add(node);
                             }
                             if (mergeGrid) {
-                                SenchaMerge((ObjectLiteral) grid, (ObjectLiteral) node, visitorBase,
-                                    visitorPatch, patchOverrides);
+                                System.out.println("merging grids");
+                                SenchaMerge(gridBase, gridPatch, visitorBase, visitorPatch, patchOverrides);
                             }
                         }
 
