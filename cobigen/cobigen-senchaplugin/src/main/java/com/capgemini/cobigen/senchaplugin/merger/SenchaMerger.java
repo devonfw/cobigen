@@ -236,6 +236,10 @@ public class SenchaMerger implements Merger {
                             ObjectLiteral gridPatch = null;
                             int index = 0;
                             for (AstNode contains : arrayBase.getElements()) {
+                                if (contains.toSource().equals(node.toSource())) {
+                                    exists = true;
+                                    break;
+                                }
                                 if (contains instanceof ObjectLiteral) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
