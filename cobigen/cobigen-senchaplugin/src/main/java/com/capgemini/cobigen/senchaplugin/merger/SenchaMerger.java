@@ -254,6 +254,9 @@ public class SenchaMerger implements Merger {
                                                     gridBase =
                                                         (ObjectLiteral) arrayBase.getElements().get(index);
                                                     break;
+                                                } else if (contains.toSource().equals(node.toSource())) {
+                                                    exists = true;
+                                                    break;
                                                 }
                                             } else if (contains.toSource().equals(node.toSource())) {
                                                 exists = true;
