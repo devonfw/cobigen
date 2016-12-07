@@ -244,23 +244,20 @@ public class SenchaMerger implements Merger {
                                             && prop.getRight().toSource().contains("grid")) {
                                             System.out.println("es tabla");
                                             if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
-                                                // System.out.println("patch no es empty");
-                                                // System.out.println(prop.getRight().toSource());
-                                                // System.out.println(visitorPatch.getGrids()
-                                                // .getGridsCollection().get(0).toSource());
-                                                // if (visitorPatch.getGrids().getGridsCollection()
-                                                // .contains(visitorPatch.getGrids().getGrids()
-                                                // .get(prop.getRight().toSource()))) {
-                                                gridPatch = (ObjectLiteral) visitorPatch.getGrids().getGrids()
-                                                    .get(prop.getRight().toSource());
-                                                System.out.println(gridPatch.toSource());
-                                                // arrayBase.getElements().add(contains);
-                                                exists = true;
-                                                mergeGrid = true;
-                                                index = arrayBase.getElements().indexOf(objLB);
-                                                gridBase = (ObjectLiteral) arrayBase.getElements().get(index);
-                                                break;
-                                                // }
+                                                if (visitorPatch.getGrids().getGridsCollection()
+                                                    .contains(visitorPatch.getGrids().getGrids()
+                                                        .get(prop.getRight().toSource()))) {
+                                                    gridPatch = (ObjectLiteral) visitorPatch.getGrids()
+                                                        .getGrids().get(prop.getRight().toSource());
+                                                    System.out.println(gridPatch.toSource());
+                                                    // arrayBase.getElements().add(contains);
+                                                    exists = true;
+                                                    mergeGrid = true;
+                                                    index = arrayBase.getElements().indexOf(objLB);
+                                                    gridBase =
+                                                        (ObjectLiteral) arrayBase.getElements().get(index);
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
