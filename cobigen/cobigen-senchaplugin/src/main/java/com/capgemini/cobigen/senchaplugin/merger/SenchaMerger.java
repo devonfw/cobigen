@@ -237,19 +237,16 @@ public class SenchaMerger implements Merger {
                             int index = 0;
                             for (AstNode contains : arrayBase.getElements()) {
                                 if (contains instanceof ObjectLiteral) {
-                                    System.out.println("patata");
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
                                         if (prop.getLeft().toSource().equals("reference")
                                             && prop.getRight().toSource().contains("grid")) {
-                                            System.out.println("es tabla");
                                             if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
                                                 if (visitorPatch.getGrids().getGridsCollection()
                                                     .contains(visitorPatch.getGrids().getGrids()
                                                         .get(prop.getRight().toSource()))) {
                                                     gridPatch = (ObjectLiteral) visitorPatch.getGrids()
                                                         .getGrids().get(prop.getRight().toSource());
-                                                    System.out.println(gridPatch.toSource());
                                                     // arrayBase.getElements().add(contains);
                                                     exists = true;
                                                     mergeGrid = true;
