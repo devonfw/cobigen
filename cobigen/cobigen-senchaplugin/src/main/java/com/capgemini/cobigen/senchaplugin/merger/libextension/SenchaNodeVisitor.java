@@ -72,7 +72,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
                     for (ObjectProperty prop : objL.getElements()) {
                         if (prop.getLeft().toSource().equals("reference")
                             && prop.getRight().toSource().contains("grid")) {
-                            grids.getGrids().put(prop.getRight().toSource(), node);
+                            grids.getGrids().put(prop.getRight().toSource(), objL);
                             grids.getGridsCollection().add(objL);
                         }
                     }
