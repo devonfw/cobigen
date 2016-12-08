@@ -3,6 +3,7 @@ package com.capgemini.cobigen.jsonplugin.merger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,7 +113,7 @@ public class JSONMerger implements Merger {
      * @return columns of the grid
      */
     private Map<String, JsonObject> getPatchColumns(JsonObject objPatch) {
-        Map<String, JsonObject> columns = null;
+        Map<String, JsonObject> columns = new HashMap<>();
         Set<Entry<String, JsonElement>> patchEntry = objPatch.entrySet();
         Iterator<Entry<String, JsonElement>> it = patchEntry.iterator();
         while (it.hasNext()) {
@@ -121,9 +122,14 @@ public class JSONMerger implements Merger {
                 JsonObject table = next.getValue().getAsJsonArray().get(1).getAsJsonObject();
                 if (table.has("cn")) {
                     JsonArray cols = table.get("cn").getAsJsonArray();
-                    for (int i = 1; i < cols.size() - 1; i++) {
-                        columns.put(cols.get(i).getAsJsonObject().get("name").getAsString(),
-                            cols.get(i).getAsJsonObject());
+                    for (int i = 0; i < cols.size(); i++) {
+                        if (cols.get(i).getAsJsonObject().get("type").getAsString()
+                            .equals("Ext.grid.column.Column")) {
+                            String name = cols.get(i).getAsJsonObject().get("name").getAsString();
+                            JsonObject column = cols.get(i).getAsJsonObject();
+                            columns.put(name, column);
+                        }
+
                     }
                 }
 
