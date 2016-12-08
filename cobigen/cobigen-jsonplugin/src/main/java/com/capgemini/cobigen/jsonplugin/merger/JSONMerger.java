@@ -61,7 +61,6 @@ public class JSONMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        System.out.println(patch);
         String file = base.getAbsolutePath();
         JsonObject objBase = null;
 
@@ -199,6 +198,7 @@ public class JSONMerger implements Merger {
                                         exist = true;
                                         for (JsonObject column : patchColumns) {
                                             if (!baseObject.get("cn").getAsJsonArray().contains(column)) {
+                                                System.out.println("no contiene " + column.toString());
                                                 baseObject.get("cn").getAsJsonArray().add(column);
                                             }
                                         }
