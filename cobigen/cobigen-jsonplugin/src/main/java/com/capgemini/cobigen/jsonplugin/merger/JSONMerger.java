@@ -118,10 +118,13 @@ public class JSONMerger implements Merger {
             Entry<String, JsonElement> next = it.next();
             if (next.getKey().equals("cn")) {
                 JsonObject table = next.getValue().getAsJsonArray().get(1).getAsJsonObject();
-                JsonArray cols = table.get("cn").getAsJsonArray();
-                for (int i = 1; i < cols.size() - 1; i++) {
-                    columns.add(cols.get(i).getAsJsonObject());
+                if (table.has("cn")) {
+                    JsonArray cols = table.get("cn").getAsJsonArray();
+                    for (int i = 1; i < cols.size() - 1; i++) {
+                        columns.add(cols.get(i).getAsJsonObject());
+                    }
                 }
+
             }
         }
         return columns;
@@ -191,19 +194,25 @@ public class JSONMerger implements Merger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
-                                    if (baseObject.get("userConfig").getAsJsonObject().get("reference")
-                                        .equals(patchObject.get("userConfig").getAsJsonObject()
-                                            .get("reference"))) {
-                                        exist = true;
-                                        for (JsonObject column : patchColumns) {
-                                            System.out.println(baseObject.get("cn").getAsJsonArray().size());
-                                            if (!patchObject.get("cn").getAsJsonArray().contains(column)) {
-                                                System.out.println("no contiene " + column.toString());
-                                                patchObject.get("cn").getAsJsonArray().add(column);
+                                    if (baseObject.get("userConfig").getAsJsonObject().has("reference")
+                                        && patchObject.get("userConfig").getAsJsonObject().has("reference")) {
+                                        if (baseObject.get("userConfig").getAsJsonObject().get("reference")
+                                            .equals(patchObject.get("userConfig").getAsJsonObject()
+                                                .get("reference"))) {
+                                            exist = true;
+                                            for (JsonObject column : patchColumns) {
+                                                System.out
+                                                    .println(baseObject.get("cn").getAsJsonArray().size());
+                                                if (!patchObject.get("cn").getAsJsonArray()
+                                                    .contains(column)) {
+                                                    System.out.println("no contiene " + column.toString());
+                                                    patchObject.get("cn").getAsJsonArray().add(column);
+                                                }
                                             }
+                                            break;
                                         }
-                                        break;
                                     }
+
                                 }
                             }
                             if (!exist) {
