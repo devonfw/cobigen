@@ -194,13 +194,12 @@ public class JSONMerger implements Merger {
                                     if (baseObject.get("userConfig").getAsJsonObject().get("reference")
                                         .equals(patchObject.get("userConfig").getAsJsonObject()
                                             .get("reference"))) {
-                                        System.out.println("es la misma tabla " + patchColumns.size());
                                         exist = true;
                                         for (JsonObject column : patchColumns) {
                                             System.out.println(baseObject.get("cn").getAsJsonArray().size());
-                                            if (!baseObject.get("cn").getAsJsonArray().contains(column)) {
+                                            if (!patchObject.get("cn").getAsJsonArray().contains(column)) {
                                                 System.out.println("no contiene " + column.toString());
-                                                baseObject.get("cn").getAsJsonArray().add(column);
+                                                patchObject.get("cn").getAsJsonArray().add(column);
                                             }
                                         }
                                         break;
