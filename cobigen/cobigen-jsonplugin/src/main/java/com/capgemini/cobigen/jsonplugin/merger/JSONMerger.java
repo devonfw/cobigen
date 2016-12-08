@@ -192,9 +192,18 @@ public class JSONMerger implements Merger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
-
+                                    if (baseObject.get("userConfig").getAsJsonObject().get("reference")
+                                        .equals(patchObject.get("userConfig").getAsJsonObject()
+                                            .get("reference"))) {
+                                        exist = true;
+                                        for (JsonObject column : patchColumns) {
+                                            if (!baseObject.get("cn").getAsJsonArray().contains(column)) {
+                                                baseObject.get("cn").getAsJsonArray().add(column);
+                                            }
+                                        }
+                                        break;
+                                    }
                                 }
-
                             }
                             if (!exist) {
                                 leftArr.add(rightArr.get(posToAdd));
