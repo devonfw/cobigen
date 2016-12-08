@@ -3,7 +3,12 @@ package com.capgemini.cobigen.jsonplugin.merger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -84,13 +89,14 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
         }
 
+        List<JsonObject> patchColumns = getPatchColumns(objPatch);
         String result = null;
         switch (type) {
         case "sencharchmerge":
-            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, objBase, patchOverrides, objPatch);
             break;
         case "sencharchmerge_override":
-            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, objBase, patchOverrides, objPatch);
             break;
         default:
             throw new MergeException(base, "Merge strategy not yet supported!");
@@ -99,6 +105,27 @@ public class JSONMerger implements Merger {
         JSONTokener tokensBase = new JSONTokener(result);
         JSONObject jsonBase = new JSONObject(tokensBase);
         return jsonBase.toString(4);
+    }
+
+    /**
+     * @param objPatch
+     * @return
+     */
+    private List<JsonObject> getPatchColumns(JsonObject objPatch) {
+        List<JsonObject> columns = new LinkedList<>();
+        Set<Entry<String, JsonElement>> patchEntry = objPatch.entrySet();
+        Iterator<Entry<String, JsonElement>> it = patchEntry.iterator();
+        while (it.hasNext()) {
+            Entry<String, JsonElement> next = it.next();
+            if (next.getKey().equals("cn")) {
+                JsonObject table = next.getValue().getAsJsonArray().get(1).getAsJsonObject();
+                JsonArray cols = table.get("cn").getAsJsonArray();
+                for (int i = 1; i < cols.size() - 1; i++) {
+                    columns.add(cols.get(i).getAsJsonObject());
+                }
+            }
+        }
+        return columns;
     }
 
     /**
@@ -112,9 +139,10 @@ public class JSONMerger implements Merger {
      *            collection of patches
      * @return the result string of the merge
      */
-    public String senchArchMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
+    public String senchArchMerge(List<JsonObject> patchColumns, JsonObject destinationObject,
+        boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            senchArchMerge(destinationObject, obj.getAsJsonObject(), patchOverrides);
+            senchArchMerge(patchColumns, destinationObject, obj.getAsJsonObject(), patchOverrides);
         }
 
         return destinationObject.toString();
@@ -129,7 +157,8 @@ public class JSONMerger implements Merger {
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
-    private void senchArchMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
+    private void senchArchMerge(List<JsonObject> patchColumns, JsonObject leftObj, JsonObject rightObj,
+        boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -160,6 +189,12 @@ public class JSONMerger implements Merger {
                                 } else {
                                     posToAdd = i;
                                 }
+                                if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
+                                    JsonObject baseObject = rightArr.get(i).getAsJsonObject();
+                                    JsonObject patchObject = leftArr.get(j).getAsJsonObject();
+
+                                }
+
                             }
                             if (!exist) {
                                 leftArr.add(rightArr.get(posToAdd));
@@ -169,7 +204,8 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    senchArchMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
+                    senchArchMerge(patchColumns, leftVal.getAsJsonObject(), rightVal.getAsJsonObject(),
+                        patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
                     if (patchOverrides
                         && !(rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
