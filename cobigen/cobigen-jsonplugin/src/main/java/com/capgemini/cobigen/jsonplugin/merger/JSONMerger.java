@@ -88,7 +88,7 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
         }
 
-        List<JsonObject> patchColumns = getPatchColumns(objPatch);
+        Map<String, JsonObject> patchColumns = getPatchColumns(objPatch);
         String result = null;
         switch (type) {
         case "sencharchmerge":
@@ -108,10 +108,11 @@ public class JSONMerger implements Merger {
 
     /**
      * @param objPatch
-     * @return
+     *            the patch grid
+     * @return columns of the grid
      */
-    private List<JsonObject> getPatchColumns(JsonObject objPatch) {
-        List<JsonObject> columns = new LinkedList<>();
+    private Map<String, JsonObject> getPatchColumns(JsonObject objPatch) {
+        Map<String, JsonObject> columns = null;
         Set<Entry<String, JsonElement>> patchEntry = objPatch.entrySet();
         Iterator<Entry<String, JsonElement>> it = patchEntry.iterator();
         while (it.hasNext()) {
@@ -121,7 +122,8 @@ public class JSONMerger implements Merger {
                 if (table.has("cn")) {
                     JsonArray cols = table.get("cn").getAsJsonArray();
                     for (int i = 1; i < cols.size() - 1; i++) {
-                        columns.add(cols.get(i).getAsJsonObject());
+                        columns.put(cols.get(i).getAsJsonObject().get("name").getAsString(),
+                            cols.get(i).getAsJsonObject());
                     }
                 }
 
@@ -132,6 +134,8 @@ public class JSONMerger implements Merger {
 
     /**
      * Merge a collection of JSON patch files
+     * @param patchColumns
+     *            columns of the grid to patch
      * @param destinationObject
      *            the destination {@link JsonObject}
      * @param patchOverrides
@@ -141,7 +145,7 @@ public class JSONMerger implements Merger {
      *            collection of patches
      * @return the result string of the merge
      */
-    public String senchArchMerge(List<JsonObject> patchColumns, JsonObject destinationObject,
+    public String senchArchMerge(Map<String, JsonObject> patchColumns, JsonObject destinationObject,
         boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
             senchArchMerge(patchColumns, destinationObject, obj.getAsJsonObject(), patchOverrides);
@@ -151,6 +155,8 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * @param patchColumns
+     *            columns of the grid to patch
      * @param leftObj
      *            The patch object
      * @param rightObj
@@ -159,7 +165,7 @@ public class JSONMerger implements Merger {
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
-    private void senchArchMerge(List<JsonObject> patchColumns, JsonObject leftObj, JsonObject rightObj,
+    private void senchArchMerge(Map<String, JsonObject> patchColumns, JsonObject leftObj, JsonObject rightObj,
         boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
@@ -199,16 +205,19 @@ public class JSONMerger implements Merger {
                                         if (baseObject.get("userConfig").getAsJsonObject().get("reference")
                                             .equals(patchObject.get("userConfig").getAsJsonObject()
                                                 .get("reference"))) {
+                                            List<String> baseColumns = getBaseGridColumns(patchObject);
                                             exist = true;
-                                            for (JsonObject column : patchColumns) {
-                                                System.out
-                                                    .println(baseObject.get("cn").getAsJsonArray().size());
-                                                if (!patchObject.get("cn").getAsJsonArray()
-                                                    .contains(column)) {
-                                                    System.out.println("no contiene " + column.toString());
+                                            for (String column : baseColumns) {
+                                                if (!patchColumns.containsKey(column)) {
                                                     patchObject.get("cn").getAsJsonArray().add(column);
                                                 }
                                             }
+                                            // for (JsonObject column : patchColumns) {
+                                            // if (!patchObject.get("cn").getAsJsonArray()
+                                            // .contains(column)) {
+                                            // patchObject.get("cn").getAsJsonArray().add(column);
+                                            // }
+                                            // }
                                             break;
                                         }
                                     }
@@ -236,5 +245,23 @@ public class JSONMerger implements Merger {
                 leftObj.add(rightKey, rightVal);
             }
         }
+    }
+
+    /**
+     * @param patchObject
+     *            the base grid
+     * @return the columns of the base grid
+     */
+    private List<String> getBaseGridColumns(JsonObject patchObject) {
+        JsonArray fields = patchObject.get("cn").getAsJsonArray();
+        List<String> columns = new LinkedList<>();
+        for (int i = 0; i < fields.size(); i++) {
+            JsonObject field = fields.get(i).getAsJsonObject();
+            if (field.get("type").equals("Ext.grid.column.Column")) {
+                System.out.println(field.get("name").getAsString());
+                columns.add(field.get("name").getAsString());
+            }
+        }
+        return columns;
     }
 }
