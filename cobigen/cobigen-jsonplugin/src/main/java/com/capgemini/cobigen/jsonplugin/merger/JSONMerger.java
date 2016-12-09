@@ -213,9 +213,10 @@ public class JSONMerger implements Merger {
                                                 .get("reference"))) {
                                             List<String> baseColumns = getBaseGridColumns(patchObject);
                                             exist = true;
-                                            for (String column : baseColumns) {
-                                                if (!patchColumns.containsKey(column)) {
-                                                    patchObject.get("cn").getAsJsonArray().add(column);
+                                            for (String key : patchColumns.keySet()) {
+                                                if (!baseColumns.contains(key)) {
+                                                    patchObject.get("cn").getAsJsonArray()
+                                                        .add(patchColumns.get(key));
                                                 }
                                             }
                                             // for (JsonObject column : patchColumns) {
