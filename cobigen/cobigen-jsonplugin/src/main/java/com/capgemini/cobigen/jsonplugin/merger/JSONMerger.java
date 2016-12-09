@@ -219,14 +219,23 @@ public class JSONMerger implements Merger {
                                         if (baseObject.get("userConfig").getAsJsonObject().get("reference")
                                             .equals(patchObject.get("userConfig").getAsJsonObject()
                                                 .get("reference"))) {
-                                            List<String> baseColumns = getBaseGridColumns(patchObject);
+                                            List<String> baseNameColumns =
+                                                getBaseGridColumnNames(patchObject);
+                                            List<String> patchNameColumns =
+                                                getPatchGridColumnNames(baseObject);
                                             exist = true;
-                                            for (String key : patchColumns.keySet()) {
-                                                if (!baseColumns.contains(key)) {
+                                            for (String column : patchNameColumns) {
+                                                if (!baseNameColumns.contains(column)) {
                                                     patchObject.get("cn").getAsJsonArray()
-                                                        .add(patchColumns.get(key));
+                                                        .add(patchColumns.get(column));
                                                 }
                                             }
+                                            // for (String key : patchColumns.keySet()) {
+                                            // if (!baseNameColumns.contains(key)) {
+                                            // patchObject.get("cn").getAsJsonArray()
+                                            // .add(patchColumns.get(key));
+                                            // }
+                                            // }
                                             break;
                                         }
                                     }
@@ -257,11 +266,27 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * @param baseObject
+     * @return
+     */
+    private List<String> getPatchGridColumnNames(JsonObject baseObject) {
+        JsonArray fields = baseObject.get("cn").getAsJsonArray();
+        List<String> columns = new LinkedList<>();
+        for (int i = 0; i < fields.size(); i++) {
+            JsonObject field = fields.get(i).getAsJsonObject();
+            if (field.get("type").getAsString().equals("Ext.grid.column.Column")) {
+                columns.add(field.get("name").getAsString());
+            }
+        }
+        return columns;
+    }
+
+    /**
      * @param patchObject
      *            the base grid
      * @return the columns of the base grid
      */
-    private List<String> getBaseGridColumns(JsonObject patchObject) {
+    private List<String> getBaseGridColumnNames(JsonObject patchObject) {
         JsonArray fields = patchObject.get("cn").getAsJsonArray();
         List<String> columns = new LinkedList<>();
         for (int i = 0; i < fields.size(); i++) {
