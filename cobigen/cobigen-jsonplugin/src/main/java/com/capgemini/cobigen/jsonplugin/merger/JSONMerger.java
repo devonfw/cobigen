@@ -219,12 +219,6 @@ public class JSONMerger implements Merger {
                                                         .add(patchColumns.get(key));
                                                 }
                                             }
-                                            // for (JsonObject column : patchColumns) {
-                                            // if (!patchObject.get("cn").getAsJsonArray()
-                                            // .contains(column)) {
-                                            // patchObject.get("cn").getAsJsonArray().add(column);
-                                            // }
-                                            // }
                                             break;
                                         }
                                     }
@@ -232,7 +226,10 @@ public class JSONMerger implements Merger {
                                 }
                             }
                             if (!exist) {
-                                leftArr.add(rightArr.get(posToAdd));
+                                if (!rightArr.get(posToAdd).getAsJsonObject().get("type").getAsString()
+                                    .equals("Ext.form.Label")) {
+                                    leftArr.add(rightArr.get(posToAdd));
+                                }
                             }
                             exist = false;
                         }
@@ -260,13 +257,11 @@ public class JSONMerger implements Merger {
      * @return the columns of the base grid
      */
     private List<String> getBaseGridColumns(JsonObject patchObject) {
-        System.out.println("calling base columns");
         JsonArray fields = patchObject.get("cn").getAsJsonArray();
         List<String> columns = new LinkedList<>();
         for (int i = 0; i < fields.size(); i++) {
             JsonObject field = fields.get(i).getAsJsonObject();
             if (field.get("type").getAsString().equals("Ext.grid.column.Column")) {
-                System.out.println(field.get("name").getAsString());
                 columns.add(field.get("name").getAsString());
             }
         }
