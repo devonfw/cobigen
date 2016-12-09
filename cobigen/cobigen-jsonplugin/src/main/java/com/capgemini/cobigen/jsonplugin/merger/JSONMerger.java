@@ -206,6 +206,14 @@ public class JSONMerger implements Merger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
+                                    if (baseObject.has("type") && patchObject.has("type")) {
+                                        if (baseObject.get("type").getAsString().equals("Ext.form.Label")
+                                            && patchObject.get("type").getAsString()
+                                                .equals("Ext.form.Label")) {
+                                            exist = true;
+                                            break;
+                                        }
+                                    }
                                     if (baseObject.get("userConfig").getAsJsonObject().has("reference")
                                         && patchObject.get("userConfig").getAsJsonObject().has("reference")) {
                                         if (baseObject.get("userConfig").getAsJsonObject().get("reference")
@@ -226,10 +234,7 @@ public class JSONMerger implements Merger {
                                 }
                             }
                             if (!exist) {
-                                if (!rightArr.get(posToAdd).getAsJsonObject().get("type").getAsString()
-                                    .equals("Ext.form.Label")) {
-                                    leftArr.add(rightArr.get(posToAdd));
-                                }
+                                leftArr.add(rightArr.get(posToAdd));
                             }
                             exist = false;
                         }
