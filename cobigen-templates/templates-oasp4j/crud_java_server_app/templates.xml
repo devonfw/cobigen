@@ -45,7 +45,6 @@
     </increment>
     <increment name="SDlogic_impl" description="CRUD SpingData logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
-      <templateRef ref="${variables.component#cap_first}.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}RepoImpl.java"/>
     </increment>
@@ -55,10 +54,10 @@
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
     </increment>
     <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
-      <templateRef ref="${variables.component#cap_first}.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
     </increment>
