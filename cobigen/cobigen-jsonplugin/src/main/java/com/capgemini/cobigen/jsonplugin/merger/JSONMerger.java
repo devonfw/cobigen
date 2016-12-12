@@ -147,6 +147,8 @@ public class JSONMerger implements Merger {
      *
      * @param patchColumns
      *            columns of the grid to patch
+     * @param baseModelFields
+     *            the fields of the model file
      * @param destinationObject
      *            the destination {@link JsonObject}
      * @param patchOverrides
@@ -171,6 +173,8 @@ public class JSONMerger implements Merger {
      *
      * @param patchColumns
      *            columns of the grid to patch
+     * @param baseModelFields
+     *            the fields of the model file
      * @param leftObj
      *            The patch object
      * @param rightObj
@@ -338,14 +342,21 @@ public class JSONMerger implements Merger {
         return columns;
     }
 
-    private List<String> getBaseModelFields(JsonObject patchObject) {
+    /**
+     * Gets the list of the fields of the base model file
+     *
+     * @param baseObject
+     *            the base model {@link JsonObject}
+     * @return list of field names
+     */
+    private List<String> getBaseModelFields(JsonObject baseObject) {
         List<String> modelFields = new LinkedList<>();
-        if (patchObject.has(Constants.TYPE_FIELD)) {
-            String type = patchObject.get(Constants.TYPE_FIELD).getAsString();
+        if (baseObject.has(Constants.TYPE_FIELD)) {
+            String type = baseObject.get(Constants.TYPE_FIELD).getAsString();
             if (!type.equals(Constants.COLUMN_TYPE) && !type.equals(Constants.LABEL_TYPE)
                 && !type.equals(Constants.PANEL_TYPE) && !type.equals(Constants.CONTROLLER_TYPE)) {
-                if (patchObject.has(Constants.CN_OBJECT)) {
-                    JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
+                if (baseObject.has(Constants.CN_OBJECT)) {
+                    JsonArray fields = baseObject.get(Constants.CN_OBJECT).getAsJsonArray();
                     for (int i = 0; i < fields.size(); i++) {
                         JsonObject field = fields.get(i).getAsJsonObject();
                         modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
