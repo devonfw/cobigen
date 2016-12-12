@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.ArrayLiteral;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.NodeVisitor;
 import org.mozilla.javascript.ast.ObjectLiteral;
@@ -21,6 +22,11 @@ public class SenchaNodeVisitor implements NodeVisitor {
      * List of {@link ObjectProperty}'s of the first level
      */
     private List<ObjectProperty> propertyNodes;
+
+    /**
+     * The info about grids of the view
+     */
+    private Grids grids;
 
     /**
      * The Sencha funtion called
@@ -43,6 +49,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
         functionCall = new LinkedList<>();
         firstArgument = null;
         secondArgument = new ObjectLiteral();
+        grids = new Grids();
 
     }
 
@@ -58,6 +65,19 @@ public class SenchaNodeVisitor implements NodeVisitor {
             firstArgument = (StringLiteral) node;
         } else if (node.depth() == 3) {
             secondArgument = (ObjectLiteral) node;
+        } else if (node instanceof ArrayLiteral) {
+            for (AstNode contains : ((ArrayLiteral) node).getElements()) {
+                if ((contains instanceof ObjectLiteral)) {
+                    ObjectLiteral objL = (ObjectLiteral) contains;
+                    for (ObjectProperty prop : objL.getElements()) {
+                        if (prop.getLeft().toSource().equals(Constants.REFERENCE)
+                            && prop.getRight().toSource().contains(Constants.GRID)) {
+                            grids.getGrids().put(prop.getRight().toSource(), objL);
+                            grids.getGridsCollection().add(objL);
+                        }
+                    }
+                }
+            }
         }
 
         return true;
@@ -89,5 +109,20 @@ public class SenchaNodeVisitor implements NodeVisitor {
      */
     public ObjectLiteral getSecondArgument() {
         return secondArgument;
+    }
+
+    /**
+     * @return the {@link Grids} object
+     */
+    public Grids getGrids() {
+        return grids;
+    }
+
+    /**
+     * @param grids
+     *            sets the {@link Grids} object
+     */
+    public void setGrids(Grids grids) {
+        this.grids = grids;
     }
 }
