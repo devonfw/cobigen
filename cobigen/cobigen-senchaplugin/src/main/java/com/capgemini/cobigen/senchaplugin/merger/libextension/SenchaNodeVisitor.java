@@ -24,7 +24,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
     private List<ObjectProperty> propertyNodes;
 
     /**
-     *
+     * The info about grids of the view
      */
     private Grids grids;
 
@@ -70,8 +70,8 @@ public class SenchaNodeVisitor implements NodeVisitor {
                 if ((contains instanceof ObjectLiteral)) {
                     ObjectLiteral objL = (ObjectLiteral) contains;
                     for (ObjectProperty prop : objL.getElements()) {
-                        if (prop.getLeft().toSource().equals("reference")
-                            && prop.getRight().toSource().contains("grid")) {
+                        if (prop.getLeft().toSource().equals(Constants.REFERENCE)
+                            && prop.getRight().toSource().contains(Constants.GRID)) {
                             grids.getGrids().put(prop.getRight().toSource(), objL);
                             grids.getGridsCollection().add(objL);
                         }
@@ -112,7 +112,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
     }
 
     /**
-     * @return
+     * @return the {@link Grids} object
      */
     public Grids getGrids() {
         return grids;
@@ -120,6 +120,7 @@ public class SenchaNodeVisitor implements NodeVisitor {
 
     /**
      * @param grids
+     *            sets the {@link Grids} object
      */
     public void setGrids(Grids grids) {
         this.grids = grids;
