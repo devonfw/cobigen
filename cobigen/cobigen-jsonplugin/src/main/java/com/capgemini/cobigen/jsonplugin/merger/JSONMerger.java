@@ -236,6 +236,7 @@ public class JSONMerger implements Merger {
                                                     .equals(Constants.COLUMN_TYPE)) { // is model field
                                                 if (baseModelFields.contains(
                                                     baseObject.get(Constants.NAME_FIELD).getAsString())) {
+                                                    System.out.println("is model field");
                                                     exist = true;
                                                     break;
                                                 }
