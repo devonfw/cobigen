@@ -229,11 +229,19 @@ public class JSONMerger implements Merger {
                                         if (!baseObject.get(Constants.TYPE_FIELD).getAsString()
                                             .equals(Constants.LABEL_TYPE)
                                             && !baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.COLUMN_TYPE)) {
+                                                .equals(Constants.COLUMN_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.PANEL_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.CONTROLLER_TYPE)) {
                                             if (!patchObject.get(Constants.TYPE_FIELD).getAsString()
                                                 .equals(Constants.LABEL_TYPE)
                                                 && !patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                    .equals(Constants.COLUMN_TYPE)) { // is model field
+                                                    .equals(Constants.COLUMN_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.PANEL_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.CONTROLLER_TYPE)) { // is model field
                                                 if (baseModelFields.contains(
                                                     baseObject.get(Constants.NAME_FIELD).getAsString())) {
                                                     System.out.println("is model field "
@@ -332,14 +340,19 @@ public class JSONMerger implements Merger {
 
     private List<String> getBaseModelFields(JsonObject patchObject) {
         List<String> modelFields = new LinkedList<>();
-        if (patchObject.has(Constants.CN_OBJECT)) {
-            JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
-            for (int i = 0; i < fields.size(); i++) {
-                JsonObject field = fields.get(i).getAsJsonObject();
-                modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+        if (patchObject.has(Constants.TYPE_FIELD)) {
+            String type = patchObject.get(Constants.TYPE_FIELD).getAsString();
+            if (!type.equals(Constants.COLUMN_TYPE) && !type.equals(Constants.LABEL_TYPE)
+                && !type.equals(Constants.PANEL_TYPE) && !type.equals(Constants.CONTROLLER_TYPE)) {
+                if (patchObject.has(Constants.CN_OBJECT)) {
+                    JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
+                    for (int i = 0; i < fields.size(); i++) {
+                        JsonObject field = fields.get(i).getAsJsonObject();
+                        modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+                    }
+                }
             }
         }
-
         return modelFields;
     }
 }
