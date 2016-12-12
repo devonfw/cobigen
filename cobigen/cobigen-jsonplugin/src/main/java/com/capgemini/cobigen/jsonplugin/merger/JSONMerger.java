@@ -90,13 +90,14 @@ public class JSONMerger implements Merger {
         }
 
         Map<String, JsonObject> patchColumns = getPatchColumns(objPatch);
+        List<String> baseModelFields = getBaseModelFields(objBase);
         String result = null;
         switch (type) {
         case "sencharchmerge":
-            result = senchArchMerge(patchColumns, objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, baseModelFields, objBase, patchOverrides, objPatch);
             break;
         case "sencharchmerge_override":
-            result = senchArchMerge(patchColumns, objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, baseModelFields, objBase, patchOverrides, objPatch);
             break;
         default:
             throw new MergeException(base, "Merge strategy not yet supported!");
@@ -155,10 +156,11 @@ public class JSONMerger implements Merger {
      *            collection of patches
      * @return the result string of the merge
      */
-    public String senchArchMerge(Map<String, JsonObject> patchColumns, JsonObject destinationObject,
-        boolean patchOverrides, JsonObject... objs) {
+    public String senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
+        JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            senchArchMerge(patchColumns, destinationObject, obj.getAsJsonObject(), patchOverrides);
+            senchArchMerge(patchColumns, baseModelFields, destinationObject, obj.getAsJsonObject(),
+                patchOverrides);
         }
 
         return destinationObject.toString();
@@ -177,8 +179,8 @@ public class JSONMerger implements Merger {
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
-    private void senchArchMerge(Map<String, JsonObject> patchColumns, JsonObject leftObj, JsonObject rightObj,
-        boolean patchOverrides) {
+    private void senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
+        JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -232,7 +234,7 @@ public class JSONMerger implements Merger {
                                                 .equals(Constants.LABEL_TYPE)
                                                 && !patchObject.get(Constants.TYPE_FIELD).getAsString()
                                                     .equals(Constants.COLUMN_TYPE)) { // is model field
-                                                if (getBaseModelFields(patchObject).contains(
+                                                if (baseModelFields.contains(
                                                     baseObject.get(Constants.NAME_FIELD).getAsString())) {
                                                     exist = true;
                                                     break;
@@ -272,8 +274,8 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    senchArchMerge(patchColumns, leftVal.getAsJsonObject(), rightVal.getAsJsonObject(),
-                        patchOverrides);
+                    senchArchMerge(patchColumns, baseModelFields, leftVal.getAsJsonObject(),
+                        rightVal.getAsJsonObject(), patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
                     if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
                         || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID)
@@ -327,12 +329,15 @@ public class JSONMerger implements Merger {
     }
 
     private List<String> getBaseModelFields(JsonObject patchObject) {
-        JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
         List<String> modelFields = new LinkedList<>();
-        for (int i = 0; i < fields.size(); i++) {
-            JsonObject field = fields.get(i).getAsJsonObject();
-            modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+        if (patchObject.has(Constants.CN_OBJECT)) {
+            JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
+            for (int i = 0; i < fields.size(); i++) {
+                JsonObject field = fields.get(i).getAsJsonObject();
+                modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+            }
         }
+
         return modelFields;
     }
 }
