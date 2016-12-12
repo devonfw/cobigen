@@ -108,6 +108,8 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * Gets the columns from patch mapped with his referenced name
+     *
      * @param objPatch
      *            the patch grid
      * @return columns of the grid
@@ -118,14 +120,15 @@ public class JSONMerger implements Merger {
         Iterator<Entry<String, JsonElement>> it = patchEntry.iterator();
         while (it.hasNext()) {
             Entry<String, JsonElement> next = it.next();
-            if (next.getKey().equals("cn")) {
+            if (next.getKey().equals(Constants.CN_OBJECT)) {
                 JsonObject table = next.getValue().getAsJsonArray().get(1).getAsJsonObject();
-                if (table.has("cn")) {
+                if (table.has(Constants.CN_OBJECT)) {
                     JsonArray cols = table.get("cn").getAsJsonArray();
                     for (int i = 0; i < cols.size(); i++) {
-                        if (cols.get(i).getAsJsonObject().get("type").getAsString()
-                            .equals("Ext.grid.column.Column")) {
-                            String name = cols.get(i).getAsJsonObject().get("name").getAsString();
+                        if (cols.get(i).getAsJsonObject().get(Constants.TYPE_FIELD).getAsString()
+                            .equals(Constants.COLUMN_TYPE)) {
+                            String name =
+                                cols.get(i).getAsJsonObject().get(Constants.NAME_FIELD).getAsString();
                             JsonObject column = cols.get(i).getAsJsonObject();
                             columns.put(name, column);
                         }
@@ -139,7 +142,8 @@ public class JSONMerger implements Merger {
     }
 
     /**
-     * Merge a collection of JSON patch files
+     * Merges a collection of JSON patch files
+     *
      * @param patchColumns
      *            columns of the grid to patch
      * @param destinationObject
@@ -161,6 +165,8 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * Merges two {@link JsonObject}
+     *
      * @param patchColumns
      *            columns of the grid to patch
      * @param leftObj
@@ -206,19 +212,24 @@ public class JSONMerger implements Merger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
-                                    if (baseObject.has("type") && patchObject.has("type")) {
-                                        if (baseObject.get("type").getAsString().equals("Ext.form.Label")
-                                            && patchObject.get("type").getAsString()
-                                                .equals("Ext.form.Label")) {
+                                    if (baseObject.has(Constants.TYPE_FIELD)
+                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                        if (baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                            .equals(Constants.LABEL_TYPE)
+                                            && patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.LABEL_TYPE)) {
                                             exist = true;
                                             break;
                                         }
                                     }
-                                    if (baseObject.get("userConfig").getAsJsonObject().has("reference")
-                                        && patchObject.get("userConfig").getAsJsonObject().has("reference")) {
-                                        if (baseObject.get("userConfig").getAsJsonObject().get("reference")
-                                            .equals(patchObject.get("userConfig").getAsJsonObject()
-                                                .get("reference"))) {
+                                    if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                        .has(Constants.REFERENCE)
+                                        && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                            .has(Constants.REFERENCE)) {
+                                        if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                            .get(Constants.REFERENCE)
+                                            .equals(patchObject.get(Constants.USERCONFIG_FIELD)
+                                                .getAsJsonObject().get(Constants.REFERENCE))) {
                                             List<String> baseNameColumns =
                                                 getBaseGridColumnNames(patchObject);
                                             List<String> patchNameColumns =
@@ -226,20 +237,13 @@ public class JSONMerger implements Merger {
                                             exist = true;
                                             for (String column : patchNameColumns) {
                                                 if (!baseNameColumns.contains(column)) {
-                                                    patchObject.get("cn").getAsJsonArray()
+                                                    patchObject.get(Constants.CN_OBJECT).getAsJsonArray()
                                                         .add(patchColumns.get(column));
                                                 }
                                             }
-                                            // for (String key : patchColumns.keySet()) {
-                                            // if (!baseNameColumns.contains(key)) {
-                                            // patchObject.get("cn").getAsJsonArray()
-                                            // .add(patchColumns.get(key));
-                                            // }
-                                            // }
                                             break;
                                         }
                                     }
-
                                 }
                             }
                             if (!exist) {
@@ -253,9 +257,9 @@ public class JSONMerger implements Merger {
                     senchArchMerge(patchColumns, leftVal.getAsJsonObject(), rightVal.getAsJsonObject(),
                         patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
-                    if (patchOverrides
-                        && !(rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
-                            || rightKey.equals("viewModelInstanceId"))) {
+                    if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
+                        || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID)
+                        || rightKey.equals(Constants.VIEWMODELINSTANCEID))) {
                         leftObj.add(rightKey, rightVal);// right side auto-wins, replace left val with its val
                     }
                 }
@@ -266,33 +270,39 @@ public class JSONMerger implements Merger {
     }
 
     /**
+     * Gets the name field of the grid columns from the patch
+     *
      * @param baseObject
-     * @return
+     *            the JsonObject to extract the column names
+     *
+     * @return list of column names field
      */
     private List<String> getPatchGridColumnNames(JsonObject baseObject) {
-        JsonArray fields = baseObject.get("cn").getAsJsonArray();
+        JsonArray fields = baseObject.get(Constants.CN_OBJECT).getAsJsonArray();
         List<String> columns = new LinkedList<>();
         for (int i = 0; i < fields.size(); i++) {
             JsonObject field = fields.get(i).getAsJsonObject();
-            if (field.get("type").getAsString().equals("Ext.grid.column.Column")) {
-                columns.add(field.get("name").getAsString());
+            if (field.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)) {
+                columns.add(field.get(Constants.NAME_FIELD).getAsString());
             }
         }
         return columns;
     }
 
     /**
+     * Gets the name field of the grid columns from the base
+     *
      * @param patchObject
      *            the base grid
      * @return the columns of the base grid
      */
     private List<String> getBaseGridColumnNames(JsonObject patchObject) {
-        JsonArray fields = patchObject.get("cn").getAsJsonArray();
+        JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
         List<String> columns = new LinkedList<>();
         for (int i = 0; i < fields.size(); i++) {
             JsonObject field = fields.get(i).getAsJsonObject();
-            if (field.get("type").getAsString().equals("Ext.grid.column.Column")) {
-                columns.add(field.get("name").getAsString());
+            if (field.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)) {
+                columns.add(field.get(Constants.NAME_FIELD).getAsString());
             }
         }
         return columns;
