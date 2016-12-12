@@ -222,6 +222,24 @@ public class JSONMerger implements Merger {
                                             break;
                                         }
                                     }
+                                    if (baseObject.has(Constants.TYPE_FIELD)
+                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                        if (!baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                            .equals(Constants.LABEL_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.COLUMN_TYPE)) {
+                                            if (!patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.LABEL_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.COLUMN_TYPE)) { // is model field
+                                                if (getBaseModelFields(patchObject).contains(
+                                                    baseObject.get(Constants.NAME_FIELD).getAsString())) {
+                                                    exist = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
                                     if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
                                         .has(Constants.REFERENCE)
                                         && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
@@ -306,5 +324,15 @@ public class JSONMerger implements Merger {
             }
         }
         return columns;
+    }
+
+    private List<String> getBaseModelFields(JsonObject patchObject) {
+        JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
+        List<String> modelFields = new LinkedList<>();
+        for (int i = 0; i < fields.size(); i++) {
+            JsonObject field = fields.get(i).getAsJsonObject();
+            modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+        }
+        return modelFields;
     }
 }
