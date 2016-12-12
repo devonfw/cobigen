@@ -31,7 +31,7 @@ import org.mozilla.javascript.ast.StringLiteral;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.senchaplugin.merger.libextension.Grids;
+import com.capgemini.cobigen.senchaplugin.merger.libextension.Constants;
 import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
 
 /**
@@ -40,11 +40,6 @@ import com.capgemini.cobigen.senchaplugin.merger.libextension.SenchaNodeVisitor;
  */
 
 public class SenchaMerger implements Merger {
-
-    /**
-     * Path for the JS Beautifier script
-     */
-    public static final String BEAUTIFY_JS = "/beautify.js";
 
     /**
      * Establish the indentation index for the code beautifier
@@ -177,12 +172,16 @@ public class SenchaMerger implements Merger {
     }
 
     /**
+     * Merges {@link ObjectLiteral}'s
+     *
      * @param nodesBase
      *            the destination of the merge result
      * @param nodesPatch
      *            nodes to patch
      * @param visitorBase
+     *            The relation of nodes of the base file
      * @param visitorPatch
+     *            the relation of nodes of the patch file
      * @param patchOverrides
      *            merge strategy
      */
@@ -221,14 +220,7 @@ public class SenchaMerger implements Merger {
 
                         ArrayLiteral arrayPatch = (ArrayLiteral) entryPatch.get(patchKey);
                         ArrayLiteral arrayBase = (ArrayLiteral) entryBase.get(patchKey);
-                        // if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
-                        // for (Map.Entry<String, AstNode> grid : visitorPatch.getGrids().getGrids()
-                        // .entrySet()) {
-                        // String gridKey = grid.getKey();
-                        // AstNode gridValue = grid.getValue();
-                        // mergeGrids(visitorBase.getGrids(), gridKey, gridValue);
-                        // }
-                        // }
+
                         for (AstNode node : arrayPatch.getElements()) {
                             boolean exists = false;
                             boolean mergeGrid = false;
@@ -243,8 +235,8 @@ public class SenchaMerger implements Merger {
                                 if (contains instanceof ObjectLiteral) {
                                     ObjectLiteral objLB = (ObjectLiteral) contains;
                                     for (ObjectProperty prop : objLB.getElements()) {
-                                        if (prop.getLeft().toSource().equals("reference")
-                                            && prop.getRight().toSource().contains("grid")) {
+                                        if (prop.getLeft().toSource().equals(Constants.REFERENCE)
+                                            && prop.getRight().toSource().contains(Constants.GRID)) {
                                             if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
                                                 if (visitorPatch.getGrids().getGridsCollection()
                                                     .contains(visitorPatch.getGrids().getGrids()
@@ -305,15 +297,9 @@ public class SenchaMerger implements Merger {
     }
 
     /**
-     * @param grids
-     * @param gridKey
-     * @param gridValue
-     */
-    private void mergeGrids(Grids gridsBase, String gridKey, AstNode gridValue) {
-
-    }
-
-    /**
+     *
+     * Handle conflict of existent elements at both files
+     *
      * @param nodesBase
      *            the destination of the merge result
      * @param patchValue
@@ -344,7 +330,7 @@ public class SenchaMerger implements Merger {
         Context cx = Context.enter();
         Scriptable scope = cx.initStandardObjects();
 
-        InputStream resourceAsStream = SenchaMerger.class.getResourceAsStream(BEAUTIFY_JS);
+        InputStream resourceAsStream = SenchaMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
 
         try {
             Reader reader = new InputStreamReader(resourceAsStream);
