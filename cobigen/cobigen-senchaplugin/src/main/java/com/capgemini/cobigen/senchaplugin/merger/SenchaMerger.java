@@ -243,7 +243,6 @@ public class SenchaMerger implements Merger {
                                                         .get(prop.getRight().toSource()))) {
                                                     gridPatch = (ObjectLiteral) visitorPatch.getGrids()
                                                         .getGrids().get(prop.getRight().toSource());
-                                                    // arrayBase.getElements().add(contains);
                                                     exists = true;
                                                     mergeGrid = true;
                                                     index = arrayBase.getElements().indexOf(objLB);
