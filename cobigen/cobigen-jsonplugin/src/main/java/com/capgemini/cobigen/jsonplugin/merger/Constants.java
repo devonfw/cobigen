@@ -57,8 +57,14 @@ public class Constants {
      */
     public static final String VIEWMODELINSTANCEID = "viewModelInstanceId";
 
+    /**
+     * Panel type
+     */
     public static final String PANEL_TYPE = "Ext.grid.Panel";
 
+    /**
+     * Controller type
+     */
     public static final String CONTROLLER_TYPE = "Ext.app.Controller";
 
 }
