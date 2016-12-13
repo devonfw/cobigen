@@ -14,6 +14,7 @@ import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
 import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.impl.util.FileSystemUtil;
 
+import freemarker.cache.NullCacheStorage;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
 
@@ -45,6 +46,7 @@ public class CobiGenFactory {
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);
         freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
+        freeMarkerConfig.setCacheStorage(new NullCacheStorage());
 
         ConfigurationHolder configurationHolder = new ConfigurationHolder(configFolder);
         if (!FileSystemUtil.isZipFile(configFileOrFolder)) {
