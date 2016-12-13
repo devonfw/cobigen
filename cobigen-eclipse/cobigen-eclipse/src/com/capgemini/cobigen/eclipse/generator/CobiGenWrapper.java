@@ -2,6 +2,7 @@ package com.capgemini.cobigen.eclipse.generator;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -205,16 +206,23 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 }
             }
 
+            URI generationTargetUri = getGenerationTargetProject().getLocationURI();
+            if (generationTargetUri == null) {
+                throw new CobiGenRuntimeException("The location URI of the generation target project "
+                    + getGenerationTargetProject().getName() + " could not be resolved. This might be "
+                    + "a temporary issue. If this problem persists, please state a bug report.");
+            }
+
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
-                report = cobiGen.generate(inputs.get(0), templates,
-                    Paths.get(getGenerationTargetProject().getLocationURI()), false, utilClasses, model);
+                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false,
+                    utilClasses, model);
             } else {
-                report = cobiGen.generate(inputs, templates,
-                    Paths.get(getGenerationTargetProject().getLocationURI()), false, utilClasses);
+                report =
+                    cobiGen.generate(inputs, templates, Paths.get(generationTargetUri), false, utilClasses);
             }
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
