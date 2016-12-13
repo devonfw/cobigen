@@ -7,14 +7,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.config.entity.Trigger;
-import com.capgemini.cobigen.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**
- * The {@link TriggerExpressionResolver} resolves expressions for {@link Trigger} objects.
- *
- * @author mbrunnli (05.04.2013)
+ * The {@link TriggerExpressionResolver} to resolve the matcher's values.
  */
 public class TriggerExpressionResolver {
 

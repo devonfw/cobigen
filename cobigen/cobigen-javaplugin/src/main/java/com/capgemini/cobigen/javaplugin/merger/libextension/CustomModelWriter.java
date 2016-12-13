@@ -60,7 +60,6 @@ public class CustomModelWriter implements ModelWriter {
         return buffer;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeSource(JavaSource source) {
         // package statement
@@ -88,7 +87,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writePackage(JavaPackage pckg) {
         if (pckg != null) {
@@ -102,7 +100,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeClass(JavaClass cls) {
         commentHeader(cls);
@@ -110,8 +107,8 @@ public class CustomModelWriter implements ModelWriter {
         writeAccessibilityModifier(cls.getModifiers());
         writeNonAccessibilityModifiers(cls.getModifiers());
 
-        buffer.write(cls.isEnum() ? "enum " : cls.isInterface() ? "interface "
-            : cls.isAnnotation() ? "@interface " : "class ");
+        buffer.write(cls.isEnum() ? "enum "
+            : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
         buffer.write(cls.getName());
 
         writeTypeParameters(cls);
@@ -190,7 +187,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeInitializer(JavaInitializer init) {
         if (init.isStatic()) {
@@ -209,7 +205,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeField(JavaField field) {
         commentHeader(field);
@@ -255,7 +250,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeConstructor(JavaConstructor constructor) {
         commentHeader(constructor);
@@ -292,7 +286,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeMethod(JavaMethod method) {
         commentHeader(method);
@@ -382,7 +375,6 @@ public class CustomModelWriter implements ModelWriter {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeAnnotation(JavaAnnotation annotation) {
         buffer.write('@');
@@ -411,7 +403,6 @@ public class CustomModelWriter implements ModelWriter {
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ModelWriter writeParameter(JavaParameter parameter) {
         commentHeader(parameter);

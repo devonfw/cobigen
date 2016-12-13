@@ -1,14 +1,12 @@
 package com.capgemini.cobigen.javaplugin.integrationtest;
 
 import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.CobiGen;
@@ -16,44 +14,41 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.thoughtworks.qdox.model.JavaClass;
 
 import junit.framework.AssertionFailedError;
 
 /**
- * Test suit for annotation retrieval from source code to be exposed in the generation model.
+ * Test suite for variable resolution.
  */
-public class AnnotationQueryingTest extends AbstractIntegrationTest {
+public class VariablesResolutionTest extends AbstractIntegrationTest {
 
     /**
-     * Tests whether annotations with object array values are correctly accessible within the templates
+     * Tests that the path resolution is performed successfully in case of including path variables derived
+     * from variable assignments retrieved by regex groups, which have been resolved to null. This bug has
+     * been introduced by changing the model building from DOM to Bean model. The latter required to
+     * explicitly not to set <code>null</code> as a value for variable resolution. Basically, this is odd, but
+     * we have to comply with backward compatibility and the issue that we cannot encode unary-operators like
+     * ?? in a file path sufficiently.
      * @throws Exception
      *             test fails
      */
     @Test
-    public void testAnnotationWithObjectArraysAsValues() throws Exception {
+    public void testSuccessfulPathResolution_variableEqNull() throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
-        File javaSourceFile =
-            new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
-        Object[] input = new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)),
-            TestClassWithAnnotationsContainingObjectArrays.class };
+        JavaClass input = JavaParserUtil.getFirstJavaClass(new FileReader(
+            new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java")));
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
-            if (template.getId().equals("annotationQuerying.txt")) {
+            if (template.getId().equals("${variables.entityName}.java")) {
                 GenerationReportTo report =
                     cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                    + "annotationQuerying.txt");
                 assertThat(report).isSuccessful();
-                assertThat(expectedFile).exists();
-                assertThat(expectedFile).hasContent(
-                    "TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");
                 methodTemplateFound = true;
                 break;
             }

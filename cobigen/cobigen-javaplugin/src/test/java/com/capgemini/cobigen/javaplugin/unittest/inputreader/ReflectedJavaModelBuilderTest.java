@@ -1,15 +1,10 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
@@ -17,13 +12,11 @@ import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
+import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}
- *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
- * @version $Revision$
  */
 public class ReflectedJavaModelBuilderTest {
 
@@ -37,15 +30,16 @@ public class ReflectedJavaModelBuilderTest {
      * Tests whether parametric attribute types will be extracted correctly to the model
      */
     @Test
+    @SuppressWarnings("null")
     public void testCorrectlyExtractedAttributeTypes() {
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(getClass());
 
         Map<String, Object> pojoMap = JavaModelUtil.getRoot(model);
-        Assert.assertNotNull(ModelConstant.ROOT + " is not accessible in model", pojoMap);
+        assertThat(pojoMap).as(ModelConstant.MODEL_ROOT + " is not accessible in model").isNotNull();
         List<Map<String, Object>> attributes = JavaModelUtil.getFields(model);
-        Assert.assertNotNull(ModelConstant.FIELDS + " is not accessible in model", attributes);
+        assertThat(attributes).as(ModelConstant.FIELDS + " is not accessible in model").isNotNull();
 
         Map<String, Object> parametricTestAttributeModel = null;
         for (Map<String, Object> attr : attributes) {
@@ -55,14 +49,15 @@ public class ReflectedJavaModelBuilderTest {
             }
         }
 
-        Assert.assertNotNull("There is no field with name 'parametricTestAttribute' in the model",
-            parametricTestAttributeModel);
+        assertThat(parametricTestAttributeModel)
+            .as("There is no field with name 'parametricTestAttribute' in the model").isNotNull();
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        Assert.assertEquals("List<?>", parametricTestAttributeModel.get(ModelConstant.TYPE));
+        assertThat(parametricTestAttributeModel.get(ModelConstant.TYPE)).isEqualTo("List<?>");
     }
 
     /**
-     * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
+     * Tests whether super types (extended Type and implemented Types) will be extracted correctly to the
+     * model
      */
     @Test
     public void testCorrectlyExtractedImplementedTypes() {
@@ -74,369 +69,269 @@ public class ReflectedJavaModelBuilderTest {
         List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
 
         // interface1
-        Assert.assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1",
-            interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
-            interfaces.get(0).get(ModelConstant.PACKAGE));
+        assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
+        assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+        assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
 
         // interface2
-        Assert.assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2",
-            interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
-            interfaces.get(1).get(ModelConstant.PACKAGE));
+        assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
+        assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+        assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
      * Tests whether the inherited type will be correctly extracted and put into the model
-     * @author mbrunnli (30.09.2014)
      */
     @Test
     public void testCorrectlyExtractedInheritedType() {
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model = javaModelBuilder.createModel(TestClass.class);
 
-        Assert
-            .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        Assert.assertEquals(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass", JavaModelUtil
-                .getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        Assert.assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata", JavaModelUtil
-            .getExtendedType(model).get(ModelConstant.PACKAGE));
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME))
+            .isEqualTo("AbstractTestClass");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+    }
+
+    /**
+     * Tests whether no {@link NullPointerException} will be thrown if an interface taken as an input extends
+     * another interface. Test for issue #250.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyInterpretingInterfaceInheritance() throws Exception {
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        javaModelBuilder.createModel(TestInterfaceInheritance.class);
+    }
+
+    /**
+     * Tests whether inherited methods will be resolved as well.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyExtractingMethodsInInterfaceInheritance() throws Exception {
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        Map<String, Object> model = javaModelBuilder.createModel(TestInterfaceInheritance.class);
+
+        assertThat(JavaModelUtil.getMethods(model)).hasSize(2);
     }
 
     /**
      * Tests the inclusion of all fields accessible by setter and getter methods into the model. This also
      * includes inherited accessible fields.
-     * @author mbrunnli (17.11.2014)
      */
     @Test
     public void testExtractionOfMethodAccessibleFields() {
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(RootClass.class);
 
-        Assert.assertNotNull(JavaModelUtil.getMethodAccessibleFields(model));
-        Assert.assertEquals(3, JavaModelUtil.getMethodAccessibleFields(model).size());
+        assertThat(JavaModelUtil.getMethodAccessibleFields(model)).isNotNull();
+        assertThat(JavaModelUtil.getMethodAccessibleFields(model)).hasSize(3);
 
         Map<String, Object> setterVisibleByteField =
             JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");
-        Assert.assertNotNull(setterVisibleByteField);
-        Assert.assertEquals("setterVisibleByte", setterVisibleByteField.get(ModelConstant.NAME));
-        Assert.assertEquals("byte", setterVisibleByteField.get(ModelConstant.TYPE));
-        Assert.assertEquals("byte", setterVisibleByteField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(setterVisibleByteField).isNotNull();
+        assertThat(setterVisibleByteField.get(ModelConstant.NAME)).isEqualTo("setterVisibleByte");
+        assertThat(setterVisibleByteField.get(ModelConstant.TYPE)).isEqualTo("byte");
+        assertThat(setterVisibleByteField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("byte");
 
         Map<String, Object> valueField = JavaModelUtil.getMethodAccessibleField(model, "value");
-        Assert.assertNotNull(valueField);
-        Assert.assertEquals("value", valueField.get(ModelConstant.NAME));
-        Assert.assertEquals("String", valueField.get(ModelConstant.TYPE));
-        Assert.assertEquals("java.lang.String", valueField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(valueField).isNotNull();
+        assertThat(valueField.get(ModelConstant.NAME)).isEqualTo("value");
+        assertThat(valueField.get(ModelConstant.TYPE)).isEqualTo("String");
+        assertThat(valueField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.String");
     }
 
     /**
      * Tests whether the input type's fields are extracted correctly (including annotations and javaDoc)
-     *
-     * @throws FileNotFoundException
-     *             test fails
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException {
+    public void testExtractionOfFields() {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);
 
         Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
 
-        assertNotNull(classField);
-        assertEquals("customList", classField.get(ModelConstant.NAME));
-        assertEquals("List<?>", classField.get(ModelConstant.TYPE));
-        assertEquals("java.util.List", classField.get(ModelConstant.CANONICAL_TYPE));
-        assertEquals("false", classField.get("isId"));
+        assertThat(classField).isNotNull();
+        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<?>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List");
+        assertThat(classField.get("isId")).isEqualTo("false");
 
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
     }
 
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (27.05.2015)
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_inherited() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_inherited() {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);
 
         // test inherited field
         Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
-        assertNotNull(inheritedField);
-        assertEquals("id", inheritedField.get(ModelConstant.NAME));
+        assertThat(inheritedField).isNotNull();
+        assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("id");
 
-        assertEquals("Long", inheritedField.get(ModelConstant.TYPE));
+        assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("Long");
 
-        assertEquals("java.lang.Long", inheritedField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.Long");
 
         // is deprecated, so its not necessary to test here
-        // assertEquals("false", inheritedField.get("isId"));
+        // assertThat(inheritedField.get("isId")).isEqualTo("false");
 
         // currently no javadoc provided
-        // assertNotNull(inheritedField.get(ModelConstant.JAVADOC));
-        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(inheritedField).get("comment"));
+        // assertThat(inheritedField.get(ModelConstant.JAVADOC)).isNotNull();
+        // assertThat(JavaModelUtil.getJavaDocModel(inheritedField).get("comment")).isEqualTo("Example
+        // JavaDoc");
 
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(inheritedField.get(ModelConstant.ANNOTATIONS));
+        assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
 
     }
 
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (08.05.2015)
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_local() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_local() {
 
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);
 
         // test local field
         Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
-        assertNotNull(classField);
-        assertEquals("customList", classField.get(ModelConstant.NAME));
-        assertEquals("List<?>", classField.get(ModelConstant.TYPE));
-        assertEquals("java.util.List", classField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(classField).isNotNull();
+        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<?>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List");
 
         // currently no javadoc provided
-        // assertNotNull(classField.get(ModelConstant.JAVADOC));
-        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(classField).get("comment"));
+        // assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
+        // assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
 
-        assertEquals("false", classField.get("isId"));
+        assertThat(classField.get("isId")).isEqualTo("false");
 
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
     /**
      * Tests whether the input type's annotations are extracted complete
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (21.06.2015)
      */
     @Test
-    public void testAnnotationExtraction() throws FileNotFoundException {
+    public void testAnnotationExtraction() {
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);
 
         Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
-        assertNotNull(classField);
-        Map<String, Object> annotation =
-            (Map<String, Object>) JavaModelUtil.getAnnotations(classField).get(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
-        assertNotNull(annotation);
+        assertThat(classField).isNotNull();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> annotation = (Map<String, Object>) JavaModelUtil.getAnnotations(classField)
+            .get("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        assertThat(annotation).isNotNull();
         // currently all values are provided as Strings
-        assertEquals("0", annotation.get("b"));
-        assertEquals("1", annotation.get("s"));
-        assertEquals("2", annotation.get("i"));
-        assertEquals("3", annotation.get("l"));
-        assertEquals("4.0", annotation.get("f"));
-        assertEquals("5.0", annotation.get("d"));
-        assertEquals("c", annotation.get("c"));
-        assertEquals("true", annotation.get("bool"));
-        assertEquals("TestString", annotation.get("str"));
-    }
-
-    /**
-     * Tests whether the the input type's annotations are available and whether the annotation parameters have
-     * the correct type
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (24.06.2015)
-     */
-    @Test
-    @Ignore("Currently we provide all parameter values as Strings")
-    public void testAnnotationExtraction_Paramtypes() throws FileNotFoundException {
-        JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
-
-        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
-        assertNotNull(classField);
-        Map<String, Object> annotation =
-            (Map<String, Object>) JavaModelUtil.getAnnotations(classField).get(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
-        assertNotNull(annotation);
-        assertTrue(annotation.get("b") instanceof Byte);
-        assertEquals((byte) 0, annotation.get("b"));
-        assertTrue(annotation.get("s") instanceof Short);
-        assertEquals((short) 1, annotation.get("s"));
-        assertTrue(annotation.get("i") instanceof Integer);
-        assertEquals(2, annotation.get("i"));
-        assertTrue(annotation.get("l") instanceof Long);
-        assertEquals(3L, annotation.get("l"));
-        assertTrue(annotation.get("f") instanceof Float);
-        assertEquals(4F, annotation.get("f"));
-        assertTrue(annotation.get("d") instanceof Double);
-        assertEquals(5D, annotation.get("d"));
-        assertTrue(annotation.get("c") instanceof Character);
-        assertEquals('c', annotation.get("c"));
-        assertTrue(annotation.get("bool") instanceof Boolean);
-        assertEquals(true, annotation.get("bool"));
-        assertTrue(annotation.get("str") instanceof String);
-        assertEquals("TestString", annotation.get("str"));
+        assertThat(annotation.get("b")).isEqualTo("0");
+        assertThat(annotation.get("s")).isEqualTo("1");
+        assertThat(annotation.get("i")).isEqualTo("2");
+        assertThat(annotation.get("l")).isEqualTo("3");
+        assertThat(annotation.get("f")).isEqualTo("4.0");
+        assertThat(annotation.get("d")).isEqualTo("5.0");
+        assertThat(annotation.get("c")).isEqualTo("c");
+        assertThat(annotation.get("bool")).isEqualTo("true");
+        assertThat(annotation.get("str")).isEqualTo("TestString");
     }
 
     /**
      * Tests whether the annotation of super super types are available
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (21.06.2015)
      */
     @Test
-    public void testAnnotationExtractionOfSuperSuperTypes() throws FileNotFoundException {
+    public void testAnnotationExtractionOfSuperSuperTypes() {
         JavaInputReader javaInputReader = new JavaInputReader();
         Map<String, Object> model = javaInputReader.createModel(TestClass.class);
 
         Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
-        assertNotNull(classField);
+        assertThat(classField).isNotNull();
 
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil
-            .getAnnotations(classField)
-            .containsKey(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation");
         // Setter
-        assertTrue(JavaModelUtil
-            .getAnnotations(classField)
-            .containsKey(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation"));
-        Map<String, Object> annotation =
-            (Map<String, Object>) JavaModelUtil
-                .getAnnotations(classField)
-                .get(
-                    "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
-        assertNotNull(annotation);
+        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> annotation = (Map<String, Object>) JavaModelUtil.getAnnotations(classField).get(
+            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+
+        assertThat(annotation).isNotNull();
         // currently all values are provided as Strings
-        assertEquals("0", annotation.get("b"));
-        assertEquals("1", annotation.get("s"));
-        assertEquals("2", annotation.get("i"));
-        assertEquals("3", annotation.get("l"));
-        assertEquals("4.0", annotation.get("f"));
-        assertEquals("5.0", annotation.get("d"));
-        assertEquals("c", annotation.get("c"));
-        assertEquals("true", annotation.get("bool"));
-        assertEquals("TestString", annotation.get("str"));
-    }
-
-    /**
-     * Tests whether the annotation of super super types are available and whether the annotation parameters
-     * have the correct type
-     *
-     * @throws FileNotFoundException
-     *             test fails
-     * @author fkreis (24.06.2015)
-     */
-    @Test
-    @Ignore("Currently we provide all parameter values as Strings")
-    public void testAnnotationExtractionOfSuperSuperTypes_Paramtypes() throws FileNotFoundException {
-        JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(TestClass.class);
-
-        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
-        assertNotNull(classField);
-
-        // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
-        // getter
-        assertTrue(JavaModelUtil
-            .getAnnotations(classField)
-            .containsKey(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation"));
-        // Setter
-        assertTrue(JavaModelUtil
-            .getAnnotations(classField)
-            .containsKey(
-                "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation"));
-        // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation"));
-        // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation"));
-        Map<String, Object> annotation =
-            (Map<String, Object>) JavaModelUtil
-                .getAnnotations(classField)
-                .get(
-                    "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
-        assertNotNull(annotation);
-        assertTrue(annotation.get("b") instanceof Byte);
-        assertEquals((byte) 0, annotation.get("b"));
-        assertTrue(annotation.get("s") instanceof Short);
-        assertEquals((short) 1, annotation.get("s"));
-        assertTrue(annotation.get("i") instanceof Integer);
-        assertEquals(2, annotation.get("i"));
-        assertTrue(annotation.get("l") instanceof Long);
-        assertEquals(3L, annotation.get("l"));
-        assertTrue(annotation.get("f") instanceof Float);
-        assertEquals(4F, annotation.get("f"));
-        assertTrue(annotation.get("d") instanceof Double);
-        assertEquals(5D, annotation.get("d"));
-        assertTrue(annotation.get("c") instanceof Character);
-        assertEquals('c', annotation.get("c"));
-        assertTrue(annotation.get("bool") instanceof Boolean);
-        assertEquals(true, annotation.get("bool"));
-        assertTrue(annotation.get("str") instanceof String);
-        assertEquals("TestString", annotation.get("str"));
+        assertThat(annotation.get("b")).isEqualTo("0");
+        assertThat(annotation.get("s")).isEqualTo("1");
+        assertThat(annotation.get("i")).isEqualTo("2");
+        assertThat(annotation.get("l")).isEqualTo("3");
+        assertThat(annotation.get("f")).isEqualTo("4.0");
+        assertThat(annotation.get("d")).isEqualTo("5.0");
+        assertThat(annotation.get("c")).isEqualTo("c");
+        assertThat(annotation.get("bool")).isEqualTo("true");
+        assertThat(annotation.get("str")).isEqualTo("TestString");
     }
 
 }

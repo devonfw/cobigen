@@ -10,25 +10,22 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 import com.capgemini.cobigen.javaplugin.matcher.JavaMatcher;
 
 /**
- *
- * @author sholzer (Nov 18, 2015)
+ * Test suite for {@link JavaMatcher}.
  */
 public class JavaMatcherTests {
 
     /**
      * Object under test
-     *
      */
     private JavaMatcher javaMatcher;
 
     /**
-     * @throws java.lang.Exception
+     * @throws Exception
      *             shouldn't occur
-     * @author sholzer (Nov 18, 2015)
      */
     @Before
     public void setUp() throws Exception {
@@ -42,7 +39,7 @@ public class JavaMatcherTests {
      */
     @SuppressWarnings("javadoc")
     @Test
-    public final void resolveEmptyRegexVariable() {
+    public void resolveEmptyRegexVariable() {
         List<VariableAssignmentTo> variables = new LinkedList<>();
         VariableAssignmentTo rootPackage = new VariableAssignmentTo("regex", "rootPackage", "1");
         VariableAssignmentTo domain = new VariableAssignmentTo("regex", "domain", "3");
@@ -76,7 +73,7 @@ public class JavaMatcherTests {
      */
     @SuppressWarnings("javadoc")
     @Test
-    public final void resolveNonEmptyRegexVariable() {
+    public void resolveNonEmptyRegexVariable() {
         List<VariableAssignmentTo> variables = new LinkedList<>();
         VariableAssignmentTo rootPackage = new VariableAssignmentTo("regex", "rootPackage", "1");
         VariableAssignmentTo domain = new VariableAssignmentTo("regex", "domain", "3");
@@ -101,4 +98,5 @@ public class JavaMatcherTests {
         result = javaMatcher.getResolvedVariables(null, regex, inputValue, variables);
         assertNotNull("Expected detail to be not null: " + result.toString(), result.get("detail"));
     }
+
 }
