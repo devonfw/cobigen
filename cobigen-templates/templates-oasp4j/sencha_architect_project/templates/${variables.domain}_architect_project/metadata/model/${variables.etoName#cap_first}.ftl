@@ -10,7 +10,7 @@
         "designer|userClassName": "${variables.etoName?cap_first}"
     },
     "name": "${variables.etoName?cap_first}Model",
-    "designerId": "${modelId}",
+    "designerId": "${IDGenerator.modelId}",
     "cn": [
         <@generateMetaDataModelFields/>
         {

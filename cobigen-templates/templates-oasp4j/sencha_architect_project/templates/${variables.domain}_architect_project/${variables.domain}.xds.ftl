@@ -23,16 +23,16 @@
     "framework": "ext60",
     "viewOrderMap": {
         "view": [
-            "${viewId}",
-            "${viewControllerId}",
-            "${viewModelId}"
+            "${IDGenerator.viewId}",
+            "${IDGenerator.viewControllerId}",
+            "${IDGenerator.viewModelId}"
         ],
         "store": [],
         "controller": [
-            "${controllerId}"
+            "${IDGenerator.controllerId}"
         ],
         "model": [
-            "${modelId}"
+            "${IDGenerator.modelId}"
         ],
         "resource": [
         ],

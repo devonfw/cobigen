@@ -16,7 +16,7 @@
         "designer|userAlias": "${variables.etoName?lower_case}",
         "designer|userClassName": "${variables.etoName?cap_first}sViewModel"
     },
-    "designerId": "${viewModelId}",
+    "designerId": "${IDGenerator.viewModelId}",
     "cn": [
         {
             "type": "Ext.data.Store",

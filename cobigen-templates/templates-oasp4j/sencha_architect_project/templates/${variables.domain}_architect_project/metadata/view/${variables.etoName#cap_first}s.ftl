@@ -15,9 +15,9 @@
         "width": "auto"
     },
     "name": "MyPanel",
-    "designerId": "${viewId}",
-    "viewControllerInstanceId": "${viewControllerId}",
-    "viewModelInstanceId": "${viewModelId}",
+    "designerId": "${IDGenerator.viewId}",
+    "viewControllerInstanceId": "${IDGenerator.viewControllerId}",
+    "viewModelInstanceId": "${IDGenerator.viewModelId}",
     "cn": [
         {
             "type": "Ext.form.Label",

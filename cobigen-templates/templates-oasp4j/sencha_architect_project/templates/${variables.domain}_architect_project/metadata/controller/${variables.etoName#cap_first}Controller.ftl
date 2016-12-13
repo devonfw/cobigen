@@ -19,7 +19,7 @@
         ]
     },
     "name": "MyController",
-    "designerId": "${controllerId}",
+    "designerId": "${IDGenerator.controllerId}",
     "cn": [
         {
             "type": "fixedfunction",
