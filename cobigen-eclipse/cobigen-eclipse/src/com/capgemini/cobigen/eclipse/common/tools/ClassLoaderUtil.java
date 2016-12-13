@@ -3,8 +3,7 @@ package com.capgemini.cobigen.eclipse.common.tools;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -13,6 +12,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Util functionality for {@link ClassLoader} issues
@@ -33,12 +33,26 @@ public class ClassLoaderUtil {
      */
     public static URLClassLoader getProjectClassLoader(IJavaProject project, ClassLoader parentClassLoader)
         throws CoreException, MalformedURLException {
-        IClasspathEntry[] classPathEntries = project.getResolvedClasspath(true);
-        project.readRawClasspath();
+        LinkedHashSet<URL> urlList = getProjectClasspathURLs(project);
 
-        List<URL> urlList = new ArrayList<>();
-        List<ClassLoader> dependentProjectClassloaders = new ArrayList<>();
-        ClassLoader parentCl = parentClassLoader;
+        URL[] urls = urlList.toArray(new URL[urlList.size()]);
+        return new URLClassLoader(urls, parentClassLoader);
+    }
+
+    /**
+     * Returns the {@link ClassLoader} URLs for the passed {@link IJavaProject}
+     * @param project
+     *            {@link IJavaProject} for which the {@link ClassLoader} URLs should be calculated
+     * @return an ordered Set of {@link ClassLoader} URLs of the given {@link IJavaProject}
+     * @throws JavaModelException
+     *             if the Java runtime class path could not be determined
+     * @throws MalformedURLException
+     *             if a path of one of the class path entries is not a valid URL
+     */
+    private static LinkedHashSet<URL> getProjectClasspathURLs(IJavaProject project)
+        throws MalformedURLException, JavaModelException {
+        LinkedHashSet<URL> urlList = new LinkedHashSet<>();
+        IClasspathEntry[] classPathEntries = project.getResolvedClasspath(true);
         for (IClasspathEntry entry : classPathEntries) {
             switch (entry.getEntryKind()) {
             case IClasspathEntry.CPE_SOURCE:
@@ -57,8 +71,7 @@ public class ClassLoaderUtil {
                     ResourcesPlugin.getWorkspace().getRoot().getProject(entry.getPath().lastSegment());
                 IJavaProject javaProjectDependency = JavaCore.create(projectDependency);
                 if (javaProjectDependency != null) {
-                    parentCl = getProjectClassLoader(javaProjectDependency, parentCl);
-                    dependentProjectClassloaders.add(parentCl);
+                    urlList.addAll(getProjectClasspathURLs(javaProjectDependency));
                 }
                 break;
             default:
@@ -66,9 +79,7 @@ public class ClassLoaderUtil {
                 break;
             }
         }
-
-        URL[] urls = urlList.toArray(new URL[urlList.size()]);
-        return new URLClassLoader(urls, parentCl);
+        return urlList;
     }
 
     /**
