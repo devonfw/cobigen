@@ -19,11 +19,12 @@ public class ModelConstant {
     /**
      * Root element for java model ({@link Map}&lt;{@link String}, {@link Object}&gt;)
      */
-    public static final String ROOT = "pojo";
+    public static final String MODEL_ROOT = "pojo";
 
-    /**
-     * Package name of the input class ({@link String})
-     */
+    /** Raw class object providing any reflection interaction. ({@link Class}) */
+    public static final String CLASS_OBJECT = "classObject";
+
+    /** Package name of the input class ({@link String}) */
     public static final String PACKAGE = "package";
 
     /**
