@@ -3,9 +3,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#cap_first}Controller" mergeStrategy="sencharchmerge_override"/>
-    <templateExtension ref="${variables.etoName#cap_first}" mergeStrategy="sencharchmerge_override"/>
-    <templateExtension ref="${variables.etoName#cap_first}s" mergeStrategy="sencharchmerge_override"/>
+    <templateExtension ref="${variables.etoName#cap_first}Controller" mergeStrategy="sencharchmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}" mergeStrategy="sencharchmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}s" mergeStrategy="sencharchmerge"/>
     <templateExtension ref="${variables.etoName#cap_first}sViewController"/>
     <templateExtension ref="${variables.etoName#cap_first}sViewModel"/>
     <templateExtension ref="Application"/>
@@ -13,7 +13,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath="sencha_architect"/>
+    <templateScan templatePath="templates" destinationPath=""/>
   </templateScans>
 
   <increments>

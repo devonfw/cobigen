@@ -16,7 +16,7 @@
             "    }"
         ]
     },
-    "designerId": "${viewControllerId}",
+    "designerId": "${IDGenerator.viewControllerId}",
     "cn": [
         {
             "type": "basicfunction",

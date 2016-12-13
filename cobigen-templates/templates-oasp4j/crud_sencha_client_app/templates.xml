@@ -30,7 +30,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath="sencha_app"/>
+    <templateScan templatePath="templates" destinationPath="devon4sencha"/>
   </templateScans>
 
   <increments>

@@ -25,15 +25,9 @@ Ext.define('${variables.domain}.view.main.Header', {
     },
 
     items: [{
-        xtype: 'image',
-        src: './resources/imagotipo.png',
-        width: 50,
-        height: 51,
-        margin: '0 20'
-    }, {
         cls: 'main-header-title',
         xtype: 'label',
-        html: i18n.main.header.title.replace(' ','<br/>')+'<img src="./resources/devonfw.png" style="margin-left:12px"/>'
+        html: i18n.main.header.title.replace(' ','<br/>')+'<img src="./resources/logo.jpg" style="margin-left:12px"/>'
     }, {
       xtype: 'component',
       flex:1
