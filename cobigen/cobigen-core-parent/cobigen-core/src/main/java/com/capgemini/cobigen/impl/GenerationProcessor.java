@@ -243,7 +243,7 @@ public class GenerationProcessor {
         TemplateTo template) {
         if (templateIdToTemplateMap.containsKey(template.getId())) {
             String oldTriggerId = templateIdToTemplateMap.get(template.getId()).getTriggerId();
-            if (oldTriggerId == template.getTriggerId()) {
+            if (!oldTriggerId.equals(template.getTriggerId())) {
                 generationReport.addWarning("Template with ID '" + template.getId()
                     + "' has been triggered by two different triggers ['" + oldTriggerId + "','"
                     + template.getTriggerId() + "']. This might lead to unintended generation results"
