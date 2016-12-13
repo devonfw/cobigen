@@ -289,12 +289,14 @@ public class GenerationProcessor {
             File originalFile = targetRootPath.resolve(resolvedDesitinationPath).toFile();
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedDesitinationPath).toFile();
 
-            if (originalFile.exists()) {
-                try {
-                    FileUtils.copyFile(originalFile, tmpOriginalFile);
-                } catch (IOException e) {
-                    throw new CobiGenRuntimeException("Could not copy file " + originalFile.getPath()
-                        + " to tmp generation directory! Generation skipped.", e);
+            if (originalFile.exists() || tmpOriginalFile.exists()) {
+                if (!tmpOriginalFile.exists()) {
+                    try {
+                        FileUtils.copyFile(originalFile, tmpOriginalFile);
+                    } catch (IOException e) {
+                        throw new CobiGenRuntimeException("Could not copy file " + originalFile.getPath()
+                            + " to tmp generation directory! Generation skipped.", e);
+                    }
                 }
 
                 if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
