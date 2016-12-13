@@ -3,7 +3,13 @@ package com.capgemini.cobigen.jsonplugin.merger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -56,7 +62,6 @@ public class JSONMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        System.out.println(patch);
         String file = base.getAbsolutePath();
         JsonObject objBase = null;
 
@@ -84,13 +89,15 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
         }
 
+        Map<String, JsonObject> patchColumns = getPatchColumns(objPatch);
+        List<String> baseModelFields = getBaseModelFields(objBase);
         String result = null;
         switch (type) {
         case "sencharchmerge":
-            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, baseModelFields, objBase, patchOverrides, objPatch);
             break;
         case "sencharchmerge_override":
-            result = senchArchMerge(objBase, patchOverrides, objPatch);
+            result = senchArchMerge(patchColumns, baseModelFields, objBase, patchOverrides, objPatch);
             break;
         default:
             throw new MergeException(base, "Merge strategy not yet supported!");
@@ -102,7 +109,46 @@ public class JSONMerger implements Merger {
     }
 
     /**
-     * Merge a collection of JSON patch files
+     * Gets the columns from patch mapped with his referenced name
+     *
+     * @param objPatch
+     *            the patch grid
+     * @return columns of the grid
+     */
+    private Map<String, JsonObject> getPatchColumns(JsonObject objPatch) {
+        Map<String, JsonObject> columns = new HashMap<>();
+        Set<Entry<String, JsonElement>> patchEntry = objPatch.entrySet();
+        Iterator<Entry<String, JsonElement>> it = patchEntry.iterator();
+        while (it.hasNext()) {
+            Entry<String, JsonElement> next = it.next();
+            if (next.getKey().equals(Constants.CN_OBJECT)) {
+                JsonObject table = next.getValue().getAsJsonArray().get(1).getAsJsonObject();
+                if (table.has(Constants.CN_OBJECT)) {
+                    JsonArray cols = table.get("cn").getAsJsonArray();
+                    for (int i = 0; i < cols.size(); i++) {
+                        if (cols.get(i).getAsJsonObject().get(Constants.TYPE_FIELD).getAsString()
+                            .equals(Constants.COLUMN_TYPE)) {
+                            String name =
+                                cols.get(i).getAsJsonObject().get(Constants.NAME_FIELD).getAsString();
+                            JsonObject column = cols.get(i).getAsJsonObject();
+                            columns.put(name, column);
+                        }
+
+                    }
+                }
+
+            }
+        }
+        return columns;
+    }
+
+    /**
+     * Merges a collection of JSON patch files
+     *
+     * @param patchColumns
+     *            columns of the grid to patch
+     * @param baseModelFields
+     *            the fields of the model file
      * @param destinationObject
      *            the destination {@link JsonObject}
      * @param patchOverrides
@@ -112,15 +158,23 @@ public class JSONMerger implements Merger {
      *            collection of patches
      * @return the result string of the merge
      */
-    public String senchArchMerge(JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
+    public String senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
+        JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            senchArchMerge(destinationObject, obj.getAsJsonObject(), patchOverrides);
+            senchArchMerge(patchColumns, baseModelFields, destinationObject, obj.getAsJsonObject(),
+                patchOverrides);
         }
 
         return destinationObject.toString();
     }
 
     /**
+     * Merges two {@link JsonObject}
+     *
+     * @param patchColumns
+     *            columns of the grid to patch
+     * @param baseModelFields
+     *            the fields of the model file
      * @param leftObj
      *            The patch object
      * @param rightObj
@@ -129,7 +183,8 @@ public class JSONMerger implements Merger {
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
-    private void senchArchMerge(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
+    private void senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
+        JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -160,6 +215,70 @@ public class JSONMerger implements Merger {
                                 } else {
                                     posToAdd = i;
                                 }
+                                if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
+                                    JsonObject baseObject = rightArr.get(i).getAsJsonObject();
+                                    JsonObject patchObject = leftArr.get(j).getAsJsonObject();
+                                    if (baseObject.has(Constants.TYPE_FIELD)
+                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                        if (baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                            .equals(Constants.LABEL_TYPE)
+                                            && patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.LABEL_TYPE)) {
+                                            exist = true;
+                                            break;
+                                        }
+                                    }
+                                    if (baseObject.has(Constants.TYPE_FIELD)
+                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                        if (!baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                            .equals(Constants.LABEL_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.COLUMN_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.PANEL_TYPE)
+                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.CONTROLLER_TYPE)) {
+                                            if (!patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                .equals(Constants.LABEL_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.COLUMN_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.PANEL_TYPE)
+                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
+                                                    .equals(Constants.CONTROLLER_TYPE)) { // is model field
+                                                if (baseModelFields.contains(
+                                                    baseObject.get(Constants.NAME_FIELD).getAsString())) {
+                                                    System.out.println("is model field "
+                                                        + baseObject.get(Constants.NAME_FIELD).getAsString());
+                                                    exist = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                        .has(Constants.REFERENCE)
+                                        && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                            .has(Constants.REFERENCE)) {
+                                        if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
+                                            .get(Constants.REFERENCE)
+                                            .equals(patchObject.get(Constants.USERCONFIG_FIELD)
+                                                .getAsJsonObject().get(Constants.REFERENCE))) {
+                                            List<String> baseNameColumns =
+                                                getBaseGridColumnNames(patchObject);
+                                            List<String> patchNameColumns =
+                                                getPatchGridColumnNames(baseObject);
+                                            exist = true;
+                                            for (String column : patchNameColumns) {
+                                                if (!baseNameColumns.contains(column)) {
+                                                    patchObject.get(Constants.CN_OBJECT).getAsJsonArray()
+                                                        .add(patchColumns.get(column));
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                             if (!exist) {
                                 leftArr.add(rightArr.get(posToAdd));
@@ -169,11 +288,12 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    senchArchMerge(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
+                    senchArchMerge(patchColumns, baseModelFields, leftVal.getAsJsonObject(),
+                        rightVal.getAsJsonObject(), patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
-                    if (patchOverrides
-                        && !(rightKey.equals("designerId") || rightKey.equals("viewControllerInstanceId")
-                            || rightKey.equals("viewModelInstanceId"))) {
+                    if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
+                        || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID)
+                        || rightKey.equals(Constants.VIEWMODELINSTANCEID))) {
                         leftObj.add(rightKey, rightVal);// right side auto-wins, replace left val with its val
                     }
                 }
@@ -181,5 +301,69 @@ public class JSONMerger implements Merger {
                 leftObj.add(rightKey, rightVal);
             }
         }
+    }
+
+    /**
+     * Gets the name field of the grid columns from the patch
+     *
+     * @param baseObject
+     *            the JsonObject to extract the column names
+     *
+     * @return list of column names field
+     */
+    private List<String> getPatchGridColumnNames(JsonObject baseObject) {
+        JsonArray fields = baseObject.get(Constants.CN_OBJECT).getAsJsonArray();
+        List<String> columns = new LinkedList<>();
+        for (int i = 0; i < fields.size(); i++) {
+            JsonObject field = fields.get(i).getAsJsonObject();
+            if (field.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)) {
+                columns.add(field.get(Constants.NAME_FIELD).getAsString());
+            }
+        }
+        return columns;
+    }
+
+    /**
+     * Gets the name field of the grid columns from the base
+     *
+     * @param patchObject
+     *            the base grid
+     * @return the columns of the base grid
+     */
+    private List<String> getBaseGridColumnNames(JsonObject patchObject) {
+        JsonArray fields = patchObject.get(Constants.CN_OBJECT).getAsJsonArray();
+        List<String> columns = new LinkedList<>();
+        for (int i = 0; i < fields.size(); i++) {
+            JsonObject field = fields.get(i).getAsJsonObject();
+            if (field.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)) {
+                columns.add(field.get(Constants.NAME_FIELD).getAsString());
+            }
+        }
+        return columns;
+    }
+
+    /**
+     * Gets the list of the fields of the base model file
+     *
+     * @param baseObject
+     *            the base model {@link JsonObject}
+     * @return list of field names
+     */
+    private List<String> getBaseModelFields(JsonObject baseObject) {
+        List<String> modelFields = new LinkedList<>();
+        if (baseObject.has(Constants.TYPE_FIELD)) {
+            String type = baseObject.get(Constants.TYPE_FIELD).getAsString();
+            if (!type.equals(Constants.COLUMN_TYPE) && !type.equals(Constants.LABEL_TYPE)
+                && !type.equals(Constants.PANEL_TYPE) && !type.equals(Constants.CONTROLLER_TYPE)) {
+                if (baseObject.has(Constants.CN_OBJECT)) {
+                    JsonArray fields = baseObject.get(Constants.CN_OBJECT).getAsJsonArray();
+                    for (int i = 0; i < fields.size(); i++) {
+                        JsonObject field = fields.get(i).getAsJsonObject();
+                        modelFields.add(field.get(Constants.NAME_FIELD).getAsString());
+                    }
+                }
+            }
+        }
+        return modelFields;
     }
 }
