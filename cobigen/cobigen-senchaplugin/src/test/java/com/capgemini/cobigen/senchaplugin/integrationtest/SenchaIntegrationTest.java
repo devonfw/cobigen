@@ -1,4 +1,4 @@
-package com.capgemini.senchaplugin.integrationtest;
+package com.capgemini.cobigen.senchaplugin.integrationtest;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,7 +19,7 @@ import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
-import com.capgemini.senchaplugin.integrationtest.testdata.ModelCreationTest;
+import com.capgemini.cobigen.senchaplugin.integrationtest.testdata.ModelCreationTest;
 
 import junit.framework.AssertionFailedError;
 

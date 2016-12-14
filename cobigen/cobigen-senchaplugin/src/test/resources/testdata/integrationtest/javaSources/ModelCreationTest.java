@@ -1,4 +1,4 @@
-package com.capgemini.senchaplugin.integrationtest.testdata;
+package com.capgemini.cobigen.senchaplugin.integrationtest.testdata;
 
 
 public class ModelCreationTest {
