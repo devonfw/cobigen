@@ -355,9 +355,8 @@ public class HierarchicalTreeOperator {
         }
         if (stubbedResources != null) {
             for (Object stubbedResource : stubbedResources) {
-                if (stubbedResource instanceof IPackageFragment
-                    && ((IPackageFragment) stubbedResource).getPath().toString()
-                        .startsWith(parentElement.getPath().toString())) {
+                if (stubbedResource instanceof IPackageFragment && ((IPackageFragment) stubbedResource)
+                    .getPath().toString().startsWith(parentElement.getPath().toString())) {
                     packageChildren.add((IPackageFragment) stubbedResource);
                 }
             }

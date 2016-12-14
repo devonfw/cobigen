@@ -45,8 +45,8 @@ public class XmlInputConverter {
                     Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                     convertedInputs.add(domDocument);
                 } catch (SAXException e) {
-                    LOG.error("Could not parse file {} as xml document.", ((IFile) resource).getFullPath()
-                        .toOSString(), e);
+                    LOG.error("Could not parse file {} as xml document.",
+                        ((IFile) resource).getFullPath().toOSString(), e);
                     throw new GeneratorCreationException("Could not parse file "
                         + ((IFile) resource).getFullPath().toOSString() + " as xml document.", e);
                 } catch (CoreException e) {
@@ -54,8 +54,8 @@ public class XmlInputConverter {
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 } catch (IOException e) {
                     LOG.error("Could not read file {}.", ((IFile) resource).getFullPath().toOSString(), e);
-                    throw new GeneratorCreationException("Could not read file "
-                        + ((IFile) resource).getFullPath().toOSString() + ".", e);
+                    throw new GeneratorCreationException(
+                        "Could not read file " + ((IFile) resource).getFullPath().toOSString() + ".", e);
                 } catch (ParserConfigurationException e) {
                     LOG.error("An internal xml parser exception occurred.", e);
                     throw new GeneratorCreationException("An internal xml parser exception occurred.", e);

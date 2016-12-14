@@ -11,10 +11,6 @@ import org.eclipse.jface.viewers.LabelProvider;
  */
 public class SelectAttributesLabelProvider extends LabelProvider {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public String getText(Object element) {
         if (element instanceof Entry<?, ?>) {

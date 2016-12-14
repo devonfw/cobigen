@@ -34,30 +34,17 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
         super(new Tree(parent, SWT.BORDER));
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void setCheckedElements(Object[] elements) {
         checkedElements = new HashSet<>(Arrays.asList(elements));
         fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
     }
 
-    /**
-     *
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public Object[] getCheckedElements() {
         return checkedElements.toArray();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public boolean setChecked(Object element, boolean state) {
         if (state) {

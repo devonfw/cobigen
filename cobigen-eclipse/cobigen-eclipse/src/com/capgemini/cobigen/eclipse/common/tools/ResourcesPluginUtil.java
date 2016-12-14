@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 
 /**
@@ -47,10 +47,9 @@ public class ResourcesPluginUtil {
      *             exists
      * @throws CoreException
      *             if an existing generator configuration project could not be opened
-     * @author mbrunnli (08.04.2013)
      */
-    public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException,
-        CoreException {
+    public static IProject getGeneratorConfigurationProject()
+        throws GeneratorProjectNotExistentException, CoreException {
 
         IProject generatorProj =
             ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);

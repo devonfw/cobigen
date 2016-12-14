@@ -1,9 +1,7 @@
-package com.capgemini.cobigen.eclipse.common.constants;
+package com.capgemini.cobigen.eclipse.common.constants.external;
 
 /**
  * This class encloses all relevant resource functionality for the generator configuration
- *
- * @author mbrunnli (08.04.2013)
  */
 public class ResourceConstants {
 

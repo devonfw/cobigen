@@ -57,8 +57,8 @@ public class GeneratorWrapperFactory {
                 if (firstElement instanceof IJavaElement) {
                     LOG.info("Create new CobiGen instance for java inputs...");
                     JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
-                    generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject()
-                        .getProject());
+                    generator.setGenerationTargetProject(
+                        ((IJavaElement) firstElement).getJavaProject().getProject());
                     generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
                     return generator;
                 } else if (firstElement instanceof IFile) {
@@ -152,11 +152,10 @@ public class GeneratorWrapperFactory {
                 }
                 //$FALL-THROUGH$
             default:
-                throw new InvalidInputException(
-                    "Your selection contains an object of the type "
-                        + o.getClass().toString()
-                        + ", which is not yet supported to be treated as an input for generation.\n"
-                        + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
+                throw new InvalidInputException("Your selection contains an object of the type "
+                    + o.getClass().toString()
+                    + ", which is not yet supported to be treated as an input for generation.\n"
+                    + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
             }
         }
 
