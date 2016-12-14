@@ -97,8 +97,8 @@ public class ModifyableSourceLibrary extends SourceLibrary {
      *             if any exception occurred while accessing the source
      * @author mbrunnli (04.04.2013)
      */
-    private JavaSource parseSource(Builder modelBuilder, Object source) throws FileNotFoundException,
-        MalformedURLException, UnsupportedEncodingException, IOException {
+    private JavaSource parseSource(Builder modelBuilder, Object source)
+        throws FileNotFoundException, MalformedURLException, UnsupportedEncodingException, IOException {
         JavaSource resultSource = null;
         if (source instanceof File) {
             resultSource =
@@ -108,9 +108,8 @@ public class ModifyableSourceLibrary extends SourceLibrary {
         } else if (source instanceof InputStream) {
             resultSource = parse((InputStream) source, null, modelBuilder);
         } else if (source instanceof URL) {
-            resultSource =
-                parse(new InputStreamReader(((URL) source).openStream(), getEncoding()), (URL) source,
-                    modelBuilder);
+            resultSource = parse(new InputStreamReader(((URL) source).openStream(), getEncoding()),
+                (URL) source, modelBuilder);
         } else {
             // throw runtimeexception?
         }
@@ -209,11 +208,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (04.04.2013)
-     */
     @Override
     protected Builder getModelBuilder() {
         ModifyableModelBuilder modelBuilder = new ModifyableModelBuilder(this, new DefaultDocletTagFactory());

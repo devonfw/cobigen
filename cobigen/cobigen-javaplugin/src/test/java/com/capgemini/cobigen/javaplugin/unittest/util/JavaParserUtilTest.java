@@ -1,13 +1,13 @@
 package com.capgemini.cobigen.javaplugin.unittest.util;
 
-import org.junit.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 /**
  * This class contains testcases for {@link JavaParserUtil}
- * @author fkreis (25.06.2015)
  */
 public class JavaParserUtilTest {
 
@@ -33,11 +33,11 @@ public class JavaParserUtilTest {
             "java.util.List<java.util.Map<java.util.Map<java.lang.String, java.lang.String>,java.util.List<java.lang.String>>>";
         String expectedString5 = "List<Map<Map<String, String>,List<String>>>";
 
-        Assert.assertEquals(expectedString1, JavaParserUtil.resolveToSimpleType(testString1));
-        Assert.assertEquals(expectedString2, JavaParserUtil.resolveToSimpleType(testString2));
-        Assert.assertEquals(expectedString3, JavaParserUtil.resolveToSimpleType(testString3));
-        Assert.assertEquals(expectedString4, JavaParserUtil.resolveToSimpleType(testString4));
-        Assert.assertEquals(expectedString5, JavaParserUtil.resolveToSimpleType(testString5));
+        assertThat(JavaParserUtil.resolveToSimpleType(testString1)).isEqualTo(expectedString1);
+        assertThat(JavaParserUtil.resolveToSimpleType(testString2)).isEqualTo(expectedString2);
+        assertThat(JavaParserUtil.resolveToSimpleType(testString3)).isEqualTo(expectedString3);
+        assertThat(JavaParserUtil.resolveToSimpleType(testString4)).isEqualTo(expectedString4);
+        assertThat(JavaParserUtil.resolveToSimpleType(testString5)).isEqualTo(expectedString5);
 
     }
 

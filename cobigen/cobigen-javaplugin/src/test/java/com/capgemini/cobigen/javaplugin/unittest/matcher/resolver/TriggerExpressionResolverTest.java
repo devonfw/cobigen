@@ -1,9 +1,7 @@
 package com.capgemini.cobigen.javaplugin.unittest.matcher.resolver;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
@@ -12,8 +10,6 @@ import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolv
 /**
  * The class <code>TriggerExpressionResolverTest</code> contains tests for the class
  * {@link TriggerExpressionResolver}
- *
- * @author mbrunnli (05.04.2013)
  */
 public class TriggerExpressionResolverTest {
 
@@ -24,8 +20,8 @@ public class TriggerExpressionResolverTest {
     public void testEvaluateExpression_instanceof() {
         TriggerExpressionResolver target = new TriggerExpressionResolver(TriggerExpressionResolver.class);
 
-        Assert.assertFalse(target.evaluateExpression("instanceof java.lang.String"));
-        Assert.assertTrue(target.evaluateExpression("instanceof java.lang.Object"));
+        assertThat(target.evaluateExpression("instanceof java.lang.String")).isFalse();
+        assertThat(target.evaluateExpression("instanceof java.lang.Object")).isTrue();
     }
 
     /**
@@ -35,7 +31,7 @@ public class TriggerExpressionResolverTest {
     public void testEvaluateExpression_isAbstract_valid() {
         TriggerExpressionResolver target = new TriggerExpressionResolver(AbstractIntegrationTest.class);
 
-        assertTrue(target.evaluateExpression("isAbstract"));
+        assertThat(target.evaluateExpression("isAbstract")).isTrue();
     }
 
     /**
@@ -45,6 +41,6 @@ public class TriggerExpressionResolverTest {
     public void testEvaluateExpression_isAbstract_invalid() {
         TriggerExpressionResolver target = new TriggerExpressionResolver(getClass());
 
-        assertFalse(target.evaluateExpression("isAbstract"));
+        assertThat(target.evaluateExpression("isAbstract")).isFalse();
     }
 }

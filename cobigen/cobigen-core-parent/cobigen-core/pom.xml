@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cobigen-core</artifactId>
+  <name>CobiGen Core</name>
+  <version>3.0.0</version>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>com.capgemini</groupId>
+    <artifactId>cobigen-core-parent</artifactId>
+    <version>dev-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- FreeMarker engine -->
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.23</version>
+    </dependency>
+    <!-- Enables XPath for FreeMarker templates -->
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.4</version>
+    </dependency>
+    <!-- Apache helper libraries -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <!-- enables XPath queries over object structures -->
+    <dependency>
+      <groupId>commons-jxpath</groupId>
+      <artifactId>commons-jxpath</artifactId>
+      <version>1.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.dozer</groupId>
+      <artifactId>dozer</artifactId>
+      <version>5.5.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.el</groupId>
+          <artifactId>el-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jsr173_api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jsr173_api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlbeans</groupId>
+          <artifactId>xmlbeans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlbeans</groupId>
+          <artifactId>xmlbeans-xpath</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>el-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Inject Maven Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- For testing purposes -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <excludes>
+            <exclude>src/test/resources/JavaMergerTest/BaseFile_encoding_ISO-8859-1.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- Generation of configuration beans -->
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+        <executions>
+          <execution>
+            <id>generate-v1.0-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v1_0</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v1.0</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v1.0</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v1.2-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v1_2</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v1.2</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v1.2</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v2.0-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v2_0</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v2.0</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.0</schemaDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v2.1-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v2_1</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v2.1</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
+            </configuration>
+          </execution>
+          <!-- Redundant generation due to stability reasons of the configuration upgrade mechanism -->
+          <execution>
+            <id>generate-current-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/current</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <removeOldOutput>true</removeOldOutput>
+          <extension>true</extension>
+          <bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>
+          <args>
+            <arg>-Xsimplify</arg>
+            <arg>-npa</arg>
+          </args>
+          <plugins>
+            <plugin>
+              <groupId>org.jvnet.jaxb2_commons</groupId>
+              <artifactId>jaxb2-basics</artifactId>
+              <version>0.9.4</version>
+            </plugin>
+          </plugins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-javaplugin</artifactId>
   <name>CobiGen - Java Plug-in</name>
-  <version>1.3.2</version>
+  <version>1.4.0</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -17,9 +17,15 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core</artifactId>
-      <version>2.0.0</version>
+      <version>3.0.0</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core-test</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    
     <!-- QDox for Java parsing -->
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>

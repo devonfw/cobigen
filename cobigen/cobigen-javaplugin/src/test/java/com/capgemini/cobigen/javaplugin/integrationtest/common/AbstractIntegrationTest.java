@@ -6,12 +6,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 
 /**
- *
- * @author mbrunnli (06.12.2014)
+ * Common Integration test implementation.
  */
 public abstract class AbstractIntegrationTest {
 

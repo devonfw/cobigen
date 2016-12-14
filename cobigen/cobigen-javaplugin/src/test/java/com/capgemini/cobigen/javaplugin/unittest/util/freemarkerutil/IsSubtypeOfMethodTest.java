@@ -1,8 +1,9 @@
 package com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
@@ -12,14 +13,13 @@ import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateModelException;
 
 /**
- * This class contains testcases for {@link IsSubtypeOfMethod}
- * @author fkreis (23.10.2014)
+ * This class contains test cases for {@link IsSubtypeOfMethod}
  */
 public class IsSubtypeOfMethodTest {
 
     /**
-     * Test method for {@link IsSubtypeOfMethod#exec(java.util.List)} where the first argument is a subtype of
-     * the second.
+     * Test method for {@link IsSubtypeOfMethod#exec(java.util.List)} where the first argument is a sub type
+     * of the second.
      * @throws TemplateModelException
      *             test fails
      */
@@ -36,12 +36,12 @@ public class IsSubtypeOfMethodTest {
         args.add(parentclass);
 
         // Execute and Check with correct arguments
-        Assert.assertSame(TemplateBooleanModel.TRUE, method.exec(args));
+        assertThat(method.exec(args)).isSameAs(TemplateBooleanModel.TRUE);
     }
 
     /**
-     * Test method for {@link IsSubtypeOfMethod#exec(java.util.List)} where the first argument is not a
-     * subtype of the second.
+     * Test method for {@link IsSubtypeOfMethod#exec(java.util.List)} where the first argument is not a sub
+     * type of the second.
      * @throws TemplateModelException
      *             test fails
      */
@@ -58,7 +58,7 @@ public class IsSubtypeOfMethodTest {
         args.add(childclass);
 
         // Execute and Check with correct arguments
-        Assert.assertSame(TemplateBooleanModel.FALSE, method.exec(args));
+        assertThat(method.exec(args)).isSameAs(TemplateBooleanModel.FALSE);
     }
 
     /**
@@ -79,14 +79,14 @@ public class IsSubtypeOfMethodTest {
         args.add(sameType);
 
         // Execute and Check with correct arguments
-        Assert.assertSame(TemplateBooleanModel.TRUE, method.exec(args));
+        assertThat(method.exec(args)).isSameAs(TemplateBooleanModel.TRUE);
     }
 
     /**
      * Test method for {@link IsSubtypeOfMethod#exec(java.util.List)} with an argument which is not an
      * resolvable to a class. Therefore a TemplateModelException is expected.
      * @throws TemplateModelException
-     *             this exception is expected because of the unresolvable argument.
+     *             this exception is expected because of the non resolvable argument.
      */
     @Test(expected = TemplateModelException.class)
     public void testExec_wrongArg() throws TemplateModelException {
