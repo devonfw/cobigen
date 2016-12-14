@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-senchaplugin</artifactId>
   <name>CobiGen - Sencha Plug-in</name>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -11,7 +11,6 @@
     <artifactId>cobigen-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
-
 
   <dependencies>
     <dependency>
@@ -37,12 +36,5 @@
       <version>1.7R4</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
-  </build>
+  
 </project>
