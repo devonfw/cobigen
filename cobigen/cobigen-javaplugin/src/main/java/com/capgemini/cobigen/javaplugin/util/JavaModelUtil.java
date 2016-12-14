@@ -12,16 +12,16 @@ import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 public class JavaModelUtil {
 
     /**
-     * Returns the model root-element ({@link ModelConstant#ROOT})
+     * Returns the model root-element ({@link ModelConstant#MODEL_ROOT})
      *
      * @param model
      *            raw model
-     * @return the model root-element ({@link ModelConstant#ROOT})
+     * @return the model root-element ({@link ModelConstant#MODEL_ROOT})
      */
     public static Map<String, Object> getRoot(Map<String, Object> model) {
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.ROOT);
+        Map<String, Object> pojoMap = (Map<String, Object>) model.get(ModelConstant.MODEL_ROOT);
         return pojoMap;
     }
 

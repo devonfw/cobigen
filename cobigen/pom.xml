@@ -13,11 +13,12 @@
   </parent>
 
   <modules>
-    <module>cobigen-core</module>
+    <module>cobigen-core-parent</module>
     <module>cobigen-javaplugin</module>
     <module>cobigen-xmlplugin</module>
     <module>cobigen-propertyplugin</module>
     <module>cobigen-textmerger</module>
+    <module>cobigen-jsonplugin</module>
     <module>cobigen-senchaplugin</module>
   </modules>
 
