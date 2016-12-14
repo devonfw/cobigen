@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 
 /**
  * Input validator, which validates the increment and template declarations within the maven plugin
@@ -34,8 +34,8 @@ public class InputValidator {
             }
         }
         if (!templateIds.isEmpty()) {
-            throw new MojoExecutionException("No template(s) with the given id(s) '" + templateIds
-                + "' found.");
+            throw new MojoExecutionException(
+                "No template(s) with the given id(s) '" + templateIds + "' found.");
         }
     }
 
@@ -58,8 +58,8 @@ public class InputValidator {
             }
         }
         if (!incrementIds.isEmpty()) {
-            throw new MojoExecutionException("No increment(s) with the given id(s) '" + incrementIds
-                + "' found.");
+            throw new MojoExecutionException(
+                "No increment(s) with the given id(s) '" + incrementIds + "' found.");
         }
     }
 }
