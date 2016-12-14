@@ -1,4 +1,4 @@
-package com.capgemini.senchaplugin.unittest.merger;
+package com.capgemini.cobigen.senchaplugin.unittest.merger;
 
 import static org.junit.Assert.assertTrue;
 
