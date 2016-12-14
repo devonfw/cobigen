@@ -24,26 +24,14 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      */
     private List<ComparableIncrement> rootElements;
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public void dispose() {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof ComparableIncrement[]) {
@@ -86,10 +74,6 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public Object[] getChildren(TreePath parentPath) {
         Object lastSegment = parentPath.getLastSegment();
@@ -105,27 +89,18 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      */
     private Object[] getChildren(Object element) {
         if (element instanceof ComparableIncrement) {
-            ComparableIncrement[] children =
-                ((ComparableIncrement) element).getDependentComparableIncrements().toArray(
-                    new ComparableIncrement[0]);
+            ComparableIncrement[] children = ((ComparableIncrement) element)
+                .getDependentComparableIncrements().toArray(new ComparableIncrement[0]);
             return children;
         }
         return new Object[0];
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public boolean hasChildren(TreePath path) {
         return getChildren(path).length != 0;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public TreePath[] getParents(Object element) {
         Set<TreePath> parents = new HashSet<>();

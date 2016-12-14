@@ -71,10 +71,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
     /**
      * Filters the {@link TreeViewer} contents by the given paths
-     *
      * @param paths
      *            to be filtered
-     * @author mbrunnli (14.02.2013)
      */
     public void filter(Set<String> paths) {
 
@@ -84,11 +82,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         HierarchicalTreeOperator.resetCache();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object[] getElements(Object inputElement) {
 
@@ -113,11 +106,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object[] getChildren(Object parentElement) {
 
@@ -130,9 +118,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
 
             try {
-                Set<Object> affectedChildren =
-                    new HashSet<>(Arrays.asList(getAffectedChildren(getNoneDuplicateResourceChildren(
-                        (IContainer) parentElement, null))));
+                Set<Object> affectedChildren = new HashSet<>(Arrays.asList(
+                    getAffectedChildren(getNoneDuplicateResourceChildren((IContainer) parentElement, null))));
 
                 // Add all non existent but targeting resources using Mocks
                 affectedChildren.addAll(stubNonExistentChildren(parentElement, true));
@@ -155,16 +142,15 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 List<Object> children = new ArrayList<>();
                 if (parentElement instanceof IPackageFragmentRoot) {
                     List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
-                    children =
-                        HierarchicalTreeOperator.getPackageChildren((IPackageFragmentRoot) parentElement,
-                            stubbedChildren);
+                    children = HierarchicalTreeOperator
+                        .getPackageChildren((IPackageFragmentRoot) parentElement, stubbedChildren);
                 } else if (parentElement instanceof IPackageFragment) {
                     List<Object> stubbedChildren = stubNonExistentChildren(parentElement, true);
                     if (!((IPackageFragment) parentElement).isDefaultPackage()) {
                         children.clear();
                         // add package children
-                        children.addAll(HierarchicalTreeOperator.getPackageChildren(
-                            (IPackageFragment) parentElement, stubbedChildren));
+                        children.addAll(HierarchicalTreeOperator
+                            .getPackageChildren((IPackageFragment) parentElement, stubbedChildren));
                         // add non-package children
                         for (Object stub : stubbedChildren) {
                             if (stub instanceof ICompilationUnitStub) {
@@ -255,9 +241,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 if (targetIsFile(elementpath)) {
 
                     // If the file is not a direct child of the parent, we will skip it
-                    IPath p =
-                        elementpath.removeFirstSegments(((IJavaElement) parentElement).getPath()
-                            .segmentCount());
+                    IPath p = elementpath
+                        .removeFirstSegments(((IJavaElement) parentElement).getPath().segmentCount());
                     if (p.segmentCount() != 1) {
                         continue;
                     } else if (_cachedProvidedResources.containsKey(path)
@@ -304,8 +289,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 if (((IJavaElement) parentElement) instanceof IPackageFragment) {
                     javaElementStub.setParent(((IJavaElement) parentElement).getParent());
                 } else {
-                    javaElementStub.setParent(determineJavaModelParent((IJavaElement) parentElement,
-                        javaElementStub));
+                    javaElementStub
+                        .setParent(determineJavaModelParent((IJavaElement) parentElement, javaElementStub));
                 }
 
                 IJavaElement[] javaChildren = new IJavaElement[0];
@@ -529,46 +514,25 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         return paths;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public Object getParent(Object element) {
 
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public boolean hasChildren(Object element) {
 
         return getChildren(element).length > 0;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public void dispose() {
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (13.02.2013)
-     */
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
         // will not occur / not needed
     }
 
@@ -577,9 +541,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *
      * @param parent
      *            the children should be retrieved for
-     * @return all non package children
+     * @param stubbedResources
+     *            the list of already stubbed ressources
      * @throws CoreException
      *             if an internal eclipse exception occurs
+     * @return an unordered set of all non package children from the parent
      * @author mbrunnli (14.02.2013)
      */
     private Set<Object> getNonPackageChildren(IParent parent, List<Object> stubbedResources)
@@ -601,14 +567,17 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * Returns all children of the given parent {@link IResource} if and only if it has no corresponding
-     * {@link IJavaElement} determined by {@link JavaCore#create(org.eclipse.core.resources.IResource)}
+     * Returns all resource children of the given parent {@link IResource} if and only if it has no
+     * corresponding {@link IJavaElement} determined by
+     * {@link JavaCore#create(org.eclipse.core.resources.IResource)}
      *
      * @param parent
      *            {@link IResource} the children should be determined
-     * @return all {@link IResource} children which have no {@link IJavaElement} representation
+     * @param stubbedResources
+     *            the list of already subbed ressources
      * @throws CoreException
      *             if an internal eclipse exception occurs
+     * @return the list of resource children, which are not already found in the java model.
      * @author mbrunnli (04.03.2013)
      */
     private List<Object> getNoneDuplicateResourceChildren(IContainer parent, List<Object> stubbedResources)
@@ -620,18 +589,16 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             IJavaElement jChild = JavaCore.create(child);
             // only add child of type IResource if it has not java representation
             // in this case it should have been added before
-            if (jChild == null
-                && (!isPartOfAnySourceFolder(child.getFullPath().toString()) || isPartOfAnyNonSourceFolderPath(child
-                    .getFullPath().toString()))) {
+            if (jChild == null && (!isPartOfAnySourceFolder(child.getFullPath().toString())
+                || isPartOfAnyNonSourceFolderPath(child.getFullPath().toString()))) {
                 children.add(child);
             }
         }
 
         if (stubbedResources != null) {
             for (Object stubbedResource : stubbedResources) {
-                if (stubbedResource instanceof IResource
-                    && ((IResource) stubbedResource).getFullPath().toString()
-                        .startsWith(parent.getFullPath().toString())) {
+                if (stubbedResource instanceof IResource && ((IResource) stubbedResource).getFullPath()
+                    .toString().startsWith(parent.getFullPath().toString())) {
                     children.add(stubbedResource);
                 }
             }

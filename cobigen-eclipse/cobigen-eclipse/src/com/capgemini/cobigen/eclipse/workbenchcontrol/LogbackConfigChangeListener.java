@@ -15,17 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
-import com.capgemini.cobigen.config.constant.ConfigurationConstants;
-import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-
 /**
  * {@link IResourceChangeListener} for the generator configuration project
- *
- * @author mbrunnli (10.04.2013)
  */
 public class LogbackConfigChangeListener implements IResourceChangeListener {
 
@@ -33,6 +31,9 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      * Assigning logger to LogbackConfigChangeListener
      */
     private final static Logger LOG = LoggerFactory.getLogger(LogbackConfigChangeListener.class);
+
+    /** Logback configuration file name */
+    public final static String LOGBACK_FILENAME = "logback.xml";
 
     /**
      * Generator configuration project
@@ -54,7 +55,7 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
     public LogbackConfigChangeListener(IProject generatorConfProj) {
 
         this.generatorConfProj = generatorConfProj;
-        logbackXmlFile = generatorConfProj.getFile("logback.xml");
+        logbackXmlFile = generatorConfProj.getFile(LOGBACK_FILENAME);
         try {
             loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
         } catch (IOException | JoranException e) {
@@ -62,11 +63,6 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (10.04.2013)
-     */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -107,10 +103,9 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      *             if the file could not be read or written
      * @throws JoranException
      *             if the file could not be handled by log4j
-     * @author sbasnet (11.06.2014)
      */
-    public void loadLogbackConfiguration(String externalConfigFileLocation) throws IOException,
-        JoranException {
+    public void loadLogbackConfiguration(String externalConfigFileLocation)
+        throws IOException, JoranException {
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 

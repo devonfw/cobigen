@@ -23,10 +23,6 @@ public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
         super(parent, SWT.BORDER);
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (26.03.2013)
-     */
     @Override
     public boolean getChecked(Object element) {
         Widget widget = internalExpand(element, false);
@@ -36,20 +32,12 @@ public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (15.03.2013)
-     */
     @Override
     public void setCheckedElements(Object[] elements) {
         super.setCheckedElements(elements);
         fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
     }
 
-    /**
-     * {@inheritDoc}
-     * @author trippl (18.04.2013)
-     */
     @Override
     public boolean setChecked(Object element, boolean value) {
         boolean returnValue = super.setChecked(element, value);
