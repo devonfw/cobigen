@@ -10,10 +10,7 @@ import org.junit.Test;
 import junit.framework.TestCase;
 
 /**
- *
- * * Testing of PropertyMerger of its override property
- *
- * @author sbasnet(06.05.2014)
+ * Testing of PropertyMerger of its override property
  */
 public class PropertyMergerTest extends TestCase {
 
