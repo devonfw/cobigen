@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Copyright © Capgemini 2013. All rights reserved.
- ******************************************************************************/
 package com.capgemini.cobigen.propertyplugin;
 
 import java.io.BufferedReader;
@@ -20,17 +17,18 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.util.SystemUtil;
+import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.impl.util.SystemUtil;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
  * being provided as the file contents of the
- * 
+ *
  * @author mbrunnli (11.03.2013)
  * @uthor sbasnet(06.05.2014)
  */
-public class PropertyMerger implements IMerger {
+public class PropertyMerger implements Merger {
 
     /**
      * Merger Type to be registered
@@ -44,50 +42,51 @@ public class PropertyMerger implements IMerger {
 
     /**
      * Creates a new {@link PropertyMerger}
-     * 
+     *
+     * @param type
+     *            the {@link PropertyMerger} should be registered with.
      * @param patchOverrides
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents<br>
-     * @author sbasnet (26.04.2014)
-     * @param type
      */
     public PropertyMerger(String type, boolean patchOverrides) {
         this.type = type;
         this.patchOverrides = patchOverrides;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IOException
-     *             if the base file could not be read or written
-     * @author mbrunnli (11.03.2013)
-     */
-    public String merge(File base, String patch, String targetCharset) throws IOException {
+    @Override
+    public String merge(File base, String patch, String targetCharset) throws MergeException {
         Properties baseProperties = new Properties();
-        baseProperties.load(new InputStreamReader(new FileInputStream(base), targetCharset));
+        try {
+            baseProperties.load(new InputStreamReader(new FileInputStream(base), targetCharset));
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read base file.", e);
+        }
         Properties patchProperties = new Properties();
-        patchProperties.load(new ByteArrayInputStream(patch.getBytes()));
+        try {
+            patchProperties.load(new ByteArrayInputStream(patch.getBytes()));
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read generated patch.", e);
+        }
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
-        return concatContents(conflicts, br, patch);
+        try {
+            BufferedReader br =
+                new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
+            return concatContents(conflicts, br, patch);
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read base file.", e);
+        }
     }
 
     /**
      * Concatenates the contents of the base files and the patch leaving out conflicting properties of the
      * patch
-     * 
+     *
      * @param conflicts
      *            a {@link Set} of conflicting properties
      * @param baseFileReader
@@ -103,8 +102,8 @@ public class PropertyMerger implements IMerger {
         throws IOException {
         String lineSeparator = SystemUtil.LINE_SEPARATOR;
 
-        List<String> recordedComments = new LinkedList<String>();
-        Map<String, String> collection = new HashMap<String, String>();
+        List<String> recordedComments = new LinkedList<>();
+        Map<String, String> collection = new HashMap<>();
         String line;
         boolean lastLineWasComment = false;
         int count = 0; // count is used below to maintain uniqueness in the hash
@@ -183,7 +182,7 @@ public class PropertyMerger implements IMerger {
             count++;
         }
         String out = ""; // initializing to use the same variable again
-        for (String tempOut : new ArrayList<String>(collection.values())) {
+        for (String tempOut : new ArrayList<>(collection.values())) {
             out += tempOut;
         }
         return out;
@@ -191,48 +190,21 @@ public class PropertyMerger implements IMerger {
 
     /**
      * Returns all conflicting properties of the two files
-     * 
+     *
      * @param baseProperties
      *            {@link Properties} defined in the base file
      * @param patchProperties
      *            {@link Properties} defined in the patch
      * @return all conflicting properties of the two files
-     * @author mbrunnli (11.03.2013)
      */
     private Set<Object> getConflictingProperties(Properties baseProperties, Properties patchProperties) {
-        HashSet<Object> conflicts = new HashSet<Object>();
+        HashSet<Object> conflicts = new HashSet<>();
         for (Object key : baseProperties.keySet()) {
             if (patchProperties.containsKey(key)) {
                 conflicts.add(key);
             }
         }
-        returnKeyValue(patchProperties);
         return conflicts;
     }
 
-    /**
-     * Returns key-value pair of the properties file
-     * 
-     * @param properties
-     * @return key-value
-     */
-    private Map<String, String> returnKeyValue(Properties properties) {
-        Map<String, String> patch = new HashMap<String, String>();
-        String key[] = new String[properties.size()];
-        String value[] = new String[properties.size()];
-        int count = 0;
-        for (Object propKey : properties.keySet()) {
-            key[count] = propKey + "";
-            count++;
-        }
-        count = 0;
-        for (Object propValue : properties.values()) {
-            value[count] = propValue + "";
-            count++;
-        }
-        for (int i = 0; i < count; i++) {
-            patch.put(key[i], value[i]);
-        }
-        return patch;
-    }
 }
