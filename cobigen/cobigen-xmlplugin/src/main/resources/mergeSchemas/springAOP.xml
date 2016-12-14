@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root = "false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/aop"/>
+
+  <ms:default-criterion xpath="true()"/>
+
+  <ms:handling for="aspectj-autoproxy">
+    <ms:handling for="include">
+      <ms:criterion xpath="./@name"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="config">
+    <ms:handling for="pointcut">
+      <ms:criterion xpath="./@id"/>
+    </ms:handling>
+    <ms:handling for="advisor">
+      <ms:criterion xpath="./@id"/>
+    </ms:handling>
+    <ms:handling for="aspect">
+      <ms:criterion xpath="./@id"/>
+      <ms:handling for="declare-parents">
+        <ms:criterion xpath="./@implement-interface"/>
+      </ms:handling>
+      <ms:handling for="before">
+        <ms:criterion xpath="./@method"/>
+      </ms:handling>
+      <ms:handling for="after">
+        <ms:criterion xpath="./@method"/>
+      </ms:handling>
+      <ms:handling for="around">
+        <ms:criterion xpath="./@method"/>
+      </ms:handling>
+      <ms:handling for="after-returning">
+        <ms:criterion xpath="./@method"/>
+      </ms:handling>
+      <ms:handling for="after-throwing">
+        <ms:criterion xpath="./@method"/>
+      </ms:handling>
+    </ms:handling>
+  </ms:handling>
+
+</ms:merge-schema>

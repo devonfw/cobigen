@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--<!DOCTYPE mappings PUBLIC "-//DOZER//DTD MAPPINGS//EN" "http://dozer.sourceforge.net/dtd/dozerbeanmapping.dtd"> --><!-- <mappings> --><mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+  <mapping>
+    <class-a>${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto</class-a>
+    <class-b>${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity</class-b>
+  </mapping>
+
+</mappings>
