@@ -19,6 +19,7 @@
     <module>cobigen-propertyplugin</module>
     <module>cobigen-textmerger</module>
     <module>cobigen-jsonplugin</module>
+    <module>cobigen-senchaplugin</module>
   </modules>
 
   <build>
