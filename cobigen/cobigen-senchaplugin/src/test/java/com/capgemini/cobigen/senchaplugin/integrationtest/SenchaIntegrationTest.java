@@ -55,16 +55,16 @@ public class SenchaIntegrationTest {
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         Object[] input = new Object[] { ModelCreationTest.class,
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
+                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals("testModel.js")) {
                 cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "testModel.js");
                 Assert.assertTrue(expectedFile.exists());
                 methodTemplateFound = true;
                 break;

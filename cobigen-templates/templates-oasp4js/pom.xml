@@ -12,5 +12,9 @@
     <artifactId>cobigen-templates-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
+  
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
 
 </project>

@@ -90,11 +90,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
 
         GenerateBatchSelectionJob job;
         if (container == null) {
-            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
-                inputTypes);
+            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds), inputTypes);
         } else {
-            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds),
-                container);
+            job = new GenerateBatchSelectionJob(cobigenWrapper, cobigenWrapper.getTemplates(templateIds), container);
         }
         try {
             dialog.run(true, false, job);

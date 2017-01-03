@@ -172,14 +172,13 @@ public class IPackageFragmentRootStub implements IPackageFragmentRoot {
     }
 
     @Override
-    public void attachSource(IPath sourcePath, IPath rootPath, IProgressMonitor monitor)
-        throws JavaModelException {
+    public void attachSource(IPath sourcePath, IPath rootPath, IProgressMonitor monitor) throws JavaModelException {
 
     }
 
     @Override
-    public void copy(IPath destination, int updateResourceFlags, int updateModelFlags,
-        IClasspathEntry sibling, IProgressMonitor monitor) throws JavaModelException {
+    public void copy(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
+        IProgressMonitor monitor) throws JavaModelException {
 
     }
 
@@ -241,8 +240,8 @@ public class IPackageFragmentRootStub implements IPackageFragmentRoot {
     }
 
     @Override
-    public void move(IPath destination, int updateResourceFlags, int updateModelFlags,
-        IClasspathEntry sibling, IProgressMonitor monitor) throws JavaModelException {
+    public void move(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
+        IProgressMonitor monitor) throws JavaModelException {
 
     }
 

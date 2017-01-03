@@ -20,7 +20,6 @@ public class UnknownTemplateException extends InvalidConfigurationException {
      *            Template ID
      */
     public UnknownTemplateException(String templateId) {
-        super(
-            "Unknown template with id=" + templateId + ". Template could not be found in the configuration.");
+        super("Unknown template with id=" + templateId + ". Template could not be found in the configuration.");
     }
 }
