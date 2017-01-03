@@ -227,8 +227,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
             anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
         when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
             anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
-        when(inputReader.getInputObjects(any(), any(Charset.class)))
-            .thenReturn(Lists.newArrayList(child1, child2));
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
 
         // match container
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
@@ -237,14 +236,12 @@ public class ContainerMatcherTest extends AbstractApiTest {
             .thenReturn(false);
 
         // do not match first child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
             .thenReturn(true);
 
         // match second child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
             .thenReturn(false);
 
@@ -256,8 +253,8 @@ public class ContainerMatcherTest extends AbstractApiTest {
         File folder = tmpFolder.newFolder();
 
         // Execution
-        GenerationReportTo report = target.generate(container, target.getMatchingTemplates(container),
-            Paths.get(folder.toURI()), false);
+        GenerationReportTo report =
+            target.generate(container, target.getMatchingTemplates(container), Paths.get(folder.toURI()), false);
         assertThat(report).isSuccessful();
 
         // Verification
@@ -339,9 +336,8 @@ public class ContainerMatcherTest extends AbstractApiTest {
                 .thenReturn(Lists.newArrayList(firstChildResource));
         }
 
-        when(matcher
-            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-                .thenReturn(containerChildMatchesTrigger);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(

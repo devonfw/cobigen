@@ -94,8 +94,8 @@ public class JavaMatcher implements MatcherInterpreter {
     }
 
     @Override
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException {
 
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
@@ -151,9 +151,8 @@ public class JavaMatcher implements MatcherInterpreter {
      *             if some of the matcher type and variable type combinations are not supported
      * @author mbrunnli (15.04.2013)
      */
-    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue,
-        String stringToMatch, List<VariableAssignmentTo> variableAssignments)
-        throws InvalidConfigurationException {
+    public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue, String stringToMatch,
+        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
 
         Map<String, String> resolvedVariables = new HashMap<>();
         for (VariableAssignmentTo va : variableAssignments) {
@@ -205,8 +204,8 @@ public class JavaMatcher implements MatcherInterpreter {
                         "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
                             + " representing a regular expression group.\nCurrent value: '{}'",
                         va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException("The VariableAssignment '"
-                        + va.getType().toUpperCase() + "' of Matcher of type '" + matcherType.toString()
+                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
+                        + "' of Matcher of type '" + matcherType.toString()
                         + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
                         + va.getValue() + "'");
                 } catch (IndexOutOfBoundsException e) {
@@ -214,10 +213,10 @@ public class JavaMatcher implements MatcherInterpreter {
                         "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
                             + " group not in range.\nCurrent value: '{}'",
                         va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException("The VariableAssignment '"
-                        + va.getType().toUpperCase() + "' of Matcher of type '" + matcherType.toString()
-                        + "' declares a regular expression group not in range.\nCurrent value: '"
-                        + va.getValue() + "'");
+                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
+                        + "' of Matcher of type '" + matcherType.toString()
+                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue()
+                        + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {

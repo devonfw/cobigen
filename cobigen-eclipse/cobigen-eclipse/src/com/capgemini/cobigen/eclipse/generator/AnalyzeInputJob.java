@@ -4,15 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
-import com.capgemini.cobigen.CobiGen;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
 
 /**
@@ -57,10 +57,6 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
         this.inputs = inputs;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jan 10, 2016)
-     */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -73,8 +69,7 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
                 monitor.worked(1);
             }
             LOG.info("Determine if input is container...");
-            resultSingleNonContainerInput =
-                inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));
+            resultSingleNonContainerInput = inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));
             monitor.done();
         } catch (RuntimeException e) {
             occurredException = e;

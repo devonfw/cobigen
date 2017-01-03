@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 
 /**
@@ -28,12 +28,10 @@ public class ResourcesPluginUtil {
      */
     public static void refreshConfigurationProject() {
         try {
-            getGeneratorConfigurationProject().refreshLocal(IResource.DEPTH_INFINITE,
-                new NullProgressMonitor());
+            getGeneratorConfigurationProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         } catch (CoreException e) {
             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                "Could not refresh the CobiGen configuration project automatically. "
-                    + "Please try it again manually");
+                "Could not refresh the CobiGen configuration project automatically. " + "Please try it again manually");
             LOG.warn("Configuration project refresh failed", e);
         }
     }
@@ -47,10 +45,9 @@ public class ResourcesPluginUtil {
      *             exists
      * @throws CoreException
      *             if an existing generator configuration project could not be opened
-     * @author mbrunnli (08.04.2013)
      */
-    public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException,
-        CoreException {
+    public static IProject getGeneratorConfigurationProject()
+        throws GeneratorProjectNotExistentException, CoreException {
 
         IProject generatorProj =
             ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);

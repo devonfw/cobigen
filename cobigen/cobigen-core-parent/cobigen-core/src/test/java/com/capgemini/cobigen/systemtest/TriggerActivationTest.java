@@ -62,8 +62,7 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(false);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
@@ -103,8 +102,7 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
@@ -143,8 +141,7 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(false);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
@@ -184,10 +181,8 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 
@@ -224,8 +219,7 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
@@ -264,10 +258,8 @@ public class TriggerActivationTest extends AbstractApiTest {
             .thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input)))))
             .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
 
         PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
 
@@ -300,8 +292,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
         when(inputReader.isValidInput(any())).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
