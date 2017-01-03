@@ -3,8 +3,7 @@ package com.capgemini.cobigen.impl.config.constant;
 /**
  * Constants extracted from the maven pom by templating-maven-plugin.
  * 
- * @Generated
- * @see edit template in src/main/java-templates
+ * @see "edit template in src/main/java-templates"
  */
 @SuppressWarnings("javadoc")
 public class MavenMetadata {
