@@ -8,8 +8,8 @@ public class SuperSuperTestClass {
     /**
      * Example JavaDoc
      */
-    @MySuperSuperTypeFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c',
-        bool = true, str = "TestString")
+    @MySuperSuperTypeFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true,
+        str = "TestString")
     private String superSuperString;
 
     @MySuperSuperTypeGetterAnnotation

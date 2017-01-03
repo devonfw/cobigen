@@ -1,17 +1,19 @@
 package com.capgemini.cobigen.textmerger;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.capgemini.cobigen.extension.IMerger;
+import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.extension.Merger;
 
 /**
  * The {@link TextAppender} allows appending the patch to the base file
  * @author mbrunnli (03.06.2014)
  */
-public class TextAppender implements IMerger {
+public class TextAppender implements Merger {
 
     /**
      * Type (or name) of the instance
@@ -39,22 +41,19 @@ public class TextAppender implements IMerger {
         this.withNewLineBeforehand = withNewLineBeforehand;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (03.06.2014)
-     */
     @Override
-    public String merge(File base, String patch, String targetCharset) throws Exception {
-        String mergedString = FileUtils.readFileToString(base, targetCharset);
+    public String merge(File base, String patch, String targetCharset) throws MergeException {
+        String mergedString;
+        try {
+            mergedString = FileUtils.readFileToString(base, targetCharset);
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read base file.", e);
+        }
         if (withNewLineBeforehand && StringUtils.isNotEmpty(patch)) {
             mergedString += System.lineSeparator();
         }

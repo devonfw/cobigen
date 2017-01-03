@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="hibernate-mapping" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition namespace="//Hibernate/Hibernate Mapping DTD 3.0//EN" type="dtd"/>
+
+  <ms:handling for="meta"><ms:criterion xpath="./@attribute"/></ms:handling>
+  <ms:handling for="identifier-generator"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="typedef"><ms:criterion xpath="./@class"/></ms:handling>
+  <ms:handling for="filter-def">
+    <ms:criterion xpath="./@name"/>
+    <ms:handling for="filter-param"><ms:criterion xpath="./@name"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="import"><ms:criterion xpath="./@class"/></ms:handling>
+  <ms:handling for="class">
+    <ms:criterion xpath="./@entity-name"/>
+    <ms:handling for="id" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="composite-id" unique="true">
+      <ms:criterion xpath="true()"/>
+    </ms:handling>
+    <ms:handling for="discriminator" unique="true">
+      <ms:criterion xpath="true()"/>
+      <ms:handling for="formula" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    </ms:handling>
+    <ms:handling for="natural-id" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="version" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="timestamp" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="subclass"><ms:criterion xpath="./@entity-name"/></ms:handling>
+  <ms:handling for="joined-subclass"><ms:criterion xpath="./@entity-name"/></ms:handling>
+  <ms:handling for="union-subclass"><ms:criterion xpath="./@entity-name"/></ms:handling>
+  <ms:handling for="resultset"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="return-scalar"><ms:criterion xpath="./@column"/></ms:handling>
+  <ms:handling for="return-join"><ms:criterion xpath="./@property"/></ms:handling>
+  <ms:handling for="return">
+    <ms:criterion xpath="./@entity-name"/>
+    <ms:handling for="return-discriminator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="return-property">
+      <ms:criterion xpath="./@name"/>
+      <ms:handling for="return-column"><ms:criterion xpath="./@name"/></ms:handling>
+    </ms:handling>
+  </ms:handling>
+  <ms:handling for="load-collection"><ms:criterion xpath="./@role"/></ms:handling>
+  <ms:handling for="query"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="sql-query"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="query-param"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="fetch-profile">
+    <ms:criterion xapth="./@name"/>
+    <ms:handling for="fetch"><ms:criterion xpath="./@association"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="database-object">
+    <ms:criterion xpath="./definition | ./create" ordered="false"/>
+    <ms:handling for="definition" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="create" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="drop" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="dialect-scope"><ms:criterion xpath="./@name"/></ms:handling>
+  </ms:handling>
+
+  <!--  -->
+  <ms:handling for="column"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="generator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="tuplizer"><ms:criterion xpath="./@class"/></ms:handling>
+  <ms:handling for="synchronize"><ms:criterion xpath="./@table"/></ms:handling>
+  <ms:handling for="property"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="many-to-one"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="one-to-one"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="component">
+    <ms:criterion xpath="./@name"/>
+    <ms:handling for="parent" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling> <!-- bookmark -->
+  <ms:handling for="dynamic-component"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="properties"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="any"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="map">
+    <ms:criterion xpath="./@name"/>
+    <ms:handling for="map-key" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="composite-map-key" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="map-key-many-to-many" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="composite-index" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="index-many-to-many" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="index-many-to-any" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="set"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="list"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="bag"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="idbag">
+    <ms:criterion xpath="./@name"/>
+    <ms:handling for="collection-id" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="array"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="primitive-array"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="join"><ms:criterion xpath="./@table"/></ms:handling>
+  <ms:handling for="key" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="loader" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="sql-insert" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="sql-update" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="sql-delete" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="subselect" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="formula"><ms:criterion xpath="text()"/></ms:handling>
+  <ms:handling for="type" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="cache" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="comment" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+
+  <!-- elements used by map/set etc. -->
+  <ms:handling for="element" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="one-to-many" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="many-to-many" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="composite-element" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="many-to-any" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="sql-delete-all" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="filter"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="index" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="list-index" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="formula"></ms:handling>
+  <ms:handling for="nested-composite-element"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="key-property"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="key-many-to-one"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="meta-value"><ms:criterion xpath="./@class"/></ms:handling>
+  <ms:handling for="param"><ms:criterion xpath="./@name"/></ms:handling>
+</ms:merge-schema>

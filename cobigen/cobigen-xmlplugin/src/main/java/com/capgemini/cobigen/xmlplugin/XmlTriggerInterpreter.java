@@ -1,20 +1,18 @@
 package com.capgemini.cobigen.xmlplugin;
 
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
 import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
 
 /**
- * {@link ITriggerInterpreter} implementation of a Xml Interpreter
- *
- * @author fkreis (18.11.2014)
+ * {@link TriggerInterpreter} implementation of a Xml Interpreter
  */
-public class XmlTriggerInterpreter implements ITriggerInterpreter {
+public class XmlTriggerInterpreter implements TriggerInterpreter {
 
     /**
-     * {@link ITriggerInterpreter} type to be registered
+     * {@link TriggerInterpreter} type to be registered
      */
     public String type;
 
@@ -30,30 +28,18 @@ public class XmlTriggerInterpreter implements ITriggerInterpreter {
         this.type = type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
-    public IInputReader getInputReader() {
+    public InputReader getInputReader() {
         return new XmlInputReader();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
-    public IMatcher getMatcher() {
+    public MatcherInterpreter getMatcher() {
         return new XmlMatcher();
     }
 

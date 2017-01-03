@@ -10,7 +10,7 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * This annotations wraps each return value with a try catch block forwarding exceptions of type
- * {@link CobiGenRuntimeException} and wrapping any other exception into a {@link PluginProcessingException}.
+ * {@link CobiGenRuntimeException} and wrapping any other exception into a {@link CobiGenRuntimeException}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })

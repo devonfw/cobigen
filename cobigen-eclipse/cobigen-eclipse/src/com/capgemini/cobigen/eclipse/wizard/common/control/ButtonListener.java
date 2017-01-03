@@ -36,10 +36,6 @@ public class ButtonListener implements Listener {
         this.page = page;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void handleEvent(Event event) {
         isCustomizable = !isCustomizable;

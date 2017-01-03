@@ -31,8 +31,7 @@ public final class ProxyFactory {
     static {
         annotationToInterceptorMap = Maps.newHashMap();
         annotationToInterceptorMap.put(Cached.class.getCanonicalName(), CachedInterceptor.class);
-        annotationToInterceptorMap.put(ExceptionFacade.class.getCanonicalName(),
-            ExceptionFacadeInterceptor.class);
+        annotationToInterceptorMap.put(ExceptionFacade.class.getCanonicalName(), ExceptionFacadeInterceptor.class);
     }
 
     /**
@@ -65,8 +64,7 @@ public final class ProxyFactory {
         // create proxy if not cached
         proxyObject = targetObject;
         for (String annotationClass : collectAnnotations(targetObject.getClass())) {
-            Class<? extends AbstractInterceptor> interceptorClass =
-                annotationToInterceptorMap.get(annotationClass);
+            Class<? extends AbstractInterceptor> interceptorClass = annotationToInterceptorMap.get(annotationClass);
             if (interceptorClass != null) {
                 AbstractInterceptor interceptor;
                 try {

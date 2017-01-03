@@ -1,8 +1,9 @@
 package com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
@@ -12,8 +13,7 @@ import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateModelException;
 
 /**
- * This class contains testcases for {@link IsAbstractMethod}
- * @author fkreis (23.10.2014)
+ * This class contains test cases for {@link IsAbstractMethod}
  */
 public class IsAbstractMethodTest {
 
@@ -30,13 +30,12 @@ public class IsAbstractMethodTest {
 
         // create testdata
         SimpleScalar abstractClass =
-            new SimpleScalar(
-                "com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil.SimpleAbstractClass");
+            new SimpleScalar("com.capgemini.cobigen.javaplugin.unittest.util.freemarkerutil.SimpleAbstractClass");
         ArrayList<Object> args = new ArrayList<>();
         args.add(abstractClass);
 
         // Execute and Check with correct argument
-        Assert.assertSame(TemplateBooleanModel.TRUE, method.exec(args));
+        assertThat(method.exec(args)).isSameAs(TemplateBooleanModel.TRUE);
     }
 
     /**
@@ -56,14 +55,14 @@ public class IsAbstractMethodTest {
         args.add(notAbstractClass);
 
         // Execute and Check with correct arguments
-        Assert.assertSame(TemplateBooleanModel.FALSE, method.exec(args));
+        assertThat(method.exec(args)).isSameAs(TemplateBooleanModel.FALSE);
     }
 
     /**
      * Test method for {@link IsAbstractMethod#exec(java.util.List)} with an argument which is not an
      * resolvable to a class. Therefore a TemplateModelException is expected.
      * @throws TemplateModelException
-     *             this Exception is excepted, because of the unresolvable argument.
+     *             this Exception is excepted, because of the non resolvable argument.
      */
     @Test(expected = TemplateModelException.class)
     public void testExec_wrongArg() throws TemplateModelException {
