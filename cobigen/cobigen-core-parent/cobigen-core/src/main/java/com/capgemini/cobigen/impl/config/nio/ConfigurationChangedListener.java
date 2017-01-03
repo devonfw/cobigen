@@ -79,8 +79,7 @@ public class ConfigurationChangedListener implements Runnable {
                 // Collect changes
                 if (relativeFilePath.getFileName().equals(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME)) {
                     changedTemplatesConfigurations.add(relativeFilePath);
-                } else if (relativeFilePath.getFileName()
-                    .equals(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)) {
+                } else if (relativeFilePath.getFileName().equals(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)) {
                     contextConfigurationChanged = true;
                 }
             }

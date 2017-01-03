@@ -1,19 +1,18 @@
 package com.capgemini.cobigen.javaplugin;
 
-import com.capgemini.cobigen.extension.IInputReader;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.matcher.JavaMatcher;
 
 /**
- * {@link ITriggerInterpreter} implementation of a Java Interpreter
- * @author mbrunnli (08.04.2014)
+ * {@link TriggerInterpreter} implementation of a Java Interpreter
  */
-public class JavaTriggerInterpreter implements ITriggerInterpreter {
+public class JavaTriggerInterpreter implements TriggerInterpreter {
 
     /**
-     * {@link ITriggerInterpreter} type to be registered
+     * {@link TriggerInterpreter} type to be registered
      */
     public String type;
 
@@ -27,30 +26,18 @@ public class JavaTriggerInterpreter implements ITriggerInterpreter {
         this.type = type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
     public String getType() {
         return type;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public IInputReader getInputReader() {
+    public InputReader getInputReader() {
         return new JavaInputReader();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public IMatcher getMatcher() {
+    public MatcherInterpreter getMatcher() {
         return new JavaMatcher();
     }
 }

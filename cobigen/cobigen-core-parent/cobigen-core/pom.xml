@@ -13,13 +13,17 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core-test</artifactId>
@@ -124,6 +128,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludePackageNames>com.capgemini.cobigen.impl.config.entity.io</excludePackageNames> <!-- /com/capgemini/cobigen/impl/config/entity/io/**/*.java -->
+        </configuration>
       </plugin>
 
       <!-- For testing purposes -->

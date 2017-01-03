@@ -4,12 +4,10 @@ import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getField;
 import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getJavaDocModel;
 import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getMethod;
 import static com.capgemini.cobigen.javaplugin.util.JavaModelUtil.getRoot;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +26,6 @@ import com.google.common.base.Charsets;
 
 /**
  * Tests for Class {@link ParsedJavaModelBuilderTest}
- *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
- * @version $Revision$
  */
 public class ParsedJavaModelBuilderTest {
     /**
@@ -47,11 +42,11 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether parametric attribute types will be extracted correctly to the model
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      */
     @Test
-    public void testCorrectlyExtractedGenericAttributeTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedGenericAttributeTypes() throws Exception {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -61,18 +56,19 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        assertEquals("List<String>", customList.get(ModelConstant.TYPE));
-        assertEquals("java.util.List<java.lang.String>", customList.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(customList.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+        assertThat(customList.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
     }
 
     /**
-     * Tests whether supertypes (extended Type and implemented Types) will be extracted correctly to the model
+     * Tests whether super types (extended Type and implemented Types) will be extracted correctly to the
+     * model
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      */
     @Test
-    public void testCorrectlyExtractedImplementedTypes() throws FileNotFoundException {
+    public void testCorrectlyExtractedImplementedTypes() throws Exception {
 
         File classFile = new File(testFileRootPath + "TestClass.java");
 
@@ -84,30 +80,28 @@ public class ParsedJavaModelBuilderTest {
         List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
 
         // interface1
-        assertEquals("TestInterface1", interfaces.get(0).get(ModelConstant.NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1",
-            interfaces.get(0).get(ModelConstant.CANONICAL_NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
-            interfaces.get(0).get(ModelConstant.PACKAGE));
+        assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
+        assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+        assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
 
         // interface2
-        assertEquals("TestInterface2", interfaces.get(1).get(ModelConstant.NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2",
-            interfaces.get(1).get(ModelConstant.CANONICAL_NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata",
-            interfaces.get(1).get(ModelConstant.PACKAGE));
+        assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
+        assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+        assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
      * Tests whether no {@link NullPointerException} will be thrown if the extended type is in the default
      * package
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @author mbrunnli (30.09.2014)
      */
     @Test
-    public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration()
-        throws FileNotFoundException {
+    public void testCorrectlyExtractedInhertedType_extendedTypeWithoutPackageDeclaration() throws Exception {
 
         File noPackageFile = new File(testFileRootPath + "NoPackageClass.java");
 
@@ -116,39 +110,53 @@ public class ParsedJavaModelBuilderTest {
         // debug nullPointerException in case of superclass without package
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
-        assertEquals(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE), "");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE)).isEqualTo("");
+    }
+
+    /**
+     * Tests whether no {@link NullPointerException} will be thrown if an interface taken as an input extends
+     * another interface
+     * @Issue #250
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectlyInterpretingInterfaceInheritance() throws Exception {
+
+        File noPackageFile = new File(testFileRootPath + "TestInterface.java");
+
+        JavaInputReader javaModelBuilder = new JavaInputReader();
+        javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
     }
 
     /**
      * Tests whether the inherited type will be correctly extracted and put into the model
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @author mbrunnli (30.09.2014)
      */
     @Test
-    public void testCorrectlyExtractedInheritedType() throws FileNotFoundException {
+    public void testCorrectlyExtractedInheritedType() throws Exception {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        Assert
-            .assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass",
-            JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata", JavaModelUtil
-            .getExtendedType(model).get(ModelConstant.PACKAGE));
+        Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
      * Tests whether the type and the canonical type of a field will be extracted correctly
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      */
     @Test
-    public void testCorrectlyResolvedFieldTypes() throws FileNotFoundException {
+    public void testCorrectlyResolvedFieldTypes() throws Exception {
 
         File file = new File(testFileRootPath + "Pojo.java");
 
@@ -158,14 +166,13 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
-        assertEquals("AnyOtherType", customTypeField.get(ModelConstant.TYPE));
-        assertEquals("com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType",
-            customTypeField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(customTypeField.get(ModelConstant.TYPE)).isEqualTo("AnyOtherType");
+        assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE))
+            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
     }
 
     /**
      * Tests the correct extraction of 'methodAccessibleFields' for {@link PackageFolder} as input.
-     * @author mbrunnli (25.01.2015)
      */
     @Test
     public void testCorrectExtractionOfInheritedFields_input_packageFolder() {
@@ -176,53 +183,50 @@ public class ParsedJavaModelBuilderTest {
         JavaInputReader javaInputReader = new JavaInputReader();
         List<Object> objects = javaInputReader.getInputObjects(packageFolder, Charsets.UTF_8);
 
-        assertNotNull("The package folder does not contain any java sources!", objects);
-        assertEquals(2, objects.size());
+        assertThat(objects).as("The package folder does not contain any java sources!").isNotNull();
+        assertThat(objects).hasSize(2);
 
         boolean found = false;
         for (Object o : objects) {
             Map<String, Object> model = javaInputReader.createModel(o);
-            assertNotNull("No model has been created!", model);
+            assertThat(model).as("No model has been created!").isNotNull();
             if (RootClass.class.getSimpleName().equals(JavaModelUtil.getName(model))) {
-                List<Map<String, Object>> methodAccessibleFields =
-                    JavaModelUtil.getMethodAccessibleFields(model);
-                assertNotNull(methodAccessibleFields);
-                assertEquals(3, methodAccessibleFields.size());
+                List<Map<String, Object>> methodAccessibleFields = JavaModelUtil.getMethodAccessibleFields(model);
+                assertThat(methodAccessibleFields).isNotNull();
+                assertThat(methodAccessibleFields).hasSize(3);
 
                 Map<String, Object> field = JavaModelUtil.getMethodAccessibleField(model, "value");
-                assertNotNull("Field 'value' not found!", field);
-                assertEquals("value", field.get(ModelConstant.NAME));
-                assertEquals("String", field.get(ModelConstant.TYPE));
-                assertEquals("java.lang.String", field.get(ModelConstant.CANONICAL_TYPE));
+                assertThat(field).as("Field 'value' not found!").isNotNull();
+                assertThat(field.get(ModelConstant.NAME)).isEqualTo("value");
+                assertThat(field.get(ModelConstant.TYPE)).isEqualTo("String");
+                assertThat(field.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.String");
 
                 field = JavaModelUtil.getMethodAccessibleField(model, "setterVisibleByte");
-                assertNotNull("Field 'setterVisibleByte' not found!", field);
-                assertEquals("setterVisibleByte", field.get(ModelConstant.NAME));
-                assertEquals("byte", field.get(ModelConstant.TYPE));
-                assertEquals("byte", field.get(ModelConstant.CANONICAL_TYPE));
+                assertThat(field).as("Field 'setterVisibleByte' not found!").isNotNull();
+                assertThat(field.get(ModelConstant.NAME)).isEqualTo("setterVisibleByte");
+                assertThat(field.get(ModelConstant.TYPE)).isEqualTo("byte");
+                assertThat(field.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("byte");
 
                 field = JavaModelUtil.getMethodAccessibleField(model, "genericAccessible");
-                assertNotNull("Field 'genericAccessible' not found!", field);
-                assertEquals("genericAccessible", field.get(ModelConstant.NAME));
+                assertThat(field).as("Field 'genericAccessible' not found!").isNotNull();
+                assertThat(field.get(ModelConstant.NAME)).isEqualTo("genericAccessible");
                 // TODO: Known Issue, this is not possible as the SuperClass2 is not in the same folder and
                 // thus not parsed. Thus, due to type erasure the parametric type will be lost.
-                // assertEquals("List<RootClass>", field.get(ModelConstant.TYPE));
-                // assertEquals("java.util.List<RootClass>", field.get(ModelConstant.CANONICAL_TYPE));
-                assertEquals("List", field.get(ModelConstant.TYPE));
-                assertEquals("java.util.List", field.get(ModelConstant.CANONICAL_TYPE));
+                // assertThat(field.get(ModelConstant.TYPE)).isEqualTo("List<RootClass>");
+                // assertThat(field.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<RootClass>");
+                assertThat(field.get(ModelConstant.TYPE)).isEqualTo("List");
+                assertThat(field.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List");
 
                 found = true;
             }
         }
-        assertTrue("Class " + RootClass.class.getName()
-            + "could not be found as child of the package folder.", found);
+        assertTrue("Class " + RootClass.class.getName() + "could not be found as child of the package folder.", found);
     }
 
     /**
      * Tests the correct extraction of the JavaDoc properties.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (30.01.2015)
      */
     @Test
     public void testCorrectExtractionOfJavaDoc() throws Exception {
@@ -233,32 +237,32 @@ public class ParsedJavaModelBuilderTest {
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
         Map<String, String> javaDocModel = getJavaDocModel(getRoot(model));
-        assertEquals("Class Doc.", javaDocModel.get(ModelConstant.COMMENT));
-        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
+        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Class Doc.");
+        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
         javaDocModel = getJavaDocModel(getField(model, "field"));
-        assertEquals("Field Doc.", javaDocModel.get(ModelConstant.COMMENT));
+        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Field Doc.");
 
         javaDocModel = getJavaDocModel(getMethod(model, "getField"));
-        assertEquals("Returns the field 'field'.", javaDocModel.get(ModelConstant.COMMENT));
-        assertEquals("value of field", javaDocModel.get("return"));
-        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
+        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Returns the field 'field'.");
+        assertThat(javaDocModel.get("return")).isEqualTo("value of field");
+        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
         javaDocModel = getJavaDocModel(getMethod(model, "setField"));
-        assertEquals("Sets the field 'field'.", javaDocModel.get(ModelConstant.COMMENT));
-        assertEquals("field" + System.getProperty("line.separator") + "           new value of field",
-            javaDocModel.get("param"));
-        assertEquals("mbrunnli (30.01.2015)", javaDocModel.get("author"));
+        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Sets the field 'field'.");
+        assertThat(javaDocModel.get("param"))
+            .isEqualTo("field" + System.getProperty("line.separator") + "           new value of field");
+        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
     }
 
     /**
      * Tests whether the input type's fields are extracted correctly (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      */
     @Test
-    public void testExtractionOfFields() throws FileNotFoundException {
+    public void testExtractionOfFields() throws Exception {
 
         File file = new File(testFileRootPath + "TestClass.java");
 
@@ -268,38 +272,37 @@ public class ParsedJavaModelBuilderTest {
 
         Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
 
-        assertNotNull(classField);
-        assertEquals("customList", classField.get(ModelConstant.NAME));
-        assertEquals("List<String>", classField.get(ModelConstant.TYPE));
-        assertEquals("java.util.List<java.lang.String>", classField.get(ModelConstant.CANONICAL_TYPE));
-        assertNotNull(classField.get(ModelConstant.JAVADOC));
-        assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(classField).get("comment"));
-        assertEquals("false", classField.get("isId"));
+        assertThat(classField).isNotNull();
+        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
+        assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
+        assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
+        assertThat(classField.get("isId")).isEqualTo("false");
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @author fkreis (08.05.2015)
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_inherited() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_inherited() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -308,44 +311,45 @@ public class ParsedJavaModelBuilderTest {
 
         // test inherited field of direct superclass named "id"
         Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
-        assertNotNull(inheritedField);
-        assertEquals("id", inheritedField.get(ModelConstant.NAME));
+        assertThat(inheritedField).isNotNull();
+        assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("id");
 
-        assertEquals("Long", inheritedField.get(ModelConstant.TYPE));
+        assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("Long");
 
-        assertEquals("java.lang.Long", inheritedField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.Long");
 
         // is deprecated, so its not necessary to test here
-        // assertEquals("false", inheritedField.get("isId"));
+        // assertThat(inheritedField.get("isId")).isEqualTo("false");
 
         // currently no javadoc provided
-        // assertNotNull(inheritedField.get(ModelConstant.JAVADOC));
-        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(inheritedField).get("comment"));
+        // assertThat(inheritedField.get(ModelConstant.JAVADOC)).isNotNull();
+        // assertThat(JavaModelUtil.getJavaDocModel(inheritedField).get("comment")).isEqualTo("Example
+        // JavaDoc");
 
         // TODO Currently qDox library does not return the superclass' annotations
         /*
          * // test annotations for attribute, getter, setter, is-method
-         * assertNotNull(inheritedField.get(ModelConstant.ANNOTATIONS)); // getter
+         * assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull(); // getter
          * assertTrue(JavaModelUtil.getAnnotations
          * (inheritedField).containsKey("MySuperTypeGetterAnnotation")); // Setter
          * assertTrue(JavaModelUtil.getAnnotations
          * (inheritedField).containsKey("MySuperTypeSetterAnnotation")); // is-method
-         * assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeIsAnnotation")); //
-         * attribute
-         * assertTrue(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeFieldAnnotation"));
+         * assertThat(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeIsAnnotation")).
+         * isTrue(); // attribute
+         * assertThat(JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperTypeFieldAnnotation")).
+         * isTrue();
          */
     }
 
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
-     * @author fkreis (08.05.2015)
      */
     @Test
     @Ignore(value = "This test case is not successfull due to boundaries of qDox")
-    public void testExtractionOfMethodAccessibleFields_inheritedInherited() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_inheritedInherited() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -354,29 +358,29 @@ public class ParsedJavaModelBuilderTest {
 
         // test inherited field of direct superclass named "id"
         System.out.println(model);
-        Map<String, Object> inheritedField =
-            JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
-        assertNotNull(inheritedField);
-        assertEquals("superSuperString", inheritedField.get(ModelConstant.NAME));
+        Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        assertThat(inheritedField).isNotNull();
+        assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("superSuperString");
 
         // TODO qDox library returns full qualified names for the superclass' fields
         // actually the expected result of ModelConstant.Type is "String" here, but we insert this test case
         // here with "java.lang.String" so that the test turns into red if there changes anything in qDox
-        assertEquals("java.lang.String", inheritedField.get(ModelConstant.TYPE));
+        assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("java.lang.String");
 
-        assertEquals("java.lang.String", inheritedField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.String");
 
         // is deprecated, so its not necessary to test here
-        // assertEquals("false", inheritedField.get("isId"));
+        // assertThat(inheritedField.get("isId")).isEqualTo("false");
 
         // currently no javadoc provided
-        // assertNotNull(inheritedField.get(ModelConstant.JAVADOC));
-        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(inheritedField).get("comment"));
+        // assertThat(inheritedField.get(ModelConstant.JAVADOC)).isNotNull();
+        // assertThat(JavaModelUtil.getJavaDocModel(inheritedField).get("comment")).isEqualTo("Example
+        // JavaDoc");
 
         // TODO Currently qDox library does not return the superclass' annotations
         /*
          * // test annotations for attribute, getter, setter, is-method
-         * assertNotNull(inheritedField.get(ModelConstant.ANNOTATIONS)); // getter
+         * assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull(); // getter
          * assertTrue(JavaModelUtil.getAnnotations
          * (inheritedField).containsKey("MySuperSuperTypeGetterAnnotation")); // Setter
          * assertTrue(JavaModelUtil.getAnnotations
@@ -391,12 +395,12 @@ public class ParsedJavaModelBuilderTest {
     /**
      * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
      *
-     * @throws FileNotFoundException
+     * @throws Exception
      *             test fails
      * @author fkreis (08.05.2015)
      */
     @Test
-    public void testExtractionOfMethodAccessibleFields_local() throws FileNotFoundException {
+    public void testExtractionOfMethodAccessibleFields_local() throws Exception {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
@@ -405,30 +409,30 @@ public class ParsedJavaModelBuilderTest {
 
         // test local field
         Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
-        assertNotNull(classField);
-        assertEquals("customList", classField.get(ModelConstant.NAME));
-        assertEquals("List<String>", classField.get(ModelConstant.TYPE));
-        assertEquals("java.util.List<java.lang.String>", classField.get(ModelConstant.CANONICAL_TYPE));
+        assertThat(classField).isNotNull();
+        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
 
         // currently no javadoc provided
-        // assertNotNull(classField.get(ModelConstant.JAVADOC));
-        // assertEquals("Example JavaDoc", JavaModelUtil.getJavaDocModel(classField).get("comment"));
+        // assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
+        // assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
 
-        assertEquals("false", classField.get("isId"));
+        assertThat(classField.get("isId")).isEqualTo("false");
         // test annotations for attribute, getter, setter, is-method
-        assertNotNull(classField.get(ModelConstant.ANNOTATIONS));
+        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertTrue(JavaModelUtil.getAnnotations(classField).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation"));
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
 }

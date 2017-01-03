@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="entity-mappings" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://java.sun.com/xml/ns/persistence/orm"/>
+
+  <ms:default-criterion xpath="./@name"/>
+
+  <ms:handling for="describtion" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="package" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="schema" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="catalog" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="access" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="persistence-unit-metadata" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="xml-mapping-metadata-complete" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="persistence-unit-defaults" unique="true">
+      <ms:criterion xpath="true()"/>
+      <ms:handling for="cascade-persist" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    </ms:handling>
+  </ms:handling>
+  <ms:handling for="table-generator">
+    <ms:handling for="unique-constraint"><ms:criterion xpath="./@column-name"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="named-query">
+    <ms:handling for="query" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="named-native-query">
+    <ms:handling for="query" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="sql-result-set-mapping">
+    <ms:handling for="entity-result"><ms:criterion xpath="./@entity-class"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="mapped-superclass">
+    <ms:criterion xpath="./@class"/>
+    <ms:handling for="id-class" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="exclude-default-listeners" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="exclude-superclass-listeners" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="entity">
+    <ms:handling for="unique-constraint"><ms:criterion xpath="./@column-name"/></ms:handling>
+    <ms:handling for="table" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="id-class" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="inheritance" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="discriminator-value" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="discriminator-column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="sequence-generator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="table-generator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="exclude-default-listeners" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="exclude-superclass-listeners" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="embeddable">
+    <ms:criterion xpath="./@class"/>
+    <ms:handling for="embeddable-attributes" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+
+  <!-- shared Handlings -->
+  <ms:handling for="entity-listeners" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="entity-listener"><ms:criterion xpath="./@class"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="attributes" unique="true">
+      <ms:criterion xpath="true()"/>
+      <ms:handling for="id">
+        <ms:handling for="column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="sequence-generator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="temporal" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="table-generator" unique="true">
+           <ms:criterion xpath="true()"/>
+           <ms:handling for="unique-constraint"><ms:criterion xpath="./@column-name"/></ms:handling>
+        </ms:handling>
+      </ms:handling>
+      <ms:handling for="embedded-id" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+      <ms:handling for="version">
+        <ms:handling for="column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="temporal" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+      </ms:handling>
+      <ms:handling for="join-table" unique="true">
+          <ms:criterion xpath="true()"/>
+          <ms:handling for="unique-constraint"><ms:criterion xpath="./@column-name"/></ms:handling>
+      </ms:handling>
+      <ms:handling for="cascade" unique="true">
+          <ms:criterion xpath="true()"/>
+          <ms:handling for="cascade-all"><ms:criterion xpath="true()"/></ms:handling>
+          <ms:handling for="cascade-persist"><ms:criterion xpath="true()"/></ms:handling>
+          <ms:handling for="cascade-merge"><ms:criterion xpath="true()"/></ms:handling>
+          <ms:handling for="cascade-remove"><ms:criterion xpath="true()"/></ms:handling>
+          <ms:handling for="cascade-refresh"><ms:criterion xpath="true()"/></ms:handling>
+       </ms:handling>
+       <ms:handling for="order-by"><ms:criterion xpath="true()"/></ms:handling>
+       <ms:handling for="map-key"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="basic">
+        <ms:handling for="column" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="lob" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="temporal" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+        <ms:handling for="enumerated" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="pre-persist" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="post-persist" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="pre-remove" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="post-remove" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="pre-update" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="post-update" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="post-load" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+</ms:merge-schema>

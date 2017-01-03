@@ -2,37 +2,29 @@ package com.capgemini.cobigen.javaplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (06.04.2014)
+ * Plug-in activator to be registered to the {@link PluginRegistry} of CobiGen by any client.
  */
-public class JavaPluginActivator implements IGeneratorPluginActivator {
+public class JavaPluginActivator implements GeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
-     */
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
         merger.add(new JavaMerger("javamerge", false));
         merger.add(new JavaMerger("javamerge_override", true));
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<ITriggerInterpreter> newArrayList(new JavaTriggerInterpreter("java"));
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
+        return Lists.<TriggerInterpreter> newArrayList(new JavaTriggerInterpreter("java"));
     }
 
 }

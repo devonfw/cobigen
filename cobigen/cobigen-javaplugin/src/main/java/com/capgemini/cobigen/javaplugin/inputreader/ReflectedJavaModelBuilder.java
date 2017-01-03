@@ -26,14 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.util.StringUtil;
+import com.capgemini.cobigen.impl.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
  * The {@link ReflectedJavaModelBuilder} creates a new model for a given input pojo class
- *
- * @author mbrunnli (12.03.2013)
  */
 public class ReflectedJavaModelBuilder {
 
@@ -60,7 +58,6 @@ public class ReflectedJavaModelBuilder {
      * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
      *         corresponding information. Learn more about the FreeMarker data model at http
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
-     * @author mbrunnli (06.02.2013)
      */
     Map<String, Object> createModel(final Class<?> pojo) {
 
@@ -101,7 +98,8 @@ public class ReflectedJavaModelBuilder {
         pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
         pojoModel.put(ModelConstant.METHODS, extractMethods(pojo));
-        cachedModel.put(ModelConstant.ROOT, pojoModel);
+        cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
+        cachedModel.put(ModelConstant.CLASS_OBJECT, pojo);
 
         return new HashMap<>(cachedModel);
     }
@@ -111,7 +109,6 @@ public class ReflectedJavaModelBuilder {
      * @param pojo
      *            source {@link Class} to determine all fields accessible via methods from
      * @return a list of field properties equivalently to {@link #extractFields(Class)}
-     * @author mbrunnli (14.11.2014)
      */
     private List<Map<String, Object>> extractMethodAccessibleFields(Class<?> pojo) {
         PojoDescriptorBuilder pojoFieldDescriptorBuilder =
@@ -124,8 +121,8 @@ public class ReflectedJavaModelBuilder {
         while (it.hasNext()) {
             PojoPropertyDescriptor fieldDescriptor = (PojoPropertyDescriptor) it.next();
             if (!fieldDescriptor.getAccessors().isEmpty()) {
-                existingFields.put(fieldDescriptor.getName(), (Field) fieldDescriptor.getAccessors()
-                    .iterator().next().getAccessibleObject());
+                existingFields.put(fieldDescriptor.getName(),
+                    (Field) fieldDescriptor.getAccessors().iterator().next().getAccessibleObject());
             }
         }
 
@@ -157,7 +154,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @return a {@link Set} of attributes, where each attribute is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author mbrunnli (06.02.2013)
      */
     private List<Map<String, Object>> extractFields(Class<?> pojo) {
 
@@ -176,7 +172,6 @@ public class ReflectedJavaModelBuilder {
      * @param field
      *            the values should be extracted for
      * @return the mapping of property names to their values
-     * @author mbrunnli (17.11.2014)
      */
     private Map<String, Object> extractFieldProperties(Field field) {
         Map<String, Object> fieldValues = new HashMap<>();
@@ -203,25 +198,29 @@ public class ReflectedJavaModelBuilder {
      * Extracts the superclass from the given POJO
      *
      * @param pojo
-     *            {@link Class} object of the POJO the supertype should be retrieved from
-     * @return the supertype, represented by a {@link Map} of a {@link String} key to the corresponding
-     *         {@link String} value of meta information
-     * @author fkreis (24.09.2014)
+     *            {@link Class} object of the POJO the super type should be retrieved from
+     * @return the super type, represented by a {@link Map} of a {@link String} key to the corresponding
+     *         {@link String} value of meta information or {@code null} if there is no super class (e.g. for
+     *         interfaces)
      */
     private Map<String, Object> extractSuperclass(Class<?> pojo) {
 
         Map<String, Object> superclassModel = new HashMap<>();
 
         Class<?> superclass = pojo.getSuperclass();
-        superclassModel.put(ModelConstant.NAME, superclass.getSimpleName());
-        superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
-        if (superclass.getPackage() != null) {
-            superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
-        } else {
-            superclassModel.put(ModelConstant.PACKAGE, "");
-        }
+        if (superclass != null) {
+            superclassModel.put(ModelConstant.NAME, superclass.getSimpleName());
+            superclassModel.put(ModelConstant.CANONICAL_NAME, superclass.getCanonicalName());
+            if (superclass.getPackage() != null) {
+                superclassModel.put(ModelConstant.PACKAGE, superclass.getPackage().getName());
+            } else {
+                superclassModel.put(ModelConstant.PACKAGE, "");
+            }
 
-        return superclassModel;
+            return superclassModel;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -231,7 +230,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the interfaces should be retrieved from
      * @return a {@link Set} of implementedTypes (interfaces), where each is represented by a {@link Map} of a
      *         {@link String} key to the corresponding {@link String} value of meta information
-     * @author fkreis (24.09.2014)
      */
     private List<Map<String, Object>> extractInterfaces(Class<?> pojo) {
 
@@ -259,7 +257,6 @@ public class ReflectedJavaModelBuilder {
      * @param pojo
      *            java class
      * @return a {@link List} of attributes for all methods
-     * @author mbrunnli (04.06.2014)
      */
     private List<Map<String, Object>> extractMethods(Class<?> pojo) {
 
@@ -284,7 +281,6 @@ public class ReflectedJavaModelBuilder {
      *            class for which the setter and getter should be evaluated according to their annotations
      * @param attributes
      *            list of attribute meta data for the generation (object model)
-     * @author mbrunnli (01.04.2014)
      */
     private void collectAnnotations(Class<?> pojo, List<Map<String, Object>> attributes) {
 
@@ -328,8 +324,7 @@ public class ReflectedJavaModelBuilder {
 
             // collect getter Annotations
             try {
-                Method getter =
-                    pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
+                Method getter = pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -337,8 +332,7 @@ public class ReflectedJavaModelBuilder {
 
             // collect is Annotations
             try {
-                Method getter =
-                    pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
+                Method getter = pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -352,8 +346,7 @@ public class ReflectedJavaModelBuilder {
                     paramList[0] = attrClass;
                 }
                 Method setter =
-                    pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)),
-                        paramList);
+                    pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList);
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -369,7 +362,6 @@ public class ReflectedJavaModelBuilder {
      *            object model for annotations
      * @param annotations
      *            to be analyzed
-     * @author mbrunnli (01.04.2014)
      */
     private void extractAnnotationsRecursively(Map<String, Object> annotationsMap, Annotation[] annotations) {
 
@@ -390,8 +382,7 @@ public class ReflectedJavaModelBuilder {
                         List<Map<String, Object>> recursiveAnnotationList = Lists.newLinkedList();
                         for (Annotation a : (Annotation[]) value) {
                             Map<String, Object> annotationParameterParameters = Maps.newHashMap();
-                            extractAnnotationsRecursively(annotationParameterParameters,
-                                new Annotation[] { a });
+                            extractAnnotationsRecursively(annotationParameterParameters, new Annotation[] { a });
                             recursiveAnnotationList.add(annotationParameterParameters);
                         }
                         annotationParameters.put(getter.getName(), recursiveAnnotationList);
@@ -417,8 +408,8 @@ public class ReflectedJavaModelBuilder {
                         annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.",
-                        getter.getName(), annotation.getClass(), e);
+                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.", getter.getName(),
+                        annotation.getClass(), e);
                 }
             }
         }
@@ -432,7 +423,6 @@ public class ReflectedJavaModelBuilder {
      *            {@link Class} object of the POJO the data should be retrieved from
      * @param attributes
      *            a {@link List} of all attributes and their properties
-     * @author mbrunnli (12.02.2013)
      */
     private void determinePojoIds(Class<?> pojo, List<Map<String, Object>> attributes) {
 
@@ -440,13 +430,9 @@ public class ReflectedJavaModelBuilder {
             try {
                 Method getter = null;
                 try {
-                    getter =
-                        pojo.getDeclaredMethod("get"
-                            + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
+                    getter = pojo.getDeclaredMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 } catch (NoSuchMethodException | SecurityException e) {
-                    getter =
-                        pojo.getDeclaredMethod("is"
-                            + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
+                    getter = pojo.getDeclaredMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
                 if (getter == null) {
                     return;

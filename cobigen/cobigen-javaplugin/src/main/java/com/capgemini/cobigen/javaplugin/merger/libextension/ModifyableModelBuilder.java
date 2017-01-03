@@ -1,20 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Custom implementation derived from com.thoughtworks.qdox.model.impl.DefaultJavaClass,
+ * which itself has been published under Apache Software Foundation (ASF) available at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
@@ -27,6 +15,7 @@ import java.util.Set;
 import com.thoughtworks.qdox.builder.Builder;
 import com.thoughtworks.qdox.builder.TypeAssembler;
 import com.thoughtworks.qdox.builder.impl.DefaultJavaAnnotationAssembler;
+import com.thoughtworks.qdox.builder.impl.ModelBuilder;
 import com.thoughtworks.qdox.library.ClassLibrary;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.DocletTagFactory;
@@ -64,8 +53,8 @@ import com.thoughtworks.qdox.parser.structs.TypeVariableDef;
 import com.thoughtworks.qdox.writer.ModelWriterFactory;
 
 /**
- * @author <a href="mailto:joew@thoughtworks.com">Joe Walnes</a>
- * @author Robert Scholte
+ * Custom implementation derived from {@link ModelBuilder} to fix some issues with annotation and javaDoc
+ * parsing.
  */
 @SuppressWarnings("javadoc")
 public class ModifyableModelBuilder implements Builder {
@@ -102,7 +91,6 @@ public class ModifyableModelBuilder implements Builder {
         currentArguments = new LinkedList<>();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void setModelWriterFactory(ModelWriterFactory modelWriterFactory) {
 
@@ -110,7 +98,6 @@ public class ModifyableModelBuilder implements Builder {
         source.setModelWriterFactory(modelWriterFactory);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addPackage(PackageDef packageDef) {
 
@@ -123,28 +110,24 @@ public class ModifyableModelBuilder implements Builder {
         source.setPackage(jPackage);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addImport(String importName) {
 
         source.addImport(importName);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addJavaDoc(String text) {
 
         lastComment = text;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addJavaDocTag(TagDef tagDef) {
 
         lastTagSet.add(tagDef);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginClass(ClassDef def) {
 
@@ -162,8 +145,8 @@ public class ModifyableModelBuilder implements Builder {
         if (newClass.isInterface()) {
             newClass.setSuperClass(null);
         } else if (!newClass.isEnum()) {
-            newClass.setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator()
-                .next(), 0) : null);
+            newClass
+                .setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
         }
 
         // implements
@@ -215,7 +198,6 @@ public class ModifyableModelBuilder implements Builder {
         return newClass;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endClass() {
 
@@ -235,8 +217,8 @@ public class ModifyableModelBuilder implements Builder {
         if (typeDef == null) {
             return null;
         }
-        return TypeAssembler.createUnresolved(typeDef, dimensions, classStack.isEmpty() ? source
-            : classStack.getFirst());
+        return TypeAssembler.createUnresolved(typeDef, dimensions,
+            classStack.isEmpty() ? source : classStack.getFirst());
     }
 
     private void addJavaDoc(AbstractBaseJavaEntity entity) {
@@ -266,7 +248,6 @@ public class ModifyableModelBuilder implements Builder {
 
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginConstructor() {
 
@@ -282,7 +263,6 @@ public class ModifyableModelBuilder implements Builder {
         classStack.getFirst().addConstructor(currentConstructor);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endConstructor(MethodDef def) {
 
@@ -295,8 +275,7 @@ public class ModifyableModelBuilder implements Builder {
         if (def.getTypeParams() != null) {
             List<JavaTypeVariable<JavaConstructor>> typeParams = new LinkedList<>();
             for (TypeVariableDef typeVariableDef : def.getTypeParams()) {
-                typeParams
-                    .add(createTypeVariable(typeVariableDef, (JavaConstructor) currentConstructor));
+                typeParams.add(createTypeVariable(typeVariableDef, (JavaConstructor) currentConstructor));
             }
             currentConstructor.setTypeParameters(typeParams);
         }
@@ -319,7 +298,6 @@ public class ModifyableModelBuilder implements Builder {
         currentConstructor.setSourceCode(def.getBody());
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginMethod() {
 
@@ -334,7 +312,6 @@ public class ModifyableModelBuilder implements Builder {
         setAnnotations(currentMethod);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endMethod(MethodDef def) {
 
@@ -390,7 +367,6 @@ public class ModifyableModelBuilder implements Builder {
         return result;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void beginField(FieldDef def) {
 
@@ -419,7 +395,6 @@ public class ModifyableModelBuilder implements Builder {
         setAnnotations(currentField);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void endField() {
 
@@ -440,20 +415,16 @@ public class ModifyableModelBuilder implements Builder {
         currentField = null;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void addParameter(FieldDef fieldDef) {
 
         DefaultJavaParameter jParam =
-            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
-                fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
-        if( currentMethod != null )
-        {
-            jParam.setDeclarator( currentMethod );
-        }
-        else
-        {
-            jParam.setDeclarator( currentConstructor );
+            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
+                fieldDef.getModifiers(), fieldDef.isVarArgs());
+        if (currentMethod != null) {
+            jParam.setDeclarator(currentMethod);
+        } else {
+            jParam.setDeclarator(currentConstructor);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);
@@ -477,7 +448,6 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     // Don't resolve until we need it... class hasn't been defined yet.
-    /** {@inheritDoc} */
     @Override
     public void addAnnotation(AnnoDef annotation) {
 

@@ -9,10 +9,6 @@ import com.thoughtworks.qdox.writer.ModelWriterFactory;
  */
 public class CustomModelWriterFactory implements ModelWriterFactory {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (04.04.2013)
-     */
     @Override
     public ModelWriter newInstance() {
         return new CustomModelWriter();

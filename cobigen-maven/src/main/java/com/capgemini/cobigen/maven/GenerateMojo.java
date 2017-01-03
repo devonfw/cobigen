@@ -30,27 +30,25 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.exceptions.MergeException;
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
+import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import freemarker.template.TemplateException;
-
 /**
  * CobiGen generation Mojo, which handles generation using a configuration folder/archive
- * @author mbrunnli (08.02.2015)
  */
 @Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.TEST, requiresProject = true,
     defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyCollection = ResolutionScope.TEST)
@@ -61,66 +59,46 @@ public class GenerateMojo extends AbstractMojo {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
+        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
+        PluginRegistry.loadPlugin(JSONPluginActivator.class);
     }
 
-    /**
-     * Maven Project, which is currently built
-     */
+    /** Maven Project, which is currently built */
     @Component
     private MavenProject project;
 
-    /**
-     * {@link MojoExecution} to retrieve the pom-declared plugin dependencies.
-     */
+    /** {@link MojoExecution} to retrieve the pom-declared plugin dependencies. */
     @Component
     private MojoExecution execution;
 
-    /**
-     * Configuration folder to be used
-     */
+    /** Configuration folder to be used */
     @Parameter
     private File configurationFolder;
 
-    /**
-     * Increments to be generated
-     */
+    /** Increments to be generated */
     @Parameter
     private List<String> increments;
 
-    /**
-     * Templates to be generated
-     */
+    /** Templates to be generated */
     @Parameter
     private List<String> templates;
 
-    /**
-     * Input packages
-     */
+    /** Input packages */
     @Parameter
     private List<String> inputPackages;
 
-    /**
-     * Input files
-     */
+    /** Input files */
     @Parameter
     private List<File> inputFiles;
 
-    /**
-     * States, whether the generation force overriding files and contents
-     */
+    /** States, whether the generation force overriding files and contents */
     @Parameter(defaultValue = "false")
     private boolean forceOverride;
 
-    /**
-     * Destination root path the relative paths of templates will be resolved with.
-     */
+    /** Destination root path the relative paths of templates will be resolved with. */
     @Parameter(defaultValue = "${basedir}")
     private File destinationRoot;
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.02.2015)
-     */
     @Override
     public void execute() throws MojoFailureException, MojoFailureException {
 
@@ -134,30 +112,26 @@ public class GenerateMojo extends AbstractMojo {
         try {
             CobiGen cobiGen;
             if (configurationFolder != null) {
-                cobiGen = new CobiGen(configurationFolder.toURI());
+                cobiGen = CobiGenFactory.create(configurationFolder.toURI());
             } else {
                 List<Dependency> dependencies =
                     execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
                 if (dependencies != null && !dependencies.isEmpty()) {
                     Dependency dependency = dependencies.iterator().next();
-                    Artifact templatesArtifact =
-                        execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                            .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
-                    cobiGen = new CobiGen(templatesArtifact.getFile().toURI());
+                    Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
+                        .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
+                    cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
                 } else {
                     throw new MojoFailureException(
                         "No configuration injected. Please inject a 'configurationFolder' to a local folder"
                             + " or inject an archive as plugin dependency.");
                 }
             }
-            cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath,
-                destinationRoot.getAbsolutePath());
-
             generateFromIncrements(cobiGen, inputs);
             generateFromTemplates(cobiGen, inputs);
-        } catch (InvalidConfigurationException | IOException e) {
-            getLog().error("An error occured while executing CobiGen", e);
-            throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage());
+        } catch (CobiGenRuntimeException | IOException e) {
+            getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
+            throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
         }
     }
 
@@ -167,7 +141,6 @@ public class GenerateMojo extends AbstractMojo {
      * @return the list of CobiGen compatible inputs
      * @throws MojoFailureException
      *             if the project {@link ClassLoader} could not be retrieved
-     * @author mbrunnli (16.02.2015)
      */
     private List<Object> collectInputs() throws MojoFailureException {
         getLog().debug("Collect inputs...");
@@ -187,8 +160,7 @@ public class GenerateMojo extends AbstractMojo {
                 List<Path> sourcePathsObserved = Lists.newLinkedList();
                 for (String sourceRoot : sourceRoots) {
                     String packagePath =
-                        inputPackage.replaceAll("\\.",
-                            Matcher.quoteReplacement(System.getProperty("file.separator")));
+                        inputPackage.replaceAll("\\.", Matcher.quoteReplacement(System.getProperty("file.separator")));
                     Path sourcePath = Paths.get(sourceRoot, packagePath);
                     getLog().debug("Checking source path " + sourcePath);
                     if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
@@ -201,10 +173,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
 
                 if (!sourceFound) {
-                    throw new MojoFailureException(
-                        "Currently, packages as inputs are only supported "
-                            + "if defined as sources in the current project to be build. Having searched for sources at paths: "
-                            + sourcePathsObserved);
+                    throw new MojoFailureException("Currently, packages as inputs are only supported "
+                        + "if defined as sources in the current project to be build. Having searched for sources at paths: "
+                        + sourcePathsObserved);
                 }
             }
         }
@@ -227,7 +198,6 @@ public class GenerateMojo extends AbstractMojo {
      *            to be used for generation
      * @throws MojoFailureException
      *             if any problem occurred while generation
-     * @author mbrunnli (09.02.2015)
      */
     private void generateFromIncrements(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
         if (increments != null && !increments.isEmpty()) {
@@ -237,19 +207,16 @@ public class GenerateMojo extends AbstractMojo {
                 for (IncrementTo increment : matchingIncrements) {
                     if (increments.contains(increment.getId())) {
                         try {
-                            cobiGen.generate(input, increment, forceOverride);
-                        } catch (IOException | TemplateException | MergeException e) {
+                            cobiGen.generate(input, increment, Paths.get(destinationRoot.toURI()), forceOverride);
+                        } catch (Throwable e) {
                             String errorMessage;
                             if (input instanceof PackageFolder) {
                                 errorMessage =
-                                    "An exception occured while generating increment with id '"
-                                        + increment.getId() + "' for input package/folder '"
-                                        + ((PackageFolder) input).getLocation() + "'";
+                                    "An exception occured while generating increment with id '" + increment.getId()
+                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
                             } else {
-                                errorMessage =
-                                    "An exception occured while generating increment with id '"
-                                        + increment.getId() + "' for input file '" + ((File) input).toURI()
-                                        + "'";
+                                errorMessage = "An exception occured while generating increment with id '"
+                                    + increment.getId() + "' for input file '" + ((File) input).toURI() + "'";
                             }
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
@@ -260,9 +227,9 @@ public class GenerateMojo extends AbstractMojo {
                 // error handling for increments not found
                 if (!configuredIncrements.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                            + "' not matched for input '" + ((PackageFolder) input).getLocation()
-                            + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException(
+                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
+                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
                     } else {
                         throw new MojoFailureException("Increments with ids '" + configuredIncrements
                             + "' not matched for input '" + input + "' by provided CobiGen configuration.");
@@ -280,7 +247,6 @@ public class GenerateMojo extends AbstractMojo {
      *            to be used for generation
      * @throws MojoFailureException
      *             if any problem occurred while generation
-     * @author mbrunnli (09.02.2015)
      */
     private void generateFromTemplates(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
         if (inputFiles != null && !inputFiles.isEmpty()) {
@@ -290,19 +256,16 @@ public class GenerateMojo extends AbstractMojo {
                 for (TemplateTo template : matchingTemplates) {
                     if (templates.contains(template.getId())) {
                         try {
-                            cobiGen.generate(input, template, forceOverride);
-                        } catch (IOException | TemplateException | MergeException e) {
+                            cobiGen.generate(input, template, Paths.get(destinationRoot.toURI()), forceOverride);
+                        } catch (Throwable e) {
                             String errorMessage;
                             if (input instanceof PackageFolder) {
                                 errorMessage =
-                                    "An exception occured while generating template with id '"
-                                        + template.getId() + "' for input package/folder '"
-                                        + ((PackageFolder) input).getLocation() + "'";
+                                    "An exception occured while generating template with id '" + template.getId()
+                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
                             } else {
-                                errorMessage =
-                                    "An exception occured while generating template with id '"
-                                        + template.getId() + "' for input file '" + ((File) input).toURI()
-                                        + "'";
+                                errorMessage = "An exception occured while generating template with id '"
+                                    + template.getId() + "' for input file '" + ((File) input).toURI() + "'";
                             }
                             getLog().error(errorMessage, e);
                             throw new MojoFailureException(errorMessage);
@@ -315,9 +278,9 @@ public class GenerateMojo extends AbstractMojo {
                 // error handling for increments not found
                 if (!configuredTemplates.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                            + "' not matched for package folder '" + ((PackageFolder) input).getLocation()
-                            + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException(
+                            "Templates with ids '" + configuredTemplates + "' not matched for package folder '"
+                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
                     } else {
                         throw new MojoFailureException("Templates with ids '" + configuredTemplates
                             + "' not matched for input '" + input + "' by provided CobiGen configuration.");
@@ -332,7 +295,6 @@ public class GenerateMojo extends AbstractMojo {
      * @return the project {@link ClassLoader}
      * @throws MojoFailureException
      *             if the maven project dependencies could not be resolved
-     * @author mbrunnli (11.02.2015)
      */
     private ClassLoader getProjectClassLoader() throws MojoFailureException {
         Set<String> classpathElements = Sets.newHashSet();

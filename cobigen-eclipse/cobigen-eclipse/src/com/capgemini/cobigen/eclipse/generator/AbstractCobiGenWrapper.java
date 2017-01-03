@@ -1,19 +1,20 @@
 package com.capgemini.cobigen.eclipse.generator;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import com.capgemini.cobigen.CobiGen;
-import com.capgemini.cobigen.config.ContextConfiguration.ContextSetting;
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
+import com.capgemini.cobigen.impl.CobiGenFactory;
 
 /**
- *
- * @author mbrunnli (02.12.2014)
+ * Common wrapper holding the cobigen instance.
  */
 public abstract class AbstractCobiGenWrapper {
 
@@ -23,7 +24,7 @@ public abstract class AbstractCobiGenWrapper {
     private IProject targetProject;
 
     /**
-     * Referenz to native {@link CobiGen} API
+     * Reference to native {@link CobiGen} API
      */
     protected CobiGen cobiGen;
 
@@ -38,10 +39,9 @@ public abstract class AbstractCobiGenWrapper {
      *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
-     * @author mbrunnli (21.03.2014)
      */
-    public AbstractCobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public AbstractCobiGenWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         cobiGen = initializeGenerator();
     }
 
@@ -57,14 +57,13 @@ public abstract class AbstractCobiGenWrapper {
      *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
-     * @author mbrunnli (05.02.2013)
      */
-    private CobiGen initializeGenerator() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    private CobiGen initializeGenerator()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
 
         ResourcesPluginUtil.refreshConfigurationProject();
         IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-        return new CobiGen(generatorProj.getLocationURI());
+        return CobiGenFactory.create(generatorProj.getLocationURI());
     }
 
     /**
@@ -72,23 +71,29 @@ public abstract class AbstractCobiGenWrapper {
      *
      * @param proj
      *            {@link IProject} which represents the target root
-     * @author mbrunnli (13.02.2013)
      */
     public void setGenerationTargetProject(IProject proj) {
 
         targetProject = proj;
-        cobiGen.setContextSetting(ContextSetting.GenerationTargetRootPath, proj.getProject().getLocation()
-            .toString());
     }
 
     /**
      * Returns the generation target project
      *
      * @return the generation target project
-     * @author mbrunnli (13.02.2013)
      */
     public IProject getGenerationTargetProject() {
 
         return targetProject;
+    }
+
+    /**
+     * Returns the generation target project
+     *
+     * @return the generation target project
+     */
+    public Path getGenerationTargetProjectPath() {
+
+        return Paths.get(targetProject.getProject().getLocationURI());
     }
 }
