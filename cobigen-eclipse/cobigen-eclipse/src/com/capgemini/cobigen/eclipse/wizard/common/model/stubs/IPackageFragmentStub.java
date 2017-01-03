@@ -112,8 +112,8 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
     }
 
     @Override
-    public ICompilationUnit createCompilationUnit(String name, String contents, boolean force,
-        IProgressMonitor monitor) throws JavaModelException {
+    public ICompilationUnit createCompilationUnit(String name, String contents, boolean force, IProgressMonitor monitor)
+        throws JavaModelException {
 
         return null;
     }

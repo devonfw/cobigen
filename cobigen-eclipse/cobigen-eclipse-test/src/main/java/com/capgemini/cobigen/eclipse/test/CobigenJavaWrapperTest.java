@@ -42,8 +42,7 @@ public class CobigenJavaWrapperTest extends SystemTest {
     public static void setupClass() throws Exception {
 
         // import the configuration project for this test
-        EclipseUtils.importExistingGeneralProject(bot,
-            new File(resourcesRootPath + "templates").getAbsolutePath());
+        EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
     }
 
@@ -63,8 +62,7 @@ public class CobigenJavaWrapperTest extends SystemTest {
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-        SWTBotTreeItem javaClassItem =
-            view.bot().tree().expandNode(testProjName, "src", "main", "SimpleInput.java");
+        SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "src", "main", "SimpleInput.java");
         javaClassItem.select();
 
         // execute CobiGen
@@ -97,8 +95,7 @@ public class CobigenJavaWrapperTest extends SystemTest {
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-        SWTBotTreeItem javaClassItem =
-            view.bot().tree().expandNode(testProjName, "src", "main", "SimpleInput.java");
+        SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "src", "main", "SimpleInput.java");
         javaClassItem.select();
 
         // execute CobiGen

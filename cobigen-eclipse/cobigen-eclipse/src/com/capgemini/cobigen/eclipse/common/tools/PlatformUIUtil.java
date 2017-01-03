@@ -103,8 +103,8 @@ public class PlatformUIUtil {
             childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
         }
 
-        MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
-            childStatus.toArray(new Status[0]), t.getMessage(), t);
+        MultiStatus ms =
+            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]), t.getMessage(), t);
         return ms;
     }
 }

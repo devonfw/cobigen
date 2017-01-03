@@ -104,23 +104,19 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      * @throws JoranException
      *             if the file could not be handled by log4j
      */
-    public void loadLogbackConfiguration(String externalConfigFileLocation)
-        throws IOException, JoranException {
+    public void loadLogbackConfiguration(String externalConfigFileLocation) throws IOException, JoranException {
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         File externalConfigFile = new File(externalConfigFileLocation);
         if (!externalConfigFile.exists()) {
-            throw new IOException(
-                "Logback External Config File Parameter does not reference a file that exists");
+            throw new IOException("Logback External Config File Parameter does not reference a file that exists");
         } else {
             if (!externalConfigFile.isFile()) {
-                throw new IOException(
-                    "Logback External Config File Parameter exists, but does not reference a file");
+                throw new IOException("Logback External Config File Parameter exists, but does not reference a file");
             } else {
                 if (!externalConfigFile.canRead()) {
-                    throw new IOException(
-                        "Logback External Config File exists and is a file, but cannot be read.");
+                    throw new IOException("Logback External Config File exists and is a file, but cannot be read.");
                 } else {
                     JoranConfigurator configurator = new JoranConfigurator();
                     configurator.setContext(lc);

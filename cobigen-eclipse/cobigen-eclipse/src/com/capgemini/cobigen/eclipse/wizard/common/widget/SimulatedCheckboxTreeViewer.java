@@ -74,8 +74,7 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
         Set<Object> visibleObjects = new HashSet<>();
         visibleObjects.addAll(Arrays.asList(objects));
         for (Object o : objects) {
-            visibleObjects
-                .addAll(Arrays.asList(((ITreeContentProvider) getContentProvider()).getChildren(o)));
+            visibleObjects.addAll(Arrays.asList(((ITreeContentProvider) getContentProvider()).getChildren(o)));
         }
         return visibleObjects.contains(element);
     }

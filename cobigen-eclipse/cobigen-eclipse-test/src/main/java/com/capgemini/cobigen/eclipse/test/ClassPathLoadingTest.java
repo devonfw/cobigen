@@ -46,8 +46,7 @@ public class ClassPathLoadingTest extends SystemTest {
     public static void setupClass() throws Exception {
 
         // import the configuration project for this test
-        EclipseUtils.importExistingGeneralProject(bot,
-            new File(resourcesRootPath + "templates").getAbsolutePath());
+        EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
     }
 
@@ -68,8 +67,8 @@ public class ClassPathLoadingTest extends SystemTest {
                 + "<artifactId>javax.ws.rs-api</artifactId>" + "<version>2.0</version>" + "</dependency>"
                 + "</dependencies>");
         // @formatter:on
-        FileUtils.copyFile(new File(resourcesRootPath + "input/JavaClass.java"), project
-            .getUnderlyingResource().getLocation().append("src/main/java/main/JavaClass.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/JavaClass.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/JavaClass.java").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule.updateProject();
 
@@ -87,8 +86,7 @@ public class ClassPathLoadingTest extends SystemTest {
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IFile generationResult = project.getProject().getFile("TestOutput.txt");
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in))
-                .isEqualTo("@javax.ws.rs.Path(value=/PATH) @javax.ws.rs.Path(value=/PATH)");
+            assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=/PATH) @javax.ws.rs.Path(value=/PATH)");
         }
     }
 
@@ -110,8 +108,8 @@ public class ClassPathLoadingTest extends SystemTest {
                 + "<artifactId>oasp4j-jpa</artifactId>" + "<version>2.1.1</version>" + "</dependency>"
                 + "</dependencies>");
         // @formatter:on
-        FileUtils.copyFile(new File(resourcesRootPath + "input/SampleEntity.java"), project
-            .getUnderlyingResource().getLocation().append("src/main/java/main/SampleEntity.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/SampleEntity.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/SampleEntity.java").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule.updateProject();
 
@@ -142,9 +140,8 @@ public class ClassPathLoadingTest extends SystemTest {
 
         // create a new temporary java project and copy java class used as an input for CobiGen
         IJavaProject projectDependency = tmpMavenProjectRule2.createProject("CommonTestProj");
-        FileUtils.copyFile(new File(resourcesRootPath + "input/AnyImportedEntity.java"),
-            projectDependency.getUnderlyingResource().getLocation()
-                .append("src/main/java/dependent/AnyImportedEntity.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/AnyImportedEntity.java"), projectDependency
+            .getUnderlyingResource().getLocation().append("src/main/java/dependent/AnyImportedEntity.java").toFile());
         projectDependency.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule2.updateProject();
 
@@ -152,12 +149,11 @@ public class ClassPathLoadingTest extends SystemTest {
         IJavaProject mainProject = tmpMavenProjectRule.createProject(testProjectName);
         tmpMavenProjectRule.createPom(
             // @formatter:off
-            "<dependencies>" + "<dependency>" + tmpMavenProjectRule2.getMavenProjectSpecification()
-                + "</dependency>" + "</dependencies>");
+            "<dependencies>" + "<dependency>" + tmpMavenProjectRule2.getMavenProjectSpecification() + "</dependency>"
+                + "</dependencies>");
         // @formatter:on
-        FileUtils.copyFile(new File(resourcesRootPath + "input/DependentEntity.java"),
-            mainProject.getUnderlyingResource().getLocation()
-                .append("src/main/java/main/DependentEntity.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/DependentEntity.java"), mainProject
+            .getUnderlyingResource().getLocation().append("src/main/java/main/DependentEntity.java").toFile());
         mainProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule.updateProject();
 
@@ -188,8 +184,8 @@ public class ClassPathLoadingTest extends SystemTest {
         // create a new temporary java project and copy java class used as an input for CobiGen
         String testProjectName = "TestInputProj";
         IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
-        FileUtils.copyFile(new File(resourcesRootPath + "input/PlainInput.java"), project
-            .getUnderlyingResource().getLocation().append("src/main/java/main/PlainInput.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/PlainInput.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/PlainInput.java").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         tmpMavenProjectRule.updateProject();
 

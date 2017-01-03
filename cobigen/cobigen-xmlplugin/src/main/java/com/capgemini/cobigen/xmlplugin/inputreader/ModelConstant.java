@@ -13,7 +13,7 @@ public class ModelConstant {
     /**
      * Root element for xml model ({@link Map}&lt;{@link String}, {@link Object}&gt;).
      *
-     * @Deprecated use the xml document's root name instead.
+     * @deprecated use the xml document's root name instead.
      */
     @Deprecated
     public static final String ROOT = "root";

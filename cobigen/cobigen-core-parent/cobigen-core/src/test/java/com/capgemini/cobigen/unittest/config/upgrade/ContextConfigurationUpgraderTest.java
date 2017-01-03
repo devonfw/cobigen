@@ -48,8 +48,7 @@ public class ContextConfigurationUpgraderTest {
 
         ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
 
-        ContextConfigurationVersion version =
-            sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
+        ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
 
         sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);

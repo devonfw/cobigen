@@ -35,11 +35,12 @@ import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 public class EclipseUtils {
 
     /**
-     * @see #importExistingGeneralProject(SWTWorkbenchBot, String, boolean)
-     *      importExistingGeneralProject(SWTWorkbenchBot, String, boolean) with
-     *      {@code copyIntoWorkspace=false}
+     * Imports the an existing general (non-java/non-maven) project to the workspace.
+     * @param bot
+     *            the {@link SWTWorkbenchBot} of the test
+     * @param projectPath
+     *            absolute path of the project on file system
      */
-    @SuppressWarnings("javadoc")
     public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) {
         importExistingGeneralProject(bot, projectPath, true);
     }
@@ -73,8 +74,7 @@ public class EclipseUtils {
         bot.waitUntil(widgetIsEnabled(selectAll));
         selectAll.click(); // just to trigger project scanning, correct logic will be set below
 
-        if (copyIntoWorkspace && !cbCopyProjects.isChecked()
-            || !copyIntoWorkspace && cbCopyProjects.isChecked()) {
+        if (copyIntoWorkspace && !cbCopyProjects.isChecked() || !copyIntoWorkspace && cbCopyProjects.isChecked()) {
             cbCopyProjects.click();
         }
 
@@ -90,13 +90,17 @@ public class EclipseUtils {
      *            the {@link SWTWorkbenchBot} of the test
      * @param projectName
      *            name of the project
+     * @throws CoreException
+     *             if anything happens during build
      */
-    public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) {
+    public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) throws CoreException {
+        bot.waitUntil(new AllJobsAreFinished(), 20000);
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
         configurationProject.contextMenu("Maven").menu("Update Project...").click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), 20000);
     }
 
@@ -112,8 +116,7 @@ public class EclipseUtils {
      * @throws CoreException
      *             if anything fails
      */
-    public static IFile createFile(IJavaProject project, String relativePath, String contents)
-        throws CoreException {
+    public static IFile createFile(IJavaProject project, String relativePath, String contents) throws CoreException {
 
         IContainer lastContainer = project.getProject();
         String[] pathArr = relativePath.split("/");
@@ -148,8 +151,7 @@ public class EclipseUtils {
             IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
             try {
                 for (IProject project : allProjects) {
-                    if (cleanCobiGenConfiguration
-                        || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
+                    if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
                         project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                         project.close(new NullProgressMonitor());
                         project.delete(true, true, new NullProgressMonitor());

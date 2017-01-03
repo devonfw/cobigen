@@ -13,13 +13,14 @@
     <github.project>devonfw/tools-cobigen</github.project>
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
     <slf4j.version>1.7.21</slf4j.version>
+    <skip.deployment>true</skip.deployment>
   </properties>
 
   <modules>
     <module>cobigen</module>
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
-	<module>cobigen-templates</module>
+    <module>cobigen-templates</module>
   </modules>
 
   <url>https://github.com/${github.project}</url>
@@ -88,7 +89,7 @@
       <comments>Proprietary license. The complete Capgemini CobiGen License Agreement can be requested from the developers.</comments>
     </license>
   </licenses>
-  
+
   <dependencies>
     <!-- SLF4j logging -->
     <dependency>
@@ -122,6 +123,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <skip>${skip.deployment}</skip>
+        </configuration>
       </plugin>
 
       <!-- Flatten POM -->
@@ -168,13 +178,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.9.1</version>
           <configuration>
-            <tags>
-              <tag>
-                <name>author</name>
-                <placement>tcm</placement>
-                <head>Author:</head>
-              </tag>
-            </tags>
+            <quiet>true</quiet>
           </configuration>
         </plugin>
         <plugin>
