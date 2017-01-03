@@ -12,26 +12,14 @@ import org.eclipse.jface.viewers.Viewer;
  */
 public class SelectAttributesContentProvider implements IStructuredContentProvider {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void dispose() {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public Object[] getElements(Object inputElement) {
         Object[] result = new Object[0];

@@ -128,8 +128,7 @@ public class JSONMerger implements Merger {
                     for (int i = 0; i < cols.size(); i++) {
                         if (cols.get(i).getAsJsonObject().get(Constants.TYPE_FIELD).getAsString()
                             .equals(Constants.COLUMN_TYPE)) {
-                            String name =
-                                cols.get(i).getAsJsonObject().get(Constants.NAME_FIELD).getAsString();
+                            String name = cols.get(i).getAsJsonObject().get(Constants.NAME_FIELD).getAsString();
                             JsonObject column = cols.get(i).getAsJsonObject();
                             columns.put(name, column);
                         }
@@ -161,8 +160,7 @@ public class JSONMerger implements Merger {
     public String senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
         JsonObject destinationObject, boolean patchOverrides, JsonObject... objs) {
         for (JsonElement obj : objs) {
-            senchArchMerge(patchColumns, baseModelFields, destinationObject, obj.getAsJsonObject(),
-                patchOverrides);
+            senchArchMerge(patchColumns, baseModelFields, destinationObject, obj.getAsJsonObject(), patchOverrides);
         }
 
         return destinationObject.toString();
@@ -183,8 +181,8 @@ public class JSONMerger implements Merger {
      *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
-    private void senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields,
-        JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
+    private void senchArchMerge(Map<String, JsonObject> patchColumns, List<String> baseModelFields, JsonObject leftObj,
+        JsonObject rightObj, boolean patchOverrides) {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -218,8 +216,7 @@ public class JSONMerger implements Merger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
-                                    if (baseObject.has(Constants.TYPE_FIELD)
-                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                    if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
                                         if (baseObject.get(Constants.TYPE_FIELD).getAsString()
                                             .equals(Constants.LABEL_TYPE)
                                             && patchObject.get(Constants.TYPE_FIELD).getAsString()
@@ -228,8 +225,7 @@ public class JSONMerger implements Merger {
                                             break;
                                         }
                                     }
-                                    if (baseObject.has(Constants.TYPE_FIELD)
-                                        && patchObject.has(Constants.TYPE_FIELD)) {
+                                    if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
                                         if (!baseObject.get(Constants.TYPE_FIELD).getAsString()
                                             .equals(Constants.LABEL_TYPE)
                                             && !baseObject.get(Constants.TYPE_FIELD).getAsString()
@@ -246,8 +242,8 @@ public class JSONMerger implements Merger {
                                                     .equals(Constants.PANEL_TYPE)
                                                 && !patchObject.get(Constants.TYPE_FIELD).getAsString()
                                                     .equals(Constants.CONTROLLER_TYPE)) { // is model field
-                                                if (baseModelFields.contains(
-                                                    baseObject.get(Constants.NAME_FIELD).getAsString())) {
+                                                if (baseModelFields
+                                                    .contains(baseObject.get(Constants.NAME_FIELD).getAsString())) {
                                                     System.out.println("is model field "
                                                         + baseObject.get(Constants.NAME_FIELD).getAsString());
                                                     exist = true;
@@ -261,13 +257,10 @@ public class JSONMerger implements Merger {
                                         && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
                                             .has(Constants.REFERENCE)) {
                                         if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
-                                            .get(Constants.REFERENCE)
-                                            .equals(patchObject.get(Constants.USERCONFIG_FIELD)
+                                            .get(Constants.REFERENCE).equals(patchObject.get(Constants.USERCONFIG_FIELD)
                                                 .getAsJsonObject().get(Constants.REFERENCE))) {
-                                            List<String> baseNameColumns =
-                                                getBaseGridColumnNames(patchObject);
-                                            List<String> patchNameColumns =
-                                                getPatchGridColumnNames(baseObject);
+                                            List<String> baseNameColumns = getBaseGridColumnNames(patchObject);
+                                            List<String> patchNameColumns = getPatchGridColumnNames(baseObject);
                                             exist = true;
                                             for (String column : patchNameColumns) {
                                                 if (!baseNameColumns.contains(column)) {
@@ -288,8 +281,8 @@ public class JSONMerger implements Merger {
                     }
                 } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
                     // recursive merging
-                    senchArchMerge(patchColumns, baseModelFields, leftVal.getAsJsonObject(),
-                        rightVal.getAsJsonObject(), patchOverrides);
+                    senchArchMerge(patchColumns, baseModelFields, leftVal.getAsJsonObject(), rightVal.getAsJsonObject(),
+                        patchOverrides);
                 } else {// not both arrays or objects, normal merge with conflict resolution
                     if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
                         || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID)

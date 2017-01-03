@@ -2,7 +2,6 @@ package com.capgemini.cobigen.eclipse.workbenchcontrol;
 
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -10,9 +9,10 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.constants.ResourceConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 
 /**
  * {@link ConfigurationProjectListener} for starting / stopping the {@link LogbackConfigChangeListener}. This
@@ -48,13 +48,9 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2013), updated by sholzer (29.09.2015) for issue #156
-     */
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID());
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         // /////////////
         // PRE_CLOSE //
@@ -92,11 +88,11 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
      * Registers the {@link LogbackConfigChangeListener} if not already set
      * @param cobigenConfigFolder
      *            CobiGens configuration project in the workspace
-     * @author mbrunnli (Jan 10, 2016)
      */
     private void registerLogbackConfigListenerIfNotAlreadyDone(IProject cobigenConfigFolder) {
         synchronized (logbackConfigListenerSync) {
-            if (logbackConfigListener == null) {
+            if (logbackConfigListener == null
+                && cobigenConfigFolder.getFile(LogbackConfigChangeListener.LOGBACK_FILENAME).exists()) {
                 logbackConfigListener = new LogbackConfigChangeListener(cobigenConfigFolder);
                 ResourcesPlugin.getWorkspace().addResourceChangeListener(logbackConfigListener);
             }

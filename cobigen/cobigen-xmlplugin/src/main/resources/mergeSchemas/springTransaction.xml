@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/tx"/>
+
+  <ms:default-criterion xpath="./@id"/>
+
+  <ms:handling for="advice">
+    <ms:handling for="attributes" type="unique">
+    <ms:criterion xpath="true()"/>
+      <ms:handling for="method">
+        <ms:criterion xpath="./@name"/>
+        <ms:attribute for="rollback-for" attachable="true" separationString=","/>
+        <ms:attribute for="no-rollback-fot" attachable="true" separationString=","/>
+      </ms:handling>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="annotation-driven">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+
+</ms:merge-schema>

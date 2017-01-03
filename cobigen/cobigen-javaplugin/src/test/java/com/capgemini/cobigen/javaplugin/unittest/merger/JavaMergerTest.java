@@ -108,8 +108,7 @@ public class JavaMergerTest {
 
         JavaMethod baseMethod = clsFooBar.getMethodBySignature("baseMethod", new LinkedList<JavaType>());
         assertThat(baseMethod).isNotNull();
-        assertThat(baseMethod.getReturnType(true).getCanonicalName())
-            .isEqualTo(void.class.getCanonicalName());
+        assertThat(baseMethod.getReturnType(true).getCanonicalName()).isEqualTo(void.class.getCanonicalName());
     }
 
     /**
@@ -142,11 +141,9 @@ public class JavaMergerTest {
         assertThat(innerField).isNotNull();
         assertThat(innerField.getInitializationExpression().equals("0")).isEqualTo(true);
 
-        JavaMethod baseMethod =
-            innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
+        JavaMethod baseMethod = innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
         assertThat(baseMethod).isNotNull();
-        assertThat(baseMethod.getReturnType(true).getCanonicalName())
-            .isEqualTo(void.class.getCanonicalName());
+        assertThat(baseMethod.getReturnType(true).getCanonicalName()).isEqualTo(void.class.getCanonicalName());
 
         JavaClass mergedInnerEnum = innerClass.getNestedClassByName("InnerBaseEnum");
         assertThat(mergedInnerEnum).isNotNull();
@@ -228,8 +225,7 @@ public class JavaMergerTest {
 
         JavaMethod baseMethod = clsFooBar.getMethodBySignature("baseMethod", new LinkedList<JavaType>());
         assertThat(baseMethod).isNotNull();
-        assertThat(baseMethod.getReturnType(true).getCanonicalName())
-            .isEqualTo(String.class.getCanonicalName());
+        assertThat(baseMethod.getReturnType(true).getCanonicalName()).isEqualTo(String.class.getCanonicalName());
     }
 
     /**
@@ -262,11 +258,9 @@ public class JavaMergerTest {
         assertThat(innerField).isNotNull();
         assertThat(innerField.getInitializationExpression()).isEqualTo("1");
 
-        JavaMethod baseMethod =
-            innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
+        JavaMethod baseMethod = innerClass.getMethodBySignature("innerBaseMethod", new LinkedList<JavaType>());
         assertThat(baseMethod).isNotNull();
-        assertThat(baseMethod.getReturnType(true).getCanonicalName())
-            .isEqualTo(String.class.getCanonicalName());
+        assertThat(baseMethod.getReturnType(true).getCanonicalName()).isEqualTo(String.class.getCanonicalName());
 
         JavaClass mergedInnerEnum = innerClass.getNestedClassByName("InnerBaseEnum");
         assertThat(mergedInnerEnum).isNotNull();
@@ -297,8 +291,7 @@ public class JavaMergerTest {
         assertThat(mergedSource.toString().contains("enthält")).isTrue();
 
         baseFile = new File(testFileRootPath + "BaseFile_encoding_ISO-8859-1.java");
-        mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
+        mergedContents = new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
         mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
         assertThat(mergedSource.toString()).contains("enthält");
     }
@@ -356,8 +349,7 @@ public class JavaMergerTest {
      * @author mbrunnli (07.06.2014)
      */
     @Test
-    public void testMergeMethodsWithoutExtendingMethodBodyWithWhitespaces()
-        throws IOException, MergeException {
+    public void testMergeMethodsWithoutExtendingMethodBodyWithWhitespaces() throws IOException, MergeException {
         File file = new File(testFileRootPath + "PatchFile_method.java");
 
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
@@ -372,8 +364,7 @@ public class JavaMergerTest {
         JavaClass resultClazz = source.getClasses().get(0);
 
         for (JavaMethod method : resultClazz.getMethods()) {
-            JavaMethod origMethod =
-                origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
+            JavaMethod origMethod = origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
             assertThat(method.getCodeBlock()).isEqualTo(origMethod.getCodeBlock());
         }
     }
@@ -395,8 +386,8 @@ public class JavaMergerTest {
         JavaClass origClazz = getFirstJavaClass(new FileReader(baseFile));
         assertThat(origClazz.getSuperClass().getCanonicalName()).isEqualTo("java.lang.Object");
 
-        String mergedContents = new JavaMerger("", false).merge(baseFile,
-            Files.toString(patchFile, Charset.forName("UTF-8")), "UTF-8");
+        String mergedContents =
+            new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")), "UTF-8");
 
         JavaClass resultClazz = getFirstJavaClass(new StringReader(mergedContents));
         assertThat(resultClazz.getSuperClass().getCanonicalName())
@@ -426,8 +417,8 @@ public class JavaMergerTest {
         JavaClass mergedClass = mergedSource.getClasses().get(0);
         // System.out.print(mergedSource.toString());
         assertThat(mergedClass.getFields()).as("Too much fields").hasSize(1);
-        assertThat(mergedClass.getMethods().size())
-            .as("Too much methods:\n" + mergedClass.getMethods().toString()).isEqualTo(1);
+        assertThat(mergedClass.getMethods().size()).as("Too much methods:\n" + mergedClass.getMethods().toString())
+            .isEqualTo(1);
 
     }
 

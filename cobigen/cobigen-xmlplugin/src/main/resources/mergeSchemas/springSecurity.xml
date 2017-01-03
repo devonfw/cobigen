@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/security"/>
+
+  <ms:default-criterion xpath="true()"/>
+
+  <ms:handling for="attribute-exchange">
+    <ms:handling for="openid-attribute">
+      <ms:criterion xpath="./@name"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="authentication-manager">
+    <ms:handling for="authentication-provider">
+      <ms:criterion xpath="./@ref"/>
+      <ms:handling for="password-encoder">
+        <ms:criterion xpath="./@ref"/>
+      </ms:handling>
+    </ms:handling>
+    <ms:handling for="ldap-authentication-provider">
+      <ms:criterion xpath="./@server-ref"/>
+      <ms:handling for="password-compare" unique="true">
+        <ms:handling for="password-encoder" unqiue="true"/>
+      </ms:handling>
+    </ms:handling>
+    <!-- shared elements -->
+    <ms:handling for="salt-source" unique="true"/>
+  </ms:handling>
+
+  <ms:handling for="filter-chain">
+    <ms:attribute for="filters" attachable="true" separationString=","/>
+  </ms:handling>
+
+  <ms:handling for="filter-chain-map">
+    <ms:handling for="filter-chain">
+      <ms:criterion xpath="./@pattern"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="global-method-security">
+    <ms:handling for="pre-post-annotation-handling" unique="true">
+      <ms:handling for="invocation-attribute-factory" unique="true"/>
+      <ms:handling for="pre-invocation-advice" unique="true"/>
+      <ms:handling for="post-invocation-advice" unique="true"/>
+    </ms:handling>
+    <ms:handling for="expression-handler" unique="true"/>
+    <ms:handling for="protect-pointcut">
+      <ms:criterion xpath="./@expression"/>
+    </ms:handling>
+    <ms:handling for="after-invocation-provider">
+      <ms:criterion xpath="./@ref"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="http">
+    <ms:handling for="access-denied-handler">
+      <ms:criterion xpath="ref"/>
+    </ms:handling>
+    <ms:handling for="form-login">
+      <ms:criterion xpath="./@login-processing-url"/>
+    </ms:handling>
+    <ms:handling for="openid-login">
+      <ms:criterion xpath="./@login-process-url"/>
+      <ms:handling for="attribute-exchange">
+        <ms:criterion xpath="./child::openid-attribute/@name" ordered="false"/>
+        <ms:handling for="openid-attribute">
+          <ms:criterion xpath="./@name"/>
+        </ms:handling>
+      </ms:handling>
+    </ms:handling>
+    <ms:handling for="jee">
+      <ms:criterion xpath="./@user-service-ref"/>
+      <ms:attribute for="mappable-roles"  attachable="true" separationString="," />
+    </ms:handling>
+    <ms:handling for="http-basic">
+      <ms:criterion xpath="./@entry-point-ref"/>
+    </ms:handling>
+    <ms:handling for="logout">
+      <ms:criterion xpath="./@logout-url"/>
+    </ms:handling>
+    <ms:handling for="session-management">
+      <ms:handling for="concurrency-control" unique="true"/>
+    </ms:handling>
+    <ms:handling for="port-mappings">
+      <ms:handling for="port-mapping">
+        <ms:criterion xpath="./@http-port"/>
+      </ms:handling>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="user-service">
+    <ms:handling for="user">
+      <ms:criterion xpath="./@name"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="websocket-message-broker">
+    <ms:handling for="intercept-message">
+      <ms:criterion xpath="./@pattern"/>
+    </ms:handling>
+  </ms:handling>
+
+  <!-- handled by default -->
+    <!-- any-user-service -->
+    <!-- cache-control -->
+    <!-- content-type-options -->
+    <!-- csrf -->
+    <!-- custom-filter -->
+    <!-- debug -->
+    <!-- filter-security-metadata-source -->
+    <!-- frame-options -->
+    <!-- header -->
+    <!-- headers -->
+    <!-- http-firewall -->
+    <!-- intercept-message -->
+    <!-- jdbc-user-service -->
+    <!-- jee -->
+    <!-- ldap-server -->
+    <!-- ldap-user-service -->
+    <!-- method-security-metadata-source -->
+    <!-- openid-attribute -->
+    <!-- request-cache -->
+    <!-- xss-protection -->
+
+  <!-- shared elements -->
+  <ms:handling for="intercept-url">
+    <ms:criterion xpath="./@pattern"/>
+  </ms:handling>
+
+  <ms:handling for="protect">
+    <ms:criterion xpath="./@method"/>
+  </ms:handling>
+</ms:merge-schema>
