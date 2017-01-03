@@ -2,39 +2,38 @@ package com.capgemini.cobigen.xmlplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
-import com.capgemini.cobigen.xmlplugin.merger.XmlMerger;
-import com.capgemini.cobigen.xmlplugin.merger.action.CompleteMergeAction;
-import com.capgemini.cobigen.xmlplugin.merger.action.OverrideMergeAction;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
+import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (06.04.2014)
+ * Plug-in activator to be registered at CobiGen's {@link PluginRegistry}.
  */
-public class XmlPluginActivator implements IGeneratorPluginActivator {
+public class XmlPluginActivator implements GeneratorPluginActivator {
 
     /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
+     * defining the default location of the merge schemas
      */
+    static private String defaultMergeSchemaLocation = "src/main/resources/mergeSchemas";
+
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
-        merger.add(new XmlMerger("xmlmerge", new CompleteMergeAction()));
-        merger.add(new XmlMerger("xmlmerge_override", new OverrideMergeAction()));
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
+
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEOVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHOVERWRITE));
+        merger.add(new XmlMergerDelegate(defaultMergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE));
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<ITriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
+        return Lists.<TriggerInterpreter> newArrayList(new XmlTriggerInterpreter("xml"));
     }
 
 }

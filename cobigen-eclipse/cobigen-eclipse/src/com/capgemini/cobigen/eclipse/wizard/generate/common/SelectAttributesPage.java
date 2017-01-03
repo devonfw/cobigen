@@ -22,7 +22,6 @@ import com.capgemini.cobigen.eclipse.wizard.generate.model.SelectAttributesLabel
 /**
  * The {@link SelectAttributesPage} enables a specific generation of contents which should be shown in the
  * overview and detail pages
- * @author mbrunnli (12.03.2013)
  */
 public class SelectAttributesPage extends WizardPage {
 
@@ -47,10 +46,6 @@ public class SelectAttributesPage extends WizardPage {
         this.attributes = attributes;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (12.03.2013)
-     */
     @Override
     public void createControl(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -61,7 +56,8 @@ public class SelectAttributesPage extends WizardPage {
         Label label = new Label(container, SWT.WRAP);
         label.setText("Every attribute selected will be displayed in the UI:");
         // label
-        // .setText("Every attribute selected will be displayed as a column in the overview or search results table:");
+        // .setText("Every attribute selected will be displayed as a column in the overview or search results
+        // table:");
 
         tableAttributes = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);
         tableAttributes.setContentProvider(new SelectAttributesContentProvider());
@@ -75,7 +71,8 @@ public class SelectAttributesPage extends WizardPage {
 
         // label = new Label(container, SWT.WRAP);
         // label
-        // .setText("Every attribute selected will be displayed in the detail, creation or modification dialog:");
+        // .setText("Every attribute selected will be displayed in the detail, creation or modification
+        // dialog:");
         //
         // CheckboxTableViewer detailAttributes =
         // CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.V_SCROLL);

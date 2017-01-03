@@ -2,35 +2,27 @@ package com.capgemini.cobigen.textmerger;
 
 import java.util.List;
 
-import com.capgemini.cobigen.extension.IGeneratorPluginActivator;
-import com.capgemini.cobigen.extension.IMerger;
-import com.capgemini.cobigen.extension.ITriggerInterpreter;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
+import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.google.common.collect.Lists;
 
 /**
  * This Plugin Activator registers a merger, which only appends the patch text to the original existing file
  * @author mbrunnli (06.04.2014)
  */
-public class TextMergerPluginActivator implements IGeneratorPluginActivator {
+public class TextMergerPluginActivator implements GeneratorPluginActivator {
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (06.04.2014)
-     */
     @Override
-    public List<IMerger> bindMerger() {
-        List<IMerger> merger = Lists.newLinkedList();
+    public List<Merger> bindMerger() {
+        List<Merger> merger = Lists.newLinkedList();
         merger.add(new TextAppender("textmerge_append", false));
         merger.add(new TextAppender("textmerge_appendWithNewLine", true));
         return merger;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (08.04.2014)
-     */
     @Override
-    public List<ITriggerInterpreter> bindTriggerInterpreter() {
+    public List<TriggerInterpreter> bindTriggerInterpreter() {
         return null;
     }
 

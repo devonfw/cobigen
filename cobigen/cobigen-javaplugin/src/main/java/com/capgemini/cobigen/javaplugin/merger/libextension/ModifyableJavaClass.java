@@ -1,20 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Custom implementation derived from com.thoughtworks.qdox.model.impl.DefaultJavaClass,
+ * which itself has been published under Apache Software Foundation (ASF) available at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
@@ -39,14 +27,13 @@ import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.JavaType;
 import com.thoughtworks.qdox.model.impl.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultBeanProperty;
+import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
 import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
 import com.thoughtworks.qdox.model.impl.JavaClassParent;
 import com.thoughtworks.qdox.model.impl.JavaMethodDelegate;
 
 /**
- * @author <a href="mailto:joew@thoughtworks.com">Joe Walnes</a>
- * @author Aslak Helles&oslash;y
- * @author Malte Brunnlieb (adaption of DefaultJavaClass -> ModifyableJavaClass)
+ * Custom implementation derived from {@link DefaultJavaClass} to enable modification of AST.
  */
 @SuppressWarnings({ "javadoc", "deprecation" })
 public class ModifyableJavaClass extends AbstractInheritableJavaEntity implements JavaClass {
@@ -235,6 +222,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
      * Only used when constructing the model by hand / without source
      *
      * @param javaPackage
+     *            {@link JavaPackage} for this class
      */
     public void setJavaPackage(JavaPackage javaPackage) {
         this.javaPackage = javaPackage;
@@ -410,8 +398,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
         JavaClass superclass = callingClazz.getSuperJavaClass();
         if (superclass != null) {
-            Map<String, JavaMethod> superClassMethods =
-                getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
+            Map<String, JavaMethod> superClassMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, superclass);
             for (Map.Entry<String, JavaMethod> methodEntry : superClassMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
@@ -427,8 +414,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         }
 
         for (JavaClass clazz : callingClazz.getImplementedInterfaces()) {
-            Map<String, JavaMethod> interfaceMethods =
-                getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
+            Map<String, JavaMethod> interfaceMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
             for (Map.Entry<String, JavaMethod> methodEntry : interfaceMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
                     JavaMethod method;
@@ -475,14 +461,13 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
-        boolean superclasses) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses) {
         return getMethodsBySignature(name, parameterTypes, superclasses, false);
     }
 
     @Override
-    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes,
-        boolean superclasses, boolean varArg) {
+    public List<JavaMethod> getMethodsBySignature(String name, List<JavaType> parameterTypes, boolean superclasses,
+        boolean varArg) {
         List<JavaMethod> result = new LinkedList<>();
 
         JavaMethod methodInThisClass = getMethod(name, parameterTypes, varArg);

@@ -11,9 +11,7 @@ import org.hamcrest.core.IsCollectionContaining;
 
 /**
  * These functions have been ported from hamcrest, whereas the signature has been customized
- * @author mbrunnli (13.10.2014)
  */
-@SuppressWarnings("javadoc")
 public class CustomHamcrestMatchers {
 
     /**
@@ -21,15 +19,19 @@ public class CustomHamcrestMatchers {
      * yield at least one item that is matched by the corresponding matcher from the specified
      * <code>itemMatchers</code>. Whilst matching, each traversal of the examined {@link List} will stop as
      * soon as a matching item is found.
-     * <p/>
+     * <p>
      * For example:
      *
      * <pre>
      * assertThat(Arrays.asList(&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;), hasItems(endsWith(&quot;z&quot;), endsWith(&quot;o&quot;)))
      * </pre>
      *
+     * @param <T>
+     *            Type of items to be matched
+     *
      * @param itemMatchers
      *            the matchers to apply to items provided by the examined {@link List}
+     * @return the matcher instance
      */
     @Factory
     @SuppressWarnings("unchecked")

@@ -60,15 +60,13 @@ public class ConfigurationHolder {
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
      */
-    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger,
-        TriggerInterpreter triggerInterpreter) {
+    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger, TriggerInterpreter triggerInterpreter) {
 
         if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
             templatesConfigurations.put(trigger.getTemplateFolder(),
                 Maps.<String, TemplatesConfiguration> newHashMap());
 
-            TemplatesConfiguration config =
-                new TemplatesConfiguration(configurationPath, trigger, triggerInterpreter);
+            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger, triggerInterpreter);
             templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
         }
 

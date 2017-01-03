@@ -5,19 +5,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 import com.google.common.collect.Lists;
 
 /**
- *
- * @author mbrunnli (Jan 10, 2016)
+ * Job which determines the templates to be generated.
  */
 public class DetermineTemplatesJob extends AbstractCobiGenJob {
 
@@ -41,7 +40,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
      *            of the generate wizard
      * @param cobiGenWrapper
      *            {@link CobiGenWrapper} instance
-     * @author mbrunnli (Jan 10, 2016)
      */
     public DetermineTemplatesJob(Set<String> filePathsToBeGenerated, Set<IncrementTo> selectedIncrements,
         CobiGenWrapper cobiGenWrapper) {
@@ -50,10 +48,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
         this.cobiGenWrapper = cobiGenWrapper;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jan 10, 2016)
-     */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -75,7 +69,6 @@ public class DetermineTemplatesJob extends AbstractCobiGenJob {
     /**
      * Returns the determined templates as a result.
      * @return the determined templates as a result.
-     * @author mbrunnli (Jan 10, 2016)
      */
     public List<TemplateTo> getResultTemplates() {
         return templates;

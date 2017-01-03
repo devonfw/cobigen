@@ -70,8 +70,7 @@ public class TriggerExpressionResolver {
         if (m.matches()) {
             if (pojo instanceof Class<?>) {
                 try {
-                    return ((Class<?>) pojo).getClassLoader().loadClass(m.group(1))
-                        .isAssignableFrom((Class<?>) pojo);
+                    return ((Class<?>) pojo).getClassLoader().loadClass(m.group(1)).isAssignableFrom((Class<?>) pojo);
                 } catch (ClassNotFoundException e) {
                     LOG.info("Could not load class '{}' to resolve expression '{}'.", m.group(1), expression);
                 }

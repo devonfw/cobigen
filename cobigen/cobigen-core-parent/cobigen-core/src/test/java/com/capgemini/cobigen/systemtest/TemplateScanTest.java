@@ -58,9 +58,8 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java"))
-                .exists();
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")).exists();
     }
 
     /**
@@ -111,8 +110,8 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
     }
 
     /**
@@ -145,8 +144,8 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // Validation
         assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java"
-            + SystemUtils.FILE_SEPARATOR + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
+            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+            + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
     }
 
 }

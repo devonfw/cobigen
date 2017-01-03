@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="flow" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/webflow"/>
+  <ms:default-criterion xpath="./@name"/>
+
+  <ms:handling for="attribute">
+    <ms:handling for="value" unique="true">
+      <ms:criterion xpath="./"/>
+    </ms:handling>
+  </ms:handling>
+
+  <ms:handling for="secured" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="persistence-context" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="transition">
+    <!-- Covers viewTransitions as well since the added attributes are handled via default -->
+    <ms:criterion xpath="./@on"/>
+  </ms:handling>
+
+  <ms:handling for="global-transitions" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="exception-handler">
+    <ms:criterion xpath="./@bean"/>
+  </ms:handling>
+
+  <ms:handling for="bean-import">
+    <ms:criterion xpath="./@resource"/>
+  </ms:handling>
+
+  <!-- Shared state elements -->
+
+  <ms:handling for="on-start" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="on-entry" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="on-exit" unique="true">
+    <ms:Content xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="binder">
+    <!-- the binder itself works as a container for binding elements. I don't see any properties for a distinction -->
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="binding">
+    <ms:criterion xpath="./@property"/>
+  </ms:handling>
+
+  <ms:handling for="on-render" unique="true">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="if">
+    <ms:criterion xpath="./@test"/>
+  </ms:handling>
+
+  <!-- States -->
+
+  <ms:handling for="action-state">
+    <ms:criterion xpath="./@id"/> <!-- TODO -->
+  </ms:handling>
+
+  <ms:handling for="view-state">
+    <ms:criterion xpath="./@id"/>
+  </ms:handling>
+
+  <ms:handling for="decision-state">
+    <ms:criterion xpath="./@id"/>
+  </ms:handling>
+
+  <ms:handling for="subflow-state">
+    <ms:criterion xpath="./@id"/>
+  </ms:handling>
+
+  <ms:handling for="end-state">
+    <ms:criterion xpath="./@id"/>
+  </ms:handling>
+
+  <!-- Group actionTypes -->
+
+  <ms:handling for="evaluate">
+    <ms:criterion xpath="./@expression"/>
+  </ms:handling>
+
+  <ms:handling for="render">
+    <ms:criterion xpath="./@fragments"/>
+  </ms:handling>
+
+</ms:merge-schema>

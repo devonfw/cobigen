@@ -35,13 +35,11 @@ public class CobiGenFactory {
      *             if the context configuration could not be read properly.
      */
     public static CobiGen create(URI configFileOrFolder) throws InvalidConfigurationException, IOException {
-        Objects.requireNonNull(configFileOrFolder,
-            "The URI pointing to the configuration could not be null.");
+        Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
 
         Path configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
         Configuration freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
-        freeMarkerConfig
-            .setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
+        freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
         freeMarkerConfig.clearEncodingMap();
         freeMarkerConfig.setDefaultEncoding("UTF-8");
         freeMarkerConfig.setLocalizedLookup(false);

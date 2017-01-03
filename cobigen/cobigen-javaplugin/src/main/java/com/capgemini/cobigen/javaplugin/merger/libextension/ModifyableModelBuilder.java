@@ -1,20 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Custom implementation derived from com.thoughtworks.qdox.model.impl.DefaultJavaClass,
+ * which itself has been published under Apache Software Foundation (ASF) available at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
@@ -27,6 +15,7 @@ import java.util.Set;
 import com.thoughtworks.qdox.builder.Builder;
 import com.thoughtworks.qdox.builder.TypeAssembler;
 import com.thoughtworks.qdox.builder.impl.DefaultJavaAnnotationAssembler;
+import com.thoughtworks.qdox.builder.impl.ModelBuilder;
 import com.thoughtworks.qdox.library.ClassLibrary;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.DocletTagFactory;
@@ -64,8 +53,8 @@ import com.thoughtworks.qdox.parser.structs.TypeVariableDef;
 import com.thoughtworks.qdox.writer.ModelWriterFactory;
 
 /**
- * @author <a href="mailto:joew@thoughtworks.com">Joe Walnes</a>
- * @author Robert Scholte
+ * Custom implementation derived from {@link ModelBuilder} to fix some issues with annotation and javaDoc
+ * parsing.
  */
 @SuppressWarnings("javadoc")
 public class ModifyableModelBuilder implements Builder {
@@ -156,8 +145,8 @@ public class ModifyableModelBuilder implements Builder {
         if (newClass.isInterface()) {
             newClass.setSuperClass(null);
         } else if (!newClass.isEnum()) {
-            newClass.setSuperClass(
-                def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
+            newClass
+                .setSuperClass(def.getExtends().size() > 0 ? createType(def.getExtends().iterator().next(), 0) : null);
         }
 
         // implements
@@ -430,8 +419,8 @@ public class ModifyableModelBuilder implements Builder {
     public void addParameter(FieldDef fieldDef) {
 
         DefaultJavaParameter jParam =
-            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()),
-                fieldDef.getName(), fieldDef.getModifiers(), fieldDef.isVarArgs());
+            new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
+                fieldDef.getModifiers(), fieldDef.isVarArgs());
         if (currentMethod != null) {
             jParam.setDeclarator(currentMethod);
         } else {

@@ -50,14 +50,14 @@ public class JavaInputReaderTest {
         Class<?> javaClass = TestClass.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader
+            .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
         // Check parser feature (resolving of parametric type variables)
         Map<String, Object> fieldAttributes = JavaModelUtil.getField(model, "customList");
-        assertThat(fieldAttributes.get(ModelConstant.TYPE))
-            .as("Parametric types are not be resolved correctly!").isEqualTo("List<String>");
+        assertThat(fieldAttributes.get(ModelConstant.TYPE)).as("Parametric types are not be resolved correctly!")
+            .isEqualTo("List<String>");
     }
 
     /**
@@ -74,8 +74,8 @@ public class JavaInputReaderTest {
         Class<?> javaClass = TestClass.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader
+            .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
     }
@@ -94,8 +94,8 @@ public class JavaInputReaderTest {
         Class<?> javaClass = TestClassWithAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader
+            .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
     }
@@ -114,8 +114,8 @@ public class JavaInputReaderTest {
         Class<?> javaClass = TestClassWithRecursiveAnnotations.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader
+            .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
     }
@@ -128,16 +128,14 @@ public class JavaInputReaderTest {
      *             test fails
      */
     @Test
-    public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays()
-        throws Exception {
+    public void provideParsingAndReflectionModelFeatures_withAnnotationsContainingObjectArrays() throws Exception {
 
-        File javaSourceFile =
-            new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
+        File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Class<?> javaClass = TestClassWithAnnotationsContainingObjectArrays.class;
 
         JavaInputReader javaInputReader = new JavaInputReader();
-        Map<String, Object> model = javaInputReader.createModel(
-            new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
+        Map<String, Object> model = javaInputReader
+            .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
     }
@@ -189,8 +187,7 @@ public class JavaInputReaderTest {
         assertThat(classField).isNotNull();
         assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
         assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(classField.get(ModelConstant.CANONICAL_TYPE))
-            .isEqualTo("java.util.List<java.lang.String>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
         assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
         assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
         assertThat(classField.get("isId")).isEqualTo("false");
@@ -210,8 +207,7 @@ public class JavaInputReaderTest {
             .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
 
         // test local field of method accessible fields
-        Map<String, Object> classFieldAccessible =
-            JavaModelUtil.getMethodAccessibleField(model, "customList");
+        Map<String, Object> classFieldAccessible = JavaModelUtil.getMethodAccessibleField(model, "customList");
         assertThat(classFieldAccessible).isNotNull();
         assertThat(classFieldAccessible.get(ModelConstant.NAME)).isEqualTo("customList");
         assertThat(classFieldAccessible.get(ModelConstant.TYPE)).isEqualTo("List<String>");
@@ -260,17 +256,17 @@ public class JavaInputReaderTest {
         // test annotations for attribute, getter, setter, is-method
         assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(inheritedField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
         // Setter
-        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(inheritedField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
         // is-method
-        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(inheritedField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
         // attribute
-        assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(inheritedField))
+            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
 
     }
 

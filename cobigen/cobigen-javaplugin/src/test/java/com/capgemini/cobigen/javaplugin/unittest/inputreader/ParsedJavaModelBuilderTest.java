@@ -57,8 +57,7 @@ public class ParsedJavaModelBuilderTest {
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         assertThat(customList.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(customList.get(ModelConstant.CANONICAL_TYPE))
-            .isEqualTo("java.util.List<java.lang.String>");
+        assertThat(customList.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
     }
 
     /**
@@ -143,8 +142,7 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        Assert.assertEquals("AbstractTestClass",
-            JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+        Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
             .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
@@ -193,8 +191,7 @@ public class ParsedJavaModelBuilderTest {
             Map<String, Object> model = javaInputReader.createModel(o);
             assertThat(model).as("No model has been created!").isNotNull();
             if (RootClass.class.getSimpleName().equals(JavaModelUtil.getName(model))) {
-                List<Map<String, Object>> methodAccessibleFields =
-                    JavaModelUtil.getMethodAccessibleFields(model);
+                List<Map<String, Object>> methodAccessibleFields = JavaModelUtil.getMethodAccessibleFields(model);
                 assertThat(methodAccessibleFields).isNotNull();
                 assertThat(methodAccessibleFields).hasSize(3);
 
@@ -223,9 +220,7 @@ public class ParsedJavaModelBuilderTest {
                 found = true;
             }
         }
-        assertTrue(
-            "Class " + RootClass.class.getName() + "could not be found as child of the package folder.",
-            found);
+        assertTrue("Class " + RootClass.class.getName() + "could not be found as child of the package folder.", found);
     }
 
     /**
@@ -280,8 +275,7 @@ public class ParsedJavaModelBuilderTest {
         assertThat(classField).isNotNull();
         assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
         assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(classField.get(ModelConstant.CANONICAL_TYPE))
-            .isEqualTo("java.util.List<java.lang.String>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
         assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
         assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
         assertThat(classField.get("isId")).isEqualTo("false");
@@ -364,8 +358,7 @@ public class ParsedJavaModelBuilderTest {
 
         // test inherited field of direct superclass named "id"
         System.out.println(model);
-        Map<String, Object> inheritedField =
-            JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+        Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
         assertThat(inheritedField).isNotNull();
         assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("superSuperString");
 
@@ -419,8 +412,7 @@ public class ParsedJavaModelBuilderTest {
         assertThat(classField).isNotNull();
         assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
         assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(classField.get(ModelConstant.CANONICAL_TYPE))
-            .isEqualTo("java.util.List<java.lang.String>");
+        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
 
         // currently no javadoc provided
         // assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
