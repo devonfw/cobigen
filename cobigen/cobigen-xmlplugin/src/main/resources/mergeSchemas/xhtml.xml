@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="html" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.w3.org/1999/xhtml" type="dtd">
+    <ms:additional-namespace namespace="//W3C//ENTITIES Latin 1 for XHTML//EN"/>
+  </ms:definition>
+
+  <ms:default-criterion xpath="./@id"/>
+
+  <ms:handling for="head" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="style"><ms:criterion xpath="type"/></ms:handling>
+    <ms:handling for="meta"><ms:criterion xpath="./@content"/></ms:handling>
+    <ms:handling for="link"><ms:criterion xpath="./*"/></ms:handling>
+    <ms:handling for="title" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="base" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="body" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+
+  <ms:handling for="table">
+    <ms:criterion xpath="./child::thead/tr" ordered="true"/>
+    <ms:handling for="caption" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="thead" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="tfoot" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="tbody" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+    <ms:handling for="tr"><ms:criterion xpath="./child::td | ./child::th" ordered="true"/></ms:handling>
+  </ms:handling>
+
+</ms:merge-schema>

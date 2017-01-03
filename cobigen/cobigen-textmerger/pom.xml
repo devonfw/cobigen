@@ -4,19 +4,30 @@
 	<groupId>com.capgemini</groupId>
 	<artifactId>cobigen-textmerger</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<name>CobiGen - Text Merger</name>
+  
 	<parent>
 		<groupId>com.capgemini</groupId>
 		<artifactId>cobigen-parent</artifactId>
 		<version>dev-SNAPSHOT</version>
 	</parent>
+  
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.capgemini</groupId>
 			<artifactId>cobigen-core</artifactId>
-			<version>1.0.0</version>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capgemini</groupId>
+			<artifactId>cobigen-core-test</artifactId>
+			<version>3.0.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

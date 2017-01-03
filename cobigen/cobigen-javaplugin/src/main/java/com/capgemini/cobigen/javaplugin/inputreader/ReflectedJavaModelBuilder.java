@@ -324,8 +324,7 @@ public class ReflectedJavaModelBuilder {
 
             // collect getter Annotations
             try {
-                Method getter =
-                    pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
+                Method getter = pojo.getMethod("get" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -333,8 +332,7 @@ public class ReflectedJavaModelBuilder {
 
             // collect is Annotations
             try {
-                Method getter =
-                    pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
+                Method getter = pojo.getMethod("is" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)));
                 extractAnnotationsRecursively(annotations, getter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -347,8 +345,8 @@ public class ReflectedJavaModelBuilder {
                     Class<?> attrClass = field.getType();
                     paramList[0] = attrClass;
                 }
-                Method setter = pojo.getMethod(
-                    "set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList);
+                Method setter =
+                    pojo.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList);
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             } catch (NoSuchMethodException e) {
                 // Do nothing if the method does not exist
@@ -384,8 +382,7 @@ public class ReflectedJavaModelBuilder {
                         List<Map<String, Object>> recursiveAnnotationList = Lists.newLinkedList();
                         for (Annotation a : (Annotation[]) value) {
                             Map<String, Object> annotationParameterParameters = Maps.newHashMap();
-                            extractAnnotationsRecursively(annotationParameterParameters,
-                                new Annotation[] { a });
+                            extractAnnotationsRecursively(annotationParameterParameters, new Annotation[] { a });
                             recursiveAnnotationList.add(annotationParameterParameters);
                         }
                         annotationParameters.put(getter.getName(), recursiveAnnotationList);
@@ -411,8 +408,8 @@ public class ReflectedJavaModelBuilder {
                         annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.",
-                        getter.getName(), annotation.getClass(), e);
+                    LOG.error("An error occured while retrieving value '{}' from annotation '{}'.", getter.getName(),
+                        annotation.getClass(), e);
                 }
             }
         }
@@ -433,11 +430,9 @@ public class ReflectedJavaModelBuilder {
             try {
                 Method getter = null;
                 try {
-                    getter = pojo.getDeclaredMethod(
-                        "get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
+                    getter = pojo.getDeclaredMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 } catch (NoSuchMethodException | SecurityException e) {
-                    getter = pojo
-                        .getDeclaredMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
+                    getter = pojo.getDeclaredMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)));
                 }
                 if (getter == null) {
                     return;

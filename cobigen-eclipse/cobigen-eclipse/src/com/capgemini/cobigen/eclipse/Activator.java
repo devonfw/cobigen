@@ -14,9 +14,11 @@ import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
+import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.pluginmanager.PluginRegistry;
+import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
+import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
@@ -54,10 +56,6 @@ public class Activator extends AbstractUIPlugin {
     public Activator() {
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (14.02.2013), updated by sholzer (22.09.2015)
-     */
     @Override
     public void start(BundleContext context) throws Exception {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -67,13 +65,14 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
         PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
+        PluginRegistry.loadPlugin(JSONPluginActivator.class);
+        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     /**
      * Starts the ResourceChangeListener
-     * @author mbrunnli (08.04.2013)
      */
     public void startConfigurationProjectListener() {
         LOG.info("Start configuration project listener");
@@ -85,8 +84,7 @@ public class Activator extends AbstractUIPlugin {
                     if (configurationProjectListenerStarted) {
                         return;
                     }
-                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
-                        configurationProjectListener,
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(configurationProjectListener,
                         IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
                             | IResourceChangeEvent.POST_CHANGE);
                     configurationProjectListenerStarted = true;
@@ -120,10 +118,6 @@ public class Activator extends AbstractUIPlugin {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;

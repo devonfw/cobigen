@@ -1,20 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Custom implementation derived from com.thoughtworks.qdox.model.impl.DefaultJavaClass,
+ * which itself has been published under Apache Software Foundation (ASF) available at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
@@ -44,8 +32,13 @@ import com.thoughtworks.qdox.model.JavaTypeVariable;
 import com.thoughtworks.qdox.model.expression.AnnotationValue;
 import com.thoughtworks.qdox.model.expression.Expression;
 import com.thoughtworks.qdox.writer.ModelWriter;
+import com.thoughtworks.qdox.writer.impl.DefaultModelWriter;
 import com.thoughtworks.qdox.writer.impl.IndentBuffer;
 
+/**
+ * Custom implementation derived from {@link DefaultModelWriter} to fix some issues with annotation and
+ * javaDoc printing.
+ */
 @SuppressWarnings("javadoc")
 public class CustomModelWriter implements ModelWriter {
 
@@ -107,8 +100,8 @@ public class CustomModelWriter implements ModelWriter {
         writeAccessibilityModifier(cls.getModifiers());
         writeNonAccessibilityModifiers(cls.getModifiers());
 
-        buffer.write(cls.isEnum() ? "enum "
-            : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
+        buffer.write(
+            cls.isEnum() ? "enum " : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
         buffer.write(cls.getName());
 
         writeTypeParameters(cls);
@@ -143,8 +136,7 @@ public class CustomModelWriter implements ModelWriter {
         buffer.indent();
 
         // fields
-        if (cls.getSuperClass() != null
-            && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
+        if (cls.getSuperClass() != null && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
             Iterator<JavaField> it = cls.getFields().iterator();
             while (it.hasNext()) {
                 JavaField curr = it.next();
@@ -219,8 +211,7 @@ public class CustomModelWriter implements ModelWriter {
         if (field.isEnumConstant()) {
             if (field.getEnumConstantArguments() != null && !field.getEnumConstantArguments().isEmpty()) {
                 buffer.write("( ");
-                for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter
-                    .hasNext();) {
+                for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter.hasNext();) {
                     buffer.write(iter.next().getParameterValue().toString());
                     if (iter.hasNext()) {
                         buffer.write(", ");

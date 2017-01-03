@@ -42,8 +42,7 @@ public class InputPreProcessor {
         Object input = null;
         try {
             input =
-                JavaParserUtil.getFirstJavaClass(cl, new InputStreamReader(new FileInputStream(file),
-                    Charsets.UTF_8));
+                JavaParserUtil.getFirstJavaClass(cl, new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
         } catch (ParseException | FileNotFoundException e) {
             // was not a java resource, try something else
         }
@@ -54,8 +53,7 @@ public class InputPreProcessor {
             // was not a XML-Document, try something else
         }
         if (input == null) {
-            throw new MojoFailureException("The file " + file.getAbsolutePath()
-                + " is not a valid input for CobiGen.");
+            throw new MojoFailureException("The file " + file.getAbsolutePath() + " is not a valid input for CobiGen.");
         }
         return input;
     }
