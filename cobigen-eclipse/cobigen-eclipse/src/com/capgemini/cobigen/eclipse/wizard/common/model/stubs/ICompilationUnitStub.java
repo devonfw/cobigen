@@ -40,8 +40,7 @@ public class ICompilationUnitStub extends IJavaElementStub implements ICompilati
     }
 
     @Override
-    public ICompilationUnit getWorkingCopy(WorkingCopyOwner owner, IProgressMonitor monitor)
-        throws JavaModelException {
+    public ICompilationUnit getWorkingCopy(WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
         return null;
     }
 
@@ -150,8 +149,7 @@ public class ICompilationUnitStub extends IJavaElementStub implements ICompilati
     }
 
     @Override
-    public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner owner)
-        throws JavaModelException {
+    public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner owner) throws JavaModelException {
         return null;
     }
 
@@ -262,8 +260,8 @@ public class ICompilationUnitStub extends IJavaElementStub implements ICompilati
     }
 
     @Override
-    public IImportDeclaration createImport(String name, IJavaElement sibling, int flags,
-        IProgressMonitor monitor) throws JavaModelException {
+    public IImportDeclaration createImport(String name, IJavaElement sibling, int flags, IProgressMonitor monitor)
+        throws JavaModelException {
         return null;
     }
 
@@ -372,15 +370,14 @@ public class ICompilationUnitStub extends IJavaElementStub implements ICompilati
     }
 
     @Override
-    public CompilationUnit reconcile(int astLevel, boolean forceProblemDetection,
-        boolean enableStatementsRecovery, WorkingCopyOwner owner, IProgressMonitor monitor)
-        throws JavaModelException {
+    public CompilationUnit reconcile(int astLevel, boolean forceProblemDetection, boolean enableStatementsRecovery,
+        WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
         return null;
     }
 
     @Override
-    public CompilationUnit reconcile(int astLevel, int reconcileFlags, WorkingCopyOwner owner,
-        IProgressMonitor monitor) throws JavaModelException {
+    public CompilationUnit reconcile(int astLevel, int reconcileFlags, WorkingCopyOwner owner, IProgressMonitor monitor)
+        throws JavaModelException {
         return null;
     }
 

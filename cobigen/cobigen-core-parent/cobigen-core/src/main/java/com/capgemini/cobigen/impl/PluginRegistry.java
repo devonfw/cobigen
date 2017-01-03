@@ -85,8 +85,7 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.info("Merger for type '{}' registered ({}).", merger.getType(),
-            merger.getClass().getCanonicalName());
+        LOG.info("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass().getCanonicalName());
     }
 
     /**

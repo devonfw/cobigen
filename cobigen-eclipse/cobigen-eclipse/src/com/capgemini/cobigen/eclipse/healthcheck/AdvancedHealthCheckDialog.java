@@ -177,8 +177,8 @@ public class AdvancedHealthCheckDialog extends Dialog {
                 templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
                 LOG.info("Upgrade finished successfully.");
             } catch (BackupFailedException e) {
-                boolean continueUpgrade = MessageDialog
-                    .openQuestion(Display.getDefault().getActiveShell(), HealthCheck.ADVANCED_DIALOG_TITLE,
+                boolean continueUpgrade =
+                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(), HealthCheck.ADVANCED_DIALOG_TITLE,
                         "Backup failed while upgrading. "
                             + "An upgrade deletes all comments in the configuration file, "
                             + "which will be gone without a backup. Continue anyhow?");

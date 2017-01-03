@@ -45,8 +45,7 @@ public class TmpMavenProjectRule extends ExternalResource {
                 javaProject.getProject().delete(true, new NullProgressMonitor());
             }
         } catch (CoreException e) {
-            LOG.warn(
-                "Was not able to delete project by workbench API. Try to delete it directly on file system.");
+            LOG.warn("Was not able to delete project by workbench API. Try to delete it directly on file system.");
             boolean deleted = new File(javaProject.getProject().getLocationURI()).delete();
             if (!deleted) {
                 LOG.warn("Was not able to delete project by File IO API.");
@@ -123,8 +122,8 @@ public class TmpMavenProjectRule extends ExternalResource {
     public void createPom(String dependencies) throws CoreException {
         IFile pom = javaProject.getProject().getFile("pom.xml");
 
-        mvnProjectSpecification = "<groupId>generated</groupId>" + "<artifactId>generated."
-            + new Random().nextInt() + "</artifactId>" + "<version>1.0.0</version>";
+        mvnProjectSpecification = "<groupId>generated</groupId>" + "<artifactId>generated." + new Random().nextInt()
+            + "</artifactId>" + "<version>1.0.0</version>";
 
         // @formatter:off
         byte[] pomBytes = ("<?xml version='1.0' encoding='UTF-8'?>"

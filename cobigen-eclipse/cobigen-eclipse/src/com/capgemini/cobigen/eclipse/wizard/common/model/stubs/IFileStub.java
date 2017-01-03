@@ -18,14 +18,13 @@ import org.eclipse.core.runtime.content.IContentDescription;
 public class IFileStub extends IResourceStub implements IFile {
 
     @Override
-    public void appendContents(InputStream source, boolean force, boolean keepHistory,
-        IProgressMonitor monitor) throws CoreException {
+    public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 
     @Override
-    public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 
@@ -40,8 +39,7 @@ public class IFileStub extends IResourceStub implements IFile {
     }
 
     @Override
-    public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 
@@ -124,14 +122,12 @@ public class IFileStub extends IResourceStub implements IFile {
     }
 
     @Override
-    public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 
     @Override
-    public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 
