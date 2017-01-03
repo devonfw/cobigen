@@ -35,11 +35,12 @@ import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 public class EclipseUtils {
 
     /**
-     * @see #importExistingGeneralProject(SWTWorkbenchBot, String, boolean)
-     *      importExistingGeneralProject(SWTWorkbenchBot, String, boolean) with
-     *      {@code copyIntoWorkspace=false}
+     * Imports the an existing general (non-java/non-maven) project to the workspace.
+     * @param bot
+     *            the {@link SWTWorkbenchBot} of the test
+     * @param projectPath
+     *            absolute path of the project on file system
      */
-    @SuppressWarnings("javadoc")
     public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) {
         importExistingGeneralProject(bot, projectPath, true);
     }

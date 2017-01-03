@@ -130,6 +130,14 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludePackageNames>com.capgemini.cobigen.impl.config.entity.io</excludePackageNames> <!-- /com/capgemini/cobigen/impl/config/entity/io/**/*.java -->
+        </configuration>
+      </plugin>
+
       <!-- For testing purposes -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
