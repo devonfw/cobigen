@@ -39,8 +39,8 @@ public class VariablesResolutionTest extends AbstractIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        JavaClass input = JavaParserUtil.getFirstJavaClass(new FileReader(
-            new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java")));
+        JavaClass input = JavaParserUtil.getFirstJavaClass(
+            new FileReader(new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java")));
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;

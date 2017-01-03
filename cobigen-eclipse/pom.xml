@@ -13,14 +13,13 @@
   </parent>
 
   <properties>
-    <eclipse-repo.url>http://download.eclipse.org/releases/juno</eclipse-repo.url>
-    <tycho.version>0.20.0</tycho.version>
-    <tycho-extras.version>0.20.0</tycho-extras.version>
+    <tycho.version>0.24.0</tycho.version>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
   </properties>
 
   <modules>
     <module>cobigen-eclipse</module>
+    <module>cobigen-eclipse-test</module>
     <module>cobigen-eclipse-feature</module>
     <module>cobigen-eclipse-updatesite</module>
   </modules>
@@ -40,23 +39,14 @@
         <version>${tycho.version}</version>
         <extensions>true</extensions>
       </plugin>
-
-      <!-- Code Signing -->
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-source-feature-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-source-feature</id>
-            <goals>
-              <goal>source-feature</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-p2-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <baselineMode>warn</baselineMode>
+          <baselineReplace>none</baselineReplace>
+        </configuration>
         <executions>
           <execution>
             <id>default-p2-metadata-default</id>
@@ -73,114 +63,57 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-compiler-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <useProjectSettings>true</useProjectSettings>
+          <compilerArguments>
+            <inlineJSR/>
+            <enableJavadoc/>
+            <encoding>${project.build.sourceEncoding}</encoding>
+          </compilerArguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <executionEnvironment>JavaSE-1.7</executionEnvironment>
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86</arch>
+            </environment>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+        </configuration>
+      </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>target-platform-configuration</artifactId>
-          <version>${tycho.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-compiler-plugin</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <compilerArguments>
-              <inlineJSR/>
-              <enableJavadoc/>
-              <encoding>${project.build.sourceEncoding}</encoding>
-            </compilerArguments>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-source-plugin</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <strictSrcIncludes>false</strictSrcIncludes>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.eclipse.tycho.extras</groupId>
-          <artifactId>tycho-source-feature-plugin</artifactId>
-          <version>${tycho-extras.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-p2-plugin</artifactId>
-          <version>${tycho.version}</version>
-          <configuration>
-            <baselineMode>warn</baselineMode>
-            <baselineReplace>none</baselineReplace>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
-  <profiles>
-    <profile>
-      <id>uploadSnapshot</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${project.build.directory}</fromDir>
-                  <includes>cobigen-eclipse-*SNAPSHOT.zip</includes>
-                  <url>file://localhost///de-file10/ClientPE/OASP</url>
-                  <toDir>CobiGenerator/Releases/snapshot</toDir>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>uploadRelease</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>upload-release</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${project.build.directory}</fromDir>
-                  <includes>cobigen-eclipse-*.zip</includes>
-                  <url>file://localhost///de-file10/ClientPE/OASP</url>
-                  <toDir>CobiGenerator/Releases/stable</toDir>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
-  <repositories>
-    <repository>
-      <id>eclipse platform</id>
-      <layout>p2</layout>
-      <url>${eclipse-repo.url}</url>
-    </repository>
-  </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>tycho</id>
@@ -193,4 +126,31 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <profiles>
+    <profile>
+      <id>MarsBuild</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>eclipse-mars</id>
+          <url>http://download.eclipse.org/releases/mars</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>NeonBuild</id>
+      <repositories>
+        <repository>
+          <id>eclipse-neon</id>
+          <url>http://download.eclipse.org/releases/neon</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
 </project>

@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.capgemini.cobigen.extension.to.IncrementTo;
-import com.capgemini.cobigen.extension.to.TemplateTo;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 
 /**
  * Input validator, which validates the increment and template declarations within the maven plugin
@@ -25,8 +25,8 @@ public class InputValidator {
      *             if one of the requested templates could not be found in configuration
      * @author mbrunnli (11.02.2015)
      */
-    public static void validateTemplateInputs(List<TemplateTo> templates,
-        List<String> templateIdsToBeGenerated) throws MojoExecutionException {
+    public static void validateTemplateInputs(List<TemplateTo> templates, List<String> templateIdsToBeGenerated)
+        throws MojoExecutionException {
         List<String> templateIds = new LinkedList<>(templateIdsToBeGenerated);
         for (TemplateTo template : templates) {
             if (templateIds.contains(template.getId())) {
@@ -34,8 +34,7 @@ public class InputValidator {
             }
         }
         if (!templateIds.isEmpty()) {
-            throw new MojoExecutionException("No template(s) with the given id(s) '" + templateIds
-                + "' found.");
+            throw new MojoExecutionException("No template(s) with the given id(s) '" + templateIds + "' found.");
         }
     }
 
@@ -49,8 +48,8 @@ public class InputValidator {
      *             if one of the requested increments could not be found in the configuration
      * @author mbrunnli (11.02.2015)
      */
-    public static void validateIncrementInputs(List<IncrementTo> increments,
-        List<String> templateIdsToBeGenerated) throws MojoExecutionException {
+    public static void validateIncrementInputs(List<IncrementTo> increments, List<String> templateIdsToBeGenerated)
+        throws MojoExecutionException {
         List<String> incrementIds = new LinkedList<>(templateIdsToBeGenerated);
         for (IncrementTo increment : increments) {
             if (incrementIds.contains(increment.getId())) {
@@ -58,8 +57,7 @@ public class InputValidator {
             }
         }
         if (!incrementIds.isEmpty()) {
-            throw new MojoExecutionException("No increment(s) with the given id(s) '" + incrementIds
-                + "' found.");
+            throw new MojoExecutionException("No increment(s) with the given id(s) '" + incrementIds + "' found.");
         }
     }
 }

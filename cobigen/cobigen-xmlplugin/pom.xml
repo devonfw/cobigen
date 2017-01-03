@@ -2,10 +2,9 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
   <artifactId>cobigen-xmlplugin</artifactId>
   <name>CobiGen - XML Plug-In</name>
-  <version>2.1.0</version>
+  <version>3.0.0</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -14,125 +13,27 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core</artifactId>
-      <version>1.2.0</version>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core-test</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
     </dependency>
 
-    <!-- XML Merge for structural merge -->
     <dependency>
-      <groupId>ch.elca.el4j.modules</groupId>
-      <artifactId>module-core</artifactId>
-      <version>3.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.inject</groupId>
-          <artifactId>inject</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.hibernate.javax.persistence</groupId>
-          <artifactId>hibernate-jpa-2.0-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.java.dev.which4j</groupId>
-          <artifactId>which4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.aspectj</groupId>
-          <artifactId>aspectjmatcher</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.bcel</groupId>
-          <artifactId>bcel</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib-nodep</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Adopt legacy logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>1.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>1.7.7</version>
-    </dependency>
-
-    <!-- <dependency>
-      <groupId>ch.elca.el4j.modules</groupId>
-      <artifactId>module-jmx</artifactId>
-      <version>3.1</version>
-      <exclusions>
-      <exclusion>
-      <groupId>javax.inject</groupId>
-      <artifactId>inject</artifactId>
-      </exclusion>
-      </exclusions>
-      </dependency> -->
-    <dependency>
-      <groupId>ch.elca.el4j.modules</groupId>
-      <artifactId>module-xml_merge-common</artifactId>
-      <version>3.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.inject</groupId>
-          <artifactId>inject</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Explicit definition of dependency due to access restrictions of the original XML Merge library dependencies -->
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
-    </dependency>
-
-    <!-- Explicit JDom version as result of dependency conflicts -->
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.1.3</version>
+      <artifactId>lexeme</artifactId>
+      <groupId>com.github.maybeec</groupId>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <!-- For XML Merge -->
-    <!-- Build with Maven2 or 3.1.x due to strange dependencies which should be authorized !!! -->
-    <repository>
-      <id>el4jReleaseRepositoryExternal</id>
-      <name>External release repository of the EL4J project</name>
-      <url>http://public-el4.elca-services.ch/el4j/maven2repository</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-  </repositories>
 </project>

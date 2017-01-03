@@ -27,8 +27,7 @@ public class TextAppenderTest {
     public void testMerge_appendWithoutNewLine() throws Exception {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")),
-            mergedString);
+        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")), mergedString);
     }
 
     /**
@@ -41,8 +40,7 @@ public class TextAppenderTest {
     public void testMerge_appendWithNewLine() throws Exception {
         TextAppender appender = new TextAppender("", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")),
+        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")),
             mergedString);
     }
 
@@ -56,7 +54,6 @@ public class TextAppenderTest {
     public void testMerge_appendWithNewLine_onlyIfPathIsNotEmpty() throws Exception {
         TextAppender appender = new TextAppender("", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "", "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")),
-            mergedString);
+        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")), mergedString);
     }
 }
