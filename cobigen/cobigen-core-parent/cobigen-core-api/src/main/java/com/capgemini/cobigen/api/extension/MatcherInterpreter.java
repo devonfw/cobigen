@@ -21,7 +21,7 @@ public interface MatcherInterpreter {
      * This function should check, whether the given matcher matches the attached input
      * @param matcher
      *            specifying the matcher type, the value to match against, and the object to be matched
-     * @return <code>true</code> if the object matches the given parameters, <br/>
+     * @return <code>true</code> if the object matches the given parameters, <br>
      *         <code>false</code> otherwise (not null)
      */
     public boolean matches(MatcherTo matcher);
@@ -38,6 +38,6 @@ public interface MatcherInterpreter {
      *             if one of the requested variable assignment types could not be managed by this
      *             {@link MatcherInterpreter} instance
      */
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException;
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException;
 }

@@ -39,8 +39,7 @@ public class TransactionalGenerationTest extends AbstractApiTest {
         List<IncrementTo> matchingIncrements = cobigen.getMatchingIncrements(generationInput);
 
         // act
-        GenerationReportTo report =
-            cobigen.generate(generationInput, matchingIncrements, targetRoot.toPath());
+        GenerationReportTo report = cobigen.generate(generationInput, matchingIncrements, targetRoot.toPath());
 
         // assert
         assertThat(report.isSuccessful()).isFalse();

@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
-  <triggers>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
     <trigger id="testTemplates" type="xml" templateFolder="testTemplates">
-      <matcher type="nodename" value="root">
-        <variableAssignment type="constant" key="testConstantKey" value="testConstantValue" />
-      </matcher>
+        <matcher type="nodename" value="root">
+            <variableAssignment type="constant" key="testConstantKey" value="testConstantValue"/>
+        </matcher>
     </trigger>
-  </triggers>
 </contextConfiguration>

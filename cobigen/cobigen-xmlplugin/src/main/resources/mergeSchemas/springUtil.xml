@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/util"/>
+  <ms:default-criterion xpath="./@id"/>
+
+  <!-- should be handled by defaults -->
+  <ms:handling for="list" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <ms:handling for="map" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <ms:handling for="properties" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+  <ms:handling for="set" scopeRef="refListOrSetType" namespaceRef="http://www.springframework.org/schema/beans"/>
+
+</ms:merge-schema>

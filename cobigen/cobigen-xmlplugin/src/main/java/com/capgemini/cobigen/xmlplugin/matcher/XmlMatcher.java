@@ -8,17 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.capgemini.cobigen.exceptions.InvalidConfigurationException;
-import com.capgemini.cobigen.extension.IMatcher;
-import com.capgemini.cobigen.extension.to.MatcherTo;
-import com.capgemini.cobigen.extension.to.VariableAssignmentTo;
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.extension.MatcherInterpreter;
+import com.capgemini.cobigen.api.to.MatcherTo;
+import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 import com.google.common.collect.Maps;
 
 /**
- *
- * @author fkreis (18.11.2014)
+ * {@link MatcherInterpreter} for XML matcher configurations.
  */
-public class XmlMatcher implements IMatcher {
+public class XmlMatcher implements MatcherInterpreter {
 
     /**
      * Assigning logger to XmlClassMatcher
@@ -47,10 +46,6 @@ public class XmlMatcher implements IMatcher {
         REGEX
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
     public boolean matches(MatcherTo matcher) {
         try {
@@ -71,13 +66,9 @@ public class XmlMatcher implements IMatcher {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (18.11.2014)
-     */
     @Override
-    public Map<String, String> resolveVariables(MatcherTo matcher,
-        List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
+    public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
+        throws InvalidConfigurationException {
 
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
@@ -91,7 +82,7 @@ public class XmlMatcher implements IMatcher {
                         resolvedVariables.put(va.getVarName(), va.getValue());
                         break;
                     case REGEX:
-                        // TODO
+                        // TODO #64
                     }
                 }
                 return resolvedVariables;

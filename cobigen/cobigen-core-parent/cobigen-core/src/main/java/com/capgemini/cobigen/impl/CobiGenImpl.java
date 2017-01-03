@@ -83,8 +83,7 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact,
-        Path targetRootPath) {
+    public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath) {
         return generate(input, generableArtifact, targetRootPath, false, null, null);
     }
 
@@ -104,8 +103,7 @@ public class CobiGenImpl implements CobiGen {
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses,
-            additionalModelValues);
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, additionalModelValues);
         return gp.generate();
     }
 
@@ -114,8 +112,7 @@ public class CobiGenImpl implements CobiGen {
 
         List<String> matchingTriggerIds = getMatchingTriggerIds(input);
         // Just take the first trigger as all trigger should have the same input reader. See javadoc.
-        Trigger trigger =
-            configurationHolder.readContextConfiguration().getTrigger(matchingTriggerIds.get(0));
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(matchingTriggerIds.get(0));
         return new ModelBuilderImpl(input, trigger);
     }
 

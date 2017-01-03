@@ -23,10 +23,6 @@ public class HealthCheckHandler extends AbstractHandler {
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckHandler.class);
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 16, 2015)
-     */
     @Override
     public Object execute(final ExecutionEvent event) throws ExecutionException {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -35,7 +31,7 @@ public class HealthCheckHandler extends AbstractHandler {
             new HealthCheck().execute();
         } catch (Throwable e) {
             LOG.error("An unexpected error occurred while processing the health check. This is a bug.", e);
-            PlatformUIUtil.openErrorDialog("Error",
+            PlatformUIUtil.openErrorDialog(
                 "An unexpected error occurred while processing the health check. This might be a bug.", e);
         }
 

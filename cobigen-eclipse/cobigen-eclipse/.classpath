@@ -1,43 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-2.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/annotations-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ant-1.9.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-2.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath-1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dozer-5.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dtdparser-1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-collections-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/guava-17.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javassist-3.18.2-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.inject-1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j-1.7.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdom-1.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/joda-time-1.6.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j-1.7.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-5.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/module-core-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/module-xml_merge-common-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/reflections-0.9.9-RC2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xml-apis-1.0.b2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-jsonplugin-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-senchaplugin-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-3.0.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-1.9.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dozer-5.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.23.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-17.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.inject-1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jdom2-2.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j-1.7.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-5.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lexeme-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sax-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson-2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-20160810.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rhino-1.7R4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
