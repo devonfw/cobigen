@@ -10,10 +10,7 @@ import org.junit.Test;
 import junit.framework.TestCase;
 
 /**
- *
- * * Testing of PropertyMerger of its override property
- *
- * @author sbasnet(06.05.2014)
+ * Testing of PropertyMerger of its override property
  */
 public class PropertyMergerTest extends TestCase {
 
@@ -31,8 +28,8 @@ public class PropertyMergerTest extends TestCase {
     public void testPropertyMergeOverride() throws Exception {
         File base = new File(testFileRootPath + "test.properties");
         PropertyMerger pMerger = new PropertyMerger("", true);
-        String mergedPropFile = pMerger.merge(base,
-            IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
+        String mergedPropFile =
+            pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
         Assert.assertTrue("NachNameOverride", mergedPropFile.contains("NachNameOverride"));
         Assert.assertFalse("nachNameOriginal", mergedPropFile.contains("nachNameOriginal"));
         Assert.assertTrue("FirstName", mergedPropFile.contains("firstName"));
@@ -48,8 +45,8 @@ public class PropertyMergerTest extends TestCase {
     public void testPropertyMergeWithoutOverride() throws Exception {
         File base = new File(testFileRootPath + "test.properties");
         PropertyMerger pMerger = new PropertyMerger("", false);
-        String mergedPropFile = pMerger.merge(base,
-            IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
+        String mergedPropFile =
+            pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
         Assert.assertFalse("NachNameOverride", mergedPropFile.contains("NachNameOverride"));
         Assert.assertTrue("nachNameOriginal", mergedPropFile.contains("nachNameOriginal"));
         Assert.assertTrue("FirstName", mergedPropFile.contains("firstName"));

@@ -37,8 +37,7 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
-        File javaSourceFile =
-            new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
+        File javaSourceFile = new File(testFileRootPath + "TestClassWithAnnotationsContainingObjectArrays.java");
         Object[] input = new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)),
             TestClassWithAnnotationsContainingObjectArrays.class };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
@@ -48,12 +47,12 @@ public class AnnotationQueryingTest extends AbstractIntegrationTest {
             if (template.getId().equals("annotationQuerying.txt")) {
                 GenerationReportTo report =
                     cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                    + "annotationQuerying.txt");
+                File expectedFile = new File(
+                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "annotationQuerying.txt");
                 assertThat(report).isSuccessful();
                 assertThat(expectedFile).exists();
-                assertThat(expectedFile).hasContent(
-                    "TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");
+                assertThat(expectedFile)
+                    .hasContent("TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");
                 methodTemplateFound = true;
                 break;
             }

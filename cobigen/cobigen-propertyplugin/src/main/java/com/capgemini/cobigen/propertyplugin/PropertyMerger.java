@@ -23,10 +23,7 @@ import com.capgemini.cobigen.impl.util.SystemUtil;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
- * being provided as the file contents of the
- *
- * @author mbrunnli (11.03.2013)
- * @uthor sbasnet(06.05.2014)
+ * being provided as the file contents of the patch.
  */
 public class PropertyMerger implements Merger {
 
@@ -75,8 +72,7 @@ public class PropertyMerger implements Merger {
         }
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
         try {
-            BufferedReader br =
-                new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
             return concatContents(conflicts, br, patch);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);

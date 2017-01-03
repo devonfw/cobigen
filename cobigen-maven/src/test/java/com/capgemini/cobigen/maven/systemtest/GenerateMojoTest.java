@@ -65,8 +65,7 @@ public class GenerateMojoTest extends AbstractMojoTestCase {
 
         Field field = mojo.getClass().getDeclaredField("project");
         field.setAccessible(true);
-        MavenProject build =
-            new DefaultMavenProjectBuilder().build(testPom, new DefaultProjectBuilderConfiguration());
+        MavenProject build = new DefaultMavenProjectBuilder().build(testPom, new DefaultProjectBuilderConfiguration());
         field.set(mojo, build);
 
         @SuppressWarnings("unchecked")

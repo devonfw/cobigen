@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <template name="t1" destinationPath="TestOutput.txt" templateFile="TestOutput.txt.ftl"/>
+        <template name="t2" destinationPath="InternalClassloading.txt" templateFile="InternalClassloading.txt.ftl"/>
+    </templates>
+    <increments>
+        <increment name="i1" description="increment1">
+            <templateRef ref="t1"/>
+        </increment>
+        <increment name="i2" description="increment2">
+            <templateRef ref="t2"/>
+        </increment>
+    </increments>
+</templatesConfiguration>

@@ -69,8 +69,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.info("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
-            matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
@@ -84,8 +83,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.info("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
-        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(
-            matcherInput)) {
+        for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), templatesConfiguration.getTrigger().getId()));
@@ -114,8 +112,8 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         Map<String, String> variables =
             new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        String resolvedDesitinationPath = new PathExpressionResolver(variables)
-            .evaluateExpressions(template.getUnresolvedDestinationPath());
+        String resolvedDesitinationPath =
+            new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
         return targetRootPath.resolve(resolvedDesitinationPath);
 
     }
@@ -143,9 +141,8 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
                     template.getMergeStrategy(), trigger.getId()));
             }
-            incrementTos.add(
-                new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(), templates,
-                    convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
+                templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
         }
         return incrementTos;
     }
@@ -177,8 +174,8 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                     LOG.debug("Check container matchers ...");
                     FOR_CONTAINERMATCHER:
                     for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                        MatcherTo containerMatcherTo = new MatcherTo(containerMatcher.getType(),
-                            containerMatcher.getValue(), matcherInput);
+                        MatcherTo containerMatcherTo =
+                            new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), matcherInput);
                         LOG.debug("Check {} ...", containerMatcherTo);
                         if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
                             LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
@@ -190,14 +187,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                             } else {
                                 // the charset does not matter as we just want to see whether there is one
                                 // matcher for one of the container resources
-                                containerResources = triggerInterpreter.getInputReader()
-                                    .getInputObjects(matcherInput, Charsets.UTF_8);
+                                containerResources =
+                                    triggerInterpreter.getInputReader().getInputObjects(matcherInput, Charsets.UTF_8);
                             }
                             LOG.debug("{} objects retrieved.", containerResources.size());
 
                             for (Object resource : containerResources) {
-                                if (GenerationProcessor.matches(resource, trigger.getMatcher(),
-                                    triggerInterpreter)) {
+                                if (GenerationProcessor.matches(resource, trigger.getMatcher(), triggerInterpreter)) {
                                     LOG.debug("At least one object from container matches.");
                                     triggerMatches = true;
                                     break FOR_CONTAINERMATCHER;
