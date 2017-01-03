@@ -94,8 +94,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateFooClass).isNotNull();
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
-        assertThat(templateFooClass.getUnresolvedDestinationPath())
-            .isEqualTo("src/main/java/foo/FooClass.java");
+        assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/foo/FooClass.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
     }
 
@@ -134,8 +133,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateBarClass).isNotNull();
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("foo/bar/BarClass.java.ftl");
-        assertThat(templateBarClass.getUnresolvedDestinationPath())
-            .isEqualTo("src/main/java/foo/bar/BarClass.java");
+        assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/foo/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
     }
 
@@ -168,8 +166,7 @@ public class TemplatesConfigurationReaderTest {
         // template-scan defaults
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("bar/BarClass.java.ftl");
-        assertThat(templateBarClass.getUnresolvedDestinationPath())
-            .isEqualTo("src/main/java/bar/BarClass.java");
+        assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
         assertThat(templateBarClass.getTargetCharset()).isEqualTo("UTF-8");
 
@@ -212,8 +209,7 @@ public class TemplatesConfigurationReaderTest {
         // template-scan defaults
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("bar/Foo2Class.java.ftl");
-        assertThat(templateFooClass.getUnresolvedDestinationPath())
-            .isEqualTo("src/main/java/bar/Foo2Class.java");
+        assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/bar/Foo2Class.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
         assertThat(templateFooClass.getTargetCharset()).isEqualTo("UTF-8");
     }
@@ -266,8 +262,8 @@ public class TemplatesConfigurationReaderTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
         reader.loadTemplates(null, null);
     }
 
@@ -281,8 +277,8 @@ public class TemplatesConfigurationReaderTest {
     public void testCorrectResolutionOfTemplateScanReferences() throws InvalidConfigurationException {
 
         // given
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "valid_template_scan_references").toPath());
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_template_scan_references").toPath());
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -296,8 +292,8 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templates).containsOnlyKeys("prefix_foo_BarClass.java", "prefix_bar_Foo2Class.java",
             "prefix_foo_FooClass.java");
         assertThat(increments).containsOnlyKeys("test");
-        assertThat(increments.get("test").getTemplates()).extracting("name")
-            .containsOnly("prefix_foo_BarClass.java", "prefix_foo_FooClass.java");
+        assertThat(increments.get("test").getTemplates()).extracting("name").containsOnly("prefix_foo_BarClass.java",
+            "prefix_foo_FooClass.java");
     }
 
     /**
@@ -323,8 +319,8 @@ public class TemplatesConfigurationReaderTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_invalid_template_scan_ref").toPath());
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_invalid_template_scan_ref").toPath());
         reader.loadTemplates(null, null);
     }
 
@@ -336,8 +332,8 @@ public class TemplatesConfigurationReaderTest {
     public void testIncrementComposition_combiningAllPossibleReferences() {
 
         // given
-        TemplatesConfigurationReader target = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "valid_increment_composition").toPath());
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_increment_composition").toPath());
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -354,10 +350,10 @@ public class TemplatesConfigurationReaderTest {
         assertThat(increments).containsOnlyKeys("0", "1", "2");
         assertThat(increments.values()).hasSize(3);
         assertThat(increments.get("0").getTemplates()).extracting("name").containsOnly("templateDecl");
-        assertThat(increments.get("1").getTemplates()).extracting("name").containsOnly("templateDecl",
-            "prefix_scanned", "scanned", "scanned2");
-        assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl",
-            "prefix_scanned", "scanned", "prefix_scanned2");
+        assertThat(increments.get("1").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
+            "scanned", "scanned2");
+        assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
+            "scanned", "prefix_scanned2");
 
     }
 

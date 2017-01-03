@@ -187,9 +187,9 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for ref='" + t.getName() + "'");
                 }
-                templates.put(t.getName(), new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(),
-                        t.getMergeStrategy(), t.getTargetCharset(),
-                        configFilePath.getParent().resolve(t.getTemplateFile())));
+                templates.put(t.getName(),
+                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(),
+                        t.getTargetCharset(), configFilePath.getParent().resolve(t.getTemplateFile())));
             }
         }
 
@@ -334,8 +334,8 @@ public class TemplatesConfigurationReader {
                         }
                         templateFile += currentPathWithSlash + templateFileName;
                         String mergeStratgey = scan.getMergeStrategy();
-                        Template template = new Template(templateName, destinationPath, templateFile,
-                            mergeStratgey, scan.getTargetCharset(), next);
+                        Template template = new Template(templateName, destinationPath, templateFile, mergeStratgey,
+                            scan.getTargetCharset(), next);
                         templates.put(templateName, template);
 
                         if (templateScanTemplates.get(scan.getName()) != null) {

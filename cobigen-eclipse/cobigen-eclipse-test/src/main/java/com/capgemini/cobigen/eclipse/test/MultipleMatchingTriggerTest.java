@@ -40,8 +40,7 @@ public class MultipleMatchingTriggerTest extends SystemTest {
     public static void setupClass() throws Exception {
 
         // import the configuration project for this test
-        EclipseUtils.importExistingGeneralProject(bot,
-            new File(resourcesRootPath + "templates").getAbsolutePath());
+        EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
     }
 
@@ -57,8 +56,8 @@ public class MultipleMatchingTriggerTest extends SystemTest {
         // create a new temporary java project and copy java class used as an input for CobiGen
         String testProjectName = "TestInputProj";
         IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
-        FileUtils.copyFile(new File(resourcesRootPath + "input/PlainInput.java"), project
-            .getUnderlyingResource().getLocation().append("src/main/java/main/PlainInput.java").toFile());
+        FileUtils.copyFile(new File(resourcesRootPath + "input/PlainInput.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/PlainInput.java").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 
         // expand the new file in the package explorer

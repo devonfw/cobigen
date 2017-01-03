@@ -66,10 +66,8 @@ public class ModelBuilderImpl implements ModelBuilder {
      *             if there are {@link VariableAssignment}s, which could not be resolved
      */
     @Override
-    public Map<String, Object> createModel(TriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
-        Map<String, Object> model =
-            new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
+    public Map<String, Object> createModel(TriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
+        Map<String, Object> model = new HashMap<>(triggerInterpreter.getInputReader().createModel(generatorInput));
         return model;
     }
 

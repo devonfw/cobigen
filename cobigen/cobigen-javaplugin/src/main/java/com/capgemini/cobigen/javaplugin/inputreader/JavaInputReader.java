@@ -136,8 +136,7 @@ public class JavaInputReader implements InputReader {
                     classLibraryBuilder.appendClassLoader(containerClassloader);
                 }
                 try {
-                    classLibraryBuilder
-                        .addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
+                    classLibraryBuilder.addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
                     JavaSource source = null;
                     for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
                         source = s;
@@ -152,14 +151,11 @@ public class JavaInputReader implements InputReader {
                             // try loading class
                             if (containerClassloader != null) {
                                 try {
-                                    Class<?> loadedClass =
-                                        containerClassloader.loadClass(javaClass.getCanonicalName());
+                                    Class<?> loadedClass = containerClassloader.loadClass(javaClass.getCanonicalName());
                                     javaClasses.add(new Object[] { javaClass, loadedClass });
                                 } catch (ClassNotFoundException e) {
-                                    LOG.info(
-                                        "Could not load Java type '{}' with the containers class loader. "
-                                            + "Just returning the parsed Java model.",
-                                        javaClass.getCanonicalName());
+                                    LOG.info("Could not load Java type '{}' with the containers class loader. "
+                                        + "Just returning the parsed Java model.", javaClass.getCanonicalName());
                                     javaClasses.add(javaClass);
                                 }
                             } else {
@@ -168,8 +164,7 @@ public class JavaInputReader implements InputReader {
                         }
                     }
                 } catch (IOException e) {
-                    LOG.error("The file {} could not be parsed as a java class",
-                        f.getAbsolutePath().toString(), e);
+                    LOG.error("The file {} could not be parsed as a java class", f.getAbsolutePath().toString(), e);
                 }
 
             }
@@ -310,10 +305,8 @@ public class JavaInputReader implements InputReader {
             // Case: List<Map<String, Object>> available in fields and methods
             else if (parsedModel instanceof List && reflectionModel instanceof List) {
                 if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof Map
-                    || !((List<?>) reflectionModel).isEmpty()
-                        && ((List<?>) reflectionModel).get(0) instanceof Map) {
-                    List<Map<String, Object>> model1List =
-                        Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
+                    || !((List<?>) reflectionModel).isEmpty() && ((List<?>) reflectionModel).get(0) instanceof Map) {
+                    List<Map<String, Object>> model1List = Lists.newLinkedList((List<Map<String, Object>>) parsedModel);
                     List<Map<String, Object>> model2List =
                         Lists.newLinkedList((List<Map<String, Object>>) reflectionModel);
                     List<Object> mergedModel = Lists.newLinkedList();
@@ -328,8 +321,7 @@ public class JavaInputReader implements InputReader {
                             Map<String, Object> model2Entry = model2ListIt.next();
                             // valid merging for fields and methods
                             if (model1Entry.get(ModelConstant.NAME) != null) {
-                                if (model1Entry.get(ModelConstant.NAME)
-                                    .equals(model2Entry.get(ModelConstant.NAME))) {
+                                if (model1Entry.get(ModelConstant.NAME).equals(model2Entry.get(ModelConstant.NAME))) {
                                     mergedModel.add(mergeModelsRecursively(model1Entry, model2Entry));
 
                                     // remove both entries as they have been matched and recursively merged
@@ -340,8 +332,7 @@ public class JavaInputReader implements InputReader {
                             } else
                             // this is the case for merging recursive annotation arrays
                             if (model1Entry.size() == 1 && model2Entry.size() == 1) {
-                                mergeModelsRecursively(
-                                    model1Entry.get(model1Entry.keySet().iterator().next()),
+                                mergeModelsRecursively(model1Entry.get(model1Entry.keySet().iterator().next()),
                                     model2Entry.get(model2Entry.keySet().iterator().next()));
                             } else {
                                 throw new IllegalStateException(
@@ -358,8 +349,7 @@ public class JavaInputReader implements InputReader {
                 // we will prefer parsed model if the values of the parsed result list are of type String.
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
-                else if (!((List<?>) parsedModel).isEmpty()
-                    && ((List<?>) parsedModel).get(0) instanceof String) {
+                else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
