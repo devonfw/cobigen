@@ -44,8 +44,7 @@ public class JavaInputConverter {
                     IPackageFragment frag = (IPackageFragment) elem;
                     PackageFolder packageFolder =
                         new PackageFolder(frag.getResource().getLocationURI(), frag.getElementName());
-                    packageFolder
-                        .setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
+                    packageFolder.setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
                     throw new GeneratorCreationException(
@@ -67,10 +66,8 @@ public class JavaInputConverter {
                                 new StringReader(((ICompilationUnit) elem).getSource())) };
                         convertedInputs.add(inputSourceAndClass);
                     } catch (MalformedURLException e) {
-                        throw new GeneratorCreationException(
-                            "An internal exception occurred while loading Java class "
-                                + rootType.getFullyQualifiedName(),
-                            e);
+                        throw new GeneratorCreationException("An internal exception occurred while loading Java class "
+                            + rootType.getFullyQualifiedName(), e);
                     } catch (ClassNotFoundException e) {
                         throw new GeneratorCreationException(
                             "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);

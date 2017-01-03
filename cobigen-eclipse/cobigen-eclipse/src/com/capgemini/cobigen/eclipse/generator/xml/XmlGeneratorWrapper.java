@@ -43,8 +43,8 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (06.12.2014)
      */
-    public XmlGeneratorWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public XmlGeneratorWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
     }
 
@@ -72,8 +72,7 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
                 } catch (CoreException e) {
                     throw new InvalidInputException("An eclipse internal exception occured! ", e);
                 } catch (IOException e) {
-                    throw new InvalidInputException(
-                        "The file " + ((IFile) tmp).getName() + " could not be read!", e);
+                    throw new InvalidInputException("The file " + ((IFile) tmp).getName() + " could not be read!", e);
                 } catch (ParserConfigurationException e) {
                     throw new InvalidInputException("The file " + ((IFile) tmp).getName()
                         + " could not be parsed, because of an internal configuration error!", e);

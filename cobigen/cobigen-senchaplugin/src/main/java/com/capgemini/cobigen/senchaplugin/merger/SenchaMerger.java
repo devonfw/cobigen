@@ -108,15 +108,13 @@ public class SenchaMerger implements Merger {
         try {
             nodesBase = parseAst(nodeBase, baseString, file, env);
         } catch (EvaluatorException e) {
-            throw new MergeException(base,
-                "Syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+            throw new MergeException(base, "Syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
         }
         // parsing the patch
         try {
             nodesPatch = parseAst(nodePatch, patch, patch, env);
         } catch (EvaluatorException e) {
-            throw new MergeException(base,
-                "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
+            throw new MergeException(base, "Patch syntax error at [" + e.lineNumber() + ", " + e.columnNumber() + "]");
         }
 
         switch (type) {
@@ -206,8 +204,8 @@ public class SenchaMerger implements Merger {
                     && entryBase.get(patchKey) instanceof ObjectLiteral) { // If is another ObjectLiteral -->
                                                                            // Recursion
 
-                    SenchaMerge((ObjectLiteral) entryBase.get(patchKey),
-                        (ObjectLiteral) entryPatch.get(patchKey), visitorBase, visitorPatch, patchOverrides);
+                    SenchaMerge((ObjectLiteral) entryBase.get(patchKey), (ObjectLiteral) entryPatch.get(patchKey),
+                        visitorBase, visitorPatch, patchOverrides);
 
                 } else if (entryPatch.get(patchKey) instanceof ArrayLiteral
                     && entryBase.get(patchKey) instanceof ArrayLiteral) {
@@ -238,16 +236,14 @@ public class SenchaMerger implements Merger {
                                         if (prop.getLeft().toSource().equals(Constants.REFERENCE)
                                             && prop.getRight().toSource().contains(Constants.GRID)) {
                                             if (!visitorPatch.getGrids().getGridsCollection().isEmpty()) {
-                                                if (visitorPatch.getGrids().getGridsCollection()
-                                                    .contains(visitorPatch.getGrids().getGrids()
-                                                        .get(prop.getRight().toSource()))) {
-                                                    gridPatch = (ObjectLiteral) visitorPatch.getGrids()
-                                                        .getGrids().get(prop.getRight().toSource());
+                                                if (visitorPatch.getGrids().getGridsCollection().contains(visitorPatch
+                                                    .getGrids().getGrids().get(prop.getRight().toSource()))) {
+                                                    gridPatch = (ObjectLiteral) visitorPatch.getGrids().getGrids()
+                                                        .get(prop.getRight().toSource());
                                                     exists = true;
                                                     mergeGrid = true;
                                                     index = arrayBase.getElements().indexOf(objLB);
-                                                    gridBase =
-                                                        (ObjectLiteral) arrayBase.getElements().get(index);
+                                                    gridBase = (ObjectLiteral) arrayBase.getElements().get(index);
                                                     break;
                                                 } else if (contains.toSource().equals(node.toSource())) {
                                                     exists = true;
@@ -339,8 +335,8 @@ public class SenchaMerger implements Merger {
             throw new MergeException(new File(""), "Error reading " + "beautify.js");
         }
         scope.put("jsCode", scope, source);
-        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})",
-            "inline", 1, null);
+        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + indent + "})", "inline", 1,
+            null);
     }
 
     /**

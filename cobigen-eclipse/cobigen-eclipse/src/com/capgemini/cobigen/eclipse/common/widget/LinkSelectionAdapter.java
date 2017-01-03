@@ -37,8 +37,8 @@ public class LinkSelectionAdapter extends SelectionAdapter {
                     Desktop.getDesktop().open(link);
                 }
             } else {
-                PlatformUIUtil.openErrorDialog(
-                    "Could not open path " + e.text + " in file explorer. Path does not exist.", null);
+                PlatformUIUtil
+                    .openErrorDialog("Could not open path " + e.text + " in file explorer. Path does not exist.", null);
             }
         } catch (IOException ex) {
             PlatformUIUtil.openErrorDialog("Could not open path " + e.text + " in file explorer.", ex);
