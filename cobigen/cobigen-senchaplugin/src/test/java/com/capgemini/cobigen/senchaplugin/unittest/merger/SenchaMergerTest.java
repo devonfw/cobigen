@@ -69,8 +69,7 @@ public class SenchaMergerTest {
                 "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents =
-            new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 
@@ -153,8 +152,7 @@ public class SenchaMergerTest {
                 "Can not read the base file " + senchaPatchFile.getAbsolutePath());
         }
 
-        String mergedContents =
-            new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
+        String mergedContents = new SenchaMerger("senchamerge", false).merge(senchaBaseFile, patchString, "UTF-8");
 
         SenchaNodeVisitor nodesResultVisit = new SenchaNodeVisitor();
 

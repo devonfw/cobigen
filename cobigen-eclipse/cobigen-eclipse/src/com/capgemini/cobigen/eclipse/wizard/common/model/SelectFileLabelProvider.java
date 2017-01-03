@@ -245,8 +245,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         synchronized (selectedIncrements) {
             // Increments selection has been changed
             if (event.getSource() instanceof CheckboxTreeViewer) {
-                Set<Object> selectedElements = new HashSet<>(
-                    Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
+                Set<Object> selectedElements =
+                    new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
 
                 selectedIncrements.clear();
                 for (Object o : selectedElements) {

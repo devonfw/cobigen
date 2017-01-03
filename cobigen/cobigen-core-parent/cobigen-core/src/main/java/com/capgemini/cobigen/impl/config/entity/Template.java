@@ -38,8 +38,8 @@ public class Template {
      * @param absoluteTemplatePath
      *            absolute file path pointing to the template file.
      */
-    public Template(String name, String unresolvedDestinationPath, String relativeTemplatePath,
-        String mergeStrategy, String outputCharset, Path absoluteTemplatePath) {
+    public Template(String name, String unresolvedDestinationPath, String relativeTemplatePath, String mergeStrategy,
+        String outputCharset, Path absoluteTemplatePath) {
         this.name = name;
         this.relativeTemplatePath = relativeTemplatePath;
         this.mergeStrategy = mergeStrategy;

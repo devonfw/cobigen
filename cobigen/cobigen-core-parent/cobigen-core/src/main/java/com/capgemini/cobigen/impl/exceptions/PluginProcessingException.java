@@ -31,8 +31,7 @@ public class PluginProcessingException extends CobiGenRuntimeException {
      */
     public PluginProcessingException(Throwable cause) {
 
-        super(
-            "A plug-in terminated abruptly! - Please consider to state this as a Bug on CobiGen's GitHub repository.",
+        super("A plug-in terminated abruptly! - Please consider to state this as a Bug on CobiGen's GitHub repository.",
             cause);
     }
 

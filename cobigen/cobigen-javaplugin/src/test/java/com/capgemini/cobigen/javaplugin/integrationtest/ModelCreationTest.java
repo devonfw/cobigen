@@ -44,8 +44,8 @@ public class ModelCreationTest extends AbstractIntegrationTest {
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
+                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -54,8 +54,8 @@ public class ModelCreationTest extends AbstractIntegrationTest {
                 GenerationReportTo report =
                     cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 assertThat(report).isSuccessful();
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "genericTypes.txt");
                 assertThat(expectedFile).exists();
                 assertThat(expectedFile).hasContent("List<String> testField");
                 methodTemplateFound = true;
@@ -79,8 +79,8 @@ public class ModelCreationTest extends AbstractIntegrationTest {
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(new File(
-                "src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
+                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;

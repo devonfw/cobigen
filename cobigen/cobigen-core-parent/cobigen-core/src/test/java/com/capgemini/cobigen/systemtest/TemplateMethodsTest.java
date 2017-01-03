@@ -139,9 +139,8 @@ public class TemplateMethodsTest extends AbstractApiTest {
         methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(this.getClass().getClassLoader()));
         when(inputReader.getTemplateMethods(any())).thenReturn(methodMap);
 
-        when(matcher
-            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-                .thenReturn(containerChildMatchesTrigger);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(containerChildMatchesTrigger);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(

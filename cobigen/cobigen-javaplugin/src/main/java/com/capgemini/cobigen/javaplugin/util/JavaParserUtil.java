@@ -10,9 +10,6 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * The {@link JavaParserUtil} class provides helper functions for generating parsed inputs
- *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
- * @version $Revision$
  */
 public class JavaParserUtil {
 
@@ -78,7 +75,7 @@ public class JavaParserUtil {
      * E.g.:
      * <ul>
      * <li><code>java.lang.String</code> is converted into <code>String</code></li>
-     * <li><code>java.util.List&ltjava.lang.String&gt;</code> is converted into
+     * <li><code>java.util.List&lt;java.lang.String&gt;</code> is converted into
      * <code>List&lt;String&gt;</code></li>
      * </ul>
      *

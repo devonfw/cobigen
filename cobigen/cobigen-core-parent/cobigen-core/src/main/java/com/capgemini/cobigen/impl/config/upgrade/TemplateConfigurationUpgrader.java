@@ -15,8 +15,7 @@ import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
  * latest supported version.
  * @author mbrunnli (Jun 22, 2015)
  */
-public class TemplateConfigurationUpgrader
-    extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
+public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
 
     /**
      * Creates a new {@link TemplateConfigurationUpgrader} instance.
@@ -37,8 +36,8 @@ public class TemplateConfigurationUpgrader
         case v1_2: // to v2.1
 
             DozerBeanMapper mapper = new DozerBeanMapper();
-            try (InputStream stream = getClass()
-                .getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
+            try (InputStream stream =
+                getClass().getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
                 mapper.addMapping(stream);
             }
             com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplatesConfiguration upgradedConfig =
@@ -50,8 +49,8 @@ public class TemplateConfigurationUpgrader
 
             break;
         default:
-            throw new NotYetSupportedException("An upgrade of the templates configuration from version "
-                + source + " to a newer one is currently not supported.");
+            throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source
+                + " to a newer one is currently not supported.");
         }
 
         return result;
