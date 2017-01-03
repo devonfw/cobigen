@@ -127,12 +127,10 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Simulate container children resolution of any plug-in
         when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
-        when(inputReader.getInputObjects(any(), any(Charset.class)))
-            .thenReturn(Lists.newArrayList(firstChildResource));
+        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
 
-        when(matcher
-            .matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-                .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+            .thenReturn(true);
 
         // Simulate variable resolving of any plug-in
         when(matcher.resolveVariables(

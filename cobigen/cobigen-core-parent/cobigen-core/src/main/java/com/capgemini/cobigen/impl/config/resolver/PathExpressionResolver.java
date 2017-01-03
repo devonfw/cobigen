@@ -69,8 +69,7 @@ public class PathExpressionResolver {
      * @throws UnknownContextVariableException
      *             if there is a unknown context variable used in the string
      */
-    public void checkExpressions(String in)
-        throws UnknownExpressionException, UnknownContextVariableException {
+    public void checkExpressions(String in) throws UnknownExpressionException, UnknownContextVariableException {
 
         evaluateExpressions(in);
     }

@@ -63,8 +63,7 @@ public class ClassLoaderUtil {
                     outputLocation = project.getOutputLocation();
                 }
                 urlList.add(project.getProject().getLocation()
-                    .append(PathUtil.getProjectDependendFilePath(outputLocation.toString())).toFile().toURI()
-                    .toURL());
+                    .append(PathUtil.getProjectDependendFilePath(outputLocation.toString())).toFile().toURI().toURL());
                 break;
             case IClasspathEntry.CPE_PROJECT:
                 IProject projectDependency =

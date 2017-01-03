@@ -91,8 +91,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public CobiGenWrapper() throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public CobiGenWrapper()
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
     }
 
@@ -110,8 +110,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if the context configuration is not valid
      * @author mbrunnli (03.12.2014)
      */
-    public CobiGenWrapper(List<Object> inputs) throws GeneratorProjectNotExistentException, CoreException,
-        InvalidConfigurationException, IOException {
+    public CobiGenWrapper(List<Object> inputs)
+        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         super();
         setInputs(inputs);
     }
@@ -156,8 +156,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 dialog.run(true, false, job);
             } catch (InvocationTargetException e) {
                 LOG.error("An internal error occured while invoking input analyzer job.", e);
-                throw new CobiGenEclipseRuntimeException(
-                    "An internal error occured while invoking input analyzer job", e);
+                throw new CobiGenEclipseRuntimeException("An internal error occured while invoking input analyzer job",
+                    e);
             } catch (InterruptedException e) {
                 LOG.warn("The working thread doing the input analyzer job has been interrupted.", e);
                 throw new CobiGenEclipseRuntimeException(
@@ -189,8 +189,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @throws Exception
      *             if anything during generation fails.
      */
-    public GenerationReportTo generate(List<TemplateTo> templates, IProgressMonitor monitor)
-        throws Exception {
+    public GenerationReportTo generate(List<TemplateTo> templates, IProgressMonitor monitor) throws Exception {
 
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
@@ -218,11 +217,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 // if we only consider one input, we want to allow some customizations of the generation
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
-                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false,
-                    utilClasses, model);
+                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
+                    model);
             } else {
-                report =
-                    cobiGen.generate(inputs, templates, Paths.get(generationTargetUri), false, utilClasses);
+                report = cobiGen.generate(inputs, templates, Paths.get(generationTargetUri), false, utilClasses);
             }
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -326,8 +324,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         // add "all" increment, which should include all possible templates
-        ComparableIncrement all = new ComparableIncrement("all", "All", null,
-            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
+            Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -388,8 +386,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     for (TemplateTo tmp : increment.getTemplates()) {
                         Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
                             getGenerationTargetProjectPath(), tmp, getCurrentRepresentingInput());
-                        String projectDependentPath = PathUtil
-                            .getProjectDependentFilePath(getGenerationTargetProject(), targetAbsolutePath);
+                        String projectDependentPath =
+                            PathUtil.getProjectDependentFilePath(getGenerationTargetProject(), targetAbsolutePath);
                         if (projectDependentPath.equals(PathUtil.getProjectDependendFilePath(filePath))) {
                             templates.add(tmp);
                         }
@@ -398,8 +396,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
         } else {
             for (TemplateTo tmp : getAllTemplates()) {
-                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
-                    getGenerationTargetProjectPath(), tmp, getCurrentRepresentingInput());
+                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), tmp,
+                    getCurrentRepresentingInput());
                 String projectDependentPath =
                     PathUtil.getProjectDependentFilePath(getGenerationTargetProject(), targetAbsolutePath);
                 if (projectDependentPath.equals(PathUtil.getProjectDependendFilePath(filePath))) {
@@ -421,8 +419,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
             if (t.getMergeStrategy() != null) {
-                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(
-                    getGenerationTargetProjectPath(), t, getCurrentRepresentingInput());
+                Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t,
+                    getCurrentRepresentingInput());
                 mergeableFiles.add(PathUtil.getProjectDependentFile(targetProjet, targetAbsolutePath));
             }
         }
@@ -455,8 +453,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         Set<IFile> files = new HashSet<>();
         IProject targetProjet = getGenerationTargetProject();
         for (TemplateTo t : getAllTemplates()) {
-            Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(),
-                t, getCurrentRepresentingInput());
+            Path targetAbsolutePath = cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t,
+                getCurrentRepresentingInput());
             files.add(PathUtil.getProjectDependentFile(targetProjet, targetAbsolutePath));
         }
         return files;
@@ -479,15 +477,13 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 for (Object input : cInputs) {
                     Path targetAbsolutePath =
                         cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t, input);
-                    files.add(
-                        PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
+                    files.add(PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
                 }
             } else {
                 for (Object input : inputs) {
                     Path targetAbsolutePath =
                         cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), t, input);
-                    files.add(
-                        PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
+                    files.add(PathUtil.getProjectDependentFile(getGenerationTargetProject(), targetAbsolutePath));
                 }
             }
         }
@@ -505,8 +501,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children =
-                new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
+            List<Object> children = new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return children.get(0);
         } else {
@@ -524,8 +519,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         if (initialized) {
             return cobiGen.getMatchingTriggerIds(loadClass);
         } else {
-            LOG.debug("Generator is not initialized. Could not get matching triggers for {}.",
-                loadClass.toString());
+            LOG.debug("Generator is not initialized. Could not get matching triggers for {}.", loadClass.toString());
             return null;
         }
     }

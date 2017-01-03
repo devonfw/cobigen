@@ -63,8 +63,8 @@ public class HierarchicalTreeOperator {
      *             if an internal exception occurs while accessing the eclipse jdt java model
      * @author mbrunnli (18.03.2013)
      */
-    public static List<Object> getPackageChildren(IPackageFragmentRoot parentElement,
-        List<Object> stubbedResources) throws JavaModelException {
+    public static List<Object> getPackageChildren(IPackageFragmentRoot parentElement, List<Object> stubbedResources)
+        throws JavaModelException {
 
         List<Object> children = new LinkedList<>();
         for (IPackageFragment frag : retrievePackageChildren(parentElement, stubbedResources)) {
@@ -88,8 +88,7 @@ public class HierarchicalTreeOperator {
      *             if an internal exception occurs while accessing the eclipse jdt java model
      * @author mbrunnli (18.03.2013)
      */
-    public static List<IPackageFragment> getPackageChildren(IPackageFragment parentElement)
-        throws JavaModelException {
+    public static List<IPackageFragment> getPackageChildren(IPackageFragment parentElement) throws JavaModelException {
 
         return getPackageChildren(parentElement, Lists.newArrayList());
     }
@@ -355,8 +354,8 @@ public class HierarchicalTreeOperator {
         }
         if (stubbedResources != null) {
             for (Object stubbedResource : stubbedResources) {
-                if (stubbedResource instanceof IPackageFragment && ((IPackageFragment) stubbedResource)
-                    .getPath().toString().startsWith(parentElement.getPath().toString())) {
+                if (stubbedResource instanceof IPackageFragment && ((IPackageFragment) stubbedResource).getPath()
+                    .toString().startsWith(parentElement.getPath().toString())) {
                     packageChildren.add((IPackageFragment) stubbedResource);
                 }
             }

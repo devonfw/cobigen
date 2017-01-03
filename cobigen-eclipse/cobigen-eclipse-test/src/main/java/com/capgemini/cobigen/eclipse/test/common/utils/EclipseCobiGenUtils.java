@@ -3,6 +3,9 @@ package com.capgemini.cobigen.eclipse.test.common.utils;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
@@ -32,6 +35,7 @@ public class EclipseCobiGenUtils {
         throws Exception {
 
         // Open generation wizard with new file as Input
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
         bot.waitUntil(shellIsActive("CobiGen"), 10000);
@@ -60,7 +64,6 @@ public class EclipseCobiGenUtils {
             // dialog just optional
         }
         bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
-        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL)
-            .click();
+        bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
     }
 }
