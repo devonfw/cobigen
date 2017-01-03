@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="project" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://maven.apache.org/POM/4.0.0"/>
+
+  <ms:default-criterion xpath="true()"/>
+
+  <ms:handling for="license"><ms:criterion xpath="./name/text()"/></ms:handling>
+  <ms:handling for="developer"><ms:criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="role"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="contributor"><ms:criterion xpath="./name/text()"/></ms:handling>
+  <ms:handling for="mailingList"><ms:criterion xpath="./name/text()"/></ms:handling>
+  <ms:handling for="otherArchive"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="module"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="notifier"><ms:criterion xpath="./address/text()"/></ms:handling>
+  <ms:handling for="dependency"><ms:criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="exclusion"><ms:criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="repositories"><ms:criterion xpath="true()"/>
+    <ms:handling for="repository"><ms:criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="pluginRepository"><ms:criterion xpath="./*[local-name()='id' or local-name()='name']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="extension"><ms:criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="resource"><ms:criterion xpath="./directory/text()"/></ms:handling>
+  <ms:handling for="include"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="exclude"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="testResource"><ms:criterion xpath="./directory/text()"/></ms:handling>
+  <ms:handling for="filter"><ms:criterion xpath="./text()"/></ms:handling>
+  <ms:handling for="plugin"><ms:criterion xpath="./*[local-name()='groupId' or local-name()='artifactId']/text()" ordered="true"/></ms:handling>
+  <ms:handling for="execution"><ms:criterion xpath="./id/text()"/></ms:handling>
+  <ms:handling for="profile"><ms:criterion xpath="./id/text()"/></ms:handling>
+
+</ms:merge-schema>

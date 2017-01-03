@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://java.sun.com/jsf/html"/>
+
+  <!-- Incomplete and dependent MergeSchema. The namespace http://java.sun.com/jsf/core needs to use the prefix 'f' -->
+
+  <ms:handling for="dataTable"><ms:criterion xpath="./@id"/></ms:handling>
+  <ms:handling for="column"><ms:criterion xpath="./*[namespace-uri()='http://java.sun.com/jsf/core' and local-name()='facet' and @name='header']/text()"/></ms:handling>
+
+</ms:merge-schema>

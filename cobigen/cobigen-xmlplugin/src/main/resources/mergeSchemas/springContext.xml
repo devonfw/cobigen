@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://www.springframework.org/schema/context"/>
+
+  <ms:default-criterion xpath="true()"/>
+
+  <!-- annotation-config by default -->
+
+  <ms:handling for="component-scan">
+    <ms:attribute for="base-package" attachable="true" separationString=","/>
+  </ms:handling>
+
+  <!-- load-time-weaver by default -->
+
+  <!-- mbean-export by default -->
+
+  <!-- mbean-server by default -->
+
+  <!-- everything by default -->
+</ms:merge-schema>

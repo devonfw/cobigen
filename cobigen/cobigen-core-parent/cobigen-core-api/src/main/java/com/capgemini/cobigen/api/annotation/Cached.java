@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation enables caching of method results for unary functions. The corresponding processor is the
- * {@link CachedInterceptor} implementation.
+ * This annotation enables caching of method results for unary functions.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
