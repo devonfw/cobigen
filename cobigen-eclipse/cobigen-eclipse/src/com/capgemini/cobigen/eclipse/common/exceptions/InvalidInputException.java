@@ -6,17 +6,16 @@ package com.capgemini.cobigen.eclipse.common.exceptions;
  */
 public class InvalidInputException extends Exception {
 
-    /**
-     * Generated Serial Version UID.
-     */
+    /** Generated Serial Version UID. */
     private static final long serialVersionUID = 6923294459129047262L;
 
     /** States, whether the exception has been initialized with a source exception */
     private boolean hasRootCause;
 
     /**
-     * @see Exception#Exception(String)
-     * @author mbrunnli (Jun 17, 2015)
+     * Creates a new {@link InvalidInputException} with a given message an cause.
+     * @param message
+     *            error message
      */
     public InvalidInputException(String message) {
         super(message);
@@ -24,8 +23,11 @@ public class InvalidInputException extends Exception {
     }
 
     /**
-     * @see Exception#Exception(String, Throwable)
-     * @author mbrunnli (Jun 17, 2015)
+     * Creates a new {@link InvalidInputException} with a given message an cause.
+     * @param message
+     *            error message
+     * @param t
+     *            cause
      */
     public InvalidInputException(String message, Throwable t) {
         super(message, t);

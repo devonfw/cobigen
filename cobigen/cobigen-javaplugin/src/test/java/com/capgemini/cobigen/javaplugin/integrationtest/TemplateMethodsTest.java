@@ -40,8 +40,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isAbstract.txt")) {
                 cobiGen.generate(getClass(), template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isAbstract.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isAbstract.txt");
                 assertThat(expectedFile).exists();
                 assertThat(expectedFile).hasContent("falsetruetrue");
                 methodTemplateFound = true;
@@ -71,8 +71,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("isSubtypeOf.txt")) {
                 cobiGen.generate(getClass(), template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isSubtypeOf.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "isSubtypeOf.txt");
                 assertThat(expectedFile).exists();
                 assertThat(expectedFile).hasContent("truetruefalsefalsefalse");
                 methodTemplateFound = true;
@@ -97,9 +97,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         Object[] inputArr = new Object[2];
-        File thisClassFile =
-            new File("src/test/java/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/"
-                + getClass().getSimpleName() + ".java");
+        File thisClassFile = new File("src/test/java/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/"
+            + getClass().getSimpleName() + ".java");
         inputArr[0] = JavaParserUtil.getFirstJavaClass(new FileReader(thisClassFile));
         inputArr[1] = getClass();
 
@@ -109,8 +108,8 @@ public class TemplateMethodsTest extends AbstractIntegrationTest {
         for (TemplateTo template : templates) {
             if (template.getId().equals("emptyTemplate.txt")) {
                 cobiGen.generate(inputArr, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "emptyTemplate.txt");
+                File expectedFile =
+                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "emptyTemplate.txt");
                 assertThat(expectedFile).exists();
                 methodTemplateFound = true;
                 break;

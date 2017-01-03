@@ -53,8 +53,7 @@ public class PluginMockFactory {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(input)))))
             .thenReturn(true);
 
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input)))))
-            .thenReturn(true);
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))))).thenReturn(true);
 
         // Simulate variable resolving of any plug-in
         HashMap<String, String> variables = new HashMap<>(3);

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ms:merge-schema for="" root="false" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition namespace="http://cxf.apache.org/jaxrs"/>
+
+  <ms:DefaultHandling xpath="./@id"/> <!-- All nodes have id since they extends identifiedType from beans -->
+
+  <ms:handling for="client">
+    <ms:criterion xpath="true()"/>
+
+    <ms:handling for="executor" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="features" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="binding" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="dataBinding" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="inInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="inFaultInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="invoker" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="serviceFactories" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="outInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="outFaultInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="serviceBeans" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="modelBeans" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="providers" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="extensionMappings" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="languageMappings" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="resourceComparator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="headers" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+
+  <ms:handling for="properties" unique="true" namespace-ref="http://www.springframework.org/schema/beans" scope-ref="map">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="schemaLocations" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="schemaLocation"><ms:criterion xpath="./text()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="model">
+    <ms:criterion xpath="true"/>
+    <ms:handling for="operation">
+      <ms:criterion xpath="./@name"/>
+      <ms:handling for="param"><ms:criterion xpath="./@name"/></ms:handling>
+    </ms:handling>
+  </ms:handling>
+
+  </ms:handling>
+  <ms:handling for="server">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="executor" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="features" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="binding" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="dataBinding" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="inInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="inFaultInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="invoker" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="serviceFactories" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="outInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="outFaultInterceptors" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="serviceBeans" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="modelBeans" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="providers" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="extensionMappings" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="languageMappings" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="resourceComparator" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+  <ms:handling for="headers" unique="true"><ms:criterion xpath="true()"/></ms:handling>
+
+  <ms:handling for="properties" unique="true" namespace-ref="http://www.springframework.org/schema/beans" scope-ref="map">
+    <ms:criterion xpath="true()"/>
+  </ms:handling>
+
+  <ms:handling for="schemaLocations" unique="true">
+    <ms:criterion xpath="true()"/>
+    <ms:handling for="schemaLocation"><ms:criterion xpath="./text()"/></ms:handling>
+  </ms:handling>
+  <ms:handling for="model">
+    <ms:criterion xpath="true"/>
+    <ms:handling for="operation">
+      <ms:criterion xpath="./@name"/>
+      <ms:handling for="param"><ms:criterion xpath="./@name"/></ms:handling>
+    </ms:handling>
+  </ms:handling>
+  </ms:handling>
+  <ms:handling for="model">
+    <ms:criterion xpath="true"/>
+    <ms:handling for="operation">
+      <ms:criterion xpath="./@name"/>
+      <ms:handling for="param"><ms:criterion xpath="./@name"/></ms:handling>
+    </ms:handling>
+  </ms:handling>
+
+
+
+  <!-- Shared handlings -->
+
+
+
+</ms:merge-schema>
