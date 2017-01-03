@@ -18,6 +18,9 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.viewsupport.JavaElementImageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
@@ -31,31 +34,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.api.to.IncrementTo;
+import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
-import com.capgemini.cobigen.extension.to.TemplateTo;
 
 /**
  * Label Provider for the Export TreeViewer
  */
 @SuppressWarnings("restriction")
-public class SelectFileLabelProvider extends LabelProvider implements IColorProvider {
+public class SelectFileLabelProvider extends LabelProvider implements IColorProvider, ICheckStateListener {
 
-    /**
-     * Logger instance
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
 
-    /**
-     * The currently selected resources
-     */
-    private Set<Object> checkedResources = new HashSet<>();
+    /** The currently selected resources */
+    private Set<Object> selectedResources = new HashSet<>();
 
-    /**
-     * The current {@link CobiGenWrapper} instance
-     */
+    /** Currently selected increments */
+    private Set<IncrementTo> selectedIncrements = new HashSet<>();
+
+    /** The current {@link CobiGenWrapper} instance */
     private CobiGenWrapper cobigenWrapper;
 
     /**
@@ -71,7 +74,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      *            the currently used {@link CobiGenWrapper} instance
      * @param batch
      *            states whether the generation process is running in batch mode
-     * @author mbrunnli (14.02.2013)
      */
     public SelectFileLabelProvider(CobiGenWrapper cobigenWrapper, boolean batch) {
 
@@ -79,11 +81,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         this.batch = batch;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public String getText(Object element) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
@@ -116,11 +113,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return result.isEmpty() ? "UNDEFINED" : result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Image getImage(Object element) {
 
@@ -138,27 +130,17 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Color getForeground(Object element) {
 
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @author mbrunnli (14.02.2013)
-     */
     @Override
     public Color getBackground(Object element) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        if (checkedResources.contains(element)) {
+        if (selectedResources.contains(element)) {
             if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !batch) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
@@ -180,7 +162,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      *            to be checked
      * @return <code>true</code> if the given object can be merged<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (14.03.2013)
      */
     private boolean isMergableFile(Object element) {
 
@@ -191,13 +172,16 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             path = ((IJavaElement) element).getPath().toString();
         }
 
-        // boundary case: multiple templates target one path, which are not mergable... does not make sense
-        List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, null);
-        for (TemplateTo template : templates) {
-            if (path != null && template.getMergeStrategy() != null) {
-                return true;
+        if (path != null) {
+            List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, selectedIncrements);
+            for (TemplateTo template : templates) {
+                if (template.getMergeStrategy() != null
+                    && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
+                    return true;
+                }
             }
         }
+
         return false;
     }
 
@@ -206,11 +190,10 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      *
      * @param checkedResources
      *            the currently selected resources
-     * @author mbrunnli (14.03.2013)
      */
     public void setCheckedResources(Object[] checkedResources) {
 
-        this.checkedResources = new HashSet<>(Arrays.asList(checkedResources));
+        selectedResources = new HashSet<>(Arrays.asList(checkedResources));
     }
 
     /**
@@ -218,14 +201,14 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      *
      * @param element
      *            to be enriched with information
-     * @param result
-     *            enriched string
+     * @param source
+     *            string to be enriched
      * @return the enriched result string
-     * @author mbrunnli (14.03.2013)
      */
-    private String addMetaInformation(Object element, String result) {
+    private String addMetaInformation(Object element, String source) {
 
-        if (checkedResources.contains(element)) {
+        String result = new String(source);
+        if (selectedResources.contains(element)) {
             if (element instanceof IJavaElementStub || element instanceof IResourceStub) {
                 result += " (new)";
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
@@ -246,7 +229,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      * @param root
      *            {@link IPackageFragmentRoot} for which the whole name should be determined
      * @return the full name of an {@link IPackageFragmentRoot}
-     * @author mbrunnli (19.02.2013)
      */
     private String getFullName(IPackageFragmentRoot root) {
 
@@ -256,5 +238,26 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             path = path.replaceFirst("/" + proj.getElementName() + "/", "");
         }
         return path;
+    }
+
+    @Override
+    public void checkStateChanged(CheckStateChangedEvent event) {
+        synchronized (selectedIncrements) {
+            // Increments selection has been changed
+            if (event.getSource() instanceof CheckboxTreeViewer) {
+                Set<Object> selectedElements =
+                    new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
+
+                selectedIncrements.clear();
+                for (Object o : selectedElements) {
+                    if (o instanceof IncrementTo) {
+                        selectedIncrements.add((IncrementTo) o);
+                    } else {
+                        throw new CobiGenEclipseRuntimeException(
+                            "Unexpected increment type '" + o.getClass().getCanonicalName() + "' !");
+                    }
+                }
+            }
+        }
     }
 }

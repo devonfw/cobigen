@@ -23,12 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.capgemini.cobigen.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.exceptions.BackupFailedException;
+import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
+import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
 
 /**
  * Dialog to show the advanced health check results as well as performing the templates configuration
@@ -70,8 +71,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * @author mbrunnli (Jun 24, 2015)
      */
     AdvancedHealthCheckDialog(List<String> expectedTemplatesConfigurations, Set<String> hasConfiguration,
-        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations,
-        Set<String> upToDateConfigurations) {
+        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations) {
         super(Display.getDefault().getActiveShell());
         this.hasConfiguration = hasConfiguration;
         this.isAccessible = isAccessible;
@@ -80,15 +80,11 @@ public class AdvancedHealthCheckDialog extends Dialog {
         this.expectedTemplatesConfigurations = expectedTemplatesConfigurations;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 24, 2015)
-     */
     @Override
     protected Control createDialogArea(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        getShell().setText(AdvancedHealthCheck.COMMON_DIALOG_TITLE);
+        getShell().setText(HealthCheck.ADVANCED_DIALOG_TITLE);
         Composite contentParent = new Composite(parent, SWT.NONE);
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         contentParent.setLayoutData(gridData);
@@ -151,10 +147,6 @@ public class AdvancedHealthCheckDialog extends Dialog {
         return contentParent;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 24, 2015)
-     */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         GridLayout layout = new GridLayout();
@@ -182,18 +174,17 @@ public class AdvancedHealthCheckDialog extends Dialog {
         boolean successful = true;
         try {
             try {
-                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(
-                    templatesConfigurationFolder, false);
+                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
                 LOG.info("Upgrade finished successfully.");
             } catch (BackupFailedException e) {
                 boolean continueUpgrade =
-                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(),
-                        AdvancedHealthCheck.COMMON_DIALOG_TITLE, "Backup failed while upgrading. "
+                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(), HealthCheck.ADVANCED_DIALOG_TITLE,
+                        "Backup failed while upgrading. "
                             + "An upgrade deletes all comments in the configuration file, "
                             + "which will be gone without a backup. Continue anyhow?");
                 if (continueUpgrade) {
-                    templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(
-                        templatesConfigurationFolder, true);
+                    templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
+                        true);
                     LOG.info("Upgrade finished successfully.");
                 } else {
                     LOG.info("Upgrade aborted.");
@@ -201,9 +192,9 @@ public class AdvancedHealthCheckDialog extends Dialog {
                 }
             }
         } catch (Throwable e) {
-            PlatformUIUtil.openErrorDialog("Upgrade failed",
-                "An unexpected error occurred while upgrading the templates configuration", e);
-            LOG.error("Upgrade failed!", e);
+            PlatformUIUtil.openErrorDialog("An unexpected error occurred while upgrading the templates configuration",
+                e);
+            LOG.error("An unexpected error occurred while upgrading the templates configuration.", e);
             successful = false;
         }
 

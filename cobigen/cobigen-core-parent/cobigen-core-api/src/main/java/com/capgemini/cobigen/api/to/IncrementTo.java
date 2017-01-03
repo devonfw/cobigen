@@ -111,8 +111,7 @@ public class IncrementTo implements GenerableArtifact {
         result = prime * result + (getDescription() == null ? 0 : getDescription().hashCode());
         result = prime * result + (getTemplates() == null ? 0 : getTemplates().hashCode());
         result = prime * result + (getTriggerId() == null ? 0 : getTriggerId().hashCode());
-        result =
-            prime * result + (getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode());
+        result = prime * result + (getDependentIncrements() == null ? 0 : getDependentIncrements().hashCode());
         return result;
     }
 
@@ -167,8 +166,8 @@ public class IncrementTo implements GenerableArtifact {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[id='" + getId() + "'/desc='" + getDescription()
-            + "'/#templates='" + getTemplates().size() + "' triggerId='" + getTriggerId()
-            + "'/#dependentIncrements: " + getDependentIncrements().size() + "']";
+        return getClass().getSimpleName() + "[id='" + getId() + "'/desc='" + getDescription() + "'/#templates='"
+            + getTemplates().size() + "' triggerId='" + getTriggerId() + "'/#dependentIncrements: "
+            + getDependentIncrements().size() + "']";
     }
 }

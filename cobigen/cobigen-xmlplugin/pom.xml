@@ -13,6 +13,10 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.capgemini</groupId>
