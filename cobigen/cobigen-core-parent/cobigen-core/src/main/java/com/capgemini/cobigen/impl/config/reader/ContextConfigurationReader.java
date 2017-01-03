@@ -65,8 +65,7 @@ public class ContextConfigurationReader {
         String filePath = contextFile.toAbsolutePath().toString();
 
         try {
-            Unmarshaller unmarschaller =
-                JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+            Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
@@ -92,8 +91,8 @@ public class ContextConfigurationReader {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
             try (
-                InputStream schemaStream = getClass().getResourceAsStream(
-                    "/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
+                InputStream schemaStream = getClass()
+                    .getResourceAsStream("/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
                 InputStream configInputStream = Files.newInputStream(contextFile)) {
 
                 Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
@@ -103,15 +102,13 @@ public class ContextConfigurationReader {
             }
         } catch (JAXBException e) {
             // try getting SAXParseException for better error handling and user support
-            Throwable parseCause =
-                ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+            Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
             String message = "";
             if (parseCause != null && parseCause.getMessage() != null) {
                 message = parseCause.getMessage();
             }
 
-            throw new InvalidConfigurationException(filePath,
-                "Could not parse configuration file:\n" + message, e);
+            throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             throw new IllegalStateException(
@@ -157,8 +154,7 @@ public class ContextConfigurationReader {
 
         List<Matcher> matcher = new LinkedList<>();
         for (com.capgemini.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
-            matcher.add(
-                new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
+            matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
         }
         return matcher;
     }
@@ -173,14 +169,11 @@ public class ContextConfigurationReader {
      * @return the {@link List} of {@link Matcher}s
      * @author mbrunnli (13.10.2014)
      */
-    private List<ContainerMatcher> loadContainerMatchers(
-        com.capgemini.cobigen.impl.config.entity.io.Trigger trigger) {
+    private List<ContainerMatcher> loadContainerMatchers(com.capgemini.cobigen.impl.config.entity.io.Trigger trigger) {
 
         List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
-        for (com.capgemini.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger
-            .getContainerMatcher()) {
-            containerMatchers
-                .add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
+        for (com.capgemini.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
+            containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
         }
         return containerMatchers;
     }
@@ -199,8 +192,7 @@ public class ContextConfigurationReader {
         com.capgemini.cobigen.impl.config.entity.io.Matcher matcher) {
 
         List<VariableAssignment> variableAssignments = new LinkedList<>();
-        for (com.capgemini.cobigen.impl.config.entity.io.VariableAssignment va : matcher
-            .getVariableAssignment()) {
+        for (com.capgemini.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
             variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
         }
         return variableAssignments;

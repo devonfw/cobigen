@@ -94,14 +94,12 @@ public class IResourceStub implements IResource {
     }
 
     @Override
-    public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor)
-        throws CoreException {
+    public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
 
     }
 
     @Override
-    public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 
@@ -381,14 +379,13 @@ public class IResourceStub implements IResource {
     }
 
     @Override
-    public void move(IProjectDescription description, boolean force, boolean keepHistory,
-        IProgressMonitor monitor) throws CoreException {
+    public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor)
+        throws CoreException {
 
     }
 
     @Override
-    public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor)
-        throws CoreException {
+    public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
     }
 

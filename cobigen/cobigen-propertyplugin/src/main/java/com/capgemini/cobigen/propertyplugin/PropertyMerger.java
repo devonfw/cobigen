@@ -72,8 +72,7 @@ public class PropertyMerger implements Merger {
         }
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
         try {
-            BufferedReader br =
-                new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(base), targetCharset));
             return concatContents(conflicts, br, patch);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);

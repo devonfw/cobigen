@@ -31,8 +31,7 @@ public class XmlUtil {
      * @throws ParserConfigurationException
      *             thrown if document builder is configured wrong
      */
-    public static Document parseXmlFileToDom(File file)
-        throws SAXException, IOException, ParserConfigurationException {
+    public static Document parseXmlFileToDom(File file) throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document parsedDocument = dBuilder.parse(file);

@@ -147,7 +147,7 @@ public class TemplateTo implements GenerableArtifact {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId()
-            + "'/mergeStrategy=" + getMergeStrategy() + "']";
+        return getClass().getSimpleName() + "[id='" + getId() + "'/triggerId='" + getTriggerId() + "'/mergeStrategy="
+            + getMergeStrategy() + "']";
     }
 }

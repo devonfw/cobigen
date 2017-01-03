@@ -59,17 +59,15 @@ public class InputValidator {
      *            to be validated
      * @author mbrunnli (08.04.2014)
      */
-    private static void validateTriggerInterpreterInternal(TriggerInterpreter triggerInterpreter,
-        String triggerType) {
+    private static void validateTriggerInterpreterInternal(TriggerInterpreter triggerInterpreter, String triggerType) {
         if (triggerInterpreter == null) {
             throw new InvalidConfigurationException("No TriggerInterpreter "
                 + (triggerType != null ? "for type '" + triggerType + "' " : "") + "found/provided!");
         }
 
         if (triggerInterpreter.getInputReader() == null) {
-            throw new PluginProcessingException(
-                "The TriggerInterpreter for type '" + triggerInterpreter.getType()
-                    + "' has to declare an InputReader, which is currently not the case!");
+            throw new PluginProcessingException("The TriggerInterpreter for type '" + triggerInterpreter.getType()
+                + "' has to declare an InputReader, which is currently not the case!");
         }
     }
 

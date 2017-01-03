@@ -64,8 +64,8 @@ public class AdvancedHealthCheck {
                     if (templatesConfigurationFile.canWrite()) {
                         isAccessible.add(expectedTemplateFolder);
 
-                        TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
-                            .resolveLatestCompatibleSchemaVersion(templateFolder);
+                        TemplatesConfigurationVersion resolvedVersion =
+                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(templateFolder);
                         if (resolvedVersion != null) {
                             if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
                                 upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
@@ -86,11 +86,8 @@ public class AdvancedHealthCheck {
 
         } catch (CoreException e) {
             PlatformUIUtil.openErrorDialog(
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
-            LOG.error(
-                "An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                e);
+                "An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
+            LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
         }
     }
 }

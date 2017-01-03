@@ -115,9 +115,9 @@ public class GenerationProcessor {
      * @param rawModel
      *            externally adapted model to be used for generation.
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig,
-        Object input, List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig, Object input,
+        List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
+        List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
@@ -169,10 +169,8 @@ public class GenerationProcessor {
 
         for (TemplateTo template : templatesToBeGenerated) {
             try {
-                Trigger trigger =
-                    configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-                TriggerInterpreter triggerInterpreter =
-                    PluginRegistry.getTriggerInterpreter(trigger.getType());
+                Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+                TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                 InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
                 generate(template, triggerInterpreter);
             } catch (CobiGenRuntimeException e) {
@@ -180,15 +178,15 @@ public class GenerationProcessor {
                 generationReport.addError(e);
             } catch (Throwable e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
-                generationReport.addError(new CobiGenRuntimeException("Something unexpected happened"
-                    + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                generationReport.addError(new CobiGenRuntimeException(
+                    "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
             }
         }
 
         if (generationReport.isSuccessful()) {
             try {
-                Files.walkFileTree(tmpTargetRootPath, new CopyDirectoryVisitor(tmpTargetRootPath,
-                    targetRootPath, StandardCopyOption.REPLACE_EXISTING));
+                Files.walkFileTree(tmpTargetRootPath,
+                    new CopyDirectoryVisitor(tmpTargetRootPath, targetRootPath, StandardCopyOption.REPLACE_EXISTING));
                 tmpTargetRootPath.toFile().delete();
             } catch (IOException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
@@ -239,8 +237,7 @@ public class GenerationProcessor {
      * @param template
      *            {@link TemplateTo} to be added.
      */
-    private void checkAndAddToTemplateMap(Map<String, TemplateTo> templateIdToTemplateMap,
-        TemplateTo template) {
+    private void checkAndAddToTemplateMap(Map<String, TemplateTo> templateIdToTemplateMap, TemplateTo template) {
         if (templateIdToTemplateMap.containsKey(template.getId())) {
             String oldTriggerId = templateIdToTemplateMap.get(template.getId()).getTriggerId();
             if (!oldTriggerId.equals(template.getTriggerId())) {
@@ -267,9 +264,8 @@ public class GenerationProcessor {
     private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader())
-            .setTemplateRoot(configurationHolder.readContextConfiguration().getConfigurationPath()
-                .resolve(trigger.getTemplateFolder()));
+        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(
+            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
         Template templateIntern = getTemplate(template, triggerInterpreter);
@@ -284,8 +280,8 @@ public class GenerationProcessor {
 
             Map<String, String> variables =
                 new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
-            String resolvedDesitinationPath = new PathExpressionResolver(variables)
-                .evaluateExpressions(template.getUnresolvedDestinationPath());
+            String resolvedDesitinationPath =
+                new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
             File originalFile = targetRootPath.resolve(resolvedDesitinationPath).toFile();
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedDesitinationPath).toFile();
 
@@ -300,10 +296,9 @@ public class GenerationProcessor {
                 }
 
                 if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
-                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE
-                        .equals(templateIntern.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
-                        inputReader, generatorInput);
+                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateIntern.getMergeStrategy())) {
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
+                        generatorInput);
                 } else {
                     String patch = null;
                     try (Writer out = new StringWriter()) {
@@ -315,16 +310,16 @@ public class GenerationProcessor {
                         if (merger != null) {
                             result = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
-                            throw new InvalidConfigurationException("No merger for merge strategy '"
-                                + templateIntern.getMergeStrategy() + "' found.");
+                            throw new InvalidConfigurationException(
+                                "No merger for merge strategy '" + templateIntern.getMergeStrategy() + "' found.");
                         }
 
                         if (result != null) {
                             LOG.debug("Merge {} with char set {}.", tmpOriginalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(tmpOriginalFile, result, targetCharset);
                         } else {
-                            throw new PluginProcessingException("Merger " + merger.getType()
-                                + " returned null on merge(...), which is not allowed.");
+                            throw new PluginProcessingException(
+                                "Merger " + merger.getType() + " returned null on merge(...), which is not allowed.");
                         }
                     } catch (MergeException e) {
                         writeBrokenPatchFile(targetCharset, tmpOriginalFile, patch);
@@ -337,8 +332,8 @@ public class GenerationProcessor {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset,
-                    inputReader, generatorInput);
+                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
+                    generatorInput);
             }
         }
     }
@@ -360,8 +355,8 @@ public class GenerationProcessor {
         while (!written) {
             String fileextension = FilenameUtils.getExtension(tmpOriginalFile.getName());
             String baseName = FilenameUtils.getBaseName(tmpOriginalFile.getName());
-            Path newPatchFile = tmpOriginalFile.toPath().getParent()
-                .resolve(baseName + ".patch." + i++ + "." + fileextension);
+            Path newPatchFile =
+                tmpOriginalFile.toPath().getParent().resolve(baseName + ".patch." + i++ + "." + fileextension);
             if (newPatchFile.toFile().exists()) {
                 continue;
             } else {
@@ -414,8 +409,7 @@ public class GenerationProcessor {
      *            {@link Trigger} to be used
      * @return the {@link List} of collected input objects.
      */
-    private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter,
-        Trigger trigger) {
+    private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter, Trigger trigger) {
 
         InputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
@@ -425,8 +419,7 @@ public class GenerationProcessor {
             // check whether the inputs should be retrieved recursively
             boolean retrieveInputsRecursively = false;
             for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                MatcherTo matcherTo =
-                    new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+                MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
                 if (triggerInterpreter.getMatcher().matches(matcherTo)) {
                     if (!retrieveInputsRecursively) {
                         retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
@@ -495,8 +488,7 @@ public class GenerationProcessor {
                 }
             }
         }
-        LOG.info(
-            "Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.info("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
@@ -582,8 +574,8 @@ public class GenerationProcessor {
                 throw new CobiGenRuntimeException("An error occurred while generating the template "
                     + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
             } catch (Throwable e) {
-                throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath(), e);
+                throw new CobiGenRuntimeException(
+                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
             }
         }
     }
@@ -602,10 +594,8 @@ public class GenerationProcessor {
     private Template getTemplate(TemplateTo templateTo, TriggerInterpreter triggerInterpreter)
         throws InvalidConfigurationException {
 
-        Trigger trigger =
-            configurationHolder.readContextConfiguration().getTrigger(templateTo.getTriggerId());
-        TemplatesConfiguration tConfig =
-            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(templateTo.getTriggerId());
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
         Template template = tConfig.getTemplate(templateTo.getId());
         if (template == null) {
             throw new UnknownTemplateException(templateTo.getId());
