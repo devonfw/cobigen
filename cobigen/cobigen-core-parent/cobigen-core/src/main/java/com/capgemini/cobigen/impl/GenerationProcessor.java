@@ -267,9 +267,14 @@ public class GenerationProcessor {
         ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(
             configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
+        InputReader inputReader = triggerInterpreter.getInputReader();
+        if (!inputReader.isValidInput(input)) {
+            throw new CobiGenRuntimeException("An invalid input of type " + input.getClass() + " has been passed to "
+                + inputReader.getClass() + " (derived from trigger '" + trigger.getId() + "')");
+        }
+
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
         Template templateIntern = getTemplate(template, triggerInterpreter);
-        InputReader inputReader = triggerInterpreter.getInputReader();
 
         for (Object generatorInput : inputObjects) {
 
@@ -413,7 +418,6 @@ public class GenerationProcessor {
 
         InputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
-
         if (inputReader.combinesMultipleInputObjects(input)) {
 
             // check whether the inputs should be retrieved recursively
