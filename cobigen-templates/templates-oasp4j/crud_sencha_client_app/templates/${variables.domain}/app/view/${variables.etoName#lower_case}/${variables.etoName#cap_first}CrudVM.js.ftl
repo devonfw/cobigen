@@ -14,16 +14,19 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
     ${variables.etoName?lower_case}Id: null,
 
     stores: {
-      states: {
-        fields: ['code'],
-        data: [{
-            'code': 'FREE'
-        }, {
-            'code': 'OCCUPIED'
-        }, {
-           'code': 'RESERVED'
-        }]
-      }
+     // Here your stores configurations
+     
+     // Example for states field of oasp4j-sample Tables
+     // states: {
+     //   fields: ['code'],
+     //   data: [{
+     //       'code': 'FREE'
+     //   }, {
+     //       'code': 'OCCUPIED'
+     //   }, {
+     //      'code': 'RESERVED'
+     //   }]
+     // }
     }
 
 });
