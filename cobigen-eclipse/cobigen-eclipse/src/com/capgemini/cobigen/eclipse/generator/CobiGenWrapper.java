@@ -220,7 +220,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
                     model);
             } else {
-                report = cobiGen.generate(inputs, templates, Paths.get(generationTargetUri), false, utilClasses);
+                report = new GenerationReportTo();
+                for (Object input : inputs) {
+                    report.aggregate(
+                        cobiGen.generate(input, templates, Paths.get(generationTargetUri), false, utilClasses));
+                }
             }
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
