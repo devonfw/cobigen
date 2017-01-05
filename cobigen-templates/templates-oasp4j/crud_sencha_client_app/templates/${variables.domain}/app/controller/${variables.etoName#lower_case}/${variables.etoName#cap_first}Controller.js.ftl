@@ -69,7 +69,7 @@ Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${var
             }
         });
         
-        Devon.App.openInContentPanel(panel, {id: id});
+        Devon.Application.openInContentPanel(panel, {id: id});
         
         Ext.GlobalEvents.fireEvent('openedInContentPanel', panel, {id:id});
     },
