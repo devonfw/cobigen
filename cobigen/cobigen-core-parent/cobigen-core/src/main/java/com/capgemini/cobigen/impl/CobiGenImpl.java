@@ -3,9 +3,11 @@ package com.capgemini.cobigen.impl;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
@@ -76,9 +78,18 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
         Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses,
-        Map<String, Object> additionalModelValues) {
+        Map<String, Object> rawModel) {
+        Objects.requireNonNull(input, "Input");
+        Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
+        if (generableArtifacts.contains(null)) {
+            throw new CobiGenRuntimeException(
+                "A collection of artifacts to be generated has been passed containing null values. "
+                    + "Aborting generation, as this has probably not been intended.");
+        }
+        Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
+        Objects.requireNonNull(targetRootPath, "targetRootPath");
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            generableArtifacts, targetRootPath, forceOverride, logicClasses, additionalModelValues);
+            generableArtifacts, targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -101,9 +112,12 @@ public class CobiGenImpl implements CobiGen {
 
     @Override
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> additionalModelValues) {
+        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        Objects.requireNonNull(input, "Input");
+        Objects.requireNonNull(generableArtifact, "Artifact to be generated");
+        Objects.requireNonNull(targetRootPath, "targetRootPath");
         GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, additionalModelValues);
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
