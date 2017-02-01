@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.htmlplugin.merger.HTMLMerger;
-import com.capgemini.cobigen.htmlplugin.merger.utils.ng2.ConstantsNG2;
+import com.capgemini.cobigen.htmlplugin.merger.ng2.utils.constants.ConstantsNG2;
 
 @SuppressWarnings("javadoc")
 public class HTMLMergerTest {

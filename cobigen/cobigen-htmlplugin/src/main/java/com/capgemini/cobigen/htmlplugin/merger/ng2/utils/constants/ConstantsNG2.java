@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.htmlplugin.merger.utils.ng2;
+package com.capgemini.cobigen.htmlplugin.merger.ng2.utils.constants;
 
 /**
  *
