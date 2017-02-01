@@ -8,11 +8,12 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.htmlplugin.merger.utils.ConstantsNG2;
+import com.capgemini.cobigen.htmlplugin.merger.utils.ng2.ConstantsNG2;
 
 /**
  * The {@link HTMLMerger} merges a patch and the base file of the same HTML file.
@@ -53,36 +54,24 @@ public class HTMLMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
 
-        patch = "<header></header>" + "<md-sidenav-layout style=\"height:91vh\">"
-            + "<md-sidenav *ngIf=\"this.router.location.path() !== '/login'\" #sidenav style= \"width:25%\" mode=\"side\" opened=\"true\" class=\"app-sidenav\">"
-            + "<span class=\"app-toolbar-filler\"></span>" + "<md-nav-list list-items>"
-            + "<a id=\"home\" md-list-item (click)=\"navigateTo('home')\">" + "<md-icon md-list-avatar>home</md-icon>"
-            + "<h3 md-line> {{'datagrid.navHome' | translate}} </h3>"
-            + "<p md-line> {{'datagrid.navHomeSub' | translate}} </p>" + "</a>"
-            + "<a id=\"newDataGrid\" md-list-item (click)=\"navigateTo('newDataGrid')\">"
-            + "<md-icon md-list-avatar>grid_on</md-icon>" + "<h3 md-line> {{'newDatagrid.navData' | translate}} </h3>"
-            + "<p md-line> {{'newDatagrid.navDataSub' | translate}} </p>" + "</a>" + "</md-nav-list>" + "</md-sidenav>"
-            + "<router-outlet></router-outlet>" + "</md-sidenav-layout>";
         Document fileDocBase;
         Document docPatch;
 
         try {
-            fileDocBase = Jsoup.parse(base, "UTF-8");
-            docPatch = Jsoup.parse(patch, "UTF-8");
-
+            fileDocBase = Jsoup.parse(base, targetCharset);
+            docPatch = Jsoup.parse(patch, targetCharset);
             fixNGIFAtt(fileDocBase);
-            Elements patchElements = docPatch.getAllElements();
+            Elements patchElements = docPatch.body().getAllElements();
 
             for (Element element : patchElements) {
 
                 switch (element.tagName()) {
                 case ConstantsNG2.MD_NAV_LIST:
-                    Element sideMenuBase = fileDocBase.getElementsByTag(ConstantsNG2.MD_NAV_LIST).get(0);
-                    Element sideMenuPatch = element.getElementsByTag(ConstantsNG2.MD_NAV_LIST).get(0);
+                    Element sideMenuBase = fileDocBase.getElementsByTag(ConstantsNG2.MD_NAV_LIST).first();
                     if (patchOverrides) {
-                        sideMenuBase.replaceWith(sideMenuPatch);
+                        sideMenuBase.replaceWith(element);
                     } else {
-                        Elements patchButtons = sideMenuPatch.getElementsByTag(ConstantsNG2.A_REF);
+                        Elements patchButtons = element.getElementsByTag(ConstantsNG2.A_REF);
                         List<String> idBase = getIds(sideMenuBase.getElementsByTag(ConstantsNG2.A_REF));
                         for (Element button : patchButtons) {
                             if (!idBase.contains(button.id()) && !button.id().equals("")) {
@@ -91,7 +80,56 @@ public class HTMLMerger implements Merger {
                         }
                     }
                     break;
-                case ConstantsNG2.TABLE_DATA:
+                case ConstantsNG2.FORM:
+                    if (element.id().equals("")) {
+                        Element filterForm = fileDocBase.getElementsByTag(ConstantsNG2.FORM).first();
+                        if (patchOverrides) {
+                            for (Element input : filterForm.getElementsByTag(ConstantsNG2.INPUT_CONTAINER)) {
+                                input.remove();
+                            }
+                            filterForm.insertChildren(0, docPatch.getElementsByTag(ConstantsNG2.FORM).first()
+                                .getElementsByTag(ConstantsNG2.INPUT_CONTAINER));
+                        } else {
+                            Elements filterFieldsBase = fileDocBase.getElementsByTag(ConstantsNG2.INPUT);
+                            List<String> fieldNames = getFilterInputsNames(filterFieldsBase);
+                            Elements filterFieldsPatch = docPatch.getElementsByTag(ConstantsNG2.INPUT);
+                            List<Node> toAdd = new LinkedList<>();
+                            for (Element input : filterFieldsPatch) {
+                                if (!fieldNames.contains(input.attr(ConstantsNG2.NAME_ATTR))) {
+                                    toAdd.add(new Element(ConstantsNG2.INPUT_CONTAINER).appendChild(input));
+                                }
+                            }
+                            if (!toAdd.isEmpty()) {
+                                filterForm.insertChildren(fieldNames.size() * 2, toAdd);
+                            }
+                        }
+                    } else {
+                        Element filterForm = fileDocBase.getElementsByTag(ConstantsNG2.FORM).first();
+                        if (patchOverrides) {
+                            for (Element input : filterForm.getElementsByTag(ConstantsNG2.INPUT_CONTAINER)) {
+                                input.remove();
+                            }
+                            filterForm.insertChildren(0, docPatch.getElementsByTag(ConstantsNG2.FORM).first()
+                                .getElementsByTag(ConstantsNG2.INPUT_CONTAINER));
+                        } else {
+                            Elements filterFieldsBase = fileDocBase.getElementsByTag(ConstantsNG2.INPUT);
+                            List<String> fieldNames = getFilterInputsNames(filterFieldsBase);
+                            Elements filterFieldsPatch = docPatch.getElementsByTag(ConstantsNG2.INPUT);
+                            List<Node> toAdd = new LinkedList<>();
+                            for (Element input : filterFieldsPatch) {
+                                if (!fieldNames.contains(input.attr(ConstantsNG2.NAME_ATTR))) {
+                                    toAdd.add(new Element(ConstantsNG2.INPUT_CONTAINER).attr("style", "width:100%")
+                                        .appendChild(input));
+                                }
+                            }
+                            if (!toAdd.isEmpty()) {
+                                filterForm.insertChildren(fieldNames.size() * 2, toAdd);
+                                System.out.println(filterForm);
+                            }
+                        }
+                    }
+
+                    break;
                 }
 
             }
@@ -104,6 +142,14 @@ public class HTMLMerger implements Merger {
 
     public boolean isPatchOverrides() {
         return patchOverrides;
+    }
+
+    public List<String> getFilterInputsNames(Elements inputs) {
+        List<String> names = new LinkedList<>();
+        for (Element input : inputs) {
+            names.add(input.attr("name"));
+        }
+        return names;
     }
 
     public List<String> getIds(Elements elements) {
