@@ -1,0 +1,23 @@
+<h1 md-dialog-title>{{title}}</h1>
+<form id="addDialog" #dialogForm = "ngForm">
+    <md-input-container style="width:100%;">
+        <input md-input name = "name" [placeholder]= "'datagrid.columns.name' | translate" [(ngModel)] = "item.name" required>
+    </md-input-container>
+
+    <md-input-container style="width:100%;">
+        <input md-input name = "surname"[placeholder]= "'datagrid.columns.surname' | translate" [(ngModel)] = "item.surname" required>
+    </md-input-container>
+
+    <md-input-container style="width:100%;">
+        <input md-input type="number" name = "age" [placeholder]= "'datagrid.columns.age' | translate" [(ngModel)] = "item.age" required>
+    </md-input-container>
+
+    <md-input-container style="width:100%;">
+        <input md-input name = "mail" [placeholder]= "'datagrid.columns.mail' | translate" [(ngModel)] = "item.mail" required>
+    </md-input-container>
+
+    <md-dialog-actions>
+        <button type = "button" md-button md-dialog-close>{{'buttons.cancel' | translate}}</button>
+        <button type = "button" md-button [disabled] = "!dialogForm.form.valid" (click)="dialogRef.close(item)"> {{'buttons.save' | translate}} </button>
+    </md-dialog-actions>
+</form>
