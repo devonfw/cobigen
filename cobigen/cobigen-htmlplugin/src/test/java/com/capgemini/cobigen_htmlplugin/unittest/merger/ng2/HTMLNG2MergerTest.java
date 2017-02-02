@@ -1,4 +1,4 @@
-package com.capgemini.cobigen_htmlplugin.unittest.merger;
+package com.capgemini.cobigen_htmlplugin.unittest.merger.ng2;
 
 import static org.junit.Assert.assertTrue;
 
@@ -20,7 +20,7 @@ import com.capgemini.cobigen.htmlplugin.merger.HTMLMerger;
 import com.capgemini.cobigen.htmlplugin.merger.ng2.utils.constants.ConstantsNG2;
 
 @SuppressWarnings("javadoc")
-public class HTMLMergerTest {
+public class HTMLNG2MergerTest {
 
     private static String testFileRootPathNG2 = "src/test/resources/testdata/unittest/merger/ng2/";
 
