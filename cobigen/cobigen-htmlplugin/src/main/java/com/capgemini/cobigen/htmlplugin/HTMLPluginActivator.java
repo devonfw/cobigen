@@ -16,8 +16,8 @@ public class HTMLPluginActivator implements GeneratorPluginActivator {
     @Override
     public List<Merger> bindMerger() {
         List<Merger> merger = Lists.newLinkedList();
-        merger.add(new HTMLMerger("htmlng2", false));
-        merger.add(new HTMLMerger("htmlng2_override", true));
+        merger.add(new HTMLMerger("html-ng*", false));
+        merger.add(new HTMLMerger("html-ng*_override", true));
         return merger;
     }
 
