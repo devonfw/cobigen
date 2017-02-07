@@ -58,7 +58,6 @@ public class JSONMergerTest {
         }
 
         String mergedContents = new JSONMerger("sencharchmerge", false).merge(jsonBaseFile, patchString, "UTF-8");
-        // System.out.println(mergedContents);
         JSONTokener tokensResult = new JSONTokener(resultString);
         JSONObject jsonResult = new JSONObject(tokensResult);
         assertTrue(mergedContents.equals(jsonResult.toString(4)));
@@ -109,5 +108,62 @@ public class JSONMergerTest {
         JSONArray toCompRes = json.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
         assertTrue(toCompRes.toString().equals(toComp.toString()));
 
+    }
+
+    @Test
+    public void jsonGenericMergeTest_Override() {
+        File jsonBaseFile = new File(testFileRootPath + "en_json");
+        File jsonPatchFile = new File(testFileRootPath + "en_patch_json");
+
+        String file = jsonPatchFile.getAbsolutePath();
+
+        Reader reader = null;
+        String patchString;
+
+        try {
+            reader = new FileReader(file);
+            patchString = IOUtils.toString(reader);
+            reader.close();
+
+        } catch (FileNotFoundException e) {
+            throw new MergeException(jsonPatchFile, "Can not read file " + jsonPatchFile.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MergeException(jsonPatchFile, "Can not read the base file " + jsonPatchFile.getAbsolutePath());
+        }
+
+        String mergedContents = new JSONMerger("jsonmerge", true).merge(jsonBaseFile, patchString, "UTF-8");
+        System.out.println(mergedContents);
+        JSONTokener tokensResult = new JSONTokener(mergedContents);
+        JSONObject jsonResult = new JSONObject(tokensResult);
+        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 1);
+        assertTrue(jsonResult.has("newdatagrid"));
+    }
+
+    @Test
+    public void jsonGenericMergeTest_NoOverride() {
+        File jsonBaseFile = new File(testFileRootPath + "en_json");
+        File jsonPatchFile = new File(testFileRootPath + "en_patch_json");
+
+        String file = jsonPatchFile.getAbsolutePath();
+
+        Reader reader = null;
+        String patchString;
+
+        try {
+            reader = new FileReader(file);
+            patchString = IOUtils.toString(reader);
+            reader.close();
+
+        } catch (FileNotFoundException e) {
+            throw new MergeException(jsonPatchFile, "Can not read file " + jsonPatchFile.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MergeException(jsonPatchFile, "Can not read the base file " + jsonPatchFile.getAbsolutePath());
+        }
+
+        String mergedContents = new JSONMerger("jsonmerge", false).merge(jsonBaseFile, patchString, "UTF-8");
+        JSONTokener tokensResult = new JSONTokener(mergedContents);
+        JSONObject jsonResult = new JSONObject(tokensResult);
+        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 5);
+        assertTrue(jsonResult.has("newdatagrid"));
     }
 }

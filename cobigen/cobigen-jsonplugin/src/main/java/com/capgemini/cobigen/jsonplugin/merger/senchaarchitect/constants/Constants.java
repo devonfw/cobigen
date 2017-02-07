@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger;
+package com.capgemini.cobigen.jsonplugin.merger.senchaarchitect.constants;
 
 import com.google.gson.JsonObject;
 
