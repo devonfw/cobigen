@@ -57,14 +57,7 @@ public class HTMLMerger implements Merger {
             fileDocBase = Jsoup.parse(base, targetCharset);
             docPatch = Jsoup.parse(patch, targetCharset);
             ng2 = new Angular2Merger(fileDocBase, docPatch);
-            switch (type) {
-            case "htmlng2":
-                mergedContents = ng2.merger(patchOverrides);
-                break;
-            case "htmlng2_override":
-                mergedContents = ng2.merger(patchOverrides);
-                break;
-            }
+            mergedContents = ng2.merger(patchOverrides);
         } catch (IOException e) {
             throw new MergeException(base, "file could not be found, or read, or the charsetName is invalid");
         }
