@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * Implementation of component interface of ${variables.component}
  */
 @Named
+@Transactional
 public class ${variables.component?cap_first}Impl extends AbstractComponentFacade implements ${variables.component?cap_first} {
 	
 	/** Logger instance. */

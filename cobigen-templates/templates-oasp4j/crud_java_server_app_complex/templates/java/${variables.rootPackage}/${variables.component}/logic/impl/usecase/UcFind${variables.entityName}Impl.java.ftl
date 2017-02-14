@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 @Named
 @UseCase
 @Validated
+@Transactional
 public class UcFind${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcFind${variables.entityName} {
 
 	/** Logger instance. */

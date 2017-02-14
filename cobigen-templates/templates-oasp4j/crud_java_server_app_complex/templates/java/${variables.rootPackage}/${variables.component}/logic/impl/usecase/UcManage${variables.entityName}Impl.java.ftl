@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 @Named
 @UseCase
 @Validated
+@Transactional
 public class UcManage${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcManage${variables.entityName} {
 
   /** Logger instance. */
