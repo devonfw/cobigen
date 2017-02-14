@@ -132,7 +132,6 @@ public class JSONMergerTest {
         }
 
         String mergedContents = new JSONMerger("jsonmerge", true).merge(jsonBaseFile, patchString, "UTF-8");
-        System.out.println(mergedContents);
         JSONTokener tokensResult = new JSONTokener(mergedContents);
         JSONObject jsonResult = new JSONObject(tokensResult);
         assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 1);
