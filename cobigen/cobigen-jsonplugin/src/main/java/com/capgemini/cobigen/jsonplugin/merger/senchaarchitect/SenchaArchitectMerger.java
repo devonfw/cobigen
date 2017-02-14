@@ -18,10 +18,23 @@ import com.google.gson.JsonObject;
  */
 public class SenchaArchitectMerger {
 
+    /**
+     * {@link JsonObject} base
+     */
     private JsonObject objBase;
 
+    /**
+     * {@link JsonObject} patch
+     */
     private JsonObject objPatch;
 
+    /**
+     * Constructor
+     * @param objBase
+     *            the base {@link JsonObject}
+     * @param objPatch
+     *            the patch {@link JsonObject}
+     */
     public SenchaArchitectMerger(JsonObject objBase, JsonObject objPatch) {
         this.objBase = objBase;
         this.objPatch = objPatch;
@@ -127,61 +140,26 @@ public class SenchaArchitectMerger {
                                 if (rightArr.get(i).isJsonObject() && leftArr.get(j).isJsonObject()) {
                                     JsonObject baseObject = rightArr.get(i).getAsJsonObject();
                                     JsonObject patchObject = leftArr.get(j).getAsJsonObject();
-                                    if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
-                                        if (baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                            .equals(Constants.LABEL_TYPE)
-                                            && patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.LABEL_TYPE)) {
-                                            exist = true;
-                                            break;
-                                        }
+
+                                    // check if object is label to avoid duplicates of Label types
+                                    exist = isLabelType(baseObject, patchObject);
+                                    if (exist) {
+                                        break;
                                     }
-                                    if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
-                                        if (!baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                            .equals(Constants.LABEL_TYPE)
-                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.COLUMN_TYPE)
-                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.PANEL_TYPE)
-                                            && !baseObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.CONTROLLER_TYPE)) {
-                                            if (!patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                .equals(Constants.LABEL_TYPE)
-                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                    .equals(Constants.COLUMN_TYPE)
-                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                    .equals(Constants.PANEL_TYPE)
-                                                && !patchObject.get(Constants.TYPE_FIELD).getAsString()
-                                                    .equals(Constants.CONTROLLER_TYPE)) { // is model field
-                                                if (baseModelFields
-                                                    .contains(baseObject.get(Constants.NAME_FIELD).getAsString())) {
-                                                    exist = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
+                                    // check if object is model field
+                                    exist = isModel(baseObject, patchObject, baseModelFields);
+                                    if (exist) {
+                                        break;
                                     }
-                                    if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
-                                        .has(Constants.REFERENCE)
-                                        && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
-                                            .has(Constants.REFERENCE)) {
-                                        if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject()
-                                            .get(Constants.REFERENCE).equals(patchObject.get(Constants.USERCONFIG_FIELD)
-                                                .getAsJsonObject().get(Constants.REFERENCE))) {
-                                            List<String> baseNameColumns = getBaseGridColumnNames(patchObject);
-                                            List<String> patchNameColumns = getPatchGridColumnNames(baseObject);
-                                            exist = true;
-                                            for (String column : patchNameColumns) {
-                                                if (!baseNameColumns.contains(column)) {
-                                                    patchObject.get(Constants.CN_OBJECT).getAsJsonArray()
-                                                        .add(patchColumns.get(column));
-                                                }
-                                            }
-                                            break;
-                                        }
+
+                                    // check if object is userConfig to add columns
+                                    exist = isUserConfigWithReferenceAddColumns(baseObject, patchObject, patchColumns);
+                                    if (exist) {
+                                        break;
                                     }
                                 }
                             }
+                            // if not exists, not model neither userConfig, add
                             if (!exist) {
                                 leftArr.add(rightArr.get(posToAdd));
                             }
@@ -192,17 +170,113 @@ public class SenchaArchitectMerger {
                     // recursive merging
                     senchArchMerge(patchColumns, baseModelFields, leftVal.getAsJsonObject(), rightVal.getAsJsonObject(),
                         patchOverrides);
-                } else {// not both arrays or objects, normal merge with conflict resolution
-                    if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
-                        || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID)
-                        || rightKey.equals(Constants.VIEWMODELINSTANCEID))) {
-                        leftObj.add(rightKey, rightVal);// right side auto-wins, replace left val with its val
-                    }
+                } else {
+                    handleConflictresolution(leftObj, rightKey, rightVal, patchOverrides);
                 }
             } else {// no conflict, add to the object
                 leftObj.add(rightKey, rightVal);
             }
         }
+    }
+
+    /**
+     * Handles the conflict resolution depending the merge strategy
+     *
+     * @param leftObj
+     *            the base @link JsonObject}
+     * @param rightKey
+     *            the patch key to resolve
+     * @param rightVal
+     *            the value of patch key
+     * @param patchOverrides
+     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+     *            if <code>false</code>, conflicts will be resolved by using the base contents
+     */
+    private void handleConflictresolution(JsonObject leftObj, String rightKey, JsonElement rightVal,
+        boolean patchOverrides) {
+        if (patchOverrides && !(rightKey.equals(Constants.DESIGNERID)
+            || rightKey.equals(Constants.VIEWCONTROLLERINSTANCEID) || rightKey.equals(Constants.VIEWMODELINSTANCEID))) {
+            leftObj.add(rightKey, rightVal);
+        }
+    }
+
+    /**
+     * Check if the {@link JsonObject} is label to avoid Label duplications on merge
+     *
+     * @param baseObject
+     *            the existent {@link JsonObject}
+     * @param patchObject
+     *            the patch {@link JsonObject}
+     * @return existent
+     */
+    private boolean isLabelType(JsonObject baseObject, JsonObject patchObject) {
+        if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
+            if (baseObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.LABEL_TYPE)
+                && patchObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.LABEL_TYPE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if the object has the patch columns adding them if not
+     *
+     * @param baseObject
+     *            the base {@link JsonObject}
+     * @param patchObject
+     *            the patch {@link JsonObject}
+     * @param patchColumns
+     *            the columns to patch
+     * @return existent
+     */
+    private boolean isUserConfigWithReferenceAddColumns(JsonObject baseObject, JsonObject patchObject,
+        Map<String, JsonObject> patchColumns) {
+        if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject().has(Constants.REFERENCE)
+            && patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject().has(Constants.REFERENCE)) {
+            if (baseObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject().get(Constants.REFERENCE)
+                .equals(patchObject.get(Constants.USERCONFIG_FIELD).getAsJsonObject().get(Constants.REFERENCE))) {
+                List<String> baseNameColumns = getBaseGridColumnNames(patchObject);
+                List<String> patchNameColumns = getPatchGridColumnNames(baseObject);
+                for (String column : patchNameColumns) {
+                    if (!baseNameColumns.contains(column)) {
+                        patchObject.get(Constants.CN_OBJECT).getAsJsonArray().add(patchColumns.get(column));
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the model has the field
+     *
+     * @param baseObject
+     *            the base {@link JsonObject}
+     * @param patchObject
+     *            the patch {@link JsonObject}
+     * @param baseModelFields
+     *            list of the fields of the base model
+     * @return existent
+     */
+    private boolean isModel(JsonObject baseObject, JsonObject patchObject, List<String> baseModelFields) {
+        if (baseObject.has(Constants.TYPE_FIELD) && patchObject.has(Constants.TYPE_FIELD)) {
+            if (!baseObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.LABEL_TYPE)
+                && !baseObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)
+                && !baseObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.PANEL_TYPE)
+                && !baseObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.CONTROLLER_TYPE)) {
+                if (!patchObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.LABEL_TYPE)
+                    && !patchObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.COLUMN_TYPE)
+                    && !patchObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.PANEL_TYPE)
+                    && !patchObject.get(Constants.TYPE_FIELD).getAsString().equals(Constants.CONTROLLER_TYPE)) {
+                    if (baseModelFields.contains(baseObject.get(Constants.NAME_FIELD).getAsString())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

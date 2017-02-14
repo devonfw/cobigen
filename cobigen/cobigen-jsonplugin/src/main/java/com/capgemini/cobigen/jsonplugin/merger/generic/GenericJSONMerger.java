@@ -7,44 +7,56 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- *
+ * JSON Merger for generic purposes
  */
 public class GenericJSONMerger {
 
+    /**
+     * Existent JSON file
+     */
     private JsonObject base;
 
+    /**
+     * JSON file to patch
+     */
     private JsonObject patch;
 
+    /**
+     * Constructor
+     * @param base
+     *            existent file
+     * @param patch
+     *            file to patch
+     */
     public GenericJSONMerger(JsonObject base, JsonObject patch) {
         this.base = base;
         this.patch = patch;
     }
 
+    /**
+     * Calls the recursive method
+     *
+     * @param patchOverrides
+     *            states if the merge must override the base or not
+     * @return the JSON resulting from the merge
+     */
     public String merge(boolean patchOverrides) {
-        try {
-            extendJsonObject(base, patchOverrides, patch);
-        } catch (JsonObjectExtensionConflictException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        extendJsonObject(base, patch, patchOverrides);
         return base.toString();
     }
 
-    public static class JsonObjectExtensionConflictException extends Exception {
+    /**
+     * Merge the file being recursive for each {@link JsonObject}
+     *
+     * @param leftObj
+     *            The base {@link JsonObject}
+     * @param rightObj
+     *            The patch {@link JsonObject}
+     * @param patchOverrides
+     *            merge strategy
+     */
+    private static void extendJsonObject(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides) {
 
-        public JsonObjectExtensionConflictException(String message) {
-            super(message);
-        }
-
-    }
-
-    public static void extendJsonObject(JsonObject destinationObject, boolean patchOverrides, JsonObject objPatch)
-        throws JsonObjectExtensionConflictException {
-        extendJsonObject(destinationObject, objPatch, patchOverrides);
-    }
-
-    private static void extendJsonObject(JsonObject leftObj, JsonObject rightObj, boolean patchOverrides)
-        throws JsonObjectExtensionConflictException {
         for (Map.Entry<String, JsonElement> rightEntry : rightObj.entrySet()) {
             String rightKey = rightEntry.getKey();
             JsonElement rightVal = rightEntry.getValue();
@@ -55,14 +67,13 @@ public class GenericJSONMerger {
                     JsonElement leftVal = leftObj.get(rightKey);
                     if (leftVal.isJsonArray() && rightVal.isJsonArray()) {
                         JsonArray leftArr = leftVal.getAsJsonArray();
-                        JsonArray rightArr = rightVal.getAsJsonArray();
-                        // concat the arrays -- there cannot be a conflict in an array, it's just a collection
-                        // of stuff
+                        JsonArray rightArr = rightVal.getAsJsonArray(); // concat the arrays -- there cannot
+                                                                        // be a conflict in an array, it's
+                                                                        // just a collection // of stuff
                         for (int i = 0; i < rightArr.size(); i++) {
                             leftArr.add(rightArr.get(i));
                         }
-                    } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) {
-                        // recursive merging
+                    } else if (leftVal.isJsonObject() && rightVal.isJsonObject()) { // recursive merging
                         extendJsonObject(leftVal.getAsJsonObject(), rightVal.getAsJsonObject(), patchOverrides);
                     } else {// not both arrays or objects, normal merge with conflict resolution
                         handleMergeConflict(rightKey, leftObj, rightVal);
@@ -72,11 +83,20 @@ public class GenericJSONMerger {
                 leftObj.add(rightKey, rightVal);
             }
         }
+
     }
 
-    private static void handleMergeConflict(String key, JsonObject leftObj, JsonElement rightVal)
-        throws JsonObjectExtensionConflictException {
-
+    /**
+     * Handles conflicts removing previous key and adding the new one
+     *
+     * @param key
+     *            key to patch
+     * @param leftObj
+     *            base {@link JsonObject}
+     * @param rightVal
+     *            patch value for the giving key
+     */
+    private static void handleMergeConflict(String key, JsonObject leftObj, JsonElement rightVal) {
         leftObj.remove(key);
         leftObj.add(key, rightVal);
 
