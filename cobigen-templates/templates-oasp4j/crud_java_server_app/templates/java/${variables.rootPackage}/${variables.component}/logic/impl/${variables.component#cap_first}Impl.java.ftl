@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.annotation.security.RolesAllowed;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
