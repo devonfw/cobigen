@@ -9,6 +9,8 @@ import java.util.Objects;
 
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
