@@ -2,8 +2,10 @@ package com.capgemini.cobigen.impl.config.entity;
 
 import java.nio.file.Path;
 
+import com.capgemini.cobigen.api.extension.TextTemplate;
+
 /** Storage class for template data provided within the config.xml */
-public class Template {
+public class Template implements TextTemplate {
 
     /** Identifies the {@link Template}. */
     private String name;
@@ -60,6 +62,7 @@ public class Template {
      * Returns the path to the {@link #relativeTemplatePath}
      * @return the relative path to the templateFile
      */
+    @Override
     public String getRelativeTemplatePath() {
         return relativeTemplatePath;
     }
@@ -119,6 +122,7 @@ public class Template {
      * Returns the absolute file path to the template
      * @return the absolute file path to the template
      */
+    @Override
     public Path getAbsoluteTemplatePath() {
         return absoluteTemplatePath;
     }
