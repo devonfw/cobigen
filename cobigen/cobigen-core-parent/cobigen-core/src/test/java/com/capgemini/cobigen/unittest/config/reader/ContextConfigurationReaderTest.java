@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
 
 import junit.framework.TestCase;
@@ -33,13 +34,14 @@ public class ContextConfigurationReaderTest {
     }
 
     /**
-     * Tests
+     * Tests whether a valid configuration can be read from a zip file.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (16.02.2015)
      */
     @Test
     public void testReadConfigurationFromZip() throws Exception {
+        TemplateEngineRegistry.register(TemplateEngineStub.class);
+
         CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
     }
 

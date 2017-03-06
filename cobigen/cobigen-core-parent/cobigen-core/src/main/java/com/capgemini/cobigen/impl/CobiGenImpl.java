@@ -10,6 +10,7 @@ import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
@@ -21,15 +22,13 @@ import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.google.common.collect.Lists;
 
-import freemarker.template.Configuration;
-
 /**
  * Implementation of the CobiGen API.
  */
 public class CobiGenImpl implements CobiGen {
 
-    /** The FreeMarker configuration */
-    private Configuration freeMarkerConfig;
+    /** The {@link TextTemplateEngine} to be used */
+    private TextTemplateEngine templateEngine;
 
     /** CobiGen Configuration Cache */
     private ConfigurationHolder configurationHolder;
@@ -43,13 +42,13 @@ public class CobiGenImpl implements CobiGen {
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
-     * @param templateEngineConfiguration
-     *            Configuration of the template Engine.
+     * @param templateEngine
+     *            {@link TextTemplateEngine template engine} to be used
      * @param configurationHolder
      *            {@link ConfigurationHolder} holding CobiGen's configuration
      */
-    public CobiGenImpl(Configuration templateEngineConfiguration, ConfigurationHolder configurationHolder) {
-        freeMarkerConfig = templateEngineConfiguration;
+    public CobiGenImpl(TextTemplateEngine templateEngine, ConfigurationHolder configurationHolder) {
+        this.templateEngine = templateEngine;
         this.configurationHolder = configurationHolder;
 
         // Create proxy of ConfigurationInterpreter to cache method calls
@@ -77,8 +76,7 @@ public class CobiGenImpl implements CobiGen {
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses,
-        Map<String, Object> rawModel) {
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         if (generableArtifacts.contains(null)) {
@@ -88,8 +86,8 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
-            generableArtifacts, targetRootPath, forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, templateEngine, input, generableArtifacts,
+            targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -116,7 +114,7 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, freeMarkerConfig, input,
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, templateEngine, input,
             Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }

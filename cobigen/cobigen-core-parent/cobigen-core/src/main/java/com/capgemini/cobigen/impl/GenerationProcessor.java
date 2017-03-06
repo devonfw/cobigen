@@ -23,6 +23,8 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TextTemplate;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
@@ -36,7 +38,6 @@ import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
-import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
@@ -46,11 +47,6 @@ import com.capgemini.cobigen.impl.util.CopyDirectoryVisitor;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import freemarker.core.Environment;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -63,8 +59,8 @@ public class GenerationProcessor {
     /** {@link ConfigurationHolder} for configuration caching purposes */
     private ConfigurationHolder configurationHolder;
 
-    /** FreeMarker configuration to utilize */
-    private Configuration freeMarkerConfig;
+    /** {@link TextTemplateEngine} used for {@link TextTemplate} processing */
+    private TextTemplateEngine templateEngine;
 
     /** States, whether existing contents should be overwritten by generation */
     private boolean forceOverride;
@@ -96,8 +92,8 @@ public class GenerationProcessor {
      *
      * @param configurationHolder
      *            {@link ConfigurationHolder} instance
-     * @param freeMarkerConfig
-     *            FreeMarker configuration
+     * @param templateEngine
+     *            {@link TextTemplateEngine template engine to be used for generation}
      * @param input
      *            generator input object
      * @param generableArtifacts
@@ -115,14 +111,14 @@ public class GenerationProcessor {
      * @param rawModel
      *            externally adapted model to be used for generation.
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig, Object input,
+    public GenerationProcessor(ConfigurationHolder configurationHolder, TextTemplateEngine templateEngine, Object input,
         List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         this.configurationHolder = configurationHolder;
-        this.freeMarkerConfig = freeMarkerConfig;
+        this.templateEngine = templateEngine;
         this.forceOverride = forceOverride;
         this.input = input;
         this.generableArtifacts = generableArtifacts;
@@ -264,7 +260,7 @@ public class GenerationProcessor {
     private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(
+        templateEngine.setTemplateFolder(
             configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
         InputReader inputReader = triggerInterpreter.getInputReader();
@@ -302,13 +298,11 @@ public class GenerationProcessor {
 
                 if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateIntern.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
-                        generatorInput);
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset);
                 } else {
                     String patch = null;
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
-                            generatorInput);
+                        templateEngine.process(templateIntern, model, out, targetCharset);
                         patch = out.toString();
                         String result = null;
                         Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
@@ -337,8 +331,7 @@ public class GenerationProcessor {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
-                    generatorInput);
+                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset);
             }
         }
     }
@@ -508,79 +501,16 @@ public class GenerationProcessor {
      *            to generate with
      * @param outputCharset
      *            charset the target file should be written with
-     * @param inputReader
-     *            the input reader the model was built with
-     * @param input
-     *            generator input object
      */
     private void generateTemplateAndWriteFile(File output, Template template, Map<String, Object> model,
-        String outputCharset, InputReader inputReader, Object input) {
+        String outputCharset) {
 
         try (Writer out = new StringWriter()) {
-            generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader, input);
+            templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
             throw new CobiGenRuntimeException(
                 "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
-        }
-    }
-
-    /**
-     * Generates the given template contents using the given model and writes the contents into the given
-     * {@link Writer}
-     *
-     * @param out
-     *            {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and
-     *            closed)
-     * @param template
-     *            FreeMarker template which will generate the contents
-     * @param model
-     *            Object model for FreeMarker template generation
-     * @param inputReader
-     *            the input reader the model was built with
-     * @param outputCharset
-     *            charset the target file should be written with
-     * @param input
-     *            generator input object
-     */
-    private void generateTemplateAndWritePatch(Writer out, Template template, Map<String, Object> model,
-        String outputCharset, InputReader inputReader, Object input) {
-
-        freemarker.template.Template fmTemplate = null;
-        try {
-            fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
-        } catch (Throwable e) {
-            String message = "An error occured while retrieving the FreeMarker template "
-                + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.";
-            throw new CobiGenRuntimeException(message, e);
-        }
-
-        if (fmTemplate != null) {
-
-            Map<String, Object> templateMethods = null;
-            try {
-                templateMethods = inputReader.getTemplateMethods(input);
-            } catch (Throwable e) {
-                throw new PluginProcessingException(e);
-            }
-
-            try {
-                Environment env = fmTemplate.createProcessingEnvironment(model, out);
-                env.setOutputEncoding(outputCharset);
-
-                if (templateMethods != null) {
-                    for (String key : templateMethods.keySet()) {
-                        env.setVariable(key, (TemplateModel) templateMethods.get(key));
-                    }
-                }
-                env.process();
-            } catch (TemplateException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
-            } catch (Throwable e) {
-                throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
-            }
         }
     }
 
