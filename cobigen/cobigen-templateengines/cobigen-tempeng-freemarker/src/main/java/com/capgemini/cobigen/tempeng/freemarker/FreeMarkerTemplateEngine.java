@@ -18,7 +18,7 @@ import freemarker.template.TemplateException;
 /**
  * {@link TextTemplateEngine} implementation for Apache FreeMarker.
  */
-public class FreeMarkerEngine implements TextTemplateEngine {
+public class FreeMarkerTemplateEngine implements TextTemplateEngine {
 
     /** The commonly used FreeMarker engine configuration */
     private Configuration freeMarkerConfig;
@@ -26,7 +26,7 @@ public class FreeMarkerEngine implements TextTemplateEngine {
     /**
      * Constructor, which initializes the commonly used FreeMarker configuration.
      */
-    public FreeMarkerEngine() {
+    public FreeMarkerTemplateEngine() {
         freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
         freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
         freeMarkerConfig.clearEncodingMap();
