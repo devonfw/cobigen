@@ -7,7 +7,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.TemplateEngineRegistry;
-import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerEngine;
+import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 
 /**
  * Abstract test implementation providing cross-cutting functionality and properties.
@@ -30,7 +30,7 @@ public abstract class AbstractApiTest {
      * Registers the default template engine for generation.
      */
     static {
-        TemplateEngineRegistry.register(FreeMarkerEngine.class);
+        TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
     }
 
     /**
