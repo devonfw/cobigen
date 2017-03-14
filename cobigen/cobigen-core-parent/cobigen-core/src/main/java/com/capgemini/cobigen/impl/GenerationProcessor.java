@@ -45,6 +45,7 @@ import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -287,9 +288,15 @@ public class GenerationProcessor {
             String targetCharset = templateEty.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateEty.getName(), generatorInput);
 
-            Map<String, String> variables =
+            // collect variables
+            Map<String, String> variables = Maps.newHashMap();
+            Map<String, String> contextVariables =
                 new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
+            variables.putAll(contextVariables);
+            ImmutableMap<String, String> templateProperties = Maps.fromProperties(templateEty.getVariables());
+            variables.putAll(templateProperties);
 
+            // resolve temporary file paths
             PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(variables);
             String resolvedTargetDestinationPath =
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
