@@ -85,6 +85,8 @@ public class JSONMerger implements Merger {
         }
 
         String result = null;
+
+        // Override would be defined by patchOverrides at PluginActivator
         if (type.contains(Constants.SENCHA_ARCHITECT)) {
             SenchaArchitectMerger senchArchMerger = new SenchaArchitectMerger(objBase, objPatch);
             result = senchArchMerger.senchArchMerge(patchOverrides);
