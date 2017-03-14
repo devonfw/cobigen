@@ -195,6 +195,17 @@
               <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>generate-v2.2-configuration</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v2_2</generatePackage>
+              <generateDirectory>${basedir}/src/generated/java/config/v2.2</generateDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema/v2.2</schemaDirectory>
+            </configuration>
+          </execution>
           <!-- Redundant generation due to stability reasons of the configuration upgrade mechanism -->
           <execution>
             <id>generate-current-configuration</id>
@@ -204,7 +215,11 @@
             <configuration>
               <generatePackage>com.capgemini.cobigen.impl.config.entity.io</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/current</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schema</schemaDirectory>
+              <schemaIncludes>
+                <schemaInclude>v2.1/contextConfiguration.xsd</schemaInclude>
+                <schemaInclude>v2.2/templatesConfiguration.xsd</schemaInclude>
+              </schemaIncludes>
             </configuration>
           </execution>
         </executions>
