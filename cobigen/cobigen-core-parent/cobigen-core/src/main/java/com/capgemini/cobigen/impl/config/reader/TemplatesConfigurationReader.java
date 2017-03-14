@@ -208,7 +208,7 @@ public class TemplatesConfigurationReader {
                         "no template file found for '" + t.getTemplateFile() + "'");
                 }
                 Template template = createTemplate((TemplateFile) child, t.getName(), t.getDestinationPath(),
-                    t.getTemplateFile(), t.getMergeStrategy(), t.getTargetCharset());
+                    t.getMergeStrategy(), t.getTargetCharset());
                 templates.put(t.getName(), template);
             }
         }
@@ -348,14 +348,9 @@ public class TemplatesConfigurationReader {
                     }
                     destinationPath += currentPathWithSlash + templateNameWithoutExtension;
 
-                    String templateFile = "";
-                    if (!StringUtils.isEmpty(scan.getTemplatePath())) {
-                        templateFile = scan.getTemplatePath() + "/";
-                    }
-                    templateFile += currentPathWithSlash + templateFileName;
                     String mergeStratgey = scan.getMergeStrategy();
                     Template template = createTemplate((TemplateFile) child, templateName, destinationPath,
-                        templateFile, mergeStratgey, scan.getTargetCharset());
+                        mergeStratgey, scan.getTargetCharset());
                     templates.put(templateName, template);
 
                     if (templateScanTemplates.get(scan.getName()) != null) {
@@ -366,10 +361,30 @@ public class TemplatesConfigurationReader {
         }
     }
 
-    private Template createTemplate(TemplateFile child, String templateName, String destinationPath,
-        String templateFile, String mergeStratgey, String outputCharset) {
+    /**
+     * @param templateFile
+     *            the {@link TemplateFile}.
+     * @param templateName
+     *            the {@link Template#getName() template name} (ID).
+     * @param unresolvedTemplatePath
+     *            the {@link Template#getUnresolvedTemplatePath() unresolved template path}.
+     * @param mergeStratgey
+     *            the {@link Template#getMergeStrategy() merge strategy}.
+     * @param outputCharset
+     *            the {@link Template#getTargetCharset() target charset}.
+     * @return the new template instance.
+     */
+    private Template createTemplate(TemplateFile templateFile, String templateName, String unresolvedTemplatePath,
+        String mergeStratgey, String outputCharset) {
 
-        return new Template(child, templateName, destinationPath, templateFile, mergeStratgey, outputCharset);
+        String unresolvedDestinationPath = unresolvedTemplatePath;
+        TemplateFolder templateFolder = templateFile.getParent();
+        String relocate = templateFolder.getVariables().getProperty(PROPERTY_RELOCATE);
+        if (relocate != null) {
+            unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFolder.toString());
+        }
+        return new Template(templateFile, templateName, unresolvedDestinationPath, unresolvedTemplatePath,
+            mergeStratgey, outputCharset);
     }
 
     /**
