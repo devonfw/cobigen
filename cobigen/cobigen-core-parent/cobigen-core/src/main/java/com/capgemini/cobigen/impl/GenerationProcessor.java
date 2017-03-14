@@ -270,21 +270,25 @@ public class GenerationProcessor {
         }
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        Template templateIntern = getTemplate(template, triggerInterpreter);
+        Template templateEty = getTemplate(template, triggerInterpreter);
 
         for (Object generatorInput : inputObjects) {
 
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput);
 
-            String targetCharset = templateIntern.getTargetCharset();
-            LOG.info("Generating template '{}' ...", templateIntern.getName(), generatorInput);
+            String targetCharset = templateEty.getTargetCharset();
+            LOG.info("Generating template '{}' ...", templateEty.getName(), generatorInput);
 
             Map<String, String> variables =
                 new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
-            String resolvedDesitinationPath =
-                new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
-            File originalFile = targetRootPath.resolve(resolvedDesitinationPath).toFile();
-            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedDesitinationPath).toFile();
+
+            PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(variables);
+            String resolvedTargetDestinationPath =
+                pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
+            String resolvedTmpDestinationPath =
+                pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
+            File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
+            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -296,21 +300,21 @@ public class GenerationProcessor {
                     }
                 }
 
-                if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
-                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateIntern.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset);
+                if (forceOverride || template.isForceOverride() && templateEty.getMergeStrategy() == null
+                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateEty, model, targetCharset);
                 } else {
                     String patch = null;
                     try (Writer out = new StringWriter()) {
-                        templateEngine.process(templateIntern, model, out, targetCharset);
+                        templateEngine.process(templateEty, model, out, targetCharset);
                         patch = out.toString();
                         String result = null;
-                        Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
+                        Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
                         if (merger != null) {
                             result = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
                             throw new InvalidConfigurationException(
-                                "No merger for merge strategy '" + templateIntern.getMergeStrategy() + "' found.");
+                                "No merger for merge strategy '" + templateEty.getMergeStrategy() + "' found.");
                         }
 
                         if (result != null) {
@@ -323,7 +327,7 @@ public class GenerationProcessor {
                     } catch (MergeException e) {
                         writeBrokenPatchFile(targetCharset, tmpOriginalFile, patch);
                         // enrich merge exception to provide template ID
-                        throw new MergeException(e, templateIntern.getAbsoluteTemplatePath());
+                        throw new MergeException(e, templateEty.getAbsoluteTemplatePath());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
                             "Could not write file " + tmpOriginalFile.toPath() + " after merge.", e);
@@ -331,7 +335,7 @@ public class GenerationProcessor {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset);
+                generateTemplateAndWriteFile(tmpOriginalFile, templateEty, model, targetCharset);
             }
         }
     }
