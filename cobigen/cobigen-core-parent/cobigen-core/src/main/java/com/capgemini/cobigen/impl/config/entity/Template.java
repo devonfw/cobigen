@@ -25,6 +25,8 @@ public class Template implements TextTemplate {
     /** Absolute path to the template file */
     private Path absoluteTemplatePath;
 
+    private TemplateFolder parentFolder;
+
     /**
      * Creates a new {@link Template} for the given data
      * @param name
@@ -125,6 +127,10 @@ public class Template implements TextTemplate {
     @Override
     public Path getAbsoluteTemplatePath() {
         return absoluteTemplatePath;
+    }
+
+    public TemplateFolder getParentFolder() {
+        return parentFolder;
     }
 
     @Override
