@@ -10,19 +10,27 @@ public class Template implements TextTemplate {
     /** Identifies the {@link Template}. */
     private String name;
 
-    /** Relative path to the template file. */
-    private String relativeTemplatePath;
-
     /** Determines the required strategy to merge the {@link Template} */
     private String mergeStrategy;
 
     /** Charset of the target file */
     private String targetCharset;
 
-    /** Relative path for the result. */
-    private String unresolvedDestinationPath;
+    /**
+     * Relative non-canonical path of the final target file to generate to. Path variables are not resolved.
+     * Relocates are resolved.
+     */
+    private String unresolvedTargetPath;
 
-    /** Absolute path to the template file */
+    /**
+     * Relative path of the final target file to generate to. Path variables and relocates are not resolved.
+     */
+    private String unresolvedTemplatePath;
+
+    /** Relative path to the template file. */
+    private String relativeTemplatePath;
+
+    /** Absolute path to the template file. */
     private Path absoluteTemplatePath;
 
     private TemplateFolder parentFolder;
@@ -48,7 +56,7 @@ public class Template implements TextTemplate {
         this.relativeTemplatePath = relativeTemplatePath;
         this.mergeStrategy = mergeStrategy;
         targetCharset = outputCharset;
-        this.unresolvedDestinationPath = unresolvedDestinationPath;
+        unresolvedTargetPath = unresolvedDestinationPath;
         this.absoluteTemplatePath = absoluteTemplatePath;
     }
 
@@ -104,20 +112,41 @@ public class Template implements TextTemplate {
     }
 
     /**
-     * Returns the unresolved destination path defined in the templates configuration
+     * Returns the relative non-canonical path of the final target file to generate to. Path variables are not
+     * resolved. Relocates are resolved.
      * @return the unresolved destination path
      */
-    public String getUnresolvedDestinationPath() {
-        return unresolvedDestinationPath;
+    public String getUnresolvedTargetPath() {
+        return unresolvedTargetPath;
     }
 
     /**
-     * Sets the unresolved destination path defined in the templates configuration
-     * @param unresolvedDestinationPath
+     * Sets the relative non-canonical path of the final target file to generate to. Path variables are not
+     * resolved. Relocates are resolved.
+     * @param unresolvedTargetPath
      *            the unresolved destination path
      */
-    public void setUnresolvedDestinationPath(String unresolvedDestinationPath) {
-        this.unresolvedDestinationPath = unresolvedDestinationPath;
+    public void setUnresolvedTargetPath(String unresolvedTargetPath) {
+        this.unresolvedTargetPath = unresolvedTargetPath;
+    }
+
+    /**
+     * Returns the relative path of the final target file to generate to. Path variables and relocates are not
+     * resolved.
+     * @return the unresolved template path.
+     */
+    public String getUnresolvedTemplatePath() {
+        return unresolvedTemplatePath;
+    }
+
+    /**
+     * Sets the relative path of the final target file to generate to. Path variables and relocates are not
+     * resolved.
+     * @param unresolvedTemplatePath
+     *            the unresolved template path.
+     */
+    public void setUnresolvedTemplatePath(String unresolvedTemplatePath) {
+        this.unresolvedTemplatePath = unresolvedTemplatePath;
     }
 
     /**
@@ -127,10 +156,6 @@ public class Template implements TextTemplate {
     @Override
     public Path getAbsoluteTemplatePath() {
         return absoluteTemplatePath;
-    }
-
-    public TemplateFolder getParentFolder() {
-        return parentFolder;
     }
 
     @Override
