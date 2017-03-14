@@ -14,7 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- *
+ * Sencha Architect Merger that merges Sencha Architect metadata json files
  */
 public class SenchaArchitectMerger {
 
