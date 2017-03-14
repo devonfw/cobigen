@@ -369,7 +369,7 @@ public class TemplatesConfigurationReader {
     private Template createTemplate(TemplateFile child, String templateName, String destinationPath,
         String templateFile, String mergeStratgey, String outputCharset) {
 
-        return new Template(templateName, destinationPath, templateFile, mergeStratgey, outputCharset, child.getPath());
+        return new Template(child, templateName, destinationPath, templateFile, mergeStratgey, outputCharset);
     }
 
     /**
