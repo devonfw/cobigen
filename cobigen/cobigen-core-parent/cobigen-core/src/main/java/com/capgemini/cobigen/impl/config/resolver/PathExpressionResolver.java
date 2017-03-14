@@ -14,8 +14,6 @@ import com.google.common.collect.Maps;
 /**
  * The {@link PathExpressionResolver} provides an interface for replacing any variable expression in a
  * {@link String} from the context xml
- *
- * @author mbrunnli (18.02.2013)
  */
 public class PathExpressionResolver {
 
