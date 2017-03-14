@@ -37,6 +37,7 @@ import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
+import com.capgemini.cobigen.impl.config.entity.TemplateFolder;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.IncrementRef;
 import com.capgemini.cobigen.impl.config.entity.io.Increments;
@@ -65,6 +66,10 @@ public class TemplatesConfigurationReader {
     /** Assigning logger to TemplatesConfigurationReader */
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
+    /** The file extension of the template files. */
+    // TODO should be extracted to template engine as this is currently freemarker specific
+    private static final String TEMPLATE_EXTENSION = ".ftl";
+
     /** JAXB root node of the configuration */
     private TemplatesConfiguration configNode;
 
@@ -77,8 +82,8 @@ public class TemplatesConfigurationReader {
     /** Cache to find all templates by name for each template scan */
     private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
 
-    /** The file extension of the template files. */
-    private static final String TEMPLATE_EXTENSION = ".ftl";
+    /** The top-level folder where the templates are located. */
+    private TemplateFolder rootFolder;
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -91,6 +96,7 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
+        rootFolder = TemplateFolder.create(templatesRoot);
         configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         readConfiguration();
     }
