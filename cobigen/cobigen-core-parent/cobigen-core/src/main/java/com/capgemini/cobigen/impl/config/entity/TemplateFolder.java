@@ -95,12 +95,13 @@ public class TemplateFolder extends TemplatePath {
     // }
 
     /**
-     * @return the {@link Map} with the variables given when the VFS was {@link #create(Path) created} merged
-     *         with potential variables from {@link Properties property-files}
+     * @return the {@link Map} with the variables for this {@link TemplateFolder}. Will be inherited from
+     *         {@link #getParent() parent} and merged and overridden with potential properties defined in this
+     *         folder.
+     * @see CobiGenPropertiesUtil
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Map<String, String> getVariables() {
-        return (Map) variables;
+    public Properties getVariables() {
+        return variables;
     }
 
     /**

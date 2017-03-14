@@ -51,6 +51,18 @@ public abstract class TemplatePath {
     }
 
     /**
+     * @return the root {@link TemplateFolder}.
+     */
+    public final TemplateFolder getRoot() {
+
+        TemplatePath folder = this;
+        while (folder.parent != null) {
+            folder = folder.parent;
+        }
+        return (TemplateFolder) folder;
+    }
+
+    /**
      * @return {@code true} if this is a {@link TemplateFolder}, {@code false} in case of a
      *         {@link TemplateFile}.
      */
@@ -75,7 +87,7 @@ public abstract class TemplatePath {
 
     @Override
     public String toString() {
-        return path.toString();
+        return getRoot().getPath().relativize(path).toString().replace('\\', '/');
     }
 
 }
