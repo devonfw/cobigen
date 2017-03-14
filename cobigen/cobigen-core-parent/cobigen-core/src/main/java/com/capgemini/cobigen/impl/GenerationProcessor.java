@@ -184,6 +184,7 @@ public class GenerationProcessor {
         if (generationReport.isSuccessful()) {
             try {
                 for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
+                    Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
                     Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
                 }
