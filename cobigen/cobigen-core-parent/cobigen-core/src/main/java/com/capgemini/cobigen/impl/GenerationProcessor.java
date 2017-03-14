@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -43,7 +44,6 @@ import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
-import com.capgemini.cobigen.impl.util.CopyDirectoryVisitor;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -163,12 +163,13 @@ public class GenerationProcessor {
 
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
+        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (TemplateTo template : templatesToBeGenerated) {
             try {
                 Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                 TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                 InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                generate(template, triggerInterpreter);
+                tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
             } catch (CobiGenRuntimeException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 generationReport.addError(e);
@@ -181,9 +182,13 @@ public class GenerationProcessor {
 
         if (generationReport.isSuccessful()) {
             try {
-                Files.walkFileTree(tmpTargetRootPath,
-                    new CopyDirectoryVisitor(tmpTargetRootPath, targetRootPath, StandardCopyOption.REPLACE_EXISTING));
-                tmpTargetRootPath.toFile().delete();
+                for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
+                    Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+                }
+                if (!tmpTargetRootPath.toFile().delete()) {
+                    LOG.warn("Temporary files could not be deleted in path " + tmpTargetRootPath);
+                }
             } catch (IOException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
@@ -256,8 +261,10 @@ public class GenerationProcessor {
      *            {@link TriggerInterpreter} to be used for reading the input and creating the model
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @return the mapping of temporary generated files to their original target destination to eventually
+     *         finalizing the generation process
      */
-    private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
+    private Map<File, File> generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
         templateEngine.setTemplateFolder(
@@ -272,6 +279,7 @@ public class GenerationProcessor {
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
         Template templateEty = getTemplate(template, triggerInterpreter);
 
+        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
 
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput);
@@ -289,6 +297,8 @@ public class GenerationProcessor {
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
             File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
+            // remember mapping to later on copy the generated resources to its target destinations
+            tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -338,6 +348,7 @@ public class GenerationProcessor {
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, model, targetCharset);
             }
         }
+        return tmpToOrigFileTrace;
     }
 
     /**
