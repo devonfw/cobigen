@@ -26,8 +26,6 @@ import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link TemplatesConfigurationReader}
- *
- * @author mbrunnli (18.06.2013)
  */
 public class TemplatesConfigurationReaderTest {
 
@@ -41,7 +39,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests whether all templates of a template package could be retrieved successfully.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (18.06.2013)
      */
     @Test
     public void testTemplatesOfAPackageRetrieval() throws Exception {
@@ -61,7 +58,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests that templates will be correctly resolved by the template-scan mechanism.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateScan() throws Exception {
@@ -73,21 +69,12 @@ public class TemplatesConfigurationReaderTest {
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
         TriggerInterpreter triggerInterpreter = null;
-        String templateIdSpringCommon = "resources_resources_spring_common";
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
 
         // then
-        assertThat(templates).isNotNull().hasSize(7);
-        Template templateSpringCommon = templates.get(templateIdSpringCommon);
-        assertThat(templateSpringCommon).isNotNull();
-        assertThat(templateSpringCommon.getName()).isEqualTo(templateIdSpringCommon);
-        assertThat(templateSpringCommon.getRelativeTemplatePath())
-            .isEqualTo("resources/resources/spring/common.xml.ftl");
-        assertThat(templateSpringCommon.getUnresolvedTargetPath())
-            .isEqualTo("src/main/resources/resources/spring/common.xml");
-        assertThat(templateSpringCommon.getMergeStrategy()).isNull();
+        assertThat(templates).isNotNull().hasSize(6);
 
         String templateIdFooClass = "prefix_FooClass.java";
         Template templateFooClass = templates.get(templateIdFooClass);
@@ -103,7 +90,6 @@ public class TemplatesConfigurationReaderTest {
      * defaults
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() throws Exception {
@@ -141,7 +127,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the overriding of all possible attributes by templateExtensions
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() throws Exception {
@@ -187,7 +172,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests an empty templateExtensions does not override any defaults
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() throws Exception {
@@ -271,7 +255,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct resolution of template scan references in increments.
      * @throws InvalidConfigurationException
      *             test fails
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test
     public void testCorrectResolutionOfTemplateScanReferences() throws InvalidConfigurationException {
@@ -300,7 +283,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct detection of duplicate template scan names.
      * @throws InvalidConfigurationException
      *             expected
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnDuplicateTemplateScanNames() throws InvalidConfigurationException {
@@ -314,7 +296,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct detection of invalid template scan references.
      * @throws InvalidConfigurationException
      *             expected
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
@@ -326,7 +307,6 @@ public class TemplatesConfigurationReaderTest {
 
     /**
      * Tests the correct resolution of references of templates / templateScans / increments.
-     * @author mbrunnli (Jun 25, 2015)
      */
     @Test
     public void testIncrementComposition_combiningAllPossibleReferences() {
@@ -361,8 +341,6 @@ public class TemplatesConfigurationReaderTest {
      * Test for <a href="https://github.com/devonfw/tools-cobigen/issues/167">Issue 167</a>. Tests if the
      * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
      * the exception
-     *
-     * @author sholzer (Dec 18, 2015)
      */
     @Test
     public void testExceptionMessageForDuplicateTemplateNames() {

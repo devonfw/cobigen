@@ -1,17 +1,17 @@
 package com.capgemini.cobigen.impl.config.reader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -37,7 +37,9 @@ import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
+import com.capgemini.cobigen.impl.config.entity.TemplateFile;
 import com.capgemini.cobigen.impl.config.entity.TemplateFolder;
+import com.capgemini.cobigen.impl.config.entity.TemplatePath;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.IncrementRef;
 import com.capgemini.cobigen.impl.config.entity.io.Increments;
@@ -53,7 +55,6 @@ import com.capgemini.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -70,6 +71,14 @@ public class TemplatesConfigurationReader {
     // TODO should be extracted to template engine as this is currently freemarker specific
     private static final String TEMPLATE_EXTENSION = ".ftl";
 
+    /**
+     * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
+     */
+    private static final String PROPERTY_RELOCATE = "relocate";
+
+    /** The syntax for the variable pointing to the current working directory (CWD) of a template. */
+    private static final String VARIABLE_CWD = "${cwd}";
+
     /** JAXB root node of the configuration */
     private TemplatesConfiguration configNode;
 
@@ -83,7 +92,7 @@ public class TemplatesConfigurationReader {
     private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
 
     /** The top-level folder where the templates are located. */
-    private TemplateFolder rootFolder;
+    private TemplateFolder rootTemplateFolder;
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -96,7 +105,7 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        rootFolder = TemplateFolder.create(templatesRoot);
+        rootTemplateFolder = TemplateFolder.create(templatesRoot);
         configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         readConfiguration();
     }
@@ -193,9 +202,14 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "Multiple template definitions found for ref='" + t.getName() + "'");
                 }
-                templates.put(t.getName(),
-                    new Template(t.getName(), t.getDestinationPath(), t.getTemplateFile(), t.getMergeStrategy(),
-                        t.getTargetCharset(), configFilePath.getParent().resolve(t.getTemplateFile())));
+                TemplatePath child = rootTemplateFolder.navigate(t.getTemplateFile());
+                if ((child == null) || (child.isFolder())) {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "no template file found for '" + t.getTemplateFile() + "'");
+                }
+                Template template = createTemplate((TemplateFile) child, t.getName(), t.getDestinationPath(),
+                    t.getTemplateFile(), t.getMergeStrategy(), t.getTargetCharset());
+                templates.put(t.getName(), template);
             }
         }
 
@@ -257,9 +271,11 @@ public class TemplatesConfigurationReader {
     private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
         TriggerInterpreter triggerInterpreter) {
 
-        Path templateFolderPath = configFilePath.getParent().resolve(scan.getTemplatePath());
-        if (!Files.isDirectory(templateFolderPath)) {
-            throw new IllegalArgumentException("The path '" + templateFolderPath + "' does not describe a directory.");
+        String templatePath = scan.getTemplatePath();
+        TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
+        if ((templateFolder == null) || templateFolder.isFile()) {
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "The path '" + templatePath + "' does not describe a directory.");
         }
 
         if (scan.getName() != null) {
@@ -267,19 +283,20 @@ public class TemplatesConfigurationReader {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                     "Two templateScan nodes have been defined with the same @name by mistake.");
             } else {
-                templateScanTemplates.put(scan.getName(), Lists.<String> newArrayList());
+                templateScanTemplates.put(scan.getName(), new ArrayList<String>());
             }
         }
 
-        scanTemplates(templateFolderPath, "", scan, templates, trigger, triggerInterpreter, Sets.<String> newHashSet());
+        scanTemplates((TemplateFolder) templateFolder, "", scan, templates, trigger, triggerInterpreter,
+            Sets.<String> newHashSet());
     }
 
     /**
      * Recursively scans the templates specified by the given {@link TemplateScan} and adds them to the given
      * <code>templates</code> {@link Map}.
      *
-     * @param currentDirectory
-     *            the {@link File} pointing to the current directory to scan.
+     * @param templateFolder
+     *            the {@link TemplateFolder} pointing to the current directory to scan.
      * @param currentPath
      *            the current path relative to the top-level directory where we started the scan.
      * @param scan
@@ -293,7 +310,7 @@ public class TemplatesConfigurationReader {
      * @param observedTemplateNames
      *            observed template name during template scan. Needed for conflict detection
      */
-    private void scanTemplates(Path currentDirectory, String currentPath, TemplateScan scan,
+    private void scanTemplates(TemplateFolder templateFolder, String currentPath, TemplateScan scan,
         Map<String, Template> templates, Trigger trigger, TriggerInterpreter triggerInterpreter,
         HashSet<String> observedTemplateNames) {
 
@@ -302,58 +319,57 @@ public class TemplatesConfigurationReader {
             currentPathWithSlash = currentPathWithSlash + "/";
         }
 
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(currentDirectory)) {
-            Iterator<Path> it = dirStream.iterator();
-            while (it.hasNext()) {
-                Path next = it.next();
-                if (Files.isDirectory(next)) {
-                    scanTemplates(next, currentPathWithSlash + next.getFileName().toString(), scan, templates, trigger,
-                        triggerInterpreter, observedTemplateNames);
-                } else {
-                    String templateFileName = next.getFileName().toString();
-                    String templateNameWithoutExtension = templateFileName;
-                    if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
-                        templateNameWithoutExtension = templateFileName.substring(0,
-                            templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
+        for (TemplatePath child : templateFolder.getChildren()) {
+            if (child.isFolder()) {
+                scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
+                    trigger, triggerInterpreter, observedTemplateNames);
+            } else {
+                String templateFileName = child.getFileName();
+                String templateNameWithoutExtension = templateFileName;
+                if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
+                    templateNameWithoutExtension = templateFileName.substring(0,
+                        templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
+                }
+                String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
+                    + templateNameWithoutExtension;
+                if (observedTemplateNames.contains(templateName)) {
+                    throw new InvalidConfigurationException(
+                        "TemplateScan has detected two files with the same file name (" + child
+                            + ") and thus with the same "
+                            + "template name. Continuing would result in an indeterministic behavior.\n"
+                            + "For now, multiple files with the same name are not supported to be automatically "
+                            + "configured with templateScans.");
+                }
+                observedTemplateNames.add(templateName);
+                if (!templates.containsKey(templateName)) {
+                    String destinationPath = "";
+                    if (!StringUtils.isEmpty(scan.getDestinationPath())) {
+                        destinationPath = scan.getDestinationPath() + "/";
                     }
-                    String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
-                        + templateNameWithoutExtension;
-                    if (observedTemplateNames.contains(templateName)) {
-                        throw new InvalidConfigurationException(
-                            "TemplateScan has detected two files with the same file name (" + next.toString()
-                                + ") and thus with the same "
-                                + "template name. Continuing would result in an indeterministic behavior.\n"
-                                + "For now, multiple files with the same name are not supported to be automatically "
-                                + "configured with templateScans.");
+                    destinationPath += currentPathWithSlash + templateNameWithoutExtension;
+
+                    String templateFile = "";
+                    if (!StringUtils.isEmpty(scan.getTemplatePath())) {
+                        templateFile = scan.getTemplatePath() + "/";
                     }
-                    observedTemplateNames.add(templateName);
-                    if (!templates.containsKey(templateName)) {
-                        String destinationPath = "";
-                        if (!StringUtils.isEmpty(scan.getDestinationPath())) {
-                            destinationPath = scan.getDestinationPath() + "/";
-                        }
-                        destinationPath += currentPathWithSlash + templateNameWithoutExtension;
+                    templateFile += currentPathWithSlash + templateFileName;
+                    String mergeStratgey = scan.getMergeStrategy();
+                    Template template = createTemplate((TemplateFile) child, templateName, destinationPath,
+                        templateFile, mergeStratgey, scan.getTargetCharset());
+                    templates.put(templateName, template);
 
-                        String templateFile = "";
-                        if (!StringUtils.isEmpty(scan.getTemplatePath())) {
-                            templateFile = scan.getTemplatePath() + "/";
-                        }
-                        templateFile += currentPathWithSlash + templateFileName;
-                        String mergeStratgey = scan.getMergeStrategy();
-                        Template template = new Template(templateName, destinationPath, templateFile, mergeStratgey,
-                            scan.getTargetCharset(), next);
-                        templates.put(templateName, template);
-
-                        if (templateScanTemplates.get(scan.getName()) != null) {
-                            templateScanTemplates.get(scan.getName()).add(templateName);
-                        }
+                    if (templateScanTemplates.get(scan.getName()) != null) {
+                        templateScanTemplates.get(scan.getName()).add(templateName);
                     }
                 }
             }
-        } catch (IOException e) {
-            LOG.error("Could not create directory stream for path '" + currentDirectory.toUri().toString()
-                + "'. Continuing template scanning...");
         }
+    }
+
+    private Template createTemplate(TemplateFile child, String templateName, String destinationPath,
+        String templateFile, String mergeStratgey, String outputCharset) {
+
+        return new Template(templateName, destinationPath, templateFile, mergeStratgey, outputCharset, child.getPath());
     }
 
     /**
