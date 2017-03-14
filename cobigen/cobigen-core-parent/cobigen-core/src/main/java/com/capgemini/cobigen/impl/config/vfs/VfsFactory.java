@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class VfsFactory {
 
-    public static TargetFolder create(Path root, Map<String, String> variables) {
+    public static VfsFolder create(Path root, Map<String, String> variables) {
         return null;
     }
 }
