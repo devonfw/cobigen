@@ -48,16 +48,6 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             result.setResultConfigurationJaxbRootNode(upgradedConfig);
         }
             break;
-        case v2_1: // to v2.2 - just increase version number
-        {
-            com.capgemini.cobigen.impl.config.entity.io.v2_2.TemplatesConfiguration upgradedConfig =
-                new DozerBeanMapper().map(previousConfigurationRootNode,
-                    com.capgemini.cobigen.impl.config.entity.io.v2_2.TemplatesConfiguration.class);
-            upgradedConfig.setVersion(new BigDecimal("2.2"));
-
-            result.setResultConfigurationJaxbRootNode(upgradedConfig);
-        }
-            break;
         default:
             throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source
                 + " to a newer one is currently not supported.");
