@@ -5,10 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-/**
- * Version steps of the templates configuration.
- * @author mbrunnli (Jun 22, 2015)
- */
+/** Incompatible Version steps of the templates configuration. */
 public enum TemplatesConfigurationVersion {
 
     /**
@@ -32,15 +29,7 @@ public enum TemplatesConfigurationVersion {
      * <li>target namespace changed</li>
      * </ul>
      */
-    v2_1(2.1f),
-
-    /**
-     * ChangeLog:
-     * <ul>
-     * <li>added template engine attribute in root node (#293)</li>
-     * </ul>
-     */
-    v2_2(2.2f);
+    v2_1(2.1f);
 
     /** Comparable float representation of the version number. */
     private float floatRepresentation;
@@ -49,7 +38,6 @@ public enum TemplatesConfigurationVersion {
      * The constructor.
      * @param floatRepresentation
      *            comparable float representation of the version number.
-     * @author mbrunnli (May 17, 2016)
      */
     private TemplatesConfigurationVersion(float floatRepresentation) {
         this.floatRepresentation = floatRepresentation;
@@ -57,7 +45,6 @@ public enum TemplatesConfigurationVersion {
 
     /**
      * @return the comparable float representation value of the version.
-     * @author mbrunnli (May 17, 2016)
      */
     public float getFloatRepresentation() {
         return floatRepresentation;
