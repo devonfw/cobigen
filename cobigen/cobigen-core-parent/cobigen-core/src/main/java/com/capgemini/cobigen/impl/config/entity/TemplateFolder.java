@@ -138,6 +138,9 @@ public class TemplateFolder extends TemplatePath {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(templatePath)) {
             for (Path childName : directoryStream) {
                 String filename = childName.getFileName().toString();
+                if (filename.endsWith("/")) {
+                    filename = filename.substring(0, filename.length() - 1);
+                }
                 if (!CobiGenPropertiesUtil.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
                     TemplatePath child = createChild(childName);
                     children.put(filename, child);
