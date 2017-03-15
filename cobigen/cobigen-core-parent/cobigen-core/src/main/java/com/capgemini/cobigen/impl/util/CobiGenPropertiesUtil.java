@@ -49,11 +49,9 @@ public class CobiGenPropertiesUtil {
             return parent;
         }
 
-        Properties properties;
-        if (parent == null) {
-            properties = new Properties();
-        } else {
-            properties = new Properties(parent);
+        Properties properties = new Properties();
+        if (parent != null) {
+            properties.putAll(parent);
         }
         try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
             properties.load(reader);

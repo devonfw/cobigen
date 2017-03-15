@@ -76,23 +76,6 @@ public class TemplateFolder extends TemplatePath {
         children = new HashMap<>();
         variables = CobiGenPropertiesUtil.load(templatePath, parent.variables);
     }
-    //
-    // /**
-    // *
-    // *
-    // *
-    // * @return the unresolved path relative to {@code basedir} (the top-level folder of the source project
-    // of
-    // * the generation containing the input file). Examples:
-    // * <ul>
-    // * <li>"java/${rootPackage}/${component}/common/api/${detail}"</li>
-    // * <li>"../api/${destinationPath}/${rootPackage}/${component}/common/api/${detail}"</li>
-    // * <li>""</li>
-    // * </ul>
-    // */
-    // public String getTargetPath() {
-    // return targetPath;
-    // }
 
     /**
      * @return the {@link Map} with the variables for this {@link TemplateFolder}. Will be inherited from
@@ -110,15 +93,8 @@ public class TemplateFolder extends TemplatePath {
      * @return the requested child or {@code null} if no such file exists.
      */
     public TemplatePath getChild(String name) {
-        TemplatePath child = children.get(name);
-        if (child == null) {
-            Path childPath = getPath().resolve(name);
-            child = createChild(childPath);
-            if (child != null) {
-                children.put(name, child);
-            }
-        }
-        return child;
+        scanChildren();
+        return children.get(name);
     }
 
     /**
@@ -162,7 +138,7 @@ public class TemplateFolder extends TemplatePath {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(templatePath)) {
             for (Path childName : directoryStream) {
                 String filename = childName.getFileName().toString();
-                if (!CobiGenPropertiesUtil.COBIGEN_PROPERTIES.equals(filename)) {
+                if (!CobiGenPropertiesUtil.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
                     TemplatePath child = createChild(childName);
                     children.put(filename, child);
                 }
@@ -247,6 +223,9 @@ public class TemplateFolder extends TemplatePath {
      */
     public static TemplateFolder create(Path rootPath) {
 
+        if (!Files.isDirectory(rootPath)) {
+            throw new CobiGenRuntimeException("Directory " + rootPath + " does not exist!");
+        }
         return new TemplateFolder(rootPath, new Properties());
     }
 
