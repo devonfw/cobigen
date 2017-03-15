@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.unittest.config.entity;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,12 +36,17 @@ public class TemplatePathTest extends Assertions {
 
     /**
      * Test {@link TemplateFolder#create(Path)} for empty folder.
+     * @throws IOException
+     *             test fails
      */
     @Test
-    public void testEmptyFolder() {
+    public void testEmptyFolder() throws IOException {
 
         String filename = "empty";
         Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
+        if (!Files.exists(path)) {
+            Files.createDirectory(path);
+        }
         TemplateFolder folder = TemplateFolder.create(path);
         verifyRootFolder(folder, path);
         assertThat(folder.getVariables()).isEmpty();
