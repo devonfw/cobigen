@@ -353,4 +353,76 @@ public class TemplatesConfigurationReaderTest {
         }
         assertFalse(message.indexOf("Bar") == -1);
     }
+
+    /**
+     * Test of <a href="https://github.com/devonfw/tools-cobigen/issues/157">issue 157</a> for relocation of
+     * templates to support multi-module generation.
+     */
+    @Test
+    public void testRelocate() {
+
+        // given
+        String noRelocation = "";
+        String relocation = "../api/";
+        String pathname = testFileRootPath + "valid_relocate/";
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(pathname).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+
+        // validation
+        int templateCount = 0;
+        templateCount++;
+        Template entityName = verifyTemplate(templates, "__EntityName__.java",
+            "java/__rootpackage__/__component__/common/api/", pathname, relocation);
+        assertThat(entityName.getVariables()).hasSize(2).containsEntry("foo", "common.api").containsEntry("relocate",
+            "../api/src/main/${cwd}");
+
+        templateCount++;
+        Template entityNameEntity = verifyTemplate(templates, "__EntityName__Entity.java",
+            "java/__rootpackage__/__component__/dataaccess/api/", pathname, noRelocation);
+        assertThat(entityNameEntity.getVariables()).hasSize(1).containsEntry("foo", "root");
+
+        templateCount++;
+        Template entityNameEto = verifyTemplate(templates, "__EntityName__Eto.java",
+            "java/__rootpackage__/__component__/logic/api/to/", pathname, relocation);
+        assertThat(entityNameEto.getVariables()).hasSize(2).containsEntry("foo", "logic.api.to")
+            .containsEntry("relocate", "../api/src/main/${cwd}");
+
+        templateCount++;
+        Template component = verifyTemplate(templates, "__Component__.java",
+            "java/__rootpackage__/__component__/logic/api/", pathname, noRelocation);
+        assertThat(component.getVariables()).hasSize(1).containsEntry("foo", "root");
+
+        templateCount++;
+        Template componentImpl = verifyTemplate(templates, "__Component__Impl.java",
+            "java/__rootpackage__/__component__/logic/impl/", pathname, noRelocation);
+        assertThat(componentImpl.getVariables()).hasSize(1).containsEntry("foo", "root");
+
+        assertThat(templates).hasSize(templateCount);
+
+        Increment increment = increments.get("test");
+        assertThat(increment).isNotNull();
+        assertThat(increment.getName()).isEqualTo("test");
+        assertThat(increment.getDescription()).isEqualTo("TEST");
+        assertThat(increment.getTemplates()).hasSize(templates.size()).containsAll(templates.values());
+    }
+
+    private Template verifyTemplate(Map<String, Template> templates, String name, String path, String rootPath,
+        String relocation) {
+
+        Template template = templates.get(name);
+        assertThat(template).isNotNull();
+        String pathWithName = path + name;
+        assertThat(template.getRelativeTemplatePath()).isEqualTo(pathWithName);
+        assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/')).isEqualTo(rootPath + pathWithName);
+        assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/" + pathWithName);
+        assertThat(template.getUnresolvedTargetPath()).isEqualTo(relocation + "src/main/" + pathWithName);
+        return template;
+    }
 }

@@ -381,7 +381,7 @@ public class TemplatesConfigurationReader {
         TemplateFolder templateFolder = templateFile.getParent();
         String relocate = templateFolder.getVariables().getProperty(PROPERTY_RELOCATE);
         if (relocate != null) {
-            unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFolder.toString());
+            unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFile.toString());
         }
         return new Template(templateFile, templateName, unresolvedDestinationPath, unresolvedTemplatePath,
             mergeStratgey, outputCharset);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templateScans>
+    <templateScan name="crud" templatePath="java" destinationPath="src/main/java"/>
+  </templateScans>
+
+	<increments>
+		<increment name="test" description="TEST">
+			<templateScanRef ref="crud"/>
+		</increment>
+	</increments>
+
+</templatesConfiguration>
