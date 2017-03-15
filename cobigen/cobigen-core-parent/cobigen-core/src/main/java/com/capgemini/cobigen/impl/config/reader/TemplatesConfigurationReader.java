@@ -96,6 +96,14 @@ public class TemplatesConfigurationReader {
     }
 
     /**
+     * Returns the configured template engine to be used
+     * @return the configured template engine to be used
+     */
+    public String getTemplateEngine() {
+        return configNode.getTemplateEngine();
+    }
+
+    /**
      * Reads the templates configuration.
      */
     private void readConfiguration() {
