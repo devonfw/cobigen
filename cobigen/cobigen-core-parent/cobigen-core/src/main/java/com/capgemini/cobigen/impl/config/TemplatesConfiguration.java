@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
@@ -19,35 +20,26 @@ import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 /**
  * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about
  * templates and the target destination for the generated data.
- *
- * @author trippl (04.04.2013)
  */
 public class TemplatesConfiguration {
 
-    /**
-     * Folder name of the context definition (root folder for all templates)
-     */
+    /** Folder name of the context definition (root folder for all templates) */
     private String templatesFolderName;
 
-    /**
-     * All available templates
-     */
+    /** All available templates */
     private Map<String, Template> templates;
 
-    /**
-     * All available increments
-     */
+    /** All available increments */
     private Map<String, Increment> increments;
 
-    /**
-     * {@link Trigger}, all templates of this configuration depend on
-     */
+    /** {@link Trigger}, all templates of this configuration depend on */
     private Trigger trigger;
 
-    /**
-     * {@link TriggerInterpreter} the trigger has been interpreted with
-     */
+    /** {@link TriggerInterpreter} the trigger has been interpreted with */
     private TriggerInterpreter triggerInterpreter;
+
+    /** {@link TextTemplateEngine} to be used for the template set covered by this configuration. */
+    private String templateEngine;
 
     /**
      * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
@@ -74,6 +66,7 @@ public class TemplatesConfiguration {
         templatesFolderName = trigger.getTemplateFolder();
         templates = reader.loadTemplates(trigger, triggerInterpreter);
         increments = reader.loadIncrements(templates, trigger);
+        templateEngine = reader.getTemplateEngine();
         this.trigger = trigger;
         this.triggerInterpreter = triggerInterpreter;
     }
@@ -87,7 +80,6 @@ public class TemplatesConfiguration {
      * @author mbrunnli (09.04.2014)
      */
     public Template getTemplate(String id) {
-
         return templates.get(id);
     }
 
@@ -98,7 +90,6 @@ public class TemplatesConfiguration {
      * @author mbrunnli (12.02.2013)
      */
     public Set<Template> getAllTemplates() {
-
         return new HashSet<>(templates.values());
     }
 
@@ -109,7 +100,6 @@ public class TemplatesConfiguration {
      * @author mbrunnli (09.04.2014)
      */
     public Trigger getTrigger() {
-
         return trigger;
     }
 
@@ -129,7 +119,6 @@ public class TemplatesConfiguration {
      * @author trippl (25.02.2013)
      */
     public List<Increment> getAllGenerationPackages() {
-
         return new LinkedList<>(increments.values());
     }
 
@@ -140,8 +129,14 @@ public class TemplatesConfiguration {
      * @author mbrunnli (05.04.2013)
      */
     public String getTemplatesFolderName() {
-
         return templatesFolderName;
     }
 
+    /**
+     * Returns the configured template engine
+     * @return the template engine name to be used
+     */
+    public String getTemplateEngine() {
+        return templateEngine;
+    }
 }

@@ -32,7 +32,15 @@ public enum TemplatesConfigurationVersion {
      * <li>target namespace changed</li>
      * </ul>
      */
-    v2_1(2.1f);
+    v2_1(2.1f),
+
+    /**
+     * ChangeLog:
+     * <ul>
+     * <li>added template engine attribute in root node (#293)</li>
+     * </ul>
+     */
+    v2_2(2.2f);
 
     /** Comparable float representation of the version number. */
     private float floatRepresentation;
