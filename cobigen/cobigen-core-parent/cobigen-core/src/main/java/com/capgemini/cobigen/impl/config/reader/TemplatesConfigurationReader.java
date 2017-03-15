@@ -32,7 +32,9 @@ import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
@@ -76,9 +78,6 @@ public class TemplatesConfigurationReader {
 
     /** Cache to find all templates by name for each template scan */
     private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
-
-    /** The file extension of the template files. */
-    private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -314,9 +313,12 @@ public class TemplatesConfigurationReader {
                 } else {
                     String templateFileName = next.getFileName().toString();
                     String templateNameWithoutExtension = templateFileName;
-                    if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
+
+                    TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
+                    if (!StringUtils.isEmpty(templateEngine.getTemplateFileEnding())
+                        && templateFileName.endsWith(templateEngine.getTemplateFileEnding())) {
                         templateNameWithoutExtension = templateFileName.substring(0,
-                            templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
+                            templateFileName.length() - templateEngine.getTemplateFileEnding().length());
                     }
                     String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
                         + templateNameWithoutExtension;
