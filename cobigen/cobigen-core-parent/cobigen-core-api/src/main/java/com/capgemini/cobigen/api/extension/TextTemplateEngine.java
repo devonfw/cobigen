@@ -20,6 +20,15 @@ public interface TextTemplateEngine {
     public String getName();
 
     /**
+     * The return value is considered for automatically retrieving file names from templates within a
+     * template-scan. The template file ending will be eliminated (if exists) from a template's file name to
+     * recover the target file name.
+     * @return the file ending of templates in the format ".ftl". Might be {@code null} if the templates do
+     *         not specify any file ending.
+     */
+    public String getTemplateFileEnding();
+
+    /**
      * Processes the passed template with the passed model as input and writes the generated result to the
      * output writer with the given output encoding.
      * @param template
