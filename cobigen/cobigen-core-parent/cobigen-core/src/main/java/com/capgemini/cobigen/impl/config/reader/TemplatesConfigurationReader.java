@@ -138,8 +138,7 @@ public class TemplatesConfigurationReader {
 
             // If we reach this point, the configuration version and root node has been validated.
             // Unmarshal with schema checks for checking the correctness and give the user more hints to
-            // correct his
-            // failures
+            // correct his failures
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             TemplatesConfigurationVersion latestConfigurationVersion = TemplatesConfigurationVersion.getLatest();
             try (
@@ -239,6 +238,7 @@ public class TemplatesConfigurationReader {
                 if (templates.containsKey(ext.getRef())) {
                     Template template = templates.get(ext.getRef());
                     if (ext.getDestinationPath() != null) {
+                        template.setUnresolvedTemplatePath(ext.getDestinationPath());
                         template.setUnresolvedTargetPath(ext.getDestinationPath());
                     }
                     if (ext.getMergeStrategy() != null) {
@@ -393,8 +393,6 @@ public class TemplatesConfigurationReader {
                     Paths.get(scanDestinationPath).resolve(destinationPathWithoutScanDestinationPrefix);
                 unresolvedDestinationPath =
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
-            } else {
-                // unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFile.toString());
             }
         }
         return new Template(templateFile, templateName, unresolvedDestinationPath, unresolvedTemplatePath,

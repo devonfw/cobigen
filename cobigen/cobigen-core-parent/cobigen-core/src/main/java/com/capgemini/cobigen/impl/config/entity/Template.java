@@ -21,9 +21,9 @@ public class Template implements TextTemplate {
     private String unresolvedTargetPath;
 
     /**
-     * Relative path of the actual file to generate to. Path variables and relocates are not resolved.
+     * See {@link #getUnresolvedTemplatePath()}
      */
-    private final String unresolvedTemplatePath;
+    private String unresolvedTemplatePath;
 
     /** Charset of the target file */
     private String targetCharset;
@@ -40,7 +40,7 @@ public class Template implements TextTemplate {
      * @param unresolvedDestinationPath
      *            path of the destination file
      * @param unresolvedTemplatePath
-     *            elative path of the actual file to generate to. Path variables and relocates are not
+     *            relative path of the actual file to generate to. Path variables and relocates are not
      *            resolved.
      * @param mergeStrategy
      *            for the template
@@ -121,9 +121,16 @@ public class Template implements TextTemplate {
     }
 
     /**
-     * Returns the relative path of the final target file to generate to. Path variables and relocates are not
-     * resolved.
-     * @return the unresolved template path.
+     * @param unresolvedTemplatePath
+     *            the value of {@link #getUnresolvedTemplatePath()}
+     */
+    public void setUnresolvedTemplatePath(String unresolvedTemplatePath) {
+        this.unresolvedTemplatePath = unresolvedTemplatePath;
+    }
+
+    /**
+     * @return the relative path of the final target file to generate to. Path variables and relocates are not
+     *         resolved.
      */
     public String getUnresolvedTemplatePath() {
         return unresolvedTemplatePath;
