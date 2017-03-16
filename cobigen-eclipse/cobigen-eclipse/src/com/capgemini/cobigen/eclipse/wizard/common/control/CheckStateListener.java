@@ -59,6 +59,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
 
+    /** Cached projects in workspace */
     private Map<Path, IProject> projectsInWorkspace = Maps.newHashMap();
 
     /**
@@ -220,21 +221,21 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         Set<String> outerPaths = new HashSet<>();
         for (TemplateTo template : pkg.getTemplates()) {
             Path targetAbsolutePath = cobigenWrapper.resolveTemplateDestinationPath(template);
-            // paths.add(
-            // targetAbsolutePath.relativize(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().toPath())
-            // .toString().replace("\\", "/"));
 
-            boolean found = false;
+            Path mostSpecificProject = null;
             for (Path projPath : projectsInWorkspace.keySet()) {
                 if (targetAbsolutePath.startsWith(projPath)) {
-                    Path relProjPath = projPath.relativize(targetAbsolutePath);
-                    workspacePaths.add(projectsInWorkspace.get(projPath).getFullPath().toFile().toPath()
-                        .resolve(relProjPath).toString().replace("\\", "/"));
-                    found = true;
-                    break;
+                    if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
+                        mostSpecificProject = projPath;
+                    }
                 }
             }
-            if (!found) {
+
+            if (mostSpecificProject != null) {
+                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
+                workspacePaths.add(projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath()
+                    .resolve(relProjPath).toString().replace("\\", "/"));
+            } else {
                 outerPaths.add(targetAbsolutePath.toString().replace("\\", "/"));
             }
         }
