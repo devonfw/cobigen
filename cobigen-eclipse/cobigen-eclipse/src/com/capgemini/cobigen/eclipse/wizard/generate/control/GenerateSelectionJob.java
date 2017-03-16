@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -32,8 +33,10 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
+import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
+import com.google.common.collect.Sets;
 
 /**
  * Abstract implementation for processing generation
@@ -77,8 +80,16 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
             final GenerationReportTo generationReport = performGeneration(monitor);
 
             if (generationReport.isSuccessful()) {
-                IProject proj = cobigenWrapper.getGenerationTargetProject();
-                if (proj != null) {
+                Set<String> generatedFiles = cobigenWrapper.getAllTargetPathsInWorkspace(templatesToBeGenerated);
+                Set<IProject> projects = Sets.newHashSet();
+                for (String filePath : generatedFiles) {
+                    IProject project =
+                        ResourcesPlugin.getWorkspace().getRoot().getProject(PathUtil.getProject(filePath));
+                    if (project.exists()) {
+                        projects.add(project);
+                    }
+                }
+                for (IProject proj : projects) {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 }
 
@@ -219,14 +230,18 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
         IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             List<ICompilationUnit> cus = new LinkedList<>();
-            for (IFile file : cobigenWrapper.getAllTargetFilesInWorkspace(templatesToBeGenerated)) {
-                if (file.exists()) {
+            Set<String> allTargetPathsInWorkspace = cobigenWrapper.getAllTargetPathsInWorkspace(templatesToBeGenerated);
+
+            for (String path : allTargetPathsInWorkspace) {
+                IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+                if (file != null && file instanceof IFile) {
                     IJavaElement elem = JavaCore.create(file);
                     if (elem instanceof ICompilationUnit) {
                         cus.add((ICompilationUnit) elem);
                     }
                 }
             }
+
             return cus.toArray(new ICompilationUnit[0]);
         } else {
             return new ICompilationUnit[0];

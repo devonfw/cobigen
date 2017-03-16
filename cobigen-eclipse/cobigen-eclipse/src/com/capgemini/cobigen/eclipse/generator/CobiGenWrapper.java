@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.io.Charsets;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -382,8 +381,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            templates for which the target files should be resolved
      * @return workspace dependent paths of all possible generated resources.
      */
-    public Set<IFile> getAllTargetFilesInWorkspace(List<TemplateTo> generatedTemplates) {
-        Set<IFile> files = new HashSet<>();
+    public Set<String> getAllTargetPathsInWorkspace(List<TemplateTo> generatedTemplates) {
+        Set<String> paths = new HashSet<>();
 
         List<Object> inputs;
         boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(this.inputs.get(0));
@@ -396,13 +395,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         for (TemplateTo template : generatedTemplates) {
             for (Object input : inputs) {
                 String path = resolveWorkspaceDependentTemplateDestinationPath(template, input);
-                IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-                if (file != null && file instanceof IFile) {
-                    files.add((IFile) file);
+                if (path != null) {
+                    paths.add(path);
                 }
             }
         }
-        return files;
+        return paths;
     }
 
     /**
