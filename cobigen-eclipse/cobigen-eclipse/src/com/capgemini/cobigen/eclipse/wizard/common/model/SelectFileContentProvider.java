@@ -1,8 +1,10 @@
 package com.capgemini.cobigen.eclipse.wizard.common.model;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
+import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.ICompilationUnitStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IFileStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IFolderStub;
@@ -54,18 +58,19 @@ public class SelectFileContentProvider implements ITreeContentProvider {
     private Set<String> filteredPaths = new HashSet<>();
 
     /**
-     * Cached {@link IPackageFragmentRoot}s of the top project tree members
+     * Cached {@link IPackageFragmentRoot}s of the top project tree members. Mapping name of the project to
+     * its cached package fragment roots.
      */
-    private IPackageFragmentRoot[] _cachedPackageFragmentRoots;
+    private Map<String, IPackageFragmentRoot[]> _cachedPackageFragmentRoots = Maps.newHashMap();
 
     /**
-     * Cached Children until the filter is reset
+     * Cached children for each project until the filter is reset.
      */
     private Map<String, Object[]> _cachedChildren = Maps.newHashMap();
 
     /**
      * Cached already provided resources (including stubs) for performance improvements & reverse lookup
-     * (mapping from path to resources)
+     * (mapping from project to path to resources)
      */
     private Map<String, Object> _cachedProvidedResources = Maps.newHashMap();
 
@@ -79,31 +84,37 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         filteredPaths = new HashSet<>(paths);
         _cachedChildren.clear();
         _cachedProvidedResources.clear();
+        _cachedPackageFragmentRoots.clear();
         HierarchicalTreeOperator.resetCache();
     }
 
     @Override
     public Object[] getElements(Object inputElement) {
 
-        Object[] result = new Object[0];
+        List<Object> result = new LinkedList<>();
         if (inputElement instanceof IProject[]) {
-            // hack due to bug 9262 (see javadoc of getElements)
-            IJavaProject jProj = JavaCore.create(((IProject[]) inputElement)[0]);
-            if (jProj != null) {
-                try {
-                    _cachedPackageFragmentRoots = jProj.getPackageFragmentRoots();
-                } catch (JavaModelException e) {
-                    // Ignore (only usablility issue)
-                    LOG.error(
-                        "An internal java model exception occured while retrieving the package fragment roots for project '{}'.",
-                        jProj.getElementName(), e);
+            for (IProject proj : (IProject[]) inputElement) {
+                if (isElementToBeShown(proj.getFullPath())) {
+
+                    // hack due to bug 9262 (see javadoc of getElements)
+                    IJavaProject jProj = JavaCore.create(proj);
+                    if (jProj != null && jProj.exists()) {
+                        try {
+                            _cachedPackageFragmentRoots.put(jProj.getElementName(), jProj.getPackageFragmentRoots());
+                        } catch (JavaModelException e) {
+                            // Ignore (only usability issue)
+                            LOG.error(
+                                "An internal java model exception occured while retrieving the package fragment roots for project '{}'.",
+                                jProj.getElementName(), e);
+                        }
+                        result.add(jProj);
+                    } else {
+                        result.add(proj);
+                    }
                 }
-                result = new IJavaProject[] { jProj };
-            } else {
-                result = new IProject[] { ((IProject[]) inputElement)[0] };
             }
         }
-        return result;
+        return result.toArray();
     }
 
     @Override
@@ -191,8 +202,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     affectedChildrenList.toArray());
                 return affectedChildrenList.toArray();
             } catch (CoreException e) {
-                LOG.error("An eclipse internal exceptions occurs while fetching the children of {}.",
-                    ((IJavaElement) parentElement).getElementName(), e);
+                throw new CobiGenEclipseRuntimeException(
+                    "An eclipse internal exceptions occurs while fetching the children of "
+                        + ((IJavaElement) parentElement).getElementName() + ".",
+                    e);
             }
         }
 
@@ -210,7 +223,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @return List of {@link IPackageFragment}s, which will be stubbed
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (01.04.2014)
      */
     private List<Object> stubNonExistentChildren(Object parentElement, boolean considerPackages)
         throws JavaModelException {
@@ -332,7 +344,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *            the so far stubbed resources and similarly the output of this method as new stubbed
      *            resources will be added to this list. This is necessary in order to avoid duplicates in this
      *            list.
-     * @author mbrunnli (01.04.2014)
      */
     private void stubNonExistentChildren(IResource parentElement, List<Object> stubbedChildren) {
 
@@ -450,7 +461,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 // cache is correctly initialized and filled because of the invariant, that getElements will
                 // be called
                 // before getChildren
-                for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
+                for (IPackageFragmentRoot root : _cachedPackageFragmentRoots.get(treeParent)) {
                     if (!root.isReadOnly() && child.getPath().toString().startsWith(root.getPath().toString())) {
                         return root;
                     }
@@ -482,11 +493,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @param parentPath
      *            parent path, which will be included in all resulting non existent child paths
      * @return the list of paths for all non existent but addressed children
-     * @author mbrunnli (01.04.2014)
      */
-    private List<String> getNonExistentChildren(IPath parentPath) {
+    private Set<String> getNonExistentChildren(IPath parentPath) {
 
-        List<String> paths = new LinkedList<>();
+        Set<String> paths = new LinkedHashSet<>();
         for (String fp : filteredPaths) {
             IPath filteredPath = new Path(fp);
             if (parentPath.isPrefixOf(filteredPath)) {
@@ -538,7 +548,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @throws CoreException
      *             if an internal eclipse exception occurs
      * @return an unordered set of all non package children from the parent
-     * @author mbrunnli (14.02.2013)
      */
     private Set<Object> getNonPackageChildren(IParent parent, List<Object> stubbedResources) throws CoreException {
 
@@ -565,11 +574,10 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @param parent
      *            {@link IResource} the children should be determined
      * @param stubbedResources
-     *            the list of already subbed ressources
+     *            the list of already stubbed resources
      * @throws CoreException
      *             if an internal eclipse exception occurs
      * @return the list of resource children, which are not already found in the java model.
-     * @author mbrunnli (04.03.2013)
      */
     private List<Object> getNoneDuplicateResourceChildren(IContainer parent, List<Object> stubbedResources)
         throws CoreException {
@@ -601,7 +609,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @param children
      *            a list of children which should be filtered
      * @return all children affected by the generation process
-     * @author mbrunnli (14.02.2013)
      */
     private Object[] getAffectedChildren(List<Object> children) {
 
@@ -625,12 +632,11 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *            path of the current element
      * @return true, if the path is affected by any template generation<br>
      *         false, otherwise
-     * @author mbrunnli (14.02.2013)
      */
     private boolean isElementToBeShown(IPath fullPath) {
 
         for (String s : filteredPaths) {
-            if (s.startsWith(fullPath.toString())) {
+            if (Paths.get(s).startsWith(Paths.get(fullPath.toString()))) {
                 return true;
             }
         }
@@ -645,13 +651,15 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @return <code>true</code> if the path starts with the path of any {@link IPackageFragmentRoot} or is
      *         contained in it<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (11.03.2013)
      */
     private boolean isDefinedInSourceFolder(String path) {
 
-        for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
-            if (!root.isReadOnly() && path.startsWith(root.getPath().toString())) {
-                return true;
+        String projectName = PathUtil.getProject(path);
+        if (_cachedPackageFragmentRoots.containsKey(projectName)) {
+            for (IPackageFragmentRoot root : _cachedPackageFragmentRoots.get(projectName)) {
+                if (!root.isReadOnly() && path.startsWith(root.getPath().toString())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -668,9 +676,12 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     private boolean isPartOfAnySourceFolder(String path) {
 
-        for (IPackageFragmentRoot root : _cachedPackageFragmentRoots) {
-            if (!root.isReadOnly() && root.getPath().toString().startsWith(path)) {
-                return true;
+        String projectName = PathUtil.getProject(path);
+        if (_cachedPackageFragmentRoots.containsKey(projectName)) {
+            for (IPackageFragmentRoot root : _cachedPackageFragmentRoots.get(projectName)) {
+                if (!root.isReadOnly() && root.getPath().toString().startsWith(path)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -682,7 +693,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * @param path
      *            to be checked
      * @return <code>true</code> if the given path is not defined within any source folder
-     * @author mbrunnli (12.03.2013)
      */
     private boolean isPartOfAnyNonSourceFolderPath(String path) {
 
@@ -699,7 +709,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      * any jdt {@link IPackageFragmentRoot}
      *
      * @return all filtered paths which do not contain any jdt containers
-     * @author mbrunnli (11.03.2013)
      */
     private Set<String> getNonJavaResourcePaths() {
 

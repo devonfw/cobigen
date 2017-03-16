@@ -4,10 +4,13 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -23,7 +26,6 @@ import org.slf4j.MDC;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
@@ -34,6 +36,7 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentP
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * This {@link CheckStateListener} provides the check / uncheck of the increments list and the generation
@@ -56,6 +59,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
 
+    private Map<Path, IProject> projectsInWorkspace = Maps.newHashMap();
+
     /**
      * Creates a new {@link CheckStateListener} instance
      *
@@ -71,6 +76,10 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         this.cobigenWrapper = cobigenWrapper;
         this.page = page;
         this.batch = batch;
+
+        for (IProject proj : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            projectsInWorkspace.put(proj.getLocation().toFile().toPath(), proj);
+        }
     }
 
     @Override
@@ -200,20 +209,36 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
     /**
      * Returns the set of all workspace relative destination paths for the templates of the given
-     * {@link ComparableIncrement} but only for the {@link CobiGenWrapper#getCurrentRepresentingInput()}.
+     * {@link ComparableIncrement}.
      * @param pkg
      *            {@link ComparableIncrement} the template destination paths should be retrieved for
      * @return the {@link HashSet} of destination paths
      */
     private Set<String> getDestinationPaths(ComparableIncrement pkg) {
 
-        Set<String> paths = new HashSet<>();
+        Set<String> workspacePaths = new HashSet<>();
+        Set<String> outerPaths = new HashSet<>();
         for (TemplateTo template : pkg.getTemplates()) {
             Path targetAbsolutePath = cobigenWrapper.resolveTemplateDestinationPath(template);
-            paths.add(PathUtil.getProjectDependentFile(cobigenWrapper.getGenerationTargetProject(), targetAbsolutePath)
-                .getFullPath().toString());
+            // paths.add(
+            // targetAbsolutePath.relativize(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().toPath())
+            // .toString().replace("\\", "/"));
+
+            boolean found = false;
+            for (Path projPath : projectsInWorkspace.keySet()) {
+                if (targetAbsolutePath.startsWith(projPath)) {
+                    Path relProjPath = projPath.relativize(targetAbsolutePath);
+                    workspacePaths.add(projectsInWorkspace.get(projPath).getFullPath().toFile().toPath()
+                        .resolve(relProjPath).toString().replace("\\", "/"));
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                outerPaths.add(targetAbsolutePath.toString().replace("\\", "/"));
+            }
         }
-        return paths;
+        return workspacePaths;
     }
 
     /**
