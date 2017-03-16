@@ -321,11 +321,7 @@ public class TemplatesConfigurationReader {
                     trigger, triggerInterpreter, observedTemplateNames);
             } else {
                 String templateFileName = child.getFileName();
-                String templateNameWithoutExtension = templateFileName;
-                if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
-                    templateNameWithoutExtension = templateFileName.substring(0,
-                        templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
-                }
+                String templateNameWithoutExtension = stripTemplateFileending(templateFileName);
                 String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
                     + templateNameWithoutExtension;
                 if (observedTemplateNames.contains(templateName)) {
@@ -358,6 +354,21 @@ public class TemplatesConfigurationReader {
     }
 
     /**
+     * Strips the file ending provided by the template engine from the file name.
+     * @param templateFileName
+     *            file name of the template
+     * @return the file name without the template file ending
+     */
+    private String stripTemplateFileending(String templateFileName) {
+        String templateNameWithoutExtension = templateFileName;
+        if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
+            templateNameWithoutExtension = templateFileName.substring(0,
+                templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
+        }
+        return templateNameWithoutExtension;
+    }
+
+    /**
      * @param templateFile
      *            the {@link TemplateFile}.
      * @param templateName
@@ -385,8 +396,8 @@ public class TemplatesConfigurationReader {
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
             }
         }
-        return new Template(templateFile, templateName, unresolvedDestinationPath, unresolvedTemplatePath,
-            mergeStratgey, outputCharset);
+        return new Template(templateFile, templateName, stripTemplateFileending(unresolvedDestinationPath),
+            unresolvedTemplatePath, mergeStratgey, outputCharset);
     }
 
     /**
