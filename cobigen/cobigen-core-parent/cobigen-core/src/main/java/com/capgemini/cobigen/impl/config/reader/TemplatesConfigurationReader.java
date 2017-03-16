@@ -26,8 +26,6 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -64,9 +62,6 @@ import com.google.common.collect.Sets;
  * converts the information to the working entities
  */
 public class TemplatesConfigurationReader {
-
-    /** Assigning logger to TemplatesConfigurationReader */
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
     /** The file extension of the template files. */
     // TODO should be extracted to template engine as this is currently freemarker specific
@@ -208,7 +203,7 @@ public class TemplatesConfigurationReader {
                         "no template file found for '" + t.getTemplateFile() + "'");
                 }
                 Template template = createTemplate((TemplateFile) child, t.getName(), t.getDestinationPath(),
-                    t.getMergeStrategy(), t.getTargetCharset(), null, null);
+                    t.getMergeStrategy(), t.getTargetCharset(), null);
                 templates.put(t.getName(), template);
             }
         }
@@ -351,7 +346,7 @@ public class TemplatesConfigurationReader {
 
                     String mergeStratgey = scan.getMergeStrategy();
                     Template template = createTemplate((TemplateFile) child, templateName, destinationPath,
-                        mergeStratgey, scan.getTargetCharset(), scan.getTemplatePath(), scan.getDestinationPath());
+                        mergeStratgey, scan.getTargetCharset(), scan.getTemplatePath());
                     templates.put(templateName, template);
 
                     if (templateScanTemplates.get(scan.getName()) != null) {
@@ -375,22 +370,17 @@ public class TemplatesConfigurationReader {
      *            the {@link Template#getTargetCharset() target charset}.
      * @param scanSourcePath
      *            {@link TemplateScan#getTemplatePath() root path} of the {@link TemplateScan}
-     * @param scanDestinationPath
-     *            {@link TemplateScan#getDestinationPath() destination path prefix} of a {@link TemplateScan}
      * @return the new template instance.
      */
     private Template createTemplate(TemplateFile templateFile, String templateName, String unresolvedTemplatePath,
-        String mergeStratgey, String outputCharset, String scanSourcePath, String scanDestinationPath) {
+        String mergeStratgey, String outputCharset, String scanSourcePath) {
 
         String unresolvedDestinationPath = unresolvedTemplatePath;
         TemplateFolder templateFolder = templateFile.getParent();
         String relocate = templateFolder.getVariables().getProperty(PROPERTY_RELOCATE);
         if (relocate != null) {
             if (scanSourcePath != null) {
-                Path destinationPathWithoutScanDestinationPrefix =
-                    Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
-                Path destinationPath =
-                    Paths.get(scanDestinationPath).resolve(destinationPathWithoutScanDestinationPrefix);
+                Path destinationPath = Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
                 unresolvedDestinationPath =
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
             }
