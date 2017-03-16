@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.slf4j.Logger;
@@ -24,7 +25,6 @@ import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
 
 /**
  * Generator wrapper covering xml documents as inputs
- * @author mbrunnli (06.12.2014)
  */
 public class XmlGeneratorWrapper extends CobiGenWrapper {
 
@@ -33,6 +33,10 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
 
     /**
      * Creates a new {@link XmlGeneratorWrapper} to handle xml documents as input
+     * @param inputs
+     *            list of inputs for generation
+     * @param inputSourceProject
+     *            project from which the inputs have been selected
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project does not exist
      * @throws CoreException
@@ -41,11 +45,10 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
      *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
-     * @author mbrunnli (06.12.2014)
      */
-    public XmlGeneratorWrapper()
+    public XmlGeneratorWrapper(IProject inputSourceProject, List<Object> inputs)
         throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
-        super();
+        super(inputSourceProject, inputs);
     }
 
     @Override

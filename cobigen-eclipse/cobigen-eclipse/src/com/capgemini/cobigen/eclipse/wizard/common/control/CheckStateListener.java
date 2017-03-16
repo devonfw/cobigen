@@ -1,16 +1,13 @@
 package com.capgemini.cobigen.eclipse.wizard.common.control;
 
-import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -36,7 +33,6 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentP
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /**
  * This {@link CheckStateListener} provides the check / uncheck of the increments list and the generation
@@ -53,14 +49,11 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /** The {@link SelectFilesPage} of the wizard providing the different viewer */
     private SelectFilesPage page;
 
-    /** Lastly checked generation packages */
-    private Set<Object> lastCheckedIncrements = new HashSet<>();
+    /** Lastly selected increments */
+    private Set<IncrementTo> selectedIncrements = new HashSet<>();
 
     /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
-
-    /** Cached projects in workspace */
-    private Map<Path, IProject> projectsInWorkspace = Maps.newHashMap();
 
     /**
      * Creates a new {@link CheckStateListener} instance
@@ -73,14 +66,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      *            states whether the check state listener should run in batch mode
      */
     public CheckStateListener(CobiGenWrapper cobigenWrapper, SelectFilesPage page, boolean batch) {
-
         this.cobigenWrapper = cobigenWrapper;
         this.page = page;
         this.batch = batch;
-
-        for (IProject proj : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            projectsInWorkspace.put(proj.getLocation().toFile().toPath(), proj);
-        }
     }
 
     @Override
@@ -93,23 +81,25 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
-                .setCheckedResources(resourcesTree.getCheckedElements());
+                .setSelectedResources(resourcesTree.getCheckedElements());
             refreshNodes(event);
         } else if (event.getSource().equals(incrementSelector)) {
             performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
             performCheckLogicForALLPackage(incrementSelector, checkedElements);
 
-            Set<String> paths = getSelectedGenerationPaths();
-            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths);
+            Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
+            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet());
+            page.setDisplayedfilePathToTemplateMapping(paths);
+
             resourcesTree.setCheckedElements(new Object[0]);
             resourcesTree.refresh();
             resourcesTree.expandAll();
             if (!batch) {
-                setSimulatedResourcesChecked();
-                setMergeableResourcesChecked();
+                selectSimulatedResources();
+                selectMergeableResources();
             } else {
-                setAllResourcesChecked();
+                selectAllResources(paths.keySet());
             }
         }
 
@@ -190,118 +180,69 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Returns all generation paths of the currently selected generation packages
-     * @return all generation paths of the currently selected generation packages
-     */
-    private Set<String> getSelectedGenerationPaths() {
-
-        Set<String> paths = new HashSet<>();
-        for (Object o : lastCheckedIncrements) {
-            if (o instanceof ComparableIncrement) {
-                ComparableIncrement pkg = ((ComparableIncrement) o);
-                paths.addAll(getDestinationPaths(pkg));
-                if (pkg.getId().equals("all")) {
-                    break;
-                }
-            }
-        }
-        return paths;
-    }
-
-    /**
-     * Returns the set of all workspace relative destination paths for the templates of the given
-     * {@link ComparableIncrement}.
-     * @param pkg
-     *            {@link ComparableIncrement} the template destination paths should be retrieved for
-     * @return the {@link HashSet} of destination paths
-     */
-    private Set<String> getDestinationPaths(ComparableIncrement pkg) {
-
-        Set<String> workspacePaths = new HashSet<>();
-        Set<String> outerPaths = new HashSet<>();
-        for (TemplateTo template : pkg.getTemplates()) {
-            Path targetAbsolutePath = cobigenWrapper.resolveTemplateDestinationPath(template);
-
-            Path mostSpecificProject = null;
-            for (Path projPath : projectsInWorkspace.keySet()) {
-                if (targetAbsolutePath.startsWith(projPath)) {
-                    if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
-                        mostSpecificProject = projPath;
-                    }
-                }
-            }
-
-            if (mostSpecificProject != null) {
-                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
-                workspacePaths.add(projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath()
-                    .resolve(relProjPath).toString().replace("\\", "/"));
-            } else {
-                outerPaths.add(targetAbsolutePath.toString().replace("\\", "/"));
-            }
-        }
-        return workspacePaths;
-    }
-
-    /**
      * Performs an intelligent check logic, e.g. check/uncheck all packages when selecting "all"
-     * @param packageSelector
+     * @param incrementSelector
      *            the {@link CheckboxTableViewer} listing all generation packages
-     * @param checkedElements
+     * @param selectedElements
      *            the {@link Set} of all elements checked by the user
      */
-    private void performCheckLogicForALLPackage(CheckboxTreeViewer packageSelector, Set<Object> checkedElements) {
+    private void performCheckLogicForALLPackage(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
 
-        Set<Object> addedDiff = new HashSet<>(checkedElements);
-        Set<Object> removedDiff = new HashSet<>(lastCheckedIncrements);
-        addedDiff.removeAll(lastCheckedIncrements);
-        removedDiff.removeAll(checkedElements);
+        Set<Object> addedDiff = new HashSet<>(selectedElements);
+        Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
+        addedDiff.removeAll(selectedIncrements);
+        removedDiff.removeAll(selectedElements);
         ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
             Lists.<IncrementTo> newLinkedList());
-        if (!lastCheckedIncrements.contains(all) && addedDiff.contains(all)) {
-            selectAllPackages(packageSelector);
-        } else if (lastCheckedIncrements.contains(all) && removedDiff.contains(all)) {
-            setAllChecked(packageSelector, false);
-            lastCheckedIncrements.clear();
+        if (!selectedIncrements.contains(all) && addedDiff.contains(all)) {
+            setStateOfAllIncrements(incrementSelector, true);
+            setSelectedIncrements(Arrays.asList((Object[]) incrementSelector.getInput()));
+        } else if (selectedIncrements.contains(all) && removedDiff.contains(all)) {
+            setStateOfAllIncrements(incrementSelector, false);
+            selectedIncrements.clear();
         } else if (!removedDiff.isEmpty()) {
-            lastCheckedIncrements = checkedElements;
-            lastCheckedIncrements.remove(all);
-            packageSelector.setChecked(all, false);
+            setSelectedIncrements(selectedElements);
+            selectedIncrements.remove(all);
+            incrementSelector.setChecked(all, false);
         } else {
-            lastCheckedIncrements = checkedElements;
+            setSelectedIncrements(selectedElements);
+        }
+    }
+
+    /**
+     * Casts the selected elements coming from the content provider to a list of {@link IncrementTo}s.
+     * @param selectedElements
+     *            {@link IncrementTo}s from the increment content provider
+     */
+    private void setSelectedIncrements(Collection<Object> selectedElements) {
+        selectedIncrements.clear();
+        for (Object o : selectedElements) {
+            if (o instanceof IncrementTo) {
+                selectedIncrements.add((IncrementTo) o);
+            }
         }
     }
 
     /**
      * Sets all checkboxes of the package selector to be checked
-     * @param packageSelector
+     * @param incrementSelector
      *            {@link CheckboxTreeViewer}
      * @param checked
      *            <code>true</code> for all check boxes being checked, <code>false</code> otherwise
      */
-    private void setAllChecked(CheckboxTreeViewer packageSelector, boolean checked) {
+    private void setStateOfAllIncrements(CheckboxTreeViewer incrementSelector, boolean checked) {
 
         TreePath[] rootPaths =
-            ((SelectIncrementContentProvider) packageSelector.getContentProvider()).getAllRootPaths();
+            ((SelectIncrementContentProvider) incrementSelector.getContentProvider()).getAllRootPaths();
         for (TreePath path : rootPaths) {
-            packageSelector.setSubtreeChecked(path, checked);
+            incrementSelector.setSubtreeChecked(path, checked);
         }
-    }
-
-    /**
-     * Selects all packages in the package selector
-     * @param incrementSelector
-     *            package selector
-     */
-    private void selectAllPackages(CheckboxTreeViewer incrementSelector) {
-
-        setAllChecked(incrementSelector, true);
-        lastCheckedIncrements = new HashSet<>(Arrays.asList((Object[]) incrementSelector.getInput()));
     }
 
     /**
      * Sets all simulated resources to be initially checked
      */
-    private void setSimulatedResourcesChecked() {
+    private void selectSimulatedResources() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         LinkedList<Object> worklist = Lists.newLinkedList(Arrays.asList(
@@ -320,12 +261,12 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Sets all mergeable files to be checked
      */
-    private void setMergeableResourcesChecked() {
+    private void selectMergeableResources() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (IFile file : cobigenWrapper.getMergeableFiles()) {
-            Object mergableTreeObject = ((SelectFileContentProvider) resourcesTree.getContentProvider())
-                .getProvidedObject(file.getFullPath().toString());
+        for (String path : cobigenWrapper.getMergeableFiles(selectedIncrements)) {
+            Object mergableTreeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
             if (mergableTreeObject != null) {
                 resourcesTree.setChecked(mergableTreeObject, true);
             }
@@ -334,13 +275,15 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
     /**
      * Sets all resources to be checked or unchecked
+     * @param currentlyDisplayedPaths
+     *            all currently displayed paths
      */
-    private void setAllResourcesChecked() {
+    private void selectAllResources(Set<String> currentlyDisplayedPaths) {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (IFile f : cobigenWrapper.getAllTargetFilesOfFirstInput()) {
-            Object treeObject = ((SelectFileContentProvider) resourcesTree.getContentProvider())
-                .getProvidedObject(f.getFullPath().toString());
+        for (String path : currentlyDisplayedPaths) {
+            Object treeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
             if (treeObject != null) {
                 resourcesTree.setChecked(treeObject, true);
             }
