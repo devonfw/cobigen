@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -106,23 +106,23 @@ public abstract class AbstractGenerateWizard extends Wizard {
             }
         }
         // Delete mergable files
-        Set<IFile> mergableFiles = cobigenWrapper.getMergeableFiles();
+        Set<String> mergableFiles = cobigenWrapper.getMergeableFiles(page1.getSelectedIncrements());
         it = diff.iterator();
         while (it.hasNext()) {
-            Object r = it.next();
-            Object iResource = null;
-            if (r instanceof IJavaElement) {
+            Object resource = it.next();
+            IResource iResource = null;
+            if (resource instanceof IJavaElement) {
                 try {
-                    iResource = ((IJavaElement) r).getCorrespondingResource();
+                    iResource = ((IJavaElement) resource).getCorrespondingResource();
                 } catch (JavaModelException e) {
                     LOG.error(
                         "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
-                        ((IJavaElement) r).getElementName(), e);
+                        ((IJavaElement) resource).getElementName(), e);
                 }
             } else {
-                iResource = r;
+                iResource = (IResource) resource;
             }
-            if (iResource != null && mergableFiles.contains(iResource)) {
+            if (iResource != null && mergableFiles.contains(iResource.getFullPath().toString())) {
                 it.remove();
             }
         }

@@ -2,7 +2,6 @@ package com.capgemini.cobigen.eclipse.wizard.common.model;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,9 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
@@ -61,9 +58,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /** The current {@link CobiGenWrapper} instance */
     private CobiGenWrapper cobigenWrapper;
 
-    /**
-     * Defines whether the {@link CobiGenWrapper} is in batch mode.
-     */
+    /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
 
     /**
@@ -171,34 +166,20 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         } else if (element instanceof IJavaElement) {
             path = ((IJavaElement) element).getPath().toString();
         }
-
-        if (path != null) {
-            List<TemplateTo> templates = cobigenWrapper.getTemplatesForFilePath(path, selectedIncrements);
-            for (TemplateTo template : templates) {
-                if (template.getMergeStrategy() != null
-                    && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return cobigenWrapper.isMergableFile(path, selectedIncrements);
     }
 
     /**
      * Sets the currently selected resources
-     *
      * @param checkedResources
      *            the currently selected resources
      */
-    public void setCheckedResources(Object[] checkedResources) {
-
+    public void setSelectedResources(Object[] checkedResources) {
         selectedResources = new HashSet<>(Arrays.asList(checkedResources));
     }
 
     /**
      * Adds meta information to the elements name, such as new or merge or override
-     *
      * @param element
      *            to be enriched with information
      * @param source
