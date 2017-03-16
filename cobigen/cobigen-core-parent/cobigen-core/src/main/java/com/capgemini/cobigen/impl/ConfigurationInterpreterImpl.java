@@ -116,7 +116,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
             configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
         String resolvedDestinationPath =
             new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
-        return targetRootPath.resolve(resolvedDestinationPath);
+        return targetRootPath.resolve(resolvedDestinationPath).normalize();
 
     }
 
