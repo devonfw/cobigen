@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -531,8 +532,11 @@ public class TemplatesConfigurationReaderTest {
         assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
             .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName);
         assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
-        assertThat(template.getUnresolvedTargetPath())
-            .isEqualTo(staticRelocationPrefix + templateScanDestinationPath + pathWithName);
+        if (StringUtils.isEmpty(staticRelocationPrefix)) {
+            assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateScanDestinationPath + pathWithName);
+        } else {
+            assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
+        }
         return template;
     }
 }
