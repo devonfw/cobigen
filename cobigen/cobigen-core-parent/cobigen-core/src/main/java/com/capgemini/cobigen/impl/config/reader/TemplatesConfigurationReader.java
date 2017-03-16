@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -208,7 +209,7 @@ public class TemplatesConfigurationReader {
                         "no template file found for '" + t.getTemplateFile() + "'");
                 }
                 Template template = createTemplate((TemplateFile) child, t.getName(), t.getDestinationPath(),
-                    t.getMergeStrategy(), t.getTargetCharset());
+                    t.getMergeStrategy(), t.getTargetCharset(), null, null);
                 templates.put(t.getName(), template);
             }
         }
@@ -350,7 +351,7 @@ public class TemplatesConfigurationReader {
 
                     String mergeStratgey = scan.getMergeStrategy();
                     Template template = createTemplate((TemplateFile) child, templateName, destinationPath,
-                        mergeStratgey, scan.getTargetCharset());
+                        mergeStratgey, scan.getTargetCharset(), scan.getTemplatePath(), scan.getDestinationPath());
                     templates.put(templateName, template);
 
                     if (templateScanTemplates.get(scan.getName()) != null) {
@@ -372,16 +373,29 @@ public class TemplatesConfigurationReader {
      *            the {@link Template#getMergeStrategy() merge strategy}.
      * @param outputCharset
      *            the {@link Template#getTargetCharset() target charset}.
+     * @param scanSourcePath
+     *            {@link TemplateScan#getTemplatePath() root path} of the {@link TemplateScan}
+     * @param scanDestinationPath
+     *            {@link TemplateScan#getDestinationPath() destination path prefix} of a {@link TemplateScan}
      * @return the new template instance.
      */
     private Template createTemplate(TemplateFile templateFile, String templateName, String unresolvedTemplatePath,
-        String mergeStratgey, String outputCharset) {
+        String mergeStratgey, String outputCharset, String scanSourcePath, String scanDestinationPath) {
 
         String unresolvedDestinationPath = unresolvedTemplatePath;
         TemplateFolder templateFolder = templateFile.getParent();
         String relocate = templateFolder.getVariables().getProperty(PROPERTY_RELOCATE);
         if (relocate != null) {
-            unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFile.toString());
+            if (scanSourcePath != null) {
+                Path destinationPathWithoutScanDestinationPrefix =
+                    Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
+                Path destinationPath =
+                    Paths.get(scanDestinationPath).resolve(destinationPathWithoutScanDestinationPrefix);
+                unresolvedDestinationPath =
+                    relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
+            } else {
+                // unresolvedDestinationPath = relocate.replace(VARIABLE_CWD, templateFile.toString());
+            }
         }
         return new Template(templateFile, templateName, unresolvedDestinationPath, unresolvedTemplatePath,
             mergeStratgey, outputCharset);

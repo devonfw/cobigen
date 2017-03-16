@@ -38,8 +38,14 @@ public abstract class TemplatePath {
      *         {@link TemplateFile}.
      */
     public final Path getPath() {
-
         return path;
+    }
+
+    /**
+     * @return the relative path to the {@link #getRoot()} path.
+     */
+    public final Path getRootRelativePath() {
+        return getRoot().getPath().relativize(path);
     }
 
     /**
@@ -87,7 +93,7 @@ public abstract class TemplatePath {
 
     @Override
     public String toString() {
-        return getRoot().getPath().relativize(path).toString().replace('\\', '/');
+        return getRootRelativePath().toString().replace('\\', '/');
     }
 
 }
