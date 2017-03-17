@@ -48,6 +48,30 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResou
 @SuppressWarnings("restriction")
 public class SelectFileLabelProvider extends LabelProvider implements IColorProvider, ICheckStateListener {
 
+    /** Item label suffix */
+    private static final String LABEL_SUFFIX_NEW = " (new)";
+
+    /** Item label suffix */
+    private static final String LABEL_SUFFIX_OVERRIDE = " (override)";
+
+    /** Item label suffix */
+    private static final String LABEL_SUFFIX_CREATE_OVERRIDE = " (create/override)";
+
+    /** Item label suffix */
+    private static final String LABEL_SUFFIX_MERGE = " (merge)";
+
+    /** Item label suffix */
+    private static final String LABEL_SUFFIX_CREATE_MERGE = " (create/merge)";
+
+    /** Item label for an unknown item */
+    private static final String LABEL_UNDEFINED = "UNDEFINED";
+
+    /** Item label if an error occurred */
+    private static final String LABEL_ERROR = "ERROR";
+
+    /** Item label for the default package */
+    private static final String LABEL_DEFAULT_PACKAGE = "(default package)";
+
     /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
 
@@ -81,9 +105,17 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     @Override
     public String getText(Object element) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        String result = getTextInternal(element, true);
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
+        return result;
+    }
 
+    /**
+     * Implementation of {@link LabelProvider#getText(Object)}
+     */
+    @SuppressWarnings("javadoc")
+    private String getTextInternal(Object element, boolean addMetadata) {
         String result = "";
-
         if (element instanceof IResource) {
             result = ((IResource) element).getName();
         } else if (element instanceof IPackageFragmentRoot) {
@@ -95,10 +127,10 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 LOG.error(
                     "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
                     ((IPackageFragment) element).getElementName(), e);
-                result = "ERROR";
+                result = LABEL_ERROR;
             }
             if (result.isEmpty()) {
-                result = "(default package)";
+                result = LABEL_DEFAULT_PACKAGE;
             }
         } else if (element instanceof IJavaElement) {
             result = ((IJavaElement) element).getElementName();
@@ -106,17 +138,19 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             result = ((OffWorkspaceResourceTreeNode) element).getPathStr();
         }
 
-        result = addMetaInformation(element, result);
-
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return result.isEmpty() ? "UNDEFINED" : result;
+        if (addMetadata) {
+            result = addMetaInformation(element, result);
+        }
+        result = result.isEmpty() ? LABEL_UNDEFINED : result;
+        return result;
     }
 
     @Override
     public Image getImage(Object element) {
 
+        String labelTextWithoutSuffix = getTextInternal(element, false);
         ImageDescriptor defaultImageDescriptor =
-            PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(getText(element));
+            PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(labelTextWithoutSuffix);
         Image result = defaultImageDescriptor.createImage();
         if (element instanceof IProject) {
             result = PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
@@ -125,6 +159,9 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         } else if (element instanceof IJavaElement) {
             JavaElementImageProvider p = new JavaElementImageProvider();
             result = p.getImageLabel(element, JavaElementImageProvider.SMALL_ICONS);
+        } else if (element instanceof OffWorkspaceResourceTreeNode
+            && ((OffWorkspaceResourceTreeNode) element).hasChildren()) {
+            result = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
         }
         return result;
     }
@@ -204,14 +241,14 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 || (element instanceof OffWorkspaceResourceTreeNode
                     && !((OffWorkspaceResourceTreeNode) element).hasChildren()
                     && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))) {
-                result += " (new)";
+                result += LABEL_SUFFIX_NEW;
             } else if (element instanceof IFile || element instanceof ICompilationUnit
                 || (element instanceof OffWorkspaceResourceTreeNode
                     && !((OffWorkspaceResourceTreeNode) element).hasChildren())) {
                 if (isMergableFile(element)) {
-                    result += batch ? " (create/merge)" : " (merge)";
+                    result += batch ? LABEL_SUFFIX_CREATE_MERGE : LABEL_SUFFIX_MERGE;
                 } else {
-                    result += batch ? " (create/override)" : " (override)";
+                    result += batch ? LABEL_SUFFIX_CREATE_OVERRIDE : LABEL_SUFFIX_OVERRIDE;
                 }
             }
         }
