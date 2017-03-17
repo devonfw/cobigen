@@ -18,6 +18,11 @@ public class TemplateEngineStub implements TextTemplateEngine {
     }
 
     @Override
+    public String getTemplateFileEnding() {
+        return ".ftl";
+    }
+
+    @Override
     public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
 
     }

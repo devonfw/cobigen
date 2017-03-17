@@ -10,7 +10,6 @@ import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
-import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
@@ -27,9 +26,6 @@ import com.google.common.collect.Lists;
  */
 public class CobiGenImpl implements CobiGen {
 
-    /** The {@link TextTemplateEngine} to be used */
-    private TextTemplateEngine templateEngine;
-
     /** CobiGen Configuration Cache */
     private ConfigurationHolder configurationHolder;
 
@@ -42,13 +38,10 @@ public class CobiGenImpl implements CobiGen {
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
-     * @param templateEngine
-     *            {@link TextTemplateEngine template engine} to be used
      * @param configurationHolder
      *            {@link ConfigurationHolder} holding CobiGen's configuration
      */
-    public CobiGenImpl(TextTemplateEngine templateEngine, ConfigurationHolder configurationHolder) {
-        this.templateEngine = templateEngine;
+    public CobiGenImpl(ConfigurationHolder configurationHolder) {
         this.configurationHolder = configurationHolder;
 
         // Create proxy of ConfigurationInterpreter to cache method calls
@@ -86,8 +79,8 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, templateEngine, input, generableArtifacts,
-            targetRootPath, forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath,
+            forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -114,7 +107,7 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, templateEngine, input,
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input,
             Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }

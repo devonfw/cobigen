@@ -56,7 +56,7 @@ public class TemplateEngineRegistry {
     }
 
     /**
-     * Returns a {@link TextTemplateEngine template engine} based on its name
+     * Returns a {@link TextTemplateEngine template engine} based on its name.
      * @param name
      *            of the {@link TextTemplateEngine template engine}
      * @return the {@link TextTemplateEngine template engine} or {@code null} if no template engine has been
@@ -66,7 +66,7 @@ public class TemplateEngineRegistry {
 
         TextTemplateEngine templateEngine = registeredEngines.get(name);
         if (templateEngine == null) {
-            return null;
+            throw new CobiGenRuntimeException("No template engine with name '" + name + "' registered.");
         }
 
         return ProxyFactory.getProxy(templateEngine);

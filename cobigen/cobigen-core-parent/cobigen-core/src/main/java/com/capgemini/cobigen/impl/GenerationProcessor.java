@@ -24,7 +24,6 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.api.extension.TextTemplate;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
@@ -60,9 +59,6 @@ public class GenerationProcessor {
     /** {@link ConfigurationHolder} for configuration caching purposes */
     private ConfigurationHolder configurationHolder;
 
-    /** {@link TextTemplateEngine} used for {@link TextTemplate} processing */
-    private TextTemplateEngine templateEngine;
-
     /** States, whether existing contents should be overwritten by generation */
     private boolean forceOverride;
 
@@ -93,8 +89,6 @@ public class GenerationProcessor {
      *
      * @param configurationHolder
      *            {@link ConfigurationHolder} instance
-     * @param templateEngine
-     *            {@link TextTemplateEngine template engine to be used for generation}
      * @param input
      *            generator input object
      * @param generableArtifacts
@@ -112,14 +106,13 @@ public class GenerationProcessor {
      * @param rawModel
      *            externally adapted model to be used for generation.
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, TextTemplateEngine templateEngine, Object input,
+    public GenerationProcessor(ConfigurationHolder configurationHolder, Object input,
         List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         this.configurationHolder = configurationHolder;
-        this.templateEngine = templateEngine;
         this.forceOverride = forceOverride;
         this.input = input;
         this.generableArtifacts = generableArtifacts;
@@ -269,8 +262,6 @@ public class GenerationProcessor {
     private Map<File, File> generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-        templateEngine.setTemplateFolder(
-            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
         InputReader inputReader = triggerInterpreter.getInputReader();
         if (!inputReader.isValidInput(input)) {
@@ -279,7 +270,16 @@ public class GenerationProcessor {
         }
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        Template templateEty = getTemplate(template, triggerInterpreter);
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        String templateEngineName = tConfig.getTemplateEngine();
+        TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
+        templateEngine.setTemplateFolder(
+            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
+
+        Template templateEty = tConfig.getTemplate(template.getId());
+        if (templateEty == null) {
+            throw new UnknownTemplateException(template.getId());
+        }
 
         Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
@@ -320,7 +320,7 @@ public class GenerationProcessor {
 
                 if (forceOverride || template.isForceOverride() && templateEty.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(tmpOriginalFile, templateEty, model, targetCharset);
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
                 } else {
                     String patch = null;
                     try (Writer out = new StringWriter()) {
@@ -353,7 +353,7 @@ public class GenerationProcessor {
                 }
             } else {
                 LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(tmpOriginalFile, templateEty, model, targetCharset);
+                generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
         return tmpToOrigFileTrace;
@@ -520,13 +520,15 @@ public class GenerationProcessor {
      *            {@link File} to be written
      * @param template
      *            FreeMarker template which will generate the contents
+     * @param templateEngine
+     *            template engine to be used
      * @param model
      *            to generate with
      * @param outputCharset
      *            charset the target file should be written with
      */
-    private void generateTemplateAndWriteFile(File output, Template template, Map<String, Object> model,
-        String outputCharset) {
+    private void generateTemplateAndWriteFile(File output, Template template, TextTemplateEngine templateEngine,
+        Map<String, Object> model, String outputCharset) {
 
         try (Writer out = new StringWriter()) {
             templateEngine.process(template, model, out, outputCharset);
@@ -535,28 +537,5 @@ public class GenerationProcessor {
             throw new CobiGenRuntimeException(
                 "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
         }
-    }
-
-    /**
-     * Returns the {@link Template} for a given {@link TemplateTo}
-     *
-     * @param templateTo
-     *            which should be found as internal representation
-     * @param triggerInterpreter
-     *            to be used for variable resolving (for the final destination path)
-     * @return the recovered {@link Template} object
-     * @throws InvalidConfigurationException
-     *             if at least one of the destination path variables could not be resolved
-     */
-    private Template getTemplate(TemplateTo templateTo, TriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
-
-        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(templateTo.getTriggerId());
-        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
-        Template template = tConfig.getTemplate(templateTo.getId());
-        if (template == null) {
-            throw new UnknownTemplateException(templateTo.getId());
-        }
-        return template;
     }
 }

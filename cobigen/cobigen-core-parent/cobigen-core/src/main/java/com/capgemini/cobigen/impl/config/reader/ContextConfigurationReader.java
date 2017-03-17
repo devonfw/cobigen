@@ -37,16 +37,10 @@ import com.capgemini.cobigen.impl.util.ExceptionUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-/**
- * The {@link ContextConfigurationReader} reads the context xml
- *
- * @author trippl (04.04.2013)
- */
+/** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
 
-    /**
-     * XML Node 'context' of the context.xml
-     */
+    /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
 
     /**
@@ -57,7 +51,6 @@ public class ContextConfigurationReader {
      *            root directory of the configuration
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
-     * @author trippl (04.04.2013)
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
@@ -129,7 +122,6 @@ public class ContextConfigurationReader {
      * Loads all {@link Trigger}s of the static context into the local representation
      *
      * @return a {@link List} containing all the {@link Trigger}s
-     * @author trippl (04.04.2013)
      */
     public Map<String, Trigger> loadTriggers() {
 
@@ -148,7 +140,6 @@ public class ContextConfigurationReader {
      *            {@link com.capgemini.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s
      *            from
      * @return the {@link List} of {@link Matcher}s
-     * @author mbrunnli (08.04.2014)
      */
     private List<Matcher> loadMatchers(com.capgemini.cobigen.impl.config.entity.io.Trigger trigger) {
 
@@ -167,7 +158,6 @@ public class ContextConfigurationReader {
      *            {@link com.capgemini.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s
      *            from
      * @return the {@link List} of {@link Matcher}s
-     * @author mbrunnli (13.10.2014)
      */
     private List<ContainerMatcher> loadContainerMatchers(com.capgemini.cobigen.impl.config.entity.io.Trigger trigger) {
 
@@ -186,7 +176,6 @@ public class ContextConfigurationReader {
      *            {@link com.capgemini.cobigen.impl.config.entity.io.Matcher} to retrieve the
      *            {@link VariableAssignment} from
      * @return the {@link List} of {@link Matcher}s
-     * @author mbrunnli (08.04.2014)
      */
     private List<VariableAssignment> loadVariableAssignments(
         com.capgemini.cobigen.impl.config.entity.io.Matcher matcher) {

@@ -31,7 +31,9 @@ import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
@@ -62,10 +64,6 @@ import com.google.common.collect.Sets;
  * converts the information to the working entities
  */
 public class TemplatesConfigurationReader {
-
-    /** The file extension of the template files. */
-    // TODO should be extracted to template engine as this is currently freemarker specific
-    private static final String TEMPLATE_EXTENSION = ".ftl";
 
     /**
      * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
@@ -104,6 +102,14 @@ public class TemplatesConfigurationReader {
         rootTemplateFolder = TemplateFolder.create(templatesRoot);
         configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         readConfiguration();
+    }
+
+    /**
+     * Returns the configured template engine to be used
+     * @return the configured template engine to be used
+     */
+    public String getTemplateEngine() {
+        return configNode.getTemplateEngine();
     }
 
     /**
@@ -322,6 +328,13 @@ public class TemplatesConfigurationReader {
             } else {
                 String templateFileName = child.getFileName();
                 String templateNameWithoutExtension = stripTemplateFileending(templateFileName);
+
+                TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
+                if (!StringUtils.isEmpty(templateEngine.getTemplateFileEnding())
+                    && templateFileName.endsWith(templateEngine.getTemplateFileEnding())) {
+                    templateNameWithoutExtension = templateFileName.substring(0,
+                        templateFileName.length() - templateEngine.getTemplateFileEnding().length());
+                }
                 String templateName = (scan.getTemplateNamePrefix() != null ? scan.getTemplateNamePrefix() : "")
                     + templateNameWithoutExtension;
                 if (observedTemplateNames.contains(templateName)) {
@@ -361,9 +374,11 @@ public class TemplatesConfigurationReader {
      */
     private String stripTemplateFileending(String templateFileName) {
         String templateNameWithoutExtension = templateFileName;
-        if (templateFileName.endsWith(TemplatesConfigurationReader.TEMPLATE_EXTENSION)) {
+        TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
+        if (!StringUtils.isEmpty(templateEngine.getTemplateFileEnding())
+            && templateFileName.endsWith(templateEngine.getTemplateFileEnding())) {
             templateNameWithoutExtension = templateFileName.substring(0,
-                templateFileName.length() - TemplatesConfigurationReader.TEMPLATE_EXTENSION.length());
+                templateFileName.length() - templateEngine.getTemplateFileEnding().length());
         }
         return templateNameWithoutExtension;
     }
