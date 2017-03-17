@@ -200,10 +200,10 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
         String result = new String(source);
         if (selectedResources.contains(element)) {
-            if (element instanceof IJavaElementStub || element instanceof IResourceStub
+            if (!batch && (element instanceof IJavaElementStub || element instanceof IResourceStub
                 || (element instanceof OffWorkspaceResourceTreeNode
                     && !((OffWorkspaceResourceTreeNode) element).hasChildren()
-                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath()))) {
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))) {
                 result += " (new)";
             } else if (element instanceof IFile || element instanceof ICompilationUnit
                 || (element instanceof OffWorkspaceResourceTreeNode
