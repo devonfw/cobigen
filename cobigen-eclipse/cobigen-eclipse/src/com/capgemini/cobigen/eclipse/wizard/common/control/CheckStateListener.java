@@ -205,7 +205,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
                         child.addChild(new OffWorkspaceResourceTreeNode(child,
                             suffix.subpath(suffix.getNameCount() - 1, suffix.getNameCount())));
                     } else {
-                        child = new OffWorkspaceResourceTreeNode(parent, suffix);
+                        child = new OffWorkspaceResourceTreeNode(parent, path);
+                        child.addChild(new OffWorkspaceResourceTreeNode(child, suffix));
                     }
                 } else {
                     child = new OffWorkspaceResourceTreeNode(parent, path);
@@ -303,8 +304,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
         addedDiff.removeAll(selectedIncrements);
         removedDiff.removeAll(selectedElements);
-        ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-            Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all =
+            new ComparableIncrement(CobiGenWrapper.ALL_INCREMENT_ID, CobiGenWrapper.ALL_INCREMENT_NAME, null,
+                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
         if (!selectedIncrements.contains(all) && addedDiff.contains(all)) {
             setStateOfAllIncrements(incrementSelector, true);
             setSelectedIncrements(Arrays.asList((Object[]) incrementSelector.getInput()));
