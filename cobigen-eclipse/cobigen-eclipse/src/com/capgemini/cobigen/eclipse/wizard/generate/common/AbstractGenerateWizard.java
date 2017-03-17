@@ -123,8 +123,10 @@ public abstract class AbstractGenerateWizard extends Wizard {
                         "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
                         ((IJavaElement) resource).getElementName(), e);
                 }
-            } else {
+            } else if (resource instanceof IResource) {
                 path = ((IResource) resource).getFullPath().toString();
+            } else if (resource instanceof OffWorkspaceResourceTreeNode) {
+                path = ((OffWorkspaceResourceTreeNode) resource).getAbsolutePathStr();
             }
             if (path != null && cobigenWrapper.isMergableFile(path, page1.getSelectedIncrements())) {
                 it.remove();
