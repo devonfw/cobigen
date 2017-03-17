@@ -3,6 +3,7 @@ package com.capgemini.cobigen.eclipse.wizard.common.model;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -89,10 +90,20 @@ public class SelectFileContentProvider implements ITreeContentProvider {
 
         filteredPaths = new HashSet<>(paths);
         _cachedChildren.clear();
-        _cachedProvidedResources.clear();
         _cachedPackageFragmentRoots.clear();
         HierarchicalTreeOperator.resetCache();
         this.offScopeResourceTree = offScopeResourceTree;
+        _cachedProvidedResources.clear();
+
+        Deque<OffWorkspaceResourceTreeNode> worklist = Lists.newLinkedList(offScopeResourceTree);
+        while (!worklist.isEmpty()) {
+            OffWorkspaceResourceTreeNode next = worklist.pop();
+            if (next.hasChildren()) {
+                worklist.addAll(next.getChildren());
+            } else {
+                _cachedProvidedResources.put(next.getAbsolutePathStr(), next);
+            }
+        }
     }
 
     @Override
