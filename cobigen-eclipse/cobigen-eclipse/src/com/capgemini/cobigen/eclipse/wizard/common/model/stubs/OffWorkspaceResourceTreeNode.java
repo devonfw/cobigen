@@ -14,20 +14,51 @@ public class OffWorkspaceResourceTreeNode {
     /** See {@link #getChildren()} */
     private List<OffWorkspaceResourceTreeNode> children = Lists.newArrayList();
 
+    /** Parent of this node */
+    private final OffWorkspaceResourceTreeNode parent;
+
     /**
      * Creates a new resource which is out of scope of the workspace
+     * @param parent
+     *            parent of this node
      * @param representingPath
      *            path represented by this resource
      */
-    public OffWorkspaceResourceTreeNode(Path representingPath) {
+    public OffWorkspaceResourceTreeNode(OffWorkspaceResourceTreeNode parent, Path representingPath) {
+        this.parent = parent;
         path = representingPath;
     }
 
     /**
-     * @return the path represented by this resource node
+     * @return the absolute path for this tree node
+     */
+    public Path getAbsolutePath() {
+        if (parent != null) {
+            return parent.getAbsolutePath().resolve(path);
+        } else {
+            return path;
+        }
+    }
+
+    /**
+     * @return the absolute path for this tree node converted to a string
+     */
+    public String getAbsolutePathStr() {
+        return getAbsolutePath().toString().replace("\\", "/");
+    }
+
+    /**
+     * @return the path segment represented by this resource node
      */
     public Path getPath() {
         return path;
+    }
+
+    /**
+     * @return the path segment represented by this resource node converted to a string
+     */
+    public String getPathStr() {
+        return path.toString().replace("\\", "/");
     }
 
     /**
@@ -53,5 +84,12 @@ public class OffWorkspaceResourceTreeNode {
      */
     public List<OffWorkspaceResourceTreeNode> getChildren() {
         return children;
+    }
+
+    /**
+     * @return {@code true} if this node is a file
+     */
+    public boolean hasChildren() {
+        return !children.isEmpty();
     }
 }

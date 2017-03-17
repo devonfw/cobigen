@@ -1,8 +1,8 @@
 package com.capgemini.cobigen.eclipse.wizard.generate.common;
 
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IResource;
@@ -18,11 +18,14 @@ import org.slf4j.MDC;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
+import com.google.common.collect.Lists;
 
 /**
  * The {@link SelectFilesPage} guides through the generation process
@@ -71,7 +74,7 @@ public abstract class AbstractGenerateWizard extends Wizard {
             generateContents(dialog);
         } catch (Throwable e) {
             LOG.error("An error occurred while finishing the wizard", e);
-            throw e;
+            PlatformUIUtil.openErrorDialog("An error occurred while finishing the wizard", e);
         }
 
         LOG.info("Performing wizard finish operation completed.");
@@ -95,34 +98,35 @@ public abstract class AbstractGenerateWizard extends Wizard {
     private boolean userConfirmed() {
         LOG.info("Check for necessary user confirmation to be displayed.");
 
-        List<Object> diff = page1.getSelectedResources();
+        List<Object> diff = Lists.newArrayList(page1.getSelectedResources());
 
         // Delete simulated resources
         Iterator<Object> it = diff.iterator();
         while (it.hasNext()) {
             Object r = it.next();
-            if (r instanceof IResourceStub || r instanceof IJavaElementStub) {
+            if (r instanceof IResourceStub || r instanceof IJavaElementStub
+                || (r instanceof OffWorkspaceResourceTreeNode
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) r).getAbsolutePath()))) {
                 it.remove();
             }
         }
         // Delete mergable files
-        Set<String> mergableFiles = cobigenWrapper.getMergeableFiles(page1.getSelectedIncrements());
         it = diff.iterator();
         while (it.hasNext()) {
             Object resource = it.next();
-            IResource iResource = null;
+            String path = null;
             if (resource instanceof IJavaElement) {
                 try {
-                    iResource = ((IJavaElement) resource).getCorrespondingResource();
+                    path = ((IJavaElement) resource).getCorrespondingResource().getFullPath().toString();
                 } catch (JavaModelException e) {
                     LOG.error(
                         "An internal java model exception occured while retrieving the java elements '{}' corresponding resource.",
                         ((IJavaElement) resource).getElementName(), e);
                 }
             } else {
-                iResource = (IResource) resource;
+                path = ((IResource) resource).getFullPath().toString();
             }
-            if (iResource != null && mergableFiles.contains(iResource.getFullPath().toString())) {
+            if (path != null && cobigenWrapper.isMergableFile(path, page1.getSelectedIncrements())) {
                 it.remove();
             }
         }
