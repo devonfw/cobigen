@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.control.GenerateSelectionJob;
 
@@ -34,11 +34,10 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
     }
 
     /**
-     * Initializes the {@link JavaGeneratorWrapper}
+     * Initializes the wizard pages
      */
-    @Override
-    protected void initializeWizard() {
-        super.initializeWizard();
+    private void initializeWizard() {
+        page1 = new SelectFilesPage(cobigenWrapper, true);
         page1.setMessage(
             "You are running a generation in batch mode!\n"
                 + "The shown target files are based on the first input of your selection. "

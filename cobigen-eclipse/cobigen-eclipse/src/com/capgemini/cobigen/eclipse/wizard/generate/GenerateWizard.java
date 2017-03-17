@@ -37,11 +37,11 @@ public class GenerateWizard extends AbstractGenerateWizard {
         initializeWizard();
     }
 
-    @Override
-    protected void initializeWizard() {
-
-        super.initializeWizard();
-
+    /**
+     * Initializes the wizard pages
+     */
+    private void initializeWizard() {
+        page1 = new SelectFilesPage(cobigenWrapper, false);
         if (cobigenWrapper instanceof JavaGeneratorWrapper) {
             page2 =
                 new SelectAttributesPage(((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());

@@ -20,7 +20,6 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
@@ -48,14 +47,6 @@ public abstract class AbstractGenerateWizard extends Wizard {
      */
     public AbstractGenerateWizard(CobiGenWrapper generator) {
         cobigenWrapper = generator;
-    }
-
-    /**
-     * Initializes the {@link JavaGeneratorWrapper}
-     */
-    protected void initializeWizard() {
-        page1 = new SelectFilesPage(cobigenWrapper, false);
-        LOG.info("AbstractGenerateWizard initialized");
     }
 
     @Override
