@@ -80,6 +80,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private Map<Path, IProject> projectsInWorkspace = Maps.newHashMap();
 
     /**
+     * Cache of external workspace paths, which will be filled after calling
+     * {@link #getTemplateDestinationPaths(Collection)}.
+     */
+    private Set<String> workspaceExternalPath = Sets.newHashSet();
+
+    /**
      * Creates a new {@link CobiGenWrapper}
      * @param inputs
      *            list of inputs for generation
@@ -466,8 +472,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * Resolves the template destination path in a workspace relative style if possible. Otherwise,
-     * {@code null} will be returned. {@link #resolveTemplateDestinationPath(TemplateTo, Object)}
+     * Resolves the template destination path in a workspace relative style if possible. Otherwise, the
+     * absolute path will be returned. {@link #resolveTemplateDestinationPath(TemplateTo, Object)}
      * @param input
      *            object to resolved the path for
      * @param template
@@ -493,6 +499,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 .toString().replace("\\", "/");
         } else {
             path = targetAbsolutePath.toString().replace("\\", "/");
+            workspaceExternalPath.add(path);
         }
         return path;
     }
@@ -567,6 +574,16 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     private Path resolveTemplateDestinationPath(TemplateTo template, Object input) {
         return cobiGen.resolveTemplateDestinationPath(getGenerationTargetProjectPath(), template, input);
+    }
+
+    /**
+     * @param path
+     *            to be checked. Most probably the outcome of {@link #getTemplateDestinationPaths(Collection)}
+     * @return {@code true} if this path has been registered before in
+     *         {@link #getTemplateDestinationPaths(Collection)} as a workspace external path.
+     */
+    public boolean isWorkspaceExternalPath(String path) {
+        return workspaceExternalPath.contains(path);
     }
 
 }

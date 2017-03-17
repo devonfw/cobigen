@@ -39,6 +39,7 @@ import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeExce
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 
 /**
  * Label Provider for the Export TreeViewer
@@ -100,6 +101,8 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             }
         } else if (element instanceof IJavaElement) {
             result = ((IJavaElement) element).getElementName();
+        } else if (element instanceof OffWorkspaceResourceTreeNode) {
+            result = ((OffWorkspaceResourceTreeNode) element).getPath().toString().replace("\\", "/");
         }
 
         result = addMetaInformation(element, result);

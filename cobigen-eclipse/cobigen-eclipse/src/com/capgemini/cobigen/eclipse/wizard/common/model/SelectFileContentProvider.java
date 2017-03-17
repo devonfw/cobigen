@@ -39,6 +39,7 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IFolderStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IPackageFragmentStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -74,18 +75,24 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      */
     private Map<String, Object> _cachedProvidedResources = Maps.newHashMap();
 
+    /** Current resource tree for workspace external files */
+    private List<OffWorkspaceResourceTreeNode> offScopeResourceTree;
+
     /**
      * Filters the {@link TreeViewer} contents by the given paths
      * @param paths
      *            to be filtered
+     * @param offScopeResourceTree
+     *            resource tree for workspace external files
      */
-    public void filter(Set<String> paths) {
+    public void filter(Set<String> paths, List<OffWorkspaceResourceTreeNode> offScopeResourceTree) {
 
         filteredPaths = new HashSet<>(paths);
         _cachedChildren.clear();
         _cachedProvidedResources.clear();
         _cachedPackageFragmentRoots.clear();
         HierarchicalTreeOperator.resetCache();
+        this.offScopeResourceTree = offScopeResourceTree;
     }
 
     @Override
@@ -113,6 +120,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     }
                 }
             }
+        }
+        if (offScopeResourceTree != null) {
+            result.addAll(offScopeResourceTree);
         }
         return result.toArray();
     }
@@ -207,6 +217,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                         + ((IJavaElement) parentElement).getElementName() + ".",
                     e);
             }
+        } else if (parentElement instanceof OffWorkspaceResourceTreeNode) {
+            return ((OffWorkspaceResourceTreeNode) parentElement).getChildren().toArray();
         }
 
         return new Object[0];
