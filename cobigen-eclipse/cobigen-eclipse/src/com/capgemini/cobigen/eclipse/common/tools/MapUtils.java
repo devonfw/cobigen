@@ -13,7 +13,9 @@ public final class MapUtils {
 
     /**
      * Recursive add of a new value to a nested {@link Set} within a {@link Map}
-     * @param <T>
+     * @param <K>
+     *            the key type of the map
+     * @param <V>
      *            The value type of the internal {@link Set}
      * @param result
      *            reference to the result {@link Map}
@@ -22,24 +24,26 @@ public final class MapUtils {
      * @param key
      *            {@link Map} key to add the value to
      */
-    public static <T> void deepMapAdd(Map<String, Set<T>> result, String key, T value) {
+    public static <K, V> void deepMapAdd(Map<K, Set<V>> result, K key, V value) {
         if (!result.containsKey(key)) {
-            result.put(key, Sets.<T> newHashSet());
+            result.put(key, Sets.<V> newHashSet());
         }
         result.get(key).add(value);
     }
 
     /**
-     * Recursive add for a {@link Set} value within a {@link Map}
-     * @param <T>
+     * Recursive add for a {@link Set} value within a {@link Map} * @param <K> the key type of the map
+     * @param <K>
+     *            the key type of the map
+     * @param <V>
      *            The value type of the internal {@link Set}
      * @param result
      *            reference to the result {@link Map}
      * @param toAdd
      *            reference to the {@link Map}, which entries should be added recursively
      */
-    public static <T> void deepMapAddAll(Map<String, Set<T>> result, Map<String, Set<T>> toAdd) {
-        for (Entry<String, Set<T>> entry : toAdd.entrySet()) {
+    public static <K, V> void deepMapAddAll(Map<K, Set<V>> result, Map<K, Set<V>> toAdd) {
+        for (Entry<K, Set<V>> entry : toAdd.entrySet()) {
             if (!result.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             } else {

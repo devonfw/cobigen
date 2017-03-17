@@ -1,10 +1,14 @@
 package com.capgemini.cobigen.eclipse.wizard.common.control;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +27,7 @@ import org.slf4j.MDC;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
@@ -32,7 +37,10 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * This {@link CheckStateListener} provides the check / uncheck of the increments list and the generation
@@ -89,7 +97,15 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             performCheckLogicForALLPackage(incrementSelector, checkedElements);
 
             Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
-            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet());
+            Set<String> workspaceExternalPaths = Sets.newHashSet();
+            for (String path : paths.keySet()) {
+                if (cobigenWrapper.isWorkspaceExternalPath(path)) {
+                    workspaceExternalPaths.add(path);
+                }
+            }
+            List<OffWorkspaceResourceTreeNode> offScopeResourceTree = buildOffScopeResourceTree(workspaceExternalPaths);
+            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet(),
+                offScopeResourceTree);
             page.setDisplayedfilePathToTemplateMapping(paths);
 
             resourcesTree.setCheckedElements(new Object[0]);
@@ -107,6 +123,99 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         LOG.info("Calculating of changed preview file tree finished.");
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    }
+
+    /**
+     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files to be generated.
+     * @param pathsStr
+     *            paths as strings to be built as a tree
+     * @return the list of root nodes.
+     */
+    private List<OffWorkspaceResourceTreeNode> buildOffScopeResourceTree(Set<String> pathsStr) {
+        Set<Path> paths = Sets.newHashSet();
+        for (String p : pathsStr) {
+            paths.add(Paths.get(p));
+        }
+
+        List<OffWorkspaceResourceTreeNode> rootResources = Lists.newArrayList();
+
+        Map<Path, Set<Path>> prefixToSuffixMap = Maps.newHashMap();
+        for (Path path : paths) {
+            MapUtils.deepMapAdd(prefixToSuffixMap, path.getRoot(), path.subpath(0, path.getNameCount()));
+        }
+
+        for (Path prefix : prefixToSuffixMap.keySet()) {
+            OffWorkspaceResourceTreeNode curr = new OffWorkspaceResourceTreeNode(prefix);
+            buildOffScopeResourceTree(curr, prefixToSuffixMap.get(prefix));
+            rootResources.add(curr);
+        }
+        return rootResources;
+    }
+
+    /**
+     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files. This is the recursive function to
+     * process a parent node and all its subsequent paths.
+     * @param parent
+     *            {@link OffWorkspaceResourceTreeNode} parent node
+     * @param childPaths
+     *            relative child paths of the parent node
+     */
+    private void buildOffScopeResourceTree(OffWorkspaceResourceTreeNode parent, Set<Path> childPaths) {
+
+        Path emptyPath = Paths.get("");
+
+        Map<Path, Set<Path>> prefixToSuffixMap = Maps.newHashMap();
+
+        if (childPaths.size() == 1) {
+            MapUtils.deepMapAdd(prefixToSuffixMap, emptyPath, childPaths.iterator().next());
+        } else {
+            for (int i = 1;; i++) {
+                prefixToSuffixMap.clear();
+                Path pathPrefix = emptyPath;
+                for (Path path : childPaths) {
+                    pathPrefix = path.subpath(i - 1, i);
+                    Path pathSuffix = null;
+                    if (i < path.getNameCount()) {
+                        // this path segment is a leaf
+                        pathSuffix = path.subpath(i, path.getNameCount());
+                    }
+                    MapUtils.deepMapAdd(prefixToSuffixMap, pathPrefix, pathSuffix);
+                }
+                if (prefixToSuffixMap.size() != 1) {
+                    break;
+                } else {
+                    Path newRootPath = parent.getPath().resolve(pathPrefix);
+                    parent.setPath(newRootPath);
+                }
+            }
+        }
+
+        for (Entry<Path, Set<Path>> entry : prefixToSuffixMap.entrySet()) {
+            OffWorkspaceResourceTreeNode child;
+            if (entry.getValue().size() == 1) {
+                Path suffix = entry.getValue().iterator().next();
+                Path path = entry.getKey();
+                if (suffix != null) {
+                    if (suffix.getNameCount() > 1) {
+                        Path folderSuffix = suffix.subpath(0, suffix.getNameCount() - 1);
+                        path = entry.getKey().resolve(folderSuffix);
+                        child = new OffWorkspaceResourceTreeNode(path);
+                        child.addChild(
+                            new OffWorkspaceResourceTreeNode(suffix.subpath(suffix.getNameCount() - 1, suffix.getNameCount())));
+                    } else {
+                        child = new OffWorkspaceResourceTreeNode(suffix);
+                    }
+                } else {
+                    child = new OffWorkspaceResourceTreeNode(path);
+                }
+            } else {
+                child = new OffWorkspaceResourceTreeNode(entry.getKey());
+                if (entry.getValue() != null) {
+                    buildOffScopeResourceTree(child, entry.getValue());
+                }
+            }
+            parent.addChild(child);
+        }
     }
 
     /**
