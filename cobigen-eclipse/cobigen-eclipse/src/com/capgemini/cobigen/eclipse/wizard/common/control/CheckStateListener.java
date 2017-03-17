@@ -167,27 +167,28 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         Map<Path, Set<Path>> prefixToSuffixMap = Maps.newHashMap();
 
+        Path lonelyChildPath = emptyPath;
         if (childPaths.size() == 1) {
-            MapUtils.deepMapAdd(prefixToSuffixMap, emptyPath, childPaths.iterator().next());
-        } else {
-            for (int i = 1;; i++) {
-                prefixToSuffixMap.clear();
-                Path pathPrefix = emptyPath;
-                for (Path path : childPaths) {
-                    pathPrefix = path.subpath(i - 1, i);
-                    Path pathSuffix = null;
-                    if (i < path.getNameCount()) {
-                        // this path segment is a leaf
-                        pathSuffix = path.subpath(i, path.getNameCount());
-                    }
-                    MapUtils.deepMapAdd(prefixToSuffixMap, pathPrefix, pathSuffix);
+            lonelyChildPath = childPaths.iterator().next();
+        }
+
+        for (int i = 1;; i++) {
+            prefixToSuffixMap.clear();
+            Path pathPrefix = emptyPath;
+            for (Path path : childPaths) {
+                pathPrefix = path.subpath(i - 1, i);
+                Path pathSuffix = null;
+                if (i < path.getNameCount()) {
+                    pathSuffix = path.subpath(i, path.getNameCount());
                 }
-                if (prefixToSuffixMap.size() != 1) {
-                    break;
-                } else {
-                    Path newRootPath = parent.getPath().resolve(pathPrefix);
-                    parent.setPath(newRootPath);
-                }
+                MapUtils.deepMapAdd(prefixToSuffixMap, pathPrefix, pathSuffix);
+            }
+            if (childPaths.size() != 1 && prefixToSuffixMap.size() != 1
+                || childPaths.size() == 1 && i == lonelyChildPath.getNameCount() - 1) {
+                break;
+            } else {
+                Path newRootPath = parent.getPath().resolve(pathPrefix);
+                parent.setPath(newRootPath);
             }
         }
 
