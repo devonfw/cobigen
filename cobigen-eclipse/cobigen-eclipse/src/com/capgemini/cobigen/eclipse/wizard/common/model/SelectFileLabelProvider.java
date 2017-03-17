@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.wizard.common.model;
 
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -102,7 +103,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         } else if (element instanceof IJavaElement) {
             result = ((IJavaElement) element).getElementName();
         } else if (element instanceof OffWorkspaceResourceTreeNode) {
-            result = ((OffWorkspaceResourceTreeNode) element).getPath().toString().replace("\\", "/");
+            result = ((OffWorkspaceResourceTreeNode) element).getPathStr();
         }
 
         result = addMetaInformation(element, result);
@@ -139,9 +140,13 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         if (selectedResources.contains(element)) {
-            if ((element instanceof IJavaElementStub || element instanceof IResourceStub) && !batch) {
+            if ((element instanceof IJavaElementStub || element instanceof IResourceStub
+                || (element instanceof OffWorkspaceResourceTreeNode
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))
+                && !batch) {
                 return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
-            } else if (element instanceof IFile || element instanceof ICompilationUnit) {
+            } else if (element instanceof IFile || element instanceof ICompilationUnit
+                || element instanceof OffWorkspaceResourceTreeNode) {
                 if (isMergableFile(element)) {
                     return Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
                 } else {
@@ -163,22 +168,24 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
      */
     private boolean isMergableFile(Object element) {
 
-        String path = null;
+        String path = "";
         if (element instanceof IResource) {
             path = ((IResource) element).getFullPath().toString();
         } else if (element instanceof IJavaElement) {
             path = ((IJavaElement) element).getPath().toString();
+        } else if (element instanceof OffWorkspaceResourceTreeNode) {
+            path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
         }
         return cobigenWrapper.isMergableFile(path, selectedIncrements);
     }
 
     /**
      * Sets the currently selected resources
-     * @param checkedResources
+     * @param selectedResources
      *            the currently selected resources
      */
-    public void setSelectedResources(Object[] checkedResources) {
-        selectedResources = new HashSet<>(Arrays.asList(checkedResources));
+    public void setSelectedResources(Object[] selectedResources) {
+        this.selectedResources = new HashSet<>(Arrays.asList(selectedResources));
     }
 
     /**
@@ -193,7 +200,9 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
         String result = new String(source);
         if (selectedResources.contains(element)) {
-            if (element instanceof IJavaElementStub || element instanceof IResourceStub) {
+            if (element instanceof IJavaElementStub || element instanceof IResourceStub
+                || (element instanceof OffWorkspaceResourceTreeNode
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath()))) {
                 result += " (new)";
             } else if (element instanceof IFile || element instanceof ICompilationUnit) {
                 if (isMergableFile(element)) {

@@ -2,13 +2,11 @@ package com.capgemini.cobigen.eclipse.wizard.common;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -46,6 +44,7 @@ import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
 import com.capgemini.cobigen.impl.config.entity.Template;
@@ -223,10 +222,7 @@ public class SelectFilesPage extends WizardPage {
 
         resourcesTree.setContentProvider(cp);
         resourcesTree.setLabelProvider(lp);
-        IProject[] workspaceProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        Object[] inputs = Arrays.copyOf(workspaceProjects, workspaceProjects.length);
-        // inputs[workspaceProjects.length] = new OffScopeResource();
-        resourcesTree.setInput(inputs);
+        resourcesTree.setInput(ResourcesPlugin.getWorkspace().getRoot().getProjects());
         resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;
@@ -251,12 +247,14 @@ public class SelectFilesPage extends WizardPage {
     private Set<String> getFilePathsToBeGenerated() {
 
         Set<String> filesToBeGenerated = new HashSet<>();
-        Object[] checkedElements = resourcesTree.getCheckedElements();
-        for (Object e : checkedElements) {
+        Object[] selectedElements = resourcesTree.getCheckedElements();
+        for (Object e : selectedElements) {
             if (e instanceof ICompilationUnit) {
                 filesToBeGenerated.add(((ICompilationUnit) e).getPath().toString());
             } else if (e instanceof IFile) {
                 filesToBeGenerated.add(((IFile) e).getFullPath().toString());
+            } else if (e instanceof OffWorkspaceResourceTreeNode && !((OffWorkspaceResourceTreeNode) e).hasChildren()) {
+                filesToBeGenerated.add(((OffWorkspaceResourceTreeNode) e).getAbsolutePathStr());
             }
         }
         return filesToBeGenerated;
@@ -294,15 +292,7 @@ public class SelectFilesPage extends WizardPage {
      *         selection
      */
     public List<Object> getSelectedResources() {
-
-        List<Object> selectedResources = new LinkedList<>();
-        Object[] checkedElements = resourcesTree.getCheckedElements();
-        for (Object e : checkedElements) {
-            if (e instanceof IJavaElement || e instanceof IResource) {
-                selectedResources.add(e);
-            }
-        }
-        return selectedResources;
+        return Arrays.asList(resourcesTree.getCheckedElements());
     }
 
     /**

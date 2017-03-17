@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.wizard.common.control;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -112,7 +113,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             resourcesTree.refresh();
             resourcesTree.expandAll();
             if (!batch) {
-                selectSimulatedResources();
+                selectNewResources();
                 selectMergeableResources();
             } else {
                 selectAllResources(paths.keySet());
@@ -145,7 +146,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         }
 
         for (Path prefix : prefixToSuffixMap.keySet()) {
-            OffWorkspaceResourceTreeNode curr = new OffWorkspaceResourceTreeNode(prefix);
+            OffWorkspaceResourceTreeNode curr = new OffWorkspaceResourceTreeNode(null, prefix);
             buildOffScopeResourceTree(curr, prefixToSuffixMap.get(prefix));
             rootResources.add(curr);
         }
@@ -153,8 +154,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files. This is the recursive function to
-     * process a parent node and all its subsequent paths.
+     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files. This is the recursive
+     * function to process a parent node and all its subsequent paths.
      * @param parent
      *            {@link OffWorkspaceResourceTreeNode} parent node
      * @param childPaths
@@ -199,17 +200,17 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
                     if (suffix.getNameCount() > 1) {
                         Path folderSuffix = suffix.subpath(0, suffix.getNameCount() - 1);
                         path = entry.getKey().resolve(folderSuffix);
-                        child = new OffWorkspaceResourceTreeNode(path);
-                        child.addChild(
-                            new OffWorkspaceResourceTreeNode(suffix.subpath(suffix.getNameCount() - 1, suffix.getNameCount())));
+                        child = new OffWorkspaceResourceTreeNode(parent, path);
+                        child.addChild(new OffWorkspaceResourceTreeNode(child,
+                            suffix.subpath(suffix.getNameCount() - 1, suffix.getNameCount())));
                     } else {
-                        child = new OffWorkspaceResourceTreeNode(suffix);
+                        child = new OffWorkspaceResourceTreeNode(parent, suffix);
                     }
                 } else {
-                    child = new OffWorkspaceResourceTreeNode(path);
+                    child = new OffWorkspaceResourceTreeNode(parent, path);
                 }
             } else {
-                child = new OffWorkspaceResourceTreeNode(entry.getKey());
+                child = new OffWorkspaceResourceTreeNode(parent, entry.getKey());
                 if (entry.getValue() != null) {
                     buildOffScopeResourceTree(child, entry.getValue());
                 }
@@ -349,9 +350,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Sets all simulated resources to be initially checked
+     * Sets all resources which will be created to be initially selected
      */
-    private void selectSimulatedResources() {
+    private void selectNewResources() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         LinkedList<Object> worklist = Lists.newLinkedList(Arrays.asList(
@@ -359,7 +360,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         while (worklist.peek() != null) {
             Object o = worklist.poll();
-            if (o instanceof IJavaElementStub || o instanceof IResourceStub) {
+            if (o instanceof IJavaElementStub || o instanceof IResourceStub
+                || (o instanceof OffWorkspaceResourceTreeNode
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) o).getAbsolutePath()))) {
                 resourcesTree.setChecked(o, true);
             }
             worklist
@@ -368,7 +371,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Sets all mergeable files to be checked
+     * Sets all mergeable files to be selected
      */
     private void selectMergeableResources() {
 
