@@ -312,8 +312,9 @@ public class SelectFilesPage extends WizardPage {
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
                     incrementSelector.setChecked(element, true);
                 }
-            } else if (element.getId().equals("all")) {
-                String value = selection.node("All").get(element.getId(), CHECK_STATE.UNCHECKED.name());
+            } else if (element.getId().equals(CobiGenWrapper.ALL_INCREMENT_ID)) {
+                String value = selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).get(element.getId(),
+                    CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
                     incrementSelector.setChecked(element, true);
                 }
@@ -341,11 +342,12 @@ public class SelectFilesPage extends WizardPage {
                 } else {
                     selection.node(element.getTriggerId()).put(element.getId(), CHECK_STATE.UNCHECKED.name());
                 }
-            } else if (element.getId().equals("all")) {
+            } else if (element.getId().equals(CobiGenWrapper.ALL_INCREMENT_ID)) {
                 if (items[i].getChecked()) {
-                    selection.node("All").put(element.getId(), CHECK_STATE.CHECKED.name());
+                    selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).put(element.getId(), CHECK_STATE.CHECKED.name());
                 } else {
-                    selection.node("All").put(element.getId(), CHECK_STATE.UNCHECKED.name());
+                    selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).put(element.getId(),
+                        CHECK_STATE.UNCHECKED.name());
                 }
             }
         }

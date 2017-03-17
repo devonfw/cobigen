@@ -58,6 +58,12 @@ import com.google.common.collect.Sets;
 /** Wrapper for CobiGen providing an eclipse compliant API. */
 public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
+    /** Increment ID of the virtual increment representing all templates */
+    public static final String ALL_INCREMENT_ID = "all";
+
+    /** Increment Name of the virtual increment representing all templates */
+    public static final String ALL_INCREMENT_NAME = "All";
+
     /** Assigning logger to CobiGenWrapper */
     private static final Logger LOG = LoggerFactory.getLogger(CobiGenWrapper.class);
 
@@ -277,7 +283,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
         List<IncrementTo> matchingIncrements;
-        matchingIncrements = cobiGen.getMatchingIncrements(inputs.get(0));
+        matchingIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
 
         // convert to comparable increments
         for (IncrementTo increment : matchingIncrements) {
@@ -286,8 +292,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         // add "all" increment, which should include all possible templates
-        ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-            Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all = new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -298,7 +304,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages (sorted and element "all" added on top)
+     * @return all available generation packages (sorted and element ALL_INCREMENT_ID added on top)
      */
     public List<TemplateTo> getAllTemplates() {
         return matchingTemplates;
@@ -336,6 +342,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return The set of all mergeable project dependent file paths
      */
     public Set<String> getMergeableFiles(Collection<IncrementTo> increments) {
+        if (increments.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+            increments = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+        }
         Set<String> mergeablePaths = Sets.newHashSet();
         Map<String, Set<TemplateTo>> templateDestinationPaths = getTemplateDestinationPaths(increments);
         for (Entry<String, Set<TemplateTo>> entry : templateDestinationPaths.entrySet()) {
@@ -347,7 +357,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * Checks whether the given object is marked as mergable
+     * Checks whether the given object is marked as mergeable
      * @param path
      *            workspace relative path to be checked
      * @param consideredIncrements
@@ -357,6 +367,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public boolean isMergableFile(String path, Collection<IncrementTo> consideredIncrements) {
         if (path != null) {
+            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+                consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+            }
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
             return isMergableFile(templates);
         }
@@ -442,7 +456,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         Map<String, Set<TemplateTo>> result = Maps.newHashMap();
         for (IncrementTo increment : increments) {
-            if (increment.getId().equals("all")) {
+            if (increment.getId().equals(ALL_INCREMENT_ID)) {
                 continue;
             }
 

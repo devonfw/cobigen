@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.google.common.collect.Lists;
 
 /**
@@ -88,7 +89,7 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
             if ((objId == null ^ getId() == null)) {
                 return false;
             } else if (objId != null && getId() != null) {
-                if (objId.equals("all") && objId.equals(getId())) {
+                if (objId.equals(CobiGenWrapper.ALL_INCREMENT_ID) && objId.equals(getId())) {
                     // Exception "all" increment
                     return true;
                 } else if (objTriggerId == null ^ getTriggerId() == null) {
