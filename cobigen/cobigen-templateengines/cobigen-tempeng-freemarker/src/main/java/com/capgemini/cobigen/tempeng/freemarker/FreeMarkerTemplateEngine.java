@@ -20,6 +20,12 @@ import freemarker.template.TemplateException;
  */
 public class FreeMarkerTemplateEngine implements TextTemplateEngine {
 
+    /** Template Engine name */
+    private static final String ENGINE_NAME = "FreeMarker";
+
+    /** The file extension of the template files. */
+    private static final String TEMPLATE_EXTENSION = ".ftl";
+
     /** The commonly used FreeMarker engine configuration */
     private Configuration freeMarkerConfig;
 
@@ -38,7 +44,12 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
 
     @Override
     public String getName() {
-        return "FreeMarker";
+        return ENGINE_NAME;
+    }
+
+    @Override
+    public String getTemplateFileEnding() {
+        return TEMPLATE_EXTENSION;
     }
 
     @Override
