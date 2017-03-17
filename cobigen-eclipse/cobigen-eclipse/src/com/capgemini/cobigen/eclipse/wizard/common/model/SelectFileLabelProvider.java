@@ -202,9 +202,12 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         if (selectedResources.contains(element)) {
             if (element instanceof IJavaElementStub || element instanceof IResourceStub
                 || (element instanceof OffWorkspaceResourceTreeNode
+                    && !((OffWorkspaceResourceTreeNode) element).hasChildren()
                     && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath()))) {
                 result += " (new)";
-            } else if (element instanceof IFile || element instanceof ICompilationUnit) {
+            } else if (element instanceof IFile || element instanceof ICompilationUnit
+                || (element instanceof OffWorkspaceResourceTreeNode
+                    && !((OffWorkspaceResourceTreeNode) element).hasChildren())) {
                 if (isMergableFile(element)) {
                     result += batch ? " (create/merge)" : " (merge)";
                 } else {
