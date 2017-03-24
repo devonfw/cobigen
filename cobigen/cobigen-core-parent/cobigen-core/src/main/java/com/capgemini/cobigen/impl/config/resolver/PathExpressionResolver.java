@@ -14,8 +14,6 @@ import com.google.common.collect.Maps;
 /**
  * The {@link PathExpressionResolver} provides an interface for replacing any variable expression in a
  * {@link String} from the context xml
- *
- * @author mbrunnli (18.02.2013)
  */
 public class PathExpressionResolver {
 
@@ -62,34 +60,34 @@ public class PathExpressionResolver {
     /**
      * Checks whether all expressions in the given string are valid and can be resolved
      *
-     * @param in
-     *            string to be parsed
+     * @param relativeUnresolvedPath
+     *            virtual target folder path to be checked for resolved
      * @throws UnknownExpressionException
      *             if there is an unknown variable modifier
      * @throws UnknownContextVariableException
      *             if there is a unknown context variable used in the string
      */
-    public void checkExpressions(String in) throws UnknownExpressionException, UnknownContextVariableException {
-
-        evaluateExpressions(in);
+    public void checkExpressions(String relativeUnresolvedPath)
+        throws UnknownExpressionException, UnknownContextVariableException {
+        evaluateExpressions(relativeUnresolvedPath);
     }
 
     /**
      * Evaluates variable expressions within a string stated in the configuration xml
      *
-     * @param in
-     *            {@link String} containing variable expressions
+     * @param relativeUnresolvedPath
+     *            virtual target folder path to be resolved
      * @return the given {@link String} where all variable expressions are replaced by its values
      * @throws UnknownContextVariableException
      *             if a context variable could not be resolved
      */
-    public String evaluateExpressions(String in) throws UnknownContextVariableException {
+    public String evaluateExpressions(String relativeUnresolvedPath) throws UnknownContextVariableException {
 
-        if (in == null) {
+        if (relativeUnresolvedPath == null) {
             return null;
         }
         Pattern p = Pattern.compile("\\$\\{([^?#}]+)(((\\?|#)[^}?#]+)*)\\}");
-        Matcher m = p.matcher(in);
+        Matcher m = p.matcher(relativeUnresolvedPath.toString());
         StringBuffer out = new StringBuffer();
         while (m.find()) {
             if (!variables.containsKey(m.group(1))) {

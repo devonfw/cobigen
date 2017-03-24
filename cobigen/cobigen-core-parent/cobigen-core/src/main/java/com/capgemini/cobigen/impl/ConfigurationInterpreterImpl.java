@@ -85,8 +85,8 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), templatesConfiguration.getTrigger().getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
+                    templatesConfiguration.getTrigger().getId()));
             }
         }
         LOG.info("{} matching templates found.", templates.size());
@@ -112,9 +112,11 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         Map<String, String> variables =
             new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        String resolvedDesitinationPath =
-            new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
-        return targetRootPath.resolve(resolvedDesitinationPath);
+        Template templateEty =
+            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
+        String resolvedDestinationPath =
+            new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
+        return targetRootPath.resolve(resolvedDestinationPath).normalize();
 
     }
 
@@ -138,8 +140,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         for (Increment increment : increments) {
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
             }
             incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
                 templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));

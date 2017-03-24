@@ -79,7 +79,7 @@ public class TemplateScanTest extends AbstractApiTest {
 
         // checking
         assertThat(templates, notNullValue());
-        assertThat(templates.size(), equalTo(7));
+        assertThat(templates.size(), equalTo(6));
     }
 
     /**
