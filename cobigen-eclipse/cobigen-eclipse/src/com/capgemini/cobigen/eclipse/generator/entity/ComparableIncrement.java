@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.google.common.collect.Lists;
 
 /**
  * Comparable {@link IncrementTo}, which compares the Increments on their description
- * @author mbrunnli (09.04.2014)
  */
 public class ComparableIncrement extends IncrementTo implements Comparable<IncrementTo> {
 
@@ -29,7 +29,6 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
      *            templates (recursively resolved)
      * @param dependentIncrements
      *            all dependent increments, means all increments which are sub increments of this
-     * @author mbrunnli (09.04.2014)
      */
     public ComparableIncrement(String id, String description, String triggerId, List<TemplateTo> templates,
         List<IncrementTo> dependentIncrements) {
@@ -42,7 +41,6 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
      * @param increments
      *            {@link List} of {@link IncrementTo}s to be converted
      * @return the {@link List} of converted {@link ComparableIncrement}s
-     * @author mbrunnli (10.04.2014)
      */
     private List<ComparableIncrement> convertIncrements(List<IncrementTo> increments) {
         List<ComparableIncrement> comparableIncrements = Lists.newLinkedList();
@@ -57,7 +55,6 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
      * Adds a new {@link TemplateTo} to this increment
      * @param template
      *            {@link TemplateTo} to be added
-     * @author mbrunnli (09.04.2014)
      */
     public void addTemplate(TemplateTo template) {
         templates.add(template);
@@ -71,7 +68,6 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
     /**
      * Returns all dependent increments
      * @return all dependent increments
-     * @author mbrunnli (10.04.2014)
      */
     public List<ComparableIncrement> getDependentComparableIncrements() {
         return dependentIncrements;
@@ -93,7 +89,7 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
             if ((objId == null ^ getId() == null)) {
                 return false;
             } else if (objId != null && getId() != null) {
-                if (objId.equals("all") && objId.equals(getId())) {
+                if (objId.equals(CobiGenWrapper.ALL_INCREMENT_ID) && objId.equals(getId())) {
                     // Exception "all" increment
                     return true;
                 } else if (objTriggerId == null ^ getTriggerId() == null) {

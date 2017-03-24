@@ -17,7 +17,6 @@ import com.google.common.collect.Lists;
 
 /**
  * Job implementation for processing long running operations of CobiGen off the ui thread.
- * @author mbrunnli (Jan 10, 2016)
  */
 public class AnalyzeInputJob extends AbstractCobiGenJob {
 
@@ -50,7 +49,6 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
      *            CobiGen instance
      * @param inputs
      *            input objects to be analyzed
-     * @author mbrunnli (Jan 10, 2016)
      */
     public AnalyzeInputJob(CobiGen cobigen, List<Object> inputs) {
         this.cobigen = cobigen;
@@ -81,7 +79,6 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
     /**
      * Returns the field 'resultMatchingTemplates'
      * @return value of resultMatchingTemplates
-     * @author mbrunnli (Jan 10, 2016)
      */
     public List<TemplateTo> getResultMatchingTemplates() {
         return resultMatchingTemplates;
@@ -90,7 +87,6 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
     /**
      * Returns the field 'resultSingleNonContainerInput'
      * @return value of resultSingleNonContainerInput
-     * @author mbrunnli (Jan 10, 2016)
      */
     public boolean isResultSingleNonContainerInput() {
         return resultSingleNonContainerInput;
