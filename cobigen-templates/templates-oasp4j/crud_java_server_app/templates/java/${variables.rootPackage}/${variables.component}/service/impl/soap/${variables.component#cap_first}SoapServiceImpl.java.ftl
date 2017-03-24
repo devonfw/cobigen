@@ -10,7 +10,6 @@ import org.springframework.web.context.WebApplicationContext;
 import ${variables.rootPackage}.general.common.api.to.PaginatedListToWrapper;
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
 import ${variables.rootPackage}.general.service.api.soap.${variables.component?cap_first}Service;
@@ -70,8 +69,4 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
     return wrapper;
   }
   
-    @Override
-    public ${variables.entityName}Cto get${variables.entityName}Cto(long id) {
-      return this.${variables.component}.find${variables.entityName}Cto(id);
-    }
 }

@@ -41,4 +41,6 @@ public interface ${variables.component?cap_first} {
    */
   ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?uncap_first});
   
+   ${variables.entityName}Cto find${variables.entityName}Cto(Long id);
+  
 }

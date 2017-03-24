@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 
 import ${variables.rootPackage}.general.common.api.to.PaginatedListToWrapper;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
@@ -38,9 +37,4 @@ public interface ${variables.component?cap_first}SoapService {
   @WebResult(name = "message")
   @POST
   public PaginatedListToWrapper<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo);
-  
-  @WebMethod
-  @WebResult(name = "message")
-  @GET
-  public ${variables.entityName}Cto get${variables.entityName}Cto(long id);
 }
