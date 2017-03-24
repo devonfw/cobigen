@@ -77,7 +77,6 @@ public class TemplatesConfiguration {
      * @param id
      *            of the {@link Template} to be searched for
      * @return the {@link Template} with the given id or <code>null</code> if there is no
-     * @author mbrunnli (09.04.2014)
      */
     public Template getTemplate(String id) {
         return templates.get(id);
@@ -87,7 +86,6 @@ public class TemplatesConfiguration {
      * Returns the set of all available templates
      *
      * @return the set of all available templates
-     * @author mbrunnli (12.02.2013)
      */
     public Set<Template> getAllTemplates() {
         return new HashSet<>(templates.values());
@@ -95,9 +93,7 @@ public class TemplatesConfiguration {
 
     /**
      * Returns the {@link Trigger}, this {@link TemplatesConfiguration} is related to
-     *
      * @return the {@link Trigger}, this {@link TemplatesConfiguration} is related to
-     * @author mbrunnli (09.04.2014)
      */
     public Trigger getTrigger() {
         return trigger;
@@ -106,7 +102,6 @@ public class TemplatesConfiguration {
     /**
      * Returns the field 'triggerInterpreter'
      * @return value of triggerInterpreter
-     * @author mbrunnli (16.10.2014)
      */
     public TriggerInterpreter getTriggerInterpreter() {
         return triggerInterpreter;
@@ -116,7 +111,6 @@ public class TemplatesConfiguration {
      * Returns the set of all available increments
      *
      * @return the set of all available increments
-     * @author trippl (25.02.2013)
      */
     public List<Increment> getAllGenerationPackages() {
         return new LinkedList<>(increments.values());
@@ -124,9 +118,7 @@ public class TemplatesConfiguration {
 
     /**
      * Returns the folder name of this context definition (root folder for all templates)
-     *
      * @return the folder name of this context definition (root folder for all templates)
-     * @author mbrunnli (05.04.2013)
      */
     public String getTemplatesFolderName() {
         return templatesFolderName;

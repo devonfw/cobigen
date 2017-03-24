@@ -17,8 +17,6 @@ import com.google.common.collect.Maps;
 
 /**
  * Resolves all context variables for a given input and its trigger
- *
- * @author mbrunnli (03.06.2014)
  */
 public class ContextVariableResolver {
 
@@ -39,7 +37,6 @@ public class ContextVariableResolver {
      *            object for which a new object model should be created
      * @param trigger
      *            which has been activated for the given input
-     * @author mbrunnli (09.04.2014)
      */
     public ContextVariableResolver(Object input, Trigger trigger) {
 

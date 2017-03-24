@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.impl.config.entity;
 
 import java.nio.file.Path;
+import java.util.Properties;
 
 import com.capgemini.cobigen.api.extension.TextTemplate;
 
@@ -8,84 +9,86 @@ import com.capgemini.cobigen.api.extension.TextTemplate;
 public class Template implements TextTemplate {
 
     /** Identifies the {@link Template}. */
-    private String name;
+    private final String name;
 
-    /** Relative path to the template file. */
-    private String relativeTemplatePath;
+    /** The {@link TemplateFile} pointing to the physical template file. */
+    private final TemplateFile templateFile;
 
-    /** Determines the required strategy to merge the {@link Template} */
-    private String mergeStrategy;
+    /**
+     * Relative non-canonical path of the final target file to generate to. Path variables are not resolved.
+     * Relocates are resolved.
+     */
+    private String unresolvedTargetPath;
+
+    /**
+     * See {@link #getUnresolvedTemplatePath()}
+     */
+    private String unresolvedTemplatePath;
 
     /** Charset of the target file */
     private String targetCharset;
 
-    /** Relative path for the result. */
-    private String unresolvedDestinationPath;
-
-    /** Absolute path to the template file */
-    private Path absoluteTemplatePath;
+    /** Determines the required strategy to merge the {@link Template} */
+    private String mergeStrategy;
 
     /**
      * Creates a new {@link Template} for the given data
+     * @param templateFile
+     *            the {@link TemplateFile} pointing to the physical template file.
      * @param name
      *            template name
      * @param unresolvedDestinationPath
      *            path of the destination file
-     * @param relativeTemplatePath
-     *            path of the template file relative to the template folder
+     * @param unresolvedTemplatePath
+     *            relative path of the actual file to generate to. Path variables and relocates are not
+     *            resolved.
      * @param mergeStrategy
      *            for the template
      * @param outputCharset
      *            output charset for the generated contents
-     * @param absoluteTemplatePath
-     *            absolute file path pointing to the template file.
      */
-    public Template(String name, String unresolvedDestinationPath, String relativeTemplatePath, String mergeStrategy,
-        String outputCharset, Path absoluteTemplatePath) {
+    public Template(TemplateFile templateFile, String name, String unresolvedDestinationPath,
+        String unresolvedTemplatePath, String mergeStrategy, String outputCharset) {
+        this.templateFile = templateFile;
         this.name = name;
-        this.relativeTemplatePath = relativeTemplatePath;
         this.mergeStrategy = mergeStrategy;
         targetCharset = outputCharset;
-        this.unresolvedDestinationPath = unresolvedDestinationPath;
-        this.absoluteTemplatePath = absoluteTemplatePath;
+        unresolvedTargetPath = unresolvedDestinationPath;
+        this.unresolvedTemplatePath = unresolvedTemplatePath;
     }
 
     /**
-     * Returns the {@link Template}'s {@link #name}
-     * @return the template name
+     * @return the {@link Template}'s name (a unique ID).
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Returns the path to the {@link #relativeTemplatePath}
-     * @return the relative path to the templateFile
+     * @return the relative path to the template file.
      */
     @Override
     public String getRelativeTemplatePath() {
-        return relativeTemplatePath;
+        return templateFile.toString();
     }
 
     /**
-     * Returns the {@link #mergeStrategy} for the {@link Template}
-     * @return the merge strategy
+     * @return the strategy used when the target file already exists and has to be merged with the generated
+     *         file.
      */
     public String getMergeStrategy() {
         return mergeStrategy;
     }
 
     /**
-     * Sets the {@link #mergeStrategy} for the {@link Template}
      * @param mergeStrategy
-     *            the {@link #mergeStrategy} for the {@link Template}
+     *            the new value of {@link #getMergeStrategy()}.
      */
     public void setMergeStrategy(String mergeStrategy) {
         this.mergeStrategy = mergeStrategy;
     }
 
     /**
-     * Returns the output charset for this template
      * @return the output charset for this template
      */
     public String getTargetCharset() {
@@ -93,38 +96,61 @@ public class Template implements TextTemplate {
     }
 
     /**
-     * Sets the output charset for this template
      * @param targetCharset
-     *            the output charset for this template
+     *            the new value of {@link #getTargetCharset()}.
      */
     public void setTargetCharset(String targetCharset) {
         this.targetCharset = targetCharset;
     }
 
     /**
-     * Returns the unresolved destination path defined in the templates configuration
+     * Returns the relative non-canonical path of the final target file to generate to. Path variables are not
+     * resolved. Relocates are resolved.
      * @return the unresolved destination path
      */
-    public String getUnresolvedDestinationPath() {
-        return unresolvedDestinationPath;
+    public String getUnresolvedTargetPath() {
+        return unresolvedTargetPath;
     }
 
     /**
-     * Sets the unresolved destination path defined in the templates configuration
-     * @param unresolvedDestinationPath
-     *            the unresolved destination path
+     * @param unresolvedTargetPath
+     *            the new value of {@link #getUnresolvedTargetPath()}.
      */
-    public void setUnresolvedDestinationPath(String unresolvedDestinationPath) {
-        this.unresolvedDestinationPath = unresolvedDestinationPath;
+    public void setUnresolvedTargetPath(String unresolvedTargetPath) {
+        this.unresolvedTargetPath = unresolvedTargetPath;
     }
 
     /**
-     * Returns the absolute file path to the template
+     * @param unresolvedTemplatePath
+     *            the value of {@link #getUnresolvedTemplatePath()}
+     */
+    public void setUnresolvedTemplatePath(String unresolvedTemplatePath) {
+        this.unresolvedTemplatePath = unresolvedTemplatePath;
+    }
+
+    /**
+     * @return the relative path of the final target file to generate to. Path variables and relocates are not
+     *         resolved.
+     */
+    public String getUnresolvedTemplatePath() {
+        return unresolvedTemplatePath;
+    }
+
+    /**
      * @return the absolute file path to the template
      */
     @Override
     public Path getAbsoluteTemplatePath() {
-        return absoluteTemplatePath;
+        return templateFile.getPath();
+    }
+
+    /**
+     * @return the {@link Properties} with the variables for this template.
+     * @see TemplateFolder#getVariables()
+     */
+    public Properties getVariables() {
+
+        return templateFile.getParent().getVariables();
     }
 
     @Override
