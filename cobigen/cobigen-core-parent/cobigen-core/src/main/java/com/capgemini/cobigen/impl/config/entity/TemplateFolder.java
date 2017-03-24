@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.impl.util.CobiGenPropertiesUtil;
+import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 
 /**
  * Virtual file system for generation target to evaluate path variables and cobigen specific symlinks.
@@ -48,7 +49,7 @@ public class TemplateFolder extends TemplatePath {
     private TemplateFolder(Path templatePath, Properties variables) {
         super(templatePath, null);
         children = new HashMap<>();
-        this.variables = CobiGenPropertiesUtil.load(templatePath, variables);
+        this.variables = CobiGenPropertiesReader.load(templatePath, variables);
     }
 
     /**
@@ -74,14 +75,14 @@ public class TemplateFolder extends TemplatePath {
     private TemplateFolder(Path templatePath, TemplateFolder parent) {
         super(templatePath, parent);
         children = new HashMap<>();
-        variables = CobiGenPropertiesUtil.load(templatePath, parent.variables);
+        variables = CobiGenPropertiesReader.load(templatePath, parent.variables);
     }
 
     /**
      * @return the {@link Map} with the variables for this {@link TemplateFolder}. Will be inherited from
      *         {@link #getParent() parent} and merged and overridden with potential properties defined in this
      *         folder.
-     * @see CobiGenPropertiesUtil
+     * @see CobiGenPropertiesReader
      */
     public Properties getVariables() {
         return variables;
@@ -141,7 +142,7 @@ public class TemplateFolder extends TemplatePath {
                 if (filename.endsWith("/")) {
                     filename = filename.substring(0, filename.length() - 1);
                 }
-                if (!CobiGenPropertiesUtil.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
+                if (!ConfigurationConstants.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
                     TemplatePath child = createChild(childName);
                     children.put(filename, child);
                 }
