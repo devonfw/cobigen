@@ -50,9 +50,9 @@ public class ${variables.component?cap_first}RepoImpl extends AbstractComponentF
   
   @Override
   public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
-    ${variables.entityName}Eto result = get${variables.entityName}RegistrationBean().get${variables.entityName}Repo().save(getBeanMapper().map(${variables.entityName?lower_case}, ${variables.entityName}Entity.class));
-    LOG.debug("${variables.entityName} with id '{}' has been created.", result.getId());
-    return getBeanMapper().map(result, ${variables.entityName}Eto.class);
+    ${variables.entityName}Eto resultEntity = get${variables.entityName}RegistrationBean().get${variables.entityName}Repo().save(getBeanMapper().map(${variables.entityName?lower_case}, ${variables.entityName}Entity.class));
+    LOG.debug("${variables.entityName} with id '{}' has been created.", resultEntity.getId());
+    return getBeanMapper().map(resultEntity, ${variables.entityName}Eto.class);
   }
 
   /**
