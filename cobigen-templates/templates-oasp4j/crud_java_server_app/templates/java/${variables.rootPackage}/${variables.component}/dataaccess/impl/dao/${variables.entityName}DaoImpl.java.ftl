@@ -66,6 +66,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     </#if>
     </#list>
 
+    addOrderBy(query, alias, ${variables.entityName?lower_case}, criteria.getSort());
     return findPaginated(criteria, query, alias);
   }
   
