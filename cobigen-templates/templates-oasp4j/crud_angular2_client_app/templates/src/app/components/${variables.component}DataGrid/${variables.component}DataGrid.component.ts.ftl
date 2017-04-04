@@ -1,7 +1,7 @@
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { SecurityService } from '../../security/security.service';
 import { TranslateService } from 'ng2-translate/src/translate.service';
-import { ${variables.component?cap_first}AddDialogComponent } from '../${variables.component}addDialog/${variables.component}addDialog.component';
+import { ${variables.component?cap_first}AddDialogComponent } from '../${variables.component}AddDialog/${variables.component}AddDialog.component';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
@@ -10,11 +10,11 @@ import {
     ITdDataTableSortChangeEvent
 } from '@covalent/core';
 import { TdDialogService } from '@covalent/core';
-import { ${variables.component?cap_first}DataGridService } from './${variables.component}dataGrid.service';
+import { ${variables.component?cap_first}DataGridService } from './${variables.component}DataGrid.service';
 import * as _ from 'lodash';
 
 @Component({
-    templateUrl: './${variables.component}dataGrid.component.html'
+    templateUrl: './${variables.component}DataGrid.component.html'
 })
 
 export class ${variables.component?cap_first}DataGridComponent implements OnInit {
@@ -24,9 +24,9 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     data: any = [];
     columns: any = [<#list pojo.fields as field>
             <#if field?has_next>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
+            {name: '${field.name}', label: this.getTranslation('${variables.component}DataGrid.columns.${field.name}')},
             <#else>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
+            {name: '${field.name}', label: this.getTranslation('${variables.component}DataGrid.columns.${field.name}')}
             </#if>
           </#list>];  
     selectedRow: any;
@@ -65,9 +65,9 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
             this.language = this.translate.currentLang;
             this.columns = [<#list pojo.fields as field>
             <#if field?has_next>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
+            {name: '${field.name}', label: this.getTranslation('${variables.component}DataGrid.columns.${field.name}')},
             <#else>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
+            {name: '${field.name}', label: this.getTranslation('${variables.component}DataGrid.columns.${field.name}')}
             </#if>
           </#list>];
         }
@@ -90,7 +90,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                            }, (error) =>{
                                 this._dialogService.openConfirm({
                                     message: JSON.parse(error.text()).message,
-                                    title: this.getTranslation('${variables.component}datagrid.alert.title')
+                                    title: this.getTranslation('${variables.component}DataGrid.alert.title')
                                 })
                            });
     }
@@ -138,7 +138,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
 
     openDialog(): void {
         this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent);
-        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.addTitle");
+        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}DataGrid.addTitle");
 
         this.dialogRef.afterClosed()
                       .subscribe(result => {
@@ -149,7 +149,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                                                 }, (error) => {
                                                     this._dialogService.openAlert({
                                                         message: JSON.parse(error.text()).message,
-                                                        title: this.getTranslation('${variables.component}datagrid.alert.title')
+                                                        title: this.getTranslation('${variables.component}DataGrid.alert.title')
                                                     })
                                                 });
                           }
@@ -159,7 +159,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     openEditDialog(): void {
         this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent);
         this.dialogRef.componentInstance.item = this.selectedRow;
-        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.editTitle");
+        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}DataGrid.editTitle");
 
         this.dialogRef.afterClosed()
                       .subscribe(result => {
@@ -170,7 +170,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                                                 }, (error) => {
                                                     this._dialogService.openAlert({
                                                         message: JSON.parse(error.text()).message,
-                                                        title: this.getTranslation('${variables.component}datagrid.alert.title')
+                                                        title: this.getTranslation('${variables.component}DataGrid.alert.title')
                                                     })
                                                 });
                         }
@@ -179,10 +179,10 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
 
     openConfirm(): void {
         this._dialogService.openConfirm({
-            message: this.getTranslation('${variables.component}datagrid.alert.message'),
-            title: this.getTranslation('${variables.component}datagrid.alert.title'),
-            cancelButton: this.getTranslation('${variables.component}datagrid.alert.cancelBtn'),
-            acceptButton: this.getTranslation('${variables.component}datagrid.alert.acceptBtn'),
+            message: this.getTranslation('${variables.component}DataGrid.alert.message'),
+            title: this.getTranslation('${variables.component}DataGrid.alert.title'),
+            cancelButton: this.getTranslation('${variables.component}DataGrid.alert.cancelBtn'),
+            acceptButton: this.getTranslation('${variables.component}DataGrid.alert.acceptBtn'),
         }).afterClosed().subscribe((accept: boolean) => {
             if (accept) {
                 this.dataGridService.deleteData(this.selectedRow.id)
@@ -191,7 +191,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                                     }, (error) => {
                                         this._dialogService.openAlert({
                                             message: JSON.parse(error.text()).message,
-                                            title: this.getTranslation('${variables.component}datagrid.alert.title')
+                                            title: this.getTranslation('${variables.component}DataGrid.alert.title')
                                         })
                                     });
             }

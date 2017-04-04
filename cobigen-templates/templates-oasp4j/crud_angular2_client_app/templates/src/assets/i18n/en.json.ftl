@@ -20,7 +20,7 @@
     "password": "Password",
     "errorMsg": "Wrong username or password"
   },
-  "${variables.component}datagrid": {
+  "${variables.component}DataGrid": {
     "navData": "${variables.etoName}_EN",
     "navDataSub": "Grid of ${variables.etoName}_EN",
     "navHome": "Home",

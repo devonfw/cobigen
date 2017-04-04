@@ -8,14 +8,14 @@
       <md-nav-list list-items>
           <a id="home" md-list-item (click)="navigateTo('home')">
             <md-icon md-list-avatar>home</md-icon>
-            <h3 md-line> {{'${variables.component}datagrid.navHome' | translate}} </h3>
-            <p md-line> {{'${variables.component}datagrid.navHomeSub' | translate}} </p>
+            <h3 md-line> {{'${variables.component}DataGrid.navHome' | translate}} </h3>
+            <p md-line> {{'${variables.component}DataGrid.navHomeSub' | translate}} </p>
           </a>
         
-          <a id="${variables.component}dataGrid" md-list-item (click)="navigateTo('${variables.component}dataGrid')">
+          <a id="${variables.component}DataGrid" md-list-item (click)="navigateTo('${variables.component}DataGrid')">
             <md-icon md-list-avatar>grid_on</md-icon>
-            <h3 md-line> {{'${variables.component}datagrid.navData' | translate}} </h3>
-            <p md-line> {{'${variables.component}datagrid.navDataSub' | translate}} </p>
+            <h3 md-line> {{'${variables.component}DataGrid.navData' | translate}} </h3>
+            <p md-line> {{'${variables.component}DataGrid.navDataSub' | translate}} </p>
           </a>
       </md-nav-list>
     </md-sidenav>

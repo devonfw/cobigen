@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: '${variables.component}-add-dialog',
-  templateUrl: './${variables.component}addDialog.component.html'
+  templateUrl: './${variables.component?cap_first}AddDialog.component.html'
 })
 
 export class ${variables.component?cap_first}AddDialogComponent {

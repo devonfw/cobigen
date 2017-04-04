@@ -12,7 +12,8 @@
 
     <md-menu #menu="mdMenu">
       <span class="flag-icon flag-icon-gb" *ngIf = "isCurrentLang('en')" (click)="toggleLanguage('en')" style="margin-bottom:10px"></span>
-      <span class="flag-icon flag-icon-es" *ngIf = "isCurrentLang('es')" (click)="toggleLanguage('es')"></span>
+      <span class="flag-icon flag-icon-es" *ngIf = "isCurrentLang('es')" (click)="toggleLanguage('es')"style="margin-bottom:10px"></span>
+      <span class="flag-icon flag-icon-de" *ngIf = "isCurrentLang('de')" (click)="toggleLanguage('de')"></span>
     </md-menu>
 
     <button md-icon-button *ngIf="this.router.location.path() !== '/login'" (click) = "logout()">
