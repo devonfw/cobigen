@@ -3,11 +3,11 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component}addDialog.component.html"/>
-    <templateExtension ref="${variables.component}addDialog.component.ts"/>
-    <templateExtension ref="${variables.component}dataGrid.component.html"/>
-    <templateExtension ref="${variables.component}dataGrid.component.ts"/>
-    <templateExtension ref="${variables.component}dataGrid.service.ts"/>
+    <templateExtension ref="${variables.component}AddDialog.component.html"/>
+    <templateExtension ref="${variables.component}AddDialog.component.ts"/>
+    <templateExtension ref="${variables.component}DataGrid.component.html"/>
+    <templateExtension ref="${variables.component}DataGrid.component.ts"/>
+    <templateExtension ref="${variables.component}DataGrid.service.ts"/>
     <templateExtension ref="header.component.html"/>
     <templateExtension ref="header.component.ts"/>
     <templateExtension ref="home.component.html"/>
@@ -24,6 +24,7 @@
     <templateExtension ref="BusinessOperations.ts"/>
     <templateExtension ref="es.json"/>
     <templateExtension ref="en.json"/>
+    <templateExtension ref="de.json"/>
     <templateExtension ref="serverPath.ts"/>
   </templates>
 
@@ -33,11 +34,11 @@
 
   <increments>
     <increment name="app_angular" description="Angular2 Client App">
-      <templateRef ref="${variables.component}addDialog.component.html"/>
-      <templateRef ref="${variables.component}addDialog.component.ts"/>
-      <templateRef ref="${variables.component}dataGrid.component.html"/>
-      <templateRef ref="${variables.component}dataGrid.component.ts"/>
-      <templateRef ref="${variables.component}dataGrid.service.ts"/>
+      <templateRef ref="${variables.component}AddDialog.component.html"/>
+      <templateRef ref="${variables.component}AddDialog.component.ts"/>
+      <templateRef ref="${variables.component}DataGrid.component.html"/>
+      <templateRef ref="${variables.component}DataGrid.component.ts"/>
+      <templateRef ref="${variables.component}DataGrid.service.ts"/>
       <templateRef ref="header.component.html"/>
       <templateRef ref="header.component.ts"/>
       <templateRef ref="home.component.html"/>
@@ -54,6 +55,7 @@
       <templateRef ref="BusinessOperations.ts"/>
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
+      <templateRef ref="de.json"/>
       <templateRef ref="serverPath.ts"/>
     </increment>
   </increments>

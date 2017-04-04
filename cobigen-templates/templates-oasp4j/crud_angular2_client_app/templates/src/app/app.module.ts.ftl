@@ -1,5 +1,5 @@
 import { BusinessOperations } from './BusinessOperations';
-import { ${variables.component?cap_first}AddDialogComponent } from './components/${variables.component}addDialog/${variables.component}addDialog.component';
+import { ${variables.component?cap_first}AddDialogComponent } from './components/${variables.component}AddDialog/${variables.component}AddDialog.component';
 // modules
 import { TranslateModule, TranslateLoader, TranslateStaticLoader } from 'ng2-translate/ng2-translate';
 import { HttpModule, Http } from '@angular/http';
@@ -16,10 +16,10 @@ import { CovalentCoreModule } from '@covalent/core';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
-import { ${variables.component?cap_first}DataGridComponent } from './components/${variables.component}dataGrid/${variables.component}dataGrid.component';
+import { ${variables.component?cap_first}DataGridComponent } from './components/${variables.component}DataGrid/${variables.component}DataGrid.component';
 
 // services
-import { ${variables.component?cap_first}DataGridService } from './components/${variables.component}dataGrid/${variables.component}dataGrid.service';
+import { ${variables.component?cap_first}DataGridService } from './components/${variables.component}DataGrid/${variables.component}DataGrid.service';
 import { SecurityService } from './security/security.service';
 import { HttpClient } from './security/httpClient.service';
 

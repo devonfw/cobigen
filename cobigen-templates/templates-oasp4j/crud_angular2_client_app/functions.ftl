@@ -38,7 +38,7 @@
 <#macro getNG2Type_Grid_Search>
   <#list pojo.fields as field>
       <md-input-container>
-        <input md-input name ="${field.name}" type="${getType(field.type)}" ngModel [placeholder]= "'${variables.component}datagrid.columns.${field.name}' | translate">
+        <input md-input name ="${field.name}" type="${getType(field.type)}" ngModel [placeholder]= "'${variables.component}DataGrid.columns.${field.name}' | translate">
       </md-input-container>
    </#list>
 </#macro>
@@ -46,7 +46,7 @@
 <#macro getNG2Type_Add_Dialog>
 <#list pojo.fields as field>
     <md-input-container style="width:100%;">
-        <input md-input type="${getType(field.type)}" name = "${field.name}" [placeholder]= "'${variables.component}datagrid.columns.${field.name}' | translate" [(ngModel)] = "item.${field.name}" required>
+        <input md-input type="${getType(field.type)}" name = "${field.name}" [placeholder]= "'${variables.component}DataGrid.columns.${field.name}' | translate" [(ngModel)] = "item.${field.name}" required>
     </md-input-container>
     </#list>
 </#macro>

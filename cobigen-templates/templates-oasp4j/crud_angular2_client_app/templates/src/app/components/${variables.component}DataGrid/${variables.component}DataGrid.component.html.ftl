@@ -1,12 +1,12 @@
 <#include '/functions.ftl'>
 <div layout="row" layout-align="start center" style="background-color:#eee">
-  <span flex class="md-title" style ="text-align: center">{{'${variables.component}datagrid.title' | translate}}</span>
+  <span flex class="md-title" style ="text-align: center">{{'${variables.component}DataGrid.title' | translate}}</span>
 
   <button
     md-button
     flex
     class="push-right-sm"
-    [mdTooltip]="'${variables.component}datagrid.searchTip' | translate"
+    [mdTooltip]="'${variables.component}DataGrid.searchTip' | translate"
     (click) = "openSearchBox()">
     <md-icon>search</md-icon>
   </button>
@@ -16,7 +16,7 @@
     flex
     class="push-right-sm"
     [disabled]="sorting.length === 0"
-    [mdTooltip]="'${variables.component}datagrid.sortTip' | translate"
+    [mdTooltip]="'${variables.component}DataGrid.sortTip' | translate"
     (click) = "clearSorting()">
     <md-icon>import_export</md-icon>
   </button>
@@ -52,7 +52,7 @@
 
 </div>
 
-<div id="${variables.etoName?lower_case}dataGrid-div" *ngIf="searchBox" layout="row" class="pad-left-sm pad-right-sm" style="background-color:#eee">
+<div id="${variables.etoName?lower_case}DataGrid-div" *ngIf="searchBox" layout="row" class="pad-left-sm pad-right-sm" style="background-color:#eee">
   <form #searchForm="ngForm">
    <@getNG2Type_Grid_Search/>
 
