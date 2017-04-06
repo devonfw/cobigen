@@ -1,0 +1,3 @@
+excluce:
+  - "*.setup"
+  - "./**/*.setup"
