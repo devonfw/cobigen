@@ -3,30 +3,30 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
 
-    <templateExtension ref="UcFind${variables.entityName}.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="UcManage${variables.entityName}.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="UcManage${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_UcFind${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_UcManage${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_UcManage${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath="src/main"/>
+    <templateScan templateNamePrefix="crud_complex_" templatePath="templates" destinationPath="src/main"/>
   </templateScans>
 
   <increments>
     <increment name="logic_impl_complex" description="CRUD logic (with use cases)">
-      <templateRef ref="AbstractBeanMapperSupport.java"/>
-      <templateRef ref="${variables.component#cap_first}.java"/>
-      <templateRef ref="Abstract${variables.entityName}Uc.java"/>
-      <templateRef ref="AbstractUc.java"/>
-      <templateRef ref="${variables.component#cap_first}Impl.java"/>
-      <templateRef ref="UcFind${variables.entityName}.java"/>
-      <templateRef ref="UcManage${variables.entityName}.java"/>
-      <templateRef ref="UcFind${variables.entityName}Impl.java"/>
-      <templateRef ref="UcManage${variables.entityName}Impl.java"/>
+      <templateRef ref="crud_complex_AbstractBeanMapperSupport.java"/>
+      <templateRef ref="crud_complex_${variables.component#cap_first}.java"/>
+      <templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java"/>
+      <templateRef ref="crud_complex_AbstractUc.java"/>
+      <templateRef ref="crud_complex_${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="crud_complex_UcFind${variables.entityName}.java"/>
+      <templateRef ref="crud_complex_UcManage${variables.entityName}.java"/>
+      <templateRef ref="crud_complex_UcFind${variables.entityName}Impl.java"/>
+      <templateRef ref="crud_complex_UcManage${variables.entityName}Impl.java"/>
     </increment>
   </increments>
 </templatesConfiguration>
