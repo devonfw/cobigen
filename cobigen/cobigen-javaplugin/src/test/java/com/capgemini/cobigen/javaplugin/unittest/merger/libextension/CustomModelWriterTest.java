@@ -132,4 +132,42 @@ public class CustomModelWriterTest {
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("@Multipart(value=\"binaryObjectEto\"");
     }
+
+    /**
+     * Tests the output of the CustomModelWriter with respect to the syntax of the array notation for
+     * annotation parameter values.
+     *
+     * See https://github.com/devonfw/tools-cobigen/issues/290
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectSyntaxOutputForArrays() throws Exception {
+        File file = new File(testFileRootPath + "ArraySyntax.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        assertThat(reprintedClass).containsSequence("{", "{", "}", "{", "}", "}");
+    }
+
+    /**
+     * Tests the output of the CustomModelWriter regarding the full qualified names of the nested annotations
+     * used in it.
+     *
+     * See https://github.com/devonfw/tools-cobigen/issues/291
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectNameOutputForNestedAnnotations() throws Exception {
+        File file = new File(testFileRootPath + "ArraySyntax.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        assertThat(reprintedClass).doesNotContain("javax.persistence.");
+    }
 }
