@@ -135,7 +135,7 @@ public class CustomModelWriterTest {
 
     /**
      * Tests the output of the CustomModelWriter with respect to the syntax of the array notation for
-     * annotation parameter values with Annotation[]
+     * annotation parameter values with Annotation[].
      *
      * See https://github.com/devonfw/tools-cobigen/issues/290
      * @throws Exception
@@ -149,12 +149,12 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        assertThat(reprintedClass).containsSequence("{", "{", "}", "{", "}", "}");
+        assertThat(reprintedClass).contains("{", "{", "}", "{", "}", "}");
     }
 
     /**
      * Tests the output of the CustomModelWriter with respect to the syntax of the array notation for
-     * annotation parameter values with only one Annotation
+     * annotation parameter values with only one Annotation.
      *
      * See https://github.com/devonfw/tools-cobigen/issues/290
      * @throws Exception
