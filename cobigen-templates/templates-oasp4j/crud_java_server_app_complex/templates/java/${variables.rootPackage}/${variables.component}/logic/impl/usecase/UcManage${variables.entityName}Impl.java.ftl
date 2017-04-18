@@ -43,10 +43,8 @@ public class UcManage${variables.entityName}Impl extends Abstract${variables.ent
 	 ${variables.entityName}Entity ${variables.entityName?uncap_first}Entity = getBeanMapper().map(${variables.entityName?uncap_first}, ${variables.entityName}Entity.class);
 
    //initialize, validate ${variables.entityName?uncap_first}Entity here if necessary
-
-
-   get${variables.entityName}Dao().save(${variables.entityName?uncap_first}Entity);
-   LOG.debug("${variables.entityName} with id '{}' has been created.", ${variables.entityName?uncap_first}Entity.getId());
-   return getBeanMapper().map(${variables.entityName?uncap_first}Entity, ${variables.entityName}Eto.class);
+   ${variables.entityName}Entity resultEntity = get${variables.entityName}Dao().save(${variables.entityName?uncap_first}Entity);
+   LOG.debug("${variables.entityName} with id '{}' has been created.",resultEntity.getId());
+   return getBeanMapper().map(resultEntity, ${variables.entityName}Eto.class);
   }
 }
