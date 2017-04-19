@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.regex.Pattern;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -149,7 +150,8 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        assertThat(reprintedClass).contains("{", "{", "}", "{", "}", "}");
+        Pattern p = Pattern.compile("@[A-Za-z]+\\(\\{.+\\{.+\\s*.+\\}.+\\{.+\\}.+\\}\\)\\s*public.+", Pattern.DOTALL);
+        assertThat(reprintedClass).matches(p);
     }
 
     /**
@@ -168,7 +170,8 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        assertThat(reprintedClass).containsSequence("{", "}");
+        Pattern p = Pattern.compile("@[A-Za-z]+\\(.*\\{.*\\}.*\\).*\\s*public.+", Pattern.DOTALL);
+        assertThat(reprintedClass).matches(p);
     }
 
     /**
@@ -187,6 +190,24 @@ public class CustomModelWriterTest {
         target.writeClass(parsedClass);
 
         String reprintedClass = target.toString();
-        assertThat(reprintedClass).doesNotContain("javax.persistence.");
+        assertThat(reprintedClass).doesNotContain("javax.persistence.NamedEntityGraphs");
+    }
+
+    /**
+     * Tests the output of the CustomModelWriter regarding an own Annotation containing two Strings.
+     *
+     * See https://github.com/devonfw/tools-cobigen/issues/290
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectNameOutputForOwnAnnotation() throws Exception {
+        File file = new File(testFileRootPath + "OwnAnnotation.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        assertThat(reprintedClass).contains("{\"abc\", \"cde\"}");
     }
 }
