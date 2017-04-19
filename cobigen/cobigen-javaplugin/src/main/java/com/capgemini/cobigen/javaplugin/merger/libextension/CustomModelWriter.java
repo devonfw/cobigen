@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
@@ -388,13 +387,17 @@ public class CustomModelWriter implements ModelWriter {
                     writeAnnotation((JavaAnnotation) entry.getValue().getParameterValue());
                 } else if (entry.getValue().getParameterValue() instanceof Collection<?>) {
                     Collection<?> annotations = (Collection<?>) entry.getValue().getParameterValue();
+                    Object[] a = annotations.toArray();
                     buffer.write("{");
-                    for (Object a : annotations) {
-                        if (a instanceof JavaAnnotation) {
-                            writeAnnotation((JavaAnnotation) a);
+                    for (int i = 0; i < annotations.toArray().length; i++) {
+                        if (a[i] instanceof JavaAnnotation) {
+                            writeAnnotation((JavaAnnotation) a[i]);
                         } else {
-                            throw new CobiGenRuntimeException("Unexpected type " + a.getClass().getCanonicalName()
-                                + ". Expecting instanceof JavaAnnotation.");
+                            if (i > 0) {
+                                buffer.write(", " + a[i].toString());
+                            } else {
+                                buffer.write(a[i].toString());
+                            }
                         }
                     }
                     buffer.write("}");
