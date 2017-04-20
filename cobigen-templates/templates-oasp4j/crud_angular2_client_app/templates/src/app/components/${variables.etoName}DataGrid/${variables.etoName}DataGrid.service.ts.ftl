@@ -3,14 +3,14 @@ import { HttpClient } from '../../security/httpClient.service';
 import { BusinessOperations } from '../../BusinessOperations';
 
 @Injectable()
-export class ${variables.component?cap_first}DataGridService {
+export class ${variables.etoName?cap_first}DataGridService {
 
     constructor(private BO: BusinessOperations, private http: HttpClient) {
     }
 
     getData(size:number, page: number, searchTerms, sort: any[]) {
       
-      let pageData = {
+      let cobigen_pageData = {
         pagination: {
           size: size,
           page: page,
@@ -21,12 +21,12 @@ export class ${variables.component?cap_first}DataGridService {
         </#list>
         sort: sort
       }
-      return this.http.post(this.BO.post${variables.etoName}Search(), pageData)
+      return this.http.post(this.BO.post${variables.etoName}Search(), cobigen_pageData)
                       .map(res => res.json());
     }
 
     saveData(data) {
-      let obj = {
+      let cobigen_obj = {
         id: data.id,
         <#list pojo.fields as field>
           <#if field?has_next>
@@ -37,7 +37,7 @@ export class ${variables.component?cap_first}DataGridService {
         </#list>
       };
 
-      return this.http.post(this.BO.post${variables.etoName}(),  obj )
+      return this.http.post(this.BO.post${variables.etoName}(),  cobigen_obj )
                       .map(res => res.json());
     }
 

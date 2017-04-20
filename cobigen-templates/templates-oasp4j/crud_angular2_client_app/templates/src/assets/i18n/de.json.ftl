@@ -20,7 +20,7 @@
     "password": "Passwort",
     "errorMsg": "Benutzername oder Passwort falsch"
   },
-  "${variables.component}DataGrid": {
+  "${variables.etoName}DataGrid": {
     "navData": "${variables.etoName}_DE",
     "navDataSub": "Raster von ${variables.etoName}_DE",
     "navHome": "Beginn",
@@ -30,7 +30,7 @@
     "editTitle": "Element bearbeiten",
     "searchTip": "Suchen",
     "sortTip": "Sortierung löschen",
-    "columns": {
+    "cobigen_columns": {
       <#list pojo.fields as field>
         <#if field?has_next>
       "${field.name}": "${field.name?cap_first}_DE",

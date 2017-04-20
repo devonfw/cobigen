@@ -1,25 +1,24 @@
 import { BusinessOperations } from './BusinessOperations';
-import { ${variables.component?cap_first}AddDialogComponent } from './components/${variables.component}AddDialog/${variables.component}AddDialog.component';
-// modules
+import { ${variables.etoName?cap_first}AddDialogComponent } from './components/${variables.etoName}AddDialog/${variables.etoName}AddDialog.component';
+
 import { TranslateModule, TranslateLoader, TranslateStaticLoader } from 'ng2-translate/ng2-translate';
 import { HttpModule, Http } from '@angular/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MaterialModule } from '@angular/material';
-import { Material2AppAppComponent } from './app.component';
+import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 import { FormsModule } from '@angular/forms';
 import 'hammerjs';
 import { CovalentCoreModule } from '@covalent/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// components
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
-import { ${variables.component?cap_first}DataGridComponent } from './components/${variables.component}DataGrid/${variables.component}DataGrid.component';
+import { ${variables.etoName?cap_first}DataGridComponent } from './components/${variables.etoName}DataGrid/${variables.etoName}DataGrid.component';
 
-// services
-import { ${variables.component?cap_first}DataGridService } from './components/${variables.component}DataGrid/${variables.component}DataGrid.service';
+import { ${variables.etoName?cap_first}DataGridService } from './components/${variables.etoName}DataGrid/${variables.etoName}DataGrid.service';
 import { SecurityService } from './security/security.service';
 import { HttpClient } from './security/httpClient.service';
 
@@ -30,6 +29,7 @@ export function translateFactory(http: Http) {
 @NgModule({
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     CovalentCoreModule.forRoot(),
     FormsModule,
     HttpModule,
@@ -42,21 +42,21 @@ export function translateFactory(http: Http) {
     })
   ],
   declarations: [
-    Material2AppAppComponent,
+    AppComponent,
     HeaderComponent,
     LoginComponent,
     HomeComponent,
-    ${variables.component?cap_first}DataGridComponent,
-    ${variables.component?cap_first}AddDialogComponent
+    ${variables.etoName?cap_first}DataGridComponent,
+    ${variables.etoName?cap_first}AddDialogComponent
   ],
   entryComponents: [
-    ${variables.component?cap_first}AddDialogComponent
+    ${variables.etoName?cap_first}AddDialogComponent
   ],
   bootstrap: [
-    Material2AppAppComponent
+    AppComponent
   ],
   providers: [
-    ${variables.component?cap_first}DataGridService,
+    ${variables.etoName?cap_first}DataGridService,
     SecurityService,
     HttpClient,
     BusinessOperations

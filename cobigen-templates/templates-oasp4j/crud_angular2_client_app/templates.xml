@@ -3,11 +3,11 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component}AddDialog.component.html"/>
-    <templateExtension ref="${variables.component}AddDialog.component.ts"/>
-    <templateExtension ref="${variables.component}DataGrid.component.html"/>
-    <templateExtension ref="${variables.component}DataGrid.component.ts"/>
-    <templateExtension ref="${variables.component}DataGrid.service.ts"/>
+    <templateExtension ref="${variables.etoName}AddDialog.component.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName}AddDialog.component.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName}DataGrid.component.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName}DataGrid.component.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName}DataGrid.service.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="header.component.html"/>
     <templateExtension ref="header.component.ts"/>
     <templateExtension ref="home.component.html"/>
@@ -17,14 +17,14 @@
     <templateExtension ref="security.service.ts"/>
     <templateExtension ref="httpClient.service.ts"/>
     <templateExtension ref="app.component.css"/>
-    <templateExtension ref="app.component.html"/>
+    <templateExtension ref="app.component.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="app.component.ts"/>
-    <templateExtension ref="app.module.ts"/>
-    <templateExtension ref="app.routing.ts"/>
-    <templateExtension ref="BusinessOperations.ts"/>
-    <templateExtension ref="es.json"/>
-    <templateExtension ref="en.json"/>
-    <templateExtension ref="de.json"/>
+    <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="app.routing.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="BusinessOperations.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
+    <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
+    <templateExtension ref="de.json" mergeStrategy="jsonmerge"/>
     <templateExtension ref="serverPath.ts"/>
   </templates>
 
@@ -34,11 +34,11 @@
 
   <increments>
     <increment name="app_angular" description="Angular2 Client App">
-      <templateRef ref="${variables.component}AddDialog.component.html"/>
-      <templateRef ref="${variables.component}AddDialog.component.ts"/>
-      <templateRef ref="${variables.component}DataGrid.component.html"/>
-      <templateRef ref="${variables.component}DataGrid.component.ts"/>
-      <templateRef ref="${variables.component}DataGrid.service.ts"/>
+      <templateRef ref="${variables.etoName}AddDialog.component.html"/>
+      <templateRef ref="${variables.etoName}AddDialog.component.ts"/>
+      <templateRef ref="${variables.etoName}DataGrid.component.html"/>
+      <templateRef ref="${variables.etoName}DataGrid.component.ts"/>
+      <templateRef ref="${variables.etoName}DataGrid.service.ts"/>
       <templateRef ref="header.component.html"/>
       <templateRef ref="header.component.ts"/>
       <templateRef ref="home.component.html"/>
