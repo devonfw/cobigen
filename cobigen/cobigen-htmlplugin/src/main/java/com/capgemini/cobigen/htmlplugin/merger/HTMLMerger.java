@@ -1,10 +1,14 @@
 package com.capgemini.cobigen.htmlplugin.merger;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 
-import org.jsoup.Jsoup;
+import org.apache.commons.io.IOUtils;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.ParseSettings;
+import org.jsoup.parser.Parser;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
@@ -53,9 +57,18 @@ public class HTMLMerger implements Merger {
         Document docPatch;
         Angular2Merger ng2;
         String mergedContents = null;
+        String htmlString;
+        Reader reader = null;
         try {
-            fileDocBase = Jsoup.parse(base, targetCharset);
-            docPatch = Jsoup.parse(patch, targetCharset);
+            Parser parse = Parser.htmlParser();
+            parse.settings(new ParseSettings(true, true));
+            reader = new FileReader(base);
+            htmlString = IOUtils.toString(reader);
+            reader.close();
+
+            fileDocBase = parse.parseInput(htmlString, base.toString());
+            // fileDocBase = Jsoup.parse(base, targetCharset);
+            docPatch = parse.parseInput(patch, targetCharset);
             ng2 = new Angular2Merger(fileDocBase, docPatch);
             mergedContents = ng2.merger(patchOverrides);
         } catch (IOException e) {
