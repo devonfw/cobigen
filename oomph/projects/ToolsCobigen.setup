@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<setup:Project
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:com.github.maybeec.oomph.task="http://maybeec.github.io/oomph-task-unzip/1.0"
+    xmlns:com.github.maybeec.oomph.task_1="http://maybeec.github.io/oomph-task-cli/1.0"
+    xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
+    xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
+    xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
+    xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
+    xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
+    xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
+    xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
+    xsi:schemaLocation="http://maybeec.github.io/oomph-task-unzip/1.0 https://raw.githubusercontent.com/maybeec/oomph-task-unzip/master/task-unzip-updatesite/model/Oomph-task-unzip.ecore http://maybeec.github.io/oomph-task-cli/1.0 https://raw.githubusercontent.com/maybeec/oomph-task-cli/master/task-cli-updatesite/model/Oomph-cli-task-1.0.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
+    name="tools.cobigen"
+    label="Tools Cobigen">
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Github">
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="github.user.id"
+        storageURI="scope://Workspace"
+        label="Github user ID">
+      <description>The Github user ID</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="github.user.pw"
+        label="Github User Password (this is stored in the scripts in PLAIN TEXT)"/>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="github.remoteURIs.cobigen"
+        defaultValue="${github.remoteURIs.devonfw}"
+        storageURI="scope://Workspace"
+        label="Github repository for CobiGen">
+      <choice
+          value="git@github.com:${github.user.id}/tools-cobigen.git"
+          label="Existing Own Fork SSH (read-write)"/>
+      <choice
+          value="https://${github.user.id}:${github.user.pw}@github.com/${github.user.id}/tools-cobigen.git"
+          label="Existing own Fork HTTPS (read-write)"/>
+      <choice
+          value="${github.remoteURIs.devonfw}"
+          label="devonfw Repository"/>
+      <description>Choose from the available Github URIs</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="github.remoteURIs.devonfw"
+        label="devonfw Github URI">
+      <choice
+          value="git@github.com:devonfw/tools-cobigen.git"
+          label="SSH (read-write)"/>
+      <choice
+          value="https://${github.user.id}:${github.user.pw}@github.com/devonfw/tools-cobigen.git"
+          label="HTTPS (read-write)"/>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Targlet">
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="active.repo.list"
+        defaultValue="Mars"
+        storageURI="scope://Workspace"
+        label="Target Eclipse">
+      <choice
+          value="Mars"
+          label="Mars"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup.targlets:TargletTask">
+      <targlet
+          name="Eclipse"
+          activeRepositoryList="${active.repo.list}">
+        <requirement
+            name="org.eclipse.equinox.sdk.feature.group"
+            versionRange="[3.11.2.v20160202-2102,3.11.2.v20160202-2102]"/>
+        <requirement
+            name="org.eclipse.sdk.ide"
+            versionRange="[4.5.2.M20160212-1500,4.5.2.M20160212-1500]"/>
+        <requirement
+            name="org.eclipse.jdt.feature.group"
+            versionRange="[3.11.2.v20160212-1500,3.11.2.v20160212-1500]"/>
+        <requirement
+            name="org.eclipse.m2e.feature.feature.group"
+            versionRange="1.6.2.20150902-0002"/>
+        <requirement
+            name="org.apache.commons.io"
+            versionRange="[2.2.0.v201405211200,2.2.0.v201405211200]"/>
+        <requirement
+            name="ch.qos.logback.classic"
+            versionRange="[1.0.7.v20121108-1250,1.0.7.v20121108-1250]"/>
+        <requirement
+            name="org.eclipse.swtbot.eclipse.feature.group"
+            versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
+        <requirement
+            name="org.eclipse.swtbot.eclipse.test.junit.feature.group"
+            versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
+        <requirement
+            name="org.eclipse.swtbot.feature.group"
+            versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
+        <sourceLocator
+            rootFolder="${targlet.source.location}"/>
+        <repositoryList
+            name="Mars">
+          <repository
+              url="http://download.eclipse.org/eclipse/updates/4.5/"/>
+          <repository
+              url="http://download.eclipse.org/releases/mars"/>
+          <repository
+              url="http://download.eclipse.org/technology/m2e/releases/1.6"/>
+          <repository
+              url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+          <repository
+              url="http://download.eclipse.org/technology/swtbot/snapshots"/>
+        </repositoryList>
+      </targlet>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:EclipseIniTask"
+      excludedTriggers="STARTUP"
+      option="-Doomph.redirection.cobigenproject="
+      value="index:/redirectable.projects.setup->http://de-mucevolve02/files/oomph/projects/cobigen/com.github.projects.cobigen.setup"
+      vm="true">
+    <description></description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup.workingsets:WorkingSetTask">
+    <workingSet
+        name="cobigen-parent">
+      <predicate
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-core"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-core-api"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-core-test"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-core-systemtest"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-javaplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-jsonplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-propertyplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-senchaplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-textmerger"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-xmlplugin"/>
+      </predicate>
+    </workingSet>
+    <workingSet
+        name="cobigen-eclipse">
+      <predicate
+          xsi:type="predicates:NamePredicate"
+          pattern="cobigen-eclipse.*"/>
+    </workingSet>
+    <workingSet
+        name="cobigen-maven-plugin">
+      <predicate
+          xsi:type="predicates:NamePredicate"
+          pattern="cobigen-maven-plugin"/>
+    </workingSet>
+    <workingSet
+        name="cobigen-templates-parent">
+      <predicate
+          xsi:type="predicates:NamePredicate"
+          pattern="cobigen-templates.*"/>
+    </workingSet>
+    <workingSet
+        name="cobigen-tempeng-parent">
+      <predicate
+          xsi:type="predicates:NamePredicate"
+          pattern="cobigen-tempeng.*"/>
+    </workingSet>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Java">
+    <setupTask
+        xsi:type="setup:ResourceCopyTask"
+        excludedTriggers="STARTUP"
+        successor="unzip.jdk.1.7"
+        sourceURL="http://de-mucevolve02/files/oomph/resources/jdk-1.7.0.87.zip"
+        targetURL="${tmp.download.location/java17.zip|uri}">
+      <description></description>
+    </setupTask>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task:unzipTask"
+        id="unzip.jdk.1.7"
+        excludedTriggers="STARTUP"
+        successor="//@setupTasks.4/@setupTasks.2"
+        zipFile="${tmp.download.location/java17.zip}"
+        destinationDir="${software.location/java/additionalJdk/1.7/}"
+        priority="100"/>
+    <setupTask
+        xsi:type="jdt:JRETask"
+        version="JavaSE-1.7"
+        location="${software.location/java/additionalJdk/1.7/}"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Eclipse Preferences">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.jdt.core">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.codegen.targetPlatform"
+          value="1.7"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.compliance"
+          value="1.7"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.source"
+          value="1.7"/>
+      <description>Sets the java code level to 1.7</description>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      id="variables.customized.cmp"
+      name="Variables Customized">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        name="variables-customized">
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="devon.nexus.user"
+          label="Devon Nexus User">
+        <description>login for https://devon.s2-eu.capgemini.com</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="devon.nexus.pw"
+          label="Devon Nexus Password">
+        <description>login for https://devon.s2-eu.capgemini.com</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="icsd.fileserver.user"
+          label="iCSD Fileserver FTP User">
+        <description></description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="icsd.fileserver.pw"
+          label="iCSD Fileserver FTP Passwort"/>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          id="settings.relpath"
+          name="settings.relpath"
+          value="tools-cobigen/ide-settings">
+        <description></description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.finalize.external.resources.win"
+        filter="(os.name=Windows*)"
+        name="Windows">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="variables.customized"
+          excludedTriggers="STARTUP MANUAL"
+          content="set MAIN_BRANCH=cobigen-master&#xA;set SETTINGS_REL_PATH=${settings.relpath|file}&#xA;set M2_REPO=%USERPROFILE%/.m2/repository&#xA;set DEVON_NEXUS_USER=${devon.nexus.user}&#xA;set DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;set ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;set ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
+          targetURL="${installation.root/variables-customized.bat|uri}"
+          encoding="UTF-8">
+        <description></description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        filter="(osgi.os=linux)"
+        name="Linux">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="variables.customized.linux"
+          excludedTriggers="STARTUP MANUAL"
+          content="export MAIN_BRANCH=cobigen-master&#xA;export SETTINGS_REL_PATH=${settings.relpath|file}&#xA;export M2_REPO=~/.m2/repository&#xA;export DEVON_NEXUS_USER=${devon.nexus.user}&#xA;export DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;export ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;export ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
+          targetURL="${installation.root/variables-customized|uri}"
+          encoding="UTF-8"/>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      id="cmp.git.clone.master"
+      name="Initial Git Clone Master">
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+        id="mkdir.workspace.cobigen.master"
+        excludedTriggers="MANUAL"
+        directory="${installation.root/workspaces}"
+        command="mkdir"
+        priority="100">
+      <argument>cobigen-master</argument>
+      <description></description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        id="workspace.location.cobigen.master"
+        name="workspace.location.cobigen.master"
+        value="${installation.root/workspaces/cobigen-master}"
+        storageURI="scope://Installation"
+        label="Target workspace"/>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.unzip.external.ressources.linux"
+        filter="(osgi.os=linux)"
+        name="linux">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="rc.cloneMaster.linux"
+          excludedTriggers="MANUAL"
+          successor="cmp.clone.master.linux.chmod"
+          content="COBIGEN_REPO=&quot;${github.remoteURIs.devonfw}&quot;&#xA;if [-d &quot;tools-cobigen&quot;];then&#xA;&#x9;echo Folder tools-cobigen already present. Skipping cloning&#xA;else&#xA;&#x9;git clone --branch=master $$COBIGEN_REPO tools-cobigen&#xA;fi"
+          targetURL="${workspace.location.cobigen.master/clone.sh|uri}"
+          encoding="UTF-8"/>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+          id="cmp.clone.master.linux.chmod"
+          excludedTriggers="MANUAL"
+          successor="cli.rc.cloneMaster.linux"
+          directory="${workspace.location.cobigen.master}"
+          command="chmod">
+        <argument>+x</argument>
+        <argument>clone.sh</argument>
+      </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+          id="cli.rc.cloneMaster.linux"
+          excludedTriggers="MANUAL"
+          directory="${workspace.location.cobigen.master}"
+          command="./clone.sh">
+        <description>Executes the cloneMaster.sh script</description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="cmp.clone.master.win"
+        filter="(os.name=Windows*)"
+        name="windows">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="rc.cloneMaster.win"
+          excludedTriggers="MANUAL"
+          successor="cli.rc.cloneMaster.win"
+          content="@ECHO OFF&#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.devonfw}&quot;&#xA;&#xA;IF EXIST &quot;tools-cobigen&quot; (&#xA;&#x9;ECHO Folder tools-cobigen already present. Skipping cloning&#xA;) ELSE (&#xA;&#x9;git clone --branch=master %COBIGEN_REPO% tools-cobigen&#xA;)"
+          targetURL="${workspace.location.cobigen.master/clone.cmd|uri}"
+          encoding="UTF-8"/>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+          id="cli.rc.cloneMaster.win"
+          excludedTriggers="MANUAL"
+          directory="${workspace.location.cobigen.master}"
+          command="clone.cmd">
+        <description>Executes the clone.cmd script in cobigen-master workspace</description>
+      </setupTask>
+      <description>Download tasks for external ressources on windows</description>
+    </setupTask>
+  </setupTask>
+  <stream name="develop">
+    <setupTask
+        xsi:type="setup:VariableTask"
+        id="workspace.location.cobigen.dev"
+        excludedTriggers="STARTUP MANUAL"
+        name="workspace.location.cobigen.dev"
+        value="${installation.root/workspaces/cobigen-development}"
+        storageURI="scope://Workspace"
+        label="Target workspace"/>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+        id="mkdir.workspace.cobigen.dev"
+        excludedTriggers="STARTUP MANUAL"
+        directory="${installation.root/workspaces}"
+        command="mkdir"
+        priority="100">
+      <argument>${workspace.location.cobigen.dev}</argument>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="cmp.workspaces.dev"
+        name="Workspace Ini">
+      <setupTask
+          xsi:type="setup:WorkspaceTask"
+          excludedTriggers="STARTUP MANUAL"
+          location="${workspace.location.cobigen.dev}"/>
+      <setupTask
+          xsi:type="setup:WorkspaceTask"
+          excludedTriggers="BOOTSTRAP"
+          location="${osgi.instance.area|trimTrailingSlashes}"/>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP MANUAL"
+          type="FOLDER"
+          name="workspace.location"
+          value="${workspace.location.cobigen.dev|file}"
+          storageURI="scope://Workspace"
+          label=""/>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="BOOTSTRAP"
+          type="FOLDER"
+          name="workspace.location"
+          value="${osgi.instance.area|trimTrailingSlashes|file}"
+          storageURI="scope://Workspace"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        predecessor="cmp.git.clone.master"
+        successor="//@streams[name='develop']/@setupTasks.4"
+        name="Git Clone Branches">
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.os=linux)"
+          name="linux">
+        <setupTask
+            xsi:type="setup:CompoundTask"
+            name="Bootstrap">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.cloneAll.linux.boot"
+              excludedTriggers="STARTUP MANUAL"
+              successor="cmp.clone.dev.linux.chmod.boot"
+              content="#&#xA;# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($$GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;folderName=$branchName&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;if [ -d &quot;$$folderName&quot; ]; then&#xA;&#x9;&#x9;&#x9;echo Folder \'$$folderName\' already exists. Skipping cloning of branch \'$$branchName\' &#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;echo Cloning branch \'$$branchName\' ...&#xA;&#x9;&#x9;&#x9;git clone --single-branch --branch=$$branchName $$COBIGEN_REPO $$folderName&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;fi&#xA;&#x9;fi&#xA;done"
+              targetURL="${workspace.location.cobigen.dev/cloneAll.sh|uri}"
+              encoding="UTF-8">
+            <description>Creates a shell script that clones all CobiGen Branches as single-branch repositories</description>
+          </setupTask>
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.pullAll.linux.boot"
+              excludedTriggers="STARTUP MANUAL"
+              content="# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;echo ------------ Pull branch $branchName ---------------&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;cd $branchName&#xA;&#x9;&#x9;git pull&#xA;&#x9;&#x9;cd ..&#xA;&#x9;fi&#xA;done"
+              targetURL="${workspace.location.cobigen.dev/pullAll.sh|uri}"
+              encoding="UTF-8">
+            <description>Creates a Shell script that pulls all CobiGen Repos in this folder</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.clone.dev.linux.chmod.boot"
+              excludedTriggers="STARTUP MANUAL"
+              successor="cli.rc.cloneAll.boot"
+              directory="${workspace.location.cobigen.dev}"
+              command="chmod">
+            <argument>+x</argument>
+            <argument>*.sh</argument>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cli.rc.cloneAll.boot"
+              excludedTriggers="STARTUP MANUAL"
+              directory="${workspace.location.cobigen.dev}"
+              command="./cloneAll.sh">
+            <description>Executes the cloneAll.sh script</description>
+          </setupTask>
+        </setupTask>
+        <setupTask
+            xsi:type="setup:CompoundTask"
+            name="Startup &amp; Manual">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.cloneAll.linux.startman"
+              excludedTriggers="BOOTSTRAP"
+              successor="cmp.clone.dev.linux.chmod.startman"
+              content="#&#xA;# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($$GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;folderName=$branchName&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;if [ -d &quot;$$folderName&quot; ]; then&#xA;&#x9;&#x9;&#x9;echo Folder \'$$folderName\' already exists. Skipping cloning of branch \'$$branchName\' &#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;echo Cloning branch \'$$branchName\' ...&#xA;&#x9;&#x9;&#x9;git clone --single-branch --branch=$$branchName $$COBIGEN_REPO $$folderName&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;fi&#xA;&#x9;fi&#xA;done"
+              targetURL="${workspace.location/cloneAll.sh|uri}"
+              encoding="UTF-8">
+            <description>Creates a shell script that clones all CobiGen Branches as single-branch repositories</description>
+          </setupTask>
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.pullAll.linux.startman"
+              excludedTriggers="BOOTSTRAP"
+              content="# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;echo ------------ Pull branch $branchName ---------------&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;cd $branchName&#xA;&#x9;&#x9;git pull&#xA;&#x9;&#x9;cd ..&#xA;&#x9;fi&#xA;done"
+              targetURL="${workspace.location/pullAll.sh|uri}"
+              encoding="UTF-8">
+            <description>Creates a Shell script that pulls all CobiGen Repos in this folder</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.clone.dev.linux.chmod.startman"
+              excludedTriggers="BOOTSTRAP"
+              successor="cli.rc.cloneAll.startman"
+              directory="${workspace.location}"
+              command="chmod">
+            <argument>+x</argument>
+            <argument>*.sh</argument>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cli.rc.cloneAll.startman"
+              excludedTriggers="BOOTSTRAP"
+              directory="${workspace.location}"
+              command="./cloneAll.sh">
+            <description>Executes the cloneAll.sh script</description>
+          </setupTask>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(os.name=Windows*)"
+          name="windows">
+        <setupTask
+            xsi:type="setup:CompoundTask"
+            name="Bootstrap">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.cloneAll.win.boot"
+              excludedTriggers="STARTUP MANUAL"
+              successor="cli.rc.cloneAll.win.boot"
+              content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;&#xA;ECHO Start cloning all development branches... &#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;FOR /F &quot;delims= &quot; %%B IN ('&quot;git ls-remote --heads %COBIGEN_REPO%&quot;') DO (&#xA;&#x9;SET BRANCH=%%B&#xA;&#x9;SET FOLDER=!BRANCH:*refs/heads/=!&#xA;&#x9;IF EXIST !FOLDER! (&#xA;&#x9;&#x9;ECHO !FOLDER! already exists. Skipping&#xA;&#x9;) ELSE (&#xA;&#x9;&#x9;ECHO Cloning branch !FOLDER! ... &#xA;&#x9;&#x9;git clone --single-branch --branch=!FOLDER! %COBIGEN_REPO% !FOLDER!&#xA;&#x9;)&#xA;)&#xA;ECHO DONE&#xA;exit"
+              targetURL="${workspace.location.cobigen.dev/cloneAll.cmd|uri}"
+              encoding="UTF-8">
+            <description>Creates a bat script in ${workspace.location.cobigen.dev} that clones all CobiGen Branches as single-branch repositories</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cli.rc.cloneAll.win.boot"
+              excludedTriggers="STARTUP MANUAL"
+              directory="${workspace.location.cobigen.dev}"
+              command="cloneAll.cmd">
+            <description>Executes the cloneAll.cmd script</description>
+          </setupTask>
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.pullAll.win"
+              excludedTriggers="STARTUP MANUAL"
+              content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;FOR /D  %%B IN (&quot;*&quot;) DO (&#xA;&#x9;SET FOLDER=%%B&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;ECHO ------------ Pull branch !FOLDER! ---------------&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;pushd !FOLDER! &amp; git pull &amp; popd&#xA;)&#xA;ECHO DONE&#xA;exit"
+              targetURL="${workspace.location.cobigen.dev/pullAll.cmd|uri}"
+              encoding="UTF-8">
+            <description>Creates a Shell script that pulls all CobiGen Repos in this folder</description>
+          </setupTask>
+        </setupTask>
+        <setupTask
+            xsi:type="setup:CompoundTask"
+            name="Startup &amp; Manual">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="rc.cloneAll.win.startman"
+              excludedTriggers="BOOTSTRAP"
+              successor="cli.rc.cloneAll.win.boot"
+              content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;&#xA;ECHO Start cloning all development branches... &#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;FOR /F &quot;delims= &quot; %%B IN ('&quot;git ls-remote --heads %COBIGEN_REPO%&quot;') DO (&#xA;&#x9;SET BRANCH=%%B&#xA;&#x9;SET FOLDER=!BRANCH:*refs/heads/=!&#xA;&#x9;IF EXIST !FOLDER! (&#xA;&#x9;&#x9;ECHO !FOLDER! already exists. Skipping&#xA;&#x9;) ELSE (&#xA;&#x9;&#x9;ECHO Cloning branch !FOLDER! ... &#xA;&#x9;&#x9;git clone --single-branch --branch=!FOLDER! %COBIGEN_REPO% !FOLDER!&#xA;&#x9;)&#xA;)&#xA;ECHO DONE&#xA;exit"
+              targetURL="${workspace.location/cloneAll.cmd|uri}"
+              encoding="UTF-8">
+            <description>Creates a bat script in ${workspace.location} that clones all CobiGen Branches as single-branch repositories</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cli.rc.cloneAll.win.startman"
+              excludedTriggers="BOOTSTRAP"
+              directory="${cloneAll.destination}"
+              command="cloneAll.cmd">
+            <description>Executes the cloneAll.cmd script</description>
+          </setupTask>
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="dev.rc.pullAll.win"
+              excludedTriggers="BOOTSTRAP"
+              content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;FOR /D  %%B IN (&quot;*&quot;) DO (&#xA;&#x9;SET FOLDER=%%B&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;ECHO ------------ Pull branch !FOLDER! ---------------&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;pushd !FOLDER! &amp; git pull &amp; popd&#xA;)&#xA;ECHO DONE&#xA;exit"
+              targetURL="${workspace.location/pullAll.cmd|uri}"
+              encoding="UTF-8">
+            <description>Creates a Shell script that pulls all CobiGen Repos in this folder</description>
+          </setupTask>
+        </setupTask>
+        <description>Download tasks for external ressources on windows</description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        name="Workspace Setup">
+      <setupTask
+          xsi:type="maven:MavenImportTask">
+        <sourceLocator
+            rootFolder="${workspace.location/dev_core/cobigen/cobigen-core-parent}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location.cobigen.master/tools-cobigen/cobigen-templates}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:AndPredicate">
+            <operand
+                xsi:type="predicates:NotPredicate">
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern=".*-parent"/>
+            </operand>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_jsonplugin/cobigen/cobigen-jsonplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_jssenchaplugin/cobigen/cobigen-senchaplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_mavenplugin/cobigen-maven}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_propertyplugin/cobigen/cobigen-propertyplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_textmerger/cobigen/cobigen-textmerger}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_xmlplugin/cobigen/cobigen-xmlplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_tempeng_freemarker/cobigen/cobigen-templateengines/cobigen-tempeng-freemarker}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <description></description>
+      </setupTask>
+      <setupTask
+          xsi:type="projects:ProjectsImportTask">
+        <sourceLocator
+            rootFolder="${workspace.location/dev_eclipseplugin/cobigen-eclipse}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NamePredicate"
+              pattern="cobigen-eclipse.*"/>
+        </sourceLocator>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        excludedTriggers="BOOTSTRAP"
+        name="targlet.source.location"
+        value="${workspace.location/dev_eclipseplugin}"
+        storageURI="scope://Workspace"/>
+  </stream>
+  <stream name="master">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="cmp.workspaces"
+        name="Workspace Ini">
+      <setupTask
+          xsi:type="setup:WorkspaceTask"
+          excludedTriggers="STARTUP MANUAL"
+          location="${workspace.location.cobigen.master}"/>
+      <setupTask
+          xsi:type="setup:WorkspaceTask"
+          excludedTriggers="BOOTSTRAP"
+          location="${osgi.instance.area|trimTrailingSlashes}"/>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP MANUAL"
+          type="FOLDER"
+          name="workspace.location"
+          value="${workspace.location.cobigen.master|file}"
+          storageURI="scope://Workspace"/>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="BOOTSTRAP"
+          type="FOLDER"
+          name="workspace.location"
+          defaultValue="${osgi.instance.area|trimTrailingSlashes|file}"
+          storageURI="scope://Workspace"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="cmp.git.clone.master.man"
+        name="Git Clone Master">
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          id="tasks.unzip.external.ressources.linux.man"
+          filter="(osgi.os=linux)"
+          name="linux">
+        <setupTask
+            xsi:type="setup:ResourceCreationTask"
+            id="rc.cloneMaster.linux.man"
+            excludedTriggers="BOOTSTRAP STARTUP"
+            successor="cmp.clone.master.linux.chmod.man"
+            content="COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;if [-d &quot;tools-cobigen&quot;];then&#xA;&#x9;echo Folder tools-cobigen already present. Skipping cloning&#xA;else&#xA;&#x9;git clone --branch=master $COBIGEN_REPO tools-cobigen&#xA;fi"
+            targetURL="${workspace.location/clone.sh|uri}"
+            encoding="UTF-8"/>
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="cmp.clone.master.linux.chmod.man"
+            excludedTriggers="BOOTSTRAP STARTUP"
+            successor="cli.rc.cloneMaster.linux.man"
+            directory="${workspace.location}"
+            command="chmod">
+          <argument>+x</argument>
+          <argument>clone.sh</argument>
+          <description></description>
+        </setupTask>
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="cli.rc.cloneMaster.linux.man"
+            excludedTriggers="BOOTSTRAP STARTUP"
+            directory="${workspace.location}"
+            command="./clone.sh">
+          <description>Executes the cloneMaster.sh script</description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          id="cmp.clone.master.win.man"
+          filter="(os.name=Windows*)"
+          name="windows">
+        <setupTask
+            xsi:type="setup:ResourceCreationTask"
+            id="rc.cloneMaster.win.man"
+            excludedTriggers="BOOTSTRAP STARTUP"
+            successor="cli.rc.cloneMaster.win.man"
+            content="@ECHO OFF&#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;IF EXIST &quot;tools-cobigen&quot; (&#xA;&#x9;ECHO Folder tools-cobigen already present. Skipping cloning&#xA;) ELSE (&#xA;&#x9;git clone --branch=master %COBIGEN_REPO% tools-cobigen&#xA;)"
+            targetURL="${workspace.location/clone.cmd|uri}"
+            encoding="UTF-8"/>
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="cli.rc.cloneMaster.win.man"
+            excludedTriggers="BOOTSTRAP STARTUP"
+            directory="${workspace.location}"
+            command="clone.cmd">
+          <description>Executes the clone.cmd script in cobigen-master workspace</description>
+        </setupTask>
+        <description>Download tasks for external ressources on windows</description>
+      </setupTask>
+      <description></description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        predecessor="cmp.git.clone.master.man cmp.git.clone.master"
+        name="Workspace Setup">
+      <setupTask
+          xsi:type="maven:MavenImportTask">
+        <sourceLocator
+            rootFolder="${workspace.location/tools-cobigen}">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern="(.*)eclipse(.*)"/>
+          </predicate>
+        </sourceLocator>
+      </setupTask>
+      <setupTask
+          xsi:type="projects:ProjectsImportTask">
+        <sourceLocator
+            rootFolder="${workspace.location/tools-cobigen/cobigen-eclipse}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:AndPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern="(.*)eclipse(.*)"/>
+          </predicate>
+        </sourceLocator>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="targlet.source.location"
+        value="${workspace.location/tools-cobigen}"
+        storageURI="scope://Workspace"/>
+  </stream>
+  <logicalProjectContainer
+      xsi:type="setup:ProjectCatalog"
+      href="index:/org.eclipse.setup#//@projectCatalogs[name='org.eclipse']"/>
+  <description>Tools Cobigen provides cool stuff.</description>
+</setup:Project>
