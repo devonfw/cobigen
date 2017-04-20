@@ -1,12 +1,12 @@
 <#include '/functions.ftl'>
 <div layout="row" layout-align="start center" style="background-color:#eee">
-  <span flex class="md-title" style ="text-align: center">{{'${variables.component}DataGrid.title' | translate}}</span>
+  <span flex class="md-title" style ="text-align: center">{{'${variables.etoName}DataGrid.title' | translate}}</span>
 
   <button
     md-button
     flex
     class="push-right-sm"
-    [mdTooltip]="'${variables.component}DataGrid.searchTip' | translate"
+    [mdTooltip]="'${variables.etoName}DataGrid.searchTip' | translate"
     (click) = "openSearchBox()">
     <md-icon>search</md-icon>
   </button>
@@ -16,13 +16,13 @@
     flex
     class="push-right-sm"
     [disabled]="sorting.length === 0"
-    [mdTooltip]="'${variables.component}DataGrid.sortTip' | translate"
+    [mdTooltip]="'${variables.etoName}DataGrid.sortTip' | translate"
     (click) = "clearSorting()">
     <md-icon>import_export</md-icon>
   </button>
 
   <button
-    md-button
+    md-icon-button
     flex
     class="push-right-sm"
     [mdTooltip]="'buttons.addItem' | translate"
@@ -31,7 +31,7 @@
   </button>
 
   <button
-    md-button
+    md-icon-button
     flex
     class="push-right-sm"
     [disabled]="!selectedRow"
@@ -41,7 +41,7 @@
   </button>
 
   <button
-    md-button
+    md-icon-button
     flex
     class="push-right-sm"
     [disabled]="!selectedRow"
@@ -56,8 +56,8 @@
   <form #searchForm="ngForm">
    <@getNG2Type_Grid_Search/>
 
-    <button md-button (click) = "search(searchForm.form)"> {{'buttons.search' | translate}} </button>
-    <button md-button (click) = "searchReset(searchForm.form)"> {{'buttons.clean' | translate}} </button>
+    <button md-icon-button (click) = "search(searchForm.form)"> {{'buttons.search' | translate}} </button>
+    <button md-icon-button (click) = "searchReset(searchForm.form)"> {{'buttons.clean' | translate}} </button>
   </form>
 
 </div>
@@ -66,7 +66,7 @@
 <td-data-table
   #dataTable
   [data]="data"
-  [columns]="columns"
+  [columns]="cobigen_columns"
   [sortable]="true"
   [selectable]="true"
   [multiple]="false"

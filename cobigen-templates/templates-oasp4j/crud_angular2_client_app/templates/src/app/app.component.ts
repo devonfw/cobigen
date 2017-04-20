@@ -7,7 +7,7 @@ import { SecurityService } from './security/security.service';
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class Material2AppAppComponent {
+export class AppComponent {
 
   constructor(private securityService: SecurityService,
               private router: Router,

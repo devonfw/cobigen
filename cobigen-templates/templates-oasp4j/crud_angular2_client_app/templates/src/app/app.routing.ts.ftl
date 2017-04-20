@@ -1,12 +1,12 @@
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
-import { ${variables.component?cap_first}DataGridComponent } from './components/${variables.component}DataGrid/${variables.component}DataGrid.component';
+import { ${variables.etoName?cap_first}DataGridComponent } from './components/${variables.etoName}DataGrid/${variables.etoName}DataGrid.component';
 
 const appRoutes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'home', component: HomeComponent },
-    { path: '${variables.component}DataGrid', component: ${variables.component?cap_first}DataGridComponent },
+    { path: '${variables.etoName}DataGrid', component: ${variables.etoName?cap_first}DataGridComponent },
     { path: '**', redirectTo: 'home' }
 ]
 
