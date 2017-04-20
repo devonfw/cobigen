@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -14,6 +17,7 @@ import org.mozilla.javascript.Scriptable;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.tsplugin.merger.constants.Constants;
+import com.capgemini.cobigen.tsplugin.util.UnzipUtility;
 
 /**
  *
@@ -65,10 +69,15 @@ public class TypeScriptMerger implements Merger {
 
     /**
      * @param patchOverrides
+     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+     *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @param base
+     *            the existent base file
      * @param patch
-     * @return
+     *            the patch string
+     * @return contents merged
      * @throws IOException
+     *             if cannot find beautify.js
      */
     private String tsMerger(boolean patchOverrides, File base, String patch) throws IOException {
         Context cx = Context.enter();
@@ -76,26 +85,31 @@ public class TypeScriptMerger implements Merger {
         String mergedContents = "";
 
         InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
+        URL zipFile = TypeScriptMerger.class.getResource("/tsm.zip");
 
         try {
-            Reader reader1 = new InputStreamReader(beautifierASStream);
-            cx.evaluateReader(scope, reader1, "__beautify.js", 1, null);
-            reader1.close();
+            Reader reader = new InputStreamReader(beautifierASStream);
+            cx.evaluateReader(scope, reader, "__beautify.js", 1, null);
+            reader.close();
         } catch (IOException e) {
             throw new MergeException(new File(""), "Error reading resoruce script");
         }
-        String index = "src/main/resources/tsm/";
-        File indexFile = new File(index);
-        String file = indexFile.getAbsolutePath();
 
-        PrintWriter out = new PrintWriter("temp_patch.ts");
+        File temp = new File("/tmp");
+        temp.mkdir();
+        File outPatch = new File("/tmp/temp_patch.ts");
+        PrintWriter out = new PrintWriter("/tmp/temp_patch.ts");
         out.println(patch);
         out.close();
-        System.out.println("file created");
-        new ProcessBuilder("cmd.exe", "/c", "more " + base.getAbsolutePath() + " > " + "temp_patch.ts").start();
-        System.out.println(file);
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node src\\main\\resources\\tsm\\build\\index.js "
-            + patchOverrides + " " + base.getAbsolutePath() + " " + patch);
+
+        if (Files.notExists(new File("/tmp/tsm").toPath(), LinkOption.NOFOLLOW_LINKS)) {
+            UnzipUtility unzipper = new UnzipUtility();
+            unzipper.unzip(zipFile.getFile(), "/tmp/tsm");
+        }
+
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node \\tmp\\tsm\\build\\index.js "
+            + patchOverrides + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
+
         builder.redirectErrorStream(true);
         Process p = builder.start();
         BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -107,10 +121,9 @@ public class TypeScriptMerger implements Merger {
             }
             mergedContents = mergedContents.concat(line);
         }
-
-        // new ProcessBuilder("cmd.exe", "/c", "del " + file + "\\temp.ts").start();
-        // new ProcessBuilder("cmd.exe", "/c", "del " + file + "\\temp_patch.ts").start();
-        scope.put("jsCode", scope, mergedContents);
+        int index = mergedContents.indexOf("temp_patch.ts");
+        String merged = mergedContents.substring(index + 13, mergedContents.length());
+        scope.put("jsCode", scope, merged);
         return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + 4 + "})", "inline", 1, null);
 
     }

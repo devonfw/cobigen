@@ -1,2 +1,0 @@
-# mercy
-TypeScript AST Printer
