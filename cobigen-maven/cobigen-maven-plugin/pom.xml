@@ -23,7 +23,17 @@
       <artifactId>maven-plugin-api</artifactId>
       <version>${maven.version}</version>
     </dependency>
-    
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
+
     <!-- CobiGen dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -79,41 +89,6 @@
       <version>3.1</version>
       <scope>provided</scope>
     </dependency>
-
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.apache.maven.plugin-testing</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-aether-provider</artifactId>
-      <version>${maven.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <version>${maven.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-compat</artifactId>
-      <version>${maven.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core-test</artifactId>
-      <version>3.0.0</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>

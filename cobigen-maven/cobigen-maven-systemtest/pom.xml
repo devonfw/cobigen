@@ -5,7 +5,7 @@
   <artifactId>cobigen-maven-systemtest</artifactId>
   <packaging>jar</packaging>
   <version>${cobigen.maven.version}</version>
-  <name>CobiGen Maven Systemtests</name>
+  <name>CobiGen Maven Plugin - Systemtests</name>
 
   <parent>
     <groupId>com.capgemini</groupId>
