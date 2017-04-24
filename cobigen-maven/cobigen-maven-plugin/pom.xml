@@ -20,20 +20,56 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <version>${maven.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-compat</artifactId>
-      <version>${maven.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
       <version>${maven.version}</version>
+    </dependency>
+    
+    <!-- CobiGen dependencies -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-core</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-core-api</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-xmlplugin</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-javaplugin</artifactId>
+      <version>1.4.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-propertyplugin</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-textmerger</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-jsonplugin</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-senchaplugin</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cobigen-tempeng-freemarker</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- dependencies to annotations -->
@@ -57,51 +93,27 @@
       <version>${maven.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
-      <groupId>com.capgemini</groupId>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>${maven.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-core-test</artifactId>
       <version>3.0.0</version>
       <scope>test</scope>
     </dependency>
 
-    <!-- CobiGen dependencies -->
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-xmlplugin</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-javaplugin</artifactId>
-      <version>1.4.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-propertyplugin</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-textmerger</artifactId>
-      <version>1.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-jsonplugin</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-senchaplugin</artifactId>
-      <version>1.0.0</version>
-    </dependency>
   </dependencies>
 
   <build>
