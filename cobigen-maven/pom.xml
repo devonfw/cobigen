@@ -5,7 +5,7 @@
   <artifactId>cobigen-maven-parent</artifactId>
   <version>dev-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>CobiGen Maven Plugin</name>
+  <name>CobiGen Maven Plugin - Parent</name>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <maven.version>3.1.1</maven.version>
+    <maven.version>3.0</maven.version>
 	<cobigen.maven.version>2.1.0-SNAPSHOT</cobigen.maven.version>
   </properties>
 
