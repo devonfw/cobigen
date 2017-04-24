@@ -123,6 +123,7 @@ public class GenerationProcessor {
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
+            LOG.info("Temporary work folder: {}", tmpTargetRootPath);
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Could not create temporary folder.", e);
         }
@@ -309,7 +310,6 @@ public class GenerationProcessor {
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
 
             String targetCharset = templateEty.getTargetCharset();
-            LOG.info("Generating template '{}' ...", templateEty.getName(), generatorInput);
 
             // resolve temporary file paths
             @SuppressWarnings("unchecked")
@@ -323,6 +323,8 @@ public class GenerationProcessor {
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
             // remember mapping to later on copy the generated resources to its target destinations
             tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
+
+            LOG.info("Generating template '{}'\t -> \t'{}' ...", templateEty.getName(), resolvedTargetDestinationPath);
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -368,7 +370,7 @@ public class GenerationProcessor {
                     }
                 }
             } else {
-                LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
+                LOG.debug("Create new file {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
@@ -500,7 +502,7 @@ public class GenerationProcessor {
     public static boolean matches(Object matcherInput, List<Matcher> matcherList,
         TriggerInterpreter triggerInterpreter) {
         boolean matcherSetMatches = false;
-        LOG.info("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
+        LOG.debug("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
         MATCHER_LOOP:
         for (Matcher matcher : matcherList) {
             MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
@@ -526,7 +528,7 @@ public class GenerationProcessor {
                 }
             }
         }
-        LOG.info("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.debug("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
