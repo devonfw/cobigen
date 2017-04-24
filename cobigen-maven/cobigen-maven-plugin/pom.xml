@@ -142,7 +142,6 @@
                     <versionRange>[3.2,)</versionRange>
                     <goals>
                       <goal>descriptor</goal>
-                      <outputDirectory>src/main/resources/META-INF/maven</outputDirectory>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
