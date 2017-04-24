@@ -54,12 +54,12 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<String> getMatchingTriggerIds(Object matcherInput) {
 
-        LOG.info("Matching trigger IDs requested.");
+        LOG.debug("Matching trigger IDs requested.");
         List<String> matchingTriggerIds = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             matchingTriggerIds.add(trigger.getId());
         }
-        LOG.info("{} matching trigger IDs found.", matchingTriggerIds.size());
+        LOG.debug("{} matching trigger IDs found.", matchingTriggerIds.size());
         return matchingTriggerIds;
     }
 
@@ -67,13 +67,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.info("Matching increments requested.");
+        LOG.debug("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
-        LOG.info("{} matching increments found.", increments.size());
+        LOG.debug("{} matching increments found.", increments.size());
         return increments;
     }
 
@@ -81,7 +81,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.info("Matching templates requested.");
+        LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
@@ -89,7 +89,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                     templatesConfiguration.getTrigger().getId()));
             }
         }
-        LOG.info("{} matching templates found.", templates.size());
+        LOG.debug("{} matching templates found.", templates.size());
         return templates;
     }
 
@@ -203,7 +203,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                         }
                     }
                 }
-                LOG.info("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
+                LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
                 if (triggerMatches) {
                     matchingTrigger.add(trigger);
                 }
