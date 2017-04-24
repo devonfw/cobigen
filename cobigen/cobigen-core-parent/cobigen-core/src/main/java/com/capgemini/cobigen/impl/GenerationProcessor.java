@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -179,9 +182,7 @@ public class GenerationProcessor {
                     Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
                 }
-                if (!tmpTargetRootPath.toFile().delete()) {
-                    LOG.warn("Temporary files could not be deleted in path " + tmpTargetRootPath);
-                }
+                deleteTemporaryFiles();
             } catch (IOException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
@@ -193,6 +194,29 @@ public class GenerationProcessor {
         }
 
         return generationReport;
+    }
+
+    /**
+     * Delete the temporary files in {@link #tmpTargetRootPath}.
+     */
+    private void deleteTemporaryFiles() {
+        try {
+            Files.walkFileTree(tmpTargetRootPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            LOG.warn("Temporary files could not be deleted in path " + tmpTargetRootPath, e);
+        }
     }
 
     /**
