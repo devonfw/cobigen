@@ -11,10 +11,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -123,7 +125,7 @@ public class GenerationProcessor {
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
-            LOG.info("Temporary work folder: {}", tmpTargetRootPath);
+            LOG.info("Temporary working directory: {}", tmpTargetRootPath);
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Could not create temporary folder.", e);
         }
@@ -169,10 +171,12 @@ public class GenerationProcessor {
             } catch (CobiGenRuntimeException e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 generationReport.addError(e);
+                LOG.error("An internal error occurred during generation.", e);
             } catch (Throwable e) {
                 generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
                 generationReport.addError(new CobiGenRuntimeException(
                     "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                LOG.error("An unknown exception occurred during generation.", e);
             }
         }
 
@@ -324,7 +328,13 @@ public class GenerationProcessor {
             // remember mapping to later on copy the generated resources to its target destinations
             tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
 
-            LOG.info("Generating template '{}'\t -> \t'{}' ...", templateEty.getName(), resolvedTargetDestinationPath);
+            if (LOG.isInfoEnabled()) {
+                Formatter formatter = new Formatter();
+                formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                    templateEty.getName(), resolvedTargetDestinationPath);
+                LOG.info(formatter.out().toString());
+                formatter.close();
+            }
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {

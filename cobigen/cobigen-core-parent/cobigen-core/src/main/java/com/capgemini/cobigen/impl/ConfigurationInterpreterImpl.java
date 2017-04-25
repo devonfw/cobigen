@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.impl;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.annotation.Cached;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
@@ -22,6 +24,7 @@ import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.base.Charsets;
@@ -114,10 +117,16 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
             new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
         Template templateEty =
             configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
-        String resolvedDestinationPath =
-            new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
-        return targetRootPath.resolve(resolvedDestinationPath).normalize();
-
+        try {
+            String resolvedDestinationPath =
+                new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
+            return targetRootPath.resolve(resolvedDestinationPath).normalize();
+        } catch (UnknownContextVariableException e) {
+            throw new CobiGenRuntimeException("Could not resolve path '" + templateEty.getUnresolvedTargetPath()
+                + "' for input '" + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
+                + "' and template '" + templateEty.getAbsoluteTemplatePath() + "'. Available variables: "
+                + variables.toString());
+        }
     }
 
     /**
