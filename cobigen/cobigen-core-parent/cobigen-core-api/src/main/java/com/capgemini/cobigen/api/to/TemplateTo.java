@@ -1,12 +1,7 @@
 package com.capgemini.cobigen.api.to;
 
-/**
- * The transfer object for templates
- */
-public class TemplateTo implements GenerableArtifact {
-
-    /** Id of the template */
-    private String id;
+/** The transfer object for templates */
+public class TemplateTo extends GenerableArtifact {
 
     /** Determines the required strategy to merge the template */
     private String mergeStrategy;
@@ -31,17 +26,9 @@ public class TemplateTo implements GenerableArtifact {
      *            Trigger ID, the template has been resolved from.
      */
     public TemplateTo(String id, String mergeStrategy, String triggerId) {
-        this.id = id;
+        super(id);
         this.mergeStrategy = mergeStrategy;
         this.triggerId = triggerId;
-    }
-
-    /**
-     * Returns the template's id
-     * @return the template's id
-     */
-    public String getId() {
-        return id;
     }
 
     /**

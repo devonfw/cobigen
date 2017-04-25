@@ -245,7 +245,7 @@ public class GenerationProcessor {
             }
         }
 
-        return templateIdToTemplateMap.values();
+        return new TreeSet<>(templateIdToTemplateMap.values());
     }
 
     /**
