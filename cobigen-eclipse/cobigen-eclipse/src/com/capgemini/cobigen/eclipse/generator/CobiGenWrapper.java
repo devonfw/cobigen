@@ -519,6 +519,39 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Resolves the template destination path in a workspace relative style if possible. Otherwise, the
+     * absolute path will be returned. {@link #resolveTemplateDestinationPath(TemplateTo, Object)}
+     * @param generatedFiles
+     *            paths to be calculated workspace dependent
+     * @return the workspace relative path as a string or {@code null} if the path is not in the workspace.
+     */
+    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles) {
+        Set<String> workspaceDependentPaths = new HashSet<>();
+        for (Path targetAbsolutePath : generatedFiles) {
+            Path mostSpecificProject = null;
+            for (Path projPath : projectsInWorkspace.keySet()) {
+                if (targetAbsolutePath.startsWith(projPath)) {
+                    if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
+                        mostSpecificProject = projPath;
+                    }
+                }
+            }
+
+            String path;
+            if (mostSpecificProject != null) {
+                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
+                path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
+                    .toString().replace("\\", "/");
+            } else {
+                path = targetAbsolutePath.toString().replace("\\", "/");
+                workspaceExternalPath.add(path);
+            }
+            workspaceDependentPaths.add(path);
+        }
+        return workspaceDependentPaths;
+    }
+
+    /**
      * @return the currently set input to be generated with
      */
     public Object getCurrentRepresentingInput() {
