@@ -13,8 +13,11 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
-  <dependencies>
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
 
+  <dependencies>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
@@ -29,7 +32,7 @@
   </dependencies>
 
   <build>
-    <plugins>     
+    <plugins>
       <!-- Inject Maven Properties in java-templates source folder -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
