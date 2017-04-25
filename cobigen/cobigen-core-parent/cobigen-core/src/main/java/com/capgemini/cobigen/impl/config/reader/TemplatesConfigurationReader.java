@@ -276,8 +276,8 @@ public class TemplatesConfigurationReader {
         String templatePath = scan.getTemplatePath();
         TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
         if ((templateFolder == null) || templateFolder.isFile()) {
-            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                "The path '" + templatePath + "' does not describe a directory.");
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(), "The templatePath '"
+                + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
         }
 
         if (scan.getName() != null) {
