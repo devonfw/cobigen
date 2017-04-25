@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-4.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-4.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
@@ -36,5 +33,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-senchaplugin-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-4.0.0-SNAPSHOT.jar" sourcepath="/cobigen-core"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-4.0.0-SNAPSHOT.jar" sourcepath="/cobigen-core-api"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar" sourcepath="/cobigen-tempeng-freemarker"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
