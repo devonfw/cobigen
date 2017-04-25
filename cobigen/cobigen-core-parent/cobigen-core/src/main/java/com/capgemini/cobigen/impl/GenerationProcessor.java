@@ -169,11 +169,11 @@ public class GenerationProcessor {
                 InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
                 tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
             } catch (CobiGenRuntimeException e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 generationReport.addError(e);
                 LOG.error("An internal error occurred during generation.", e);
             } catch (Throwable e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 generationReport.addError(new CobiGenRuntimeException(
                     "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
                 LOG.error("An unknown exception occurred during generation.", e);
@@ -189,11 +189,11 @@ public class GenerationProcessor {
                 }
                 deleteTemporaryFiles();
             } catch (IOException e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
             }
         } else {
-            generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
             LOG.warn("Generation finished non-successful. Generated contents can be reviewed in "
                 + tmpTargetRootPath.toUri());
         }
@@ -354,18 +354,19 @@ public class GenerationProcessor {
                     try (Writer out = new StringWriter()) {
                         templateEngine.process(templateEty, model, out, targetCharset);
                         patch = out.toString();
-                        String result = null;
+                        String mergeResult = null;
                         Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
                         if (merger != null) {
-                            result = merger.merge(tmpOriginalFile, patch, targetCharset);
+                            mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
                             throw new InvalidConfigurationException(
                                 "No merger for merge strategy '" + templateEty.getMergeStrategy() + "' found.");
                         }
 
-                        if (result != null) {
+                        if (mergeResult != null) {
                             LOG.debug("Merge {} with char set {}.", tmpOriginalFile.getName(), targetCharset);
-                            FileUtils.writeStringToFile(tmpOriginalFile, result, targetCharset);
+                            FileUtils.writeStringToFile(tmpOriginalFile, mergeResult, targetCharset);
+                            generationReport.addGeneratedFile(tmpOriginalFile.toPath());
                         } else {
                             throw new PluginProcessingException(
                                 "Merger " + merger.getType() + " returned null on merge(...), which is not allowed.");
@@ -563,6 +564,7 @@ public class GenerationProcessor {
         try (Writer out = new StringWriter()) {
             templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
+            generationReport.addGeneratedFile(output.toPath());
         } catch (IOException e) {
             throw new CobiGenRuntimeException(
                 "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
