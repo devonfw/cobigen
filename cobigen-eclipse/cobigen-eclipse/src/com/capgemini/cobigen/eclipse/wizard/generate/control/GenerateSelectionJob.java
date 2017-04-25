@@ -80,7 +80,8 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
             final GenerationReportTo generationReport = performGeneration(monitor);
 
             if (generationReport.isSuccessful()) {
-                Set<String> generatedFiles = cobigenWrapper.getAllTargetPathsInWorkspace(templatesToBeGenerated);
+                Set<String> generatedFiles =
+                    cobigenWrapper.getWorkspaceDependentTemplateDestinationPath(generationReport.getGeneratedFiles());
                 Set<IProject> projects = Sets.newHashSet();
                 for (String filePath : generatedFiles) {
                     IProject project =
@@ -138,7 +139,7 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                         String tempGenMessage = "The merge of generated contents to the "
                             + "target code base has been aborted. Please find the errorneous generation "
                             + "results in the following temporary folder for further investigation: "
-                            + generationReport.getIncompleteGenerationPath();
+                            + generationReport.getTemporaryWorkingDirectory();
                         PlatformUIUtil.openErrorDialog(generationReport.getErrors().size() > 1
                             ? "Multiple errors occurred during generation. There are "
                                 + generationReport.getErrors().size()
