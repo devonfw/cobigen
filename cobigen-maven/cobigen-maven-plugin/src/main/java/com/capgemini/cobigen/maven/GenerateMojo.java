@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -32,6 +34,7 @@ import org.apache.maven.project.MavenProject;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
@@ -103,7 +106,7 @@ public class GenerateMojo extends AbstractMojo {
     private File destinationRoot;
 
     @Override
-    public void execute() throws MojoFailureException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
         List<Object> inputs = collectInputs();
         if (inputs.isEmpty()) {
@@ -117,28 +120,44 @@ public class GenerateMojo extends AbstractMojo {
             return;
         }
 
-        try {
-            CobiGen cobiGen;
-            if (configurationFolder != null) {
+        CobiGen cobiGen;
+        if (configurationFolder != null) {
+            try {
                 cobiGen = CobiGenFactory.create(configurationFolder.toURI());
-            } else {
-                List<Dependency> dependencies =
-                    execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
-
-                if (dependencies != null && !dependencies.isEmpty()) {
-                    Dependency dependency = dependencies.iterator().next();
-                    Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                        .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
-                    cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
-                } else {
-                    throw new MojoFailureException(
-                        "No configuration injected. Please inject a 'configurationFolder' to a local folder"
-                            + " or inject an archive as plugin dependency.");
-                }
+            } catch (IOException e) {
+                throw new MojoExecutionException("The configured configuration folder could not be read.", e);
             }
-            generateFromIncrements(cobiGen, inputs);
-            generateFromTemplates(cobiGen, inputs);
-        } catch (CobiGenRuntimeException | IOException e) {
+        } else {
+            List<Dependency> dependencies =
+                execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
+
+            if (dependencies != null && !dependencies.isEmpty()) {
+                Dependency dependency = dependencies.iterator().next();
+                Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
+                    .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
+                try {
+                    cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
+                } catch (IOException e) {
+                    throw new MojoExecutionException("The templates artifact could not be read in location '"
+                        + templatesArtifact.getFile().toURI() + "'.", e);
+                }
+            } else {
+                throw new MojoFailureException(
+                    "No configuration injected. Please inject a 'configurationFolder' to a local folder"
+                        + " or inject an archive as plugin dependency.");
+            }
+        }
+        List<GenerableArtifact> generableArtifacts = collectIncrements(cobiGen, inputs);
+        generableArtifacts.addAll(collectTemplates(cobiGen, inputs));
+
+        try {
+            for (Object input : inputs) {
+                cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride);
+            }
+        } catch (CobiGenRuntimeException e) {
+            getLog().error(e.getMessage(), e);
+            throw new MojoFailureException(e.getMessage(), e);
+        } catch (Throwable e) {
             getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
             throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
         }
@@ -205,31 +224,20 @@ public class GenerateMojo extends AbstractMojo {
      *            generator instance to be used for generation
      * @param inputs
      *            to be used for generation
+     * @return the collected increments to be generated
      * @throws MojoFailureException
-     *             if any problem occurred while generation
+     *             if the maven configuration does not match cobigen configuration (context.xml)
      */
-    private void generateFromIncrements(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
+    private List<GenerableArtifact> collectIncrements(CobiGen cobiGen, List<Object> inputs)
+        throws MojoFailureException {
+        List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (increments != null && !increments.isEmpty()) {
             for (Object input : inputs) {
                 List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
                 List<String> configuredIncrements = new LinkedList<>(increments);
                 for (IncrementTo increment : matchingIncrements) {
                     if (increments.contains(increment.getId())) {
-                        try {
-                            cobiGen.generate(input, increment, Paths.get(destinationRoot.toURI()), forceOverride);
-                        } catch (Throwable e) {
-                            String errorMessage;
-                            if (input instanceof PackageFolder) {
-                                errorMessage =
-                                    "An exception occured while generating increment with id '" + increment.getId()
-                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
-                            } else {
-                                errorMessage = "An exception occured while generating increment with id '"
-                                    + increment.getId() + "' for input file '" + ((File) input).toURI() + "'";
-                            }
-                            getLog().error(errorMessage, e);
-                            throw new MojoFailureException(errorMessage, e);
-                        }
+                        generableArtifacts.add(increment);
                         configuredIncrements.remove(increment.getId());
                     }
                 }
@@ -240,12 +248,16 @@ public class GenerateMojo extends AbstractMojo {
                             "Increments with ids '" + configuredIncrements + "' not matched for input '"
                                 + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
                     } else {
-                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                            + "' not matched for input '" + input + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException(
+                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
+                                + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
+                                + "' by provided CobiGen configuration.");
                     }
                 }
+
             }
         }
+        return generableArtifacts;
     }
 
     /**
@@ -254,49 +266,35 @@ public class GenerateMojo extends AbstractMojo {
      *            generator instance to be used for generation
      * @param inputs
      *            to be used for generation
+     * @return the collected templates to be generated
      * @throws MojoFailureException
      *             if any problem occurred while generation
      */
-    private void generateFromTemplates(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
+    private List<GenerableArtifact> collectTemplates(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
+        List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (templates != null && !templates.isEmpty()) {
             for (Object input : inputs) {
                 List<TemplateTo> matchingTemplates = cobiGen.getMatchingTemplates(input);
                 List<String> configuredTemplates = new LinkedList<>(templates);
                 for (TemplateTo template : matchingTemplates) {
                     if (templates.contains(template.getId())) {
-                        try {
-                            cobiGen.generate(input, template, Paths.get(destinationRoot.toURI()), forceOverride);
-                        } catch (Throwable e) {
-                            String errorMessage;
-                            if (input instanceof PackageFolder) {
-                                errorMessage =
-                                    "An exception occured while generating template with id '" + template.getId()
-                                        + "' for input package/folder '" + ((PackageFolder) input).getLocation() + "'";
-                            } else {
-                                errorMessage = "An exception occured while generating template with id '"
-                                    + template.getId() + "' for input file '" + ((File) input).toURI() + "'";
-                            }
-                            getLog().error(errorMessage, e);
-                            throw new MojoFailureException(errorMessage, e);
-                        }
-                    } else {
-                        throw new MojoFailureException("Increment with id '" + template.getId()
-                            + "' not found in provided CobiGen configuration.");
+                        generableArtifacts.add(template);
+                        configuredTemplates.remove(template.getId());
                     }
                 }
                 // error handling for increments not found
                 if (!configuredTemplates.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException(
-                            "Templates with ids '" + configuredTemplates + "' not matched for package folder '"
-                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
-                    } else {
                         throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                            + "' not matched for input '" + input + "' by provided CobiGen configuration.");
+                            + "' did not match package in folder '" + ((PackageFolder) input).getLocation() + "'.");
+                    } else {
+                        throw new MojoFailureException(
+                            "Templates with ids '" + configuredTemplates + "' did not match input '" + input + "'.");
                     }
                 }
             }
         }
+        return generableArtifacts;
     }
 
     /**
