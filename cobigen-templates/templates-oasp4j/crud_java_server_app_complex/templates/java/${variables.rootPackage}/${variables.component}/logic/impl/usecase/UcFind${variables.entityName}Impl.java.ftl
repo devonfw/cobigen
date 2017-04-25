@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 @Named
 @UseCase
 @Validated
+@Transactional
 public class UcFind${variables.entityName}Impl extends Abstract${variables.entityName}Uc implements UcFind${variables.entityName} {
 
 	/** Logger instance. */
