@@ -186,6 +186,7 @@ public class GenerationProcessor {
                     Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
                     Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
+                    generationReport.addGeneratedFile(tmpToOrigFile.getValue().toPath());
                 }
                 deleteTemporaryFiles();
             } catch (IOException e) {
@@ -366,7 +367,6 @@ public class GenerationProcessor {
                         if (mergeResult != null) {
                             LOG.debug("Merge {} with char set {}.", tmpOriginalFile.getName(), targetCharset);
                             FileUtils.writeStringToFile(tmpOriginalFile, mergeResult, targetCharset);
-                            generationReport.addGeneratedFile(tmpOriginalFile.toPath());
                         } else {
                             throw new PluginProcessingException(
                                 "Merger " + merger.getType() + " returned null on merge(...), which is not allowed.");
@@ -564,7 +564,6 @@ public class GenerationProcessor {
         try (Writer out = new StringWriter()) {
             templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
-            generationReport.addGeneratedFile(output.toPath());
         } catch (IOException e) {
             throw new CobiGenRuntimeException(
                 "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
