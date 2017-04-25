@@ -31,7 +31,7 @@ public class Oasp4JTemplateTest {
 
     /**
      * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
-     * whether the files have been generated.
+     * whether the files have been generated. Takes an entity (POJO) as input.
      * @throws Exception
      *             test fails
      */
@@ -62,7 +62,40 @@ public class Oasp4JTemplateTest {
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 3 from entity_infrastructure, 4 from daos, 1 input file
         assertThat(numFilesInTarget).isEqualTo(8);
-
     }
 
+    /**
+     * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
+     * whether the files have been generated. Takes a package as input.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testPackageInputDataaccessGeneration() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestPackageInputDataaccessGeneration/");
+        assertThat(testProject).exists();
+
+        File testProjectRoot = tmpFolder.newFolder();
+        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
+
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setBaseDirectory(testProjectRoot);
+        request.setGoals(Collections.singletonList("package"));
+        Properties mavenProperties = new Properties();
+        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
+        request.setProperties(mavenProperties);
+        request.setShowErrors(true);
+
+        Invoker invoker = new DefaultInvoker();
+        InvocationResult result = invoker.execute(request);
+
+        assertThat(result.getExecutionException()).isNull();
+        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
+
+        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        long numFilesInTarget =
+            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+        // 2+2 from entity_infrastructure, 4+2 from daos, 2 input files
+        assertThat(numFilesInTarget).isEqualTo(12);
+    }
 }
