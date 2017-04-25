@@ -329,14 +329,6 @@ public class GenerationProcessor {
             // remember mapping to later on copy the generated resources to its target destinations
             tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
 
-            if (LOG.isInfoEnabled()) {
-                Formatter formatter = new Formatter();
-                formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                    templateEty.getName(), resolvedTargetDestinationPath);
-                LOG.info(formatter.out().toString());
-                formatter.close();
-            }
-
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
                     try {
@@ -349,8 +341,22 @@ public class GenerationProcessor {
 
                 if ((forceOverride || template.isForceOverride()) && templateEty.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
+                    if (LOG.isInfoEnabled()) {
+                        try (Formatter formatter = new Formatter()) {
+                            formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                                templateEty.getName(), resolvedTargetDestinationPath);
+                            LOG.info(formatter.out().toString());
+                        }
+                    }
                     generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
                 } else if (templateEty.getMergeStrategy() != null) {
+                    if (LOG.isInfoEnabled()) {
+                        try (Formatter formatter = new Formatter()) {
+                            formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                                templateEty.getName(), resolvedTargetDestinationPath);
+                            LOG.info(formatter.out().toString());
+                        }
+                    }
                     String patch = null;
                     try (Writer out = new StringWriter()) {
                         templateEngine.process(templateEty, model, out, targetCharset);
@@ -381,7 +387,13 @@ public class GenerationProcessor {
                     }
                 }
             } else {
-                LOG.debug("Create new file {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
+                if (LOG.isInfoEnabled()) {
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                    }
+                }
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
