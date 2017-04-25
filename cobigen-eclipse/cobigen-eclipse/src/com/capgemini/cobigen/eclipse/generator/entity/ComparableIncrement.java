@@ -2,20 +2,22 @@ package com.capgemini.cobigen.eclipse.generator.entity;
 
 import java.util.List;
 
+import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.google.common.collect.Lists;
 
-/**
- * Comparable {@link IncrementTo}, which compares the Increments on their description
- */
-public class ComparableIncrement extends IncrementTo implements Comparable<IncrementTo> {
+/** Comparable {@link IncrementTo}, which compares the Increments on their description */
+public class ComparableIncrement extends IncrementTo {
 
     /**
      * All dependent increments, means all increments which are sub increments of this
      */
     private List<ComparableIncrement> dependentIncrements = Lists.newLinkedList();
+
+    /** Set of templates contained in this increment, inclusively templates of dependent increments. */
+    private List<TemplateTo> templates = Lists.newLinkedList();
 
     /**
      * Creates a new comparable increment with the given properties
@@ -33,6 +35,7 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
     public ComparableIncrement(String id, String description, String triggerId, List<TemplateTo> templates,
         List<IncrementTo> dependentIncrements) {
         super(id, description, triggerId, templates, dependentIncrements);
+        this.templates = templates;
         this.dependentIncrements = convertIncrements(dependentIncrements);
     }
 
@@ -74,8 +77,12 @@ public class ComparableIncrement extends IncrementTo implements Comparable<Incre
     }
 
     @Override
-    public int compareTo(IncrementTo o) {
-        return getDescription().compareTo(o.getDescription());
+    public int compareTo(GenerableArtifact o) {
+        if (o instanceof IncrementTo) {
+            return getDescription().compareTo(((IncrementTo) o).getDescription());
+        } else {
+            return super.compareTo(o);
+        }
     }
 
     @Override
