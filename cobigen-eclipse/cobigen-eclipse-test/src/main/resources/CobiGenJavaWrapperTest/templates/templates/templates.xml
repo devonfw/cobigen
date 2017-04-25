@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
-    <templates>
-        <template name="t2" destinationPath="TestOutput2.txt" templateFile="TestOutput2.txt.ftl"/>
-        <template name="t3" destinationPath="subfolder/TestOutput3.txt" templateFile="TestOutput3.txt.ftl"/>
-    </templates>
-    <increments>
-        <increment name="i2" description="increment2">
-            <templateRef ref="t2"/>
-        </increment>
-        <increment name="i3" description="increment3">
-            <templateRef ref="t3"/>
-        </increment>
-    </increments>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+  <templates>
+    <template name="t1" destinationPath="TestOutput.txt" templateFile="TestOutput.txt.ftl" mergeStrategy="textmerge_append"/>
+    <template name="t2" destinationPath="TestOutput2.txt" templateFile="TestOutput2.txt.ftl"/>
+    <template name="t3" destinationPath="subfolder/TestOutput3.txt" templateFile="TestOutput3.txt.ftl"/>
+  </templates>
+  <increments>
+    <increment name="i1" description="increment1">
+      <templateRef ref="t1"/>
+    </increment>
+    <increment name="i2" description="increment2">
+      <templateRef ref="t2"/>
+    </increment>
+    <increment name="i3" description="increment3">
+      <templateRef ref="t3"/>
+    </increment>
+  </increments>
 </templatesConfiguration>
