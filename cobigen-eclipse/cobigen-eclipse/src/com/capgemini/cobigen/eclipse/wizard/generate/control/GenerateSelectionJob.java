@@ -94,7 +94,7 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                     proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
                 }
 
-                final ICompilationUnit[] cus = getGeneratedCompilationUnits();
+                final ICompilationUnit[] cus = getGeneratedCompilationUnits(generatedFiles);
 
                 monitor.setTaskName("Organize Imports...");
                 organizeImports(cus);
@@ -224,15 +224,15 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
 
     /**
      * Retrieves all {@link ICompilationUnit}s targeted by the generated paths
+     * @param allTargetPathsInWorkspace
+     *            all target paths in workspace
      * @return an array of {@link ICompilationUnit}s, which are targeted by the generated paths
      */
-    private ICompilationUnit[] getGeneratedCompilationUnits() {
+    private ICompilationUnit[] getGeneratedCompilationUnits(Set<String> allTargetPathsInWorkspace) {
 
         IProject proj = cobigenWrapper.getGenerationTargetProject();
         if (proj != null) {
             List<ICompilationUnit> cus = new LinkedList<>();
-            Set<String> allTargetPathsInWorkspace = cobigenWrapper.getAllTargetPathsInWorkspace(templatesToBeGenerated);
-
             for (String path : allTargetPathsInWorkspace) {
                 IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
                 if (file != null && file instanceof IFile) {
