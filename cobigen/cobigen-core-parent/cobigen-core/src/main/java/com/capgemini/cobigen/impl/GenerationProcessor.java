@@ -347,10 +347,10 @@ public class GenerationProcessor {
                     }
                 }
 
-                if (forceOverride || template.isForceOverride() && templateEty.getMergeStrategy() == null
+                if ((forceOverride || template.isForceOverride()) && templateEty.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
                     generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
-                } else {
+                } else if (templateEty.getMergeStrategy() != null) {
                     String patch = null;
                     try (Writer out = new StringWriter()) {
                         templateEngine.process(templateEty, model, out, targetCharset);
