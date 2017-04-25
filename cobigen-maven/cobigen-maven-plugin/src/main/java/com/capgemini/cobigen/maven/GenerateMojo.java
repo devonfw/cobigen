@@ -35,6 +35,7 @@ import org.apache.maven.project.MavenProject;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
@@ -152,11 +153,21 @@ public class GenerateMojo extends AbstractMojo {
 
         try {
             for (Object input : inputs) {
-                cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride);
+                getLog().debug("Invoke CobiGen for input " + input);
+                GenerationReportTo report =
+                    cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride);
+                if (!report.isSuccessful()) {
+                    for (Throwable e : report.getErrors()) {
+                        getLog().error(e.getMessage(), e);
+                    }
+                    throw new MojoFailureException("Generation not successfull", report.getErrors().get(0));
+                }
             }
         } catch (CobiGenRuntimeException e) {
             getLog().error(e.getMessage(), e);
             throw new MojoFailureException(e.getMessage(), e);
+        } catch (MojoFailureException e) {
+            throw e;
         } catch (Throwable e) {
             getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
             throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
@@ -215,6 +226,7 @@ public class GenerateMojo extends AbstractMojo {
                 inputs.add(input);
             }
         }
+        getLog().debug(inputs.size() + " inputs collected.");
         return inputs;
     }
 
