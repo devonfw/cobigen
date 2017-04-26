@@ -534,7 +534,7 @@
             xsi:type="com.github.maybeec.oomph.task_1:cliTask"
             id="cli.rc.cloneAll.win.startman"
             excludedTriggers="STARTUP"
-            directory="${cloneAll.destination}"
+            directory="${workspace.location}"
             command="cloneAll.cmd">
           <description>Executes the cloneAll.cmd script</description>
         </setupTask>
