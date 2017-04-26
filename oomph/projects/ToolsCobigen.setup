@@ -396,6 +396,7 @@
     <setupTask
         xsi:type="setup:CompoundTask"
         id="cmp.git.clone.master"
+        predecessor="variables.customized.cmp"
         name="Initial Git Clone Master">
       <setupTask
           xsi:type="com.github.maybeec.oomph.task_1:cliTask"
@@ -552,6 +553,7 @@
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
+        predecessor="//@streams[name='develop']/@setupTasks.1"
         name="Workspace Setup">
       <setupTask
           xsi:type="maven:MavenImportTask">
