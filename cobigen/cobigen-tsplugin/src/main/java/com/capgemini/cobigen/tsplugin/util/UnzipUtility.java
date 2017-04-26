@@ -2,9 +2,9 @@ package com.capgemini.cobigen.tsplugin.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -27,12 +27,12 @@ public class UnzipUtility {
      * @throws IOException
      *             if the zip file cannot be found
      */
-    public void unzip(String zipFilePath, String destDirectory) throws IOException {
+    public void unzip(InputStream zipFilePath, String destDirectory) throws IOException {
         File destDir = new File(destDirectory);
         if (!destDir.exists()) {
             destDir.mkdir();
         }
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+        ZipInputStream zipIn = new ZipInputStream(zipFilePath);
         ZipEntry entry = zipIn.getNextEntry();
         // iterates over entries in the zip file
         while (entry != null) {

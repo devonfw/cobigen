@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
@@ -85,7 +84,7 @@ public class TypeScriptMerger implements Merger {
         String mergedContents = "";
 
         InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-        URL zipFile = TypeScriptMerger.class.getResource("/tsm.zip");
+        InputStream zipFile = TypeScriptMerger.class.getResourceAsStream("/tsm.zip");
 
         try {
             Reader reader = new InputStreamReader(beautifierASStream);
@@ -104,11 +103,11 @@ public class TypeScriptMerger implements Merger {
 
         if (Files.notExists(new File("/tmp/tsm").toPath(), LinkOption.NOFOLLOW_LINKS)) {
             UnzipUtility unzipper = new UnzipUtility();
-            unzipper.unzip(zipFile.getFile(), "/tmp/tsm");
+            unzipper.unzip(zipFile, "/tmp/tsm");
         }
 
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node \\tmp\\tsm\\build\\index.js "
-            + patchOverrides + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node \\tmp\\tsm\\src\\index.js " + patchOverrides
+            + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
 
         builder.redirectErrorStream(true);
         Process p = builder.start();
@@ -121,9 +120,7 @@ public class TypeScriptMerger implements Merger {
             }
             mergedContents = mergedContents.concat(line);
         }
-        int index = mergedContents.indexOf("temp_patch.ts");
-        String merged = mergedContents.substring(index + 13, mergedContents.length());
-        scope.put("jsCode", scope, merged);
+        scope.put("jsCode", scope, mergedContents);
         return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + 4 + "})", "inline", 1, null);
 
     }
