@@ -511,7 +511,7 @@
         <setupTask
             xsi:type="com.github.maybeec.oomph.task_1:cliTask"
             id="cli.rc.cloneAll.startman"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             directory="${workspace.location}"
             command="./cloneAll.sh">
           <description>Executes the cloneAll.sh script</description>
@@ -533,7 +533,7 @@
         <setupTask
             xsi:type="com.github.maybeec.oomph.task_1:cliTask"
             id="cli.rc.cloneAll.win.startman"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             directory="${workspace.location}"
             command="cloneAll.cmd">
           <description>Executes the cloneAll.cmd script</description>
@@ -710,7 +710,7 @@
         <setupTask
             xsi:type="com.github.maybeec.oomph.task_1:cliTask"
             id="cli.rc.cloneMaster.linux.man"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             directory="${workspace.location}"
             command="./clone.sh">
           <description>Executes the cloneMaster.sh script</description>
@@ -732,7 +732,7 @@
         <setupTask
             xsi:type="com.github.maybeec.oomph.task_1:cliTask"
             id="cli.rc.cloneMaster.win.man"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             directory="${workspace.location}"
             command="clone.cmd">
           <description>Executes the clone.cmd script in cobigen-master workspace</description>

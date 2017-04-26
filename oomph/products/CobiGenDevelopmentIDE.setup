@@ -451,69 +451,6 @@
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
-      id="variables.customized.cmp"
-      successor="tasks.finalize.external.resources"
-      name="Variables Customized">
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        name="variables-customized">
-      <setupTask
-          xsi:type="setup:VariableTask"
-          excludedTriggers="STARTUP"
-          name="devon.nexus.user"
-          label="Devon Nexus User">
-        <description>login for https://devon.s2-eu.capgemini.com</description>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:VariableTask"
-          excludedTriggers="STARTUP"
-          name="devon.nexus.pw"
-          label="Devon Nexus Password">
-        <description>login for https://devon.s2-eu.capgemini.com</description>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:VariableTask"
-          excludedTriggers="STARTUP"
-          name="icsd.fileserver.user"
-          label="iCSD Fileserver FTP User">
-        <description></description>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:VariableTask"
-          excludedTriggers="STARTUP"
-          name="icsd.fileserver.pw"
-          label="iCSD Fileserver FTP Passwort"/>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="tasks.finalize.external.resources.win"
-        filter="(os.name=Windows*)"
-        name="Windows">
-      <setupTask
-          xsi:type="setup:ResourceCreationTask"
-          id="variables.customized"
-          excludedTriggers="STARTUP MANUAL"
-          content="set MAIN_BRANCH=main&#xA;set M2_REPO=%USERPROFILE%/.m2/repository&#xA;set DEVON_NEXUS_USER=${devon.nexus.user}&#xA;set DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;set ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;set ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
-          targetURL="${installation.root/variables-customized.bat|uri}"
-          encoding="UTF-8">
-        <description></description>
-      </setupTask>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        filter="(osgi.os=linux)"
-        name="Linux">
-      <setupTask
-          xsi:type="setup:ResourceCreationTask"
-          id="variables.customized.linux"
-          excludedTriggers="STARTUP MANUAL"
-          content="export MAIN_BRANCH=main&#xA;export M2_REPO=~/.m2/repository&#xA;export DEVON_NEXUS_USER=${devon.nexus.user}&#xA;export DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;export ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;export ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
-          targetURL="${installation.root/variables-customized|uri}"
-          encoding="UTF-8"/>
-    </setupTask>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
       id="tasks.finalize.external.resources"
       predecessor="//@setupTasks.11 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.9 //@setupTasks.10"
       name="finalize external resources">
