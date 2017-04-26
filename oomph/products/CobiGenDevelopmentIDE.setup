@@ -23,13 +23,77 @@
     </detail>
     <detail
         key="imageURI">
-      <value>http://de-mucevolve02/files/oomph/resources/cobigen.png</value>
+      <value>http://de-mucevolve02/files/oomph/resources/images/cobigen.png</value>
     </detail>
     <detail
         key="siteURI">
       <value>https://github.com/devonfw/tools-cobigen</value>
     </detail>
   </annotation>
+  <setupTask
+      xsi:type="setup.p2:P2Task"
+      label="CobiGen IDE"
+      licenseConfirmationDisabled="true">
+    <requirement
+        name="org.eclipse.m2e.feature.feature.group"
+        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
+    <requirement
+        name="org.eclipse.m2e.logback.feature.feature.group"
+        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
+    <requirement
+        name="org.eclipse.egit.feature.group"
+        versionRange="[4.6.1.201703071140-r,4.6.1.201703071140-r]"/>
+    <requirement
+        name="org.eclipse.oomph.p2.feature.group"
+        versionRange="[1.7.0.v20170228-1751,1.7.0.v20170228-1751]"/>
+    <requirement
+        name="org.eclipse.oomph.setup.feature.group"
+        versionRange="[1.7.0.v20170305-1123,1.7.0.v20170305-1123]"/>
+    <requirement
+        name="org.eclipse.oomph.setup.git.feature.group"
+        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
+    <requirement
+        name="org.eclipse.oomph.setup.maven.feature.group"
+        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
+    <requirement
+        name="org.eclipse.swtbot.feature.group"
+        versionRange="2.6.0"/>
+    <requirement
+        name="org.eclipse.swtbot.eclipse.feature.group"
+        versionRange="2.6.0"/>
+    <requirement
+        name="org.eclipse.swtbot.ide.feature.group"
+        versionRange="2.6.0"/>
+    <requirement
+        name="org.eclipse.swtbot.generator.feature.feature.group"
+        versionRange="2.6.0"/>
+    <requirement
+        name="org.sonatype.m2e.buildhelper.feature.feature.group"
+        versionRange="[0.15.0.201207090124,0.15.0.201207090124]"/>
+    <requirement
+        name="de.bastiankrol.startexplorer.feature.feature.group"
+        versionRange="[1.7.0,1.7.0]"/>
+    <requirement
+        name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"
+        versionRange="3.8.3"/>
+    <requirement
+        name="org.sonatype.tycho.m2e.feature.feature.group"
+        versionRange="[0.9.0.201609252021,0.9.0.201609252021]"/>
+    <repository
+        url="http://fabioz.github.io/startexplorer/update/"/>
+    <repository
+        url="http://download.eclipse.org/egit/updates/"/>
+    <repository
+        url="http://download.eclipse.org/oomph/updates/milestone/latest"/>
+    <repository
+        url="http://download.eclipse.org/technology/m2e/releases"/>
+    <repository
+        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+    <repository
+        url="http://download.eclipse.org/technology/swtbot/snapshots"/>
+    <repository
+        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/0.9.0.201609252021/"/>
+  </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
       id="config.user.input"
@@ -139,6 +203,7 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       id="compound.downloads"
+      successor="tasks.unzip.external.resources"
       name="download tasks of external resources">
     <setupTask
         xsi:type="setup:ResourceCopyTask"
@@ -192,6 +257,7 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       id="tasks.unzip.external.resources"
+      predecessor="compound.downloads"
       name="unzip tasks of external resources">
     <setupTask
         xsi:type="com.github.maybeec.oomph.task:unzipTask"
@@ -239,7 +305,217 @@
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
+      id="compound.downloads.external.software"
+      successor="tasks.unzip.external.software"
+      name="download tasks of external software">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.download.external.ressources.windows"
+        filter="(os.name=Windows*)"
+        name="windows">
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.win.maven"
+          excludedTriggers="STARTUP MANUAL"
+          successor="unzip.maven.win"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.zip"
+          targetURL="${tmp.download.location/maven.zip|uri}">
+        <description>Fetches the maven ${maven.version} archive</description>
+      </setupTask>
+      <description>Download tasks for external ressources on windows</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.download.external.ressources.linux"
+        filter="(osgi.os=linux)"
+        name="linux">
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.linux.maven"
+          excludedTriggers="STARTUP MANUAL"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
+          targetURL="${tmp.download.location/maven.tar.gz|uri}">
+        <description>Fetches the maven ${maven.version} archive for linux</description>
+      </setupTask>
+    </setupTask>
+    <description>downloads external resources</description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      id="tasks.unzip.external.software"
+      predecessor="compound.downloads.external.software"
+      name="unzip tasks of external software">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.unzip.external.ressources.linux"
+        filter="(osgi.os=linux)"
+        name="linux">
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.maven"
+          excludedTriggers="STARTUP MANUAL"
+          zipFile="${tmp.download.location/maven.tar.gz}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the maven binaries</description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.unzip.external.ressources.windows"
+        filter="(os.name=Windows*)"
+        name="windows">
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.maven.win"
+          excludedTriggers="STARTUP MANUAL"
+          predecessor="rc.win.maven"
+          zipFile="${tmp.download.location/maven.zip}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the maven binaries</description>
+      </setupTask>
+      <description>Download tasks for external ressources on windows</description>
+    </setupTask>
+    <setupTask
+        xsi:type="fsrename:FSRenameTask"
+        id="rename.maven"
+        excludedTriggers="MANUAL"
+        predecessor="unzip.maven.win unzip.maven"
+        filter=""
+        resource="${software.location/}apache-maven-${maven.version}"
+        destination="maven"
+        priority="100"/>
+    <description></description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="UI Setup">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.oomph.setup.ui/showToolBarContributions"
+        value="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Eclipse Product Redirect CobiGen">
+    <setupTask
+        xsi:type="setup:EclipseIniTask"
+        excludedTriggers="STARTUP MANUAL"
+        option="-Doomph.redirection.index.redirection="
+        value="index:/org.eclipse.setup->http://devonfw.github.io/devon-ide/oomph/index/org.eclipse.setup"
+        vm="true">
+      <description></description>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="JDK config">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="jdk.win.64"
+        successor="unzip.jdk.1.8"
+        filter="(osgi.arch=x86_64)"
+        name="x64">
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          excludedTriggers="STARTUP MANUAL"
+          successor="unzip.jdk.1.8"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121_x64.zip"
+          targetURL="${tmp.download.location/java18.zip|uri}">
+        <description></description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        successor="unzip.jdk.1.8"
+        filter="(osgi.arch=x86)"
+        name="x86">
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          excludedTriggers="STARTUP MANUAL"
+          successor="unzip.jdk.1.8"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121.zip"
+          targetURL="${tmp.download.location/java18.zip|uri}">
+        <description></description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task:unzipTask"
+        id="unzip.jdk.1.8"
+        excludedTriggers="STARTUP MANUAL"
+        predecessor="jdk.win.64 //@setupTasks.11/@setupTasks.1"
+        zipFile="${tmp.download.location/java18.zip}"
+        destinationDir="${software.location/java/}"
+        priority="100"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      id="variables.customized.cmp"
+      successor="tasks.finalize.external.resources"
+      name="Variables Customized">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        name="variables-customized">
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="devon.nexus.user"
+          label="Devon Nexus User">
+        <description>login for https://devon.s2-eu.capgemini.com</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="devon.nexus.pw"
+          label="Devon Nexus Password">
+        <description>login for https://devon.s2-eu.capgemini.com</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="icsd.fileserver.user"
+          label="iCSD Fileserver FTP User">
+        <description></description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:VariableTask"
+          excludedTriggers="STARTUP"
+          name="icsd.fileserver.pw"
+          label="iCSD Fileserver FTP Passwort"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        id="tasks.finalize.external.resources.win"
+        filter="(os.name=Windows*)"
+        name="Windows">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="variables.customized"
+          excludedTriggers="STARTUP MANUAL"
+          content="set MAIN_BRANCH=main&#xA;set M2_REPO=%USERPROFILE%/.m2/repository&#xA;set DEVON_NEXUS_USER=${devon.nexus.user}&#xA;set DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;set ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;set ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
+          targetURL="${installation.root/variables-customized.bat|uri}"
+          encoding="UTF-8">
+        <description></description>
+      </setupTask>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        filter="(osgi.os=linux)"
+        name="Linux">
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="variables.customized.linux"
+          excludedTriggers="STARTUP MANUAL"
+          content="export MAIN_BRANCH=main&#xA;export M2_REPO=~/.m2/repository&#xA;export DEVON_NEXUS_USER=${devon.nexus.user}&#xA;export DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;export ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;export ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
+          targetURL="${installation.root/variables-customized|uri}"
+          encoding="UTF-8"/>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
       id="tasks.finalize.external.resources"
+      predecessor="//@setupTasks.11 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.9 //@setupTasks.10"
       name="finalize external resources">
     <setupTask
         xsi:type="setup:CompoundTask"
@@ -318,236 +594,6 @@
       </setupTask>
     </setupTask>
     <description></description>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="UI Setup">
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/org.eclipse.oomph.setup.ui/showToolBarContributions"
-        value="true"/>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="Eclipse Index Redirect">
-    <setupTask
-        xsi:type="setup:EclipseIniTask"
-        excludedTriggers="STARTUP MANUAL"
-        option="-Doomph.redirection.setups="
-        value="http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/->http://de-mucevolve02/files/oomph/products/devon-ide/index/"
-        vm="true">
-      <description></description>
-    </setupTask>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="Eclipse Product Redirect CobiGen">
-    <setupTask
-        xsi:type="setup:EclipseIniTask"
-        excludedTriggers="STARTUP MANUAL"
-        option="-Doomph.redirection.setups="
-        value="http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/->http://de-mucevolve02/files/oomph/products/cobigen-ide/index/"
-        vm="true">
-      <description></description>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:EclipseIniTask"
-        excludedTriggers="STARTUP"
-        option="-Doomph.redirection.cobigenproject="
-        value="index:/redirectable.projects.setup->http://de-mucevolve02/files/oomph/projects/cobigen/com.github.projects.cobigen.setup"
-        vm="true">
-      <description></description>
-    </setupTask>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      id="compound.downloads"
-      name="download tasks of external resources">
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="tasks.download.external.ressources.windows"
-        filter="(os.name=Windows*)"
-        name="windows">
-      <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          id="rc.win.maven"
-          excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.zip"
-          targetURL="${tmp.download.location/maven.zip|uri}">
-        <description>Fetches the maven ${maven.version} archive</description>
-      </setupTask>
-      <description>Download tasks for external ressources on windows</description>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="tasks.download.external.ressources.linux"
-        filter="(osgi.os=linux)"
-        name="linux">
-      <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          id="rc.linux.maven"
-          excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
-          targetURL="${tmp.download.location/maven.tar.gz|uri}">
-        <description>Fetches the maven ${maven.version} archive for linux</description>
-      </setupTask>
-    </setupTask>
-    <description>downloads external resources</description>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      id="tasks.unzip.external.resources"
-      name="unzip tasks of external resources">
-    <predecessor
-        xsi:type="setup:CompoundTask"
-        href="org.eclipse.products.setup#compound.downloads"/>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="tasks.unzip.external.ressources.linux"
-        filter="(osgi.os=linux)"
-        name="linux">
-      <setupTask
-          xsi:type="com.github.maybeec.oomph.task:unzipTask"
-          id="unzip.maven"
-          excludedTriggers="STARTUP MANUAL"
-          zipFile="${tmp.download.location/maven.tar.gz}"
-          destinationDir="${software.location}"
-          priority="100">
-        <description>Unzips the maven binaries</description>
-      </setupTask>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="tasks.unzip.external.ressources.windows"
-        filter="(os.name=Windows*)"
-        name="windows">
-      <setupTask
-          xsi:type="com.github.maybeec.oomph.task:unzipTask"
-          id="unzip.maven.win"
-          excludedTriggers="STARTUP MANUAL"
-          zipFile="${tmp.download.location/maven.zip}"
-          destinationDir="${software.location}"
-          priority="100">
-        <description>Unzips the maven binaries</description>
-      </setupTask>
-      <description>Download tasks for external ressources on windows</description>
-    </setupTask>
-    <setupTask
-        xsi:type="fsrename:FSRenameTask"
-        id="rename.maven"
-        excludedTriggers="MANUAL"
-        predecessor="unzip.maven.win unzip.maven"
-        filter=""
-        resource="${software.location/}apache-maven-${maven.version}"
-        destination="maven"
-        priority="100"/>
-    <description></description>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="JDK config">
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="jdk.win.64"
-        filter="(osgi.arch=x86_64)"
-        name="x64">
-      <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121_x64.zip"
-          targetURL="${tmp.download.location/java18.zip|uri}">
-        <successor
-            xsi:type="com.github.maybeec.oomph.task:unzipTask"
-            href="org.eclipse.products.setup#unzip.jdk.1.8"/>
-        <description></description>
-      </setupTask>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        filter="(osgi.arch=x86)"
-        name="x86">
-      <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121.zip"
-          targetURL="${tmp.download.location/java18.zip|uri}">
-        <successor
-            xsi:type="com.github.maybeec.oomph.task:unzipTask"
-            href="org.eclipse.products.setup#unzip.jdk.1.8"/>
-        <description></description>
-      </setupTask>
-    </setupTask>
-    <setupTask
-        xsi:type="com.github.maybeec.oomph.task:unzipTask"
-        id="unzip.jdk.1.8"
-        excludedTriggers="STARTUP MANUAL"
-        zipFile="${tmp.download.location/java18.zip}"
-        destinationDir="${software.location/java/}"
-        priority="100"/>
-  </setupTask>
-  <setupTask
-      xsi:type="setup.p2:P2Task"
-      label="CobiGen IDE"
-      licenseConfirmationDisabled="true">
-    <requirement
-        name="org.eclipse.m2e.feature.feature.group"
-        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
-    <requirement
-        name="org.eclipse.m2e.logback.feature.feature.group"
-        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
-    <requirement
-        name="org.eclipse.egit.feature.group"
-        versionRange="[4.6.1.201703071140-r,4.6.1.201703071140-r]"/>
-    <requirement
-        name="org.eclipse.oomph.p2.feature.group"
-        versionRange="[1.7.0.v20170228-1751,1.7.0.v20170228-1751]"/>
-    <requirement
-        name="org.eclipse.oomph.setup.feature.group"
-        versionRange="[1.7.0.v20170305-1123,1.7.0.v20170305-1123]"/>
-    <requirement
-        name="org.eclipse.oomph.setup.git.feature.group"
-        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
-    <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group"
-        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
-    <requirement
-        name="org.eclipse.swtbot.feature.group"
-        versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
-    <requirement
-        name="org.eclipse.swtbot.eclipse.feature.group"
-        versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
-    <requirement
-        name="org.eclipse.swtbot.ide.feature.group"
-        versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
-    <requirement
-        name="org.eclipse.swtbot.generator.feature.feature.group"
-        versionRange="[2.6.0.201612081710,2.6.0.201612081710]"/>
-    <requirement
-        name="org.sonatype.m2e.buildhelper.feature.feature.group"
-        versionRange="[0.15.0.201207090124,0.15.0.201207090124]"/>
-    <requirement
-        name="de.bastiankrol.startexplorer.feature.feature.group"
-        versionRange="[1.7.0,1.7.0]"/>
-    <requirement
-        name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"
-        versionRange="[3.8.3.201612190658-RELEASE,3.8.3.201612190658-RELEASE]"/>
-    <requirement
-        name="org.sonatype.tycho.m2e.feature.feature.group"
-        versionRange="[0.9.0.201609252021,0.9.0.201609252021]"/>
-    <repository
-        url="http://fabioz.github.io/startexplorer/update/"/>
-    <repository
-        url="http://download.eclipse.org/egit/updates/"/>
-    <repository
-        url="http://download.eclipse.org/oomph/updates/milestone/latest"/>
-    <repository
-        url="http://download.eclipse.org/technology/m2e/releases"/>
-    <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
-    <repository
-        url="http://download.eclipse.org/technology/swtbot/snapshots"/>
-    <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/0.9.0.201609252021/"/>
   </setupTask>
   <version name="Neon"
       label="Neon"
