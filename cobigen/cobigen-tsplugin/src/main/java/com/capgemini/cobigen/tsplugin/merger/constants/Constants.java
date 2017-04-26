@@ -11,7 +11,7 @@ public class Constants {
     public static final String BEAUTIFY_JS = "/beautify.js";
 
     /**
-     * Path for the TSMerger script
+     * Path for the TSMerger
      */
-    public static final String TS_MERGER = "/tsm/build/src/index.js";
+    public static final String TS_MERGER = "/tsm.zip";
 }

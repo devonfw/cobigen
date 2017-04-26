@@ -84,7 +84,7 @@ public class TypeScriptMerger implements Merger {
         String mergedContents = "";
 
         InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-        InputStream zipFile = TypeScriptMerger.class.getResourceAsStream("/tsm.zip");
+        InputStream zipFile = TypeScriptMerger.class.getResourceAsStream(Constants.TS_MERGER);
 
         try {
             Reader reader = new InputStreamReader(beautifierASStream);

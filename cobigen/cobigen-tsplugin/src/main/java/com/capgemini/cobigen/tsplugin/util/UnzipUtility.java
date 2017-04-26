@@ -54,8 +54,11 @@ public class UnzipUtility {
     /**
      * Extracts a zip entry (file entry)
      * @param zipIn
+     *            zip file to unzip
      * @param filePath
+     *            destination path
      * @throws IOException
+     *             if file not found
      */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
