@@ -483,7 +483,7 @@
         <setupTask
             xsi:type="setup:ResourceCreationTask"
             id="rc.cloneAll.linux.startman"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             successor="cmp.clone.dev.linux.chmod.startman"
             content="#&#xA;# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($$GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;folderName=$branchName&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;if [ -d &quot;$$folderName&quot; ]; then&#xA;&#x9;&#x9;&#x9;echo Folder \'$$folderName\' already exists. Skipping cloning of branch \'$$branchName\' &#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;echo Cloning branch \'$$branchName\' ...&#xA;&#x9;&#x9;&#x9;git clone --single-branch --branch=$$branchName $$COBIGEN_REPO $$folderName&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;fi&#xA;&#x9;fi&#xA;done"
             targetURL="${workspace.location/cloneAll.sh|uri}"
@@ -493,7 +493,7 @@
         <setupTask
             xsi:type="setup:ResourceCreationTask"
             id="rc.pullAll.linux.startman"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             content="# Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;#&#xA;&#xA;# 1. Configuration&#xA;&#xA;COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;&#xA;# 2. Script&#xA;&#xA;GIT_OUTPUT=&quot;$$(git ls-remote --heads $$COBIGEN_REPO)&quot;&#xA;&#xA;BRANCHES=($GIT_OUTPUT)&#xA;for i in &quot;$${BRANCHES[@]}&quot;; do&#xA;&#x9;if [[ $$i == *&quot;head&quot;* ]]; then&#xA;&#x9;&#x9;branchName=${i#$$&quot;refs/heads/&quot;}&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;echo ------------ Pull branch $branchName ---------------&#xA;&#x9;&#x9;echo ----------------------------------------------------&#xA;&#x9;&#x9;cd $branchName&#xA;&#x9;&#x9;git pull&#xA;&#x9;&#x9;cd ..&#xA;&#x9;fi&#xA;done"
             targetURL="${workspace.location/pullAll.sh|uri}"
             encoding="UTF-8">
@@ -525,7 +525,7 @@
         <setupTask
             xsi:type="setup:ResourceCreationTask"
             id="rc.cloneAll.win.startman"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;&#xA;ECHO Start cloning all development branches... &#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;FOR /F &quot;delims= &quot; %%B IN ('&quot;git ls-remote --heads %COBIGEN_REPO%&quot;') DO (&#xA;&#x9;SET BRANCH=%%B&#xA;&#x9;SET FOLDER=!BRANCH:*refs/heads/=!&#xA;&#x9;IF EXIST !FOLDER! (&#xA;&#x9;&#x9;ECHO !FOLDER! already exists. Skipping&#xA;&#x9;) ELSE (&#xA;&#x9;&#x9;ECHO Cloning branch !FOLDER! ... &#xA;&#x9;&#x9;git clone --single-branch --branch=!FOLDER! %COBIGEN_REPO% !FOLDER!&#xA;&#x9;)&#xA;)&#xA;ECHO DONE&#xA;exit"
             targetURL="${workspace.location/cloneAll.cmd|uri}"
             encoding="UTF-8">
@@ -542,7 +542,7 @@
         <setupTask
             xsi:type="setup:ResourceCreationTask"
             id="dev.rc.pullAll.win"
-            excludedTriggers="STARTUP"
+            excludedTriggers="BOOTSTRAP"
             content="@ECHO OFF&#xA;REM ##############################&#xA;REM Script to clone the CobiGen repository by cloning each branch in a single-branch clone&#xA;REM ##############################&#xA;&#xA;REM Config&#xA;setlocal enabledelayedexpansion&#xA;FOR /D  %%B IN (&quot;*&quot;) DO (&#xA;&#x9;SET FOLDER=%%B&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;ECHO ------------ Pull branch !FOLDER! ---------------&#xA;&#x9;ECHO ----------------------------------------------------&#xA;&#x9;pushd !FOLDER! &amp; git pull &amp; popd&#xA;)&#xA;ECHO DONE&#xA;exit"
             targetURL="${workspace.location/pullAll.cmd|uri}"
             encoding="UTF-8">
