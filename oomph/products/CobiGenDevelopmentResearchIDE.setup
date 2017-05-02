@@ -341,7 +341,7 @@
       name="download tasks of external software">
     <setupTask
         xsi:type="setup:CompoundTask"
-        id="tasks.download.external.ressources.windows"
+        id="tasks.download.external.software.windows"
         filter="(os.name=Windows*)"
         name="windows">
       <setupTask
@@ -357,7 +357,7 @@
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
-        id="tasks.download.external.ressources.linux"
+        id="tasks.download.external.software.linux"
         filter="(osgi.os=linux)"
         name="linux">
       <setupTask
@@ -378,7 +378,7 @@
       name="unzip tasks of external software">
     <setupTask
         xsi:type="setup:CompoundTask"
-        id="tasks.unzip.external.ressources.linux"
+        id="tasks.unzip.external.software.linux"
         filter="(osgi.os=linux)"
         name="linux">
       <setupTask
@@ -393,7 +393,7 @@
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
-        id="tasks.unzip.external.ressources.windows"
+        id="tasks.unzip.external.software.windows"
         filter="(os.name=Windows*)"
         name="windows">
       <setupTask

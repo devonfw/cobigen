@@ -290,7 +290,7 @@
       </setupTask>
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
-          id="unzip.jdk.1.7"
+          id="unzip.jdk.1.7.linux"
           excludedTriggers="STARTUP MANUAL"
           zipFile="${tmp.download.location/java17.tar.gz}"
           destinationDir="${jdk.1.7.location}"
@@ -826,6 +826,6 @@
   </stream>
   <logicalProjectContainer
       xsi:type="setup:ProjectCatalog"
-      href="index:/org.eclipse.setup#//@projectCatalogs[name='org.eclipse']"/>
+      href="http://devonfw.github.io/devon-ide/oomph/projects/catalog_devonfw.setup#/"/>
   <description>Tools Cobigen provides cool stuff.</description>
 </setup:Project>
