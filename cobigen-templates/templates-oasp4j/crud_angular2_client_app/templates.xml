@@ -33,29 +33,41 @@
   </templateScans>
 
   <increments>
-    <increment name="app_angular" description="Angular2 Client App">
-      <templateRef ref="${variables.etoName}AddDialog.component.html"/>
-      <templateRef ref="${variables.etoName}AddDialog.component.ts"/>
+    <increment name="app_angular_grid" description="NG2 Grid">
       <templateRef ref="${variables.etoName}DataGrid.component.html"/>
       <templateRef ref="${variables.etoName}DataGrid.component.ts"/>
       <templateRef ref="${variables.etoName}DataGrid.service.ts"/>
+    </increment>
+    <increment name="app_angular_add" description="NG2 Add Dialog">
+      <templateRef ref="${variables.etoName}AddDialog.component.html"/>
+      <templateRef ref="${variables.etoName}AddDialog.component.ts"/>
+    </increment>
+    <increment name="app_angular_i18n" description="NG2 i18n">
+      <templateRef ref="es.json"/>
+      <templateRef ref="en.json"/>
+      <templateRef ref="de.json"/>
+    </increment>
+    <increment name="app_angular_routing" description="NG2 Routing">
+      <templateRef ref="app.routing.ts"/>
+    </increment>
+    <increment name="app_angular_business" description="NG2 Business Operations">
+      <templateRef ref="BusinessOperations.ts"/>
+    </increment>
+    <increment name="app_angular_security" description="NG2 Security">
+      <templateRef ref="login.component.ts"/>
+      <templateRef ref="security.service.ts"/>
+      <templateRef ref="httpClient.service.ts"/>
+    </increment>
+    <increment name="app_angular_base" description="NG2 Project Structure">
       <templateRef ref="header.component.html"/>
       <templateRef ref="header.component.ts"/>
       <templateRef ref="home.component.html"/>
       <templateRef ref="home.component.ts"/>
       <templateRef ref="login.component.html"/>
-      <templateRef ref="login.component.ts"/>
-      <templateRef ref="security.service.ts"/>
-      <templateRef ref="httpClient.service.ts"/>
       <templateRef ref="app.component.css"/>
       <templateRef ref="app.component.html"/>
       <templateRef ref="app.component.ts"/>
       <templateRef ref="app.module.ts"/>
-      <templateRef ref="app.routing.ts"/>
-      <templateRef ref="BusinessOperations.ts"/>
-      <templateRef ref="es.json"/>
-      <templateRef ref="en.json"/>
-      <templateRef ref="de.json"/>
       <templateRef ref="serverPath.ts"/>
     </increment>
   </increments>
