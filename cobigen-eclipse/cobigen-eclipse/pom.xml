@@ -42,13 +42,24 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-jsonplugin</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-senchaplugin</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-tsplugin</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-htmlplugin</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    
 
     <dependency>
       <groupId>ch.qos.logback</groupId>

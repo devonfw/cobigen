@@ -14,12 +14,14 @@ import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
+import com.capgemini.cobigen.htmlplugin.HTMLPluginActivator;
 import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
+import com.capgemini.cobigen.tsplugin.TypeScriptPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
 /**
@@ -67,6 +69,8 @@ public class Activator extends AbstractUIPlugin {
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
         PluginRegistry.loadPlugin(JSONPluginActivator.class);
         PluginRegistry.loadPlugin(SenchaPluginActivator.class);
+        PluginRegistry.loadPlugin(TypeScriptPluginActivator.class);
+        PluginRegistry.loadPlugin(HTMLPluginActivator.class);
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
