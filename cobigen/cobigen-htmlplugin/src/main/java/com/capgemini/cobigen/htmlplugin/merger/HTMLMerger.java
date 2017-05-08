@@ -55,29 +55,20 @@ public class HTMLMerger implements Merger {
 
         Document fileDocBase;
         Document docPatch;
-        Angular2Merger ng2;
         String mergedContents = null;
         String htmlString;
-        Reader reader = null;
-        try {
-            Parser parse = Parser.htmlParser();
-            parse.settings(new ParseSettings(true, true));
-            try {
-                reader = new FileReader(base);
-                htmlString = IOUtils.toString(reader);
-            } catch (IOException e) {
-                throw new MergeException(base, "file could not be found or read");
-            }
-
-            reader.close();
-
-            fileDocBase = parse.parseInput(htmlString, base.toString());
-            docPatch = parse.parseInput(patch, targetCharset);
-            ng2 = new Angular2Merger(fileDocBase, docPatch);
-            mergedContents = ng2.merger(patchOverrides);
+        Parser parse = Parser.htmlParser();
+        parse.settings(new ParseSettings(true, true));
+        try (Reader reader = new FileReader(base)) {
+            htmlString = IOUtils.toString(reader);
         } catch (IOException e) {
             throw new MergeException(base, "file could not be found, or read, or the charsetName is invalid");
         }
+
+        fileDocBase = parse.parseInput(htmlString, base.toString());
+        docPatch = parse.parseInput(patch, targetCharset);
+        Angular2Merger ng2 = new Angular2Merger(fileDocBase, docPatch);
+        mergedContents = ng2.merger(patchOverrides);
 
         return mergedContents;
     }
