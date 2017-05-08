@@ -62,12 +62,16 @@ public class HTMLMerger implements Merger {
         try {
             Parser parse = Parser.htmlParser();
             parse.settings(new ParseSettings(true, true));
-            reader = new FileReader(base);
-            htmlString = IOUtils.toString(reader);
+            try {
+                reader = new FileReader(base);
+                htmlString = IOUtils.toString(reader);
+            } catch (IOException e) {
+                throw new MergeException(base, "file could not be found or read");
+            }
+
             reader.close();
 
             fileDocBase = parse.parseInput(htmlString, base.toString());
-            // fileDocBase = Jsoup.parse(base, targetCharset);
             docPatch = parse.parseInput(patch, targetCharset);
             ng2 = new Angular2Merger(fileDocBase, docPatch);
             mergedContents = ng2.merger(patchOverrides);
