@@ -44,7 +44,7 @@ node {
 		}
 		
 		stage('process test results') {
-			junit '**/target/*.xml'
+			step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
 		}
 		
 		stage('deploy') {
