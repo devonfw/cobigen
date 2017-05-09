@@ -1,9 +1,11 @@
 node {
     try {
+		setBuildStatus("In Progress","PENDING")
+		
 		step([$class: 'WsCleanup'])
 		
 		stage('setting up environment & cloning repositories') { // for display purposes
-			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: env.BRANCH_NAME
+			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: "${env.BRANCH_NAME}"
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 			if (env.BRANCH_NAME == "dev_mavenplugin") {
@@ -31,6 +33,7 @@ node {
 			root = "cobigen/cobigen-core-parent"
 		} else if (env.BRANCH_NAME == "gh-pages" || env.BRANCH_NAME == "dev_oomph_setup") {
 			currentBuild.result = 'SUCCESS'
+			setBuildStatus("Complete","SUCCESS")
 			sh "exit 0"
 		} else {
 			root = "cobigen/cobigen-" + env.BRANCH_NAME.replace("dev_", "")
@@ -51,6 +54,9 @@ node {
 		
 		stage('process test results') {
 			step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+			}
 		}
 		
 		stage('deploy') {
@@ -63,8 +69,12 @@ node {
 		
     } catch(e) {
 		notifyFailed()
+		if (currentBuild.result != 'UNSTABLE') {
+			setBuildStatus("Incomplete","ERROR")
+		}
         throw e
     }
+	 setBuildStatus("Complete","SUCCESS")
 }
 
 def notifyFailed() {
@@ -78,4 +88,8 @@ def notifyFailed() {
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
          to: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider']]))
+}
+
+def setBuildStatus(String message, String state) {
+	githubNotify context: "Jenkins-Tests", description: message, status: state, credentialsId: 'github-devonfw-ci', sha: "${gitCommit}", targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen'
 }
