@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-jsonplugin</artifactId>
   <name>CobiGen - JSON Plug-in</name>
-  <version>1.1.0</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -27,11 +27,6 @@
       <artifactId>cobigen-core-test</artifactId>
       <version>3.0.0</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>5.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
