@@ -23,7 +23,7 @@
     </detail>
     <detail
         key="imageURI">
-      <value>http://de-mucevolve02/files/oomph/resources/cobigen.png</value>
+      <value>http://de-mucevolve02/files/oomph/resources/images/cobigen.png</value>
     </detail>
     <detail
         key="siteURI">
@@ -372,7 +372,7 @@
           xsi:type="setup:ResourceCopyTask"
           id="rc.win.maven"
           excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/apache-maven-${maven.version}-bin.zip"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.zip"
           targetURL="${tmp.download.location/maven.zip|uri}">
         <description>Fetches the maven ${maven.version} archive</description>
       </setupTask>
@@ -387,7 +387,7 @@
           xsi:type="setup:ResourceCopyTask"
           id="rc.linux.maven"
           excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/apache-maven-${maven.version}-bin.tar.gz"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
           targetURL="${tmp.download.location/maven.tar.gz|uri}">
         <description>Fetches the maven ${maven.version} archive for linux</description>
       </setupTask>
@@ -454,7 +454,7 @@
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/jdk-1.8.0.121_x64.zip"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121_x64.zip"
           targetURL="${tmp.download.location/java18.zip|uri}">
         <successor
             xsi:type="com.github.maybeec.oomph.task:unzipTask"
@@ -469,7 +469,7 @@
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/jdk-1.8.0.121.zip"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121.zip"
           targetURL="${tmp.download.location/java18.zip|uri}">
         <successor
             xsi:type="com.github.maybeec.oomph.task:unzipTask"
