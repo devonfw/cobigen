@@ -24,7 +24,7 @@ node {
 		} else if (env.BRANCH_NAME == "dev_htmlmerger") {
 			root = "cobigen/cobigen-htmlplugin"
 		} else if (env.BRANCH_NAME == "dev_mavenplugin") {
-			root = "cobigen-mavenplugin"
+			root = "cobigen-maven"
 		} else if (env.BRANCH_NAME == "dev_tempeng_freemarker") {
 			root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
 		} else if (env.BRANCH_NAME == "dev_core") {
