@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
 
+  <servers>
+    <server>
+      <id>nexus.central</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>public</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>3rd.party</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>oasp.releases</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>oasp.snapshots</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>devon.releases</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+    <server>
+      <id>devon.snapshots</id>
+      <username>${DEVON_NEXUS_USER}</username>
+      <password>${DEVON_NEXUS_PASSWD}</password>
+    </server>
+  </servers>
+
   <mirrors>
     <mirror>
       <id>nexus.central</id>
