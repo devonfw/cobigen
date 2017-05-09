@@ -8,6 +8,7 @@ node {
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 			env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
+			tool 'VNC Server'
 		}
 		
 		def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin"]
