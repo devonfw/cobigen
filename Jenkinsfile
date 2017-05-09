@@ -11,10 +11,10 @@ node {
 			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: "${env.BRANCH_NAME}"
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
+			env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
 			// we have to also build master with 1.8 as it will later on also run maven systemtests
 			if (env.BRANCH_NAME == "dev_mavenplugin" || env.BRANCH_NAME == "master") {
 				env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
-				env.maven.home="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
 			} else {
 				env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
 			}
