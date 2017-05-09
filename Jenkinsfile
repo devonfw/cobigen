@@ -20,9 +20,8 @@ node {
 			}
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 			// load jenkins managed global maven settings file
-			configFileProvider(
-				[configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
-				env.MAVEN_SETTINGS = $MAVEN_SETTINGS
+			configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+				env.MAVEN_SETTINGS = '$MAVEN_SETTINGS'
 			}
 			// load VNC Server for eclipse tests
 			tool 'VNC Server'
