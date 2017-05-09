@@ -38,6 +38,10 @@ node {
 			}
 		}
 		
+		stage('process test results') {
+			junit '**/target/*.xml'
+		}
+		
 		stage('deploy') {
 			dir(root) {
 				if (!non_deployable_branches.contains(env.BRANCH_NAME)) {
@@ -46,11 +50,8 @@ node {
 			}
 		}
 		
-		stage('process results') {
-			junit '**/target/*.xml'
-		}
     } catch(e) {
-        notifyFailed()
+		notifyFailed()
         throw e
     }
 }
