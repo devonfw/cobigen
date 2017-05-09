@@ -1,14 +1,14 @@
-package com.capgemini.cobigen.htmlplugin.merger.ng2.utils.constants;
+package com.capgemini.cobigen.htmlplugin.merger.constants;
 
 import org.jsoup.nodes.Element;
 
 /**
  *
  */
-public class ConstantsNG2 {
+public class Constants {
 
     /**
-     * Referring md-nav-list items
+     * Referring md-nav-list items (Angular2 Client)
      */
     public static final String MD_NAV_LIST = "md-nav-list";
 
@@ -23,7 +23,7 @@ public class ConstantsNG2 {
     public static final String FORM = "form";
 
     /**
-     * referring input containers for forms
+     * referring input containers for forms (Angular2 Client)
      */
     public static final String INPUT_CONTAINER = "md-input-container";
 
