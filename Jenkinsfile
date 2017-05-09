@@ -13,6 +13,7 @@ node {
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 			if (env.BRANCH_NAME == "dev_mavenplugin") {
 				env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
+				env.maven.home="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
 			} else {
 				env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
 			}
