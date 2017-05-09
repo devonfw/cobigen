@@ -45,7 +45,6 @@ public class JSONMerger implements Merger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
     public JSONMerger(String type, boolean patchOverrides) {
-
         this.type = type;
         this.patchOverrides = patchOverrides;
     }
