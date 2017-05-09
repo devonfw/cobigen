@@ -9,10 +9,9 @@ node {
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 		}
 		stage('build & test') {
-			sh "mvn clean package -Pcobigen"
+			sh "mvn clean test"
 		}
 		stage('process results') {
-			archive '**/*.pdf'
 			junit '**/target/*.xml'
 		}
     } catch(e) {
