@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import io.oasp.module.jpa.common.api.to.PaginationResultTo;
 
 /**
- * @author ssarmoka
- *
+ * This class will be used if SOAP service needs to return PaginatedList result.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
