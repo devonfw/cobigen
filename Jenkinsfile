@@ -12,7 +12,9 @@ node {
 		
 		def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin"]
 		def root = ""
-		if (env.BRANCH_NAME == "dev_eclipseplugin") {
+		if (env.BRANCH_NAME == "master") {
+			root = ""
+		} else if (env.BRANCH_NAME == "dev_eclipseplugin") {
 			root = "cobigen-eclipse"
 		} else if (env.BRANCH_NAME == "dev_mavenplugin") {
 			root = "cobigen/cobigen-htmlplugin"
