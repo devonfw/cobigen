@@ -38,7 +38,7 @@ node {
 					// current warning, which maybe points to the cause: 
 					// Xlib:  extension "RANDR" missing on display
 					// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
-					sh "mvn clean test"
+					sh "mvn clean package"
 				}
 			}
 		}
