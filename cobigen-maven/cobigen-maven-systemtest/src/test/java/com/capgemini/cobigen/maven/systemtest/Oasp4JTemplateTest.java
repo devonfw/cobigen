@@ -3,6 +3,7 @@ package com.capgemini.cobigen.maven.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Properties;
@@ -13,6 +14,8 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -28,6 +31,21 @@ public class Oasp4JTemplateTest {
     /** Temporary folder rule to create new temporary folder and files */
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+    /** The maven settings file used by maven invoker for test execution */
+    private File mvnSettingsFile;
+
+    /**
+     * Copy settings file to get a file handle required by maven invoker API
+     * @throws IOException
+     *             if the file could not be read/written
+     */
+    @Before
+    public void getSettingsFile() throws IOException {
+        mvnSettingsFile = tmpFolder.newFile();
+        Files.write(mvnSettingsFile.toPath(),
+            IOUtil.toByteArray(Oasp4JTemplateTest.class.getResourceAsStream("/test-maven-settings.xml")));
+    }
 
     /**
      * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
@@ -50,6 +68,7 @@ public class Oasp4JTemplateTest {
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         request.setProperties(mavenProperties);
         request.setShowErrors(true);
+        request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
@@ -85,6 +104,7 @@ public class Oasp4JTemplateTest {
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         request.setProperties(mavenProperties);
         request.setShowErrors(true);
+        request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
