@@ -14,7 +14,7 @@
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xsi:schemaLocation="http://maybeec.github.io/oomph-task-unzip/1.0 https://raw.githubusercontent.com/maybeec/oomph-task-unzip/master/task-unzip-updatesite/model/Oomph-task-unzip.ecore http://maybeec.github.io/oomph-task-cli/1.0 https://raw.githubusercontent.com/maybeec/oomph-task-cli/master/task-cli-updatesite/model/Oomph-cli-task-1.0.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="tools.cobigen"
-    label="Tools Cobigen">
+    label="CobiGen">
   <setupTask
       xsi:type="setup:CompoundTask"
       name="Github">
