@@ -33,7 +33,7 @@ node {
 		stage('build & test') {
 			dir(root) {
 				// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
-				wrap([$class:'Xvnc', takeScreenshot: true, useXauthority: true]) {
+				wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
 					// just skip tycho tests (running in integration-test phase) as they are not yet working due to xvnc issues
 					// current warning, which maybe points to the cause: 
 					// Xlib:  extension "RANDR" missing on display
