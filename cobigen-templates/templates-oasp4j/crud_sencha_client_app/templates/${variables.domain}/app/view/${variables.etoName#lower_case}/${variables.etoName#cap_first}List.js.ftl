@@ -67,10 +67,6 @@ Ext.define('${variables.domain}.view.${variables.etoName?lower_case}.${variables
                 }, 
                 '-'
               ]
-          },
-
-          listeners: {
-              beforeitemdblclick: 'onEditDblclick'
           }
     }]
 });

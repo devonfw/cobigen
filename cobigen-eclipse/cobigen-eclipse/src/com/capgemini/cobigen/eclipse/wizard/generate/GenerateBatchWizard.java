@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
@@ -44,13 +45,12 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      *
      * @param generator
      *            to be used for generation
-     * @author trippl (22.04.2013)
      */
     public GenerateBatchWizard(CobiGenWrapper generator) {
 
         super(generator);
         initializeWizard();
-        setWindowTitle("CobiGen (batch mode)");
+        setWindowTitle(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH);
     }
 
     /**
