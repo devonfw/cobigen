@@ -19,6 +19,12 @@ node {
 				env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
 			}
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
+			// load jenkins managed global maven settings file
+			configFileProvider(
+				[configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+				env.MAVEN_SETTINGS = $MAVEN_SETTINGS
+			}
+			// load VNC Server for eclipse tests
 			tool 'VNC Server'
 		}
 		
@@ -54,7 +60,7 @@ node {
 						// current warning, which maybe points to the cause: 
 						// Xlib:  extension "RANDR" missing on display
 						// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
-						sh "mvn clean package"
+						sh "mvn -s ${env.MAVEN_SETTINGS} clean package"
 					}
 				}
 			}
@@ -70,7 +76,7 @@ node {
 		stage('deploy') {
 			dir(root) {
 				if (!non_deployable_branches.contains(env.BRANCH_NAME)) {
-					sh "mvn deploy -Dmaven.test.skip=true"
+					sh "mvn -s ${env.MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 				}
 			}
 		}
