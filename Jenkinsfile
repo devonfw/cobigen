@@ -32,8 +32,13 @@ node {
 		
 		stage('build & test') {
 			dir(root) {
-				wrap([$class:'Xvnc', useXauthority: true]) {
-					sh "mvn clean install"
+				// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
+				wrap([$class:'Xvnc', takeScreenshot: true, useXauthority: true]) {
+					// just skip tycho tests as they are not yet working due to xvnc issues
+					// current warning, which maybe is one cause: 
+					// Xlib:  extension "RANDR" missing on display
+					// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12
+					sh "mvn clean install -Dmaven.test.skipExec=true"
 				}
 			}
 		}
