@@ -2,7 +2,6 @@ node {
     try {
 		
 		stage('prepare') {
-			env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 			setBuildStatus("In Progress","PENDING")
 			step([$class: 'WsCleanup'])
 		}
@@ -94,5 +93,5 @@ def notifyFailed() {
 }
 
 def setBuildStatus(String message, String state) {
-	githubNotify context: "Jenkins-Tests", description: message, status: state, credentialsId: 'github-devonfw-ci', sha: "${GIT_COMMIT}", targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen'
+	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${BUILD_URL}"
 }
