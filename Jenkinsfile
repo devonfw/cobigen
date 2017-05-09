@@ -6,24 +6,30 @@ node {
 			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git'
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
-			env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
+			if (env.BRANCH_NAME == "dev_mavenplugin") {
+				env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
+			} else {
+				env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
+			}
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 			tool 'VNC Server'
 		}
 		
-		def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin"]
+		def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 		def root = ""
 		if (env.BRANCH_NAME == "master") {
 			root = ""
 		} else if (env.BRANCH_NAME == "dev_eclipseplugin") {
 			root = "cobigen-eclipse"
-		} else if (env.BRANCH_NAME == "dev_mavenplugin") {
+		} else if (env.BRANCH_NAME == "dev_htmlmerger") {
 			root = "cobigen/cobigen-htmlplugin"
+		} else if (env.BRANCH_NAME == "dev_mavenplugin") {
+			root = "cobigen-mavenplugin"
 		} else if (env.BRANCH_NAME == "dev_tempeng_freemarker") {
 			root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
 		} else if (env.BRANCH_NAME == "dev_core") {
 			root = "cobigen/cobigen-core-parent"
-		} else if (env.BRANCH_NAME == "gh-pages") {
+		} else if (env.BRANCH_NAME == "gh-pages" || env.BRANCH_NAME == "dev_oomph_setup") {
 			currentBuild.result = 'SUCCESS'
 			sh "exit 0"
 		} else {
