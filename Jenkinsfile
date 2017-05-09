@@ -1,9 +1,14 @@
 node {
     try {
-		step([$class: 'WsCleanup'])
+		
+		stage('prepare') {
+			env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+			setBuildStatus("In Progress","PENDING")
+			step([$class: 'WsCleanup'])
+		}
 		
 		stage('setting up environment & cloning repositories') { // for display purposes
-			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git'
+			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: "${env.BRANCH_NAME}"
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 			if (env.BRANCH_NAME == "dev_mavenplugin") {
@@ -24,13 +29,14 @@ node {
 		} else if (env.BRANCH_NAME == "dev_htmlmerger") {
 			root = "cobigen/cobigen-htmlplugin"
 		} else if (env.BRANCH_NAME == "dev_mavenplugin") {
-			root = "cobigen-mavenplugin"
+			root = "cobigen-maven"
 		} else if (env.BRANCH_NAME == "dev_tempeng_freemarker") {
 			root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
 		} else if (env.BRANCH_NAME == "dev_core") {
 			root = "cobigen/cobigen-core-parent"
 		} else if (env.BRANCH_NAME == "gh-pages" || env.BRANCH_NAME == "dev_oomph_setup") {
 			currentBuild.result = 'SUCCESS'
+			setBuildStatus("Complete","SUCCESS")
 			sh "exit 0"
 		} else {
 			root = "cobigen/cobigen-" + env.BRANCH_NAME.replace("dev_", "")
@@ -51,6 +57,9 @@ node {
 		
 		stage('process test results') {
 			step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+			}
 		}
 		
 		stage('deploy') {
@@ -63,8 +72,12 @@ node {
 		
     } catch(e) {
 		notifyFailed()
+		if (currentBuild.result != 'UNSTABLE') {
+			setBuildStatus("Incomplete","ERROR")
+		}
         throw e
     }
+	 setBuildStatus("Complete","SUCCESS")
 }
 
 def notifyFailed() {
@@ -78,4 +91,12 @@ def notifyFailed() {
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
          to: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider']]))
+}
+
+def setBuildStatus(String message, String state) {
+	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
+	// https://issues.jenkins-ci.org/browse/JENKINS-43370
+	if(env.BRANCH_NAME.startsWith("PR-")) {
+		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+	}
 }
