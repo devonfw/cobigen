@@ -1,8 +1,11 @@
 node {
     try {
-		setBuildStatus("In Progress","PENDING")
 		
-		step([$class: 'WsCleanup'])
+		stage('prepare') {
+			env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+			setBuildStatus("In Progress","PENDING")
+			step([$class: 'WsCleanup'])
+		}
 		
 		stage('setting up environment & cloning repositories') { // for display purposes
 			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: "${env.BRANCH_NAME}"
@@ -91,5 +94,5 @@ def notifyFailed() {
 }
 
 def setBuildStatus(String message, String state) {
-	githubNotify context: "Jenkins-Tests", description: message, status: state, credentialsId: 'github-devonfw-ci', sha: "${gitCommit}", targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen'
+	githubNotify context: "Jenkins-Tests", description: message, status: state, credentialsId: 'github-devonfw-ci', sha: "${GIT_COMMIT}", targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen'
 }
