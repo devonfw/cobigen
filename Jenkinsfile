@@ -31,14 +31,16 @@ node {
 		
 		stage('build & test') {
 			dir(root) {
-				sh "mvn clean install"
+				wrap([$class:'Xvnc', useXauthority: true]) {
+					sh "mvn clean install"
+				}
 			}
 		}
 		
 		stage('deploy') {
 			dir(root) {
 				if (!non_deployable_branches.contains(env.BRANCH_NAME)) {
-					sh "mvn deploy"
+					sh "mvn deploy -Dmaven.test.skip=true"
 				}
 			}
 		}
