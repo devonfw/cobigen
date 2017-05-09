@@ -5,7 +5,7 @@ node {
 			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git'
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
-			env.JAVA_HOME="${tool 'JDK 1.7'}"
+			env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
 			env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 		}
 		stage('build & test') {
