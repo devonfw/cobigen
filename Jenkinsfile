@@ -34,11 +34,11 @@ node {
 			dir(root) {
 				// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 				wrap([$class:'Xvnc', takeScreenshot: true, useXauthority: true]) {
-					// just skip tycho tests as they are not yet working due to xvnc issues
-					// current warning, which maybe is one cause: 
+					// just skip tycho tests (running in integration-test phase) as they are not yet working due to xvnc issues
+					// current warning, which maybe points to the cause: 
 					// Xlib:  extension "RANDR" missing on display
-					// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12
-					sh "mvn clean install -Dmaven.test.skipExec=true"
+					// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
+					sh "mvn clean test"
 				}
 			}
 		}
