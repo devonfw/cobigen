@@ -3,7 +3,7 @@ node {
 		step([$class: 'WsCleanup'])
 		
 		stage('setting up environment & cloning repositories') { // for display purposes
-			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git'
+			git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: env.BRANCH_NAME
 			// Tools have to be configured in the global configuration of Jenkins.
 			env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 			if (env.BRANCH_NAME == "dev_mavenplugin") {
