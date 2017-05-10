@@ -14,6 +14,7 @@ import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
 
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.capgemini.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
 
 /**
  * Eclipse Utils to work with the CobiGen UI.
@@ -38,7 +39,8 @@ public class EclipseCobiGenUtils {
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
-        bot.waitUntil(shellIsActive("CobiGen"), 10000);
+        bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
+            CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), 10000);
 
         // select increment and generate
         for (String increment : increments) {
