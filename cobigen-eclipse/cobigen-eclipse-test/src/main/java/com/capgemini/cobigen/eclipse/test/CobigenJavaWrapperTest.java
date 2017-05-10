@@ -110,4 +110,36 @@ public class CobigenJavaWrapperTest extends SystemTest {
             assertThat(IOUtils.toString(in)).isEqualTo("Content does not matter!");
         }
     }
+
+    /**
+     * Tests successful batch generation.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testPackageAsInputForGeneration() throws Exception {
+
+        // copy sample project to external location and import it into the workspace
+        File tmpFolder = tmpFolderRule.newFolder();
+        String testProjName = "ExtTestProj";
+        FileUtils.copyDirectory(new File(resourcesRootPath + "input/" + testProjName), tmpFolder);
+        EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), false);
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "src", "main");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+        IFile generationResult = proj.getFile("TestOutput.txt");
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in)).isEqualTo("SimpleInputSimpleInput2");
+        }
+    }
 }
