@@ -33,7 +33,7 @@
 <#-- -------------------- -->
 
 <#--
-	Generates all field declaration
+  Generates all field declaration
 -->
 <#macro generateSenchaModelFields>
   <#list pojo.fields as field>
@@ -75,7 +75,7 @@
             displayField: 'code',
             valueField: 'code',
             bind: {
-                store: '{${field.name}s',
+                store: '{${field.name}s}',
                 value: '{${variables.etoName?lower_case}.${field.name?lower_case}}'
             },
             tabIndex: ${x},
@@ -176,5 +176,3 @@
       ${field.name}: ${field.name?upper_case},
   </#list>
 </#macro>
-
-
