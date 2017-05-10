@@ -1,8 +1,6 @@
 node {
-    
-    try {
-		lock(resource: "pipeline_${env.NODE_NAME}_${env.BRANCH_NAME}", inversePrecedence: false) {
-		
+    lock(resource: "pipeline_${env.NODE_NAME}_${env.BRANCH_NAME}", inversePrecedence: false) {
+		try {	
 			stage('prepare') {
 				env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 				setBuildStatus("In Progress","PENDING")
@@ -82,15 +80,15 @@ node {
 					}
 				}
 			}
+		} catch(e) {
+			notifyFailed()
+			if (currentBuild.result != 'UNSTABLE') {
+				setBuildStatus("Incomplete","ERROR")
+			}
+			throw e
 		}
-    } catch(e) {
-		notifyFailed()
-		if (currentBuild.result != 'UNSTABLE') {
-			setBuildStatus("Incomplete","ERROR")
-		}
-        throw e
-    }
-	 setBuildStatus("Complete","SUCCESS")
+		setBuildStatus("Complete","SUCCESS")
+	}
 }
 
 def notifyFailed() {
