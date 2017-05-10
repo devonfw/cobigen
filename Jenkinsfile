@@ -64,7 +64,7 @@ node {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 									if (currentBuild.result == 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
 										setBuildStatus("Complete","FAILURE")
-										return 
+										sh "exit 0"
 									} else {
 										throw err
 									}
@@ -79,7 +79,7 @@ node {
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
 				if (currentBuild.result == 'UNSTABLE') {
 					setBuildStatus("Complete","FAILURE")
-					return 
+					sh "exit 0"
 				}
 			}
 			
