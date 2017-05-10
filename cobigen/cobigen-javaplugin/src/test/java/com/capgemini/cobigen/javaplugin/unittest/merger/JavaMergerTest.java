@@ -52,7 +52,7 @@ public class JavaMergerTest {
 
         assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
         assertThat(mergedSource.getImports()).hasSize(2);
-        assertThat(mergedSource.getImports()).contains("com.capgemini.BaseClassImport");
+        assertThat(mergedSource.getImports()).contains("com.capgemini.BaseClassImport2");
         assertThat(mergedSource.getImports()).contains("com.capgemini.PatchClassImport");
     }
 
