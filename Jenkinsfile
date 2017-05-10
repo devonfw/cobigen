@@ -1,5 +1,5 @@
 node {
-    lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
+    //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
 		try {	
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
@@ -89,7 +89,7 @@ node {
 			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
-	}
+	//}
 }
 
 def notifyFailed() {
