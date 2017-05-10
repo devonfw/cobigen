@@ -61,7 +61,7 @@ node {
 								try {
 									sh "mvn -s ${MAVEN_SETTINGS} clean package"
 								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults=true])
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 									throw err
 								}
 							}
