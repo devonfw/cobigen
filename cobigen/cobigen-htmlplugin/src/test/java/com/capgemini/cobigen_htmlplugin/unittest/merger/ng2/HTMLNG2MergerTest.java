@@ -24,7 +24,7 @@ public class HTMLNG2MergerTest {
     @Test
     public void htmlMergeTest_AddSideBarButton() {
         Document mergedContents =
-            htmlMerger(testFileRootPathNG2, "app.component.html_Base", "app.component.html_Patch", false, "html-ng*");
+            htmlMerger(testFileRootPathNG2, "app.component.base.html", "app.component.patch.html", false, "html-ng*");
         Element sideBar = mergedContents.getElementsByTag(Constants.MD_NAV_LIST).first();
         Elements listEntry = sideBar.getElementsByTag(Constants.A_REF);
         assertTrue(listEntry.size() == 3);
@@ -32,7 +32,7 @@ public class HTMLNG2MergerTest {
 
     @Test
     public void htmlMergeTest_AddSideBarButton_Override() {
-        Document mergedContents = htmlMerger(testFileRootPathNG2, "app.component.html_Base", "app.component.html_Patch",
+        Document mergedContents = htmlMerger(testFileRootPathNG2, "app.component.base.html", "app.component.patch.html",
             true, "html-ng*_override");
         Element sideBar = mergedContents.getElementsByTag(Constants.MD_NAV_LIST).first();
         Elements listEntry = sideBar.getElementsByTag(Constants.A_REF);
@@ -41,29 +41,29 @@ public class HTMLNG2MergerTest {
 
     @Test
     public void htmlMergeTest_AddFilterField() {
-        Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.html_Base",
-            "dataGrid.component.html_Patch", false, "html-ng*");
+        Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.base.html",
+            "dataGrid.component.patch.html", false, "html-ng*");
         assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 5);
     }
 
     @Test
     public void htmlMergeTest_AddFilterField_Override() {
-        Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.html_Base",
-            "dataGrid.component.html_Patch", true, "html-ng*_override");
+        Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.base.html",
+            "dataGrid.component.patch.html", true, "html-ng*_override");
         assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 1);
     }
 
     @Test
     public void htmlMergeTest_AddDialogAddField() {
-        Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.html_Base",
-            "addDialog.component.html_Patch", false, "html-ng*");
+        Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.base.html",
+            "addDialog.component.patch.html", false, "html-ng*");
         assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 5);
     }
 
     @Test
     public void htmlMergeTest_AddDialogAddField_Override() {
-        Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.html_Base",
-            "addDialog.component.html_Patch", true, "html-ng*_override");
+        Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.base.html",
+            "addDialog.component.patch.html", true, "html-ng*_override");
         assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 1);
     }
 
@@ -77,6 +77,7 @@ public class HTMLNG2MergerTest {
             return Jsoup.parse(
                 new AngularMerger(mergeStrategy, patchOverrides).merge(htmlBaseFile, patchString, "UTF-8"), "UTF-8");
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException("An error occurred accessing test resources", e);
         }
 
