@@ -38,6 +38,8 @@ node {
 				root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
 			} else if (env.BRANCH_NAME == "dev_core") {
 				root = "cobigen/cobigen-core-parent"
+			} else if (env.BRANCH_NAME == "dev_jssenchaplugin") {
+				root = "cobigen/cobigen-senchaplugin"
 			} else if (env.BRANCH_NAME == "gh-pages" || env.BRANCH_NAME == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
