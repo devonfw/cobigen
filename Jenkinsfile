@@ -62,10 +62,7 @@ node {
 									sh "mvn -s ${MAVEN_SETTINGS} clean package"
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
-									if (currentBuild.result == 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
-										setBuildStatus("Complete","FAILURE")
-										sh "exit 0"
-									} else {
+									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
 										throw err
 									}
 								}
@@ -75,12 +72,18 @@ node {
 				}
 			}
 			
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+				return
+			}
+			
 			stage('process test results') {
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
-				if (currentBuild.result == 'UNSTABLE') {
-					setBuildStatus("Complete","FAILURE")
-					sh "exit 0"
-				}
+			}
+			
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+				return
 			}
 			
 			stage('deploy') {
