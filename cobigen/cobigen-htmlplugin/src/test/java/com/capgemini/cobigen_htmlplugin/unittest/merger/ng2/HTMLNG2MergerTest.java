@@ -3,10 +3,8 @@ package com.capgemini.cobigen_htmlplugin.unittest.merger.ng2;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
@@ -15,7 +13,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.htmlplugin.merger.AngularMerger;
 import com.capgemini.cobigen.htmlplugin.merger.constants.Constants;
 
@@ -75,21 +72,13 @@ public class HTMLNG2MergerTest {
         File htmlBaseFile = new File(rootPath + fileBase);
         File htmlPatchFile = new File(rootPath + filePatch);
 
-        Reader reader = null;
-        String patchString;
-
-        try {
-            reader = new FileReader(htmlPatchFile);
-            patchString = IOUtils.toString(reader);
-            reader.close();
-
-        } catch (FileNotFoundException e) {
-            throw new MergeException(htmlPatchFile, "Can not read file " + htmlPatchFile.getAbsolutePath(), e);
+        try (FileReader reader = new FileReader(htmlPatchFile)) {
+            String patchString = IOUtils.toString(reader);
+            return Jsoup.parse(
+                new AngularMerger(mergeStrategy, patchOverrides).merge(htmlBaseFile, patchString, "UTF-8"), "UTF-8");
         } catch (IOException e) {
-            throw new MergeException(htmlPatchFile, "Can not read the base file " + htmlPatchFile.getAbsolutePath(), e);
+            throw new RuntimeException("An error occurred accessing test resources", e);
         }
-        return Jsoup.parse(new AngularMerger(mergeStrategy, patchOverrides).merge(htmlBaseFile, patchString, "UTF-8"),
-            "UTF-8");
 
     }
 }
