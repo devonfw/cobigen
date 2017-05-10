@@ -2,86 +2,121 @@ package utils;
 
 import java.util.Random;
 
+/**
+ * Generates random ID's necessary for Sencha Architect project files
+ */
 public class IDGenerator {
 
-  private Object modelId;
+    /**
+     * The ID for the model file
+     */
+    private Object modelId;
 
-  private Object viewId;
+    /**
+     * The ID for the view file
+     */
+    private Object viewId;
 
-  private Object controllerId;
+    /**
+     * The ID for the controller file
+     */
+    private Object controllerId;
 
-  private Object viewControllerId;
+    /**
+     * The ID for the VC file
+     */
+    private Object viewControllerId;
 
-  private Object viewModelId;
+    /**
+     * The ID for the VM file
+     */
+    private Object viewModelId;
 
-  public IDGenerator() {
-    setModelId(generateId());
-    setViewId(generateId());
-    setControllerId(generateId());
-    setViewControllerId(generateId());
-    setViewModelId(generateId());
-  }
-
-  public Object getModelId() {
-
-    return this.modelId;
-  }
-
-  public void setModelId(Object modelId) {
-
-    this.modelId = modelId;
-  }
-
-  public Object getViewId() {
-
-    return this.viewId;
-  }
-
-  public void setViewId(Object viewId) {
-
-    this.viewId = viewId;
-  }
-
-  public Object getControllerId() {
-
-    return this.controllerId;
-  }
-
-  public void setControllerId(Object controllerId) {
-
-    this.controllerId = controllerId;
-  }
-
-  private Object generateId() {
-
-    Random random = new Random();
-    StringBuilder sb = new StringBuilder();
-    while (sb.length() < 32) {
-      sb.append(Integer.toHexString(random.nextInt()));
+    /**
+     * The constructor
+     */
+    public IDGenerator() {
+        setModelId(generateId());
+        setViewId(generateId());
+        setControllerId(generateId());
+        setViewControllerId(generateId());
+        setViewModelId(generateId());
     }
-    String id = sb.toString();
-    String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
-        + id.substring(16, 20) + '-' + id.substring(20, 32);
-    return resultId;
-  }
 
-  public Object getViewControllerId() {
+    @SuppressWarnings("javadoc")
+    public Object getModelId() {
 
-    return this.viewControllerId;
-  }
+        return modelId;
+    }
 
-  public void setViewControllerId(Object viewControllerId) {
+    @SuppressWarnings("javadoc")
+    public void setModelId(Object modelId) {
 
-    this.viewControllerId = viewControllerId;
-  }
+        this.modelId = modelId;
+    }
 
-  public Object getViewModelId() {
+    @SuppressWarnings("javadoc")
+    public Object getViewId() {
 
-    return this.viewModelId;
-  }
+        return viewId;
+    }
 
-  public void setViewModelId(Object viewModelId) {
+    @SuppressWarnings("javadoc")
+    public void setViewId(Object viewId) {
 
-    this.viewModelId = viewModelId;
-  }
+        this.viewId = viewId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public Object getControllerId() {
+
+        return controllerId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public void setControllerId(Object controllerId) {
+
+        this.controllerId = controllerId;
+    }
+
+    /**
+     * Generates random strings following the 8-4-4-4-12 pattern
+     * @return the generated string
+     */
+    private Object generateId() {
+
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < 32) {
+            sb.append(Integer.toHexString(random.nextInt()));
+        }
+        String id = sb.toString();
+        String resultId = id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-'
+            + id.substring(16, 20) + '-' + id.substring(20, 32);
+        return resultId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public Object getViewControllerId() {
+
+        return viewControllerId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public void setViewControllerId(Object viewControllerId) {
+
+        this.viewControllerId = viewControllerId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public Object getViewModelId() {
+
+        return viewModelId;
+    }
+
+    @SuppressWarnings("javadoc")
+    public void setViewModelId(Object viewModelId) {
+
+        this.viewModelId = viewModelId;
+    }
 }
