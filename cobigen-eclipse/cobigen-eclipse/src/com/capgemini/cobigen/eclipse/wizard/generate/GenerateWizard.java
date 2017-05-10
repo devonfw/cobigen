@@ -6,6 +6,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
@@ -32,7 +33,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
     public GenerateWizard(CobiGenWrapper generator) {
 
         super(generator);
-        setWindowTitle("CobiGen");
+        setWindowTitle(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE);
         initializeWizard();
     }
 
@@ -42,8 +43,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
         super.initializeWizard();
 
         if (cobigenWrapper instanceof JavaGeneratorWrapper) {
-            page2 =
-                new SelectAttributesPage(((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
+            page2 = new SelectAttributesPage(
+                ((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
         }
     }
 
@@ -71,7 +72,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
         }
 
         LOG.info("Start generation process job...");
-        GenerateSelectionJob job = new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
+        GenerateSelectionJob job =
+            new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
             dialog.run(true, false, job);
         } catch (InvocationTargetException e) {
