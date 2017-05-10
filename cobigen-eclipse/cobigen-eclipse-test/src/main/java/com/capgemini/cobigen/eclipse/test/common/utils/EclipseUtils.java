@@ -40,8 +40,10 @@ public class EclipseUtils {
      *            the {@link SWTWorkbenchBot} of the test
      * @param projectPath
      *            absolute path of the project on file system
+     * @throws CoreException
+     *             if anything went wrong during build
      */
-    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) {
+    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath) throws CoreException {
         importExistingGeneralProject(bot, projectPath, true);
     }
 
@@ -53,9 +55,11 @@ public class EclipseUtils {
      *            absolute path of the project on file system
      * @param copyIntoWorkspace
      *            state if the project sources should be copied into workspace while importing
+     * @throws CoreException
+     *             if anything went wrong during build
      */
-    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath,
-        boolean copyIntoWorkspace) {
+    public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath, boolean copyIntoWorkspace)
+        throws CoreException {
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         view.show();
         view.setFocus();
@@ -81,6 +85,7 @@ public class EclipseUtils {
         SWTBotButton finishButton = bot.button("Finish");
         bot.waitUntil(widgetIsEnabled(finishButton));
         finishButton.click();
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), 20000);
     }
 

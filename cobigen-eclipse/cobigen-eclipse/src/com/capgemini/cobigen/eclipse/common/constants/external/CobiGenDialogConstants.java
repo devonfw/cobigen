@@ -23,4 +23,14 @@ public class CobiGenDialogConstants {
         /** Commonly used dialog title for the Advanced Health Check */
         public static final String ADVANCED_DIALOG_TITLE = "Advanced Health Check";
     }
+
+    /** Dialog constants of the Generate Wizard */
+    public class GenerateWizard {
+
+        /** Dialog title of the generate wizard for one single input */
+        public static final String DIALOG_TITLE = "CobiGen";
+
+        /** Dialog title of the generate wizard for batch processing */
+        public static final String DIALOG_TITLE_BATCH = "CobiGen (batch mode)";
+    }
 }
