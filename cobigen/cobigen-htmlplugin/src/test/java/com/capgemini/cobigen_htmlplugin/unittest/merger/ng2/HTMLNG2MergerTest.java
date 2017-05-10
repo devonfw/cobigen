@@ -72,8 +72,8 @@ public class HTMLNG2MergerTest {
 
     public Document htmlMerger(String rootPath, String fileBase, String filePatch, boolean patchOverrides,
         String mergeStrategy) {
-        File htmlBaseFile = new File(rootPath + fileBase);
-        File htmlPatchFile = new File(rootPath + filePatch);
+        File htmlBaseFile = new File(rootPath + fileBase).getAbsoluteFile();
+        File htmlPatchFile = new File(rootPath + filePatch).getAbsoluteFile();
 
         Reader reader = null;
         String patchString;
