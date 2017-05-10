@@ -58,18 +58,32 @@ node {
 							// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
-								sh "mvn -s ${MAVEN_SETTINGS} clean package"
+								try {
+									sh "mvn -s ${MAVEN_SETTINGS} clean package"
+								} catch(err) {
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
+										throw err
+									}
+								}
 							}
 						}
 					}
 				}
 			}
 			
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+				return
+			}
+			
 			stage('process test results') {
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
-				if (currentBuild.result == 'UNSTABLE') {
-					setBuildStatus("Complete","FAILURE")
-				}
+			}
+			
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+				return
 			}
 			
 			stage('deploy') {
