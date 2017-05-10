@@ -7,6 +7,7 @@ import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${vari
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 
@@ -16,8 +17,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.annotation.security.RolesAllowed;
-
-import org.springframework.transaction.annotation.Transactional;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of component interface of ${variables.component}
  */
-@Named
 @Transactional
+@Named
 public class ${variables.component?cap_first}Impl extends AbstractComponentFacade implements ${variables.component?cap_first} {
 	
 	/** Logger instance. */
@@ -71,10 +71,10 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 		${variables.entityName}Entity ${variables.entityName?uncap_first}Entity = getBeanMapper().map(${variables.entityName?uncap_first}, ${variables.entityName}Entity.class);
 
 		//initialize, validate ${variables.entityName?uncap_first}Entity here if necessary
-		${variables.entityName}Entity resultEntity = get${variables.entityName}Dao().save(${variables.entityName?uncap_first}Entity);
-		LOG.debug("${variables.entityName} with id '{}' has been created.", resultEntity.getId());
+		get${variables.entityName}Dao().save(${variables.entityName?uncap_first}Entity);
+		LOG.debug("${variables.entityName} with id '{}' has been created.", ${variables.entityName?uncap_first}Entity.getId());
 
-		return getBeanMapper().map(resultEntity, ${variables.entityName}Eto.class);
+		return getBeanMapper().map(${variables.entityName?uncap_first}Entity, ${variables.entityName}Eto.class);
 	}
 
 	/**
@@ -86,4 +86,13 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 		return this.${variables.entityName?uncap_first}Dao;
 	}
 
+  @Override
+  public ${variables.entityName}Cto find${variables.entityName}Cto(Long id) {
+  
+    ${variables.entityName}Cto ${variables.entityName?uncap_first}Cto =new ${variables.entityName}Cto();
+    ${variables.entityName}Eto ${variables.entityName?uncap_first}Eto=this.find${variables.entityName}(id); 
+    ${variables.entityName?uncap_first}Cto.set${variables.entityName}(${variables.entityName?uncap_first}Eto);
+    LOG.debug("Cto created for id ", id);
+    return ${variables.entityName?uncap_first}Cto;
+  }
 }
