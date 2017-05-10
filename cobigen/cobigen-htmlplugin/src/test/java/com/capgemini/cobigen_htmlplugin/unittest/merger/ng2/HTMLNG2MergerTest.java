@@ -1,6 +1,6 @@
 package com.capgemini.cobigen_htmlplugin.unittest.merger.ng2;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,10 +16,11 @@ import org.junit.Test;
 import com.capgemini.cobigen.htmlplugin.merger.AngularMerger;
 import com.capgemini.cobigen.htmlplugin.merger.constants.Constants;
 
-@SuppressWarnings("javadoc")
+/** Test suite for {@link AngularMerger} regarding NG2 templates */
 public class HTMLNG2MergerTest {
 
-    private static String testFileRootPathNG2 = "src/test/resources/testdata/unittest/merger/ng2/";
+    /** Resource root path of test resources */
+    private static final String testFileRootPathNG2 = "src/test/resources/testdata/unittest/merger/ng2/";
 
     @Test
     public void htmlMergeTest_AddSideBarButton() {
@@ -27,7 +28,7 @@ public class HTMLNG2MergerTest {
             htmlMerger(testFileRootPathNG2, "app.component.base.html", "app.component.patch.html", false, "html-ng*");
         Element sideBar = mergedContents.getElementsByTag(Constants.MD_NAV_LIST).first();
         Elements listEntry = sideBar.getElementsByTag(Constants.A_REF);
-        assertTrue(listEntry.size() == 3);
+        assertThat(listEntry).hasSize(3);
     }
 
     @Test
@@ -36,49 +37,52 @@ public class HTMLNG2MergerTest {
             true, "html-ng*_override");
         Element sideBar = mergedContents.getElementsByTag(Constants.MD_NAV_LIST).first();
         Elements listEntry = sideBar.getElementsByTag(Constants.A_REF);
-        assertTrue(listEntry.size() == 2);
+        assertThat(listEntry).hasSize(2);
     }
 
     @Test
     public void htmlMergeTest_AddFilterField() {
         Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.base.html",
             "dataGrid.component.patch.html", false, "html-ng*");
-        assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 5);
+        assertThat(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER)).hasSize(5);
     }
 
     @Test
     public void htmlMergeTest_AddFilterField_Override() {
         Document mergedContents = htmlMerger(testFileRootPathNG2, "dataGrid.component.base.html",
             "dataGrid.component.patch.html", true, "html-ng*_override");
-        assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 1);
+        assertThat(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER)).hasSize(1);
     }
 
     @Test
     public void htmlMergeTest_AddDialogAddField() {
         Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.base.html",
             "addDialog.component.patch.html", false, "html-ng*");
-        assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 5);
+        assertThat(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER)).hasSize(5);
     }
 
     @Test
     public void htmlMergeTest_AddDialogAddField_Override() {
         Document mergedContents = htmlMerger(testFileRootPathNG2, "addDialog.component.base.html",
             "addDialog.component.patch.html", true, "html-ng*_override");
-        assertTrue(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER).size() == 1);
+        assertThat(mergedContents.getElementsByTag(Constants.INPUT_CONTAINER)).hasSize(1);
     }
 
     public Document htmlMerger(String rootPath, String fileBase, String filePatch, boolean patchOverrides,
         String mergeStrategy) {
-        File htmlBaseFile = new File(rootPath + fileBase);
-        File htmlPatchFile = new File(rootPath + filePatch);
+        File htmlBaseFile = new File(rootPath + fileBase).getAbsoluteFile();
+        File htmlPatchFile = new File(rootPath + filePatch).getAbsoluteFile();
+
+        System.out.println("> CWD: " + new File(".").getAbsolutePath());
+        System.out.println("> BASE: " + htmlBaseFile.getAbsolutePath());
+        System.out.println("> PATCH: " + htmlPatchFile.getAbsolutePath());
 
         try (FileReader reader = new FileReader(htmlPatchFile)) {
             String patchString = IOUtils.toString(reader);
             return Jsoup.parse(
                 new AngularMerger(mergeStrategy, patchOverrides).merge(htmlBaseFile, patchString, "UTF-8"), "UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("An error occurred accessing test resources", e);
+            throw new AssertionError("An error occurred accessing test resources", e);
         }
 
     }
