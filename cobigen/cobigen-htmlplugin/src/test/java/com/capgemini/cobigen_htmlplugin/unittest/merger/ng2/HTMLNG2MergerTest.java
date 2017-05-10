@@ -72,8 +72,8 @@ public class HTMLNG2MergerTest {
 
     public Document htmlMerger(String rootPath, String fileBase, String filePatch, boolean patchOverrides,
         String mergeStrategy) {
-        File htmlBaseFile = new File(rootPath + fileBase).getAbsoluteFile();
-        File htmlPatchFile = new File(rootPath + filePatch).getAbsoluteFile();
+        File htmlBaseFile = new File(rootPath + fileBase);
+        File htmlPatchFile = new File(rootPath + filePatch);
 
         Reader reader = null;
         String patchString;
@@ -84,9 +84,9 @@ public class HTMLNG2MergerTest {
             reader.close();
 
         } catch (FileNotFoundException e) {
-            throw new MergeException(htmlPatchFile, "Can not read file " + htmlPatchFile.getAbsolutePath());
+            throw new MergeException(htmlPatchFile, "Can not read file " + htmlPatchFile.getAbsolutePath(), e);
         } catch (IOException e) {
-            throw new MergeException(htmlPatchFile, "Can not read the base file " + htmlPatchFile.getAbsolutePath());
+            throw new MergeException(htmlPatchFile, "Can not read the base file " + htmlPatchFile.getAbsolutePath(), e);
         }
         return Jsoup.parse(new AngularMerger(mergeStrategy, patchOverrides).merge(htmlBaseFile, patchString, "UTF-8"),
             "UTF-8");
