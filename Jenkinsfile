@@ -62,7 +62,9 @@ node {
 									sh "mvn -s ${MAVEN_SETTINGS} clean package"
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
-									throw err
+									if (currentBuild.result == null) { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
+										throw err
+									}
 								}
 							}
 						}
