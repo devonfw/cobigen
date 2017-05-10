@@ -1,14 +1,15 @@
 node {
-    lock(resource: "pipeline_${env.NODE_NAME}_${env.BRANCH_NAME}", inversePrecedence: false) {
+    lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
 		try {	
 			stage('prepare') {
-				env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
-				setBuildStatus("In Progress","PENDING")
 				step([$class: 'WsCleanup'])
 			}
 			
-			stage('setting up environment & cloning repositories') { // for display purposes
-				git credentialsId:'github-devonfw-ci', url:'https://github.com/devonfw/tools-cobigen.git', branch: "${env.BRANCH_NAME}"
+			stage('setting up environment & cloning repositories') {
+				checkout scm
+				env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+				setBuildStatus("In Progress","PENDING")
+			
 				// Tools have to be configured in the global configuration of Jenkins.
 				env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 				env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
@@ -108,6 +109,6 @@ def setBuildStatus(String message, String state) {
 	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
 	// https://issues.jenkins-ci.org/browse/JENKINS-43370
 	if(env.BRANCH_NAME.startsWith("PR-")) {
-		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${BUILD_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
 	}
 }
