@@ -127,6 +127,6 @@ def setBuildStatus(String message, String state) {
 	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
 	// https://issues.jenkins-ci.org/browse/JENKINS-43370
 	if(env.BRANCH_NAME.startsWith("PR-")) {
-		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'themetalone', repo: 'tools-cobigen', credentialsId:'github-token', sha: "${GIT_COMMIT}"
 	}
 }
