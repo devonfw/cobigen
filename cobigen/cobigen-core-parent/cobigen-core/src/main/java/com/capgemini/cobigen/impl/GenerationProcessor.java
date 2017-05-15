@@ -37,6 +37,7 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
@@ -44,7 +45,6 @@ import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -290,12 +290,9 @@ public class GenerationProcessor {
             LOG.info("Generating template '{}' ...", templateEty.getName(), generatorInput);
 
             // collect variables
-            Map<String, String> variables = Maps.newHashMap();
-            Map<String, String> contextVariables =
-                new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
-            variables.putAll(contextVariables);
-            ImmutableMap<String, String> templateProperties = Maps.fromProperties(templateEty.getVariables());
-            variables.putAll(templateProperties);
+            Variables variables = new ContextVariableResolver(generatorInput, trigger)
+                .resolveVariables(triggerInterpreter, templateEty.getVariables());
+            // variables = variables.forChildFolder(inputProjectRootFolder);
 
             // resolve temporary file paths
             PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(variables);

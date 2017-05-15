@@ -82,7 +82,7 @@ public class ModelBuilderImpl implements ModelBuilder {
     public Map<String, Object> enrichByContextVariables(Map<String, Object> model,
         TriggerInterpreter triggerInterpreter) {
         model.put("variables",
-            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
+            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter).asMap());
         return model;
     }
 

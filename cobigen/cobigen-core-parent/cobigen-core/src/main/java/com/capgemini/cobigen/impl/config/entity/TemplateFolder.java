@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.util.CobiGenPropertiesUtil;
@@ -26,7 +25,7 @@ public class TemplateFolder extends TemplatePath {
     private final Map<String, TemplatePath> children;
 
     /** @see #getVariables() */
-    private final Properties variables;
+    private final Variables variables;
 
     /** @see #getChildFiles() */
     private List<TemplateFile> childFiles;
@@ -42,13 +41,11 @@ public class TemplateFolder extends TemplatePath {
      *
      * @param templatePath
      *            the {@link #getPath() template path}.
-     * @param variables
-     *            the top-level {@link Properties} to inherit.
      */
-    private TemplateFolder(Path templatePath, Properties variables) {
+    private TemplateFolder(Path templatePath) {
         super(templatePath, null);
         children = new HashMap<>();
-        this.variables = CobiGenPropertiesUtil.load(templatePath, variables);
+        variables = new Variables(CobiGenPropertiesUtil.load(templatePath));
     }
 
     /**
@@ -74,7 +71,7 @@ public class TemplateFolder extends TemplatePath {
     private TemplateFolder(Path templatePath, TemplateFolder parent) {
         super(templatePath, parent);
         children = new HashMap<>();
-        variables = CobiGenPropertiesUtil.load(templatePath, parent.variables);
+        variables = parent.variables.forChildFolder(templatePath);
     }
 
     /**
@@ -83,7 +80,7 @@ public class TemplateFolder extends TemplatePath {
      *         folder.
      * @see CobiGenPropertiesUtil
      */
-    public Properties getVariables() {
+    public Variables getVariables() {
         return variables;
     }
 
@@ -229,7 +226,7 @@ public class TemplateFolder extends TemplatePath {
         if (!Files.isDirectory(rootPath)) {
             throw new CobiGenRuntimeException("Directory " + rootPath + " does not exist!");
         }
-        return new TemplateFolder(rootPath, new Properties());
+        return new TemplateFolder(rootPath);
     }
 
     @Override

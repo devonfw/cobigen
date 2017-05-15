@@ -432,7 +432,7 @@ public class TemplatesConfigurationReaderTest {
         String destinationPath = "src/main/java/$_rootpackage_$/$_component_$/common/api/ExplicitlyDefined.java";
         assertThat(template.getUnresolvedTemplatePath()).isEqualTo(destinationPath);
         assertThat(template.getUnresolvedTargetPath()).isEqualTo(destinationPath);
-        assertThat(template.getVariables()).hasSize(0);
+        assertThat(template.getVariables().asMap()).hasSize(0);
     }
 
     /**
@@ -457,11 +457,12 @@ public class TemplatesConfigurationReaderTest {
         // assert
         Template template = templates.get("$_Component_$.java");
         assertThat(template).isNotNull();
-        assertThat(template.getVariables()).isNotNull().containsEntry("foo", "root").containsEntry("bar", "barValue");
+        assertThat(template.getVariables().asMap()).isNotNull().containsEntry("foo", "root").containsEntry("bar",
+            "barValue");
 
         template = templates.get("$_EntityName_$Eto.java");
         assertThat(template).isNotNull();
-        assertThat(template.getVariables()).isNotNull().containsEntry("relocate", "../api2/${cwd}")
+        assertThat(template.getVariables().asMap()).isNotNull().containsEntry("relocate", "../api2/${cwd}")
             .containsEntry("foo", "logic.api.to").containsEntry("bar", "barValue").containsEntry("local", "localValue");
     }
 
