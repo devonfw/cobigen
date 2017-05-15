@@ -403,7 +403,7 @@ public class TemplatesConfigurationReader {
 
         String unresolvedDestinationPath = unresolvedTemplatePath;
         TemplateFolder templateFolder = templateFile.getParent();
-        String relocate = templateFolder.getVariables().getProperty(PROPERTY_RELOCATE);
+        String relocate = templateFolder.getVariables().get(PROPERTY_RELOCATE);
         if (relocate != null) {
             if (scanSourcePath != null) {
                 Path destinationPath = Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());

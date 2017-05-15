@@ -49,7 +49,7 @@ public class TemplatePathTest extends Assertions {
         }
         TemplateFolder folder = TemplateFolder.create(path);
         verifyRootFolder(folder, path);
-        assertThat(folder.getVariables()).isEmpty();
+        assertThat(folder.getVariables().asMap()).isEmpty();
         verifyEmptyFolder(folder);
     }
 
@@ -65,28 +65,28 @@ public class TemplatePathTest extends Assertions {
         TemplateFolder folder = TemplateFolder.create(path);
         verifyRootFolder(folder, path);
         assertThat(folder).isNotNull();
-        assertThat(folder.getVariables()).isEmpty();
+        assertThat(folder.getVariables().asMap()).isEmpty();
 
         TemplateFolder having = verifyChildFolder(folder, path, "having");
         TemplateFolder or = verifyChildFolder(folder, path, "or");
         verifyChildren(folder, having, or);
 
-        assertThat(having.getVariables()).isEmpty();
+        assertThat(having.getVariables().asMap()).isEmpty();
 
         TemplateFolder property = verifyChildFolder(having, having.getPath(), "property");
         verifyChildren(having, property);
         assertThat(property.getChild("cobigen.properties")).isNull();
         assertThat(property.getChild("COBIGEN.PROPERTIES")).isNull();
-        assertThat(property.getVariables()).hasSize(2).containsEntry("foo", "foo").containsEntry("bar", "bar");
+        assertThat(property.getVariables().asMap()).hasSize(2).containsEntry("foo", "foo").containsEntry("bar", "bar");
 
         TemplateFolder override = verifyChildFolder(property, property.getPath(), "override");
         verifyChildren(property, override);
-        assertThat(override.getVariables()).hasSize(2).containsEntry("foo", "bar").containsEntry("bar", "bar");
+        assertThat(override.getVariables().asMap()).hasSize(2).containsEntry("foo", "bar").containsEntry("bar", "bar");
         TemplateFile emptyFileInOverride = verifyChildFile(override, override.getPath(), emptyFile);
         verifyChildren(override, emptyFileInOverride);
 
         TemplateFolder not = verifyChildFolder(or, or.getPath(), "not");
-        assertThat(not.getVariables()).isEmpty();
+        assertThat(not.getVariables().asMap()).isEmpty();
         TemplateFile emptyFileInNot = verifyChildFile(not, not.getPath(), emptyFile);
         verifyChildren(not, emptyFileInNot);
     }

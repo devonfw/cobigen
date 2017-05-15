@@ -1,7 +1,6 @@
 package com.capgemini.cobigen.impl.config.entity;
 
 import java.nio.file.Path;
-import java.util.Properties;
 
 import com.capgemini.cobigen.api.extension.TextTemplate;
 
@@ -145,10 +144,10 @@ public class Template implements TextTemplate {
     }
 
     /**
-     * @return the {@link Properties} with the variables for this template.
+     * @return the {@link Variables} with the variables for this template.
      * @see TemplateFolder#getVariables()
      */
-    public Properties getVariables() {
+    public Variables getVariables() {
 
         return templateFile.getParent().getVariables();
     }
