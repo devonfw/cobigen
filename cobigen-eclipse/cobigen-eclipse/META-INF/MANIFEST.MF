@@ -51,8 +51,8 @@ Bundle-ClassPath: .,
  lib/cobigen-tsplugin-1.0.0.jar,
  lib/cobigen-htmlplugin-1.0.0.jar,
  lib/jsoup-1.10.2.jar,
- lib/cobigen-jsonplugin-1.1.0.jar
- lib/cobigen-core-4.0.0-SNAPSHOT.jar,
  lib/cobigen-core-api-4.0.0-SNAPSHOT.jar,
- lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar
+ lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar,
+ lib/cobigen-jsonplugin-1.1.0.jar,
+ lib/cobigen-core-4.0.0-SNAPSHOT.jar
 Export-Package: com.capgemini.cobigen.eclipse.common.constants.external
