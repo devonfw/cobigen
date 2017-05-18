@@ -4,9 +4,22 @@ node {
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
 			}
+
+			// will hold the current branch name
+			def origin_branch =""
 			
 			stage('setting up environment & cloning repositories') {
 				checkout scm
+
+				// CHANGE_TARGET seems only to be set at PR- build jobs. Since there is (seemingly) no documentation the variable is used if it is present. Otherwise BRANCH_NAME is used that fits on normal branch builds
+				if(env.CHANGE_TARGET != null){
+					origin_branch = env.CHANGE_TARGET
+					echo 'using CHANGE_TARGET as branch name: '+origin_branch
+				}else{
+					origin_branch=env.BRANCH_NAME
+					echo 'using BRANCH_NAME as branch name: '+origin_branch 
+				}
+
 				env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 				setBuildStatus("In Progress","PENDING")
 			
