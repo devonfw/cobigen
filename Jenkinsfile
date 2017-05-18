@@ -91,7 +91,8 @@ node {
 			}
 			
 			stage('process test results') {
-				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
+				// added 'allowEmptyResults:true' to prevent failure in case of no tests
+				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 			}
 			
 			if (currentBuild.result == 'UNSTABLE') {
@@ -136,6 +137,7 @@ def notifyFailed() {
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
+// sets the build status at the current pr commit triggering this build. In case of a normal origin branch build nothing happens
 def setBuildStatus(String message, String state) {
 	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
 	
@@ -143,6 +145,7 @@ def setBuildStatus(String message, String state) {
 	if(env.BRANCH_NAME.startsWith("PR-")) {
 		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
 		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
-		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: 'Jenkins-Tests'], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+		// replacement for the old implementation: 
+		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
 	}
 }
