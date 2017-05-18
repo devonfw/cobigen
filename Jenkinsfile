@@ -27,7 +27,7 @@ node {
 				env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 				env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
 				// we have to also build master with 1.8 as it will later on also run maven systemtests
-				if (env.CHANGE_TARGET == "dev_mavenplugin" || env.CHANGE_TARGET == "master") {
+				if (origin_branch == "dev_mavenplugin" || origin_branch == "master") {
 					env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
 				} else {
 					env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
@@ -39,24 +39,24 @@ node {
 			
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
-			if (env.CHANGE_TARGET == "master") {
+			if (origin_branch == "master") {
 				root = ""
-			} else if (env.CHANGE_TARGET == "dev_eclipseplugin") {
+			} else if (origin_branch == "dev_eclipseplugin") {
 				root = "cobigen-eclipse"
-			} else if (env.CHANGE_TARGET == "dev_htmlmerger") {
+			} else if (origin_branch == "dev_htmlmerger") {
 				root = "cobigen/cobigen-htmlplugin"
-			} else if (env.CHANGE_TARGET == "dev_mavenplugin") {
+			} else if (origin_branch == "dev_mavenplugin") {
 				root = "cobigen-maven"
-			} else if (env.CHANGE_TARGET == "dev_tempeng_freemarker") {
+			} else if (origin_branch == "dev_tempeng_freemarker") {
 				root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
-			} else if (env.CHANGE_TARGET == "dev_core") {
+			} else if (origin_branch == "dev_core") {
 				root = "cobigen/cobigen-core-parent"
-			} else if (env.CHANGE_TARGET == "gh-pages" || env.CHANGE_TARGET == "dev_oomph_setup") {
+			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
 				sh "exit 0"
 			} else {
-				root = "cobigen/cobigen-" + env.CHANGE_TARGET.replace("dev_", "")
+				root = "cobigen/cobigen-" + origin_branch.replace("dev_", "")
 			}
 			
 			stage('build & test') {
@@ -101,7 +101,7 @@ node {
 			
 			stage('deploy') {
 				dir(root) {
-					if (!non_deployable_branches.contains(env.CHANGE_TARGET)) {
+					if (!non_deployable_branches.contains(origin_branch)) {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 						}
