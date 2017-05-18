@@ -33,7 +33,7 @@ Ext.define('${variables.domain}.controller.${variables.etoName?lower_case}.${var
     onMenuOpen${variables.etoName?cap_first}s: function(options) {
         var ${variables.etoName?lower_case}s = new ${variables.domain}.view.${variables.etoName?lower_case}.${variables.etoName?cap_first}List(options);
 
-        Devon.App.openInContentPanel(${variables.etoName?lower_case}s);
+        Devon.Application.openInContentPanel(${variables.etoName?lower_case}s);
 
     },
 
