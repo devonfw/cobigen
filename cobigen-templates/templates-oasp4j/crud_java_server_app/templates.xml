@@ -65,6 +65,7 @@
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
     </increment>
     <increment name="dataaccess_infrastructure" description="Entity infrastructure">
       <templateRef ref="ApplicationPersistenceEntity.java"/>
