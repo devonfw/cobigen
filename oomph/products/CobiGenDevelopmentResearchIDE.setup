@@ -110,22 +110,6 @@
         url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-antlr/0.15.0/N/0.15.0.201405281449/"/>
   </setupTask>
   <setupTask
-      xsi:type="setup.p2:P2Task"
-      label="Spoofax"
-      licenseConfirmationDisabled="true">
-    <requirement
-        name="org.metaborg.spoofax.eclipse.meta.feature.feature.group"
-        versionRange="[2.1.0,2.1.0]"/>
-    <requirement
-        name="org.metaborg.spoofax.eclipse.meta.m2e.feature.feature.group"
-        versionRange="[2.1.0,2.1.0]"/>
-    <requirement
-        name="org.metaborg.spoofax.eclipse.feature.feature.group"
-        versionRange="[2.1.0,2.1.0]"/>
-    <repository
-        url="http://tinyurl.com/spoofax-eclipse-2-1-0-fixed"/>
-  </setupTask>
-  <setupTask
       xsi:type="setup:CompoundTask"
       id="config.user.input"
       name="unset config as simple user interface">
