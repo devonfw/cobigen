@@ -4,9 +4,22 @@ node {
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
 			}
+
+			// will hold the current branch name
+			def origin_branch =""
 			
 			stage('setting up environment & cloning repositories') {
 				checkout scm
+
+				// CHANGE_TARGET seems only to be set at PR- build jobs. Since there is (seemingly) no documentation the variable is used if it is present. Otherwise BRANCH_NAME is used that fits on normal branch builds
+				if(env.CHANGE_TARGET != null){
+					origin_branch = env.CHANGE_TARGET
+					echo 'using CHANGE_TARGET as branch name: '+origin_branch
+				}else{
+					origin_branch=env.BRANCH_NAME
+					echo 'using BRANCH_NAME as branch name: '+origin_branch 
+				}
+
 				env.GIT_COMMIT = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 				setBuildStatus("In Progress","PENDING")
 			
@@ -14,7 +27,7 @@ node {
 				env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
 				env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
 				// we have to also build master with 1.8 as it will later on also run maven systemtests
-				if (env.BRANCH_NAME == "dev_mavenplugin" || env.BRANCH_NAME == "master") {
+				if (origin_branch == "dev_mavenplugin" || origin_branch == "master") {
 					env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
 				} else {
 					env.JAVA_HOME="${tool 'OpenJDK 1.7'}"
@@ -26,24 +39,24 @@ node {
 			
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
-			if (env.BRANCH_NAME == "master") {
+			if (origin_branch == "master") {
 				root = ""
-			} else if (env.BRANCH_NAME == "dev_eclipseplugin") {
+			} else if (origin_branch == "dev_eclipseplugin") {
 				root = "cobigen-eclipse"
-			} else if (env.BRANCH_NAME == "dev_htmlmerger") {
+			} else if (origin_branch == "dev_htmlmerger") {
 				root = "cobigen/cobigen-htmlplugin"
-			} else if (env.BRANCH_NAME == "dev_mavenplugin") {
+			} else if (origin_branch == "dev_mavenplugin") {
 				root = "cobigen-maven"
-			} else if (env.BRANCH_NAME == "dev_tempeng_freemarker") {
+			} else if (origin_branch == "dev_tempeng_freemarker") {
 				root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
-			} else if (env.BRANCH_NAME == "dev_core") {
+			} else if (origin_branch == "dev_core") {
 				root = "cobigen/cobigen-core-parent"
-			} else if (env.BRANCH_NAME == "gh-pages" || env.BRANCH_NAME == "dev_oomph_setup") {
+			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
 				sh "exit 0"
 			} else {
-				root = "cobigen/cobigen-" + env.BRANCH_NAME.replace("dev_", "")
+				root = "cobigen/cobigen-" + origin_branch.replace("dev_", "")
 			}
 			
 			stage('build & test') {
@@ -78,7 +91,8 @@ node {
 			}
 			
 			stage('process test results') {
-				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
+				// added 'allowEmptyResults:true' to prevent failure in case of no tests
+				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 			}
 			
 			if (currentBuild.result == 'UNSTABLE') {
@@ -88,7 +102,7 @@ node {
 			
 			stage('deploy') {
 				dir(root) {
-					if (!non_deployable_branches.contains(env.BRANCH_NAME)) {
+					if (!non_deployable_branches.contains(origin_branch)) {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 						}
@@ -123,10 +137,15 @@ def notifyFailed() {
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
+// sets the build status at the current pr commit triggering this build. In case of a normal origin branch build nothing happens
 def setBuildStatus(String message, String state) {
 	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
-	// https://issues.jenkins-ci.org/browse/JENKINS-43370
+	
+	// sholzer 20170516:
 	if(env.BRANCH_NAME.startsWith("PR-")) {
-		githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
+		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+		// replacement for the old implementation: 
+		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
 	}
 }
