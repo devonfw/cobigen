@@ -122,14 +122,6 @@
     </setupTask>
   </setupTask>
   <setupTask
-      xsi:type="setup:EclipseIniTask"
-      excludedTriggers="STARTUP"
-      option="-Doomph.redirection.cobigenproject="
-      value="index:/redirectable.projects.setup->http://de-mucevolve02/files/oomph/projects/cobigen/com.github.projects.cobigen.setup"
-      vm="true">
-    <description></description>
-  </setupTask>
-  <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
     <workingSet
         name="cobigen-parent">
@@ -292,16 +284,10 @@
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.jdk.1.7.linux"
           excludedTriggers="STARTUP MANUAL"
+          predecessor="//@setupTasks.3/@setupTasks.3/@setupTasks.1 jdk.win.64"
           zipFile="${tmp.download.location/java17.tar.gz}"
           destinationDir="${jdk.1.7.location}"
-          priority="100">
-        <predecessor
-            xsi:type="setup:CompoundTask"
-            href="#//@setupTasks.4/@setupTasks.3/@setupTasks.1"/>
-        <predecessor
-            xsi:type="setup:CompoundTask"
-            href="platform:/resource/devon-ide/docs/oomph/products/DevonIde.setup#jdk.win.64"/>
-      </setupTask>
+          priority="100"/>
     </setupTask>
     <setupTask
         xsi:type="jdt:JRETask"
@@ -825,7 +811,7 @@
         label="Workspace for Project Checkout"/>
   </stream>
   <logicalProjectContainer
-      xsi:type="setup:ProjectCatalog"
-      href="http://devonfw.github.io/devon-ide/oomph/projects/catalog_devonfw.setup#/"/>
+      xsi:type="setup:Project"
+      href="http://devonfw.github.io/devon-ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
   <description>Tools Cobigen provides cool stuff.</description>
 </setup:Project>
