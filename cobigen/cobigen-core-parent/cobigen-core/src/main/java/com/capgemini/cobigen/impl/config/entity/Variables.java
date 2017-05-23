@@ -14,6 +14,7 @@ import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
+import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.util.StringUtil;
 
 /**
@@ -28,7 +29,7 @@ import com.capgemini.cobigen.impl.util.StringUtil;
 public class Variables {
 
     /** The variables prefix. */
-    private static final String PREFIX_VARIABLES = "variables.";
+    private static final String PREFIX_VARIABLES = ModelBuilderImpl.NS_VARIABLES + ".";
 
     /**
      * A {@link Character#isLetter(char) letter} character that is not to be expected to occur in regular
