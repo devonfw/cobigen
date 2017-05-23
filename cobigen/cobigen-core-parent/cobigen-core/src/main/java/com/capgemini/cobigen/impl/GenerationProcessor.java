@@ -42,7 +42,6 @@ import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
-import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
@@ -284,18 +283,15 @@ public class GenerationProcessor {
         Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
 
-            Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput);
+            Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
 
             String targetCharset = templateEty.getTargetCharset();
             LOG.info("Generating template '{}' ...", templateEty.getName(), generatorInput);
 
-            // collect variables
-            Variables variables = new ContextVariableResolver(generatorInput, trigger)
-                .resolveVariables(triggerInterpreter, templateEty.getVariables());
-            // variables = variables.forChildFolder(inputProjectRootFolder);
-
             // resolve temporary file paths
-            PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(variables);
+            @SuppressWarnings("unchecked")
+            PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(
+                Variables.fromMap((Map<String, String>) model.get(ModelBuilderImpl.NS_VARIABLES)));
             String resolvedTargetDestinationPath =
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
             String resolvedTmpDestinationPath =
@@ -399,10 +395,12 @@ public class GenerationProcessor {
      *            activated {@link Trigger}
      * @param generatorInput
      *            input for generation to retrieve information from.
+     * @param template
+     *            the internal {@link Template} representation
      * @return the object model for generation.
      */
     private Map<String, Object> buildModel(TriggerInterpreter triggerInterpreter, Trigger trigger,
-        Object generatorInput) {
+        Object generatorInput, Template template) {
         ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger);
         Map<String, Object> model;
         if (rawModel != null) {
@@ -410,7 +408,7 @@ public class GenerationProcessor {
         } else {
             model = modelBuilderImpl.createModel(triggerInterpreter);
         }
-        modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter);
+        modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter, template);
         if (logicClassesModel != null) {
             model.putAll(logicClassesModel);
         }

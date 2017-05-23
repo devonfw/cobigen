@@ -148,7 +148,6 @@ public class Template implements TextTemplate {
      * @see TemplateFolder#getVariables()
      */
     public Variables getVariables() {
-
         return templateFile.getParent().getVariables();
     }
 

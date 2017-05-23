@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.util;
+package com.capgemini.cobigen.impl.config.reader;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -7,17 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
- *
+ * Reader for {@link ConfigurationConstants#COBIGEN_PROPERTIES} files.
  */
-public class CobiGenPropertiesUtil {
+public class CobiGenPropertiesReader {
 
-    /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
-    public static final String COBIGEN_PROPERTIES = "cobigen.properties";
-
-    /** The {@link Charset} used to read {@link #COBIGEN_PROPERTIES}. */
+    /** The {@link Charset} used to read {@link ConfigurationConstants#COBIGEN_PROPERTIES}. */
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     /**
@@ -41,7 +39,7 @@ public class CobiGenPropertiesUtil {
      */
     public static final Properties load(Path folder, Properties parent) {
 
-        Path propertiesPath = folder.resolve(COBIGEN_PROPERTIES);
+        Path propertiesPath = folder.resolve(ConfigurationConstants.COBIGEN_PROPERTIES);
         if (!Files.exists(propertiesPath)) {
             if (parent == null) {
                 return new Properties();
@@ -56,7 +54,8 @@ public class CobiGenPropertiesUtil {
         try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
             properties.load(reader);
         } catch (IOException e) {
-            throw new CobiGenRuntimeException("Failed to read " + COBIGEN_PROPERTIES + " from " + folder, e);
+            throw new CobiGenRuntimeException(
+                "Failed to read " + ConfigurationConstants.COBIGEN_PROPERTIES + " from " + folder, e);
         }
         return properties;
     }

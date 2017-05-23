@@ -52,7 +52,6 @@ public class ClassLoadingTest extends AbstractApiTest {
      * Tests the usage of sample logic classes to be used in a template.
      * @throws Exception
      *             test fails
-     * @author sroeger (Aug 12, 2016)
      */
     @Test
     public void callClassLoadingTest() throws Exception {

@@ -10,9 +10,10 @@ import java.util.regex.Pattern;
 
 import net.sf.mmm.util.lang.api.CaseSyntax;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
-import com.capgemini.cobigen.impl.util.CobiGenPropertiesUtil;
 import com.capgemini.cobigen.impl.util.StringUtil;
 
 /**
@@ -224,16 +225,28 @@ public class Variables {
     }
 
     /**
+     * Creates a new variables instance from the given map.
+     * @param map
+     *            variable entries to be added.
+     * @return the newly created instance.
+     */
+    public static Variables fromMap(Map<String, String> map) {
+        Variables variables = new Variables();
+        variables.putAll(map);
+        return variables;
+    }
+
+    /**
      * @param folder
      *            the {@link Path} pointing to a child-folder potentially containing
-     *            {@link CobiGenPropertiesUtil#COBIGEN_PROPERTIES cobigen.properties}.
+     *            {@link ConfigurationConstants#COBIGEN_PROPERTIES cobigen.properties}.
      * @return a new {@link Variables} instance inherited from this one with the
-     *         {@link CobiGenPropertiesUtil#COBIGEN_PROPERTIES cobigen.properties} set or this
+     *         {@link ConfigurationConstants#COBIGEN_PROPERTIES cobigen.properties} set or this
      *         {@link Variables} if no such properties exists.
      */
     public Variables forChildFolder(Path folder) {
 
-        Properties childProperties = CobiGenPropertiesUtil.load(folder, properties);
+        Properties childProperties = CobiGenPropertiesReader.load(folder, properties);
         if (childProperties == properties) {
             return this;
         }
