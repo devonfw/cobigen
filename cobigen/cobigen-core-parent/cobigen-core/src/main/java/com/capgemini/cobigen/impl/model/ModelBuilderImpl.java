@@ -95,8 +95,8 @@ public class ModelBuilderImpl implements ModelBuilder {
         TriggerInterpreter triggerInterpreter, Template template) {
         Map<String, String> variables = Maps.newHashMap();
         Map<String, String> contextVariables =
-            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
-        Map<String, String> templateProperties = Maps.fromProperties(template.getVariables());
+            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter).asMap();
+        Map<String, String> templateProperties = template.getVariables().asMap();
         // if there are properties overriding each other, throw an exception for better usability.
         // This is most probably a not intended mechanism such that we simply will not support it.
         Set<String> intersection = new HashSet<>(contextVariables.keySet());

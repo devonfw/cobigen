@@ -59,7 +59,7 @@ public class PluginMockFactory {
         HashMap<String, String> variables = new HashMap<>(3);
         variables.put("rootPackage", "com.capgemini");
         variables.put("component", "comp1");
-        variables.put("detail", null);
+        variables.put("detail", "");
 
         when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
             argThat(hasItemsInList(

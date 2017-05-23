@@ -10,10 +10,10 @@ import com.capgemini.cobigen.api.to.VariableAssignmentTo;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /**
  * Resolves all context variables for a given input and its trigger
@@ -57,10 +57,26 @@ public class ContextVariableResolver {
      * @throws InvalidConfigurationException
      *             if there are {@link VariableAssignment}s, which could not be resolved
      */
-    public Map<String, String> resolveVariables(TriggerInterpreter triggerInterpreter)
+    public Variables resolveVariables(TriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
+
+        return resolveVariables(triggerInterpreter, null);
+    }
+
+    /**
+     * Resolves all {@link VariableAssignment}s by using the given {@link TriggerInterpreter}
+     *
+     * @param triggerInterpreter
+     *            to be used
+     * @param parent
+     *            the parent {@link Variables} to inherit.
+     * @return the mapping of variable to value
+     * @throws InvalidConfigurationException
+     *             if there are {@link VariableAssignment}s, which could not be resolved
+     */
+    public Variables resolveVariables(TriggerInterpreter triggerInterpreter, Variables parent)
         throws InvalidConfigurationException {
 
-        Map<String, String> variables = Maps.newHashMap();
+        Variables variables = new Variables(parent);
         for (Matcher m : trigger.getMatcher()) {
             MatcherTo matcherTo = new MatcherTo(m.getType(), m.getValue(), input);
             if (triggerInterpreter.getMatcher().matches(matcherTo)) {

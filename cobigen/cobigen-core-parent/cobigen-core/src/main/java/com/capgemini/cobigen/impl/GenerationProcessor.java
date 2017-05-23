@@ -42,6 +42,7 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
@@ -318,8 +319,8 @@ public class GenerationProcessor {
 
             // resolve temporary file paths
             @SuppressWarnings("unchecked")
-            PathExpressionResolver pathExpressionResolver =
-                new PathExpressionResolver((Map<String, String>) model.get(ModelBuilderImpl.NS_VARIABLES));
+            PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(
+                Variables.fromMap((Map<String, String>) model.get(ModelBuilderImpl.NS_VARIABLES)));
             String resolvedTargetDestinationPath =
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
             String resolvedTmpDestinationPath =
