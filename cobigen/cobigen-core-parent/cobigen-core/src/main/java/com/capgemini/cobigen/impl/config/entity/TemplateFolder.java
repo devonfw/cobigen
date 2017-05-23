@@ -13,8 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.impl.util.CobiGenPropertiesUtil;
+import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 
 /**
  * Virtual file system for generation target to evaluate path variables and cobigen specific symlinks.
@@ -45,7 +46,7 @@ public class TemplateFolder extends TemplatePath {
     private TemplateFolder(Path templatePath) {
         super(templatePath, null);
         children = new HashMap<>();
-        variables = new Variables(CobiGenPropertiesUtil.load(templatePath));
+        variables = new Variables(CobiGenPropertiesReader.load(templatePath));
     }
 
     /**
@@ -78,7 +79,7 @@ public class TemplateFolder extends TemplatePath {
      * @return the {@link Map} with the variables for this {@link TemplateFolder}. Will be inherited from
      *         {@link #getParent() parent} and merged and overridden with potential properties defined in this
      *         folder.
-     * @see CobiGenPropertiesUtil
+     * @see CobiGenPropertiesReader
      */
     public Variables getVariables() {
         return variables;
@@ -138,7 +139,7 @@ public class TemplateFolder extends TemplatePath {
                 if (filename.endsWith("/")) {
                     filename = filename.substring(0, filename.length() - 1);
                 }
-                if (!CobiGenPropertiesUtil.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
+                if (!ConfigurationConstants.COBIGEN_PROPERTIES.equals(filename) && !children.containsKey(filename)) {
                     TemplatePath child = createChild(childName);
                     children.put(filename, child);
                 }
