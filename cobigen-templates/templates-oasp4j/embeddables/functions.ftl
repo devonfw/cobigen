@@ -40,7 +40,7 @@
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${resolveIdVariableName(field)};
 <#else>
-	private ${field.type} ${field.name};
+	private ${JavaUtil.boxJavaPrimitives(field.type)} ${field.name};
 </#if>
 </#list>
 </#macro>
@@ -67,13 +67,13 @@
 <#else>
    	<#if implementsInterface>
 	@Override</#if>
-	public ${field.type} get${field.name?cap_first}() {
+	public ${JavaUtil.boxJavaPrimitives(field.type)} get${field.name?cap_first}() {
 		return ${field.name};
 	}
 	
 	<#if implementsInterface>
 	@Override</#if>
-	public void set${field.name?cap_first}(${field.type} ${field.name}) {
+	public void set${field.name?cap_first}(${JavaUtil.boxJavaPrimitives(field.type)} ${field.name}) {
 		this.${field.name} = ${field.name};
 	}
 </#if>
@@ -85,19 +85,21 @@
 <#-- ----------------------- -->
 
 <#-- 
+	edited by sholzer 20170523: Reimplemented all functions in Java class embeddables.EmbeddablesFunctions. Kept the functions here as delegates for better readability of the macros
+-->
+
+<#-- 
 	Check whether the given 'canonicalType' is an OASP Entity, which is declared in the given 'component' 
 -->
 <#function isEntityInComponent canonicalType component>
-	<#assign regex =  ".+" + component + r"\.dataaccess\.api\.[A-Za-z0-9_]+Entity(<.*)?">
-	<#return canonicalType?matches(regex)>
+	<#return EmbeddablesFunctions.isEntityInComponent(canonicalType, component)>
 </#function>
 
 <#-- 
 	Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via an object reference or a direct ID getter (default=false) 
 -->
 <#function resolveIdGetter field byObjectReference=false>
-	<#assign suffix = resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true)>
-	<#return "get" + suffix + "()">
+	<#return EmbeddablesFunctions.resolveIdGetter(field, byObjectReference, true, variables.component)>
 </#function>
 
 <#-- 
@@ -105,54 +107,28 @@
     In contrast to resolveIdGetter, this function does not generate the function parenthesis to enable parameter declaration.
 -->
 <#function resolveIdSetter field byObjectReference=false>
-	<#assign suffix = resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true)>
-	<#return "set" + suffix >
+	<#return EmbeddablesFunctions.resolveIdSetter(field, byObjectReference, true, variables.component)>
 </#function>
 
 <#-- 
 	Determines the variable name for the id value of the 'field' 
 -->
 <#function resolveIdVariableName field>
-	<#return resolveIdVariableNameOrSetterGetterSuffix(field, false, false)>
+	<#return EmbeddablesFunctions.resolveIdVariableNameOrSetterGetterSuffix(field, false, false, variables.component)>
 </#function>
 
 <#-- 
 	Determines the ID setter/getter suffix for a given 'field' dependent on whether the setter/getter should access the ID via an object reference or a direct ID setter/getter (default=false) 
 -->
 <#function resolveIdVariableNameOrSetterGetterSuffix field byObjectReference capitalize>
-	<#assign fieldCapName=field.name>
-	<#if capitalize>
-		<#assign fieldCapName=fieldCapName?cap_first>
-	</#if>
-	<#assign suffix="">
-	<#if field.type?contains("Entity")>
-		<#if field.canonicalType?starts_with("java.util.List") || field.canonicalType?starts_with("java.util.Set")>
-		  <#assign suffix="Ids">
-		  <#-- Handle the standard case. Due to no knowledge about the interface, we have no other possibility than guessing -->
-		  <#-- Therefore remove (hopefully) plural 's' from field's name to attach it on the suffix -->
-		  <#if fieldCapName?ends_with("s")>
-			 <#assign fieldCapName=fieldCapName?substring(0, fieldCapName?length-1)>
-		  </#if>
-		<#else>
-		  <#assign suffix="Id">
-		</#if>
-		
-		<#if byObjectReference && isEntityInComponent(field.canonicalType, variables.component)>
-			<#assign suffix="().getId"><#-- direct references for Entities in same component, so get id of the object reference -->
-		</#if>
-	</#if>
-	<#return fieldCapName + suffix>
+	<#return EmbeddablesFunctions.resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, capitalize, variables.component)>
 </#function>
 
 <#-- 
 	Converts all occurrences of OASP Entities types in the given 'field' simple type (possibly generic) to Longs 
 -->
 <#function getSimpleEntityTypeAsLongReference field>
-	<#assign newSimpleType = field.type>
-	<#if field.type?contains("Entity")>
-		<#assign newSimpleType = field.type?replace("[^<>]+Entity","Long","r")>
-	</#if>
-	<#return newSimpleType>
+	<#return EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)>
 </#function>
 	
 	
