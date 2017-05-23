@@ -3,7 +3,6 @@ package com.capgemini.cobigen.impl;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
@@ -113,8 +113,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         InputValidator.validateTrigger(trigger);
 
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-        Map<String, String> variables =
-            new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
+        Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
         Template templateEty =
             configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
         try {
