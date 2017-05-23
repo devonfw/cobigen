@@ -8,31 +8,37 @@ import java.util.List;
  */
 public class JavaUtil {
 
-  /**
-   * creates a statement from a List of Strings
-   *
-   * @param components List of Strings. Not null nor any of it's elements.
-   * @param indentation the number of white spaces to print before the actual statement
-   * @return String containing the indentation followed by the white space separated components, a semicolon and a new
-   *         line
-   */
-  public static String getStatement(List<String> components, int indentation) {
-
-    StringBuilder builder = new StringBuilder();
-    for (String component : components) {
-      builder.append(component);
-      builder.append(" ");
-    }
-    return getIndendation(indentation) + builder.toString().trim() + ";" + "\n";
-
+  private JavaUtil() {
   }
+  /**
+   * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
+   *
+   * @param variableType String
+   * @return the corresponding object type name of the input if the input is the name of a primitive java type. The
+   *         input itself if not.
+   */
+  public static String boxJavaPrimitives(String variableType) {
 
-  private static String getIndendation(int spaces) {
-
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < spaces; i++) {
-      builder.append(" ");
+    switch (variableType) {
+    case "boolean":
+      return "Boolean";
+    case "byte":
+      return "Byte";
+    case "char":
+      return "Char";
+    case "double":
+      return "Double";
+    case "float":
+      return "Float";
+    case "int":
+      return "Integer";
+    case "long":
+      return "Long";
+    case "short":
+      return "Short";
+    default:
+      return variableType;
     }
-    return builder.toString();
+
   }
 }
