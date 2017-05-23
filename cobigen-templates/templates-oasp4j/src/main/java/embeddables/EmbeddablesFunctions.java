@@ -1,11 +1,8 @@
 package embeddables;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import constants.pojo.Field;
-import utils.JavaUtil;
 
 /**
  * @author sholzer
@@ -21,64 +18,39 @@ public class EmbeddablesFunctions {
   }
 
   /**
-   * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
+   * Check whether the given 'canonicalType' is an OASP Entity, which is declared in the given 'component'
    *
-   * @param variableType String
-   * @return the corresponding object type name of the input if the input is the name of a primitive java type. The
-   *         input itself if not.
+   * @param canonicalType the entity type to be checked
+   * @param component the component in which the entity may or may not be included. this is an component in the sense of
+   *        the oasp4j structure
+   * @return true iff canonicalType matches the regex .*${component}\.dataaccess\.api\.[A-Za-z0-9_]+Entity(<.*)?
    */
-  public String boxJavaPrimitives(String variableType) {
+  private boolean isEntityInComponent(String canonicalType, String component) {
 
-    switch (variableType) {
-    case "boolean":
-      return "Boolean";
-    case "byte":
-      return "Byte";
-    case "char":
-      return "Char";
-    case "double":
-      return "Double";
-    case "float":
-      return "Float";
-    case "int":
-      return "Integer";
-    case "long":
-      return "Long";
-    case "short":
-      return "Short";
-    default:
-      return variableType;
-    }
-
+    return canonicalType.matches(".*" + component + "\\.dataaccess\\.api\\.[A-Za-z0-9_]+Entity(<.*)?");
   }
 
   /**
-   * Generates all field declaration whereas Entity references will be converted to appropriate id references
-   *
-   * @param pojoFields the fields from the pojo
-   * @return String
+   * Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via an object
+   * reference or a direct ID getter (default=false)
    */
-  public String generateFieldDeclarationsWithRespectToEntityObjectToIdReferenceConversion(
-      List<Map<String, Object>> pojoFields) {
+  @SuppressWarnings("unused")
+  private String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
-    StringBuilder result = new StringBuilder();
-    for (Map<String, Object> field : pojoFields) {
-      if (field.get(Field.TYPE) instanceof String && field.get(Field.NAME) instanceof String) {
-        List<String> components = new LinkedList<>();
-        String type = (String) field.get(Field.TYPE);
-        components.add("private");
-        if (type.contains("Entity")) {
-          components.add(type.replaceAll("[^<>,]+Entity", "Long"));
-          components.add(resolveIdVariableNameOrsetterGetterSuffix(field, false, false));
-        } else {
-          components.add(boxJavaPrimitives(type));
-          components.add((String) field.get(Field.NAME));
-        }
-        result.append(JavaUtil.getStatement(components, 4));
-      }
-    }
-    return result.toString();
+    String suffix = resolveIdVariableNameOrsetterGetterSuffix(field, byObjectReference, true, component);
+    return "get" + suffix + "()";
+  }
 
+  /**
+   * Determines the ID setter for a given 'field' dependent on whether the setter should access the ID via an object
+   * reference or a direct ID setter (default=false) In contrast to resolveIdGetter, this function does not generate the
+   * function parenthesis to enable parameter declaration.
+   */
+  @SuppressWarnings("unused")
+  private String resolveIdSetter(Map<String, Object> field, boolean byObjectReference, String component) {
+
+    String suffix = resolveIdVariableNameOrsetterGetterSuffix(field, byObjectReference, true, component);
+    return "set" + suffix;
   }
 
   /**
@@ -88,10 +60,11 @@ public class EmbeddablesFunctions {
    * @param field the name of the field
    * @param byObjectReference boolean
    * @param capitalize boolean
+   * @param component the oasp4j component name
    * @return String
    */
   private String resolveIdVariableNameOrsetterGetterSuffix(Map<String, Object> field, boolean byObjectReference,
-      boolean capitalize) {
+      boolean capitalize, String component) {
 
     String fieldName = (String) field.get(Field.NAME);
     fieldName = capitalize ? fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1) : fieldName;
@@ -108,7 +81,7 @@ public class EmbeddablesFunctions {
       } else {
         suffix = "Id";
       }
-      if (byObjectReference && isEntityInComponent(canonicalType, null)) {
+      if (byObjectReference && isEntityInComponent(canonicalType, component)) {
         suffix = "().getId";
       }
     }
@@ -116,9 +89,17 @@ public class EmbeddablesFunctions {
 
   }
 
-  private boolean isEntityInComponent(String canonicalType, String component) {
+  /**
+   * Converts all occurrences of OASP Entities types in the given 'field' simple type (possibly generic) to Longs
+   */
+  @SuppressWarnings("unused")
+  private String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
-    return canonicalType.matches(".*" + component + "\\.dataaccess\\.api\\.[A-Za-z0-9_]+Entity(<.*)?");
+    String result = (String) field.get(Field.TYPE);
+    if (result.contains("Entity")) {
+      result.replaceAll("[^<>]+Entity", "Long");
+    }
+    return result;
   }
 
 }
