@@ -24,7 +24,7 @@ public class JavaUtil {
     case "byte":
       return "Byte";
     case "char":
-      return "Char";
+      return "Character";
     case "double":
       return "Double";
     case "float":
