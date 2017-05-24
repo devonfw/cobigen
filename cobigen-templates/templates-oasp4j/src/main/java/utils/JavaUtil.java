@@ -1,15 +1,14 @@
 package utils;
 
-import java.util.List;
-
 /**
  * @author sholzer
  *
  */
 public class JavaUtil {
 
-  private JavaUtil() {
+  public JavaUtil() {
   }
+
   /**
    * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
    *
