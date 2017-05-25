@@ -25,7 +25,7 @@ public class EmbeddablesFunctions {
    *        the oasp4j structure
    * @return true iff canonicalType matches the regex .*${component}\.dataaccess\.api\.[A-Za-z0-9_]+Entity(<.*)?
    */
-  private boolean isEntityInComponent(String canonicalType, String component) {
+  public boolean isEntityInComponent(String canonicalType, String component) {
 
     return canonicalType.matches(".*" + component + "\\.dataaccess\\.api\\.[A-Za-z0-9_]+Entity(<.*)?");
   }
@@ -33,9 +33,14 @@ public class EmbeddablesFunctions {
   /**
    * Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via an object
    * reference or a direct ID getter (default=false)
+   *
+   * @param field the Field object as {@link Map}&lt;{@link String}, {@link Object}>.
+   * @param byObjectReference boolean. If true the resolution is done via the Object Reference
+   * @param component String the oasp4j component
+   * @return String "get${{@link #resolveIdVariableNameOrsetterGetterSuffix}($field, $byObjectReference, true,
+   *         $component)}()"
    */
-  @SuppressWarnings("unused")
-  private String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
+  public String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
     String suffix = resolveIdVariableNameOrsetterGetterSuffix(field, byObjectReference, true, component);
     return "get" + suffix + "()";
@@ -45,12 +50,29 @@ public class EmbeddablesFunctions {
    * Determines the ID setter for a given 'field' dependent on whether the setter should access the ID via an object
    * reference or a direct ID setter (default=false) In contrast to resolveIdGetter, this function does not generate the
    * function parenthesis to enable parameter declaration.
+   *
+   * @param field the Field object as{@link Map}&lt;{@link String}, {@link Object}>.
+   * @param byObjectReference boolean. If true the resolution is done via the Object Reference
+   * @param component String the oasp4j component
+   * @return String "set${{@link #resolveIdVariableNameOrsetterGetterSuffix}($field, $byObjectReference, true,
+   *         $component)}"
    */
-  @SuppressWarnings("unused")
-  private String resolveIdSetter(Map<String, Object> field, boolean byObjectReference, String component) {
+  public String resolveIdSetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
     String suffix = resolveIdVariableNameOrsetterGetterSuffix(field, byObjectReference, true, component);
     return "set" + suffix;
+  }
+
+  /**
+   * Determines the variable name for the id value of the 'field'
+   *
+   * @param field the field
+   * @param component the oasp component
+   * @return String id variable name
+   */
+  public String resolveIdVariableName(Map<String, Object> field, String component) {
+
+    return resolveIdVariableNameOrsetterGetterSuffix(field, false, false, component);
   }
 
   /**
@@ -63,7 +85,7 @@ public class EmbeddablesFunctions {
    * @param component the oasp4j component name
    * @return String
    */
-  private String resolveIdVariableNameOrsetterGetterSuffix(Map<String, Object> field, boolean byObjectReference,
+  public String resolveIdVariableNameOrsetterGetterSuffix(Map<String, Object> field, boolean byObjectReference,
       boolean capitalize, String component) {
 
     String fieldName = (String) field.get(Field.NAME);
@@ -91,13 +113,15 @@ public class EmbeddablesFunctions {
 
   /**
    * Converts all occurrences of OASP Entities types in the given 'field' simple type (possibly generic) to Longs
+   *
+   * @param field the field object as {@link Map}&lt;{@link String}, {@link Object}>.
+   * @return String
    */
-  @SuppressWarnings("unused")
-  private String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
+  public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
     String result = (String) field.get(Field.TYPE);
     if (result.contains("Entity")) {
-      result.replaceAll("[^<>]+Entity", "Long");
+      result = result.replaceAll("[^<>]+Entity", "Long");
     }
     return result;
   }

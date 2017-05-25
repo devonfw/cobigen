@@ -13,15 +13,15 @@ public interface ${variables.entityName} {
    *
    * @return the {@link ${variables.entityName}}s ID
    */
-	${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)};
+	${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${EmbeddablesFunctions.resolveIdGetter(field,false,variables.component)};
 	
-	<#assign idVar = resolveIdVariableName(field)>
+	<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field,variables.component)>
 	/**
 	* Sets a new {@link ${variables.entityName}} with the given ID.
 	* 
 	* @param ${idVar} of the {@link ${variables.entityName}} to be set
 	*/
-	void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar});
+	void ${EmbeddablesFunctions.resolveIdSetter(field,false,variables.component)}(${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar});
 <#else>
 	/**
    * Returns the field ${field.name}.
