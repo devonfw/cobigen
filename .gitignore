@@ -6,3 +6,6 @@ target
 
 /cobigen-eclipse/.project
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
+cobigen/cobigen-tsplugin/node/
+cobigen/cobigen-tsplugin/node_modules/
+cobigen/cobigen-tsplugin/src/main/resources/tsm.zip
