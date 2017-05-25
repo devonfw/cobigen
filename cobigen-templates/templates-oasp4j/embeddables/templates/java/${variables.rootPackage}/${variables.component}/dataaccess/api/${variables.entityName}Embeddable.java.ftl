@@ -18,7 +18,7 @@ public class ${pojo.name} implements ${variables.entityName} {
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references -->
   @Override
   @Transient
-  public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
+  public ${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${EmbeddablesFunctions.resolveIdGetter(field,false,variables.component)} {
 
   if (this.${field.name} == null) {
       return null;
@@ -26,9 +26,9 @@ public class ${pojo.name} implements ${variables.entityName} {
     return this.${field.name}.getId();
   }
 
-  <#assign idVar = resolveIdVariableName(field)>
+  <#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field,variables.component)>
   @Override
-  public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+  public void ${EmbeddablesFunctions.resolveIdSetter(field,false,variables.component)}(${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 
     if (${idVar} == null) {
       this.${field.name} = null;
