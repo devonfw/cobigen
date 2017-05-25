@@ -106,8 +106,8 @@ public class TypeScriptMerger implements Merger {
             unzipper.unzip(zipFile, "/tmp/tsm");
         }
 
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "ts-node \\tmp\\tsm\\src\\index.ts " + patchOverrides
-            + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node \\tmp\\tsm\\build\\index.js "
+            + patchOverrides + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
 
         builder.redirectErrorStream(true);
         Process p = builder.start();
