@@ -17,7 +17,7 @@
 	<#else>
 		private ${field.type?replace("Embeddable","Eto")} ${field.name};
 	</#if>
-<#elseif isSearchCriteria && CrudJavaServerAppFunctions.equalsJavaPrimitive(field.type)>
+<#elseif isSearchCriteria && JavaUtil.equalsJavaPrimitive(field.type)>
   private ${JavaUtil.boxJavaPrimitives(field.type)} ${field.name};
 <#else>
 	private ${field.type} ${field.name};
