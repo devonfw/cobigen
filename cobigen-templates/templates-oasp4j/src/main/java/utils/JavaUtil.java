@@ -59,6 +59,18 @@ public class JavaUtil {
   }
 
   /**
+   * Checks if the given type is a Java primitive or a Java primitive array
+   * @param simpleString the Type name to be checked
+   * @return true iff {@link #equalsJavaPrimitive($simpleType)} is true or if {@link #boxJavaPrimitives(String)} is true for simpleType without trailing '[]'
+   */
+  public boolean equalsJavaPrimitiveIncludingArrays(String simpleType){
+    if(simpleType.endsWith("[]")){
+      simpleType = simpleType.substring(0, simpleType.length()-2);
+    }
+    return equalsJavaPrimitive(simpleType);
+  }
+
+  /**
    * Returns a cast statement for a given (java primitive, variable name) pair or nothing of the type isn't a java
    * primitive
    *

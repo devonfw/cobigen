@@ -40,9 +40,9 @@ public class ${variables.entityName?cap_first}RepoImpl implements ${variables.en
         <#assign fieldCapName=field.name?cap_first>
         </#compress>
         <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
-        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
+        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${CrudJavaServerAppFunctions.resolveIdGetter(field,false,variables.component)}</#if>;
         <#compress>
-      <#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
+      <#if !JavaUtil.equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
               if(${variables.entityName?lower_case}.get${fieldCapName}() != null) {
                   query.where(getQ${variables.entityName}Entity().${field.name}.eq(${field.name});
@@ -50,7 +50,7 @@ public class ${variables.entityName?cap_first}RepoImpl implements ${variables.en
           <#else>
               query.where(getQ${variables.entityName}Entity().<#if field.type=='boolean'>is${fieldCapName}()<#else>${field.name}</#if>.eq(${field.name}));
           </#if>
-        <#if !equalsJavaPrimitive(field.type)>}</#if>
+        <#if !JavaUtil.equalsJavaPrimitive(field.type)>}</#if>
       </#compress>
     </#if>
     </#list>
