@@ -21,7 +21,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
    <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
       @Override
       @Transient
-      public ${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)} {
+      public ${CrudJavaServerAppFunctions.getSimpleEntityTypeAsLongReference(field)} ${CrudJavaServerAppFunctions.resolveIdGetter(field, false,"")} {
     
       if (this.${field.name} == null) {
           return null;
@@ -29,9 +29,9 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
         return this.${field.name}.getId();
       }
     
-      <#assign idVar = resolveIdVariableName(field)>
+      <#assign idVar = CrudJavaServerAppFunctions.resolveIdVariableName(field)>
       @Override
-      public void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+      public void ${CrudJavaServerAppFunctions.resolveIdSetter(field,false,"")}(${CrudJavaServerAppFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
     
         if (${idVar} == null) {
           this.${field.name} = null;
