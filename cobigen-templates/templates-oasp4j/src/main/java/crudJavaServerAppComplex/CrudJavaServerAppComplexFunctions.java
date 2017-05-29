@@ -1,4 +1,4 @@
-package embeddables;
+package crudJavaServerAppComplex;
 
 import java.util.Map;
 
@@ -8,13 +8,13 @@ import utils.OaspUtil;
  * @author sholzer
  *
  */
-public class EmbeddablesFunctions {
+public class CrudJavaServerAppComplexFunctions {
 
   /**
    * The constructor.
    */
-  public EmbeddablesFunctions() {
-    // canonical constructor
+  public CrudJavaServerAppComplexFunctions() {
+    // empty for automatic instantiation
   }
 
   /**
@@ -44,6 +44,14 @@ public class EmbeddablesFunctions {
   }
 
   /**
+   * same as {@link #resolveIdGetter(Map, boolean, String)} but with byObjectReference=false and component=""
+   */
+  public String resolveIdGetter(Map<String, Object> field) {
+
+    return new OaspUtil().resolveIdGetter(field);
+  }
+
+  /**
    * Determines the ID setter for a given 'field' dependent on whether the setter should access the ID via an object
    * reference or a direct ID setter. In contrast to resolveIdGetter, this function does not generate the function
    * parenthesis to enable parameter declaration.
@@ -59,10 +67,18 @@ public class EmbeddablesFunctions {
   }
 
   /**
+   * same as {@link #resolveIdSetter(Map, boolean, String)} but with byObjectReference=false and component=""
+   */
+  public String resolveIdSetter(Map<String, Object> field) {
+
+    return new OaspUtil().resolveIdSetter(field);
+  }
+
+  /**
    * Determines the variable name for the id value of the 'field'
    *
    * @param field the field
-   * @return String id variable name
+   * @return {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, false, false, "")})
    */
   public String resolveIdVariableName(Map<String, Object> field) {
 

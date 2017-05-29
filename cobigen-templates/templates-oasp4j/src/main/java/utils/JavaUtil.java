@@ -60,14 +60,18 @@ public class JavaUtil {
 
   /**
    * Checks if the given type is a Java primitive or a Java primitive array
-   * @param simpleString the Type name to be checked
-   * @return true iff {@link #equalsJavaPrimitive($simpleType)} is true or if {@link #boxJavaPrimitives(String)} is true for simpleType without trailing '[]'
+   *
+   * @param simpleType the Type name to be checked
+   * @return true iff {@link #equalsJavaPrimitive(String)} is true or if {@link #boxJavaPrimitives(String)} is true for
+   *         simpleType without trailing '[]'
    */
-  public boolean equalsJavaPrimitiveIncludingArrays(String simpleType){
-    if(simpleType.endsWith("[]")){
-      simpleType = simpleType.substring(0, simpleType.length()-2);
+  public boolean equalsJavaPrimitiveIncludingArrays(String simpleType) {
+
+    String output = simpleType;
+    if (output.endsWith("[]")) {
+      output = simpleType.substring(0, simpleType.length() - 2);
     }
-    return equalsJavaPrimitive(simpleType);
+    return equalsJavaPrimitive(output);
   }
 
   /**
