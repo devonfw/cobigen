@@ -92,4 +92,53 @@ public class JavaUtil {
     }
 
   }
+
+/**
+ * returns the sencha type associated with a Java primitive or {@link String} or {@link java.util.Date}
+ * @param simpleType :{@link String} the type to be parsed
+ * @return the corresponding sencha type or 'auto' otherwise
+ */
+  public String getSenchaType(String simpleType) {
+
+    switch (simpleType) {
+    case "boolean":
+      return "boolean";
+    case "short":
+    case "int":
+    case "long":
+      return "int";
+    case "float":
+    case "double":
+      return "float";
+    case "char":
+    case "String":
+      return "string";
+    case "Date":
+      return "date";
+    case "byte":
+    default:
+      return "auto";
+    }
+  }
+
+  public String getExtType(String simpleType){
+    switch(simpleType){
+      case "short":
+      case "int":
+      case "long" /* Long in the functions.ftl but I think long was intended*/: 
+        return "Integer";
+      case "float":
+      case "double":
+        return "Number";
+      case "boolean":
+        return "Boolean";
+      case "char":
+      case "String":
+        return "String";
+      case "Date":
+        return "Date";
+      default:
+        return "Field";
+    }
+  }
 }

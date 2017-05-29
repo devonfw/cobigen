@@ -1,58 +1,3 @@
-<#-- ---------------------------------------- -->
-<#-- GENERAL JAVA SPECIFIC FUNCTIONS & MACROS -->
-<#-- ---------------------------------------- -->
-
-<#function getSenchaType simpleType>
-  <#if simpleType=="byte">
-    <#return "auto">
-  <#elseif simpleType=="short">
-    <#return "int">
-  <#elseif simpleType=="int">
-    <#return "int">
-  <#elseif simpleType=="Long">
-    <#return "int">
-  <#elseif simpleType=="float">
-    <#return "float">
-  <#elseif simpleType=="double">
-    <#return "float">
-  <#elseif simpleType=="boolean">
-    <#return "boolean">
-  <#elseif simpleType=="char">
-    <#return "string">
-  <#elseif simpleType=="String">
-    <#return "string">
-  <#elseif simpleType=="Date">
-    <#return "date">
-  <#else>
-    <#return "auto">
-  </#if>
-</#function>
-
-<#function getExtType simpleType>
-  <#if simpleType=="short">
-    <#return "Integer">
-  <#elseif simpleType=="int">
-    <#return "Integer">
-  <#elseif simpleType=="Long">
-    <#return "Integer">
-  <#elseif simpleType=="float">
-    <#return "Number">
-  <#elseif simpleType=="double">
-    <#return "Number">
-  <#elseif simpleType=="boolean">
-    <#return "Boolean">
-  <#elseif simpleType=="char">
-    <#return "String">
-  <#elseif simpleType=="String">
-    <#return "String">
-  <#elseif simpleType=="Date">
-    <#return "Date">
-  <#else>
-    <#return "Field">
-  </#if>
-</#function>
-
-
 <#-- -------------------- -->
 <#--   SPECIFIC MACROS    -->
 <#-- -------------------- -->
@@ -83,7 +28,7 @@
 -->
 <#macro generateMetaDataModelFields>
   <#list pojo.fields as field>
-  <#assign extType=getExtType(field.type)>
+  <#assign extType=JavaUtil.getExtType(field.type)>
        {
               "type": "Ext.data.field.${extType}",
               "reference": {
