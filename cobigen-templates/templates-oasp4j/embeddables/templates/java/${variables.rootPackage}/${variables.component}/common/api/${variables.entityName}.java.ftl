@@ -15,7 +15,7 @@ public interface ${variables.entityName} {
    */
 	${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${EmbeddablesFunctions.resolveIdGetter(field,false,variables.component)};
 	
-	<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field,variables.component)>
+	<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field)>
 	/**
 	* Sets a new {@link ${variables.entityName}} with the given ID.
 	* 

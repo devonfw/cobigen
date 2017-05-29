@@ -1,21 +1,16 @@
-package embeddables;
+package utils;
 
 import java.util.Map;
 
-import utils.OaspUtil;
+import constants.pojo.Field;
 
 /**
+ * A class for shared functions in the
+ *
  * @author sholzer
  *
  */
-public class EmbeddablesFunctions {
-
-  /**
-   * The constructor.
-   */
-  public EmbeddablesFunctions() {
-    // canonical constructor
-  }
+public class OaspUtil {
 
   /**
    * Check whether the given 'canonicalType' is an OASP Entity, which is declared in the given 'component'
@@ -26,7 +21,7 @@ public class EmbeddablesFunctions {
    */
   public boolean isEntityInComponent(String canonicalType, String component) {
 
-    return new OaspUtil().isEntityInComponent(canonicalType, component);
+    return canonicalType.matches(String.format(".+%1$s\\.dataaccess\\.api\\.[A-Za-z0-9]+Entity(<.*)?", component));
   }
 
   /**
@@ -40,7 +35,15 @@ public class EmbeddablesFunctions {
    */
   public String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
-    return new OaspUtil().resolveIdGetter(field, byObjectReference, component);
+    return "get" + resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true, component) + "()";
+  }
+
+  /**
+   * same as {@link #resolveIdGetter(Map, boolean, String)} but with byObjectReference=false and component=""
+   */
+  public String resolveIdGetter(Map<String, Object> field) {
+
+    return this.resolveIdGetter(field, false, "");
   }
 
   /**
@@ -55,18 +58,28 @@ public class EmbeddablesFunctions {
    */
   public String resolveIdSetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
-    return new OaspUtil().resolveIdSetter(field, byObjectReference, component);
+    return "set" + resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true, component);
+  }
+
+  /**
+   * same as {@link #resolveIdSetter(Map, boolean, String)} but with byObjectReference=false and component=""
+   */
+  public String resolveIdSetter(Map<String, Object> field) {
+
+    return this.resolveIdSetter(field, false, "");
   }
 
   /**
    * Determines the variable name for the id value of the 'field'
    *
    * @param field the field
-   * @return String id variable name
+   * @return {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, false, false, "")})
    */
   public String resolveIdVariableName(Map<String, Object> field) {
 
-    return new OaspUtil().resolveIdVariableName(field);
+    // the component is passed down as an empty string since byObjectReference is false and therefore the component is
+    // never touched
+    return resolveIdVariableNameOrSetterGetterSuffix(field, false, false, "");
   }
 
   /**
@@ -82,7 +95,31 @@ public class EmbeddablesFunctions {
   public String resolveIdVariableNameOrSetterGetterSuffix(Map<String, Object> field, boolean byObjectReference,
       boolean capitalize, String component) {
 
-    return new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, capitalize, component);
+    String fieldName = (String) field.get(Field.NAME);
+    if (capitalize) {
+      fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    }
+    String suffix = "";
+
+    String fieldType = (String) field.get(Field.TYPE);
+    String fieldCType = (String) field.get(Field.CANONICAL_TYPE);
+    if (fieldType.contains("Entity")) {
+      if (fieldCType.startsWith("java.util.List") || fieldCType.startsWith("java.util.Set")) {
+        suffix = "Ids";
+        if (fieldName.endsWith("s")) {
+          // Assume trailing 's' as indicator for a plural
+          fieldName = fieldName.substring(0, fieldName.length() - 1);
+        }
+      } else {
+        suffix = "Id";
+      }
+      if (byObjectReference && isEntityInComponent(fieldCType, component)) {
+        // direct references for Entities in same component, so get id of the object reference
+        suffix = "().getId";
+      }
+    }
+
+    return fieldName + suffix;
 
   }
 
@@ -95,7 +132,11 @@ public class EmbeddablesFunctions {
    */
   public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
-    return new OaspUtil().getSimpleEntityTypeAsLongReference(field);
+    String fieldType = (String) field.get(Field.TYPE);
+    if (fieldType.contains("Entity")) {
+      fieldType = fieldType.replaceAll("[^<>]+Entity", "Long");
+    }
+    return fieldType;
   }
 
 }

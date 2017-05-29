@@ -26,7 +26,7 @@ public class ${pojo.name} implements ${variables.entityName} {
     return this.${field.name}.getId();
   }
 
-  <#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field,variables.component)>
+  <#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field)>
   @Override
   public void ${EmbeddablesFunctions.resolveIdSetter(field,false,variables.component)}(${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 
