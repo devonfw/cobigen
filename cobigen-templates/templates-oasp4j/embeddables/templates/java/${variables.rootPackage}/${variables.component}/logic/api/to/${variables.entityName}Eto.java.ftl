@@ -27,7 +27,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         		<#if JavaUtil.equalsJavaPrimitive(field.type)>
 					result = prime * result + ${JavaUtil.boxJavaPrimitives(field.type,field.name)}.hashCode();
 				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-					<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field)>
+					<#assign idVar = OaspUtil.resolveIdVariableName(field)>
 					result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
         		<#else>
 					result = prime * result + ((this.${field.name} == null) ? 0 : this.${field.name}.hashCode());
@@ -59,7 +59,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
 			return false;
 		}
     <#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-		<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field)>
+		<#assign idVar = OaspUtil.resolveIdVariableName(field)>
 		if (this.${idVar} == null) {
 		  if (other.${idVar} != null) {
 			return false;

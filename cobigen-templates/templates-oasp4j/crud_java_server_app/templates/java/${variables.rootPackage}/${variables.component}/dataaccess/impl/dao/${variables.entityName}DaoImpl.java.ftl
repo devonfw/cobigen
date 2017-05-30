@@ -51,7 +51,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     <#assign fieldCapName=field.name?cap_first>
     </#compress>
     <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
-        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${CrudJavaServerAppFunctions.resolveIdGetter(field, false, "")}</#if>;
+        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, false, "")}</#if>;
         <#compress>
     	<#if !JavaUtil.equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
@@ -59,7 +59,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
                   query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}().getId()).eq(${field.name}));
               }
           <#else>
-              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${CrudJavaServerAppFunctions.resolveIdGetter(field,false,"")}</#if>).eq(${field.name}));
+              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>).eq(${field.name}));
           </#if>    
         <#if !JavaUtil.equalsJavaPrimitive(field.type)>}</#if>
     	</#compress>

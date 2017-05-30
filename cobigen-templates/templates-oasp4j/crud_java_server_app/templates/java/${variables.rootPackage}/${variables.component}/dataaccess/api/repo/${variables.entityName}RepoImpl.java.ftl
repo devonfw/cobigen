@@ -40,7 +40,7 @@ public class ${variables.entityName?cap_first}RepoImpl implements ${variables.en
         <#assign fieldCapName=field.name?cap_first>
         </#compress>
         <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
-        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${CrudJavaServerAppFunctions.resolveIdGetter(field,false,"")}</#if>;
+        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>;
         <#compress>
       <#if !JavaUtil.equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
