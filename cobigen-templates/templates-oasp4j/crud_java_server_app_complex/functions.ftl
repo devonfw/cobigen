@@ -22,16 +22,16 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
-	<#assign idVar = CrudJavaServerAppComplexFunctions.resolveIdVariableName(field)>
+	<#assign idVar = OaspUtil.resolveIdVariableName(field)>
 	<#if implementsInterface>
 	@Override</#if>
-	public ${CrudJavaServerAppComplexFunctions.getSimpleEntityTypeAsLongReference(field)} ${CrudJavaServerAppComplexFunctions.resolveIdGetter(field)} {
+	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field)} {
 		return ${idVar};
 	}
 
 	<#if implementsInterface>
 	@Override</#if>
-	public void ${CrudJavaServerAppComplexFunctions.resolveIdSetter(field)}(${CrudJavaServerAppComplexFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+	public void ${OaspUtil.resolveIdSetter(field)}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
 	}
 <#else>
