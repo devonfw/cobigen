@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 })
 
 export class ${variables.component?cap_first}AddDialogComponent {
-  item = {
+  cobigen_items = {
   <#list pojo.fields as field>
     <#if field?has_next>
   ${field.name}: '',

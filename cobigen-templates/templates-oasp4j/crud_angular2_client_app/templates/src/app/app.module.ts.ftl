@@ -6,7 +6,7 @@ import { HttpModule, Http } from '@angular/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MaterialModule } from '@angular/material';
-import { Material2AppAppComponent } from './app.component';
+import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 import { FormsModule } from '@angular/forms';
 import 'hammerjs';
@@ -42,7 +42,7 @@ export function translateFactory(http: Http) {
     })
   ],
   declarations: [
-    Material2AppAppComponent,
+    AppComponent,
     HeaderComponent,
     LoginComponent,
     HomeComponent,
@@ -53,7 +53,7 @@ export function translateFactory(http: Http) {
     ${variables.component?cap_first}AddDialogComponent
   ],
   bootstrap: [
-    Material2AppAppComponent
+    AppComponent
   ],
   providers: [
     ${variables.component?cap_first}DataGridService,
