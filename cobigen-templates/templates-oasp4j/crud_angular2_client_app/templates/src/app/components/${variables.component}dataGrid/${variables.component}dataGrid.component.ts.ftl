@@ -22,7 +22,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     @ViewChild('dataTable') dataTable;
     
     data: any = [];
-    columns: any = [<#list pojo.fields as field>
+    cobigen_columns: any = [<#list pojo.fields as field>
             <#if field?has_next>
             {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
             <#else>
@@ -39,7 +39,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     currentPage: number = 1;
     pageSize: number = 5;
     sorting: any[] = [];
-    searchTerms: any = {
+    cobigen_searchTerms: any = {
      <#list pojo.fields as field>
       <#if field?has_next>
         ${field.name}: null,
@@ -63,7 +63,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     ngDoCheck() {
         if (this.language !== this.translate.currentLang) {
             this.language = this.translate.currentLang;
-            this.columns = [<#list pojo.fields as field>
+            this.cobigen_columns = [<#list pojo.fields as field>
             <#if field?has_next>
             {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
             <#else>
@@ -83,7 +83,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
 
     getData(): void {
        let me = this;
-       this.dataGridService.getData(this.pageSize, this.currentPage, this.searchTerms, this.sorting)
+       this.dataGridService.getData(this.pageSize, this.currentPage, this.cobigen_searchTerms, this.sorting)
                            .subscribe((res) => {
                                me.data = res.result;
                                me.dataTotal = res.pagination.total;
@@ -113,7 +113,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                 searchForm.value[key] = null;
             }
         });
-        this.searchTerms = searchForm.value;
+        this.cobigen_searchTerms = searchForm.value;
         this.getData();
     }
     

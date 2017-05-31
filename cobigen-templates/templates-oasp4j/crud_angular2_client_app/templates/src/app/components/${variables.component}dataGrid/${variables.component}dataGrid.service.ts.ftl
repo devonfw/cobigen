@@ -8,7 +8,7 @@ export class ${variables.component?cap_first}DataGridService {
     constructor(private BO: BusinessOperations, private http: HttpClient) {
     }
 
-    getData(size:number, page: number, searchTerms, sort: any[]) {
+    getData(size:number, page: number, cobigen_searchTerms, sort: any[]) {
       
       let pageData = {
         pagination: {
@@ -17,7 +17,7 @@ export class ${variables.component?cap_first}DataGridService {
           total: 1
         },
         <#list pojo.fields as field>
-        ${field.name}: searchTerms.${field.name},
+        ${field.name}: cobigen_searchTerms.${field.name},
         </#list>
         sort: sort
       }
@@ -26,7 +26,7 @@ export class ${variables.component?cap_first}DataGridService {
     }
 
     saveData(data) {
-      let obj = {
+      let cobigen_obj = {
         id: data.id,
         <#list pojo.fields as field>
           <#if field?has_next>
@@ -37,7 +37,7 @@ export class ${variables.component?cap_first}DataGridService {
         </#list>
       };
 
-      return this.http.post(this.BO.post${variables.etoName}(),  obj )
+      return this.http.post(this.BO.post${variables.etoName}(),  cobigen_obj )
                       .map(res => res.json());
     }
 

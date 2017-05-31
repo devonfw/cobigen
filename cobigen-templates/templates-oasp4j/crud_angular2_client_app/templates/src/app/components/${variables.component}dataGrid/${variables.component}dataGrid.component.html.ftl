@@ -66,7 +66,7 @@
 <td-data-table
   #dataTable
   [data]="data"
-  [columns]="columns"
+  [columns]="cobigen_columns"
   [sortable]="true"
   [selectable]="true"
   [multiple]="false"
