@@ -23,12 +23,12 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
     
     data: any = [];
     cobigen_columns: any = [<#list pojo.fields as field>
-            <#if field?has_next>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
-            <#else>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
-            </#if>
-          </#list>];  
+      <#if field?has_next>
+      {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
+      <#else>
+      {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
+      </#if>
+    </#list>];  
     selectedRow: any;
     language: string;
 
@@ -83,16 +83,15 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
 
     getData(): void {
        let me = this;
-       this.dataGridService.getData(this.pageSize, this.currentPage, this.cobigen_searchTerms, this.sorting)
-                           .subscribe((res) => {
-                               me.data = res.result;
-                               me.dataTotal = res.pagination.total;
-                           }, (error) =>{
-                                this._dialogService.openConfirm({
-                                    message: JSON.parse(error.text()).message,
-                                    title: this.getTranslation('${variables.component}datagrid.alert.title')
-                                })
-                           });
+       this.dataGridService.getData(this.pageSize, this.currentPage, this.cobigen_searchTerms, this.sorting).subscribe((res) => {
+           me.data = res.result;
+           me.dataTotal = res.pagination.total;
+       }, (error) =>{
+            this._dialogService.openConfirm({
+                message: JSON.parse(error.text()).message,
+                title: this.getTranslation('${variables.component}datagrid.alert.title')
+            })
+       });
     }
 
     sort(sortEvent: ITdDataTableSortChangeEvent): void {
@@ -140,20 +139,18 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
         this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent);
         this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.addTitle");
 
-        this.dialogRef.afterClosed()
-                      .subscribe(result => {
-                          if (result) {
-                            this.dataGridService.saveData(result)
-                                                .subscribe( () => {
-                                                    this.getData();
-                                                }, (error) => {
-                                                    this._dialogService.openAlert({
-                                                        message: JSON.parse(error.text()).message,
-                                                        title: this.getTranslation('${variables.component}datagrid.alert.title')
-                                                    })
-                                                });
-                          }
-                      });
+        this.dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.dataGridService.saveData(result).subscribe( () => {
+                  this.getData();
+              }, (error) => {
+                  this._dialogService.openAlert({
+                      message: JSON.parse(error.text()).message,
+                      title: this.getTranslation('${variables.component}datagrid.alert.title')
+                  })
+              });
+            }
+        });
     }
 
     openEditDialog(): void {
@@ -161,20 +158,18 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
         this.dialogRef.componentInstance.item = this.selectedRow;
         this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.editTitle");
 
-        this.dialogRef.afterClosed()
-                      .subscribe(result => {
-                        if (result) {
-                            this.dataGridService.saveData(result)
-                                                .subscribe( () => {
-                                                    this.getData();
-                                                }, (error) => {
-                                                    this._dialogService.openAlert({
-                                                        message: JSON.parse(error.text()).message,
-                                                        title: this.getTranslation('${variables.component}datagrid.alert.title')
-                                                    })
-                                                });
-                        }
-                      });
+        this.dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+              this.dataGridService.saveData(result).subscribe( () => {
+                  this.getData();
+              }, (error) => {
+                  this._dialogService.openAlert({
+                      message: JSON.parse(error.text()).message,
+                      title: this.getTranslation('${variables.component}datagrid.alert.title')
+                  })
+              });
+          }
+        });
     }
 
     openConfirm(): void {
@@ -185,15 +180,14 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
             acceptButton: this.getTranslation('${variables.component}datagrid.alert.acceptBtn'),
         }).afterClosed().subscribe((accept: boolean) => {
             if (accept) {
-                this.dataGridService.deleteData(this.selectedRow.id)
-                                    .subscribe( () => {
-                                        this.getData();
-                                    }, (error) => {
-                                        this._dialogService.openAlert({
-                                            message: JSON.parse(error.text()).message,
-                                            title: this.getTranslation('${variables.component}datagrid.alert.title')
-                                        })
-                                    });
+                this.dataGridService.deleteData(this.selectedRow.id).subscribe( () => {
+                    this.getData();
+                }, (error) => {
+                    this._dialogService.openAlert({
+                        message: JSON.parse(error.text()).message,
+                        title: this.getTranslation('${variables.component}datagrid.alert.title')
+                    })
+                });
             }
         });
     }
