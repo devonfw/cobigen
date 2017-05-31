@@ -3,29 +3,35 @@
 <#-- ---------------------------------------- -->
 
 <#function getType simpleType>
-<#if simpleType=="byte">
-<#return "number">
-<#elseif simpleType=="short">
-<#return "number">
-<#elseif simpleType=="int">
-<#return "number">
-<#elseif simpleType=="long">
-<#return "number">
-<#elseif simpleType=="Double">
-<#return "number">
-<#elseif simpleType=="Long">
-<#return "number">
-<#elseif simpleType=="float">
-<#return "number">
-<#elseif simpleType=="double">
-<#return "number">
-<#elseif simpleType=="boolean">
-<#return "boolean">
-<#elseif simpleType=="char">
-<#return "string">
-<#else>
-<#return "string">
-</#if>
+    <#if simpleType=="byte">
+        <#return "number">
+    <#elseif simpleType=="short">
+        <#return "number">
+    <#elseif simpleType=="int">
+        <#return "number">
+    <#elseif simpleType=="Integer">
+        <#return "number">
+    <#elseif simpleType=="long">
+        <#return "number">
+    <#elseif simpleType=="Double">
+        <#return "number">
+    <#elseif simpleType=="Long">
+        <#return "number">
+    <#elseif simpleType=="float">
+        <#return "number">
+    <#elseif simpleType=="double">
+        <#return "number">
+    <#elseif simpleType=="boolean">
+        <#return "boolean">
+    <#elseif simpleType=="Boolean">
+        <#return "boolean">
+    <#elseif simpleType=="char">
+        <#return "string">
+    <#elseif simpleType=="String">
+        <#return "string">
+    <#else>
+        <#return "any">
+    </#if>
 </#function>
 
 <#-- -------------------- -->

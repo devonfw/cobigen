@@ -37,8 +37,7 @@ export class ${variables.component?cap_first}DataGridService {
         </#list>
       };
 
-      return this.http.post(this.BO.post${variables.etoName}(),  cobigen_obj )
-                      .map(res => res.json());
+      return this.http.post(this.BO.post${variables.etoName}(),  cobigen_obj ).map(res => res.json());
     }
 
     deleteData(id) {
@@ -46,8 +45,7 @@ export class ${variables.component?cap_first}DataGridService {
     }
 
     searchData(criteria) {
-      return this.http.post(this.BO.post${variables.etoName}Search(), { criteria: criteria })
-                      .map(res => res.json());
+      return this.http.post(this.BO.post${variables.etoName}Search(), { criteria: criteria }).map(res => res.json());
     }
 
 }
