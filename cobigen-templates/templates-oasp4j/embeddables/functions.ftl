@@ -10,7 +10,7 @@
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(field)};
 <#else>
-	private <#if boxPrimitives>${JavaUtil.boxJavaPrimitives(field.type)}<#else>${field.type}</#if> ${field.name};
+	private <#if boxPrimitives>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> ${field.name};
 </#if>
 </#list>
 </#macro>

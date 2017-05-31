@@ -17,8 +17,8 @@
 	<#else>
 		private ${field.type?replace("Embeddable","Eto")} ${field.name};
 	</#if>
-<#elseif isSearchCriteria && JavaUtil.equalsJavaPrimitive(field.type)>
-  private ${JavaUtil.boxJavaPrimitives(field.type)} ${field.name};
+<#elseif isSearchCriteria && JavaUtil.equalsJavaPrimitive(classObject,field.name)>
+  private ${JavaUtil.boxJavaPrimitives(classObject,field.name)} ${field.name};
 <#else>
 	private ${field.type} ${field.name};
 </#if>
@@ -63,12 +63,12 @@
 	</#if>
 <#else>
   <#if implementsInterface>@Override</#if>
-	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(field.type)}<#else>${field.type}</#if> <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
+	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
 	}</#if>
 
 	<#if implementsInterface>@Override</#if>
-	public void set${field.name?cap_first}(<#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(field.type)}<#else>${field.type}</#if> ${field.name}) <#if isInterface>;<#else>{
+	public void set${field.name?cap_first}(<#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> ${field.name}) <#if isInterface>;<#else>{
 		this.${field.name} = ${field.name};
 	}</#if>
 </#if>
