@@ -25,7 +25,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         <#if pojo.fields?has_content>
         	<#list pojo.fields as field>
         		<#if JavaUtil.equalsJavaPrimitive(field.type)>
-					result = prime * result + ${JavaUtil.boxJavaPrimitives(field.type,field.name)}.hashCode();
+					result = prime * result + ${JavaUtil.castJavaPrimitives(field.type,field.name)}.hashCode();
 				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
           <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
   					<#assign idVar = OaspUtil.resolveIdVariableName(field)>
