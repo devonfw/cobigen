@@ -15,7 +15,7 @@ public interface ${variables.entityName} {
    */
 	${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,variables.component)};
 	
-	<#assign idVar = OaspUtil.resolveIdVariableName(field)>
+	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
 	/**
 	* Sets a new {@link ${variables.entityName}} with the given ID.
 	* 

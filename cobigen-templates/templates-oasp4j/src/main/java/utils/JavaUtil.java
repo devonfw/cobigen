@@ -138,8 +138,7 @@ public class JavaUtil {
    */
   public String castJavaPrimitives(String simpleType, String varName) throws ClassNotFoundException {
 
-    // TODO formerly named box... replace it through the templates!!!
-    if (equalsJavaPrimitive(simpleType)) {
+   if (equalsJavaPrimitive(simpleType)) {
       return String.format("((%1$s)%2$s)", boxJavaPrimitives(simpleType), varName);
     } else {
       return "";

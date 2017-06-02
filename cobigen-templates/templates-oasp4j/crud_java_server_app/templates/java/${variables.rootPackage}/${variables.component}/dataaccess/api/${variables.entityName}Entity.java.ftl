@@ -29,7 +29,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
         return this.${field.name}.getId();
       }
     
-      <#assign idVar = OaspUtil.resolveIdVariableName(field)>
+      <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
       @Override
       public void ${OaspUtil.resolveIdSetter(field,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
     

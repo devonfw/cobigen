@@ -26,7 +26,7 @@ public class ${pojo.name} implements ${variables.entityName} {
     return this.${field.name}.getId();
   }
 
-  <#assign idVar = OaspUtil.resolveIdVariableName(field)>
+  <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
   @Override
   public void ${OaspUtil.resolveIdSetter(field,false,variables.component)}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 
