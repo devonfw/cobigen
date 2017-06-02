@@ -24,7 +24,7 @@ public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonical
         int result = super.hashCode();
         <#if pojo.fields?has_content>
         	<#list pojo.fields as field>
-        		<#if JavaUtil.equalsJavaPrimitive(callObject,field.name)>
+        		<#if JavaUtil.equalsJavaPrimitive(classObject,field.name)>
 					result = prime * result + ${JavaUtil.castJavaPrimitives(classObject,field.name)}.hashCode();
 				<#elseif field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
           <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
