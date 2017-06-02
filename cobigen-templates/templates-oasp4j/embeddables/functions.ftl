@@ -8,7 +8,7 @@
 <#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion boxPrimitives=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-   	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(field)};
+   	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
 <#else>
 	private <#if boxPrimitives>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> ${field.name};
 </#if>
@@ -22,7 +22,7 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
-	<#assign idVar = OaspUtil.resolveIdVariableName(field)>
+	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
 	<#if implementsInterface>
 	@Override</#if>
 	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,variables.component)} {

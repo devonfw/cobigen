@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.Collection;
 import java.util.Map;
 
 import constants.pojo.Field;
@@ -39,11 +40,47 @@ public class OaspUtil {
   }
 
   /**
+   * Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via an object
+   * reference or a direct ID getter
+   *
+   * @param pojoClass the class object of the pojo
+   * @param fieldName the name of the field in the pojo
+   * @param byObjectReference boolean
+   * @param component the OASP4j component name
+   * @return get+ {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, boolean, true, String)})+()
+   * @throws NoSuchFieldException indicating a severe problem in the used model
+   * @throws SecurityException if the field cannot be accessed for any reason
+   */
+  public String resolveIdGetter(Class<?> pojoClass, Map<String, Object> fieldMap, boolean byObjectReference, String component)
+      throws NoSuchFieldException, SecurityException {
+
+    return "get" + resolveIdVariableNameOrSetterGetterSuffix(pojoClass, fieldMap, byObjectReference, true, component)
+        + "()";
+  }
+
+  /**
    * same as {@link #resolveIdGetter(Map, boolean, String)} but with byObjectReference=false and component=""
+   *
+   * @param field the field
+   * @return get+ {@link #resolveIdVariableNameOrSetterGetterSuffix(Map,boolean,true,String)})+()
    */
   public String resolveIdGetter(Map<String, Object> field) {
 
     return this.resolveIdGetter(field, false, "");
+  }
+
+  /**
+   * same as {@link #resolveIdGetter(Class,String,boolean,String)} but with byObjectReference=false and component=""
+   *
+   * @param pojoClass the class object of the pojo
+   * @param fieldName the name of the field in the pojo
+   * @return get+ {@link #resolveIdVariableNameOrSetterGetterSuffix(Map,boolean,true,String)})+()
+   * @throws NoSuchFieldException indicating a severe problem in the used model
+   * @throws SecurityException if the field cannot be accessed for any reason
+   */
+  public String resolveIdGetter(Class<?> pojoClass, Map<String, Object> fieldMap) throws NoSuchFieldException, SecurityException {
+
+    return resolveIdGetter(pojoClass, fieldMap, false, "");
   }
 
   /**
@@ -70,6 +107,39 @@ public class OaspUtil {
   }
 
   /**
+   * Determines the ID setter for a given 'field' dependent on whether the setter should access the ID via an object
+   * reference or a direct ID setter. In contrast to resolveIdGetter, this function does not generate the function
+   * parenthesis to enable parameter declaration.
+   *
+   * @param pojoClass the class object of the pojo
+   * @param fieldName the name of the field in the pojo
+   * @param byObjectReference boolean
+   * @param component the OASP4j component name
+   * @return set+ {@link #resolveIdVariableNameOrSetterGetterSuffix(Map,boolean,true,String)})
+   * @throws NoSuchFieldException indicating a severe problem in the used model
+   * @throws SecurityException if the field cannot be accessed for any reason
+   */
+  public String resolveIdSetter(Class<?> pojoClass, Map<String, Object> fieldMap, boolean byObjectReference, String component)
+      throws NoSuchFieldException, SecurityException {
+
+    return "set" + resolveIdVariableNameOrSetterGetterSuffix(pojoClass, fieldMap, byObjectReference, true, component);
+  }
+
+  /**
+   * same as {@link #resolveIdSetter(Class,String,boolean,String)} but with byObjectReference=false and component=""
+   *
+   * @param pojoClass the class object of the pojo
+   * @param fieldName the name of the field in the pojo
+   * @return set+ {@link #resolveIdVariableNameOrSetterGetterSuffix(Map,boolean,true,String)})
+   * @throws NoSuchFieldException indicating a severe problem in the used model
+   * @throws SecurityException if the field cannot be accessed for any reason
+   */
+  public String resolveIdSetter(Class<?> pojoClass, Map<String, Object> fieldMap) throws NoSuchFieldException, SecurityException {
+
+    return resolveIdSetter(pojoClass, fieldMap, false, "");
+  }
+
+  /**
    * Determines the variable name for the id value of the 'field'
    *
    * @param field the field
@@ -80,6 +150,21 @@ public class OaspUtil {
     // the component is passed down as an empty string since byObjectReference is false and therefore the component is
     // never touched
     return resolveIdVariableNameOrSetterGetterSuffix(field, false, false, "");
+  }
+
+  /**
+   * Determines the variable name for the id value of the specified field in the pojo
+   *
+   * @param pojoClass the class object of the pojo
+   * @param fieldName the name of the field in the pojo
+   * @return {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, false, false, "")})
+   */
+  public String resolveIdVariableName(Class<?> pojoClass, Map<String, Object> fieldMap)
+      throws NoSuchFieldException, SecurityException {
+
+    // the component is passed down as an empty string since byObjectReference is false and therefore the component is
+    // never touched
+    return resolveIdVariableNameOrSetterGetterSuffix(pojoClass, fieldMap, false, false, "");
   }
 
   /**
@@ -120,6 +205,53 @@ public class OaspUtil {
     }
 
     return fieldName + suffix;
+
+  }
+
+  /**
+   * Determines the ID setter/getter suffix for a given 'field' dependent on whether the setter/getter should access the
+   * ID via an object reference or a direct ID setter/getter
+   *
+   * @param pojoClass the {@link Class} object of the pojo
+   * @param fieldName String the name of the field to look up
+   * @param byObjectReference boolean
+   * @param capitalize if the field name should be capitalized
+   * @param component the oasp component. Only needed if byObjectReference is true
+   * @return idVariable name or getter/setter suffix
+   * @throws NoSuchFieldException indicating a severe problem in the used model
+   * @throws SecurityException if the field cannot be accessed for any reason
+   */
+  public String resolveIdVariableNameOrSetterGetterSuffix(Class<?> pojoClass, Map<String, Object> fieldMap,
+      boolean byObjectReference, boolean capitalize, String component) throws NoSuchFieldException, SecurityException {
+
+    String resultName = (String)fieldMap.get(Field.NAME);
+    if (capitalize) {
+      resultName = resultName.substring(0, 1).toUpperCase() + resultName.substring(1);
+    }
+    String suffix = "";
+    // TODO Due to type erasure this simple check won't work ... This will get ugly as hell
+    // check if Entity is contained OR if instanceof Collection.
+    // in the later: cast to Collection, get an iterator, get an element (if any...) get type ... won#t work...
+    String fieldType = (String) fieldMap.get(Field.TYPE);
+    String fieldName = (String) fieldMap.get(Field.NAME);
+    if (fieldType.contains("Entity")) {
+      if (Collection.class.isAssignableFrom(pojoClass.getDeclaredField(fieldName).getType())) {
+        suffix = "Ids";
+        if (resultName.endsWith("s")) {
+          // Assume trailing 's' as indicator for a plural
+          resultName = resultName.substring(0, resultName.length() - 1);
+        }
+      } else {
+        suffix = "Id";
+      }
+      if (byObjectReference
+          && isEntityInComponent(pojoClass.getDeclaredField(fieldName).getType().getName(), component)) {
+        // direct references for Entities in same component, so get id of the object reference
+        suffix = "().getId";
+      }
+    }
+
+    return resultName + suffix;
 
   }
 
