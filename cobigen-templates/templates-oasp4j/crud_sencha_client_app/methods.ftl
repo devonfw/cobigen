@@ -1,33 +1,3 @@
-<#-- ---------------------------------------- -->
-<#-- GENERAL JAVA SPECIFIC FUNCTIONS & MACROS -->
-<#-- ---------------------------------------- -->
-
-<#function getSenchaType simpleType>
-<#if simpleType=="byte">
-<#return "auto">
-<#elseif simpleType=="short">
-<#return "int">
-<#elseif simpleType=="int">
-<#return "int">
-<#elseif simpleType=="Long">
-<#return "int">
-<#elseif simpleType=="float">
-<#return "float">
-<#elseif simpleType=="double">
-<#return "float">
-<#elseif simpleType=="boolean">
-<#return "boolean">
-<#elseif simpleType=="char">
-<#return "string">
-<#elseif simpleType=="String">
-<#return "string">
-<#elseif simpleType=="Date">
-<#return "date">
-<#else>
-<#return "auto">
-</#if>
-</#function>
-
 <#-- -------------------- -->
 <#-- OASP SPECIFIC MACROS -->
 <#-- -------------------- -->
@@ -38,9 +8,9 @@
 <#macro generateSenchaModelFields>
   <#list pojo.fields as field>
     <#if field?has_next>
-      { name: '${field.name}', type: '${getSenchaType(field.type)}' },
+      { name: '${field.name}', type: '${JavaUtil.getSenchaType(field.type)}' },
     <#else>
-      { name: '${field.name}', type: '${getSenchaType(field.type)}' }
+      { name: '${field.name}', type: '${JavaUtil.getSenchaType(field.type)}' }
     </#if>
   </#list>
 </#macro>
@@ -65,7 +35,7 @@
   <#assign x=1>
   <#list pojo.fields as field>
     <#if field?has_next>
-      <#if getSenchaType(field.type) == "auto">
+      <#if JavaUtil.getSenchaType(field.type) == "auto">
          {
             xtype: 'combo',
             reference: '${field.name}',
@@ -82,7 +52,7 @@
             minValue: 1
         },
       <#else>
-        <#if getSenchaType(field.type) == 'int'>
+        <#if JavaUtil.getSenchaType(field.type) == 'int'>
           {
               xtype: 'numberfield',
               reference: '${field.name?lower_case}',
@@ -94,7 +64,7 @@
               tabIndex: ${x},
               minValue: 1
           },
-        <#elseif getSenchaType(field.type)=='string'>
+        <#elseif JavaUtil.getSenchaType(field.type)=='string'>
           {
               xtype: 'textfield',
               reference: '${field.name?lower_case}',
@@ -109,7 +79,7 @@
         </#if>
       </#if>
     <#else>
-      <#if getSenchaType(field.type) == "auto">
+      <#if JavaUtil.getSenchaType(field.type) == "auto">
        {
             xtype: 'combo',
             reference: '${field.name}',
@@ -127,7 +97,7 @@
             minValue: 1
         }
       <#else>
-        <#if getSenchaType(field.type) == 'int'>
+        <#if JavaUtil.getSenchaType(field.type) == 'int'>
           {
               xtype: 'numberfield',
               reference: '${field.name?lower_case}',
@@ -139,7 +109,7 @@
               tabIndex: ${x},
               minValue: 1
           }
-        <#elseif getSenchaType(field.type)=='string'>
+        <#elseif JavaUtil.getSenchaType(field.type)=='string'>
           {
               xtype: 'textfield',
               reference: '${field.name?lower_case}',

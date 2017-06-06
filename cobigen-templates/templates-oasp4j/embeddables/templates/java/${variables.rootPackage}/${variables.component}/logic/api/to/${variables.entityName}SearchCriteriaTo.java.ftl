@@ -13,7 +13,7 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 
   private static final long serialVersionUID = 1L;
 
-	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion/>
+	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion boxPrimitives=true/>
 
   /**
    * The constructor.
