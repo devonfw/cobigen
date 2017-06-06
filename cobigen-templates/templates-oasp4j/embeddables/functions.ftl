@@ -8,9 +8,9 @@
 <#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion boxPrimitives=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-   	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${EmbeddablesFunctions.resolveIdVariableName(field)};
+   	private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
 <#else>
-	private <#if boxPrimitives>${JavaUtil.boxJavaPrimitives(field.type)}<#else>${field.type}</#if> ${field.name};
+	private <#if boxPrimitives>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> ${field.name};
 </#if>
 </#list>
 </#macro>
@@ -22,16 +22,16 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
-	<#assign idVar = EmbeddablesFunctions.resolveIdVariableName(field)>
+	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
 	<#if implementsInterface>
 	@Override</#if>
-	public ${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${EmbeddablesFunctions.resolveIdGetter(field,false,variables.component)} {
+	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,variables.component)} {
 		return ${idVar};
 	}
 
 	<#if implementsInterface>
 	@Override</#if>
-	public void ${EmbeddablesFunctions.resolveIdSetter(field,false,variables.component)}(${EmbeddablesFunctions.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+	public void ${OaspUtil.resolveIdSetter(field,false,variables.component)}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
 	}
 <#else>

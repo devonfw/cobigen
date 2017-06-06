@@ -142,10 +142,12 @@ def setBuildStatus(String message, String state) {
 	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
 	
 	// sholzer 20170516:
-	if(env.BRANCH_NAME.startsWith("PR-")) {
-		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
-		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
-		// replacement for the old implementation: 
-		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
-	}
+	// if(env.BRANCH_NAME.startsWith("PR-")) {
+	// 	// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
+	// 	//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
+	// 	// replacement for the old implementation: 
+	// 	step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+	// }
+	// sholzer 20170524: Jenkins seems to set states by itself
+	echo '${message} ${state}'
 }
