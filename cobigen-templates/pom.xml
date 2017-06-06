@@ -42,6 +42,8 @@
         </includes>
         <excludes>
           <exclude>pom.xml</exclude>
+          <exclude>target/</exclude>
+          <exclude>bin</exclude>
         </excludes>
       </resource>
     </resources>

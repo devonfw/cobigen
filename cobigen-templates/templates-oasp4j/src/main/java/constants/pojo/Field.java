@@ -1,19 +1,45 @@
 package constants.pojo;
 
 /**
- * @author sholzer
+ * Contains the used keys for the pojo field Map&lt;String, Object>
  *
+ * @author sholzer
  */
-public interface Field {
+public enum Field {
 
-  public static final String NAME = "name";
+    /**
+     * Name of the field
+     */
+    NAME("name"),
+    /**
+     * Type of the field
+     */
+    TYPE("type"),
+    /**
+     * Canonical Type of the field
+     */
+    CANONICAL_TYPE("canonicalType"),
+    /**
+     * The Javadoc of the field
+     */
+    JAVA_DOC("javaDoc"),
+    /**
+     * Annotations
+     */
+    ANNOTATIONS("annotations");
 
-  public static final String TYPE = "type";
+    /**
+     * key value
+     */
+    @SuppressWarnings("unused")
+    private String value;
 
-  public static final String CANONICAL_TYPE = "canonicalType";
-
-  public static final String JAVA_DOC = "javaDoc";
-
-  public static final String ANNOTATIONS = "annotations";
+    /**
+     * @param value
+     *            of the key
+     */
+    Field(String value) {
+        this.value = value;
+    }
 
 }
