@@ -126,6 +126,7 @@ def notifyFailed() {
       notifyEveryUnstableBuild: true,
       recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                       [$class: 'RequesterRecipientProvider'],
+				      [$class: 'DevelopersRecipientProvider'],
 				      [$class: 'FailingTestSuspectsRecipientProvider'],
 				      [$class: 'UpstreamComitterRecipientProvider']])])
     
@@ -133,6 +134,7 @@ def notifyFailed() {
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
          to: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider'],
+				 [$class: 'DevelopersRecipientProvider'],
 				 [$class: 'FailingTestSuspectsRecipientProvider'],
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
