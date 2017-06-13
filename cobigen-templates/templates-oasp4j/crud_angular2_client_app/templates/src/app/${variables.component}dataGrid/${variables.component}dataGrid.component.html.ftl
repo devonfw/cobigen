@@ -15,16 +15,6 @@
     md-button
     flex
     class="push-right-sm"
-    [disabled]="sorting.length === 0"
-    [mdTooltip]="'${variables.component}datagrid.sortTip' | translate"
-    (click) = "clearSorting()">
-    <md-icon>import_export</md-icon>
-  </button>
-
-  <button
-    md-button
-    flex
-    class="push-right-sm"
     [mdTooltip]="'buttons.addItem' | translate"
     (click) = "openDialog()">
     <md-icon>add</md-icon>
@@ -54,7 +44,7 @@
 
 <div id="${variables.etoName?lower_case}dataGrid-div" *ngIf="searchBox" layout="row" class="pad-left-sm pad-right-sm" style="background-color:#eee">
   <form #searchForm="ngForm">
-   <@getNG2Type_Grid_Search/>
+      <@getNG2Type_Grid_Search/>
 
     <button md-button (click) = "search(searchForm.form)"> {{'buttons.search' | translate}} </button>
     <button md-button (click) = "searchReset(searchForm.form)"> {{'buttons.clean' | translate}} </button>
@@ -66,7 +56,7 @@
 <td-data-table
   #dataTable
   [data]="data"
-  [columns]="cobigen_columns"
+  [columns]="columns"
   [sortable]="true"
   [selectable]="true"
   [multiple]="false"
@@ -75,4 +65,7 @@
   (rowSelect)="selectEvent($event)"
   (sortChange)="sort($event)">
 </td-data-table>
-<td-paging-bar [pageSizes]="[5, 10, 20]" [total]="dataTotal" (change)="page($event)"></td-paging-bar>
+<td-paging-bar #pagingBar [pageSizes]="[5, 10, 20]" [total]="dataTotal" (change)="page($event)">
+  <span td-paging-bar-label hide-xs>Rows per page:</span>
+  {{pagingBar.range}} <span hide-xs>of {{pagingBar.total}}</span>
+</td-paging-bar>
