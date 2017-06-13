@@ -1,127 +1,129 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { SecurityService } from '../../security/security.service';
-import { TranslateService } from 'ng2-translate/src/translate.service';
-import { ${variables.component?cap_first}AddDialogComponent } from '../${variables.component}addDialog/${variables.component}addDialog.component';
+import { Router } from '@angular/router';
+import { AuthService } from '../shared/security/auth.service';
+import { TranslateService } from '@ngx-translate/core';
+import { ${variables.component?cap_first}AddDialogComponent } from './${variables.component}addDialog/${variables.component}addDialog.component';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
     IPageChangeEvent,
     ITdDataTableColumn,
-    ITdDataTableSortChangeEvent
+    ITdDataTableSortChangeEvent,
+    TdDataTableColumnComponent,
+    TdDataTableComponent,
+    TdDialogService
 } from '@covalent/core';
-import { TdDialogService } from '@covalent/core';
-import { ${variables.component?cap_first}DataGridService } from './${variables.component}dataGrid.service';
+import { ${variables.component?cap_first}DataGridService } from './shared/${variables.component}dataGrid.service';
 import * as _ from 'lodash';
 
 @Component({
-    templateUrl: './${variables.component}dataGrid.component.html'
+    selector: 'app-data-grid',
+    templateUrl: './${variables.component}dataGrid.component.html',
 })
 
 export class ${variables.component?cap_first}DataGridComponent implements OnInit {
 
-    @ViewChild('dataTable') dataTable;
-    
+    @ViewChild('dataTable') dataTable: TdDataTableComponent
+
     data: any = [];
-    cobigen_columns: any = [<#list pojo.fields as field>
+    columns: ITdDataTableColumn[] = [<#list pojo.fields as field>
       <#if field?has_next>
       {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
       <#else>
       {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
       </#if>
-    </#list>];  
+    </#list>];
+
     selectedRow: any;
-    language: string;
 
     dialogRef: MdDialogRef<${variables.component?cap_first}AddDialogComponent>;
 
     dataTotal: number;
-    searchBox: boolean = false;
-    currentPage: number = 1;
-    pageSize: number = 5;
+    searchBox = false;
+    currentPage = 1;
+    pageSize = 5;
     sorting: any[] = [];
-    cobigen_searchTerms: any = {
-     <#list pojo.fields as field>
-      <#if field?has_next>
-        ${field.name}: null,
-      <#else>
-        ${field.name}: null
-      </#if>
-    </#list>
+    searchTerms: any = {
+      <#list pojo.fields as field>
+        <#if field?has_next>
+      ${field.name}: null,
+        <#else>
+      ${field.name}: null
+       </#if>
+      </#list>
     };
 
     constructor(public dialog: MdDialog,
+                public authService: AuthService,
+                public router: Router,
                 private dataGridService: ${variables.component?cap_first}DataGridService,
                 private _dialogService: TdDialogService,
-                private translate: TranslateService,
-                private securityService: SecurityService) {
+                private translate: TranslateService) {
     }
 
     ngOnInit(): void {
         this.getData();
     }
-    
-    ngDoCheck() {
-        if (this.language !== this.translate.currentLang) {
-            this.language = this.translate.currentLang;
-            this.cobigen_columns = [<#list pojo.fields as field>
-            <#if field?has_next>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')},
-            <#else>
-            {name: '${field.name}', label: this.getTranslation('${variables.component}datagrid.columns.${field.name}')}
-            </#if>
-          </#list>];
-        }
-    }
 
     getTranslation(text: string): string {
         let value: string;
+        let me = this;
+
         this.translate.get(text).subscribe( (res) => {
             value = res;
         });
+
+        this.translate.onLangChange.subscribe(() => {
+                me.columns.forEach( column => {
+                    this.translate.get('${variables.component}datagrid.columns.' + column.name).subscribe( (res) => {
+                        column.label = res;
+                    });
+                } )
+                me.dataTable.refresh();
+        });
+
         return value;
     }
 
     getData(): void {
        let me = this;
-       this.dataGridService.getData(this.pageSize, this.currentPage, this.cobigen_searchTerms, this.sorting).subscribe((res) => {
+       this.dataGridService.getData(this.pageSize, this.currentPage, this.searchTerms, this.sorting).subscribe((res) => {
            me.data = res.result;
            me.dataTotal = res.pagination.total;
-       }, (error) =>{
+       }, (error) => {
             this._dialogService.openConfirm({
                 message: JSON.parse(error.text()).message,
                 title: this.getTranslation('${variables.component}datagrid.alert.title')
-            })
+            }).afterClosed().subscribe((accept: boolean) => {
+              if (accept) {
+                this.authService.setLogged(false);
+                this.router.navigate(['/login']);
+              }
+            });
        });
     }
 
     sort(sortEvent: ITdDataTableSortChangeEvent): void {
         this.sorting = _.reject(this.sorting, { 'name': sortEvent.name });
-        this.sorting.push({"name": sortEvent.name, "direction": sortEvent.order});
-        this.getData();
-    }
-
-    clearSorting() {
-        this.dataTable._sortBy = null;
-        this.sorting = [];
+        this.sorting.push({'name': sortEvent.name, 'direction': sortEvent.order});
         this.getData();
     }
 
     search(searchForm): void {
         _.forIn(searchForm.value, function(value, key) {
-            if(value == "") {
+            if (value === '') {
                 searchForm.value[key] = null;
             }
         });
-        this.cobigen_searchTerms = searchForm.value;
+        this.searchTerms = searchForm.value;
         this.getData();
     }
-    
+
     searchReset(form): void {
       form.reset();
       this.search(form);
     }
 
-    openSearchBox(){
+    openSearchBox() {
         this.searchBox = !this.searchBox;
     }
 
@@ -137,7 +139,6 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
 
     openDialog(): void {
         this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent);
-        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.addTitle");
 
         this.dialogRef.afterClosed().subscribe(result => {
             if (result) {
@@ -147,28 +148,38 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                   this._dialogService.openAlert({
                       message: JSON.parse(error.text()).message,
                       title: this.getTranslation('${variables.component}datagrid.alert.title')
-                  })
+                  }).afterClosed().subscribe((accept: boolean) => {
+                    if (accept) {
+                    this.authService.setLogged(false);
+                    this.router.navigate(['/login']);
+                    }
+                });
               });
             }
         });
     }
 
     openEditDialog(): void {
-        this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent);
-        this.dialogRef.componentInstance.item = this.selectedRow;
-        this.dialogRef.componentInstance.title = this.getTranslation("${variables.component}datagrid.editTitle");
+        this.dialogRef = this.dialog.open(${variables.component?cap_first}AddDialogComponent, {
+            data: this.selectedRow,
+        });
 
         this.dialogRef.afterClosed().subscribe(result => {
-          if (result) {
+            if (result) {
               this.dataGridService.saveData(result).subscribe( () => {
                   this.getData();
               }, (error) => {
                   this._dialogService.openAlert({
                       message: JSON.parse(error.text()).message,
                       title: this.getTranslation('${variables.component}datagrid.alert.title')
-                  })
+                  }).afterClosed().subscribe((accept: boolean) => {
+                      if (accept) {
+                        this.authService.setLogged(false);
+                        this.router.navigate(['/login']);
+                      }
+                    });
               });
-          }
+            }
         });
     }
 
@@ -186,7 +197,12 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                     this._dialogService.openAlert({
                         message: JSON.parse(error.text()).message,
                         title: this.getTranslation('${variables.component}datagrid.alert.title')
-                    })
+                    }).afterClosed().subscribe((acceptance: boolean) => {
+                      if (acceptance) {
+                        this.authService.setLogged(false);
+                        this.router.navigate(['/login']);
+                      }
+                    });
                 });
             }
         });
