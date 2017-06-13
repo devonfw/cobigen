@@ -13,5 +13,5 @@ public class Constants {
     /**
      * Path for the TSMerger
      */
-    public static final String TS_MERGER = "/tsm.zip";
+    public static final String TS_MERGER = "/tsmerger.js";
 }

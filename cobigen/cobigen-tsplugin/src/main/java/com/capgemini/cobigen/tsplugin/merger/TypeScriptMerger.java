@@ -5,18 +5,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
+import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.tsplugin.merger.constants.Constants;
-import com.capgemini.cobigen.tsplugin.util.UnzipUtility;
 
 /**
  *
@@ -55,14 +54,7 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        String result = "";
-        try {
-            result = tsMerger(patchOverrides, base, patch);
-        } catch (IOException e) {
-            throw new MergeException(base, e.getMessage());
-        }
-
-        return result;
+        return tsMerger(patchOverrides, base, patch);
 
     }
 
@@ -75,53 +67,52 @@ public class TypeScriptMerger implements Merger {
      * @param patch
      *            the patch string
      * @return contents merged
-     * @throws IOException
-     *             if cannot find beautify.js
      */
-    private String tsMerger(boolean patchOverrides, File base, String patch) throws IOException {
-        Context cx = Context.enter();
-        Scriptable scope = cx.initStandardObjects();
+    private String tsMerger(boolean patchOverrides, File base, String patch) {
+        Context cxBeautify = Context.enter();
+        Scriptable scopeBeautify = cxBeautify.initStandardObjects();
+
         String mergedContents = "";
+        String mergedImports = "";
 
-        InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-        InputStream zipFile = TypeScriptMerger.class.getResourceAsStream(Constants.TS_MERGER);
+        try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
+            InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream(Constants.TS_MERGER);
+            Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
+            cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
+            Path tmpDir = Files.createTempDirectory("cobigen-ts");
+            Path filePath = tmpDir.resolve("tsmerger.js");
+            Path filePatch = tmpDir.resolve("patch.ts");
+            Files.copy(mergerASStream, filePath);
+            Files.copy(IOUtils.toInputStream(patch, "UTF-8"), filePatch);
 
-        try {
-            Reader reader = new InputStreamReader(beautifierASStream);
-            cx.evaluateReader(scope, reader, "__beautify.js", 1, null);
-            reader.close();
-        } catch (IOException e) {
-            throw new MergeException(new File(""), "Error reading resoruce script");
-        }
-
-        File temp = new File("/tmp");
-        temp.mkdir();
-        File outPatch = new File("/tmp/temp_patch.ts");
-        PrintWriter out = new PrintWriter("/tmp/temp_patch.ts");
-        out.println(patch);
-        out.close();
-
-        if (Files.notExists(new File("/tmp/tsm").toPath(), LinkOption.NOFOLLOW_LINKS)) {
-            UnzipUtility unzipper = new UnzipUtility();
-            unzipper.unzip(zipFile, "/tmp/tsm");
-        }
-
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node \\tmp\\tsm\\build\\index.js "
-            + patchOverrides + " " + base.getAbsolutePath() + " " + outPatch.getAbsolutePath());
-
-        builder.redirectErrorStream(true);
-        Process p = builder.start();
-        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line;
-        while (true) {
-            line = r.readLine();
-            if (line == null) {
-                break;
+            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node " + filePath.toAbsolutePath() + " "
+                + patchOverrides + " " + base.getAbsolutePath() + " " + filePatch.toAbsolutePath());
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+            try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                String line;
+                while (true) {
+                    line = r.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    System.out.println(line);
+                    if (line.startsWith("import ")) {
+                        mergedImports = mergedImports.concat(line);
+                        mergedImports = mergedImports.concat("\n");
+                    } else {
+                        mergedContents = mergedContents.concat("\n");
+                        mergedContents = mergedContents.concat(line);
+                    }
+                }
             }
-            mergedContents = mergedContents.concat(line);
+        } catch (IOException e) {
+            throw new MergeException(new File(""), "Error reading jsBeautifier script");
         }
-        scope.put("jsCode", scope, mergedContents);
-        return (String) cx.evaluateString(scope, "js_beautify(jsCode, {indent_size:" + 4 + "})", "inline", 1, null);
+
+        scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
+        return mergedImports + (String) cxBeautify.evaluateString(scopeBeautify,
+            "js_beautify(jsCode, {indent_size:" + 4 + "})", "inline", 1, null);
 
     }
 
