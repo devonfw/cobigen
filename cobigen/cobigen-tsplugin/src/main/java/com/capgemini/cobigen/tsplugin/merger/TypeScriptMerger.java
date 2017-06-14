@@ -8,8 +8,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -18,7 +21,7 @@ import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.tsplugin.merger.constants.Constants;
 
 /**
- *
+ * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level
  */
 public class TypeScriptMerger implements Merger {
 
@@ -79,17 +82,34 @@ public class TypeScriptMerger implements Merger {
             InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream(Constants.TS_MERGER);
             Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
             cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
-            Path tmpDir = Files.createTempDirectory("cobigen-ts");
-            Path filePath = tmpDir.resolve("tsmerger.js");
-            Path filePatch = tmpDir.resolve("patch.ts");
+            Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
+            Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
+            Path filePatch = tmpDir.resolve(Constants.PATCH_TS);
             Files.copy(mergerASStream, filePath);
             Files.copy(IOUtils.toInputStream(patch, "UTF-8"), filePatch);
 
-            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node " + filePath.toAbsolutePath() + " "
-                + patchOverrides + " " + base.getAbsolutePath() + " " + filePatch.toAbsolutePath());
+            List<String> commands = new LinkedList<>();
+
+            if (SystemUtils.IS_OS_WINDOWS) {
+                commands.add("cmd.exe");
+                commands.add("/c");
+            }
+
+            commands.add("node");
+            commands.add(filePath.toAbsolutePath().toString());
+            if (patchOverrides) {
+                commands.add("true");
+            } else {
+                commands.add("false");
+            }
+
+            commands.add(base.getAbsolutePath().toString());
+            commands.add(filePatch.toAbsolutePath().toString());
+            ProcessBuilder builder = new ProcessBuilder(commands);
             builder.redirectErrorStream(true);
             Process p = builder.start();
-            try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+            try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
+                BufferedReader r = new BufferedReader(rdr)) {
                 String line;
                 while (true) {
                     line = r.readLine();
@@ -99,7 +119,7 @@ public class TypeScriptMerger implements Merger {
                     System.out.println(line);
                     if (line.startsWith("import ")) {
                         mergedImports = mergedImports.concat(line);
-                        mergedImports = mergedImports.concat("\n");
+                        mergedImports = mergedImports.concat("\n\n");
                     } else {
                         mergedContents = mergedContents.concat("\n");
                         mergedContents = mergedContents.concat(line);
