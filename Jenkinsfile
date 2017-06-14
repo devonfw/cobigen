@@ -87,6 +87,7 @@ node {
 			
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
+				notifyFailed()
 				return
 			}
 			
@@ -97,6 +98,7 @@ node {
 			
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
+				notifyFailed()
 				return
 			}
 			
@@ -126,6 +128,7 @@ def notifyFailed() {
       notifyEveryUnstableBuild: true,
       recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                       [$class: 'RequesterRecipientProvider'],
+				      [$class: 'DevelopersRecipientProvider'],
 				      [$class: 'FailingTestSuspectsRecipientProvider'],
 				      [$class: 'UpstreamComitterRecipientProvider']])])
     
@@ -133,6 +136,7 @@ def notifyFailed() {
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
          to: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider'],
+				 [$class: 'DevelopersRecipientProvider'],
 				 [$class: 'FailingTestSuspectsRecipientProvider'],
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
@@ -149,5 +153,5 @@ def setBuildStatus(String message, String state) {
 	// 	step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
 	// }
 	// sholzer 20170524: Jenkins seems to set states by itself
-	echo '${message} ${state}'
+	echo "${message} ${state}"
 }
