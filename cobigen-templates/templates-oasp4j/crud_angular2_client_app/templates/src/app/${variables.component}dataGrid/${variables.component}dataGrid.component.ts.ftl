@@ -16,7 +16,7 @@ import { ${variables.component?cap_first}DataGridService } from './shared/${vari
 import * as _ from 'lodash';
 
 @Component({
-    selector: 'app-data-grid',
+    selector: 'app-${variables.etoName?lower_case}data-grid',
     templateUrl: './${variables.component}dataGrid.component.html',
 })
 
