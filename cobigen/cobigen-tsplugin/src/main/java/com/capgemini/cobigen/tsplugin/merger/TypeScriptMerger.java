@@ -116,7 +116,6 @@ public class TypeScriptMerger implements Merger {
                     if (line == null) {
                         break;
                     }
-                    System.out.println(line);
                     if (line.startsWith("import ")) {
                         mergedImports = mergedImports.concat(line);
                         mergedImports = mergedImports.concat("\n\n");
