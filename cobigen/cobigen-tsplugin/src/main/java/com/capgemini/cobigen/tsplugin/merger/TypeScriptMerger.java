@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -81,6 +82,7 @@ public class TypeScriptMerger implements Merger {
         try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
             InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS);
             Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
+
             cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
             Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
             Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
@@ -106,8 +108,16 @@ public class TypeScriptMerger implements Merger {
             commands.add(base.getAbsolutePath().toString());
             commands.add(filePatch.toAbsolutePath().toString());
             ProcessBuilder builder = new ProcessBuilder(commands);
-            builder.redirectErrorStream(true);
+            builder.redirectError(Redirect.PIPE);
             Process p = builder.start();
+
+            // Handles console error
+            try (InputStream err = p.getErrorStream(); Reader errorReader = new InputStreamReader(err)) {
+                if (errorReader.read() > -1) {
+                    throw new MergeException(base, IOUtils.toString(err, "UTF-8"));
+                }
+            }
+
             try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
                 BufferedReader r = new BufferedReader(rdr)) {
                 String line;
@@ -126,7 +136,7 @@ public class TypeScriptMerger implements Merger {
                 }
             }
         } catch (IOException e) {
-            throw new MergeException(new File(""), "Error reading jsBeautifier script");
+            throw new MergeException(base, "Error reading jsBeautifier script");
         }
 
         scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
