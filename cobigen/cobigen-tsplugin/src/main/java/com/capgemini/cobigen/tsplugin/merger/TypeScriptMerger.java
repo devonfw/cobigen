@@ -79,7 +79,7 @@ public class TypeScriptMerger implements Merger {
         String mergedImports = "";
 
         try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-            InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream(Constants.TS_MERGER);
+            InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS);
             Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
             cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
             Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
