@@ -93,6 +93,12 @@ public class TypeScriptMergerTest {
         assertTrue(mergedContents.contains("import { a, e } from 'b'"));
     }
 
+    /**
+     * Reads a TS file
+     * @param fileName
+     *            the ts file
+     * @return the content of the file
+     */
     private String readTSFile(String fileName) {
         File patchFile = new File(testFileRootPath + fileName);
         String file = patchFile.getAbsolutePath();
