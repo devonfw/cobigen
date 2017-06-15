@@ -13,11 +13,6 @@ public class Constants {
     public static final String BEAUTIFY_JS = "/beautify.js";
 
     /**
-     * Path for the TSMerger
-     */
-    public static final String TS_MERGER = "/tsmerger.js";
-
-    /**
      * Temporary folder name
      */
     public static final String COBIGEN_TS = "cobigen-ts";
