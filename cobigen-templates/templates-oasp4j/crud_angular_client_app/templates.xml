@@ -18,7 +18,7 @@
     <templateExtension ref="header.component.ts"/>
     <templateExtension ref="header.service.spec.ts"/>
     <templateExtension ref="header.service.ts"/>
-    <templateExtension ref="home.component.html"/>
+    <templateExtension ref="home.component.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="home.component.css"/>
     <templateExtension ref="home.component.spec.ts"/>
     <templateExtension ref="home.component.ts"/>
@@ -54,11 +54,7 @@
         <templateRef ref="initial-page.component.ts"/>
         <templateRef ref="initial-page.component.spec.ts"/>
         <templateRef ref="initial-page.component.css"/>
-        <templateRef ref="app.module.ts"/>
         <templateRef ref="serverPath.ts"/>
-      </increment>
-      <increment name="app_angular_routing" description="Angular2 Routing">
-        <templateRef ref="app.routing.ts"/>
       </increment>
       <increment name="app_angular_i18n" description="Angular2 i18n">
         <templateRef ref="es.json"/>
@@ -75,6 +71,8 @@
         <templateRef ref="${variables.component}dataGrid.component.spec.ts"/>
         <templateRef ref="${variables.component}dataGrid.css"/>
         <templateRef ref="BusinessOperations.ts"/>
+        <templateRef ref="app.routing.ts"/>
+        <templateRef ref="app.module.ts"/>
       </increment>
   </increments>
 </templatesConfiguration>
