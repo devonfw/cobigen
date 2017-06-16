@@ -73,17 +73,12 @@ public class TypeScriptMerger implements Merger {
      * @return contents merged
      */
     private String tsMerger(boolean patchOverrides, File base, String patch) {
-        Context cxBeautify = Context.enter();
-        Scriptable scopeBeautify = cxBeautify.initStandardObjects();
 
         String mergedContents = "";
         String mergedImports = "";
 
-        try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-            InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS);
-            Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
+        try (InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS)) {
 
-            cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
             Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
             Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
             Path filePatch = tmpDir.resolve(Constants.PATCH_TS);
@@ -126,6 +121,7 @@ public class TypeScriptMerger implements Merger {
                     if (line == null) {
                         break;
                     }
+                    // import declarations won't be beautified
                     if (line.startsWith("import ")) {
                         mergedImports = mergedImports.concat(line);
                         mergedImports = mergedImports.concat("\n\n");
@@ -136,13 +132,32 @@ public class TypeScriptMerger implements Merger {
                 }
             }
         } catch (IOException e) {
-            throw new MergeException(base, "Error reading jsBeautifier script");
+            throw new MergeException(base, "Cannot find tsmerger.js file");
         }
 
-        scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
-        return mergedImports + (String) cxBeautify.evaluateString(scopeBeautify,
-            "js_beautify(jsCode, {indent_size:" + 4 + "})", "inline", 1, null);
+        return mergedImports + beautifier(mergedContents);
 
+    }
+
+    /**
+     * Calls the jsBeautifier script to beautify the merged code
+     *
+     * @param mergedContents
+     *            the merged coded
+     * @return the merged code beautified
+     */
+    private String beautifier(String mergedContents) {
+        Context cxBeautify = Context.enter();
+        Scriptable scopeBeautify = cxBeautify.initStandardObjects();
+        try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
+            Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
+            cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
+        } catch (IOException e) {
+            throw new MergeException(new File(""), "Error reading jsBeautifier script");
+        }
+        scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
+        return (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
+            "inline", 1, null);
     }
 
 }
