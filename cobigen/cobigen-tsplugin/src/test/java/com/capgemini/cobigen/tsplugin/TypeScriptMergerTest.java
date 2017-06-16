@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.tsplugin;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,11 +25,12 @@ public class TypeScriptMergerTest {
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
     /**
-     * Checks if node is installed and version
+     * Checks if node is installed and version. Version must be equal or superior to v6
      */
     @Test
-    public void testNode() {
+    public void checkNodeInstallationAndVersion() {
         String version = new String();
+        int versionNumber = 0;
         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node --version");
 
         Process p;
@@ -45,12 +47,12 @@ public class TypeScriptMergerTest {
                         version = version.concat(line);
                     }
                 }
+                versionNumber = Integer.parseInt(version.substring(1, 2));
             }
-
         } catch (IOException e) {
-            assertTrue(false);
+            fail("No version of Node is installed. Please install Node 6 or superior");
         }
-        assertTrue(version.startsWith("v6"));
+        assertThat(versionNumber).isGreaterThanOrEqualTo(6);
     }
 
     /**
@@ -64,13 +66,13 @@ public class TypeScriptMergerTest {
         // act
         String mergedContents = new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
 
-        assertTrue(mergedContents.contains("bProperty"));
-        assertTrue(mergedContents.contains("aProperty: number = 2"));
-        assertTrue(mergedContents.contains("bMethod"));
-        assertTrue(mergedContents.contains("aMethod"));
-        assertTrue(mergedContents.contains("bProperty"));
-        assertTrue(mergedContents.contains("import { c, f } from 'd'"));
-        assertTrue(mergedContents.contains("import { a, e } from 'b'"));
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 2");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
     }
 
     /**
@@ -84,13 +86,13 @@ public class TypeScriptMergerTest {
         // act
         String mergedContents = new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
 
-        assertTrue(mergedContents.contains("bProperty"));
-        assertTrue(mergedContents.contains("aProperty: number = 3"));
-        assertTrue(mergedContents.contains("bMethod"));
-        assertTrue(mergedContents.contains("aMethod"));
-        assertTrue(mergedContents.contains("bProperty"));
-        assertTrue(mergedContents.contains("import { c, f } from 'd'"));
-        assertTrue(mergedContents.contains("import { a, e } from 'b'"));
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 3");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
     }
 
     /**
