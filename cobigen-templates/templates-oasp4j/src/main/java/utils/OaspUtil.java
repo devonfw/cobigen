@@ -98,8 +98,8 @@ public class OaspUtil {
      * @throws SecurityException
      *             if the field cannot be accessed for any reason
      */
-    public String resolveIdGetter(Class<?> pojoClass, Map<String, Object> fieldMap)
-        throws NoSuchFieldException, SecurityException {
+    public String resolveIdGetter(Class<?> pojoClass, Map<String, Object> fieldMap) throws NoSuchFieldException,
+        SecurityException {
 
         return resolveIdGetter(pojoClass, fieldMap, false, "");
     }
@@ -179,8 +179,8 @@ public class OaspUtil {
      * @throws SecurityException
      *             if the field cannot be accessed for any reason
      */
-    public String resolveIdSetter(Class<?> pojoClass, Map<String, Object> fieldMap)
-        throws NoSuchFieldException, SecurityException {
+    public String resolveIdSetter(Class<?> pojoClass, Map<String, Object> fieldMap) throws NoSuchFieldException,
+        SecurityException {
 
         return resolveIdSetter(pojoClass, fieldMap, false, "");
     }
@@ -215,8 +215,8 @@ public class OaspUtil {
      * @throws SecurityException
      *             if the field cannot be accessed for any reason
      */
-    public String resolveIdVariableName(Class<?> pojoClass, Map<String, Object> fieldMap)
-        throws NoSuchFieldException, SecurityException {
+    public String resolveIdVariableName(Class<?> pojoClass, Map<String, Object> fieldMap) throws NoSuchFieldException,
+        SecurityException {
 
         // the component is passed down as an empty string since byObjectReference is false and therefore the
         // component is
@@ -290,8 +290,7 @@ public class OaspUtil {
      *             if the field cannot be accessed for any reason
      */
     public String resolveIdVariableNameOrSetterGetterSuffix(Class<?> pojoClass, Map<String, Object> fieldMap,
-        boolean byObjectReference, boolean capitalize, String component)
-        throws NoSuchFieldException, SecurityException {
+        boolean byObjectReference, boolean capitalize, String component) throws NoSuchFieldException, SecurityException {
 
         String resultName = (String) fieldMap.get(Field.NAME.toString());
         if (capitalize) {
