@@ -1,0 +1,124 @@
+package com.capgemini.cobigen.tsplugin;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+
+import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.tsplugin.merger.TypeScriptMerger;
+
+/**
+ * Test methods for different TS mergers of the plugin
+ */
+public class TypeScriptMergerTest {
+
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
+
+    /**
+     * Checks if node is installed and version. Version must be equal or superior to v6
+     */
+    @Test
+    public void checkNodeInstallationAndVersion() {
+        String version = new String();
+        int versionNumber = 0;
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node --version");
+
+        Process p;
+        try {
+            p = builder.start();
+            try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
+                BufferedReader r = new BufferedReader(rdr)) {
+                String line;
+                while (true) {
+                    line = r.readLine();
+                    if (line == null) {
+                        break;
+                    } else {
+                        version = version.concat(line);
+                    }
+                }
+                versionNumber = Integer.parseInt(version.substring(1, 2));
+            }
+        } catch (IOException e) {
+            fail("No version of Node is installed. Please install Node 6 or superior");
+        }
+        assertThat(versionNumber).isGreaterThanOrEqualTo(6);
+    }
+
+    /**
+     * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
+     */
+    @Test
+    public void testMergingNoOverrides() {
+        // arrange
+        File baseFile = new File(testFileRootPath + "base.ts");
+
+        // act
+        String mergedContents = new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 2");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
+    }
+
+    /**
+     * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = true
+     */
+    @Test
+    public void testMergingOverrides() {
+        // arrange
+        File baseFile = new File(testFileRootPath + "base.ts");
+
+        // act
+        String mergedContents = new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 3");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
+    }
+
+    /**
+     * Reads a TS file
+     * @param fileName
+     *            the ts file
+     * @return the content of the file
+     */
+    private String readTSFile(String fileName) {
+        File patchFile = new File(testFileRootPath + fileName);
+        String file = patchFile.getAbsolutePath();
+        Reader reader = null;
+        String returnString;
+
+        try {
+            reader = new FileReader(file);
+            returnString = IOUtils.toString(reader);
+            reader.close();
+
+        } catch (FileNotFoundException e) {
+            throw new MergeException(patchFile, "Can not read file " + patchFile.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MergeException(patchFile, "Can not read the base file " + patchFile.getAbsolutePath());
+        }
+
+        return returnString;
+    }
+
+}
