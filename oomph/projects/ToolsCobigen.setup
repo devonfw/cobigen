@@ -141,6 +141,9 @@
             pattern="cobigen-core-systemtest"/>
         <operand
             xsi:type="predicates:NamePredicate"
+            pattern="cobigen-htmlplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
             pattern="cobigen-javaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
@@ -154,6 +157,9 @@
         <operand
             xsi:type="predicates:NamePredicate"
             pattern="cobigen-textmerger"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="cobigen-tsplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
             pattern="cobigen-xmlplugin"/>
@@ -567,15 +573,42 @@
         predecessor="//@streams[name='develop']/@setupTasks.3"
         name="Workspace Setup">
       <setupTask
+          xsi:type="setup:CompoundTask"
+          name="Maven">
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="mvn.package.eclipse"
+            excludedTriggers="BOOTSTRAP"
+            directory="${workspace.location/dev_eclipseplugin/cobigen-eclipse}"
+            command="mvn">
+          <argument>eclipse:eclipse</argument>
+          <argument>package</argument>
+          <argument>-U</argument>
+          <argument>-DskipTests</argument>
+        </setupTask>
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="mvn.install.ts"
+            excludedTriggers="BOOTSTRAP"
+            successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.3"
+            directory="${workspace.location/dev_tsplugin/cobigen/cobigen-tsplugin}"
+            command="mvn">
+          <argument>clean</argument>
+          <argument>install</argument>
+          <argument>-DskipTests</argument>
+        </setupTask>
+      </setupTask>
+      <setupTask
           xsi:type="setup:ResourceCreationTask"
           id="resource.creation.project"
           excludedTriggers="BOOTSTRAP"
-          successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.1"
+          successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.2"
           content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;projectDescription>&#xA;&#x9;&lt;name>gh-pages&lt;/name>&#xA;&#x9;&lt;comment>&lt;/comment>&#xA;&#x9;&lt;natures>&#xA;&#x9;&#x9;&lt;nature>org.eclipse.wst.common.project.facet.core.nature&lt;/nature>&#xA;&#x9;&lt;/natures>&#xA;&lt;/projectDescription>"
           targetURL="${workspace.location/gh-pages/.project|uri}"
           encoding="UTF-8"/>
       <setupTask
-          xsi:type="projects:ProjectsImportTask">
+          xsi:type="projects:ProjectsImportTask"
+          predecessor="//@streams[name='develop']/@setupTasks.4/@setupTasks.0">
         <sourceLocator
             rootFolder="${workspace.location/dev_eclipseplugin/cobigen-eclipse}"
             locateNestedProjects="true">
@@ -588,7 +621,7 @@
       </setupTask>
       <setupTask
           xsi:type="maven:MavenImportTask"
-          predecessor="//@streams[name='develop']/@setupTasks.4/@setupTasks.1">
+          predecessor="//@streams[name='develop']/@setupTasks.4/@setupTasks.2 //@streams[name='develop']/@setupTasks.4/@setupTasks.0">
         <sourceLocator
             rootFolder="${workspace.location/dev_core/cobigen/cobigen-core-parent}"
             locateNestedProjects="true">
@@ -601,6 +634,19 @@
         </sourceLocator>
         <sourceLocator
             rootFolder="${workspace.location.cobigen.master/tools-cobigen/cobigen-templates}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:AndPredicate">
+            <operand
+                xsi:type="predicates:NotPredicate">
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern=".*-parent"/>
+            </operand>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_htmlmerger/cobigen/cobigen-htmlplugin}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:AndPredicate">
@@ -664,6 +710,16 @@
         </sourceLocator>
         <sourceLocator
             rootFolder="${workspace.location/dev_textmerger/cobigen/cobigen-textmerger}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_tsplugin/cobigen/cobigen-tsplugin}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:NotPredicate">
@@ -764,8 +820,35 @@
         predecessor="cmp.git.clone.master.man cmp.git.clone.master"
         name="Workspace Setup">
       <setupTask
+          xsi:type="setup:CompoundTask"
+          name="Maven">
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="mvn.package.eclipse.master"
+            excludedTriggers="BOOTSTRAP"
+            directory="${workspace.location/tools-cobigen/cobigen-eclipse}"
+            command="mvn">
+          <argument>eclipse:eclipse</argument>
+          <argument>package</argument>
+          <argument>-U</argument>
+          <argument>-DskipTests</argument>
+        </setupTask>
+        <setupTask
+            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+            id="mvn.install.ts.master"
+            excludedTriggers="BOOTSTRAP"
+            successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.3"
+            directory="${workspace.location/tools-cobigen/cobigen/cobigen-tsplugin}"
+            command="mvn">
+          <argument>clean</argument>
+          <argument>install</argument>
+          <argument>-DskipTests</argument>
+        </setupTask>
+      </setupTask>
+      <setupTask
           xsi:type="projects:ProjectsImportTask"
-          successor="//@streams[name='master']/@setupTasks.1/@setupTasks.1">
+          predecessor="//@streams[name='master']/@setupTasks.1/@setupTasks.0"
+          successor="//@streams[name='master']/@setupTasks.1/@setupTasks.2">
         <sourceLocator
             rootFolder="${workspace.location/tools-cobigen/cobigen-eclipse}"
             locateNestedProjects="true">
@@ -778,7 +861,8 @@
         </sourceLocator>
       </setupTask>
       <setupTask
-          xsi:type="maven:MavenImportTask">
+          xsi:type="maven:MavenImportTask"
+          predecessor="//@streams[name='master']/@setupTasks.1/@setupTasks.0">
         <sourceLocator
             rootFolder="${workspace.location/tools-cobigen}">
           <predicate
