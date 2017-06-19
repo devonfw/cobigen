@@ -337,6 +337,32 @@
           targetURL="${tmp.download.location/maven.zip|uri}">
         <description>Fetches the maven ${maven.version} archive</description>
       </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86_64)"
+          name="x64">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="devon.software.download.node.64"
+            excludedTriggers="STARTUP MANUAL"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/node/node-v${nodejs.version}-x64.msi"
+            targetURL="${tmp.download.location/node.msi|uri}">
+          <description></description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86)"
+          name="x86">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="devon.software.download.node.86"
+            excludedTriggers="STARTUP MANUAL"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/node/node-v${nodejs.version}-x86.msi"
+            targetURL="${tmp.download.location/node.msi|uri}">
+          <description></description>
+        </setupTask>
+      </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
     <setupTask
@@ -351,6 +377,32 @@
           sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
           targetURL="${tmp.download.location/maven.tar.gz|uri}">
         <description>Fetches the maven ${maven.version} archive for linux</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86_64)"
+          name="x64">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="devon.software.download.node.64.linux"
+            excludedTriggers="STARTUP MANUAL"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/node/node-v${nodejs.version}-linux-x64.tar.gz"
+            targetURL="${tmp.download.location/node.tar.gz|uri}">
+          <description></description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86)"
+          name="x86">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="devon.software.download.node.86.linux"
+            excludedTriggers="STARTUP MANUAL"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/node/node-v${nodejs.version}-linux-x86.tar.gz"
+            targetURL="${tmp.download.location/node.tar.gz|uri}">
+          <description></description>
+        </setupTask>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
@@ -374,6 +426,12 @@
           priority="100">
         <description>Unzips the maven binaries</description>
       </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="devon.software.unarchive.node"
+          excludedTriggers="STARTUP MANUAL"
+          zipFile="${tmp.download.location/node.tar.gz}"
+          destinationDir="${software.location}"/>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
@@ -402,6 +460,21 @@
         destination="maven"
         priority="100"/>
     <description></description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      id="devon.software.install.compound"
+      predecessor="compound.downloads.external.software"
+      filter="(os.name=Windows*)"
+      name="install msi packages">
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+        id="devon.software.install.node"
+        excludedTriggers="STARTUP MANUAL"
+        directory="${installation.root}"
+        command="msiinstall.bat">
+      <argument>node</argument>
+    </setupTask>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -459,7 +532,7 @@
         xsi:type="com.github.maybeec.oomph.task:unzipTask"
         id="unzip.jdk.1.8"
         excludedTriggers="STARTUP MANUAL"
-        predecessor="jdk.win.64 //@setupTasks.13/@setupTasks.1"
+        predecessor="jdk.win.64 //@setupTasks.14/@setupTasks.1"
         zipFile="${tmp.download.location/java18.zip}"
         destinationDir="${software.location/java/}"
         priority="100"/>
@@ -467,7 +540,7 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       id="tasks.finalize.external.resources"
-      predecessor="//@setupTasks.13 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.11 //@setupTasks.12"
+      predecessor="tasks.finalize.external.resources tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.12 //@setupTasks.13"
       name="finalize external resources">
     <setupTask
         xsi:type="setup:CompoundTask"
