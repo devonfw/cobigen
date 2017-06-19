@@ -2,11 +2,11 @@ package com.capgemini.cobigen.tsplugin.merger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -76,12 +76,15 @@ public class TypeScriptMerger implements Merger {
 
         String mergedContents = "";
         String mergedImports = "";
+        String cmdError = "";
 
         try (InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS)) {
 
             Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
             Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
             Path filePatch = tmpDir.resolve(Constants.PATCH_TS);
+            File outputFile = new File(tmpDir.toAbsolutePath().toString() + Constants.MERGED_CONTENTS);
+            outputFile.createNewFile();
             Files.copy(mergerASStream, filePath);
             Files.copy(IOUtils.toInputStream(patch, "UTF-8"), filePatch);
 
@@ -102,40 +105,34 @@ public class TypeScriptMerger implements Merger {
 
             commands.add(base.getAbsolutePath().toString());
             commands.add(filePatch.toAbsolutePath().toString());
+            commands.add(">");
+            commands.add(outputFile.getAbsolutePath().toString());
             ProcessBuilder builder = new ProcessBuilder(commands);
-            builder.redirectError(Redirect.PIPE);
+            builder.redirectErrorStream(true);
             Process p = builder.start();
-
-            // Handles console error
-            try (InputStream err = p.getErrorStream(); Reader errorReader = new InputStreamReader(err)) {
-                if (errorReader.read() > -1) {
-                    throw new MergeException(base, IOUtils.toString(err, "UTF-8"));
-                }
-            }
 
             try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
                 BufferedReader r = new BufferedReader(rdr)) {
                 String line;
                 while (true) {
                     line = r.readLine();
-                    if (line == null) {
+                    if (line != null) {
+                        cmdError = cmdError.concat(line);
+                    } else {
                         break;
                     }
-                    // import declarations won't be beautified
-                    if (line.startsWith("import ")) {
-                        mergedImports = mergedImports.concat(line);
-                        mergedImports = mergedImports.concat("\n\n");
-                    } else {
-                        mergedContents = mergedContents.concat("\n");
-                        mergedContents = mergedContents.concat(line);
-                    }
+                }
+                if (!cmdError.equals("")) {
+                    throw new MergeException(base, cmdError);
                 }
             }
+
+            mergedContents = readMergedContentsFile(outputFile);
+
         } catch (IOException e) {
             throw new MergeException(base, "Cannot find tsmerger.js file");
         }
-
-        return mergedImports + beautifier(mergedContents);
+        return mergedContents;
 
     }
 
@@ -156,8 +153,37 @@ public class TypeScriptMerger implements Merger {
             throw new MergeException(new File(""), "Error reading jsBeautifier script");
         }
         scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
-        return (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
+        String result = "";
+        result = (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
             "inline", 1, null);
+        if (result.equals("")) {
+            throw new MergeException(new File(""), "An error ocurred with beautify.js script!");
+        }
+        return result;
+    }
+
+    /**
+     * Reads the output.ts temporary file to get the merged contents
+     * @param output
+     *            the output.ts file
+     * @return merged contents already beautified
+     */
+    private String readMergedContentsFile(File output) {
+        String imports = "";
+        String mergedContents = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(output))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("import ")) {
+                    imports = imports.concat(line);
+                } else {
+                    mergedContents = mergedContents.concat(line);
+                }
+            }
+        } catch (IOException e) {
+            throw new MergeException(output, "Can not read merged.ts temporary file!");
+        }
+        return imports + "\n\n" + beautifier(mergedContents);
     }
 
 }

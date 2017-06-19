@@ -61,10 +61,11 @@ public class TypeScriptMergerTest {
     @Test
     public void testMergingNoOverrides() {
         // arrange
-        File baseFile = new File(testFileRootPath + "base.ts");
+        File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
-        String mergedContents = new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+        String mergedContents =
+            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 2");
@@ -81,10 +82,11 @@ public class TypeScriptMergerTest {
     @Test
     public void testMergingOverrides() {
         // arrange
-        File baseFile = new File(testFileRootPath + "base.ts");
+        File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
-        String mergedContents = new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+        String mergedContents =
+            new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 3");
