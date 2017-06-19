@@ -26,4 +26,9 @@ public class Constants {
      * Temporary TS Merger JS file
      */
     public static final String TSMERGER_JS = "tsmerger.js";
+
+    /**
+     * Path for the output merged contents file
+     */
+    public static final String MERGED_CONTENTS = "/merged.ts";
 }
