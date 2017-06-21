@@ -1,6 +1,7 @@
 properties([
   parameters([
-    string(name: 'TRIGGER', defaultValue: '', description: 'The sha of the commit that triggered the calling job')
+    string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
+    string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
    ])
 ])
 node {
@@ -8,6 +9,11 @@ node {
 		try {	
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
+
+				if(env.TRIGGER_SHA != null && env.TRIGGER_SHA != '' && env.TRIGGER_REPO != null && TRIGGER_REPO != '') {
+					echo "Build called by ${env.TRIGGER_SHA} on ${env.TRIGGER_REPO}"
+				}
+
 			}
 
 			// will hold the current branch name
@@ -143,13 +149,13 @@ def notifyFailed() {
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
-// If this build is triggered by another the build result will be appended to the sha
 def setBuildStatus(String message, String state) {
 	try{
-		if(params.TRIGGER != null && params.TRIGGER != '') {
-			step([$class: 'GitHubCommitStatusSetter',commitShaSource: [$clasS:'ManuallyEnteredShaSource', sha:params.TRIGGER], contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "integration-test"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+		if(env.TRIGGER_SHA != null && env.TRIGGER_SHA != '' && env.TRIGGER_REPO != null && TRIGGER_REPO != '') {
+			step([$class: 'GitHubCommitStatusSetter', commitShaSource: [$class:'ManuallyEnteredShaSource', sha:env.TRIGGER], reposSource: [$class:'ManuallyEnteredRepositorySource', url:env.TRIGGER_REPO], contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "integration-test"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
 		}
 	} catch(e) {
-		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${status}"
+		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${state}"
+		echo "Exception ${e.toString()}:${e.getMessage()}"
 	}
 }
