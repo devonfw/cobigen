@@ -1,3 +1,8 @@
+properties([
+  parameters([
+    string(name: 'TRIGGER', defaultValue: '', description: 'The sha of the commit that triggered the calling job')
+   ])
+])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
 		try {	
@@ -72,7 +77,7 @@ node {
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									sh "mvn -s ${MAVEN_SETTINGS} clean install -PuploadNightly"
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
@@ -109,6 +114,7 @@ node {
 					}
 				}
 			}
+
 		} catch(e) {
 			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
@@ -137,15 +143,13 @@ def notifyFailed() {
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
-// sets the build status at the current pr commit triggering this build. In case of a normal origin branch build nothing happens
+// If this build is triggered by another the build result will be appended to the sha
 def setBuildStatus(String message, String state) {
-	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
-	
-	// sholzer 20170516:
-	if(env.BRANCH_NAME.startsWith("PR-")) {
-		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
-		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
-		// replacement for the old implementation: 
-		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+	try{
+		if(params.TRIGGER != null && params.TRIGGER != '') {
+			step([$class: 'GitHubCommitStatusSetter',commitShaSource: [$clasS:'ManuallyEnteredShaSource', sha:params.TRIGGER], contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "integration-test"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+		}
+	} catch(e) {
+		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${status}"
 	}
 }
