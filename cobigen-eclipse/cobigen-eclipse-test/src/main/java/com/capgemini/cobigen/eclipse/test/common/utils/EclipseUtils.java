@@ -86,6 +86,8 @@ public class EclipseUtils {
         bot.waitUntil(widgetIsEnabled(finishButton));
         finishButton.click();
         bot.waitUntil(new AllJobsAreFinished(), 20000);
+        ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        bot.waitUntil(new AllJobsAreFinished(), 20000);
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), 20000);
     }
