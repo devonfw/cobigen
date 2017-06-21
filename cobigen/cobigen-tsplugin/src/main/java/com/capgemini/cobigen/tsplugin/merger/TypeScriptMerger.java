@@ -2,7 +2,7 @@ package com.capgemini.cobigen.tsplugin.merger;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,7 +58,7 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        return tsMerger(patchOverrides, base, patch);
+        return tsMerger(patchOverrides, base, patch, targetCharset);
 
     }
 
@@ -70,12 +70,13 @@ public class TypeScriptMerger implements Merger {
      *            the existent base file
      * @param patch
      *            the patch string
+     * @param targetCharset
+     *            target char set of the file to be read and write
      * @return contents merged
      */
-    private String tsMerger(boolean patchOverrides, File base, String patch) {
+    private String tsMerger(boolean patchOverrides, File base, String patch, String targetCharset) {
 
         String mergedContents = "";
-        String mergedImports = "";
         String cmdError = "";
 
         try (InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS)) {
@@ -105,10 +106,11 @@ public class TypeScriptMerger implements Merger {
 
             commands.add(base.getAbsolutePath().toString());
             commands.add(filePatch.toAbsolutePath().toString());
-            commands.add(">");
             commands.add(outputFile.getAbsolutePath().toString());
+            commands.add(targetCharset);
             ProcessBuilder builder = new ProcessBuilder(commands);
             builder.redirectErrorStream(true);
+
             Process p = builder.start();
 
             try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
@@ -127,10 +129,10 @@ public class TypeScriptMerger implements Merger {
                 }
             }
 
-            mergedContents = readMergedContentsFile(outputFile);
+            mergedContents = readMergedContentsFile(outputFile, targetCharset);
 
         } catch (IOException e) {
-            throw new MergeException(base, "Cannot find tsmerger.js file");
+            throw new MergeException(base, "An error during merge process koccurred!");
         }
         return mergedContents;
 
@@ -166,12 +168,18 @@ public class TypeScriptMerger implements Merger {
      * Reads the output.ts temporary file to get the merged contents
      * @param output
      *            the output.ts file
+     * @param targetCharset
+     *            target char set of the file to be read and write
      * @return merged contents already beautified
+     * @throws IOException
+     *             if merged.ts file cannot be read
      */
-    private String readMergedContentsFile(File output) {
+    private String readMergedContentsFile(File output, String targetCharset) throws IOException {
         String imports = "";
         String mergedContents = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(output))) {
+
+        try (
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(output), targetCharset))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("import ")) {
@@ -180,8 +188,6 @@ public class TypeScriptMerger implements Merger {
                     mergedContents = mergedContents.concat(line);
                 }
             }
-        } catch (IOException e) {
-            throw new MergeException(output, "Can not read merged.ts temporary file!");
         }
         return imports + "\n\n" + beautifier(mergedContents);
     }
