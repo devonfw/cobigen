@@ -178,8 +178,9 @@ public class TypeScriptMerger implements Merger {
         String imports = "";
         String mergedContents = "";
 
-        try (
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(output), targetCharset))) {
+        try (FileInputStream finStrm = new FileInputStream(output);
+            InputStreamReader inR = new InputStreamReader(finStrm, targetCharset);
+            BufferedReader br = new BufferedReader(inR)) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("import ")) {
