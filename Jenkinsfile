@@ -1,8 +1,19 @@
+properties([
+  parameters([
+    string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
+    string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
+   ])
+])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
 		try {	
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
+
+				if(env.TRIGGER_SHA != null && env.TRIGGER_SHA != '' && env.TRIGGER_REPO != null && TRIGGER_REPO != '') {
+					echo "Build called by ${env.TRIGGER_SHA} on ${env.TRIGGER_REPO}"
+				}
+
 			}
 
 			// will hold the current branch name
@@ -109,6 +120,7 @@ node {
 					}
 				}
 			}
+
 		} catch(e) {
 			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
@@ -137,15 +149,13 @@ def notifyFailed() {
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
-// sets the build status at the current pr commit triggering this build. In case of a normal origin branch build nothing happens
 def setBuildStatus(String message, String state) {
-	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
-	
-	// sholzer 20170516:
-	if(env.BRANCH_NAME.startsWith("PR-")) {
-		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
-		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
-		// replacement for the old implementation: 
-		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+	try{
+		if(env.TRIGGER_SHA != null && env.TRIGGER_SHA != '' && env.TRIGGER_REPO != null && TRIGGER_REPO != '') {
+			step([$class: 'GitHubCommitStatusSetter', commitShaSource: [$class:'ManuallyEnteredShaSource', sha:env.TRIGGER], reposSource: [$class:'ManuallyEnteredRepositorySource', url:env.TRIGGER_REPO], contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "integration-test"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+		}
+	} catch(e) {
+		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${state}"
+		echo "Exception ${e.toString()}:${e.getMessage()}"
 	}
 }
