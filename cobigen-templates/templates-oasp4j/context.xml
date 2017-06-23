@@ -79,6 +79,14 @@
           <variableAssignment type="regex" key="etoName" value="5"/>
       </matcher>
     </trigger>
+    <trigger id="crud_angular_client_app" type="java" templateFolder="crud_angular_client_app">
+      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+          <variableAssignment type="regex" key="rootPackage" value="1"/>
+          <variableAssignment type="regex" key="domain" value="3"/>
+          <variableAssignment type="regex" key="component" value="4"/>
+          <variableAssignment type="regex" key="etoName" value="5"/>
+      </matcher>
+    </trigger>
     <trigger id="crud_angular2_client_app" type="java" templateFolder="crud_angular2_client_app">
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
           <variableAssignment type="regex" key="rootPackage" value="1"/>
