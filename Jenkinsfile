@@ -1,3 +1,9 @@
+properties([
+  parameters([
+    string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
+    string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
+   ])
+])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
 		try {	
@@ -72,7 +78,11 @@ node {
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									if(origin_branch!='dev_eclipseplugin'){
+										sh "mvn -s ${MAVEN_SETTINGS} clean package"
+									}else{
+										sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									}
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
@@ -87,6 +97,7 @@ node {
 			
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
+				notifyFailed()
 				return
 			}
 			
@@ -97,6 +108,7 @@ node {
 			
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
+				notifyFailed()
 				return
 			}
 			
@@ -109,6 +121,14 @@ node {
 					}
 				}
 			}
+
+			if(origin_branch != 'dev_eclipseplugin'){
+				stage('integration-test') {
+					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
+					build job: 'dev_eclipseplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
+				}
+			}
+
 		} catch(e) {
 			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
@@ -126,6 +146,7 @@ def notifyFailed() {
       notifyEveryUnstableBuild: true,
       recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                       [$class: 'RequesterRecipientProvider'],
+				      [$class: 'DevelopersRecipientProvider'],
 				      [$class: 'FailingTestSuspectsRecipientProvider'],
 				      [$class: 'UpstreamComitterRecipientProvider']])])
     
@@ -133,19 +154,18 @@ def notifyFailed() {
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
          to: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
                                  [$class: 'RequesterRecipientProvider'],
+				 [$class: 'DevelopersRecipientProvider'],
 				 [$class: 'FailingTestSuspectsRecipientProvider'],
 				 [$class: 'UpstreamComitterRecipientProvider']]))
 }
 
-// sets the build status at the current pr commit triggering this build. In case of a normal origin branch build nothing happens
 def setBuildStatus(String message, String state) {
-	// we can leave this open, but currently there seems to be a bug preventing the whole functionality:
-	
-	// sholzer 20170516:
-	if(env.BRANCH_NAME.startsWith("PR-")) {
-		// old but buggy implementation. This may or may not work (https://issues.jenkins-ci.org/browse/JENKINS-43370)
-		//	githubNotify context: "Jenkins-Tests", description: message, status: state, targetUrl: "${env.JENKINS_URL}", account: 'devonfw', repo: 'tools-cobigen', credentialsId:'github-devonfw-ci', sha: "${GIT_COMMIT}"
-		// replacement for the old implementation: 
-		step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "Jenkins"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+	try{
+		if(env.TRIGGER_SHA != null && env.TRIGGER_SHA != '' && env.TRIGGER_REPO != null && TRIGGER_REPO != '') {
+			step([$class: 'GitHubCommitStatusSetter', commitShaSource: [$class:'ManuallyEnteredShaSource', sha:env.TRIGGER], reposSource: [$class:'ManuallyEnteredRepositorySource', url:env.TRIGGER_REPO], contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "integration-test"], statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]]])
+		}
+	} catch(e) {
+		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${state}"
+		echo "Exception ${e.toString()}:${e.getMessage()}"
 	}
 }
