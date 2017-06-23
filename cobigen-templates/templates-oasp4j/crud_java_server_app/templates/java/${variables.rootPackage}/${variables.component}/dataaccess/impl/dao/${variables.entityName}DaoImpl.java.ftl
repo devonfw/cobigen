@@ -45,23 +45,26 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
 
     <#list pojo.fields as field>
     <#compress>
-    <#assign newFieldType=field.type?replace("[^<>,]+Entity","Long","r")>
+    <#-- sholzer, 29.05.2017, #259: the newFiledType is now never a Java primitive. The field.type?replace.. value is processed by the JavaUtil.boxJavaPrimitives(String) method that wraps primitives into their objects -->
+    <#assign newFieldType=JavaUtil.boxJavaPrimitives(field.type?replace("[^<>,]+Entity","Long","r"))>
 	<#if newFieldType?ends_with("Embeddable")><#assign newFieldType=newFieldType?replace("Embeddable","SearchCriteriaTo","r")></#if>
 	<#assign newFieldType=newFieldType?replace("[^<>,]+Embeddable","SearchCriteriaTo","r")>
     <#assign fieldCapName=field.name?cap_first>
     </#compress>
     <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
-        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>;
+        ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, false, "")}</#if>;
         <#compress>
-    	<#if !equalsJavaPrimitive(field.type)>if (${field.name} != null) {</#if>
+        <#-- sholzer, 29.05.2017, #259: if clause not needed anymore since newFieldType is never a primitive. -->
+    	if (${field.name} != null) {
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
               if(${variables.entityName?lower_case}.get${fieldCapName}() != null) {
                   query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}().getId()).eq(${field.name}));
               }
           <#else>
-              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${resolveIdGetter(field)}</#if>).eq(${field.name}));
-          </#if>    
-        <#if !equalsJavaPrimitive(field.type)>}</#if>
+              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>).eq(${field.name}));
+          </#if>  
+        <#-- sholzer, 29.05.2017, #259: as above -->  
+        }
     	</#compress>
     </#if>
     </#list>
