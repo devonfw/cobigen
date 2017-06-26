@@ -134,7 +134,7 @@ public class TypeScriptMerger implements Merger {
             mergedContents = readMergedContentsFile(outputFile, targetCharset);
 
         } catch (IOException e) {
-            throw new MergeException(base, "An error during merge process koccurred!");
+            throw new MergeException(base, "An error during merge process occurred!");
         }
         return mergedContents;
 
