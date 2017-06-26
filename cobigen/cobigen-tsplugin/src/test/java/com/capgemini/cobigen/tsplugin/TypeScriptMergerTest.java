@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -57,14 +58,27 @@ public class TypeScriptMergerTest {
 
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
+     * @throws MergeException
      */
     @Test
-    public void testMergingNoOverrides() {
+    public void testMergingNoOverrides() throws MergeException {
         // arrange
-        File baseFile = new File(testFileRootPath + "base.ts");
+        File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
-        String mergedContents = new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+        String mergedContents =
+            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
+
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 2");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
+
+        mergedContents =
+            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 2");
@@ -77,14 +91,16 @@ public class TypeScriptMergerTest {
 
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = true
+     * @throws MergeException
      */
     @Test
-    public void testMergingOverrides() {
+    public void testMergingOverrides() throws MergeException {
         // arrange
-        File baseFile = new File(testFileRootPath + "base.ts");
+        File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
-        String mergedContents = new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patch.ts"), "UTF-8");
+        String mergedContents =
+            new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 3");
@@ -93,6 +109,38 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
+
+        mergedContents =
+            new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
+
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("aProperty: number = 3");
+        assertThat(mergedContents).contains("bMethod");
+        assertThat(mergedContents).contains("aMethod");
+        assertThat(mergedContents).contains("bProperty");
+        assertThat(mergedContents).contains("import { c, f } from 'd'");
+        assertThat(mergedContents).contains("import { a, e } from 'b'");
+    }
+
+    /**
+     * Tests whether the contents will be rewritten after parsing and printing with the right encoding
+     * @throws IOException
+     *             test fails
+     * @throws MergeException
+     *             test fails
+     */
+    @Test
+    public void testReadingEncoding() throws IOException, MergeException {
+        File baseFile = new File(testFileRootPath + "baseFile_encoding_UTF-8.ts");
+        File patchFile = new File(testFileRootPath + "patchFile.ts");
+        String mergedContents =
+            new TypeScriptMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        assertThat(mergedContents.contains("Ñ")).isTrue();
+
+        baseFile = new File(testFileRootPath + "baseFile_encoding_ISO-8859-1.ts");
+        mergedContents =
+            new TypeScriptMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
+        assertThat(mergedContents.contains("Ñ"));
     }
 
     /**

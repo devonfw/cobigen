@@ -2,11 +2,11 @@ package com.capgemini.cobigen.tsplugin.merger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -58,7 +58,7 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        return tsMerger(patchOverrides, base, patch);
+        return tsMerger(patchOverrides, base, patch, targetCharset);
 
     }
 
@@ -70,18 +70,22 @@ public class TypeScriptMerger implements Merger {
      *            the existent base file
      * @param patch
      *            the patch string
+     * @param targetCharset
+     *            target char set of the file to be read and write
      * @return contents merged
      */
-    private String tsMerger(boolean patchOverrides, File base, String patch) {
+    private String tsMerger(boolean patchOverrides, File base, String patch, String targetCharset) {
 
         String mergedContents = "";
-        String mergedImports = "";
+        String cmdError = "";
 
         try (InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS)) {
 
             Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
             Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
             Path filePatch = tmpDir.resolve(Constants.PATCH_TS);
+            File outputFile = new File(tmpDir.toAbsolutePath().toString() + Constants.MERGED_CONTENTS);
+            outputFile.createNewFile();
             Files.copy(mergerASStream, filePath);
             Files.copy(IOUtils.toInputStream(patch, "UTF-8"), filePatch);
 
@@ -95,47 +99,44 @@ public class TypeScriptMerger implements Merger {
             commands.add("node");
             commands.add(filePath.toAbsolutePath().toString());
             if (patchOverrides) {
-                commands.add("true");
-            } else {
-                commands.add("false");
+                commands.add("-f");
             }
 
+            commands.add("-b");
             commands.add(base.getAbsolutePath().toString());
+            commands.add("-p");
             commands.add(filePatch.toAbsolutePath().toString());
+            commands.add("-o");
+            commands.add(outputFile.getAbsolutePath().toString());
+            commands.add("-e");
+            commands.add(targetCharset);
             ProcessBuilder builder = new ProcessBuilder(commands);
-            builder.redirectError(Redirect.PIPE);
-            Process p = builder.start();
+            builder.redirectErrorStream(true);
 
-            // Handles console error
-            try (InputStream err = p.getErrorStream(); Reader errorReader = new InputStreamReader(err)) {
-                if (errorReader.read() > -1) {
-                    throw new MergeException(base, IOUtils.toString(err, "UTF-8"));
-                }
-            }
+            Process p = builder.start();
 
             try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
                 BufferedReader r = new BufferedReader(rdr)) {
                 String line;
                 while (true) {
                     line = r.readLine();
-                    if (line == null) {
+                    if (line != null) {
+                        cmdError = cmdError.concat(line);
+                    } else {
                         break;
                     }
-                    // import declarations won't be beautified
-                    if (line.startsWith("import ")) {
-                        mergedImports = mergedImports.concat(line);
-                        mergedImports = mergedImports.concat("\n\n");
-                    } else {
-                        mergedContents = mergedContents.concat("\n");
-                        mergedContents = mergedContents.concat(line);
-                    }
+                }
+                if (!cmdError.equals("")) {
+                    throw new MergeException(base, cmdError);
                 }
             }
-        } catch (IOException e) {
-            throw new MergeException(base, "Cannot find tsmerger.js file");
-        }
 
-        return mergedImports + beautifier(mergedContents);
+            mergedContents = readMergedContentsFile(outputFile, targetCharset);
+
+        } catch (IOException e) {
+            throw new MergeException(base, "An error during merge process occurred!");
+        }
+        return mergedContents;
 
     }
 
@@ -156,8 +157,42 @@ public class TypeScriptMerger implements Merger {
             throw new MergeException(new File(""), "Error reading jsBeautifier script");
         }
         scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
-        return (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
+        String result = "";
+        result = (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
             "inline", 1, null);
+        if (result.equals("")) {
+            throw new MergeException(new File(""), "An error ocurred with beautify.js script!");
+        }
+        return result;
+    }
+
+    /**
+     * Reads the output.ts temporary file to get the merged contents
+     * @param output
+     *            the output.ts file
+     * @param targetCharset
+     *            target char set of the file to be read and write
+     * @return merged contents already beautified
+     * @throws IOException
+     *             if merged.ts file cannot be read
+     */
+    private String readMergedContentsFile(File output, String targetCharset) throws IOException {
+        String imports = "";
+        String mergedContents = "";
+
+        try (FileInputStream finStrm = new FileInputStream(output);
+            InputStreamReader inR = new InputStreamReader(finStrm, targetCharset);
+            BufferedReader br = new BufferedReader(inR)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("import ")) {
+                    imports = imports.concat(line);
+                } else {
+                    mergedContents = mergedContents.concat(line);
+                }
+            }
+        }
+        return imports + "\n\n" + beautifier(mergedContents);
     }
 
 }

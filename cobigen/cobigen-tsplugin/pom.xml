@@ -51,6 +51,7 @@
             <configuration>
               <url>https://github.com/oasp/ts-merger/releases/download/1.0.0-rc.1/tsmerger.js</url>
               <outputFileName>tsmerger.js</outputFileName>
+              <skipCache>true</skipCache>
               <!-- default target location, just to demonstrate the parameter -->
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
