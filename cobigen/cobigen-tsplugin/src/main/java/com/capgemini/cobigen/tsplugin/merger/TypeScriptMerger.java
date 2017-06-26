@@ -99,14 +99,16 @@ public class TypeScriptMerger implements Merger {
             commands.add("node");
             commands.add(filePath.toAbsolutePath().toString());
             if (patchOverrides) {
-                commands.add("true");
-            } else {
-                commands.add("false");
+                commands.add("-f");
             }
 
+            commands.add("-b");
             commands.add(base.getAbsolutePath().toString());
+            commands.add("-p");
             commands.add(filePatch.toAbsolutePath().toString());
+            commands.add("-o");
             commands.add(outputFile.getAbsolutePath().toString());
+            commands.add("-e");
             commands.add(targetCharset);
             ProcessBuilder builder = new ProcessBuilder(commands);
             builder.redirectErrorStream(true);
