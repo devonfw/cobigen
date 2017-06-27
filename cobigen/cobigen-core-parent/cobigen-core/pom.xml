@@ -138,19 +138,6 @@
         </configuration>
       </plugin>
 
-      <!-- For testing purposes -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <encoding>UTF-8</encoding>
-          <excludes>
-            <exclude>src/test/resources/JavaMergerTest/BaseFile_encoding_ISO-8859-1.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
       <!-- Generation of configuration beans -->
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -202,7 +189,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v2.2-configuration</id>
+            <id>generate-v4.0-configuration</id>
             <goals>
               <goal>generate</goal>
             </goals>
