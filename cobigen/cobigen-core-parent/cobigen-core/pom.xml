@@ -189,7 +189,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v2.2-configuration</id>
+            <id>generate-v4.0-configuration</id>
             <goals>
               <goal>generate</goal>
             </goals>
