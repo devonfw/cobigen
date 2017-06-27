@@ -1,9 +1,11 @@
 package com.capgemini.cobigen.impl.model;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
@@ -17,6 +19,8 @@ import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
+import com.capgemini.cobigen.impl.config.entity.Variables;
+import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -89,19 +93,23 @@ public class ModelBuilderImpl implements ModelBuilder {
      *            {@link TriggerInterpreter} to resolve the variables
      * @param template
      *            the internal {@link Template} representation
+     * @param targetRootPath
      * @return the adapted model reference.
      */
     public Map<String, Object> enrichByContextVariables(Map<String, Object> model,
-        TriggerInterpreter triggerInterpreter, Template template) {
+        TriggerInterpreter triggerInterpreter, Template template, Path targetRootPath) {
         Map<String, String> variables = Maps.newHashMap();
         Map<String, String> contextVariables =
             new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter).asMap();
         Map<String, String> templateProperties = template.getVariables().asMap();
+        Properties targetCobiGenProperties = CobiGenPropertiesReader.load(targetRootPath);
         // if there are properties overriding each other, throw an exception for better usability.
         // This is most probably a not intended mechanism such that we simply will not support it.
         Set<String> intersection = new HashSet<>(contextVariables.keySet());
         intersection.retainAll(templateProperties.keySet());
-        if (!intersection.isEmpty()) {
+        Set<String> intersection2 = new HashSet<>(contextVariables.keySet());
+        intersection2.retainAll(targetCobiGenProperties.keySet());
+        if (!intersection.isEmpty() || !intersection2.isEmpty()) {
             throw new CobiGenRuntimeException("There are conflicting variables coming from the context configuration "
                 + "as well as coming from the " + ConfigurationConstants.COBIGEN_PROPERTIES + " file. "
                 + "This is most probably an unintended behavior and thus is not supported. The following variables are "
@@ -110,6 +118,7 @@ public class ModelBuilderImpl implements ModelBuilder {
         }
         variables.putAll(contextVariables);
         variables.putAll(templateProperties);
+        variables.putAll(new Variables(targetCobiGenProperties).asMap());
         model.put(NS_VARIABLES, variables);
         return model;
     }

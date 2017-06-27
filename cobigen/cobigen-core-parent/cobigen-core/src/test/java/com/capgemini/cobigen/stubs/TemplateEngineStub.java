@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.unittest.config.reader;
+package com.capgemini.cobigen.stubs;
 
 import java.io.Writer;
 import java.nio.file.Path;
