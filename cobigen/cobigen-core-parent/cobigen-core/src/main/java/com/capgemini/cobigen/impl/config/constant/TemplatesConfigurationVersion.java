@@ -29,7 +29,15 @@ public enum TemplatesConfigurationVersion {
      * <li>target namespace changed</li>
      * </ul>
      */
-    v2_1(2.1f);
+    v2_1(2.1f),
+
+    /**
+     * ChangeLog:
+     * <ul>
+     * <li>new attribute templateEngine (#293)</li>
+     * </ul>
+     */
+    v4_0(4.0f);
 
     /** Comparable float representation of the version number. */
     private float floatRepresentation;
