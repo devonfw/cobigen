@@ -55,6 +55,8 @@ node {
 				root = "cobigen-maven"
 			} else if (origin_branch == "dev_tempeng_freemarker") {
 				root = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
+			} else if (origin_branch == "dev_tempeng_velocity") {
+				root = "cobigen/cobigen-templateengines/cobigen-tempeng-velocity"
 			} else if (origin_branch == "dev_core") {
 				root = "cobigen/cobigen-core-parent"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
