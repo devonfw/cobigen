@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +29,7 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
@@ -35,22 +42,15 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
-import com.capgemini.cobigen.impl.config.nio.NioFileSystemTemplateLoader;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
-import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
-import com.capgemini.cobigen.impl.util.CopyDirectoryVisitor;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import freemarker.core.Environment;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -62,9 +62,6 @@ public class GenerationProcessor {
 
     /** {@link ConfigurationHolder} for configuration caching purposes */
     private ConfigurationHolder configurationHolder;
-
-    /** FreeMarker configuration to utilize */
-    private Configuration freeMarkerConfig;
 
     /** States, whether existing contents should be overwritten by generation */
     private boolean forceOverride;
@@ -96,8 +93,6 @@ public class GenerationProcessor {
      *
      * @param configurationHolder
      *            {@link ConfigurationHolder} instance
-     * @param freeMarkerConfig
-     *            FreeMarker configuration
      * @param input
      *            generator input object
      * @param generableArtifacts
@@ -115,14 +110,13 @@ public class GenerationProcessor {
      * @param rawModel
      *            externally adapted model to be used for generation.
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Configuration freeMarkerConfig, Object input,
+    public GenerationProcessor(ConfigurationHolder configurationHolder, Object input,
         List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         this.configurationHolder = configurationHolder;
-        this.freeMarkerConfig = freeMarkerConfig;
         this.forceOverride = forceOverride;
         this.input = input;
         this.generableArtifacts = generableArtifacts;
@@ -132,6 +126,7 @@ public class GenerationProcessor {
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
+            LOG.info("Temporary working directory: {}", tmpTargetRootPath);
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Could not create temporary folder.", e);
         }
@@ -167,38 +162,68 @@ public class GenerationProcessor {
 
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
+        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (TemplateTo template : templatesToBeGenerated) {
             try {
                 Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                 TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                 InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                generate(template, triggerInterpreter);
+                tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
             } catch (CobiGenRuntimeException e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 generationReport.addError(e);
+                LOG.error("An internal error occurred during generation.", e);
             } catch (Throwable e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 generationReport.addError(new CobiGenRuntimeException(
                     "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                LOG.error("An unknown exception occurred during generation.", e);
             }
         }
 
         if (generationReport.isSuccessful()) {
             try {
-                Files.walkFileTree(tmpTargetRootPath,
-                    new CopyDirectoryVisitor(tmpTargetRootPath, targetRootPath, StandardCopyOption.REPLACE_EXISTING));
-                tmpTargetRootPath.toFile().delete();
+                for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
+                    Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
+                    Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+                    generationReport.addGeneratedFile(tmpToOrigFile.getValue().toPath());
+                }
+                deleteTemporaryFiles();
             } catch (IOException e) {
-                generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
             }
         } else {
-            generationReport.setIncompleteGenerationPath(tmpTargetRootPath);
+            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
             LOG.warn("Generation finished non-successful. Generated contents can be reviewed in "
                 + tmpTargetRootPath.toUri());
         }
 
         return generationReport;
+    }
+
+    /**
+     * Delete the temporary files in {@link #tmpTargetRootPath}.
+     */
+    private void deleteTemporaryFiles() {
+        try {
+            Files.walkFileTree(tmpTargetRootPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            LOG.warn("Temporary files could not be deleted in path " + tmpTargetRootPath, e);
+        }
     }
 
     /**
@@ -226,7 +251,7 @@ public class GenerationProcessor {
             }
         }
 
-        return templateIdToTemplateMap.values();
+        return new TreeSet<>(templateIdToTemplateMap.values());
     }
 
     /**
@@ -260,30 +285,50 @@ public class GenerationProcessor {
      *            {@link TriggerInterpreter} to be used for reading the input and creating the model
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
+     * @return the mapping of temporary generated files to their original target destination to eventually
+     *         finalizing the generation process
      */
-    private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
+    private Map<File, File> generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(
-            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
+
+        InputReader inputReader = triggerInterpreter.getInputReader();
+        if (!inputReader.isValidInput(input)) {
+            throw new CobiGenRuntimeException("An invalid input of type " + input.getClass() + " has been passed to "
+                + inputReader.getClass() + " (derived from trigger '" + trigger.getId() + "')");
+        }
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        Template templateIntern = getTemplate(template, triggerInterpreter);
-        InputReader inputReader = triggerInterpreter.getInputReader();
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        String templateEngineName = tConfig.getTemplateEngine();
+        TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
+        templateEngine.setTemplateFolder(
+            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
+        Template templateEty = tConfig.getTemplate(template.getId());
+        if (templateEty == null) {
+            throw new UnknownTemplateException(template.getId());
+        }
+
+        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
 
-            Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput);
+            Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
 
-            String targetCharset = templateIntern.getTargetCharset();
-            LOG.info("Generating template '{}' ...", templateIntern.getName(), generatorInput);
+            String targetCharset = templateEty.getTargetCharset();
 
-            Map<String, String> variables =
-                new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter);
-            String resolvedDesitinationPath =
-                new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
-            File originalFile = targetRootPath.resolve(resolvedDesitinationPath).toFile();
-            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedDesitinationPath).toFile();
+            // resolve temporary file paths
+            @SuppressWarnings("unchecked")
+            PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(
+                Variables.fromMap((Map<String, String>) model.get(ModelBuilderImpl.NS_VARIABLES)));
+            String resolvedTargetDestinationPath =
+                pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
+            String resolvedTmpDestinationPath =
+                pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
+            File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
+            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
+            // remember mapping to later on copy the generated resources to its target destinations
+            tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -295,28 +340,40 @@ public class GenerationProcessor {
                     }
                 }
 
-                if (forceOverride || template.isForceOverride() && templateIntern.getMergeStrategy() == null
-                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateIntern.getMergeStrategy())) {
-                    generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
-                        generatorInput);
-                } else {
+                if ((forceOverride || template.isForceOverride()) && templateEty.getMergeStrategy() == null
+                    || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
+                    if (LOG.isInfoEnabled()) {
+                        try (Formatter formatter = new Formatter()) {
+                            formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                                templateEty.getName(), resolvedTargetDestinationPath);
+                            LOG.info(formatter.out().toString());
+                        }
+                    }
+                    generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
+                } else if (templateEty.getMergeStrategy() != null) {
+                    if (LOG.isInfoEnabled()) {
+                        try (Formatter formatter = new Formatter()) {
+                            formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                                templateEty.getName(), resolvedTargetDestinationPath);
+                            LOG.info(formatter.out().toString());
+                        }
+                    }
                     String patch = null;
                     try (Writer out = new StringWriter()) {
-                        generateTemplateAndWritePatch(out, templateIntern, model, targetCharset, inputReader,
-                            generatorInput);
+                        templateEngine.process(templateEty, model, out, targetCharset);
                         patch = out.toString();
-                        String result = null;
-                        Merger merger = PluginRegistry.getMerger(templateIntern.getMergeStrategy());
+                        String mergeResult = null;
+                        Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
                         if (merger != null) {
-                            result = merger.merge(tmpOriginalFile, patch, targetCharset);
+                            mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
                             throw new InvalidConfigurationException(
-                                "No merger for merge strategy '" + templateIntern.getMergeStrategy() + "' found.");
+                                "No merger for merge strategy '" + templateEty.getMergeStrategy() + "' found.");
                         }
 
-                        if (result != null) {
+                        if (mergeResult != null) {
                             LOG.debug("Merge {} with char set {}.", tmpOriginalFile.getName(), targetCharset);
-                            FileUtils.writeStringToFile(tmpOriginalFile, result, targetCharset);
+                            FileUtils.writeStringToFile(tmpOriginalFile, mergeResult, targetCharset);
                         } else {
                             throw new PluginProcessingException(
                                 "Merger " + merger.getType() + " returned null on merge(...), which is not allowed.");
@@ -324,18 +381,24 @@ public class GenerationProcessor {
                     } catch (MergeException e) {
                         writeBrokenPatchFile(targetCharset, tmpOriginalFile, patch);
                         // enrich merge exception to provide template ID
-                        throw new MergeException(e, templateIntern.getAbsoluteTemplatePath());
+                        throw new MergeException(e, templateEty.getAbsoluteTemplatePath());
                     } catch (IOException e) {
                         throw new CobiGenRuntimeException(
                             "Could not write file " + tmpOriginalFile.toPath() + " after merge.", e);
                     }
                 }
             } else {
-                LOG.info("Create new File {} with charset {}.", tmpOriginalFile.toURI(), targetCharset);
-                generateTemplateAndWriteFile(tmpOriginalFile, templateIntern, model, targetCharset, inputReader,
-                    generatorInput);
+                if (LOG.isInfoEnabled()) {
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                    }
+                }
+                generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
+        return tmpToOrigFileTrace;
     }
 
     /**
@@ -381,10 +444,12 @@ public class GenerationProcessor {
      *            activated {@link Trigger}
      * @param generatorInput
      *            input for generation to retrieve information from.
+     * @param template
+     *            the internal {@link Template} representation
      * @return the object model for generation.
      */
     private Map<String, Object> buildModel(TriggerInterpreter triggerInterpreter, Trigger trigger,
-        Object generatorInput) {
+        Object generatorInput, Template template) {
         ModelBuilderImpl modelBuilderImpl = new ModelBuilderImpl(generatorInput, trigger);
         Map<String, Object> model;
         if (rawModel != null) {
@@ -392,7 +457,7 @@ public class GenerationProcessor {
         } else {
             model = modelBuilderImpl.createModel(triggerInterpreter);
         }
-        modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter);
+        modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter, template, targetRootPath);
         if (logicClassesModel != null) {
             model.putAll(logicClassesModel);
         }
@@ -413,7 +478,6 @@ public class GenerationProcessor {
 
         InputReader inputReader = triggerInterpreter.getInputReader();
         List<Object> inputObjects = Lists.newArrayList(input);
-
         if (inputReader.combinesMultipleInputObjects(input)) {
 
             // check whether the inputs should be retrieved recursively
@@ -462,7 +526,7 @@ public class GenerationProcessor {
     public static boolean matches(Object matcherInput, List<Matcher> matcherList,
         TriggerInterpreter triggerInterpreter) {
         boolean matcherSetMatches = false;
-        LOG.info("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
+        LOG.debug("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
         MATCHER_LOOP:
         for (Matcher matcher : matcherList) {
             MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
@@ -488,7 +552,7 @@ public class GenerationProcessor {
                 }
             }
         }
-        LOG.info("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+        LOG.debug("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
         return matcherSetMatches;
     }
 
@@ -500,106 +564,22 @@ public class GenerationProcessor {
      *            {@link File} to be written
      * @param template
      *            FreeMarker template which will generate the contents
+     * @param templateEngine
+     *            template engine to be used
      * @param model
      *            to generate with
      * @param outputCharset
      *            charset the target file should be written with
-     * @param inputReader
-     *            the input reader the model was built with
-     * @param input
-     *            generator input object
      */
-    private void generateTemplateAndWriteFile(File output, Template template, Map<String, Object> model,
-        String outputCharset, InputReader inputReader, Object input) {
+    private void generateTemplateAndWriteFile(File output, Template template, TextTemplateEngine templateEngine,
+        Map<String, Object> model, String outputCharset) {
 
         try (Writer out = new StringWriter()) {
-            generateTemplateAndWritePatch(out, template, model, outputCharset, inputReader, input);
+            templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
             throw new CobiGenRuntimeException(
                 "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
         }
-    }
-
-    /**
-     * Generates the given template contents using the given model and writes the contents into the given
-     * {@link Writer}
-     *
-     * @param out
-     *            {@link Writer} in which the contents will be written (the {@link Writer} will be flushed and
-     *            closed)
-     * @param template
-     *            FreeMarker template which will generate the contents
-     * @param model
-     *            Object model for FreeMarker template generation
-     * @param inputReader
-     *            the input reader the model was built with
-     * @param outputCharset
-     *            charset the target file should be written with
-     * @param input
-     *            generator input object
-     */
-    private void generateTemplateAndWritePatch(Writer out, Template template, Map<String, Object> model,
-        String outputCharset, InputReader inputReader, Object input) {
-
-        freemarker.template.Template fmTemplate = null;
-        try {
-            fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
-        } catch (Throwable e) {
-            String message = "An error occured while retrieving the FreeMarker template "
-                + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.";
-            throw new CobiGenRuntimeException(message, e);
-        }
-
-        if (fmTemplate != null) {
-
-            Map<String, Object> templateMethods = null;
-            try {
-                templateMethods = inputReader.getTemplateMethods(input);
-            } catch (Throwable e) {
-                throw new PluginProcessingException(e);
-            }
-
-            try {
-                Environment env = fmTemplate.createProcessingEnvironment(model, out);
-                env.setOutputEncoding(outputCharset);
-
-                if (templateMethods != null) {
-                    for (String key : templateMethods.keySet()) {
-                        env.setVariable(key, (TemplateModel) templateMethods.get(key));
-                    }
-                }
-                env.process();
-            } catch (TemplateException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
-            } catch (Throwable e) {
-                throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
-            }
-        }
-    }
-
-    /**
-     * Returns the {@link Template} for a given {@link TemplateTo}
-     *
-     * @param templateTo
-     *            which should be found as internal representation
-     * @param triggerInterpreter
-     *            to be used for variable resolving (for the final destination path)
-     * @return the recovered {@link Template} object
-     * @throws InvalidConfigurationException
-     *             if at least one of the destination path variables could not be resolved
-     */
-    private Template getTemplate(TemplateTo templateTo, TriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
-
-        Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(templateTo.getTriggerId());
-        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
-        Template template = tConfig.getTemplate(templateTo.getId());
-        if (template == null) {
-            throw new UnknownTemplateException(templateTo.getId());
-        }
-        return template;
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="$_EntityName_$2.java" destinationPath="$_EntityName_$2.java"/>
+  </templates>
+
+  <templateScans>
+    <templateScan name="crud" templatePath="templates" destinationPath="src/main/java"/>
+  </templateScans>
+
+</templatesConfiguration>

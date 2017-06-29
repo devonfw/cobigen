@@ -55,8 +55,8 @@ public interface ConfigurationInterpreter {
     public boolean combinesMultipleInputs(Object input);
 
     /**
-     * Resolves the {@link TemplateTo#getUnresolvedDestinationPath() raw destination path} of a template for a
-     * given root path to generate to as well as a given input to be used for variable resolution.
+     * Resolves the destination path of a template for a given root path to generate to as well as a given
+     * input to be used for variable resolution.
      * @param targetRootPath
      *            root path to generate to
      * @param template
