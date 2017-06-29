@@ -20,6 +20,7 @@
     <module>cobigen-textmerger</module>
     <module>cobigen-jsonplugin</module>
     <module>cobigen-senchaplugin</module>
+    <module>cobigen-htmlplugin</module>
   </modules>
 
   <build>
