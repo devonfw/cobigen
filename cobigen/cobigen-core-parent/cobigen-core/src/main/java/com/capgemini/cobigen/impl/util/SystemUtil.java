@@ -2,8 +2,6 @@ package com.capgemini.cobigen.impl.util;
 
 /**
  * This util class provides system properties
- *
- * @author mbrunnli (10.04.2013)
  */
 public class SystemUtil {
 
