@@ -61,7 +61,7 @@ public class TypeScriptMergerTest {
                 versionNumber = Integer.parseInt(version.substring(1, 2));
             }
         } catch (IOException e) {
-            fail("No version of Node is installed. Please install Node 6 or superior");
+            fail("Could not fetch node version:" + e.toString());
         }
         assertThat(versionNumber).isGreaterThanOrEqualTo(6);
     }
