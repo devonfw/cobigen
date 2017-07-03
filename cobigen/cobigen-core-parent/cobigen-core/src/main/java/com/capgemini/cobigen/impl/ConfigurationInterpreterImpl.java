@@ -1,8 +1,8 @@
 package com.capgemini.cobigen.impl;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.annotation.Cached;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
@@ -21,7 +22,9 @@ import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
+import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.base.Charsets;
@@ -54,12 +57,12 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<String> getMatchingTriggerIds(Object matcherInput) {
 
-        LOG.info("Matching trigger IDs requested.");
+        LOG.debug("Matching trigger IDs requested.");
         List<String> matchingTriggerIds = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
             matchingTriggerIds.add(trigger.getId());
         }
-        LOG.info("{} matching trigger IDs found.", matchingTriggerIds.size());
+        LOG.debug("{} matching trigger IDs found.", matchingTriggerIds.size());
         return matchingTriggerIds;
     }
 
@@ -67,13 +70,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.info("Matching increments requested.");
+        LOG.debug("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
                 templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
         }
-        LOG.info("{} matching increments found.", increments.size());
+        LOG.debug("{} matching increments found.", increments.size());
         return increments;
     }
 
@@ -81,15 +84,15 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     @Override
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException {
 
-        LOG.info("Matching templates requested.");
+        LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             for (Template template : templatesConfiguration.getAllTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), templatesConfiguration.getTrigger().getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
+                    templatesConfiguration.getTrigger().getId()));
             }
         }
-        LOG.info("{} matching templates found.", templates.size());
+        LOG.debug("{} matching templates found.", templates.size());
         return templates;
     }
 
@@ -110,12 +113,19 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         InputValidator.validateTrigger(trigger);
 
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-        Map<String, String> variables =
-            new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        String resolvedDesitinationPath =
-            new PathExpressionResolver(variables).evaluateExpressions(template.getUnresolvedDestinationPath());
-        return targetRootPath.resolve(resolvedDesitinationPath);
-
+        Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
+        Template templateEty =
+            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
+        try {
+            String resolvedDestinationPath =
+                new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
+            return targetRootPath.resolve(resolvedDestinationPath).normalize();
+        } catch (UnknownContextVariableException e) {
+            throw new CobiGenRuntimeException("Could not resolve path '" + templateEty.getUnresolvedTargetPath()
+                + "' for input '" + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
+                + "' and template '" + templateEty.getAbsoluteTemplatePath() + "'. Available variables: "
+                + variables.toString());
+        }
     }
 
     /**
@@ -138,8 +148,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         for (Increment increment : increments) {
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getUnresolvedDestinationPath(),
-                    template.getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
             }
             incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
                 templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
@@ -202,7 +211,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                         }
                     }
                 }
-                LOG.info("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
+                LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
                 if (triggerMatches) {
                     matchingTrigger.add(trigger);
                 }
