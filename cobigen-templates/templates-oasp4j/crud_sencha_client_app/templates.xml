@@ -3,34 +3,22 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#cap_first}Controller.js"/>
-    <templateExtension ref="MainController.js"/>
     <templateExtension ref="${variables.etoName#cap_first}.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="${variables.etoName#cap_first}CrudVM.js" mergeStrategy="senchamerge"/>
-    <templateExtension ref="${variables.etoName#cap_first}CrudVC.js"/>
     <templateExtension ref="${variables.etoName#cap_first}Crud.js" mergeStrategy="senchamerge"/>
-    <templateExtension ref="${variables.etoName#cap_first}ListVM.js"/>
-    <templateExtension ref="${variables.etoName#cap_first}ListVC.js"/>
     <templateExtension ref="${variables.etoName#cap_first}List.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="${variables.etoName#cap_first}_es_ES.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="${variables.etoName#cap_first}_en_EN.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="Main_es_ES.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="Main_en_EN.js" mergeStrategy="senchamerge"/>
-    <templateExtension ref="Content.js"/>
-    <templateExtension ref="Header.js"/>
-    <templateExtension ref="HeaderVC.js"/>
-    <templateExtension ref="Home.js"/>
-    <templateExtension ref="LeftSidePanel.js"/>
     <templateExtension ref="${variables.domain#cap_first}Status.js"/>
     <templateExtension ref="${variables.domain#cap_first}StatusVC.js"/>
     <templateExtension ref="Menu.js" mergeStrategy="senchamerge"/>
     <templateExtension ref="Application.js" mergeStrategy="senchamerge"/>
-    <templateExtension ref="Config.js"/>
-    <templateExtension ref="ConfigDevelopment.js"/>
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath="devon4sencha"/>
+    <templateScan name="ts_scan" templatePath="templates" destinationPath="" />
   </templateScans>
 
   <increments>
