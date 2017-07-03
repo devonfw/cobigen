@@ -41,7 +41,8 @@ public class TypeScriptMergerTest {
             nodeVersionScript.add("cmd.exe");
             nodeVersionScript.add("/c");
         }
-        nodeVersionScript.add("node --version");
+        nodeVersionScript.add("node");
+        nodeVersionScript.add("--version");
         ProcessBuilder builder = new ProcessBuilder(nodeVersionScript);
 
         Process p;
