@@ -7,6 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-test-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-test-4.0.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
