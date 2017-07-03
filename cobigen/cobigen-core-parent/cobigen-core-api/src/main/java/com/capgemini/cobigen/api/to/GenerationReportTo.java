@@ -5,27 +5,52 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-/**
- * Generation report.
- */
+/** Generation report. */
 public class GenerationReportTo {
 
     /** Error messages mapping from message to cause to avoid duplicates. */
-    private Map<String, Throwable> errors = Maps.newHashMap();
+    private Map<String, Throwable> errors = Maps.newTreeMap();
 
     /** Warnings in a hash set to remove duplicates */
-    private Set<String> warnings = Sets.newHashSet();
+    private Set<String> warnings = Sets.newTreeSet();
+
+    /** @see #getTemporaryWorkingDirectory() */
+    private Path temporaryWorkingDirectory = null;
+
+    /** @see #getGeneratedFiles() */
+    private Set<Path> generatedFiles = new TreeSet<>();
 
     /**
-     * A temporary {@link Path} pointing to the incomplete generation result iff {@link #isSuccessful()
-     * isSuccessful() == false}
+     * @see #getGeneratedFiles()
+     * @param file
+     *            generated/touched file
      */
-    private Path incompleteGenerationPath;
+    public void addGeneratedFile(Path file) {
+        generatedFiles.add(file);
+    }
+
+    /**
+     * @see #getGeneratedFiles()
+     * @param files
+     *            a collection of generated/touched files
+     */
+    private void addAllGeneratedFiles(Collection<Path> files) {
+        generatedFiles.addAll(files);
+    }
+
+    /**
+     * The sorted set of generated files.
+     * @return a {@link TreeSet} of {@link Path}s
+     */
+    public Set<Path> getGeneratedFiles() {
+        return generatedFiles;
+    }
 
     /**
      * Adds a new error message to the report.
@@ -50,7 +75,7 @@ public class GenerationReportTo {
      * @param messages
      *            warning messages.
      */
-    public void addAllWarnings(Collection<String> messages) {
+    private void addAllWarnings(Collection<String> messages) {
         warnings.addAll(messages);
     }
 
@@ -59,43 +84,45 @@ public class GenerationReportTo {
      * @param errors
      *            error messages.
      */
-    public void addAllErrors(List<Throwable> errors) {
+    private void addAllErrors(List<Throwable> errors) {
         for (Throwable t : errors) {
             this.errors.put(t.getMessage(), t);
         }
     }
 
     /**
-     * Returns the {@link Path} to the temporary sources of the resulting incomplete generation contents iff
-     * {@link #isSuccessful() isSuccessful() == false}.
+     * Returns the temporary {@link Path} pointing to the incomplete generation result iff
+     * {@link #isSuccessful() isSuccessful() == false}. Otherwise, the directory will have been deleted after
+     * generation.
      * @return the {@link Path} to the generation contents.
      */
-    public Path getIncompleteGenerationPath() {
-        return incompleteGenerationPath;
+    public Path getTemporaryWorkingDirectory() {
+        return temporaryWorkingDirectory;
     }
 
     /**
-     * Sets the {@link Path} to the temporary sources of the resulting incomplete generation contents iff
-     * {@link #isSuccessful() isSuccessful() == false}.
-     * @param incompleteGenerationPath
+     * @see #getTemporaryWorkingDirectory()
+     * @param temporaryWorkingDirectory
      *            the {@link Path} to the incomplete generation result.
      */
-    public void setIncompleteGenerationPath(Path incompleteGenerationPath) {
-        this.incompleteGenerationPath = incompleteGenerationPath;
+    public void setTemporaryWorkingDirectory(Path temporaryWorkingDirectory) {
+        this.temporaryWorkingDirectory = temporaryWorkingDirectory;
     }
 
     /**
      * Aggregates all properties of the given report within {@code this} report. The
-     * {@link #incompleteGenerationPath} will be overwritten on every aggregation by the passed instance's
-     * value iff not <code>null</code>.
+     * {@link #temporaryWorkingDirectory} will be overwritten on every aggregation by the passed instance's
+     * value iff not <code>null</code>. {@link #getTemporaryWorkingDirectory()} will not be aggregated, just
+     * the first non null value will be preserved.
      * @param report
      *            {@link GenerationReportTo} to be aggregated
      */
     public void aggregate(GenerationReportTo report) {
         addAllErrors(report.getErrors());
         addAllWarnings(report.getWarnings());
-        if (report.getIncompleteGenerationPath() != null) {
-            incompleteGenerationPath = report.getIncompleteGenerationPath();
+        addAllGeneratedFiles(report.getGeneratedFiles());
+        if (report.getTemporaryWorkingDirectory() != null) {
+            temporaryWorkingDirectory = report.getTemporaryWorkingDirectory();
         }
     }
 

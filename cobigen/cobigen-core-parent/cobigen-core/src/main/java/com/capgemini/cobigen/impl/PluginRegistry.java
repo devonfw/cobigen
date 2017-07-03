@@ -85,7 +85,7 @@ public class PluginRegistry {
                 "You cannot register a new Merger with merger==null or type==null or empty!");
         }
         registeredMerger.put(merger.getType(), merger);
-        LOG.info("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass().getCanonicalName());
+        LOG.debug("Merger for type '{}' registered ({}).", merger.getType(), merger.getClass().getCanonicalName());
     }
 
     /**
@@ -101,7 +101,7 @@ public class PluginRegistry {
                 "You cannot register a new TriggerInterpreter with triggerInterpreter==null or type==null or empty!");
         }
         registeredTriggerInterpreter.put(triggerInterpreter.getType(), triggerInterpreter);
-        LOG.info("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
+        LOG.debug("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
     }
 
