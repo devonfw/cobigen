@@ -105,7 +105,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            the root folder containing the configuration
      * @return <code>true</code> if the configuration is up-to-date, <br>
      *         otherwise <code>false</code>
-     * @author mbrunnli (Jun 23, 2015)
      */
     public boolean isCompliantToLatestSupportedVersion(Path configurationRoot) {
         return resolveLatestCompatibleSchemaVersion(configurationRoot, true) != null;
@@ -117,7 +116,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            the root folder containing the configuration
      * @return the newest schema version, the configuration is compliant with or <code>null</code> if the
      *         configuration is not compliant to any.
-     * @author mbrunnli (Jun 22, 2015)
      */
     public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
         return resolveLatestCompatibleSchemaVersion(configurationRoot, false);
@@ -131,7 +129,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            just checks latest supported version and returns
      * @return the newest schema version, the configuration is compliant with or <code>null</code> if the
      *         configuration is not compliant to any.
-     * @author mbrunnli (Jun 22, 2015)
      */
     private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion) {
         LOG.info("Try reading {} (including trails with legacy schema).", configurationName);
@@ -184,7 +181,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * @return if manual adoptions has to be performed after upgrading
      * @throws BackupFailedException
      *             if the backup could not be created
-     * @author mbrunnli (Jun 22, 2015)
      */
     public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, boolean ignoreFailedBackup) {
         boolean manualAdoptionsNecessary = false;

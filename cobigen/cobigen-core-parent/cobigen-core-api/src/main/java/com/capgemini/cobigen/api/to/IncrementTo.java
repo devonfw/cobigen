@@ -4,36 +4,20 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-/**
- * The transfer object for increments
- * @author mbrunnli (09.04.2014)
- */
-public class IncrementTo implements GenerableArtifact {
+/** The transfer object for increments */
+public class IncrementTo extends GenerableArtifact {
 
-    /**
-     * Id of the Increment
-     */
-    protected String id;
+    /** Textual description of the increment. */
+    private String description;
 
-    /**
-     * Textual description of the increment.
-     */
-    protected String description;
+    /** Trigger Id, this {@link IncrementTo} was retrieved from */
+    private String triggerId;
 
-    /**
-     * Trigger Id, this {@link IncrementTo} was retrieved from
-     */
-    protected String triggerId;
+    /** Increments, which are part of this increment */
+    private List<IncrementTo> dependentIncrements = Lists.newLinkedList();
 
-    /**
-     * Increments, which are part of this increment
-     */
-    protected List<IncrementTo> dependentIncrements = Lists.newLinkedList();
-
-    /**
-     * Set of templates contained in this increment, inclusively templates of dependent increments.
-     */
-    protected List<TemplateTo> templates = Lists.newLinkedList();
+    /** Set of templates contained in this increment, inclusively templates of dependent increments. */
+    private List<TemplateTo> templates = Lists.newLinkedList();
 
     /**
      * Creates a new increment transfer object with the given properties
@@ -47,11 +31,10 @@ public class IncrementTo implements GenerableArtifact {
      *            a {@link List} of {@link TemplateTo}s which are part of the increment (recursively resolved)
      * @param dependentIncrements
      *            a {@link List} of dependent increments which are part of this increment
-     * @author mbrunnli (09.04.2014)
      */
     public IncrementTo(String id, String description, String triggerId, List<TemplateTo> templates,
         List<IncrementTo> dependentIncrements) {
-        this.id = id;
+        super(id);
         this.description = description;
         this.templates = templates;
         this.triggerId = triggerId;
@@ -59,18 +42,8 @@ public class IncrementTo implements GenerableArtifact {
     }
 
     /**
-     * Returns the id
-     * @return the id
-     * @author mbrunnli (09.04.2014)
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
      * Returns the description
      * @return the description
-     * @author mbrunnli (09.04.2014)
      */
     public String getDescription() {
         return description;
@@ -79,7 +52,6 @@ public class IncrementTo implements GenerableArtifact {
     /**
      * Returns the trigger's id the increment is assigned to
      * @return the trigger's id the increment is assigned to
-     * @author mbrunnli (09.04.2014)
      */
     public String getTriggerId() {
         return triggerId;
@@ -87,8 +59,7 @@ public class IncrementTo implements GenerableArtifact {
 
     /**
      * Returns the {@link List} of templates, which are part of the increment (recursively resolved)
-     * @return the {@link List} of tempaltes
-     * @author mbrunnli (09.04.2014)
+     * @return the {@link List} of templates
      */
     public List<TemplateTo> getTemplates() {
         return Lists.newLinkedList(templates);
@@ -97,7 +68,6 @@ public class IncrementTo implements GenerableArtifact {
     /**
      * Returns the {@link List} of increments, which are part of this increment
      * @return the {@link List} of increments, which are part of this increment
-     * @author mbrunnli (10.04.2014)
      */
     public List<IncrementTo> getDependentIncrements() {
         return Lists.newLinkedList(dependentIncrements);

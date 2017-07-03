@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -20,14 +21,14 @@ import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateExtension;
+import com.capgemini.cobigen.impl.config.entity.io.TemplateScan;
 import com.capgemini.cobigen.impl.config.reader.TemplatesConfigurationReader;
 
 import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link TemplatesConfigurationReader}
- *
- * @author mbrunnli (18.06.2013)
  */
 public class TemplatesConfigurationReaderTest {
 
@@ -41,7 +42,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests whether all templates of a template package could be retrieved successfully.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (18.06.2013)
      */
     @Test
     public void testTemplatesOfAPackageRetrieval() throws Exception {
@@ -61,7 +61,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests that templates will be correctly resolved by the template-scan mechanism.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateScan() throws Exception {
@@ -73,28 +72,19 @@ public class TemplatesConfigurationReaderTest {
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
         TriggerInterpreter triggerInterpreter = null;
-        String templateIdSpringCommon = "resources_resources_spring_common";
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
 
         // then
-        assertThat(templates).isNotNull().hasSize(7);
-        Template templateSpringCommon = templates.get(templateIdSpringCommon);
-        assertThat(templateSpringCommon).isNotNull();
-        assertThat(templateSpringCommon.getName()).isEqualTo(templateIdSpringCommon);
-        assertThat(templateSpringCommon.getRelativeTemplatePath())
-            .isEqualTo("resources/resources/spring/common.xml.ftl");
-        assertThat(templateSpringCommon.getUnresolvedDestinationPath())
-            .isEqualTo("src/main/resources/resources/spring/common.xml");
-        assertThat(templateSpringCommon.getMergeStrategy()).isNull();
+        assertThat(templates).isNotNull().hasSize(6);
 
         String templateIdFooClass = "prefix_FooClass.java";
         Template templateFooClass = templates.get(templateIdFooClass);
         assertThat(templateFooClass).isNotNull();
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
-        assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/foo/FooClass.java");
+        assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/FooClass.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
     }
 
@@ -103,7 +93,6 @@ public class TemplatesConfigurationReaderTest {
      * defaults
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() throws Exception {
@@ -124,7 +113,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateFoo2Class).isNotNull();
         assertThat(templateFoo2Class.getName()).isEqualTo(templateIdFoo2Class);
         assertThat(templateFoo2Class.getRelativeTemplatePath()).isEqualTo("foo/Foo2Class.java.ftl");
-        assertThat(templateFoo2Class.getUnresolvedDestinationPath())
+        assertThat(templateFoo2Class.getUnresolvedTargetPath())
             .isEqualTo("src/main/java/foo/Foo2Class${variable}.java");
         assertThat(templateFoo2Class.getMergeStrategy()).isEqualTo("javamerge");
 
@@ -133,7 +122,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateBarClass).isNotNull();
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("foo/bar/BarClass.java.ftl");
-        assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/foo/bar/BarClass.java");
+        assertThat(templateBarClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
     }
 
@@ -141,7 +130,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the overriding of all possible attributes by templateExtensions
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() throws Exception {
@@ -166,7 +154,7 @@ public class TemplatesConfigurationReaderTest {
         // template-scan defaults
         assertThat(templateBarClass.getName()).isEqualTo(templateIdBarClass);
         assertThat(templateBarClass.getRelativeTemplatePath()).isEqualTo("bar/BarClass.java.ftl");
-        assertThat(templateBarClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/bar/BarClass.java");
+        assertThat(templateBarClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/bar/BarClass.java");
         assertThat(templateBarClass.getMergeStrategy()).isNull();
         assertThat(templateBarClass.getTargetCharset()).isEqualTo("UTF-8");
 
@@ -178,7 +166,7 @@ public class TemplatesConfigurationReaderTest {
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("bar/FooClass.java.ftl");
         // overwritten by templateExtension
-        assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("adapted/path/FooClass.java");
+        assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("adapted/path/FooClass.java");
         assertThat(templateFooClass.getMergeStrategy()).isEqualTo("javamerge");
         assertThat(templateFooClass.getTargetCharset()).isEqualTo("ISO-8859-1");
     }
@@ -187,7 +175,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests an empty templateExtensions does not override any defaults
      * @throws Exception
      *             test fails
-     * @author mbrunnli (12.11.2014)
      */
     @Test
     public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() throws Exception {
@@ -209,7 +196,7 @@ public class TemplatesConfigurationReaderTest {
         // template-scan defaults
         assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
         assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("bar/Foo2Class.java.ftl");
-        assertThat(templateFooClass.getUnresolvedDestinationPath()).isEqualTo("src/main/java/bar/Foo2Class.java");
+        assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/bar/Foo2Class.java");
         assertThat(templateFooClass.getMergeStrategy()).isNull();
         assertThat(templateFooClass.getTargetCharset()).isEqualTo("UTF-8");
     }
@@ -271,7 +258,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct resolution of template scan references in increments.
      * @throws InvalidConfigurationException
      *             test fails
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test
     public void testCorrectResolutionOfTemplateScanReferences() throws InvalidConfigurationException {
@@ -300,7 +286,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct detection of duplicate template scan names.
      * @throws InvalidConfigurationException
      *             expected
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnDuplicateTemplateScanNames() throws InvalidConfigurationException {
@@ -314,7 +299,6 @@ public class TemplatesConfigurationReaderTest {
      * Tests the correct detection of invalid template scan references.
      * @throws InvalidConfigurationException
      *             expected
-     * @author mbrunnli (Jun 19, 2015)
      */
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
@@ -326,7 +310,6 @@ public class TemplatesConfigurationReaderTest {
 
     /**
      * Tests the correct resolution of references of templates / templateScans / increments.
-     * @author mbrunnli (Jun 25, 2015)
      */
     @Test
     public void testIncrementComposition_combiningAllPossibleReferences() {
@@ -361,8 +344,6 @@ public class TemplatesConfigurationReaderTest {
      * Test for <a href="https://github.com/devonfw/tools-cobigen/issues/167">Issue 167</a>. Tests if the
      * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
      * the exception
-     *
-     * @author sholzer (Dec 18, 2015)
      */
     @Test
     public void testExceptionMessageForDuplicateTemplateNames() {
@@ -374,5 +355,220 @@ public class TemplatesConfigurationReaderTest {
             message = e.getMessage();
         }
         assertFalse(message.indexOf("Bar") == -1);
+    }
+
+    /**
+     * Tests the rewriting of the destination path of a scanned template by using the
+     * {@link TemplateExtension} configuration element. The explicitly configured destination path from the
+     * configuration should have precedence over the relocated path of the template scan.
+     */
+    @Test
+    public void testRelocate_overlappingTemplateExtensionAndScan() {
+        // given
+        String templateScanDestinationPath = "src/main/java/";
+        String templatesConfigurationRoot = testFileRootPath + "valid_relocate_templateExt_vs_scan/";
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        assertThat(templates).hasSize(2);
+
+        // validation
+        String staticRelocationPrefix = "../api/";
+        String scanRelTemplatePath = "$_rootpackage_$/$_component_$/common/api/";
+        Template template = verifyScannedTemplate(templates, "$_EntityName_$.java", scanRelTemplatePath,
+            templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+        String templateName = "$_EntityName_$2.java";
+        template = templates.get(templateName);
+        assertThat(template).isNotNull();
+        String pathWithName = scanRelTemplatePath + templateName;
+        assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName);
+        assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+            .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName);
+        assertThat(template.getUnresolvedTemplatePath()).isEqualTo(templateName);
+        assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateName);
+    }
+
+    /**
+     * Tests an overlapping configuration according to the destination paths of a relocated folder within a
+     * template scan and a explicitly defined destination path of a template configuration XML node. The
+     * destination path of a template configuration should not be affected by any relocation of any template
+     * scan.
+     */
+    @Test
+    public void testRelocate_overlappingExplicitTemplateDestinationPathAndRelocatedScanPath() {
+        // given
+        String templateScanDestinationPath = "src/main/java/";
+        String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_vs_scan/";
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        assertThat(templates).hasSize(2);
+
+        // validation
+        String staticRelocationPrefix = "../api/";
+        String scanRelTemplatePath = "$_rootpackage_$/$_component_$/common/api/";
+        Template template = verifyScannedTemplate(templates, "$_EntityName_$.java", scanRelTemplatePath,
+            templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+        template = templates.get("ExplicitlyDefined");
+        assertThat(template).isNotNull();
+        assertThat(template.getRelativeTemplatePath()).isEqualTo("OuterTemplate.java");
+        assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+            .isEqualTo(templatesConfigurationRoot + "OuterTemplate.java");
+        // the destination path has designed to match a relocated path during the scan by intention
+        String destinationPath = "src/main/java/$_rootpackage_$/$_component_$/common/api/ExplicitlyDefined.java";
+        assertThat(template.getUnresolvedTemplatePath()).isEqualTo(destinationPath);
+        assertThat(template.getUnresolvedTargetPath()).isEqualTo(destinationPath);
+        assertThat(template.getVariables().asMap()).hasSize(0);
+    }
+
+    /**
+     * Tests the correct property inheritance and resolution of cobigen.properties within a template set read
+     * by a template scan.
+     */
+    @Test
+    public void testRelocate_propertiesResolution() {
+        // arrange
+        String templatesConfigurationRoot = testFileRootPath + "valid_relocate_propertiesresolution/";
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // act
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        assertThat(templates).hasSize(2);
+
+        // assert
+        Template template = templates.get("$_Component_$.java");
+        assertThat(template).isNotNull();
+        assertThat(template.getVariables().asMap()).isNotNull().containsEntry("foo", "root").containsEntry("bar",
+            "barValue");
+
+        template = templates.get("$_EntityName_$Eto.java");
+        assertThat(template).isNotNull();
+        assertThat(template.getVariables().asMap()).isNotNull().containsEntry("relocate", "../api2/${cwd}")
+            .containsEntry("foo", "logic.api.to").containsEntry("bar", "barValue").containsEntry("local", "localValue");
+    }
+
+    /**
+     * Test relocate while the template is defined with the template file ending, which should be removed on
+     * destination path resolution.
+     */
+    @Test
+    public void testRelocate_withTemplateFilenameEnding() {
+
+        // given
+        String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_fileending/";
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+
+        // validation
+        assertThat(templates).hasSize(1);
+
+        String staticRelocationPrefix = "../server/";
+        String templateName = "$_Component_$Impl.java";
+        Template template = templates.get(templateName);
+        assertThat(template).isNotNull();
+        String pathWithName = "$_rootpackage_$/$_component_$/logic/impl/" + templateName;
+        assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName + ".ftl");
+        assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+            .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName + ".ftl");
+        assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
+        assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
+
+    }
+
+    /**
+     * Test the basic valid configuration of
+     * <a href="https://github.com/devonfw/tools-cobigen/issues/157">issue 157</a> for relocation of templates
+     * to support multi-module generation.
+     */
+    @Test
+    public void testRelocate() {
+
+        // given
+        String noRelocation = "";
+        String templateScanDestinationPath = "src/main/java/";
+        String templatesConfigurationRoot = testFileRootPath + "valid_relocate/";
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+
+        Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+        TriggerInterpreter triggerInterpreter = null;
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+
+        // validation
+        assertThat(templates).hasSize(3);
+
+        String staticRelocationPrefix = "../api/";
+        verifyScannedTemplate(templates, "$_EntityName_$Entity.java", "$_rootpackage_$/$_component_$/dataaccess/api/",
+            templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+        staticRelocationPrefix = "../api2/";
+        verifyScannedTemplate(templates, "$_EntityName_$Eto.java", "$_rootpackage_$/$_component_$/logic/api/to/",
+            templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+        verifyScannedTemplate(templates, "$_Component_$.java", "$_rootpackage_$/$_component_$/logic/api/",
+            templatesConfigurationRoot, noRelocation, templateScanDestinationPath);
+    }
+
+    /**
+     * Verifies a template's path properties
+     * @param templates
+     *            list of all templates mapping template name to template
+     * @param templateName
+     *            name of the template
+     * @param templatePath
+     *            template path
+     * @param templatesConfigurationRoot
+     *            configuration root folder of the templates configuration
+     * @param staticRelocationPrefix
+     *            static prefix of a relocation value excluding ${cwd}
+     * @param templateScanDestinationPath
+     *            destination path of the involved {@link TemplateScan}
+     * @return the template with the given templateName
+     */
+    private Template verifyScannedTemplate(Map<String, Template> templates, String templateName, String templatePath,
+        String templatesConfigurationRoot, String staticRelocationPrefix, String templateScanDestinationPath) {
+
+        Template template = templates.get(templateName);
+        assertThat(template).isNotNull();
+        String pathWithName = templatePath + templateName;
+        assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName);
+        assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+            .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName);
+        assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
+        if (StringUtils.isEmpty(staticRelocationPrefix)) {
+            assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateScanDestinationPath + pathWithName);
+        } else {
+            assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
+        }
+        return template;
     }
 }
