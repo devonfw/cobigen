@@ -81,7 +81,9 @@ node {
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
 									if(origin_branch!='dev_eclipseplugin'){
-										sh "mvn -s ${MAVEN_SETTINGS} clean package"
+										nodejs(nodeJSInstallationName: '6.11') {
+											sh "mvn -s ${MAVEN_SETTINGS} clean package"
+										}
 									}else{
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
