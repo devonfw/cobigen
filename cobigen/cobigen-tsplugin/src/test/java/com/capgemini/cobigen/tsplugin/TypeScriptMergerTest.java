@@ -10,9 +10,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.MergeException;
@@ -32,7 +35,14 @@ public class TypeScriptMergerTest {
     public void checkNodeInstallationAndVersion() {
         String version = new String();
         int versionNumber = 0;
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "node --version");
+        List<String> nodeVersionScript = new LinkedList<>();
+
+        if (SystemUtils.IS_OS_WINDOWS) {
+            nodeVersionScript.add("cmd.exe");
+            nodeVersionScript.add("/c");
+        }
+        nodeVersionScript.add("node --version");
+        ProcessBuilder builder = new ProcessBuilder(nodeVersionScript);
 
         Process p;
         try {
