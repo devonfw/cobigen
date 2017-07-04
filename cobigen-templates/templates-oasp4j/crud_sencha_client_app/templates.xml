@@ -18,7 +18,7 @@
   </templates>
 
   <templateScans>
-    <templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+    <templateScan templatePath="templates" destinationPath="devon4sencha"/>
   </templateScans>
 
   <increments>
