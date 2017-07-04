@@ -8,7 +8,6 @@
     <templateExtension ref="${variables.component}dataGrid.component.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="${variables.component}dataGrid.component.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="${variables.component}dataGrid.service.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.component}dataGrid.component.spec.ts"/>
     <templateExtension ref="home.component.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="app.routing.ts" mergeStrategy="tsmerge"/>
