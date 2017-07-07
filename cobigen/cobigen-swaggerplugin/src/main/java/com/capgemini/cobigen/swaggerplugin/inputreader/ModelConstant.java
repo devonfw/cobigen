@@ -27,47 +27,22 @@ public class ModelConstant {
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String INTEGER = "Integer";
+    public static final String NOTNULL = "NotNull";
 
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String LONG = "Long";
+    public static final String MAXIMUM = "maximum";
 
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String FLOAT = "float";
+    public static final String MINIMUM = "minimum";
 
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String DOUBLE = "Double";
-
-    /**
-     * Type of a field of the input class ({@link String})
-     */
-    public static final String STRING = "String";
-
-    /**
-     * Type of a field of the input class ({@link String})
-     */
-    public static final String BYTE = "byte";
-
-    /**
-     * Type of a field of the input class ({@link String})
-     */
-    public static final String BOOLEAN = "Boolean";
-
-    /**
-     * Type of a field of the input class ({@link String})
-     */
-    public static final String DATE = "Date";
-
-    /**
-     * Type of a field of the input class ({@link String})
-     */
-    public static final String TIMESTAMP = "Timestamp";
+    public static final String CONSTRAINTS = "constraints";
 
     /**
      * Type of the supertype of the input class ({@link Map}&lt;{@link String}, {@link Object}&gt;)

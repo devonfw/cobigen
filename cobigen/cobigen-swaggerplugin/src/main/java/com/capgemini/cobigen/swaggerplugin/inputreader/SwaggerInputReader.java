@@ -14,7 +14,24 @@ import com.capgemini.cobigen.swaggerplugin.utils.constants.Constants;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.BaseIntegerProperty;
+import io.swagger.models.properties.BinaryProperty;
+import io.swagger.models.properties.BooleanProperty;
+import io.swagger.models.properties.ByteArrayProperty;
+import io.swagger.models.properties.DateProperty;
+import io.swagger.models.properties.DateTimeProperty;
+import io.swagger.models.properties.DecimalProperty;
+import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.EmailProperty;
+import io.swagger.models.properties.FloatProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.LongProperty;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.PasswordProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 import io.swagger.parser.SwaggerParser;
 
 /**
@@ -50,7 +67,10 @@ public class SwaggerInputReader implements InputReader {
         List<Map<String, Object>> fields = new LinkedList<>();
         ModelImpl model = (ModelImpl) input;
         pojoModel.put(ModelConstant.NAME, model.getName());
-        pojoModel.put(ModelConstant.COMPONENT, model.getDescription());
+        int descriptionIndex = model.getDescription().indexOf("-/-");
+        if (descriptionIndex != 0) {
+            pojoModel.put(ModelConstant.COMPONENT, model.getDescription().substring(0, descriptionIndex));
+        }
         pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties()));
 
         return null;
@@ -64,18 +84,15 @@ public class SwaggerInputReader implements InputReader {
 
         List<Map<String, Object>> fields = new LinkedList<>();
         Map<String, Object> fieldValues;
+
         for (String key : properties.keySet()) {
             if (key != "id") {
                 fieldValues = new HashMap<>();
-                fieldValues.put(ModelConstant.NAME, key);
 
-                fieldValues.put(ModelConstant.TYPE,
-                    buildType(properties.get(key).getType(), properties.get(key).getFormat()));
-                if (properties.get(key).getRequired()) {
-                    fieldValues.put(key, "true");
-                } else {
-                    fieldValues.put(key, "false");
-                }
+                fieldValues.put(ModelConstant.NAME, key);
+                fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key)));
+                fieldValues.put(ModelConstant.CONSTRAINTS, getConstraints(properties.get(key)));
+
                 fields.add(fieldValues);
             }
         }
@@ -83,46 +100,96 @@ public class SwaggerInputReader implements InputReader {
     }
 
     /**
-     * @param type
-     * @param format
+     * @param property
      * @return
      */
-    private String buildType(String type, String format) {
-        switch (type) {
-        case "integer":
-            switch (format) {
-            case "int32":
-                return ModelConstant.INTEGER;
-            case "int64":
-                return ModelConstant.LONG;
-            default:
-                return ModelConstant.LONG;
-            }
-        case "number":
-            switch (format) {
-            case "float":
-                return ModelConstant.FLOAT;
-            case "double":
-                return ModelConstant.DOUBLE;
-            default:
-                return ModelConstant.DOUBLE;
-            }
-        case "boolean":
-            return ModelConstant.BOOLEAN;
-        case "string":
-            switch (format) {
-            case "byte":
-                return ModelConstant.BYTE;
-            case "date":
-                return ModelConstant.DATE;
-            case "date-time":
-                return ModelConstant.TIMESTAMP;
-            default:
-                return ModelConstant.STRING;
-            }
-        default:
-            return type;
+    private Object getConstraints(Property property) {
+        Map<String, Object> constraints = new HashMap<>();
+        if (property.getRequired()) {
+            constraints.put(ModelConstant.NOTNULL, true);
         }
+        if (property instanceof IntegerProperty || property instanceof LongProperty) {
+            BaseIntegerProperty prop = (BaseIntegerProperty) property;
+            if (prop.getMaximum() != null) {
+                constraints.put(ModelConstant.MAXIMUM, prop.getMaximum());
+            }
+            if (prop.getMinimum() != null) {
+                constraints.put(ModelConstant.MINIMUM, prop.getMinimum());
+            }
+        } else if (property instanceof FloatProperty || property instanceof DoubleProperty) {
+            DecimalProperty prop = (DecimalProperty) property;
+            if (prop.getMaximum() != null) {
+                constraints.put(ModelConstant.MAXIMUM, prop.getMaximum());
+            }
+            if (prop.getMinimum() != null) {
+                constraints.put(ModelConstant.MINIMUM, prop.getMinimum());
+            }
+        } else if (property instanceof ArrayProperty) {
+
+        } else if (property instanceof StringProperty || property instanceof EmailProperty
+            || property instanceof BinaryProperty || property instanceof PasswordProperty) {
+            return Constants.LONG;
+        } else if (property instanceof BooleanProperty) {
+            return Constants.BOOLEAN;
+        } else if (property instanceof StringProperty) {
+            return Constants.STRING;
+        } else if (property instanceof ObjectProperty) {
+            return ((ObjectProperty) property).getName();
+        } else if (property instanceof RefProperty) {
+            return ((RefProperty) property).getName();
+        } else if (property instanceof ByteArrayProperty) {
+            return Constants.BYTE;
+        } else if (property instanceof DateProperty) {
+            return Constants.DATE;
+        } else if (property instanceof DateTimeProperty) {
+            return Constants.TIMESTAMP;
+        } else if (property instanceof BinaryProperty) {
+            return Constants.FLOAT;
+        } else if (property instanceof EmailProperty) {
+            return Constants.STRING;
+        } else if (property instanceof PasswordProperty) {
+            return Constants.STRING;
+        } else {
+            return Constants.STRING;
+        }
+        return constraints;
+    }
+
+    /**
+     * @param property
+     * @return
+     */
+    private String buildType(Property property) {
+        if (property instanceof IntegerProperty) {
+            return Constants.INTEGER;
+        } else if (property instanceof DoubleProperty) {
+            return Constants.DOUBLE;
+        } else if (property instanceof LongProperty) {
+            return Constants.LONG;
+        } else if (property instanceof BooleanProperty) {
+            return Constants.BOOLEAN;
+        } else if (property instanceof StringProperty) {
+            return Constants.STRING;
+        } else if (property instanceof ObjectProperty) {
+            return ((ObjectProperty) property).getName();
+        } else if (property instanceof RefProperty) {
+            return ((RefProperty) property).getName();
+        } else if (property instanceof ByteArrayProperty) {
+            return Constants.BYTE;
+        } else if (property instanceof DateProperty) {
+            return Constants.DATE;
+        } else if (property instanceof DateTimeProperty) {
+            return Constants.TIMESTAMP;
+        } else if (property instanceof BinaryProperty) {
+            return Constants.FLOAT;
+        } else if (property instanceof EmailProperty) {
+            return Constants.STRING;
+        } else if (property instanceof PasswordProperty) {
+            return Constants.STRING;
+        } else {
+            return Constants.STRING;
+        }
+
     }
 
     @Override
