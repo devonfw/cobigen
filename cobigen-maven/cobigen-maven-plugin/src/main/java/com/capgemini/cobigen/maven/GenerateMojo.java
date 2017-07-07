@@ -47,6 +47,7 @@ import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
+import com.capgemini.cobigen.htmlplugin.HTMLPluginActivator;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.TemplateEngineRegistry;
@@ -59,6 +60,7 @@ import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
+import com.capgemini.cobigen.tsplugin.TypeScriptPluginActivator;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -77,6 +79,8 @@ public class GenerateMojo extends AbstractMojo {
         PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
         PluginRegistry.loadPlugin(SenchaPluginActivator.class);
         PluginRegistry.loadPlugin(JSONPluginActivator.class);
+        PluginRegistry.loadPlugin(HTMLPluginActivator.class);
+        PluginRegistry.loadPlugin(TypeScriptPluginActivator.class);
         TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
     }
 
