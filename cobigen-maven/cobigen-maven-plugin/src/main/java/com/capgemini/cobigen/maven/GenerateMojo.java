@@ -7,14 +7,21 @@ import static java.nio.file.Files.isReadable;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -25,12 +32,14 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
@@ -44,6 +53,7 @@ import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
+import com.capgemini.cobigen.maven.utils.MojoUtils;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
@@ -77,6 +87,10 @@ public class GenerateMojo extends AbstractMojo {
     /** {@link MojoExecution} to retrieve the pom-declared plugin dependencies. */
     @Component
     private MojoExecution execution;
+
+    /** {@link PluginDescriptor} to retrieve the ClassRealm for this Plug-in */
+    @Component
+    public PluginDescriptor pluginDescriptor;
 
     /** Configuration folder to be used */
     @Parameter
@@ -120,7 +134,6 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("");
             return;
         }
-
         CobiGen cobiGen;
         if (configurationFolder != null) {
             try {
@@ -134,8 +147,9 @@ public class GenerateMojo extends AbstractMojo {
 
             if (dependencies != null && !dependencies.isEmpty()) {
                 Dependency dependency = dependencies.iterator().next();
-                Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                    .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
+                Artifact templatesArtifact =
+                    execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
+                        .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
                 try {
                     cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
                 } catch (IOException e) {
@@ -154,8 +168,10 @@ public class GenerateMojo extends AbstractMojo {
         try {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
+                List<Class<?>> utilClasses = resolveUtilClasses();
                 GenerationReportTo report =
-                    cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride);
+                    cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride,
+                        utilClasses);
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
                         getLog().error(e.getMessage(), e);
@@ -172,6 +188,119 @@ public class GenerateMojo extends AbstractMojo {
             getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
             throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Walks the class path in search of an 'context.xml' resource to identify the enclosing folder or jar
+     * file. That location is then searched for class files and a list with those loaded classes is returned
+     * @return a List of Classes for template generation.
+     */
+    private List<Class<?>> resolveUtilClasses() {
+        final List<Class<?>> result = new LinkedList<>();
+        final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+        if (configurationFolder != null) {
+            try {
+                pluginDescriptor.getClassRealm().addURL(configurationFolder.toURI().toURL());
+                getLog().debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
+            } catch (MalformedURLException e) {
+                getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
+            }
+        }
+        URL contextXmlUrl = classRealm.getResource("context.xml");
+        if (contextXmlUrl == null) {
+            getLog().error("No context.xml could be found in the classpath!");
+            return null;
+        }
+        getLog().debug("Found context.xml @ " + contextXmlUrl.toString());
+        final List<String> foundClasses = new LinkedList<>();
+        if (contextXmlUrl.toString().startsWith("jar")) {
+            try {
+                // Get the URI of the jar from the URL of the contained context.xml
+                URI jarUri = URI.create(contextXmlUrl.toString().split("!")[0]);
+                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
+
+                // walk the jar file
+                getLog().debug("Searching for classes in " + jarUri.toString());
+                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.toString().endsWith(".class")) {
+                            getLog().debug("    * Found clas file " + file.toString());
+                            // remove the leading '/' and the trailing '.class'
+                            String fileName = file.toString().substring(1, file.toString().length() - 6);
+                            // replace the path separator '/' with package separator '.' and add it to the
+                            // list of found files
+                            foundClasses.add(fileName.replace("/", "."));
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        getLog().warn(exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                getLog().error(e);
+            }
+            for (String className : foundClasses) {
+                try {
+                    result.add(classRealm.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    getLog().warn("Could not load " + className + " from classpath", e);
+                }
+            }
+        } else {
+            final Path configFolder = Paths.get(URI.create(contextXmlUrl.toString())).getParent();
+            getLog().debug("Searching for classes in " + configFolder.toString());
+            final List<Path> foundPaths = new LinkedList<>();
+            try {
+                Files.walkFileTree(configFolder, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.toString().endsWith(".class")) {
+                            getLog().debug("    * Found class file " + file.toString());
+                            foundPaths.add(file);
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        getLog().warn(exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                getLog().error(e);
+            }
+
+            Path commonParent = new MojoUtils().getCommonParent(foundPaths);
+            while (!commonParent.equals(configFolder)) {
+                try {
+                    pluginDescriptor.getClassRealm().addURL(commonParent.toUri().toURL());
+                    getLog().debug("Added " + commonParent.toUri().toURL().toString() + " to class path");
+                } catch (MalformedURLException e) {
+                    getLog().error("Could not add folder " + commonParent.toString(), e);
+                }
+                commonParent = commonParent.getParent();
+            }
+
+            for (Path path : foundPaths) {
+                try {
+                    result.add(loadClassByPath(path, classRealm));
+                } catch (ClassNotFoundException e) {
+                    getLog().error(e);
+                }
+            }
+        }
+
+        return result;
+
     }
 
     /**
@@ -212,9 +341,10 @@ public class GenerateMojo extends AbstractMojo {
                 }
 
                 if (!sourceFound) {
-                    throw new MojoFailureException("Currently, packages as inputs are only supported "
-                        + "if defined as sources in the current project to be build. Having searched for sources at paths: "
-                        + sourcePathsObserved);
+                    throw new MojoFailureException(
+                        "Currently, packages as inputs are only supported "
+                            + "if defined as sources in the current project to be build. Having searched for sources at paths: "
+                            + sourcePathsObserved);
                 }
             }
         }
@@ -240,8 +370,7 @@ public class GenerateMojo extends AbstractMojo {
      * @throws MojoFailureException
      *             if the maven configuration does not match cobigen configuration (context.xml)
      */
-    private List<GenerableArtifact> collectIncrements(CobiGen cobiGen, List<Object> inputs)
-        throws MojoFailureException {
+    private List<GenerableArtifact> collectIncrements(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
         List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (increments != null && !increments.isEmpty()) {
             for (Object input : inputs) {
@@ -256,14 +385,14 @@ public class GenerateMojo extends AbstractMojo {
                 // error handling for increments not found
                 if (!configuredIncrements.isEmpty()) {
                     if (input instanceof PackageFolder) {
-                        throw new MojoFailureException(
-                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
-                                + ((PackageFolder) input).getLocation() + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
+                            + "' not matched for input '" + ((PackageFolder) input).getLocation()
+                            + "' by provided CobiGen configuration.");
                     } else {
-                        throw new MojoFailureException(
-                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
-                                + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
-                                + "' by provided CobiGen configuration.");
+                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
+                            + "' not matched for input '"
+                            + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
+                            + "' by provided CobiGen configuration.");
                     }
                 }
 
@@ -300,8 +429,8 @@ public class GenerateMojo extends AbstractMojo {
                         throw new MojoFailureException("Templates with ids '" + configuredTemplates
                             + "' did not match package in folder '" + ((PackageFolder) input).getLocation() + "'.");
                     } else {
-                        throw new MojoFailureException(
-                            "Templates with ids '" + configuredTemplates + "' did not match input '" + input + "'.");
+                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
+                            + "' did not match input '" + input + "'.");
                     }
                 }
             }
@@ -310,7 +439,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     /**
-     * Builds the {@link ClassLoader} for the current maven project
+     * Builds the {@link ClassLoader} for the current maven project based on the plugins class loader
      * @return the project {@link ClassLoader}
      * @throws MojoFailureException
      *             if the maven project dependencies could not be resolved
@@ -320,22 +449,78 @@ public class GenerateMojo extends AbstractMojo {
         try {
             classpathElements.addAll(project.getCompileClasspathElements());
             classpathElements.addAll(project.getTestClasspathElements());
-            List<URL> projectClasspathList = new ArrayList<>();
+            ClassRealm loader = pluginDescriptor.getClassRealm();
+            getLog().debug("Fetched ClassRealm for Plug-In");
             for (String element : classpathElements) {
                 try {
                     URL url = new File(element).toURI().toURL();
                     getLog().debug("Add Classpath-URL: " + url);
-                    projectClasspathList.add(url);
+                    loader.addURL(url);
                 } catch (MalformedURLException e) {
                     getLog().error(element + " is an invalid classpath element", e);
                     throw new MojoFailureException(element + " is an invalid classpath element");
                 }
             }
-            return new URLClassLoader(projectClasspathList.toArray(new URL[0]));
+            if (getLog().isDebugEnabled()) {
+                getLog().debug("ClassLoader knows:");
+                for (URL url : loader.getURLs()) {
+                    getLog().debug("    * " + url.toString());
+                }
+                URL contextURL = loader.getResource("context.xml");
+                if (contextURL != null) {
+                    getLog().debug("Found content.xml @ " + contextURL.toString());
+                } else {
+                    getLog().warn("No context.xml found in classpath");
+                }
+
+            }
+            return loader;
         } catch (DependencyResolutionRequiredException e) {
             getLog().error("Dependency resolution failed", e);
             throw new MojoFailureException("Dependency resolution failed", e);
         }
     }
 
+    /**
+     * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
+     * the following classes in this order: <list><li>Some</li> <li>c.Some</li> <li>b.c.Some</li> <li>
+     * a.b.c.Some</> </list>
+     * @param classPath
+     *            the {@link Path} of the Class file
+     * @param cl
+     *            the used ClassLoader
+     * @return Class<?> of the class file
+     * @throws ClassNotFoundException
+     *             if no class could be found all the way up to the path root
+     */
+    private Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
+        // Get a list with all path segments, starting with the class name
+        Queue<String> pathSegments = new LinkedList<>();
+        // Split the path by the systems file separator and without the .class suffix
+        String[] pathSegmentsArray =
+            classPath.toString().substring(0, classPath.toString().length() - 6)
+                .split("\\".equals(File.separator) ? "\\\\" : File.separator);
+        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
+            pathSegments.add(pathSegmentsArray[i]);
+        }
+
+        if (!pathSegments.isEmpty()) {
+            String className = "";
+            while (!pathSegments.isEmpty()) {
+                if (className == "") {
+                    className = pathSegments.poll();
+                } else {
+                    className = String.join(".", pathSegments.poll(), className);
+                }
+                try {
+                    getLog().debug("Try to load " + className);
+                    return cl.loadClass(className);
+                } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                    continue;
+                }
+            }
+        }
+        throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
+
+    }
 }
