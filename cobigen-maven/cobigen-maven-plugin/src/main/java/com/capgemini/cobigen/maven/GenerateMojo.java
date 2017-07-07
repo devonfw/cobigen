@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -52,6 +53,7 @@ import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
+import com.capgemini.cobigen.maven.utils.MojoUtils;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
 import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
@@ -189,53 +191,115 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     /**
-     * @return
+     * Walks the class path in search of an 'context.xml' resource to identify the enclosing folder or jar
+     * file. That location is then searched for class files and a list with those loaded classes is returned
+     * @return a List of Classes for template generation.
      */
     private List<Class<?>> resolveUtilClasses() {
-        ClassRealm classRealm = pluginDescriptor.getClassRealm();
+        final List<Class<?>> result = new LinkedList<>();
+        final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+        if (configurationFolder != null) {
+            try {
+                pluginDescriptor.getClassRealm().addURL(configurationFolder.toURI().toURL());
+                getLog().debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
+            } catch (MalformedURLException e) {
+                getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
+            }
+        }
         URL contextXmlUrl = classRealm.getResource("context.xml");
         if (contextXmlUrl == null) {
             getLog().error("No context.xml could be found in the classpath!");
             return null;
         }
+        getLog().debug("Found context.xml @ " + contextXmlUrl.toString());
+        final List<String> foundClasses = new LinkedList<>();
         if (contextXmlUrl.toString().startsWith("jar")) {
             try {
-
+                // Get the URI of the jar from the URL of the contained context.xml
                 URI jarUri = URI.create(contextXmlUrl.toString().split("!")[0]);
                 FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-                final List<String> foundClasses = new LinkedList<>();
-                // Path jarPath = Paths.get(jarUri);
+
+                // walk the jar file
                 getLog().debug("Searching for classes in " + jarUri.toString());
                 Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
 
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         if (file.toString().endsWith(".class")) {
+                            getLog().debug("    * Found clas file " + file.toString());
+                            // remove the leading '/' and the trailing '.class'
                             String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            getLog().debug("    ** Found Class " + file.toString());
+                            // replace the path separator '/' with package separator '.' and add it to the
+                            // list of found files
                             foundClasses.add(fileName.replace("/", "."));
                         }
                         return FileVisitResult.CONTINUE;
                     }
-                });
-                List<Class<?>> result = new LinkedList<>();
-                for (String className : foundClasses) {
-                    try {
-                        result.add(classRealm.loadClass(className));
-                    } catch (ClassNotFoundException e) {
-                        getLog().warn("Could not load " + className + " from classpath", e);
-                    }
-                }
-                return result;
 
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        getLog().warn(exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
             } catch (IOException e) {
                 getLog().error(e);
             }
+            for (String className : foundClasses) {
+                try {
+                    result.add(classRealm.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    getLog().warn("Could not load " + className + " from classpath", e);
+                }
+            }
         } else {
-            getLog().error("Currently not supported");
+            final Path configFolder = Paths.get(URI.create(contextXmlUrl.toString())).getParent();
+            getLog().debug("Searching for classes in " + configFolder.toString());
+            final List<Path> foundPaths = new LinkedList<>();
+            try {
+                Files.walkFileTree(configFolder, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.toString().endsWith(".class")) {
+                            getLog().debug("    * Found class file " + file.toString());
+                            foundPaths.add(file);
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        getLog().warn(exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                getLog().error(e);
+            }
+
+            Path commonParent = new MojoUtils().getCommonParent(foundPaths);
+            while (!commonParent.equals(configFolder)) {
+                try {
+                    pluginDescriptor.getClassRealm().addURL(commonParent.toUri().toURL());
+                    getLog().debug("Added " + commonParent.toUri().toURL().toString() + " to class path");
+                } catch (MalformedURLException e) {
+                    getLog().error("Could not add folder " + commonParent.toString(), e);
+                }
+                commonParent = commonParent.getParent();
+            }
+
+            for (Path path : foundPaths) {
+                try {
+                    result.add(loadClassByPath(path, classRealm));
+                } catch (ClassNotFoundException e) {
+                    getLog().error(e);
+                }
+            }
         }
 
-        return null;
+        return result;
 
     }
 
@@ -415,5 +479,48 @@ public class GenerateMojo extends AbstractMojo {
             getLog().error("Dependency resolution failed", e);
             throw new MojoFailureException("Dependency resolution failed", e);
         }
+    }
+
+    /**
+     * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
+     * the following classes in this order: <list><li>Some</li> <li>c.Some</li> <li>b.c.Some</li> <li>
+     * a.b.c.Some</> </list>
+     * @param classPath
+     *            the {@link Path} of the Class file
+     * @param cl
+     *            the used ClassLoader
+     * @return Class<?> of the class file
+     * @throws ClassNotFoundException
+     *             if no class could be found all the way up to the path root
+     */
+    private Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
+        // Get a list with all path segments, starting with the class name
+        Queue<String> pathSegments = new LinkedList<>();
+        // Split the path by the systems file separator and without the .class suffix
+        String[] pathSegmentsArray =
+            classPath.toString().substring(0, classPath.toString().length() - 6)
+                .split("\\".equals(File.separator) ? "\\\\" : File.separator);
+        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
+            pathSegments.add(pathSegmentsArray[i]);
+        }
+
+        if (!pathSegments.isEmpty()) {
+            String className = "";
+            while (!pathSegments.isEmpty()) {
+                if (className == "") {
+                    className = pathSegments.poll();
+                } else {
+                    className = String.join(".", pathSegments.poll(), className);
+                }
+                try {
+                    getLog().debug("Try to load " + className);
+                    return cl.loadClass(className);
+                } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                    continue;
+                }
+            }
+        }
+        throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
+
     }
 }
