@@ -163,8 +163,7 @@ public class Oasp4JTemplateTest {
         assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
+        assertThat(numFilesInTarget).isEqualTo(2);
     }
 
     /**
@@ -208,8 +207,7 @@ public class Oasp4JTemplateTest {
         assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
+        assertThat(numFilesInTarget).isEqualTo(2);
     }
 
     /**
