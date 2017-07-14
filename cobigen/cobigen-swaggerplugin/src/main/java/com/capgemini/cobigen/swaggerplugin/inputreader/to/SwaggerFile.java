@@ -2,6 +2,8 @@ package com.capgemini.cobigen.swaggerplugin.inputreader.to;
 
 import java.net.URI;
 
+import io.swagger.models.Swagger;
+
 /** Swagger file transfer object which contains the {@link URI} and the name of the file */
 public class SwaggerFile {
 
@@ -10,6 +12,8 @@ public class SwaggerFile {
 
     /** File name */
     private String fileName;
+
+    private Swagger swaggerFile;
 
     /**
      * Creates a new transfer object for a file
@@ -60,5 +64,13 @@ public class SwaggerFile {
     @Override
     public String toString() {
         return "SwaggerFile[fileName=" + fileName + ", location=" + location.toString() + "]";
+    }
+
+    public Swagger getSwaggerFile() {
+        return swaggerFile;
+    }
+
+    public void setSwaggerFile(Swagger swaggerFile) {
+        this.swaggerFile = swaggerFile;
     }
 }

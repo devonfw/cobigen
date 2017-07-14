@@ -42,6 +42,21 @@ public class ModelConstant {
     /**
      * Type of a field of the input class ({@link String})
      */
+    public static final String DESCRIPTION = "description";
+
+    /**
+     * Type of a field of the input class ({@link String})
+     */
+    public static final String MAX_LENGTH = "maxLength";
+
+    /**
+     * Type of a field of the input class ({@link String})
+     */
+    public static final String MIN_LENGTH = "minLength";
+
+    /**
+     * Type of a field of the input class ({@link String})
+     */
     public static final String CONSTRAINTS = "constraints";
 
     /**
