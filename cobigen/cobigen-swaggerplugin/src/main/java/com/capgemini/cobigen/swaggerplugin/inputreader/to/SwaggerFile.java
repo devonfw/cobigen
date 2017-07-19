@@ -13,7 +13,7 @@ public class SwaggerFile {
     /** File name */
     private String fileName;
 
-    private Swagger swaggerFile;
+    private Swagger swagger;
 
     /**
      * Creates a new transfer object for a file
@@ -66,11 +66,11 @@ public class SwaggerFile {
         return "SwaggerFile[fileName=" + fileName + ", location=" + location.toString() + "]";
     }
 
-    public Swagger getSwaggerFile() {
-        return swaggerFile;
+    public Swagger getSwagger() {
+        return swagger;
     }
 
-    public void setSwaggerFile(Swagger swaggerFile) {
-        this.swaggerFile = swaggerFile;
+    public void setSwagger(Swagger swagger) {
+        this.swagger = swagger;
     }
 }
