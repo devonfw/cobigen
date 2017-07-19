@@ -30,6 +30,11 @@ public class ModelConstant {
     public static final String NOTNULL = "NotNull";
 
     /**
+     * Simple name of the input class ({@link String})
+     */
+    public static final String IS_COLLECTION = "isCollection";
+
+    /**
      * Type of a field of the input class ({@link String})
      */
     public static final String MAXIMUM = "maximum";
@@ -120,4 +125,6 @@ public class ModelConstant {
      * A list of all visible fields accessible via setter and getter methods including inherited fields.
      */
     public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";
+
+    public static final String IS_ENTITY = "isEntity";
 }

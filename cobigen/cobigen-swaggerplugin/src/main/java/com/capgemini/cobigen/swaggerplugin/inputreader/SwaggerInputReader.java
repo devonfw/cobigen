@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.swaggerplugin.inputreader.to.PathDef;
+import com.capgemini.cobigen.swaggerplugin.inputreader.to.SwaggerDef;
 import com.capgemini.cobigen.swaggerplugin.inputreader.to.SwaggerFile;
 import com.capgemini.cobigen.swaggerplugin.utils.constants.Constants;
 
@@ -22,7 +24,6 @@ import io.swagger.models.properties.EmailProperty;
 import io.swagger.models.properties.FloatProperty;
 import io.swagger.models.properties.IntegerProperty;
 import io.swagger.models.properties.LongProperty;
-import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.PasswordProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
@@ -37,31 +38,33 @@ public class SwaggerInputReader implements InputReader {
     @Override
     public boolean isValidInput(Object input) {
         if (input instanceof SwaggerFile) {
-            List<ModelImpl> models = getObjectDefinitions(((SwaggerFile) input).getSwagger());
+            List<SwaggerDef> models = getObjectDefinitions(((SwaggerFile) input).getSwagger());
             if (models.isEmpty()) {
                 return false;
-            } else {
-                for (ModelImpl model : models) {
-                    if (model.getAdditionalProperties() == null) {
-                        return false;
-                    }
-                    if (!(model.getAdditionalProperties() instanceof ObjectProperty)) {
-                        return false;
-                    }
-                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties() == null) {
-                        return false;
-                    }
-                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component") == null) {
-                        return false;
-                    }
-                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
-                        .getDescription() == null
-                        || ((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
-                            .getDescription().equals("")) {
-                        return false;
-                    }
-                }
             }
+            // else {
+            // for (ModelImpl model : models) {
+            // if (model.getAdditionalProperties() == null) {
+            // return false;
+            // }
+            // if (!(model.getAdditionalProperties() instanceof ObjectProperty)) {
+            // return false;
+            // }
+            // if (((ObjectProperty) model.getAdditionalProperties()).getProperties() == null) {
+            // return false;
+            // }
+            // if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component") ==
+            // null) {
+            // return false;
+            // }
+            // if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
+            // .getDescription() == null
+            // || ((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
+            // .getDescription().equals("")) {
+            // return false;
+            // }
+            // }
+            // }
             return true;
         } else {
             return false;
@@ -72,28 +75,28 @@ public class SwaggerInputReader implements InputReader {
     public Map<String, Object> createModel(Object input) {
         Map<String, Object> pojoModel = new HashMap<>();
 
-        ModelImpl model = (ModelImpl) input;
-        if (model.getAdditionalProperties() != null) {
-            if (model.getAdditionalProperties() instanceof ObjectProperty) {
-                System.out.println(((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
-                    .getDescription());
-            }
-
-        }
+        ModelImpl model = ((SwaggerDef) input).getModel();
+        // if (model.getAdditionalProperties() != null) {
+        // if (model.getAdditionalProperties() instanceof ObjectProperty) {
+        // System.out.println(((ObjectProperty)
+        // model.getAdditionalProperties()).getProperties().get("component")
+        // .getDescription());
+        // }
+        //
+        // }
         pojoModel.put(ModelConstant.NAME, model.getName());
         if (model.getDescription() != null) {
             pojoModel.put(ModelConstant.DESCRIPTION, model.getDescription());
 
         }
-        if (model.getAdditionalProperties() != null) {
-            if (model.getAdditionalProperties() instanceof ObjectProperty) {
-                pojoModel.put(ModelConstant.COMPONENT, ((ObjectProperty) model.getAdditionalProperties())
-                    .getProperties().get("component").getDescription());
-
-            }
-        } else {
-            pojoModel.put(ModelConstant.COMPONENT, "UNKNOWN");
-        }
+        pojoModel.put(ModelConstant.COMPONENT, model.getReference().toLowerCase());
+        // if (model.getAdditionalProperties() != null) {
+        // if (model.getAdditionalProperties() instanceof ObjectProperty) {
+        // pojoModel.put(ModelConstant.COMPONENT, ((ObjectProperty) model.getAdditionalProperties())
+        // .getProperties().get("component").getDescription());
+        //
+        // }
+        // }
         if (model.getRequired() != null) {
             pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
         } else {
@@ -116,16 +119,25 @@ public class SwaggerInputReader implements InputReader {
                 fieldValues = new HashMap<>();
 
                 fieldValues.put(ModelConstant.NAME, key);
-                fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key).getType(),
-                    properties.get(key).getFormat(), properties.get(key), key));
+                if (properties.get(key) instanceof RefProperty) {
+                    fieldValues.put(ModelConstant.TYPE, ((RefProperty) properties.get(key)).getSimpleRef());
+                    fieldValues.put(ModelConstant.IS_ENTITY, true);
+                } else if (properties.get(key) instanceof ArrayProperty) {
+                    ArrayProperty array = (ArrayProperty) properties.get(key);
+                    if (array.getItems() instanceof RefProperty) {
+                        fieldValues.put(ModelConstant.TYPE, ((RefProperty) array.getItems()).getSimpleRef());
+                        fieldValues.put(ModelConstant.IS_COLLECTION, true);
+                    }
+                } else {
+                    fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key).getType(),
+                        properties.get(key).getFormat(), properties.get(key), key));
+                }
                 fieldValues.put(ModelConstant.CONSTRAINTS, getConstraints(properties.get(key), required, key));
                 if (properties.get(key).getDescription() != null) {
                     fieldValues.put(ModelConstant.DESCRIPTION, properties.get(key).getDescription());
                 }
                 fields.add(fieldValues);
-
             }
-
         }
         return fields;
     }
@@ -255,18 +267,42 @@ public class SwaggerInputReader implements InputReader {
         return new LinkedList<>();
     }
 
-    private List<ModelImpl> getObjectDefinitions(Swagger input) {
-        List<ModelImpl> objects = new LinkedList<>();
+    /**
+     * @param input
+     * @return
+     */
+    private List<SwaggerDef> getObjectDefinitions(Swagger input) {
+        List<SwaggerDef> objects = new LinkedList<>();
         for (String key : input.getDefinitions().keySet()) {
             if (input.getDefinitions().get(key) instanceof ModelImpl) {
-                ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(key);
-                if (inputObject.getType().equals("object")) {
-                    inputObject.setName(key);
-                    objects.add(inputObject);
+                ModelImpl inputComponentObject = (ModelImpl) input.getDefinitions().get(key);
+                if (inputComponentObject.getDescription() != null) {
+                    if (inputComponentObject.getType().equals("object")
+                        && inputComponentObject.getDescription().equals("oasp4j_component")) {
+                        for (String keyEntity : inputComponentObject.getProperties().keySet()) {
+                            if (inputComponentObject.getProperties().get(keyEntity) instanceof RefProperty) {
+                                ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
+                                    ((RefProperty) inputComponentObject.getProperties().get(keyEntity)).getSimpleRef());
+                                SwaggerDef definition = new SwaggerDef();
+                                for (String path : input.getPaths().keySet()) {
+                                    if (path.startsWith("/" + key.toLowerCase() + "/")
+                                        && path.contains("/" + keyEntity.toLowerCase() + "/")) {
+                                        PathDef pathDef = new PathDef();
+                                        pathDef.setPathURI(path);
+                                        pathDef.setPath(input.getPaths().get(path));
+                                        definition.addPath(pathDef);
+                                    }
+                                }
+                                inputObject.setName(keyEntity);
+                                inputObject.setReference(key);
+                                definition.setModel(inputObject);
+                                objects.add(definition);
+                            }
+                        }
+                    }
                 }
             }
         }
         return objects;
     }
-
 }
