@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Scanner;
 
 import com.capgemini.cobigen.swaggerplugin.inputreader.SwaggerInputReader;
@@ -15,16 +16,17 @@ import io.swagger.parser.Swagger20Parser;
 
 public class App {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        String content = new Scanner(new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml")).useDelimiter("\\Z").next();
+        String content = new Scanner(new File("C:\\Users\\rudiazma\\Desktop\\devonfw.yaml")).useDelimiter("\\Z").next();
         Swagger swagger = new Swagger20Parser().parse(content);
 
         ModelImpl mod = (ModelImpl) swagger.getDefinitions().get("SampleData");
         SwaggerInputReader inp = new SwaggerInputReader();
         File g = new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml");
         SwaggerFile file = new SwaggerFile(g.toURI(), "loqsea.yaml");
-        file.setSwaggerFile(swagger);
+        file.setSwagger(swagger);
         if (inp.isValidInput(file)) {
-            for (Object input : inp.getInputObjects(swagger, Charset.forName("UTF-8"))) {
+            List<Object> inputs = inp.getInputObjects(swagger, Charset.forName("UTF-8"));
+            for (Object input : inputs) {
                 System.out.println(inp.createModel(input));
             }
         }

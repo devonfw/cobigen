@@ -27,7 +27,6 @@ import io.swagger.models.properties.PasswordProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
-import io.swagger.parser.SwaggerParser;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Swagger definition files
@@ -38,19 +37,32 @@ public class SwaggerInputReader implements InputReader {
     @Override
     public boolean isValidInput(Object input) {
         if (input instanceof SwaggerFile) {
-            Swagger swagger = new SwaggerParser().read(((SwaggerFile) input).getLocation().toString());
-            if (swagger == null) {
+            List<ModelImpl> models = getObjectDefinitions(((SwaggerFile) input).getSwagger());
+            if (models.isEmpty()) {
                 return false;
             } else {
-                for (ModelImpl def : getObjectDefinitions(swagger)) {
-                    if (def.getFormat() == null || def.getFormat().equals("")) {
-                        // System.out.println(def.getFormat());
-                        // System.out.println(def.getName());
+                for (ModelImpl model : models) {
+                    if (model.getAdditionalProperties() == null) {
+                        return false;
+                    }
+                    if (!(model.getAdditionalProperties() instanceof ObjectProperty)) {
+                        return false;
+                    }
+                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties() == null) {
+                        return false;
+                    }
+                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component") == null) {
+                        return false;
+                    }
+                    if (((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
+                        .getDescription() == null
+                        || ((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
+                            .getDescription().equals("")) {
                         return false;
                     }
                 }
-                return true;
             }
+            return true;
         } else {
             return false;
         }
@@ -61,11 +73,26 @@ public class SwaggerInputReader implements InputReader {
         Map<String, Object> pojoModel = new HashMap<>();
 
         ModelImpl model = (ModelImpl) input;
+        if (model.getAdditionalProperties() != null) {
+            if (model.getAdditionalProperties() instanceof ObjectProperty) {
+                System.out.println(((ObjectProperty) model.getAdditionalProperties()).getProperties().get("component")
+                    .getDescription());
+            }
+
+        }
         pojoModel.put(ModelConstant.NAME, model.getName());
         if (model.getDescription() != null) {
-            pojoModel.put(ModelConstant.COMPONENT, model.getFormat());
             pojoModel.put(ModelConstant.DESCRIPTION, model.getDescription());
 
+        }
+        if (model.getAdditionalProperties() != null) {
+            if (model.getAdditionalProperties() instanceof ObjectProperty) {
+                pojoModel.put(ModelConstant.COMPONENT, ((ObjectProperty) model.getAdditionalProperties())
+                    .getProperties().get("component").getDescription());
+
+            }
+        } else {
+            pojoModel.put(ModelConstant.COMPONENT, "UNKNOWN");
         }
         if (model.getRequired() != null) {
             pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
@@ -213,7 +240,6 @@ public class SwaggerInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof Swagger) {
-            // Swagger swagger = new SwaggerParser().read(((SwaggerFile) input).getLocation().getPath());
             inputs.addAll(getObjectDefinitions((Swagger) input));
         }
         return inputs;
@@ -237,22 +263,6 @@ public class SwaggerInputReader implements InputReader {
                 if (inputObject.getType().equals("object")) {
                     inputObject.setName(key);
                     objects.add(inputObject);
-                    if (inputObject.getProperties() != null) {
-                        for (String propKey : inputObject.getProperties().keySet()) {
-                            if (inputObject.getProperties().get(propKey).getType().equals("object")) {
-                                ObjectProperty tal = (ObjectProperty) inputObject.getProperties().get(propKey);
-                                System.out.println(inputObject.getProperties().get(propKey).getFormat());
-                                ModelImpl ni = new ModelImpl();
-                                ni.setName(key);
-                                ni.setDescription(tal.getDescription());
-                                ni.setProperties(tal.getProperties());
-                                ni.setRequired(tal.getRequiredProperties());
-                                // System.out.println(tal.getFormat());
-                                ni.setFormat(inputObject.getProperties().get(propKey).getFormat());
-                                objects.add(ni);
-                            }
-                        }
-                    }
                 }
             }
         }
