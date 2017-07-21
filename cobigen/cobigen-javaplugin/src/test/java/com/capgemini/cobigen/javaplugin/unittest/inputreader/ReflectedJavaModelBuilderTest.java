@@ -8,12 +8,12 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
-import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
-import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
+import com.capgemini.cobigen.javautil.JavaModelUtil;
+import com.capgemini.cobigen.javautil.ModelConstant;
 
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}

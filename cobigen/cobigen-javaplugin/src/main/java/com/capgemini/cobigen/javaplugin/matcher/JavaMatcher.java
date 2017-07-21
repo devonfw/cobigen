@@ -13,8 +13,8 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
+import com.capgemini.cobigen.javautil.PackageFolder;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.JavaClass;
 
@@ -200,23 +200,23 @@ public class JavaMatcher implements MatcherInterpreter {
                     // thrown when value == null
                     return value;
                 } catch (NumberFormatException e) {
-                    LOG.error(
-                        "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
-                            + " representing a regular expression group.\nCurrent value: '{}'",
-                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
-                        + "' of Matcher of type '" + matcherType.toString()
-                        + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
-                        + va.getValue() + "'");
+                    LOG.error("The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
+                        + " representing a regular expression group.\nCurrent value: '{}'", va.getType().toUpperCase(),
+                        matcherType.toString(), va.getValue(), e);
+                    throw new InvalidConfigurationException(
+                        "The VariableAssignment '"
+                            + va.getType().toUpperCase()
+                            + "' of Matcher of type '"
+                            + matcherType.toString()
+                            + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
+                            + va.getValue() + "'");
                 } catch (IndexOutOfBoundsException e) {
-                    LOG.error(
-                        "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
-                            + " group not in range.\nCurrent value: '{}'",
-                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
+                    LOG.error("The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
+                        + " group not in range.\nCurrent value: '{}'", va.getType().toUpperCase(),
+                        matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
                         + "' of Matcher of type '" + matcherType.toString()
-                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue()
-                        + "'");
+                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue() + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {
