@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.impl.util.StringUtil;
+import com.capgemini.cobigen.javautil.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

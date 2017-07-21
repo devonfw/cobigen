@@ -17,8 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
+import com.capgemini.cobigen.javautil.ModelConstant;
+import com.capgemini.cobigen.javautil.PackageFolder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -49,13 +50,13 @@ public class JavaInputReader implements InputReader {
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    if (((JavaClass) inputArr[0]).getFullyQualifiedName()
-                        .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
+                    if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
+                        ((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    if (((Class<?>) inputArr[0]).getCanonicalName()
-                        .equals(((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                    if (((Class<?>) inputArr[0]).getCanonicalName().equals(
+                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
                     }
                 }

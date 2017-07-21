@@ -1,9 +1,7 @@
-package com.capgemini.cobigen.javaplugin.util;
+package com.capgemini.cobigen.javautil;
 
 import java.util.List;
 import java.util.Map;
-
-import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
 
 /**
  * * The {@link JavaModelUtil} class provides helper functions to access the given model.
