@@ -14,13 +14,10 @@ import org.eclipse.swt.widgets.Tree;
 /**
  * This {@link CheckboxTreeViewer} enables to have a {@link CheckboxTreeViewer} without displaying the
  * checkboxes. The internal state for the checked behavior will be simulated internally for restore issues.
- * @author mbrunnli (12.03.2013)
  */
 public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
 
-    /**
-     * Currently virtual checked elements
-     */
+    /** Currently virtual checked elements */
     private Set<Object> checkedElements;
 
     /**
@@ -28,7 +25,6 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
      * displaying checkboxes
      * @param parent
      *            parent {@link Composite} of the viewer
-     * @author mbrunnli (12.03.2013)
      */
     public SimulatedCheckboxTreeViewer(Composite parent) {
         super(new Tree(parent, SWT.BORDER));
