@@ -54,10 +54,12 @@ public class PathUtil {
      * @return the project name of the path (the first segment)
      */
     public static String getProject(String path) {
+        int nextSlash = path.indexOf("/", 1);
+        int substringEnd = nextSlash == -1 ? path.length() : nextSlash;
         if (path.startsWith("/")) {
-            return path.substring(1, path.indexOf("/", 1));
+            return path.substring(1, substringEnd);
         } else {
-            return path.substring(0, path.indexOf("/", 1));
+            return path.substring(0, substringEnd);
         }
     }
 
