@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 /**
  * Plug-in activator to be registered to the {@link PluginRegistry} of CobiGen by any client.
  */
-public class SwaggerPluginActivator implements GeneratorPluginActivator {
+public class OpenAPIPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<Merger> bindMerger() {
@@ -20,7 +20,7 @@ public class SwaggerPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new SwaggerTriggerInterpreter("swagger"));
+        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter("swagger"));
     }
 
 }

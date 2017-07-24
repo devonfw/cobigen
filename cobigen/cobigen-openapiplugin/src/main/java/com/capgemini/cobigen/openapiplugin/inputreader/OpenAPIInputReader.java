@@ -9,8 +9,8 @@ import java.util.Map;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.SwaggerDef;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.SwaggerFile;
+import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIDef;
+import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
 import io.swagger.models.ModelImpl;
@@ -34,12 +34,12 @@ import io.swagger.models.properties.StringProperty;
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Swagger definition files
  * into FreeMarker models
  */
-public class SwaggerInputReader implements InputReader {
+public class OpenAPIInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof SwaggerFile) {
-            List<ComponentDef> models = getComponents(((SwaggerFile) input).getSwagger());
+        if (input instanceof OpenAPIFile) {
+            List<ComponentDef> models = getComponents(((OpenAPIFile) input).getSwagger());
             if (models.isEmpty()) {
                 return false;
             }
@@ -53,7 +53,7 @@ public class SwaggerInputReader implements InputReader {
     public Map<String, Object> createModel(Object input) {
         Map<String, Object> pojoModel = new HashMap<>();
 
-        ModelImpl model = ((SwaggerDef) input).getModel();
+        ModelImpl model = ((OpenAPIDef) input).getModel();
         pojoModel.put(ModelConstant.NAME, model.getName());
         if (model.getDescription() != null) {
             pojoModel.put(ModelConstant.DESCRIPTION, model.getDescription());
@@ -66,7 +66,7 @@ public class SwaggerInputReader implements InputReader {
             pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
         }
 
-        List<PathDef> paths = ((SwaggerDef) input).getPaths();
+        List<PathDef> paths = ((OpenAPIDef) input).getPaths();
 
         return pojoModel;
     }
@@ -207,7 +207,7 @@ public class SwaggerInputReader implements InputReader {
 
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
-        if (input instanceof SwaggerFile) {
+        if (input instanceof OpenAPIFile) {
             return true;
         }
         return false;

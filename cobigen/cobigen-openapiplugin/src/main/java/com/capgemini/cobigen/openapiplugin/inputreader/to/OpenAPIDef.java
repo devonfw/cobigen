@@ -8,13 +8,13 @@ import io.swagger.models.ModelImpl;
 /**
  *
  */
-public class SwaggerDef {
+public class OpenAPIDef {
 
     private ModelImpl model;
 
     private List<PathDef> paths;
 
-    public SwaggerDef() {
+    public OpenAPIDef() {
         paths = new LinkedList<>();
     }
 

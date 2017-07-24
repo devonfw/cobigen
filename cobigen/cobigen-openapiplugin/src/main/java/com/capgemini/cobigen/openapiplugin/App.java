@@ -7,8 +7,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Scanner;
 
-import com.capgemini.cobigen.openapiplugin.inputreader.SwaggerInputReader;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.SwaggerFile;
+import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
+import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
@@ -20,9 +20,9 @@ public class App {
         Swagger swagger = new Swagger20Parser().parse(content);
 
         ModelImpl mod = (ModelImpl) swagger.getDefinitions().get("SampleData");
-        SwaggerInputReader inp = new SwaggerInputReader();
+        OpenAPIInputReader inp = new OpenAPIInputReader();
         File g = new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml");
-        SwaggerFile file = new SwaggerFile(g.toURI(), "loqsea.yaml");
+        OpenAPIFile file = new OpenAPIFile(g.toURI(), "loqsea.yaml");
         file.setSwagger(swagger);
         if (inp.isValidInput(file)) {
             List<Object> inputs = inp.getInputObjects(swagger, Charset.forName("UTF-8"));
