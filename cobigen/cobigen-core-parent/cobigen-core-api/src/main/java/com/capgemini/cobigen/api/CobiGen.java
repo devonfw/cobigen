@@ -13,7 +13,7 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
  * The {@link CobiGen} provides the API for generating Code/Files from FreeMarker templates.
  */
 @ExceptionFacade
-public interface CobiGen extends ConfigurationInterpreter {
+public interface CobiGen extends ConfigurationInterpreter, InputInterpreter {
 
     /**
      * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
@@ -204,5 +204,4 @@ public interface CobiGen extends ConfigurationInterpreter {
      * @return a new {@link ModelBuilder} instance
      */
     public ModelBuilder getModelBuilder(Object generatorInput, String triggerId);
-
 }
