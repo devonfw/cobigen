@@ -13,8 +13,8 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 
 import junit.framework.AssertionFailedError;

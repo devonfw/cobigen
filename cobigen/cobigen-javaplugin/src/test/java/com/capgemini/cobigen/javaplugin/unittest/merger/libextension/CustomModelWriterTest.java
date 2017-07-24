@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.merger.libextension.CustomModelWriter;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 

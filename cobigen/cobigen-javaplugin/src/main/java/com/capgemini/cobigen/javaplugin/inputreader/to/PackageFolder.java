@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javautil;
+package com.capgemini.cobigen.javaplugin.inputreader.to;
 
 import java.net.URI;
 

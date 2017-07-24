@@ -9,8 +9,8 @@ import java.util.List;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;

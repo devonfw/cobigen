@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.util;
+package com.capgemini.cobigen.javaplugin.inputreader;
 
 import java.io.Reader;
 

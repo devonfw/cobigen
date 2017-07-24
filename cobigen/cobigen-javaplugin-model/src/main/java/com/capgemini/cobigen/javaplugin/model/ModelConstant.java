@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javautil;
+package com.capgemini.cobigen.javaplugin.model;
 
 import java.util.List;
 import java.util.Map;
