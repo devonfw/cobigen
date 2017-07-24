@@ -5,7 +5,7 @@ import java.net.URI;
 import io.swagger.models.Swagger;
 
 /** Swagger file transfer object which contains the {@link URI} and the name of the file */
-public class SwaggerFile {
+public class OpenAPIFile {
 
     /** {@link URI} to the Swagger file */
     private URI location;
@@ -22,7 +22,7 @@ public class SwaggerFile {
      * @param fileName
      *            file name
      */
-    public SwaggerFile(URI location, String fileName) {
+    public OpenAPIFile(URI location, String fileName) {
         this.location = location;
         this.fileName = fileName;
     }
