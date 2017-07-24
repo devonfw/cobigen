@@ -15,8 +15,9 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
-    <bundle.classpath>lib/cobigen-core-4.0.0.jar,
-      lib/cobigen-core-api-4.0.0.jar,
+    <bundle.classpath>lib/cobigen-core-4.1.0-SNAPSHOT.jar,
+      lib/cobigen-core-api-4.1.0-SNAPSHOT.jar,
+      lib/cobigen-javaplugin.model-1.0.0-SNAPSHOT.jar,
       lib/commons-beanutils-1.9.1.jar,
       lib/commons-collections-3.2.1.jar,
       lib/commons-io-2.4.jar,
