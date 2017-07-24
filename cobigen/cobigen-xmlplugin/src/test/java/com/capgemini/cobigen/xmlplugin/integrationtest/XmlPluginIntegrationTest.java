@@ -11,6 +11,8 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.AssertionFailedError;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
@@ -26,9 +28,9 @@ import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.impl.TemplateEngineRegistry;
+import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
-
-import junit.framework.AssertionFailedError;
 
 /**
  * Test suite for testing the xml plugin correctly integrated with cobigen-core.
@@ -58,6 +60,7 @@ public class XmlPluginIntegrationTest {
     @BeforeClass
     public static void setup() {
         PluginRegistry.loadPlugin(XmlPluginActivator.class);
+        TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
     }
 
     /**
