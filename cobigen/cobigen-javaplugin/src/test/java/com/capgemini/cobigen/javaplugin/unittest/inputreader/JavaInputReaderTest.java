@@ -12,14 +12,14 @@ import org.apache.commons.io.Charsets;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotations;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithRecursiveAnnotations;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.javautil.JavaModelUtil;
-import com.capgemini.cobigen.javautil.ModelConstant;
-import com.capgemini.cobigen.javautil.PackageFolder;
 import com.google.common.collect.Lists;
 import com.thoughtworks.qdox.model.JavaClass;
 

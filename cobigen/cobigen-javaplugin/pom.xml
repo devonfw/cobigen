@@ -37,12 +37,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-core</artifactId>
-      <version>4.0.0</version>
+      <version>4.1.0-SNAPSHOT</version>
     </dependency>
     
     <dependency>
       <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-javautil</artifactId>
+      <artifactId>cobigen-javaplugin.model</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>

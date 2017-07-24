@@ -1,9 +1,9 @@
 package com.capgemini.cobigen.javaplugin.unittest.inputreader;
 
-import static com.capgemini.cobigen.javautil.JavaModelUtil.getField;
-import static com.capgemini.cobigen.javautil.JavaModelUtil.getJavaDocModel;
-import static com.capgemini.cobigen.javautil.JavaModelUtil.getMethod;
-import static com.capgemini.cobigen.javautil.JavaModelUtil.getRoot;
+import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getField;
+import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getJavaDocModel;
+import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getMethod;
+import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getRoot;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -17,11 +17,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.javautil.JavaModelUtil;
-import com.capgemini.cobigen.javautil.ModelConstant;
-import com.capgemini.cobigen.javautil.PackageFolder;
 import com.google.common.base.Charsets;
 
 /**

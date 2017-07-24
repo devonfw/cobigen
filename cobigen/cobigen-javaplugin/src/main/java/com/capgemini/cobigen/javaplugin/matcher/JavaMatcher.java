@@ -13,8 +13,8 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
-import com.capgemini.cobigen.javautil.PackageFolder;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.JavaClass;
 

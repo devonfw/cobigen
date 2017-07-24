@@ -11,8 +11,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.capgemini.cobigen.impl.util.StringUtil;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.javautil.ModelConstant;
+import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thoughtworks.qdox.model.BeanProperty;

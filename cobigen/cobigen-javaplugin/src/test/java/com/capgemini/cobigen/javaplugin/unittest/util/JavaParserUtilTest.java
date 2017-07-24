@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
 
 /**
  * This class contains testcases for {@link JavaParserUtil}
@@ -13,7 +13,7 @@ public class JavaParserUtilTest {
 
     /**
      * Test method for
-     * {@link com.capgemini.cobigen.javaplugin.util.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
+     * {@link com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
      */
     @Test
     public void testResolveToSimpleType() {

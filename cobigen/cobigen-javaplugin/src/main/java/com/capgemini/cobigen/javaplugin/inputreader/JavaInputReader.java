@@ -1,10 +1,14 @@
 package com.capgemini.cobigen.javaplugin.inputreader;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,10 +20,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javautil.ModelConstant;
-import com.capgemini.cobigen.javautil.PackageFolder;
+import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -372,4 +377,77 @@ public class JavaInputReader implements InputReader {
         }
     }
 
+    /**
+     * Reads the data at the specified path.
+     * @param path
+     *            the Path of the content to read
+     * @param additionalArguments
+     *            <ul>
+     *            <li>In case of path pointing to a folder
+     *            <ol>
+     *            <li>packageName: String, required</li>
+     *            <li>classLoader: ClassLoader, required</li>
+     *            </ol>
+     *            additional arguments are ignored</li>
+     *            <li>In case of path pointing to a file
+     *            <ol>
+     *            </ol></li>
+     *            </ul>
+     */
+    @Override
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+
+        ClassLoader classLoader = null;
+        if (Files.isDirectory(path)) {
+            String packageName = null;
+            for (Object addArg : additionalArguments) {
+                if (packageName == null && addArg instanceof String) {
+                    packageName = (String) addArg;
+                } else if (classLoader == null && addArg instanceof ClassLoader) {
+                    classLoader = (ClassLoader) addArg;
+                }
+            }
+            if (packageName == null || classLoader == null) {
+                throw new IllegalArgumentException(
+                    "Expected packageName:String and classLoader:ClassLoader as additional arguments but was "
+                        + additionalArguments.toString());
+            }
+
+            return new PackageFolder(path.toUri(), packageName, classLoader);
+        } else {
+            Class<?> clazz = null;
+            for (Object addArg : additionalArguments) {
+                if (clazz == null && addArg instanceof Class) {
+                    clazz = (Class<?>) addArg;
+                } else if (classLoader == null && addArg instanceof ClassLoader) {
+                    classLoader = (ClassLoader) addArg;
+                }
+            }
+            try {
+                // couldn't think of another way here... Java8 compliance would made this a lot easier due to
+                // lambdas
+                if (clazz == null) {
+                    if (classLoader == null) {
+                        return JavaParserUtil.getFirstJavaClass(new BufferedReader(new FileReader(path.toFile())));
+                    } else {
+                        return JavaParserUtil.getFirstJavaClass(classLoader,
+                            new BufferedReader(new FileReader(path.toFile())));
+                    }
+                } else {
+                    Object[] result = new Object[] { null, clazz };
+                    if (classLoader == null) {
+                        result[0] = JavaParserUtil.getFirstJavaClass(new BufferedReader(new FileReader(path.toFile())));
+                    } else {
+                        result[0] =
+                            JavaParserUtil.getFirstJavaClass(classLoader,
+                                new BufferedReader(new FileReader(path.toFile())));
+                    }
+                    return result;
+                }
+
+            } catch (IOException e) {
+                throw new InputReaderException("Could not read file " + path.toString(), e);
+            }
+        }
+    }
 }

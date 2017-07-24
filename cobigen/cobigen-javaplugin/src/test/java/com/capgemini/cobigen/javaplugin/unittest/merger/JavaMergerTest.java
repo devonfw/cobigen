@@ -1,6 +1,6 @@
 package com.capgemini.cobigen.javaplugin.unittest.merger;
 
-import static com.capgemini.cobigen.javaplugin.util.JavaParserUtil.getFirstJavaClass;
+import static com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil.getFirstJavaClass;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;

@@ -15,9 +15,9 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 
 import junit.framework.AssertionFailedError;
 
