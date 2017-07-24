@@ -27,7 +27,7 @@ import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.GeneratorWrapperFactory;
-import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
+import com.capgemini.cobigen.eclipse.healthcheck.HealthCheckDialog;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.GenerateWizard;
 
@@ -137,7 +137,7 @@ public class GenerateHandler extends AbstractHandler {
 
         int result = dialog.open();
         if (result == 0) {
-            new HealthCheck().execute();
+            new HealthCheckDialog().execute();
         }
     }
 }

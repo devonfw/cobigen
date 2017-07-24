@@ -11,12 +11,11 @@ import org.slf4j.MDC;
 
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
-import com.capgemini.cobigen.eclipse.healthcheck.HealthCheck;
+import com.capgemini.cobigen.eclipse.healthcheck.HealthCheckDialog;
 
 /**
- * This handler triggers the {@link HealthCheck} to provide more information about the current status of
+ * This handler triggers the {@link HealthCheckDialog} to provide more information about the current status of
  * CobiGen and potentially why it cannot be used with the current selection.
- * @author mbrunnli (Jun 16, 2015)
  */
 public class HealthCheckHandler extends AbstractHandler {
 
@@ -28,7 +27,7 @@ public class HealthCheckHandler extends AbstractHandler {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
         try {
-            new HealthCheck().execute();
+            new HealthCheckDialog().execute();
         } catch (Throwable e) {
             LOG.error("An unexpected error occurred while processing the health check. This is a bug.", e);
             PlatformUIUtil.openErrorDialog(
