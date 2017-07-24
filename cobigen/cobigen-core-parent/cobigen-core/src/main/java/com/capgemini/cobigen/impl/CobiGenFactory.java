@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
@@ -40,6 +41,14 @@ public class CobiGenFactory {
         }
 
         return ProxyFactory.getProxy(new CobiGenImpl(configurationHolder));
+    }
+
+    /**
+     * Creates and returns a new {@link InputInterpreter} instance.
+     * @return InputInterpreter
+     */
+    public static InputInterpreter getInputInterpreter() {
+        return new InputInterpreterImpl();
     }
 
 }

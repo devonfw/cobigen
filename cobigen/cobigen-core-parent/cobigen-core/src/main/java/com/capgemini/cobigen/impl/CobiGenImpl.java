@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.impl;
 
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,9 @@ import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
+import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
@@ -36,6 +39,27 @@ public class CobiGenImpl implements CobiGen {
     private ConfigurationInterpreter configurationInterpreter;
 
     /**
+     * {@link InputInterpreter} which handles InputReader delegates
+     */
+    private InputInterpreter inputInterpreter;
+
+    @Override
+    public List<Object> getInputObjectsRecursively(String type, Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjectsRecursively(type, input, inputCharset);
+    }
+
+    @Override
+    public List<Object> getInputObjects(String type, Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjects(type, input, inputCharset);
+    }
+
+    @Override
+    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
+        throws InputReaderException {
+        return inputInterpreter.read(type, path, inputCharset, additionalArguments);
+    }
+
+    /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
      * @param configurationHolder
@@ -47,6 +71,7 @@ public class CobiGenImpl implements CobiGen {
         // Create proxy of ConfigurationInterpreter to cache method calls
         ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
         configurationInterpreter = ProxyFactory.getProxy(impl);
+        inputInterpreter = ProxyFactory.getProxy(CobiGenFactory.getInputInterpreter());
     }
 
     @Override
@@ -79,8 +104,9 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath,
-            forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp =
+            new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath, forceOverride,
+                logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -107,8 +133,9 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input,
-            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp =
+            new GenerationProcessor(configurationHolder, input, Lists.newArrayList(generableArtifact), targetRootPath,
+                forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -155,4 +182,5 @@ public class CobiGenImpl implements CobiGen {
     public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
         return configurationInterpreter.resolveTemplateDestinationPath(targetRootPath, template, input);
     }
+
 }
