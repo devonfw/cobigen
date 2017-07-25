@@ -3,7 +3,6 @@ package com.capgemini.cobigen.openapiplugin.inputreader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +16,8 @@ import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
 import io.swagger.models.ModelImpl;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.BaseIntegerProperty;
@@ -251,7 +252,8 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     @Override
-    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+    public Object read(java.nio.file.Path path, Charset inputCharset, Object... additionalArguments)
+        throws InputReaderException {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
@@ -266,43 +268,44 @@ public class OpenAPIInputReader implements InputReader {
         }
     }
 
-    // /**
-    // * @param input
-    // * @return
-    // */
-    // private List<ModelImpl> getObjectDefinitions(Swagger input, Path path) {
-    // List<ModelImpl> objects = new LinkedList<>();
-    // for (Operation op : path.getOperations()) {
-    //
-    // op.getResponses()
-    // }
-    // for (String key : input.getDefinitions().keySet()) {
-    // if (input.getDefinitions().get(key) instanceof ModelImpl) {
-    // ModelImpl inputComponentObject = (ModelImpl) input.getDefinitions().get(key);
-    // if (inputComponentObject.getDescription() != null) {
-    // if (inputComponentObject.getType().equals("object")
-    // && inputComponentObject.getDescription().equals("oasp4j_component")) {
-    // for (String keyEntity : inputComponentObject.getProperties().keySet()) {
-    // if (inputComponentObject.getProperties().get(keyEntity) instanceof RefProperty) {
-    // ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
-    // ((RefProperty) inputComponentObject.getProperties().get(keyEntity)).getSimpleRef());
-    //
-    // inputObject.setName(keyEntity);
-    // inputObject.setReference(key);
-    // objects.add(inputObject);
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-    // return objects;
-    // }
-    //
+    /**
+     * @param input
+     * @return
+     */
+    private List<ModelImpl> getObjectDefinitions(Swagger input, Path path) {
+        List<ModelImpl> objects = new LinkedList<>();
+        for (Operation op : path.getOperations()) {
+            System.out.println(op.getResponses().get("200").getSchema().getClass());
+        }
+        for (String key : input.getDefinitions().keySet()) {
+            if (input.getDefinitions().get(key) instanceof ModelImpl) {
+                ModelImpl inputComponentObject = (ModelImpl) input.getDefinitions().get(key);
+                if (inputComponentObject.getDescription() != null) {
+                    if (inputComponentObject.getType().equals("object")
+                        && inputComponentObject.getDescription().equals("oasp4j_component")) {
+                        for (String keyEntity : inputComponentObject.getProperties().keySet()) {
+                            if (inputComponentObject.getProperties().get(keyEntity) instanceof RefProperty) {
+                                ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
+                                    ((RefProperty) inputComponentObject.getProperties().get(keyEntity)).getSimpleRef());
+
+                                inputObject.setName(keyEntity);
+                                inputObject.setReference(key);
+                                objects.add(inputObject);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return objects;
+    }
+
     // private List<ModelImpl> getReferences(Object object) {
     // List<ModelImpl> objects = new LinkedList<>();
     // if (object instanceof Response) {
+    // if (((Response) object).getSchema().getClass()) {
     // objects.add(((Response) object).getSchema());
+    // }
     //
     // } else if (object instanceof BodyParameter) {
     //
