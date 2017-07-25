@@ -6,3 +6,4 @@ target
 
 /cobigen-eclipse/.project
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
+cobigen/cobigen-openapiplugin/src/main/resources/lib/
