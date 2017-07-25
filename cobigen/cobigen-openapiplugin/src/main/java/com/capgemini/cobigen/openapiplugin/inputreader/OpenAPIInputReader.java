@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
@@ -15,10 +16,13 @@ import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
+import io.swagger.models.HttpMethod;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.BaseIntegerProperty;
 import io.swagger.models.properties.BinaryProperty;
@@ -53,21 +57,74 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object input) {
         Map<String, Object> pojoModel = new HashMap<>();
-
-        ModelImpl model = ((ModelImpl) input);
-        pojoModel.put(ModelConstant.NAME, model.getName());
-        if (model.getDescription() != null) {
-            pojoModel.put(ModelConstant.DESCRIPTION, model.getDescription());
-
-        }
-        pojoModel.put(ModelConstant.COMPONENT, model.getReference().toLowerCase());
-        if (model.getRequired() != null) {
-            pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
-        } else {
-            pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
-        }
+        ComponentDef cmp = ((ComponentDef) input);
+        pojoModel.put(ModelConstant.COMPONENT, cmp.getComponent());
+        pojoModel.put(ModelConstant.SERVICE_VERSION, cmp.getVersion());
+        pojoModel.put(ModelConstant.DEFINITIONS, getDefinitions(cmp.getEntities()));
+        pojoModel.put(ModelConstant.PATHS, getPaths(cmp.getPaths()));
 
         return pojoModel;
+    }
+
+    /**
+     * @param paths
+     * @return
+     */
+    private List<Map<String, Object>> getPaths(List<PathDef> pathsDefs) {
+        List<Map<String, Object>> paths = new LinkedList<>();
+        Map<String, Object> pathValues;
+        for (PathDef pathDef : pathsDefs) {
+            pathValues = new HashMap<>();
+            pathValues.put(ModelConstant.PATH_URL, pathDef.getPathURI());
+            pathValues.put(ModelConstant.OPERATIONS, getOperations(pathDef.getPath().getOperationMap()));
+            paths.add(pathValues);
+
+        }
+        return paths;
+    }
+
+    /**
+     * @param operationMap
+     * @return
+     */
+    private List<Map<String, Object>> getOperations(Map<HttpMethod, Operation> operationMap) {
+        List<Map<String, Object>> operations = new LinkedList<>();
+        Map<String, Object> opValues;
+        for (HttpMethod op : operationMap.keySet()) {
+            opValues = new HashMap<>();
+            opValues.put(ModelConstant.HTTP_OPERATION, op.name());
+            opValues.put(ModelConstant.SUMMARY, operationMap.get(op).getSummary());
+            opValues.put(ModelConstant.DESCRIPTION, operationMap.get(op).getDescription());
+            opValues.put(ModelConstant.PRODUCES, operationMap.get(op).getProduces());
+            opValues.put(ModelConstant.CONSUMES, operationMap.get(op).getConsumes());
+            opValues.put(ModelConstant.PARAMETERS, operationMap.get(op).getParameters());
+            opValues.put(ModelConstant.RESPONSES, operationMap.get(op).getResponses());
+            operations.add(opValues);
+        }
+        return operations;
+    }
+
+    /**
+     * @param entities
+     * @return
+     */
+    private Object getDefinitions(List<ModelImpl> entities) {
+        List<Map<String, Object>> definitions = new LinkedList<>();
+        Map<String, Object> defValues;
+        for (ModelImpl model : entities) {
+            defValues = new HashMap<>();
+            defValues.put(ModelConstant.NAME, model.getName());
+            if (model.getDescription() != null) {
+                defValues.put(ModelConstant.DESCRIPTION, model.getDescription());
+            }
+            if (model.getRequired() != null) {
+                defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
+            } else {
+                defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
+            }
+            definitions.add(defValues);
+        }
+        return definitions;
     }
 
     /**
@@ -231,24 +288,53 @@ public class OpenAPIInputReader implements InputReader {
         return new LinkedList<>();
     }
 
+    /**
+     * @param input
+     * @return
+     */
     private List<ComponentDef> getComponents(Swagger input) {
         List<ComponentDef> objects = new LinkedList<>();
+        List<String> added = new LinkedList<>();
         for (String key : input.getPaths().keySet()) {
             String[] mp = key.split("/");
-            PathDef path = new PathDef();
-            ComponentDef component = new ComponentDef();
-            component.setComponent(mp[1]);
-            component.setVersion(mp[2]);
-            String pathUri = "/";
-            for (int i = 3; i < mp.length; i++) {
-                pathUri = pathUri.concat(mp[i] + "/");
+            if (added.indexOf(mp[1]) < 0) {
+                ComponentDef component = new ComponentDef();
+                component.setComponent(mp[1]);
+                component.setVersion(mp[2]);
+                component.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
+                component.getEntities()
+                    .addAll(getObjectDefinitions(input, input.getPaths(), input.getPaths().keySet(), mp[1]));
+
+                objects.add(component);
+                added.add(mp[1]);
             }
-            path.setPathURI(pathUri);
-            path.setPath(input.getPaths().get(key));
-            component.getPaths().add(path);
-            objects.add(component);
         }
         return objects;
+    }
+
+    /**
+     * @param paths
+     * @param component
+     * @return
+     */
+    private List<PathDef> getPaths(Map<String, Path> paths, String component) {
+        List<PathDef> pathDefs = new LinkedList<>();
+        for (String pathKey : paths.keySet()) {
+            if (pathKey.contains(component)) {
+                String[] mp = pathKey.split("/");
+                PathDef path = new PathDef();
+                String pathUri = "/";
+                for (int i = 3; i < mp.length; i++) {
+                    pathUri = pathUri.concat(mp[i] + "/");
+                }
+                path.setPathURI(pathUri);
+                if (pathKey.contains(mp[1])) {
+                    path.setPath(paths.get(pathKey));
+                }
+                pathDefs.add(path);
+            }
+        }
+        return pathDefs;
     }
 
     @Override
@@ -270,27 +356,54 @@ public class OpenAPIInputReader implements InputReader {
 
     /**
      * @param input
+     * @param map
+     * @param keySet
+     * @param component
      * @return
      */
-    private List<ModelImpl> getObjectDefinitions(Swagger input, Path path) {
+    private List<ModelImpl> getObjectDefinitions(Swagger input, Map<String, Path> map, Set<String> keySet,
+        String component) {
         List<ModelImpl> objects = new LinkedList<>();
-        for (Operation op : path.getOperations()) {
-            System.out.println(op.getResponses().get("200").getSchema().getClass());
-        }
-        for (String key : input.getDefinitions().keySet()) {
-            if (input.getDefinitions().get(key) instanceof ModelImpl) {
-                ModelImpl inputComponentObject = (ModelImpl) input.getDefinitions().get(key);
-                if (inputComponentObject.getDescription() != null) {
-                    if (inputComponentObject.getType().equals("object")
-                        && inputComponentObject.getDescription().equals("oasp4j_component")) {
-                        for (String keyEntity : inputComponentObject.getProperties().keySet()) {
-                            if (inputComponentObject.getProperties().get(keyEntity) instanceof RefProperty) {
-                                ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
-                                    ((RefProperty) inputComponentObject.getProperties().get(keyEntity)).getSimpleRef());
-
-                                inputObject.setName(keyEntity);
-                                inputObject.setReference(key);
-                                objects.add(inputObject);
+        List<String> added = new LinkedList<>();
+        for (String key : keySet) {
+            if (key.contains(component)) {
+                for (Operation op : map.get(key).getOperations()) {
+                    if (op.getResponses() != null) {
+                        for (String responseKey : op.getResponses().keySet()) {
+                            if (op.getResponses().get(responseKey).getSchema() != null) {
+                                if (op.getResponses().get(responseKey).getSchema() instanceof RefProperty
+                                    && input.getDefinitions()
+                                        .get(((RefProperty) op.getResponses().get(responseKey).getSchema())
+                                            .getSimpleRef()) instanceof ModelImpl
+                                    && !added.contains(((RefProperty) op.getResponses().get(responseKey).getSchema())
+                                        .getSimpleRef())) {
+                                    ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
+                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+                                    inputObject.setName(
+                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+                                    objects.add(inputObject);
+                                    added.add(
+                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+                                }
+                            }
+                        }
+                    }
+                    if (op.getParameters() != null) {
+                        for (Parameter param : op.getParameters()) {
+                            if (param instanceof BodyParameter) {
+                                if (((BodyParameter) param).getSchema() instanceof RefProperty
+                                    && input.getDefinitions()
+                                        .get(((RefProperty) ((BodyParameter) param).getSchema())
+                                            .getSimpleRef()) instanceof ModelImpl
+                                    && !added
+                                        .contains(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef())) {
+                                    ModelImpl inputObject = (ModelImpl) input.getDefinitions()
+                                        .get(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+                                    inputObject
+                                        .setName(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+                                    objects.add(inputObject);
+                                    added.add(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+                                }
                             }
                         }
                     }
@@ -300,16 +413,4 @@ public class OpenAPIInputReader implements InputReader {
         return objects;
     }
 
-    // private List<ModelImpl> getReferences(Object object) {
-    // List<ModelImpl> objects = new LinkedList<>();
-    // if (object instanceof Response) {
-    // if (((Response) object).getSchema().getClass()) {
-    // objects.add(((Response) object).getSchema());
-    // }
-    //
-    // } else if (object instanceof BodyParameter) {
-    //
-    // }
-    // return null;
-    // }
 }

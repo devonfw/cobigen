@@ -24,9 +24,9 @@ public class App {
         File g = new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml");
         OpenAPIFile file = new OpenAPIFile(g.toPath(), swagger);
         if (inp.isValidInput(file)) {
-            List<Object> inputs = inp.getInputObjects(swagger, Charset.forName("UTF-8"));
+            List<Object> inputs = inp.getInputObjects(file, Charset.forName("UTF-8"));
             for (Object input : inputs) {
-                // System.out.println(inp.createModel(input));
+                System.out.println(inp.createModel(input));
             }
         }
         // System.out.println(inp.createModel(mod));
