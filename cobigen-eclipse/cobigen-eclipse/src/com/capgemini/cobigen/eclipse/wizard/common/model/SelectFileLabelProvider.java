@@ -72,6 +72,9 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
     /** Item label for the default package */
     private static final String LABEL_DEFAULT_PACKAGE = "(default package)";
 
+    /** Red color for override marking */
+    private static final Color OVERRIDE_COLOR = new Color(Display.getDefault(), 255, 69, 0);
+
     /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
 
@@ -184,10 +187,10 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                 return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
             } else if (element instanceof IFile || element instanceof ICompilationUnit
                 || element instanceof OffWorkspaceResourceTreeNode) {
-                if (isMergableFile(element)) {
+                if (isMergableFile(element) && !isOverridableFile(element)) {
                     return Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
                 } else {
-                    return new Color(Display.getDefault(), 255, 69, 0);
+                    return OVERRIDE_COLOR;
                 }
             }
         }
@@ -214,6 +217,27 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
         }
         return cobigenWrapper.isMergableFile(path, selectedIncrements);
+    }
+
+    /**
+     * Checks whether the given object is marked as mergable
+     *
+     * @param element
+     *            to be checked
+     * @return <code>true</code> if the given object can be merged<br>
+     *         <code>false</code> otherwise
+     */
+    private boolean isOverridableFile(Object element) {
+
+        String path = "";
+        if (element instanceof IResource) {
+            path = ((IResource) element).getFullPath().toString();
+        } else if (element instanceof IJavaElement) {
+            path = ((IJavaElement) element).getPath().toString();
+        } else if (element instanceof OffWorkspaceResourceTreeNode) {
+            path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
+        }
+        return cobigenWrapper.isOverridableFile(path, selectedIncrements);
     }
 
     /**
@@ -245,7 +269,9 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
             } else if (element instanceof IFile || element instanceof ICompilationUnit
                 || (element instanceof OffWorkspaceResourceTreeNode
                     && !((OffWorkspaceResourceTreeNode) element).hasChildren())) {
-                if (isMergableFile(element)) {
+                if (isOverridableFile(element)) {
+                    result += LABEL_SUFFIX_OVERRIDE;
+                } else if (isMergableFile(element)) {
                     result += batch ? LABEL_SUFFIX_CREATE_MERGE : LABEL_SUFFIX_MERGE;
                 } else {
                     result += batch ? LABEL_SUFFIX_CREATE_OVERRIDE : LABEL_SUFFIX_OVERRIDE;
