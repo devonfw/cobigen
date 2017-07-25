@@ -13,7 +13,6 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 
 /**
  * Matcher for internal OpenAPI model.
@@ -39,26 +38,16 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
     @Override
     public boolean matches(MatcherTo matcher) {
-
-        if (matcher.getTarget() instanceof OpenAPIFile) {
-            OpenAPIFile swaggerDefinition = (OpenAPIFile) matcher.getTarget();
-
-            try {
-                MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
-                switch (matcherType) {
-                case ELEMENT:
-                    for (String defName : swaggerDefinition.getSwagger().getDefinitions().keySet()) {
-                        if (defName.matches(matcher.getValue())) {
-                            return true;
-                        }
-                    }
-                    break;
-                default:
-                    break;
-                }
-            } catch (IllegalArgumentException e) {
-                LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
+        try {
+            MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
+            switch (matcherType) {
+            case ELEMENT:
+                return matcher.getTarget().getClass().getSimpleName().equals(matcher.getValue());
+            default:
+                break;
             }
+        } catch (IllegalArgumentException e) {
+            LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
         }
 
         return false;
