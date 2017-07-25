@@ -127,4 +127,26 @@ public class ModelConstant {
     public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";
 
     public static final String IS_ENTITY = "isEntity";
+
+    public static final String SERVICE_VERSION = "serviceVersion";
+
+    public static final String DEFINITIONS = "definitions";
+
+    public static final String PATHS = "paths";
+
+    public static final String PATH_URL = "pathURL";
+
+    public static final String OPERATIONS = "operations";
+
+    public static final String HTTP_OPERATION = "httpOperation";
+
+    public static final String SUMMARY = "summary";
+
+    public static final String PRODUCES = "produces";
+
+    public static final String CONSUMES = "consumes";
+
+    public static final String PARAMETERS = "parameters";
+
+    public static final String RESPONSES = "responses";
 }
