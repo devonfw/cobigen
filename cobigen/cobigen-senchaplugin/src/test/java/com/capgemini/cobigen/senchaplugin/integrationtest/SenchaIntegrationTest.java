@@ -1,10 +1,12 @@
 package com.capgemini.cobigen.senchaplugin.integrationtest;
 
 import java.io.File;
-import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.List;
 
+import junit.framework.AssertionFailedError;
+
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,12 +18,11 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.senchaplugin.integrationtest.testdata.ModelCreationTest;
-
-import junit.framework.AssertionFailedError;
+import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 
 @SuppressWarnings("javadoc")
 public class SenchaIntegrationTest {
@@ -43,6 +44,7 @@ public class SenchaIntegrationTest {
     @Before
     public void setup() {
         PluginRegistry.loadPlugin(SenchaPluginActivator.class);
+        TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
     }
 
     @Test
@@ -54,9 +56,12 @@ public class SenchaIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        Object[] input = new Object[] { ModelCreationTest.class,
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+        Object[] input =
+            new Object[] {
+                ModelCreationTest.class,
+                cobiGen.read("java",
+                    Paths.get("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"),
+                    Charsets.UTF_8) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
