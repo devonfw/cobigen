@@ -22,8 +22,7 @@ public class App {
         ModelImpl mod = (ModelImpl) swagger.getDefinitions().get("SampleData");
         OpenAPIInputReader inp = new OpenAPIInputReader();
         File g = new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml");
-        OpenAPIFile file = new OpenAPIFile(g.toURI(), "loqsea.yaml");
-        file.setSwagger(swagger);
+        OpenAPIFile file = new OpenAPIFile(g.toPath(), swagger);
         if (inp.isValidInput(file)) {
             List<Object> inputs = inp.getInputObjects(swagger, Charset.forName("UTF-8"));
             for (Object input : inputs) {
