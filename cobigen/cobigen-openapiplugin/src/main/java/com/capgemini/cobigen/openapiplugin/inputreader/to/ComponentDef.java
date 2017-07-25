@@ -10,7 +10,7 @@ import io.swagger.models.ModelImpl;
  */
 public class ComponentDef {
 
-    private String component;
+    private String name;
 
     private String version;
 
@@ -35,18 +35,18 @@ public class ComponentDef {
     }
 
     public ComponentDef() {
-        component = "";
+        name = "";
         version = "v1";
         paths = new LinkedList<>();
         entities = new LinkedList<>();
     }
 
     public String getComponent() {
-        return component;
+        return name;
     }
 
     public void setComponent(String component) {
-        this.component = component;
+        this.name = component;
     }
 
     public String getVersion() {

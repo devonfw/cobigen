@@ -214,8 +214,8 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
-        if (input instanceof Swagger) {
-            inputs.addAll(getComponents((Swagger) input));
+        if (input instanceof OpenAPIFile) {
+            inputs.addAll(getComponents(((OpenAPIFile) input).getAST()));
         }
         return inputs;
     }
@@ -245,7 +245,7 @@ public class OpenAPIInputReader implements InputReader {
             path.setPathURI(pathUri);
             path.setPath(input.getPaths().get(key));
             component.getPaths().add(path);
-
+            objects.add(component);
         }
         return objects;
     }

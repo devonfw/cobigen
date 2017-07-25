@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  title: Devon Example
+  version: 1.0.0
+schemes:
+  - https
+basePath: /server/services/rest
+paths:
+  /tablemanagement/v1/sampledata/:
+    get:
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Any
+  /salesmanagement/v1/sampledata/:
+    post:
+      responses:
+        '200':
+          description: Any
+ 
