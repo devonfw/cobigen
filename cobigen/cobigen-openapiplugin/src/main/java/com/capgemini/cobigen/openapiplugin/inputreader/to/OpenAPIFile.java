@@ -11,19 +11,19 @@ public class OpenAPIFile {
     /** {@link Path} to the Swagger file */
     private Path location;
 
-    /** Swagger AST */
-    private Swagger swagger;
+    /** Open API AST */
+    private Swagger ast;
 
     /**
      * Creates a new transfer object for a file
      * @param location
      *            {@link URI} to the file
-     * @param swagger
+     * @param ast
      *            {@link Swagger} AST
      */
-    public OpenAPIFile(Path location, Swagger swagger) {
+    public OpenAPIFile(Path location, Swagger ast) {
         this.location = location;
-        this.swagger = swagger;
+        this.ast = ast;
     }
 
     /**
@@ -44,14 +44,14 @@ public class OpenAPIFile {
 
     @Override
     public String toString() {
-        return "SwaggerFile[fileName=" + getFileName() + ", location=" + location.toString() + "]";
+        return getClass().getSimpleName() + "[fileName=" + getFileName() + ", location=" + location.toString() + "]";
     }
 
     /**
      * The swagger AST of the file
      * @return the swagger AST
      */
-    public Swagger getSwagger() {
-        return swagger;
+    public Swagger getAST() {
+        return ast;
     }
 }
