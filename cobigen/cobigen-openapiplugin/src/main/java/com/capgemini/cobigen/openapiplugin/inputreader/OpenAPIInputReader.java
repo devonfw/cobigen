@@ -8,9 +8,9 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
+import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
 import io.swagger.models.ModelImpl;
@@ -39,10 +39,6 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public boolean isValidInput(Object input) {
         if (input instanceof OpenAPIFile) {
-            List<ComponentDef> models = getComponents(((OpenAPIFile) input).getSwagger());
-            if (models.isEmpty()) {
-                return false;
-            }
             return true;
         } else {
             return false;
@@ -236,16 +232,20 @@ public class OpenAPIInputReader implements InputReader {
         List<ComponentDef> objects = new LinkedList<>();
         List<String> added = new LinkedList<>();
         for (String key : input.getPaths().keySet()) {
-            if (!added.contains(key.split("/")[0])) {
-                added.add(key.split("/")[0]);
+            String[] mp = key.split("/");
+            if (mp[0].equals("")) {
+                added.add(mp[1]);
                 ComponentDef component = new ComponentDef();
-                component.setComponent(key.split("/")[0]);
-                component.setVersion(key.split("/")[1]);
+                component.setComponent(mp[1]);
+                component.setVersion(mp[2]);
+                objects.add(component);
+            } else {
+                added.add(mp[0]);
+                ComponentDef component = new ComponentDef();
+                component.setComponent(mp[0]);
+                component.setVersion(mp[1]);
                 objects.add(component);
             }
-        }
-        for (ComponentDef componentdef : objects) {
-            System.out.println(componentdef.getComponent() + " " + componentdef.getVersion());
         }
         return objects;
     }
