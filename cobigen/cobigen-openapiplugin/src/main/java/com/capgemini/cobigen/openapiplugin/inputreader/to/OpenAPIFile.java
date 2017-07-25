@@ -1,47 +1,37 @@
 package com.capgemini.cobigen.openapiplugin.inputreader.to;
 
 import java.net.URI;
+import java.nio.file.Path;
 
 import io.swagger.models.Swagger;
 
-/** Swagger file transfer object which contains the {@link URI} and the name of the file */
+/** Swagger file transfer object which contains the {@link Path} and the name of the file */
 public class OpenAPIFile {
 
-    /** {@link URI} to the Swagger file */
-    private URI location;
+    /** {@link Path} to the Swagger file */
+    private Path location;
 
-    /** File name */
-    private String fileName;
-
+    /** Swagger AST */
     private Swagger swagger;
 
     /**
      * Creates a new transfer object for a file
      * @param location
      *            {@link URI} to the file
-     * @param fileName
-     *            file name
+     * @param swagger
+     *            {@link Swagger} AST
      */
-    public OpenAPIFile(URI location, String fileName) {
+    public OpenAPIFile(Path location, Swagger swagger) {
         this.location = location;
-        this.fileName = fileName;
+        this.swagger = swagger;
     }
 
     /**
-     * Returns the file location {@link URI}
-     * @return the file location {@link URI}
+     * Returns the file location {@link Path}
+     * @return the file location {@link Path}
      */
-    public URI getLocation() {
+    public Path getLocation() {
         return location;
-    }
-
-    /**
-     * Sets the location of the file
-     * @param location
-     *            new value of location
-     */
-    public void setLocation(URI location) {
-        this.location = location;
     }
 
     /**
@@ -49,28 +39,19 @@ public class OpenAPIFile {
      * @return the file's name
      */
     public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the file name
-     * @param fileName
-     *            new value of fileName
-     */
-    public void setPackageName(String fileName) {
-        this.fileName = fileName;
+        return location.getFileName().toString();
     }
 
     @Override
     public String toString() {
-        return "SwaggerFile[fileName=" + fileName + ", location=" + location.toString() + "]";
+        return "SwaggerFile[fileName=" + getFileName() + ", location=" + location.toString() + "]";
     }
 
+    /**
+     * The swagger AST of the file
+     * @return the swagger AST
+     */
     public Swagger getSwagger() {
         return swagger;
-    }
-
-    public void setSwagger(Swagger swagger) {
-        this.swagger = swagger;
     }
 }

@@ -20,7 +20,7 @@ public class OpenAPIPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter("swagger"));
+        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter("openapi"));
     }
 
 }

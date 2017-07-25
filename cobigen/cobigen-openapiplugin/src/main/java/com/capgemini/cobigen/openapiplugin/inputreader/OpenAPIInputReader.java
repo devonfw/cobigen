@@ -1,11 +1,15 @@
 package com.capgemini.cobigen.openapiplugin.inputreader;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
@@ -28,6 +32,7 @@ import io.swagger.models.properties.PasswordProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
+import io.swagger.parser.Swagger20Parser;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Swagger definition files
@@ -243,6 +248,22 @@ public class OpenAPIInputReader implements InputReader {
 
         }
         return objects;
+    }
+
+    @Override
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+        if (!Files.isRegularFile(path)) {
+            throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
+        }
+
+        try {
+            String contents = new String(Files.readAllBytes(path), inputCharset);
+            Swagger swagger = new Swagger20Parser().parse(contents);
+            return new OpenAPIFile(path, swagger);
+        } catch (IOException e) {
+            throw new InputReaderException(
+                "An error occurred on reading the file " + path.toAbsolutePath().toUri().toString());
+        }
     }
 
     // /**
