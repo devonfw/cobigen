@@ -115,6 +115,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             if (!batch) {
                 selectNewResources();
                 selectMergeableResources();
+                selectOverridingResources();
             } else {
                 selectAllResources(paths.keySet());
             }
@@ -370,6 +371,21 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             }
             worklist
                 .addAll(Arrays.asList(((SelectFileContentProvider) resourcesTree.getContentProvider()).getChildren(o)));
+        }
+    }
+
+    /**
+     * Sets all mergeable files to be selected
+     */
+    private void selectOverridingResources() {
+
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        for (String path : cobigenWrapper.getOverridingFiles(selectedIncrements)) {
+            Object mergableTreeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
+            if (mergableTreeObject != null) {
+                resourcesTree.setChecked(mergableTreeObject, true);
+            }
         }
     }
 

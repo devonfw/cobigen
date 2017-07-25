@@ -335,6 +335,28 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Returns project dependent paths of all resources which are marked to be overridable (just of
+     * {@link #getCurrentRepresentingInput()})
+     * @param increments
+     *            to be considered
+     * @return The set of all overridable project dependent file paths
+     */
+    public Set<String> getOverridingFiles(Collection<IncrementTo> increments) {
+        if (increments.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+            increments = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+        }
+        Set<String> overridablePaths = Sets.newHashSet();
+        Map<String, Set<TemplateTo>> templateDestinationPaths = getTemplateDestinationPaths(increments);
+        for (Entry<String, Set<TemplateTo>> entry : templateDestinationPaths.entrySet()) {
+            if (isOverridableFile(entry.getValue())) {
+                overridablePaths.add(entry.getKey());
+            }
+        }
+        return overridablePaths;
+    }
+
+    /**
      * Returns project dependent paths of all resources which are marked to be mergeable (just of
      * {@link #getCurrentRepresentingInput()})
      * @param increments
@@ -388,6 +410,44 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         for (TemplateTo template : templates) {
             if (template.getMergeStrategy() != null
                 && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the given object is marked as overridable
+     * @param path
+     *            workspace relative path to be checked
+     * @param consideredIncrements
+     *            increments to be considered for the check
+     * @return <code>true</code> if the given object will be overwritten<br>
+     *         <code>false</code> otherwise
+     */
+    public boolean isOverridableFile(String path, Collection<IncrementTo> consideredIncrements) {
+        if (path != null) {
+            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+                consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+            }
+            Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
+            return isOverridableFile(templates);
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the given object is marked as mergable
+     * @param templates
+     *            templates to be checked
+     * @return <code>true</code> if the given object can be merged<br>
+     *         <code>false</code> otherwise
+     */
+    private boolean isOverridableFile(Set<TemplateTo> templates) {
+        for (TemplateTo template : templates) {
+            if (template.getMergeStrategy() != null
+                && template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
                 return true;
             }
         }
