@@ -1,5 +1,9 @@
 package com.capgemini.cobigen.openapiplugin.inputreader.to;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import io.swagger.models.Operation;
 import io.swagger.models.Path;
 
 /**
@@ -7,9 +11,15 @@ import io.swagger.models.Path;
  */
 public class PathDef {
 
-    public String pathURI;
+    private String pathURI;
 
-    public Path path;
+    private Path path;
+
+    private List<Operation> operations;
+
+    public PathDef() {
+        operations = new LinkedList<>();
+    }
 
     public String getPathURI() {
         return pathURI;

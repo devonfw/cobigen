@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
@@ -49,7 +48,7 @@ public class OpenAPIInputReader implements InputReader {
     public Map<String, Object> createModel(Object input) {
         Map<String, Object> pojoModel = new HashMap<>();
 
-        ModelImpl model = ((OpenAPIDef) input).getModel();
+        ModelImpl model = ((ModelImpl) input);
         pojoModel.put(ModelConstant.NAME, model.getName());
         if (model.getDescription() != null) {
             pojoModel.put(ModelConstant.DESCRIPTION, model.getDescription());
@@ -61,8 +60,6 @@ public class OpenAPIInputReader implements InputReader {
         } else {
             pojoModel.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
         }
-
-        List<PathDef> paths = ((OpenAPIDef) input).getPaths();
 
         return pojoModel;
     }
@@ -230,22 +227,20 @@ public class OpenAPIInputReader implements InputReader {
 
     private List<ComponentDef> getComponents(Swagger input) {
         List<ComponentDef> objects = new LinkedList<>();
-        List<String> added = new LinkedList<>();
         for (String key : input.getPaths().keySet()) {
             String[] mp = key.split("/");
-            if (mp[0].equals("")) {
-                added.add(mp[1]);
-                ComponentDef component = new ComponentDef();
-                component.setComponent(mp[1]);
-                component.setVersion(mp[2]);
-                objects.add(component);
-            } else {
-                added.add(mp[0]);
-                ComponentDef component = new ComponentDef();
-                component.setComponent(mp[0]);
-                component.setVersion(mp[1]);
-                objects.add(component);
+            PathDef path = new PathDef();
+            ComponentDef component = new ComponentDef();
+            component.setComponent(mp[1]);
+            component.setVersion(mp[2]);
+            String pathUri = "/";
+            for (int i = 3; i < mp.length; i++) {
+                pathUri = pathUri.concat(mp[i] + "/");
             }
+            path.setPathURI(pathUri);
+            path.setPath(input.getPaths().get(key));
+            component.getPaths().add(path);
+
         }
         return objects;
     }
@@ -254,8 +249,12 @@ public class OpenAPIInputReader implements InputReader {
     // * @param input
     // * @return
     // */
-    // private List<SwaggerDef> getObjectDefinitions(Swagger input) {
-    // List<SwaggerDef> objects = new LinkedList<>();
+    // private List<ModelImpl> getObjectDefinitions(Swagger input, Path path) {
+    // List<ModelImpl> objects = new LinkedList<>();
+    // for (Operation op : path.getOperations()) {
+    //
+    // op.getResponses()
+    // }
     // for (String key : input.getDefinitions().keySet()) {
     // if (input.getDefinitions().get(key) instanceof ModelImpl) {
     // ModelImpl inputComponentObject = (ModelImpl) input.getDefinitions().get(key);
@@ -266,20 +265,10 @@ public class OpenAPIInputReader implements InputReader {
     // if (inputComponentObject.getProperties().get(keyEntity) instanceof RefProperty) {
     // ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
     // ((RefProperty) inputComponentObject.getProperties().get(keyEntity)).getSimpleRef());
-    // SwaggerDef definition = new SwaggerDef();
-    // for (String path : input.getPaths().keySet()) {
-    // if (path.startsWith("/" + key.toLowerCase() + "/")
-    // && path.contains("/" + keyEntity.toLowerCase() + "/")) {
-    // PathDef pathDef = new PathDef();
-    // pathDef.setPathURI(path);
-    // pathDef.setPath(input.getPaths().get(path));
-    // definition.addPath(pathDef);
-    // }
-    // }
+    //
     // inputObject.setName(keyEntity);
     // inputObject.setReference(key);
-    // definition.setModel(inputObject);
-    // objects.add(definition);
+    // objects.add(inputObject);
     // }
     // }
     // }
@@ -287,5 +276,16 @@ public class OpenAPIInputReader implements InputReader {
     // }
     // }
     // return objects;
+    // }
+    //
+    // private List<ModelImpl> getReferences(Object object) {
+    // List<ModelImpl> objects = new LinkedList<>();
+    // if (object instanceof Response) {
+    // objects.add(((Response) object).getSchema());
+    //
+    // } else if (object instanceof BodyParameter) {
+    //
+    // }
+    // return null;
     // }
 }
