@@ -9,7 +9,7 @@
 
   <parent>
     <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-parent</artifactId>
+    <artifactId>cobigen-javaplugin-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
