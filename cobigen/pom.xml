@@ -14,7 +14,7 @@
 
   <modules>
     <module>cobigen-core-parent</module>
-    <module>cobigen-javaplugin</module>
+    <module>cobigen-javaplugin-parent</module>
     <module>cobigen-xmlplugin</module>
     <module>cobigen-propertyplugin</module>
     <module>cobigen-textmerger</module>

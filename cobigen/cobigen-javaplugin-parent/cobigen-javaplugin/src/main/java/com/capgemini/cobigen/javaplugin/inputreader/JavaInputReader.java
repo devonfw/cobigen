@@ -423,24 +423,21 @@ public class JavaInputReader implements InputReader {
                     classLoader = (ClassLoader) addArg;
                 }
             }
-            try {
+            try (BufferedReader pathReader = new BufferedReader(new FileReader(path.toFile()))) {
                 // couldn't think of another way here... Java8 compliance would made this a lot easier due to
                 // lambdas
                 if (clazz == null) {
                     if (classLoader == null) {
-                        return JavaParserUtil.getFirstJavaClass(new BufferedReader(new FileReader(path.toFile())));
+                        return JavaParserUtil.getFirstJavaClass(pathReader);
                     } else {
-                        return JavaParserUtil.getFirstJavaClass(classLoader,
-                            new BufferedReader(new FileReader(path.toFile())));
+                        return JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
                     }
                 } else {
                     Object[] result = new Object[] { null, clazz };
                     if (classLoader == null) {
-                        result[0] = JavaParserUtil.getFirstJavaClass(new BufferedReader(new FileReader(path.toFile())));
+                        result[0] = JavaParserUtil.getFirstJavaClass(pathReader);
                     } else {
-                        result[0] =
-                            JavaParserUtil.getFirstJavaClass(classLoader,
-                                new BufferedReader(new FileReader(path.toFile())));
+                        result[0] = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
                     }
                     return result;
                 }
