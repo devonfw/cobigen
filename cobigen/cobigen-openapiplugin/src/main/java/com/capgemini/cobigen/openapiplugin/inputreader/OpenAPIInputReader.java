@@ -20,9 +20,14 @@ import io.swagger.models.HttpMethod;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
+import io.swagger.models.RefModel;
+import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.BaseIntegerProperty;
 import io.swagger.models.properties.BinaryProperty;
@@ -78,7 +83,6 @@ public class OpenAPIInputReader implements InputReader {
             pathValues.put(ModelConstant.PATH_URL, pathDef.getPathURI());
             pathValues.put(ModelConstant.OPERATIONS, getOperations(pathDef.getPath().getOperationMap()));
             paths.add(pathValues);
-
         }
         return paths;
     }
@@ -93,15 +97,125 @@ public class OpenAPIInputReader implements InputReader {
         for (HttpMethod op : operationMap.keySet()) {
             opValues = new HashMap<>();
             opValues.put(ModelConstant.HTTP_OPERATION, op.name());
-            opValues.put(ModelConstant.SUMMARY, operationMap.get(op).getSummary());
-            opValues.put(ModelConstant.DESCRIPTION, operationMap.get(op).getDescription());
-            opValues.put(ModelConstant.PRODUCES, operationMap.get(op).getProduces());
-            opValues.put(ModelConstant.CONSUMES, operationMap.get(op).getConsumes());
-            opValues.put(ModelConstant.PARAMETERS, operationMap.get(op).getParameters());
-            opValues.put(ModelConstant.RESPONSES, operationMap.get(op).getResponses());
+            if (operationMap.get(op).getSummary() != null) {
+                opValues.put(ModelConstant.SUMMARY, operationMap.get(op).getSummary());
+            }
+            if (operationMap.get(op).getDescription() != null) {
+                opValues.put(ModelConstant.DESCRIPTION, operationMap.get(op).getDescription());
+            }
+            if (operationMap.get(op).getProduces() != null) {
+                opValues.put(ModelConstant.PRODUCES, operationMap.get(op).getProduces());
+            }
+            if (operationMap.get(op).getParameters() != null) {
+                opValues.put(ModelConstant.PARAMETERS,
+                    getParameters(operationMap.get(op).getParameters(), operationMap.get(op).getConsumes()));
+            }
+            if (operationMap.get(op).getConsumes() != null) {
+
+                opValues.put(ModelConstant.CONSUMES, operationMap.get(op).getConsumes());
+            }
+
+            if (operationMap.get(op).getResponses() != null) {
+                opValues.put(ModelConstant.RESPONSES, getResponses(operationMap.get(op).getResponses()));
+            } else {
+                opValues.put(ModelConstant.RESPONSES, new LinkedList<>());
+            }
             operations.add(opValues);
         }
         return operations;
+    }
+
+    /**
+     * @param responses
+     * @return
+     */
+    private Map<String, Object> getResponses(Map<String, Response> responses) {
+        Map<String, Object> response = new HashMap<>();
+
+        for (String resp : responses.keySet()) {
+            if (resp.equals("200")) {
+                if (responses.get(resp).getDescription() != null) {
+                    response.put(ModelConstant.DESCRIPTION, responses.get(resp).getDescription());
+                }
+                if (responses.get(resp).getSchema() != null) {
+                    if (responses.get(resp).getSchema() instanceof ArrayProperty) {
+                        response.put(ModelConstant.IS_COLLECTION, true);
+                        response.put(ModelConstant.TYPE,
+                            ((RefProperty) ((ArrayProperty) responses.get(resp).getSchema()).getItems())
+                                .getSimpleRef());
+                    } else if (responses.get(resp).getSchema() instanceof RefProperty) {
+                        response.put(ModelConstant.TYPE,
+                            ((RefProperty) responses.get(resp).getSchema()).getSimpleRef());
+                    }
+                }
+            }
+        }
+        return response;
+    }
+
+    /**
+     * @param parameters
+     * @param list
+     * @param consumes
+     * @return
+     */
+    private List<Map<String, Object>> getParameters(List<Parameter> parameters, List<String> consumes) {
+        List<Map<String, Object>> params = new LinkedList<>();
+        Map<String, Object> paramValues;
+        for (Parameter param : parameters) {
+            paramValues = new HashMap<>();
+            paramValues.put(ModelConstant.NAME, param.getName());
+            if (param.getDescription() != null) {
+                paramValues.put(ModelConstant.DESCRIPTION, param.getDescription());
+            }
+            paramValues.put(ModelConstant.CONSTRAINTS, getConstraints(param));
+            if (param instanceof PathParameter) {
+                paramValues.put(ModelConstant.TYPE,
+                    buildType(((PathParameter) param).getType(), ((PathParameter) param).getFormat(), null, null));
+            }
+            if (param instanceof QueryParameter) {
+                paramValues.put(ModelConstant.TYPE,
+                    buildType(((QueryParameter) param).getType(), ((QueryParameter) param).getFormat(), null, null));
+            }
+            if (param instanceof BodyParameter) {
+                if (((BodyParameter) param).getSchema() != null) {
+                    paramValues.put(ModelConstant.TYPE,
+                        ((RefModel) ((BodyParameter) param).getSchema()).getSimpleRef());
+                }
+            }
+            if (param instanceof FormParameter) {
+                paramValues.put(ModelConstant.MULTIPART, true);
+            }
+
+            params.add(paramValues);
+
+        }
+        return params;
+    }
+
+    /**
+     * @param param
+     * @return
+     */
+    private Map<String, Object> getConstraints(Parameter param) {
+        Map<String, Object> constraints = new HashMap<>();
+        if (param.getRequired()) {
+            constraints.put(ModelConstant.NOTNULL, true);
+        }
+        if (param instanceof PathParameter) {
+            constraints.put(ModelConstant.MAXIMUM, ((PathParameter) param).getMaximum());
+            constraints.put(ModelConstant.MINIMUM, ((PathParameter) param).getMaximum());
+            constraints.put(ModelConstant.MAX_LENGTH, ((PathParameter) param).getMaxLength());
+            constraints.put(ModelConstant.MIN_LENGTH, ((PathParameter) param).getMinLength());
+        } else if (param instanceof QueryParameter) {
+            constraints.put(ModelConstant.MAXIMUM, ((QueryParameter) param).getMaximum());
+            constraints.put(ModelConstant.MINIMUM, ((QueryParameter) param).getMaximum());
+            constraints.put(ModelConstant.MAX_LENGTH, ((QueryParameter) param).getMaxLength());
+            constraints.put(ModelConstant.MIN_LENGTH, ((QueryParameter) param).getMinLength());
+        } else {
+            return constraints;
+        }
+        return constraints;
     }
 
     /**
@@ -129,6 +243,7 @@ public class OpenAPIInputReader implements InputReader {
 
     /**
      * @param properties
+     * @param required
      * @return
      */
     private List<Map<String, Object>> getFields(Map<String, Property> properties, List<String> required) {
@@ -165,9 +280,11 @@ public class OpenAPIInputReader implements InputReader {
 
     /**
      * @param property
+     * @param required
+     * @param key
      * @return
      */
-    private Object getConstraints(Property property, List<String> required, String key) {
+    private Map<String, Object> getConstraints(Property property, List<String> required, String key) {
         Map<String, Object> constraints = new HashMap<>();
         if (required.contains(key)) {
             constraints.put(ModelConstant.NOTNULL, true);
@@ -225,7 +342,10 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * @param type
+     * @param format
      * @param property
+     * @param key
      * @return
      */
     private String buildType(String type, String format, Property property, String key) {
