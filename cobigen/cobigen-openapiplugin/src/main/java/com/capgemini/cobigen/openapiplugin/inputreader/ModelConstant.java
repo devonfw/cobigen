@@ -149,4 +149,6 @@ public class ModelConstant {
     public static final String PARAMETERS = "parameters";
 
     public static final String RESPONSES = "responses";
+
+    public static final String MULTIPART = "multipart";
 }
