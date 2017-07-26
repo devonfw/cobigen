@@ -31,6 +31,7 @@ import org.xml.sax.SAXParseException;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.exception.UnknownExpressionException;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.TemplateEngineRegistry;
@@ -54,7 +55,6 @@ import com.capgemini.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator;
 import com.capgemini.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

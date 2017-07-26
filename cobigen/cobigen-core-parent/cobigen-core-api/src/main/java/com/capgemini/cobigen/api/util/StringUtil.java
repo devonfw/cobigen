@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.util;
+package com.capgemini.cobigen.api.util;
 
 /**
  * This class provides a set of transformation functions on {@link String}s
