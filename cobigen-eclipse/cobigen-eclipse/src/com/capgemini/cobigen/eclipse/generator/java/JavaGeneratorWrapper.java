@@ -2,6 +2,7 @@ package com.capgemini.cobigen.eclipse.generator.java;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,15 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -25,9 +29,8 @@ import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.capgemini.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
-import com.capgemini.cobigen.javaplugin.inputreader.ModelConstant;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
+import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 
 /**
  * The generator interface for the external generator library
@@ -145,9 +148,17 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                     }
                 } else if (tmp instanceof IPackageFragment) {
                     uniqueSourceSelected = true;
-                    firstTriggers = cobiGen.getMatchingTriggerIds(
-                        new PackageFolder(((IPackageFragment) tmp).getResource().getLocationURI(),
-                            ((IPackageFragment) tmp).getElementName()));
+                    IPackageFragment packageFragment = (IPackageFragment) tmp;
+                    Object packageFolder = null;
+                    try {
+                        packageFolder =
+                            cobiGen.read("java",
+                                Paths.get(packageFragment.getCorrespondingResource().getRawLocationURI()),
+                                Charsets.UTF_8, packageFragment.getElementName(), super.getInputClassloader());
+                    } catch (InputReaderException | JavaModelException e) {
+                        throw new InvalidInputException("One Input could not be processed: " + tmp.toString(), e);
+                    }
+                    firstTriggers = cobiGen.getMatchingTriggerIds(packageFolder);
                 } else {
                     throw new InvalidInputException(
                         "You selected at least one input, which type is currently not supported as input for generation. "
@@ -185,19 +196,19 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
             type = EclipseJavaModelUtil.getJavaClassType(cu);
             return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
-            throw new InvalidInputException(
-                "Error while retrieving the project's ('" + cu.getJavaProject().getElementName() + "') classloader.",
-                e);
+            throw new InvalidInputException("Error while retrieving the project's ('"
+                + cu.getJavaProject().getElementName() + "') classloader.", e);
         } catch (CoreException e) {
             throw new InvalidInputException("An eclipse internal exception occured!", e);
         } catch (ClassNotFoundException e) {
             throw new InvalidInputException("The class '" + type.getFullyQualifiedName() + "' could not be found. "
                 + "This may be cause of a non-compiling host project of the selected input.", e);
         } catch (UnsupportedClassVersionError e) {
-            throw new InvalidInputException("Incompatible java version: "
-                + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
-                + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
-                + "Current runtime: " + System.getProperty("java.version"), e);
+            throw new InvalidInputException(
+                "Incompatible java version: "
+                    + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+                    + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+                    + "Current runtime: " + System.getProperty("java.version"), e);
         }
     }
 }

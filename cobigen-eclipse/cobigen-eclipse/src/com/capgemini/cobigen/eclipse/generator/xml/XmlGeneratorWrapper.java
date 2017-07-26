@@ -21,7 +21,7 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
+import com.capgemini.cobigen.eclipse.generator.xml.util.XmlUtil;
 
 /**
  * Generator wrapper covering xml documents as inputs

@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.eclipse;
 
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -12,19 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
-import com.capgemini.cobigen.htmlplugin.HTMLPluginActivator;
 import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.TemplateEngineRegistry;
-import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
-import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
-import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
-import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
-import com.capgemini.cobigen.tsplugin.TypeScriptPluginActivator;
-import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -65,14 +60,20 @@ public class Activator extends AbstractUIPlugin {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         super.start(context);
         plugin = this;
-        PluginRegistry.loadPlugin(JavaPluginActivator.class);
-        PluginRegistry.loadPlugin(XmlPluginActivator.class);
-        PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
-        PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        PluginRegistry.loadPlugin(JSONPluginActivator.class);
-        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
-        PluginRegistry.loadPlugin(HTMLPluginActivator.class);
-        PluginRegistry.loadPlugin(TypeScriptPluginActivator.class);
+
+        Iterator<GeneratorPluginActivator> pluginIterator =
+            ServiceLoader.load(GeneratorPluginActivator.class).iterator();
+        if (pluginIterator.hasNext()) {
+            LOG.info("Loading Plugins");
+        } else {
+            LOG.error("No Plugins Found!");
+        }
+        while (pluginIterator.hasNext()) {
+            GeneratorPluginActivator loadedPlugin = pluginIterator.next();
+            LOG.debug(" * {} found", loadedPlugin.getClass().getName());
+            PluginRegistry.loadPlugin(loadedPlugin.getClass());
+        }
+
         TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
@@ -92,7 +93,8 @@ public class Activator extends AbstractUIPlugin {
                     if (configurationProjectListenerStarted) {
                         return;
                     }
-                    ResourcesPlugin.getWorkspace().addResourceChangeListener(configurationProjectListener,
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                        configurationProjectListener,
                         IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
                             | IResourceChangeEvent.POST_CHANGE);
                     configurationProjectListenerStarted = true;
