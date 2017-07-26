@@ -5,12 +5,11 @@ import java.util.List;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.google.common.collect.Lists;
 
 /**
- * Plug-in activator to be registered to the {@link PluginRegistry} of CobiGen by any client.
+ * Plug-in activator to be registered to the PluginRegistry of CobiGen by any client.
  */
 public class JavaPluginActivator implements GeneratorPluginActivator {
 

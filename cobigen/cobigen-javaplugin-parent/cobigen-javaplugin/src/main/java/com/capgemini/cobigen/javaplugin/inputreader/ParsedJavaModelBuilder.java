@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.capgemini.cobigen.impl.util.StringUtil;
+import com.capgemini.cobigen.api.util.StringUtil;
 import com.capgemini.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -287,8 +287,9 @@ public class ParsedJavaModelBuilder {
                 paramList = new ArrayList<>();
                 paramList.add(attrType);
             }
-            JavaMethod setter = javaClass
-                .getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList, false);
+            JavaMethod setter =
+                javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList,
+                    false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
@@ -391,8 +392,9 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             JavaMethod getter = null;
             try {
-                getter = javaClass.getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null,
-                    false);
+                getter =
+                    javaClass
+                        .getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
             } catch (Exception e) {
                 getter =
                     javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
