@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
-import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
+import com.capgemini.cobigen.eclipse.generator.xml.util.XmlUtil;
 import com.google.common.collect.Lists;
 
 /**
@@ -45,18 +45,17 @@ public class XmlInputConverter {
                     Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                     convertedInputs.add(domDocument);
                 } catch (SAXException e) {
-                    LOG.error("Could not parse file {} as xml document.", ((IFile) resource).getFullPath().toOSString(),
-                        e);
-                    throw new GeneratorCreationException(
-                        "Could not parse file " + ((IFile) resource).getFullPath().toOSString() + " as xml document.",
-                        e);
+                    LOG.error("Could not parse file {} as xml document.",
+                        ((IFile) resource).getFullPath().toOSString(), e);
+                    throw new GeneratorCreationException("Could not parse file "
+                        + ((IFile) resource).getFullPath().toOSString() + " as xml document.", e);
                 } catch (CoreException e) {
                     LOG.error("An eclipse internal exception occurred.", e);
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
                 } catch (IOException e) {
                     LOG.error("Could not read file {}.", ((IFile) resource).getFullPath().toOSString(), e);
-                    throw new GeneratorCreationException(
-                        "Could not read file " + ((IFile) resource).getFullPath().toOSString() + ".", e);
+                    throw new GeneratorCreationException("Could not read file "
+                        + ((IFile) resource).getFullPath().toOSString() + ".", e);
                 } catch (ParserConfigurationException e) {
                     LOG.error("An internal xml parser exception occurred.", e);
                     throw new GeneratorCreationException("An internal xml parser exception occurred.", e);

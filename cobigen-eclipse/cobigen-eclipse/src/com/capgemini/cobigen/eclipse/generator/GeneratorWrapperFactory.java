@@ -20,6 +20,7 @@ import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
 import com.capgemini.cobigen.eclipse.generator.xml.XmlGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.xml.XmlInputConverter;
+import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.google.common.collect.Lists;
 
 /**
@@ -45,8 +46,8 @@ public class GeneratorWrapperFactory {
      *             if the selection includes non supported input types or is composed in a non supported
      *             combination of inputs.
      */
-    public static CobiGenWrapper createGenerator(IStructuredSelection selection)
-        throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
+    public static CobiGenWrapper createGenerator(IStructuredSelection selection) throws GeneratorCreationException,
+        GeneratorProjectNotExistentException, InvalidInputException {
 
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
@@ -56,7 +57,7 @@ public class GeneratorWrapperFactory {
                 if (firstElement instanceof IJavaElement) {
                     LOG.info("Create new CobiGen instance for java inputs...");
                     return new JavaGeneratorWrapper(((IJavaElement) firstElement).getJavaProject().getProject(),
-                        JavaInputConverter.convertInput(extractedInputs));
+                        JavaInputConverter.convertInput(extractedInputs, CobiGenFactory.getInputInterpreter()));
                 } else if (firstElement instanceof IFile) {
                     LOG.info("Create new CobiGen instance for xml inputs...");
                     return new XmlGeneratorWrapper(((IFile) firstElement).getProject(),
@@ -108,8 +109,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: " + ICompilationUnit.class
-                            + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: "
+                            + ICompilationUnit.class + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 0;
@@ -122,8 +123,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: " + IPackageFragment.class
-                            + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: "
+                            + IPackageFragment.class + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 1;
@@ -145,10 +146,11 @@ public class GeneratorWrapperFactory {
                 }
                 //$FALL-THROUGH$
             default:
-                throw new InvalidInputException("Your selection contains an object of the type "
-                    + o.getClass().toString()
-                    + ", which is not yet supported to be treated as an input for generation.\n"
-                    + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
+                throw new InvalidInputException(
+                    "Your selection contains an object of the type "
+                        + o.getClass().toString()
+                        + ", which is not yet supported to be treated as an input for generation.\n"
+                        + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
             }
         }
 

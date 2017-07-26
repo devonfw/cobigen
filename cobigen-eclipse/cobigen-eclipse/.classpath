@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-1.9.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
@@ -15,30 +16,14 @@
 	<classpathentry exported="true" kind="lib" path="lib/javax.inject-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdom2-2.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-7.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lexeme-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sax-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gson-2.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-20160810.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rhino-1.7R4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-propertyplugin-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-senchaplugin-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-textmerger-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-xmlplugin-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-4.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-4.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar" sourcepath="/cobigen-tempeng-freemarker"/>
-	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-7.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin-1.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mmm-util-pojo-7.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-htmlplugin-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-jsonplugin-1.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-tsplugin-1.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsoup-1.10.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-4.1.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-4.1.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cobigen-javaplugin.model-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

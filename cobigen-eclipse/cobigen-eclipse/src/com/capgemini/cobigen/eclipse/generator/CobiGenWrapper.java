@@ -50,7 +50,6 @@ import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
-import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -188,13 +187,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 // if we only consider one input, we want to allow some customizations of the generation
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
-                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
-                    model);
+                report =
+                    cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
+                        model);
             } else {
                 report = new GenerationReportTo();
                 for (Object input : inputs) {
-                    report.aggregate(
-                        cobiGen.generate(input, templates, Paths.get(generationTargetUri), false, utilClasses));
+                    report.aggregate(cobiGen.generate(input, templates, Paths.get(generationTargetUri), false,
+                        utilClasses));
                 }
             }
 
@@ -244,7 +244,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * Retrieves the {@link ClassLoader} of the input.
      * @return the {@link ClassLoader} of the input or a newly created one of the input's project
      */
-    private ClassLoader getInputClassloader() {
+    protected ClassLoader getInputClassloader() {
         Object firstInput = inputs.get(0);
         if (firstInput instanceof Class<?>) {
             return ((Class<?>) firstInput).getClassLoader();
@@ -292,8 +292,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         // add "all" increment, which should include all possible templates
-        ComparableIncrement all = new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
-            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
+        ComparableIncrement all =
+            new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null, Lists.<TemplateTo> newLinkedList(),
+                Lists.<IncrementTo> newLinkedList());
         for (TemplateTo t : matchingTemplates) {
             all.addTemplate(t);
         }
@@ -342,8 +343,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return The set of all mergeable project dependent file paths
      */
     public Set<String> getMergeableFiles(Collection<IncrementTo> increments) {
-        if (increments.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
-            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+        if (increments.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null, Lists
+            .<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
             increments = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
         }
         Set<String> mergeablePaths = Sets.newHashSet();
@@ -367,8 +368,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public boolean isMergableFile(String path, Collection<IncrementTo> consideredIncrements) {
         if (path != null) {
-            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
-                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null, Lists
+                .<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
                 consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
             }
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
@@ -407,7 +408,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         List<Object> inputs;
         boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(this.inputs.get(0));
         if (combinesMultipleInputs) {
-            inputs = new JavaInputReader().getInputObjects(this.inputs.get(0), Charsets.UTF_8);
+            inputs = cobiGen.getInputObjects("java", this.inputs.get(0), Charsets.UTF_8);
         } else {
             inputs = this.inputs;
         }
@@ -509,8 +510,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         String path;
         if (mostSpecificProject != null) {
             Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
-            path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
-                .toString().replace("\\", "/");
+            path =
+                projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
+                    .toString().replace("\\", "/");
         } else {
             path = targetAbsolutePath.toString().replace("\\", "/");
             workspaceExternalPath.add(path);
@@ -540,8 +542,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             String path;
             if (mostSpecificProject != null) {
                 Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
-                path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
-                    .toString().replace("\\", "/");
+                path =
+                    projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
+                        .toString().replace("\\", "/");
             } else {
                 path = targetAbsolutePath.toString().replace("\\", "/");
                 workspaceExternalPath.add(path);
@@ -561,7 +564,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children = new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
+            List<Object> children = cobiGen.getInputObjectsRecursively("java", inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return children.get(0);
         } else {
