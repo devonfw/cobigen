@@ -15,7 +15,7 @@ import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 public class OpenAPIInputReaderTest {
 
     /** Testdata root path */
-    private static final String testdataRoot = "src/main/resources/unittest/OpenAPIInputReaderTest";
+    private static final String testdataRoot = "src/test/resources/unittest/OpenAPIInputReaderTest";
 
     /** UTF-8 Charset */
     private static final Charset UTF_8 = Charset.forName("UTF-8");

@@ -5,13 +5,14 @@ import java.util.List;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
 import com.google.common.collect.Lists;
 
 /**
- * Plug-in activator to be registered to the {@link PluginRegistry} of CobiGen by any client.
+ * Plug-in activator to be registered at CobiGen.
  */
 public class OpenAPIPluginActivator implements GeneratorPluginActivator {
+
+    private static final String TRIGGER_TYPE = "openapi";
 
     @Override
     public List<Merger> bindMerger() {
@@ -20,7 +21,7 @@ public class OpenAPIPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter("openapi"));
+        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter(TRIGGER_TYPE));
     }
 
 }
