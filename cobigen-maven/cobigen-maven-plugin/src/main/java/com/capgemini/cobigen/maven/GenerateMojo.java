@@ -19,12 +19,15 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import org.apache.commons.io.Charsets;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Dependency;
@@ -42,7 +45,10 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.exception.InputReaderException;
+import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
@@ -50,16 +56,9 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.TemplateEngineRegistry;
-import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.jsonplugin.JSONPluginActivator;
 import com.capgemini.cobigen.maven.utils.MojoUtils;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
-import com.capgemini.cobigen.propertyplugin.PropertyMergerPluginActivator;
-import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
-import com.capgemini.cobigen.textmerger.TextMergerPluginActivator;
-import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -71,12 +70,6 @@ import com.google.common.collect.Sets;
 public class GenerateMojo extends AbstractMojo {
 
     static {
-        PluginRegistry.loadPlugin(JavaPluginActivator.class);
-        PluginRegistry.loadPlugin(XmlPluginActivator.class);
-        PluginRegistry.loadPlugin(PropertyMergerPluginActivator.class);
-        PluginRegistry.loadPlugin(TextMergerPluginActivator.class);
-        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
-        PluginRegistry.loadPlugin(JSONPluginActivator.class);
         TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
     }
 
@@ -123,7 +116,20 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        List<Object> inputs = collectInputs();
+        Iterator<GeneratorPluginActivator> pluginIterator =
+            ServiceLoader.load(GeneratorPluginActivator.class).iterator();
+        if (pluginIterator.hasNext()) {
+            getLog().info("Loading Plugins");
+        } else {
+            getLog().error("No Plugins Found!");
+        }
+        while (pluginIterator.hasNext()) {
+            GeneratorPluginActivator loadedPlugin = pluginIterator.next();
+            getLog().debug(" * " + loadedPlugin.getClass().getName() + " found");
+            PluginRegistry.loadPlugin(loadedPlugin.getClass());
+        }
+
+        List<Object> inputs = collectInputs(CobiGenFactory.getInputInterpreter());
         if (inputs.isEmpty()) {
             getLog().info("No inputs specified for generation!");
             getLog().info("");
@@ -306,11 +312,13 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Collects/Converts all inputs from {@link #inputPackages} and {@link #inputFiles} into CobiGen
      * compatible formats
+     * @param inputInterpreter
+     *            to interpret input objects
      * @return the list of CobiGen compatible inputs
      * @throws MojoFailureException
      *             if the project {@link ClassLoader} could not be retrieved
      */
-    private List<Object> collectInputs() throws MojoFailureException {
+    private List<Object> collectInputs(InputInterpreter inputInterpreter) throws MojoFailureException {
         getLog().debug("Collect inputs...");
         List<Object> inputs = Lists.newLinkedList();
 
@@ -332,9 +340,17 @@ public class GenerateMojo extends AbstractMojo {
                     Path sourcePath = Paths.get(sourceRoot, packagePath);
                     getLog().debug("Checking source path " + sourcePath);
                     if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
-                        PackageFolder packageFolder = new PackageFolder(sourcePath.toUri(), inputPackage, cl);
-                        inputs.add(packageFolder);
-                        sourceFound = true;
+                        Object packageFolder;
+                        try {
+                            packageFolder =
+                                inputInterpreter.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8,
+                                    inputPackage, cl);
+                            inputs.add(packageFolder);
+                            sourceFound = true;
+                        } catch (InputReaderException e) {
+                            throw new MojoFailureException("Could not read input package " + sourcePath.toString(), e);
+                        }
+
                     } else {
                         sourcePathsObserved.add(sourcePath);
                     }
@@ -352,7 +368,7 @@ public class GenerateMojo extends AbstractMojo {
         if (inputFiles != null && !inputFiles.isEmpty()) {
             for (File file : inputFiles) {
                 getLog().debug("Resolve file '" + file.toURI().toString() + "'");
-                Object input = InputPreProcessor.process(file, cl);
+                Object input = InputPreProcessor.process(inputInterpreter, file, cl);
                 inputs.add(input);
             }
         }
@@ -384,16 +400,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
                 // error handling for increments not found
                 if (!configuredIncrements.isEmpty()) {
-                    if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                            + "' not matched for input '" + ((PackageFolder) input).getLocation()
-                            + "' by provided CobiGen configuration.");
-                    } else {
-                        throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                            + "' not matched for input '"
-                            + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
-                            + "' by provided CobiGen configuration.");
-                    }
+                    throw new MojoFailureException("Increments with ids '" + configuredIncrements
+                        + "' not matched for input '" + getStringRepresentation(input)
+                        + "' by provided CobiGen configuration.");
                 }
 
             }
@@ -425,13 +434,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
                 // error handling for increments not found
                 if (!configuredTemplates.isEmpty()) {
-                    if (input instanceof PackageFolder) {
-                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                            + "' did not match package in folder '" + ((PackageFolder) input).getLocation() + "'.");
-                    } else {
-                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                            + "' did not match input '" + input + "'.");
-                    }
+                    throw new MojoFailureException("Templates with ids '" + configuredTemplates
+                        + "' did not match package in folder '" + getStringRepresentation(input) + "'.");
+
                 }
             }
         }
@@ -522,5 +527,19 @@ public class GenerateMojo extends AbstractMojo {
         }
         throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
 
+    }
+
+    /**
+     * Returns a String representation of an object
+     * @param object
+     *            to be represented
+     * @return A String representing the object. Uses Arrays.toString() for arrays and toString() otherwise
+     */
+    private String getStringRepresentation(Object object) {
+        if (object instanceof Object[]) {
+            return Arrays.toString((Object[]) object);
+        } else {
+            return object.toString();
+        }
     }
 }
