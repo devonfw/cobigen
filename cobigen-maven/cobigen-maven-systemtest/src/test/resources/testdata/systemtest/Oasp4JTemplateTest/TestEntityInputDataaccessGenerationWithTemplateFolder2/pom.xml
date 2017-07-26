@@ -5,7 +5,7 @@
   <artifactId>Oasp4JTemplateTest-TestEntityInputDataaccessGeneration</artifactId>
   <version>SNAPSHOT</version>
 
-  
+
 
   <build>
     <plugins>
@@ -31,6 +31,18 @@
             <increment>daos</increment>
           </increments>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-javaplugin</artifactId>
+            <version>1.6.0-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-xmlplugin</artifactId>
+            <version>3.1.0-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
