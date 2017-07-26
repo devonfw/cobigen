@@ -1,51 +1,48 @@
 package com.capgemini.cobigen.api.exception;
 
 /**
- * 
+ * Exception to indicate that an InputReader encountered a problem while parsing input content.
  */
 public class InputReaderException extends Exception {
 
     /**
-     * 
+     *
+     */
+    private static final long serialVersionUID = -3460790488241223241L;
+
+    /**
+     * Creates a new InputReaderException
      */
     public InputReaderException() {
-        // TODO Auto-generated constructor stub
     }
 
     /**
+     * Creates a new InputReaderException with the specified message
      * @param message
+     *            describing the exception
      */
     public InputReaderException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
+     * Creates a new InputReaderException with the causing {@link Throwable}
      * @param cause
+     *            the causing Throwable
      */
     public InputReaderException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
+     * Creates a new InputReaderException with the specified message and the causing {@link Throwable}
      * @param message
+     *            describing the exception
      * @param cause
+     *            the causing Throwable
      */
     public InputReaderException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @param message
-     * @param cause
-     * @param enableSuppression
-     * @param writableStackTrace
-     */
-    public InputReaderException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
     }
 
 }
