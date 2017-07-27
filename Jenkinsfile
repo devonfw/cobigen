@@ -82,6 +82,7 @@ node {
 								try {
 									nodejs(nodeJSInstallationName: '6.11') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
+										junit '**/target/surefire-reports/TEST-*.xml'
 									}
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
@@ -91,7 +92,6 @@ node {
 								}
 								
 								//step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
-								junit '**/target/surefire-reports/TEST-*.xml'
 							}
 						}
 					}
