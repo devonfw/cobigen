@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.impl.util.SystemUtil;
+import com.capgemini.cobigen.api.util.SystemUtil;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
