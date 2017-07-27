@@ -116,6 +116,8 @@
           <repository
               url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
           <repository
+              url="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
+          <repository
               url="http://download.eclipse.org/technology/swtbot/snapshots"/>
         </repositoryList>
       </targlet>
