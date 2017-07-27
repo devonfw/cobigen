@@ -79,19 +79,10 @@ node {
 							// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
-								try {
-									nodejs(nodeJSInstallationName: '6.11') {
-										sh "mvn -s ${MAVEN_SETTINGS} clean install"
-										junit '**/target/surefire-reports/TEST-*.xml'
-									}
-								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
-									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
-										throw err
-									}
+								nodejs(nodeJSInstallationName: '6.11') {
+									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: false])
 								}
-								
-								//step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
 							}
 						}
 					}
@@ -101,7 +92,7 @@ node {
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
 				notifyFailed()
-				return
+				return // do the return outside of stage area to exit the pipeline
 			}
 			
 			stage('deploy') {
@@ -122,6 +113,7 @@ node {
 			}
 
 		} catch(e) {
+			step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true])
 			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
 				setBuildStatus("Incomplete","ERROR")
