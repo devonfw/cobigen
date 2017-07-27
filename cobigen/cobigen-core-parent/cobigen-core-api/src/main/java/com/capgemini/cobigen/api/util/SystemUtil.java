@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.util;
+package com.capgemini.cobigen.api.util;
 
 /**
  * This util class provides system properties
