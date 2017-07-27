@@ -102,7 +102,7 @@ node {
 			}
 			
 			stage('process test results') {
-				sh "find . -name TEST-*.xml -exec touch {} \\;"
+				sh '''find . -name *.xml -exec touch {} \\;'''
 				// added 'allowEmptyResults:true' to prevent failure in case of no tests
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 			}
