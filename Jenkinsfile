@@ -102,9 +102,11 @@ node {
 			}
 			
 			stage('process test results') {
-				sh '''find . -name *.xml -exec touch {} \\;'''
-				// added 'allowEmptyResults:true' to prevent failure in case of no tests
-				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+				dir(root) {
+					sh "find . -name *.xml -exec touch {} \\;"
+					// added 'allowEmptyResults:true' to prevent failure in case of no tests
+					step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+				}
 			}
 			
 			if (currentBuild.result == 'UNSTABLE') {
