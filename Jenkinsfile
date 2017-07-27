@@ -91,7 +91,7 @@ node {
 								}
 								
 								//step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
-								junit '**/target/surefire-reports/*.xml'
+								junit '**/target/surefire-reports/TEST-*.xml'
 							}
 						}
 					}
