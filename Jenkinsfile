@@ -81,7 +81,7 @@ node {
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								nodejs(nodeJSInstallationName: '6.11') {
 									sh "mvn -s ${MAVEN_SETTINGS} clean install"
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: false])
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: false, ignoreTimestampCheck: true])
 								}
 							}
 						}
