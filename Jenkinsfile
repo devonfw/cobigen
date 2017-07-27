@@ -83,8 +83,9 @@ node {
 									nodejs(nodeJSInstallationName: '6.11') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
 								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
 										throw err
 									}
@@ -92,20 +93,6 @@ node {
 							}
 						}
 					}
-				}
-			}
-			
-			if (currentBuild.result == 'UNSTABLE') {
-				setBuildStatus("Complete","FAILURE")
-				notifyFailed()
-				return
-			}
-			
-			stage('process test results') {
-				dir(root) {
-					sh "find . -name *.xml -exec touch {} \\;"
-					// added 'allowEmptyResults:true' to prevent failure in case of no tests
-					step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 				}
 			}
 			
