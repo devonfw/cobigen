@@ -153,9 +153,8 @@ public class GenerateMojo extends AbstractMojo {
 
             if (dependencies != null && !dependencies.isEmpty()) {
                 Dependency dependency = dependencies.iterator().next();
-                Artifact templatesArtifact =
-                    execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                        .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
+                Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
+                    .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
                 try {
                     cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
                 } catch (IOException e) {
@@ -175,9 +174,8 @@ public class GenerateMojo extends AbstractMojo {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
                 List<Class<?>> utilClasses = resolveUtilClasses();
-                GenerationReportTo report =
-                    cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()), forceOverride,
-                        utilClasses);
+                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
+                    Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
                         getLog().error(e.getMessage(), e);
@@ -342,9 +340,8 @@ public class GenerateMojo extends AbstractMojo {
                     if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
                         Object packageFolder;
                         try {
-                            packageFolder =
-                                inputInterpreter.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8,
-                                    inputPackage, cl);
+                            packageFolder = inputInterpreter.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8,
+                                inputPackage, cl);
                             inputs.add(packageFolder);
                             sourceFound = true;
                         } catch (InputReaderException e) {
@@ -357,10 +354,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
 
                 if (!sourceFound) {
-                    throw new MojoFailureException(
-                        "Currently, packages as inputs are only supported "
-                            + "if defined as sources in the current project to be build. Having searched for sources at paths: "
-                            + sourcePathsObserved);
+                    throw new MojoFailureException("Currently, packages as inputs are only supported "
+                        + "if defined as sources in the current project to be build. Having searched for sources at paths: "
+                        + sourcePathsObserved);
                 }
             }
         }
@@ -386,7 +382,8 @@ public class GenerateMojo extends AbstractMojo {
      * @throws MojoFailureException
      *             if the maven configuration does not match cobigen configuration (context.xml)
      */
-    private List<GenerableArtifact> collectIncrements(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
+    private List<GenerableArtifact> collectIncrements(CobiGen cobiGen, List<Object> inputs)
+        throws MojoFailureException {
         List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (increments != null && !increments.isEmpty()) {
             for (Object input : inputs) {
@@ -400,9 +397,9 @@ public class GenerateMojo extends AbstractMojo {
                 }
                 // error handling for increments not found
                 if (!configuredIncrements.isEmpty()) {
-                    throw new MojoFailureException("Increments with ids '" + configuredIncrements
-                        + "' not matched for input '" + getStringRepresentation(input)
-                        + "' by provided CobiGen configuration.");
+                    throw new MojoFailureException(
+                        "Increments with ids '" + configuredIncrements + "' not matched for input '"
+                            + getStringRepresentation(input) + "' by provided CobiGen configuration.");
                 }
 
             }
@@ -488,8 +485,11 @@ public class GenerateMojo extends AbstractMojo {
 
     /**
      * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
-     * the following classes in this order: <list><li>Some</li> <li>c.Some</li> <li>b.c.Some</li> <li>
-     * a.b.c.Some</> </list>
+     * the following classes in this order: <list>
+     * <li>Some</li>
+     * <li>c.Some</li>
+     * <li>b.c.Some</li>
+     * <li>a.b.c.Some</> </list>
      * @param classPath
      *            the {@link Path} of the Class file
      * @param cl
@@ -502,9 +502,8 @@ public class GenerateMojo extends AbstractMojo {
         // Get a list with all path segments, starting with the class name
         Queue<String> pathSegments = new LinkedList<>();
         // Split the path by the systems file separator and without the .class suffix
-        String[] pathSegmentsArray =
-            classPath.toString().substring(0, classPath.toString().length() - 6)
-                .split("\\".equals(File.separator) ? "\\\\" : File.separator);
+        String[] pathSegmentsArray = classPath.toString().substring(0, classPath.toString().length() - 6)
+            .split("\\".equals(File.separator) ? "\\\\" : File.separator);
         for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
             pathSegments.add(pathSegmentsArray[i]);
         }
@@ -515,7 +514,7 @@ public class GenerateMojo extends AbstractMojo {
                 if (className == "") {
                     className = pathSegments.poll();
                 } else {
-                    className = String.join(".", pathSegments.poll(), className);
+                    className = pathSegments.poll() + "." + className;
                 }
                 try {
                     getLog().debug("Try to load " + className);
