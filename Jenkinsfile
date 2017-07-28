@@ -10,7 +10,6 @@ node {
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
 			}
-			return
 
 			// will hold the current branch name
 			def origin_branch =""
@@ -43,6 +42,7 @@ node {
 				// load VNC Server for eclipse tests
 				tool 'VNC Server'
 			}
+			return
 			
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
