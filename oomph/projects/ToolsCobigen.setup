@@ -149,6 +149,9 @@
             pattern="cobigen-javaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
+            pattern="cobigen-javaplugin.model"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
             pattern="cobigen-jsonplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
@@ -661,7 +664,17 @@
           </predicate>
         </sourceLocator>
         <sourceLocator
-            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin}"
+            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin-parent/cobigen-javaplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin-parent/cobigen-javaplugin-model}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:NotPredicate">
