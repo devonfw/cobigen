@@ -79,19 +79,10 @@ node {
 							// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
-								try {
-									if(origin_branch!='dev_eclipseplugin'){
-										nodejs(nodeJSInstallationName: '6.11') {
-											sh "mvn -s ${MAVEN_SETTINGS} clean package"
-										}
-									}else{
-										sh "mvn -s ${MAVEN_SETTINGS} clean install"
-									}
-								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
-									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
-										throw err
-									}
+								nodejs(nodeJSInstallationName: '6.11') {
+									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									sh '''find . -name *TEST*.xml -exec touch {} \\;'''
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: false])
 								}
 							}
 						}
@@ -102,18 +93,7 @@ node {
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
 				notifyFailed()
-				return
-			}
-			
-			stage('process test results') {
-				// added 'allowEmptyResults:true' to prevent failure in case of no tests
-				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
-			}
-			
-			if (currentBuild.result == 'UNSTABLE') {
-				setBuildStatus("Complete","FAILURE")
-				notifyFailed()
-				return
+				return // do the return outside of stage area to exit the pipeline
 			}
 			
 			stage('deploy') {
@@ -134,6 +114,7 @@ node {
 			}
 
 		} catch(e) {
+			step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true])
 			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
 				setBuildStatus("Incomplete","ERROR")
