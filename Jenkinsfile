@@ -10,6 +10,7 @@ node {
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
 			}
+			return
 
 			// will hold the current branch name
 			def origin_branch =""
