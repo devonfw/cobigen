@@ -200,7 +200,7 @@ public class OpenAPIInputReader implements InputReader {
     private Map<String, Object> getConstraints(Parameter param) {
         Map<String, Object> constraints = new HashMap<>();
         if (param.getRequired()) {
-            constraints.put(ModelConstant.NOTNULL, true);
+            constraints.put(ModelConstant.REQUIRED, true);
         }
         if (param instanceof PathParameter) {
             constraints.put(ModelConstant.MAXIMUM, ((PathParameter) param).getMaximum());
@@ -257,12 +257,13 @@ public class OpenAPIInputReader implements InputReader {
                 fieldValues.put(ModelConstant.NAME, key);
                 if (properties.get(key) instanceof RefProperty) {
                     fieldValues.put(ModelConstant.TYPE, ((RefProperty) properties.get(key)).getSimpleRef());
-                    fieldValues.put(ModelConstant.IS_ENTITY, true);
+                    fieldValues.put(ModelConstant.IS_REFERENCE, true);
                 } else if (properties.get(key) instanceof ArrayProperty) {
                     ArrayProperty array = (ArrayProperty) properties.get(key);
                     if (array.getItems() instanceof RefProperty) {
                         fieldValues.put(ModelConstant.TYPE, ((RefProperty) array.getItems()).getSimpleRef());
                         fieldValues.put(ModelConstant.IS_COLLECTION, true);
+                        fieldValues.put(ModelConstant.IS_REFERENCE, true);
                     }
                 } else {
                     fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key).getType(),
@@ -287,7 +288,7 @@ public class OpenAPIInputReader implements InputReader {
     private Map<String, Object> getConstraints(Property property, List<String> required, String key) {
         Map<String, Object> constraints = new HashMap<>();
         if (required.contains(key)) {
-            constraints.put(ModelConstant.NOTNULL, true);
+            constraints.put(ModelConstant.REQUIRED, true);
         }
         if (property instanceof IntegerProperty || property instanceof LongProperty) {
             BaseIntegerProperty prop = (BaseIntegerProperty) property;
