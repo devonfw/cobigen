@@ -2,6 +2,8 @@ package com.capgemini.cobigen.eclipse.generator.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -73,15 +76,24 @@ public class XmlGeneratorWrapper extends CobiGenWrapper {
                     Document domDocument = XmlUtil.parseXmlStreamToDom(stream);
                     firstTriggers = cobiGen.getMatchingTriggerIds(domDocument);
                 } catch (CoreException e) {
-                    throw new InvalidInputException("An eclipse internal exception occured! ", e);
+                    // throw new InvalidInputException("An eclipse internal exception occured! ", e);
                 } catch (IOException e) {
-                    throw new InvalidInputException("The file " + ((IFile) tmp).getName() + " could not be read!", e);
+                    // throw new InvalidInputException("The file " + ((IFile) tmp).getName() + " could not be
+                    // read!", e);
                 } catch (ParserConfigurationException e) {
-                    throw new InvalidInputException("The file " + ((IFile) tmp).getName()
-                        + " could not be parsed, because of an internal configuration error!", e);
+                    // throw new InvalidInputException("The file " + ((IFile) tmp).getName()
+                    // + " could not be parsed, because of an internal configuration error!", e);
                 } catch (SAXException e) {
-                    throw new InvalidInputException("The contents of the file " + ((IFile) tmp).getName()
-                        + " could not be detected as an instance of any CobiGen supported input language.");
+                    // throw new InvalidInputException("The contents of the file " + ((IFile) tmp).getName()
+                    // + " could not be detected as an instance of any CobiGen supported input language.");
+                }
+
+                try {
+                    Object openAPIFile = cobiGen.read("openapi", Paths.get(((IFile) tmp).getLocationURI()),
+                        Charset.forName(((IFile) tmp).getCharset()));
+                    firstTriggers = cobiGen.getMatchingTriggerIds(openAPIFile);
+                } catch (InputReaderException | CoreException e) {
+                    throw new InvalidInputException("One Input could not be processed: " + tmp.toString(), e);
                 }
             } else {
                 throw new InvalidInputException(

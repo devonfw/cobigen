@@ -150,11 +150,10 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                     IPackageFragment packageFragment = (IPackageFragment) tmp;
                     Object packageFolder = null;
                     try {
-                        packageFolder =
-                            cobiGen.read("java",
-                                Paths.get(packageFragment.getCorrespondingResource().getRawLocationURI()),
-                                Charsets.UTF_8, packageFragment.getElementName(),
-                                ClassLoaderUtil.getProjectClassLoader(((IPackageFragment) tmp).getJavaProject()));
+                        packageFolder = cobiGen.read("java",
+                            Paths.get(packageFragment.getCorrespondingResource().getRawLocationURI()), Charsets.UTF_8,
+                            packageFragment.getElementName(),
+                            ClassLoaderUtil.getProjectClassLoader(((IPackageFragment) tmp).getJavaProject()));
                     } catch (InputReaderException | MalformedURLException | CoreException e) {
                         throw new InvalidInputException("One Input could not be processed: " + tmp.toString(), e);
                     }
@@ -164,7 +163,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                         "You selected at least one input, which type is currently not supported as input for generation. "
                             + "Please choose a different one or read the CobiGen documentation for more details.");
                 }
-
                 if (uniqueSourceSelected && selection.size() > 1) {
                     throw new InvalidInputException(
                         "You selected at least one input, which type is currently not supported for batch processing.\n "
@@ -174,7 +172,6 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
         } finally {
             LOG.debug("Ended checking selection validity for the use as Java input.");
         }
-
         return firstTriggers != null && !firstTriggers.isEmpty();
     }
 
@@ -196,19 +193,19 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
             type = EclipseJavaModelUtil.getJavaClassType(cu);
             return cobiGen.getMatchingTriggerIds(classLoader.loadClass(type.getFullyQualifiedName()));
         } catch (MalformedURLException e) {
-            throw new InvalidInputException("Error while retrieving the project's ('"
-                + cu.getJavaProject().getElementName() + "') classloader.", e);
+            throw new InvalidInputException(
+                "Error while retrieving the project's ('" + cu.getJavaProject().getElementName() + "') classloader.",
+                e);
         } catch (CoreException e) {
             throw new InvalidInputException("An eclipse internal exception occured!", e);
         } catch (ClassNotFoundException e) {
             throw new InvalidInputException("The class '" + type.getFullyQualifiedName() + "' could not be found. "
                 + "This may be cause of a non-compiling host project of the selected input.", e);
         } catch (UnsupportedClassVersionError e) {
-            throw new InvalidInputException(
-                "Incompatible java version: "
-                    + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
-                    + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
-                    + "Current runtime: " + System.getProperty("java.version"), e);
+            throw new InvalidInputException("Incompatible java version: "
+                + "You have selected a java class, which Java version is higher than the Java runtime your eclipse is running with. "
+                + "Please update your PATH variable to reference the latest Java runtime you are developing for and restart eclipse.\n"
+                + "Current runtime: " + System.getProperty("java.version"), e);
         }
     }
 }

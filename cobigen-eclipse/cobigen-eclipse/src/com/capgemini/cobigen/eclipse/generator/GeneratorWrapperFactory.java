@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.eclipse.generator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,8 +47,8 @@ public class GeneratorWrapperFactory {
      *             if the selection includes non supported input types or is composed in a non supported
      *             combination of inputs.
      */
-    public static CobiGenWrapper createGenerator(IStructuredSelection selection) throws GeneratorCreationException,
-        GeneratorProjectNotExistentException, InvalidInputException {
+    public static CobiGenWrapper createGenerator(IStructuredSelection selection)
+        throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
@@ -60,8 +61,19 @@ public class GeneratorWrapperFactory {
                         JavaInputConverter.convertInput(extractedInputs, CobiGenFactory.getInputInterpreter()));
                 } else if (firstElement instanceof IFile) {
                     LOG.info("Create new CobiGen instance for xml inputs...");
-                    return new XmlGeneratorWrapper(((IFile) firstElement).getProject(),
-                        XmlInputConverter.convertInput(extractedInputs));
+
+                    List<Object> input;
+                    switch (((IFile) firstElement).getFileExtension()) {
+                    case "yaml":
+                        input = new ArrayList<>();
+                        input.add(firstElement);
+                        break;
+                    default:
+                        input = XmlInputConverter.convertInput(extractedInputs);
+                        break;
+                    }
+
+                    return new XmlGeneratorWrapper(((IFile) firstElement).getProject(), input);
                 }
             } catch (CoreException e) {
                 LOG.error("An eclipse internal exception occurred", e);
@@ -109,8 +121,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: "
-                            + ICompilationUnit.class + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: " + ICompilationUnit.class
+                            + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 0;
@@ -123,8 +135,8 @@ public class GeneratorWrapperFactory {
                     initialized = true;
                 } else if (initialized) {
                     throw new InvalidInputException(
-                        "Multiple different inputs have been selected of the following types: "
-                            + IPackageFragment.class + ", " + o.getClass());
+                        "Multiple different inputs have been selected of the following types: " + IPackageFragment.class
+                            + ", " + o.getClass());
                 }
                 if (initialized) {
                     type = 1;
@@ -146,11 +158,10 @@ public class GeneratorWrapperFactory {
                 }
                 //$FALL-THROUGH$
             default:
-                throw new InvalidInputException(
-                    "Your selection contains an object of the type "
-                        + o.getClass().toString()
-                        + ", which is not yet supported to be treated as an input for generation.\n"
-                        + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
+                throw new InvalidInputException("Your selection contains an object of the type "
+                    + o.getClass().toString()
+                    + ", which is not yet supported to be treated as an input for generation.\n"
+                    + "Please adjust your selection to only contain supported objects like Java classes/packages or XML files.");
             }
         }
 
