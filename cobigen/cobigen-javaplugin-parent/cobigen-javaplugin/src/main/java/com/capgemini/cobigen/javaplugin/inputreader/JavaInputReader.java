@@ -410,7 +410,7 @@ public class JavaInputReader implements InputReader {
             if (packageName == null || classLoader == null) {
                 throw new IllegalArgumentException(
                     "Expected packageName:String and classLoader:ClassLoader as additional arguments but was "
-                        + additionalArguments.toString());
+                        + toString(additionalArguments));
             }
 
             return new PackageFolder(path.toUri(), packageName, classLoader);
@@ -445,6 +445,33 @@ public class JavaInputReader implements InputReader {
             } catch (IOException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
             }
+        }
+    }
+
+    /**
+     * Pretty Prints Objects for Logging
+     * @param any
+     *            object.
+     * @return String representation.
+     */
+    private String toString(Object any) {
+        if (any == null) {
+            return "null";
+        }
+        if (any instanceof Object[]) {
+            String result = "[";
+            for (Object o : (Object[]) any) {
+                if ("[".equals(result)) {
+                    result = toString(o);
+                } else {
+                    result = result + ", " + toString(o);
+                }
+            }
+            return result + "]";
+        } else if (Object.class.equals(any.getClass())) {
+            return any.toString();
+        } else {
+            return any.getClass().getName() + "@" + any.toString();
         }
     }
 }
