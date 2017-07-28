@@ -27,7 +27,7 @@ public class ModelConstant {
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String NOTNULL = "NotNull";
+    public static final String REQUIRED = "required";
 
     /**
      * Simple name of the input class ({@link String})
@@ -126,7 +126,7 @@ public class ModelConstant {
      */
     public static final String METHOD_ACCESSIBLE_FIELDS = "methodAccessibleFields";
 
-    public static final String IS_ENTITY = "isEntity";
+    public static final String IS_REFERENCE = "isReference";
 
     public static final String SERVICE_VERSION = "serviceVersion";
 
