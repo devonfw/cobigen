@@ -4,14 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-1.9.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cobigen-tempeng-freemarker-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dozer-5.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker-2.3.23.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-17.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.inject-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.4.jar"/>
