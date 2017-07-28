@@ -16,6 +16,8 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.extension.TextTemplate;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.tempeng.velocity.log.LogChuteDelegate;
+import com.capgemini.cobigen.tempeng.velocity.runtime.resources.NullResourceCach;
+import com.capgemini.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
 
 /**
  *
@@ -44,6 +46,9 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
             new LogChuteDelegate(LoggerFactory.getLogger(VelocityEngine.class)));
         engine.setProperty(RuntimeConstants.ENCODING_DEFAULT, "UTF-8");
         engine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, new Boolean(false));
+        engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, ResourceManagerDelegate.class.getName());
+        engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, new Boolean(true));
+        engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CACHE_CLASS, NullResourceCach.class.getName());
 
     }
 
