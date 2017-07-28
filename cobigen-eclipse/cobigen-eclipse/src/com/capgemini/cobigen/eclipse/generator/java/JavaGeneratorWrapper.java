@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,8 +153,9 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
                         packageFolder =
                             cobiGen.read("java",
                                 Paths.get(packageFragment.getCorrespondingResource().getRawLocationURI()),
-                                Charsets.UTF_8, packageFragment.getElementName(), super.getInputClassloader());
-                    } catch (InputReaderException | JavaModelException e) {
+                                Charsets.UTF_8, packageFragment.getElementName(),
+                                ClassLoaderUtil.getProjectClassLoader(((IPackageFragment) tmp).getJavaProject()));
+                    } catch (InputReaderException | MalformedURLException | CoreException e) {
                         throw new InvalidInputException("One Input could not be processed: " + tmp.toString(), e);
                     }
                     firstTriggers = cobiGen.getMatchingTriggerIds(packageFolder);
