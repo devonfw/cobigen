@@ -24,7 +24,7 @@ public class InputValidator {
             throw new IllegalArgumentException("Invalid trigger == null");
         }
         TriggerInterpreter interpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-        validateTriggerInterpreterInternal(interpreter, trigger.getType());
+        validateTriggerInterpreter(interpreter, trigger.getType());
     }
 
     /**
@@ -38,17 +38,16 @@ public class InputValidator {
         if (trigger == null) {
             throw new IllegalArgumentException("Invalid trigger == null");
         }
-        validateTriggerInterpreterInternal(triggerInterpreter, trigger.getType());
+        validateTriggerInterpreter(triggerInterpreter, trigger.getType());
     }
 
     /**
      * Validates an {@link TriggerInterpreter} for null references
      * @param triggerInterpreter
      *            to be validated
-     * @author mbrunnli (08.04.2014)
      */
     public static void validateTriggerInterpreter(TriggerInterpreter triggerInterpreter) {
-        validateTriggerInterpreterInternal(triggerInterpreter, null);
+        validateTriggerInterpreter(triggerInterpreter, (String) null);
     }
 
     /**
@@ -57,12 +56,12 @@ public class InputValidator {
      *            to be validated
      * @param triggerType
      *            to be validated
-     * @author mbrunnli (08.04.2014)
      */
-    private static void validateTriggerInterpreterInternal(TriggerInterpreter triggerInterpreter, String triggerType) {
+    public static void validateTriggerInterpreter(TriggerInterpreter triggerInterpreter, String triggerType) {
         if (triggerInterpreter == null) {
-            throw new InvalidConfigurationException("No TriggerInterpreter "
-                + (triggerType != null ? "for type '" + triggerType + "' " : "") + "found/provided!");
+            throw new InvalidConfigurationException(
+                "No TriggerInterpreter " + (triggerType != null ? "for type '" + triggerType + "' " : "")
+                    + " provided! You may miss a plug-in.");
         }
 
         if (triggerInterpreter.getInputReader() == null) {
@@ -75,7 +74,6 @@ public class InputValidator {
      * Validates all given input objects for null references
      * @param objects
      *            to be validated
-     * @author mbrunnli (10.04.2014)
      */
     public static void validateInputsUnequalNull(Object... objects) {
         for (Object o : objects) {
