@@ -20,7 +20,7 @@ import com.capgemini.cobigen.tempeng.velocity.runtime.resources.NullResourceCach
 import com.capgemini.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
 
 /**
- *
+ * Template engine for Apache Velocity
  */
 public class VelocityTemplateEngine implements TextTemplateEngine {
 
@@ -36,9 +36,14 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
     private VelocityEngine engine;
 
     /**
-     * Constructor that sets the most common properties for the Velocity engine<br/>
-     * <list><li>A slf4j based logger</li> <li>Default encoding of UTF-8</li> <li>No Cache</li> <li>
-     * FileResourceLoader class by default</li></list>
+     * Constructor that sets the most common properties for the Velocity engine<br>
+     *
+     * <ul>
+     * <li>A slf4j based logger</li>
+     * <li>Default encoding of UTF-8</li>
+     * <li>No Cache</li>
+     * <li>FileResourceLoader class by default</li>
+     * </ul>
      */
     public VelocityTemplateEngine() {
         engine = new VelocityEngine();
@@ -83,8 +88,8 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
                 throw new CobiGenRuntimeException("An error occurred while generating the template "
                     + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
             } catch (Throwable e) {
-                throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath(), e);
+                throw new CobiGenRuntimeException(
+                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
             }
         }
 
