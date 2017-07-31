@@ -98,6 +98,82 @@
     </pluginManagement>
   </build>
 
+  <profiles>
+    <profile>
+      <id>p2Bundle</id> <!-- Bundle and P2 -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+              <archive>
+                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>3.3.0</version>
+            <executions>
+              <execution>
+                <id>bundle-manifest</id>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>manifest</goal>
+                </goals>
+              </execution>
+            </executions>
+            <extensions>true</extensions>
+            <configuration>
+              <instructions>
+                <Fragment-Host>com.capgemini.cobigen.eclipse</Fragment-Host>
+                <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                <Embed-Dependency>*;scope=!test</Embed-Dependency>
+                <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
+                <Embed-Transitive>true</Embed-Transitive>
+                <Bundle-Name>${project.name}</Bundle-Name>
+                <Include-Resource>
+                  {maven-resources}, {maven-dependencies}
+                </Include-Resource>
+                <niceManifest>true</niceManifest>
+                <Import-Package></Import-Package>
+                <Export-Package></Export-Package>
+              </instructions>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.reficio</groupId>
+            <artifactId>p2-maven-plugin</artifactId>
+            <version>1.2.0</version>
+            <executions>
+              <execution>
+                <id>default-cli</id>
+                <configuration>
+                  <artifacts>
+                    <artifact>
+                      <id>${project.groupId}:${project.artifactId}:${project.version}</id>
+                      <transitive>false</transitive>
+                    </artifact>
+                  </artifacts>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>reficio</id>
+      <url>http://repo.reficio.org/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <reporting>
     <plugins>
       <plugin>
