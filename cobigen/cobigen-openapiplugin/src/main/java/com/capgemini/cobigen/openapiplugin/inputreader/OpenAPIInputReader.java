@@ -468,6 +468,9 @@ public class OpenAPIInputReader implements InputReader {
         try {
             String contents = new String(Files.readAllBytes(path), inputCharset);
             Swagger swagger = new Swagger20Parser().parse(contents);
+            if (swagger == null) {
+                throw new InputReaderException(path + " is not a valid OpenAPI file");
+            }
             return new OpenAPIFile(path, swagger);
         } catch (IOException e) {
             throw new InputReaderException(
