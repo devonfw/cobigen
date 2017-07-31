@@ -11,16 +11,9 @@ import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 
 /**
- *
+ * Implementation of the CobiGen API for input processing
  */
 public class InputInterpreterImpl implements InputInterpreter {
-
-    /**
-     *
-     */
-    public InputInterpreterImpl() {
-        // Nothing to do here
-    }
 
     @Override
     public List<Object> getInputObjectsRecursively(String type, Object input, Charset inputCharset) {

@@ -141,7 +141,7 @@ public class PluginRegistry {
         if (triggerInterpreter != null) {
             triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
         }
-        InputValidator.validateTriggerInterpreter(triggerInterpreter);
+        InputValidator.validateTriggerInterpreter(triggerInterpreter, triggerType);
         return triggerInterpreter;
     }
 
