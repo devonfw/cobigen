@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.xmlplugin.inputreader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,14 +23,12 @@ import org.xml.sax.SAXException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 
-/**
- * {@link InputReader} for XML files.
- */
+/** {@link InputReader} for XML files. */
 public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof Document) {
+        if (input instanceof Document || input instanceof Path && Files.isRegularFile((Path) input)) {
             return true;
         } else {
             return false;
@@ -174,8 +173,8 @@ public class XmlInputReader implements InputReader {
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         if (!Files.isDirectory(path)) {
-            try {
-                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(Files.newInputStream(path));
+            try (InputStream fileIn = Files.newInputStream(path)) {
+                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(fileIn);
             } catch (SAXException | IOException | ParserConfigurationException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
             }
