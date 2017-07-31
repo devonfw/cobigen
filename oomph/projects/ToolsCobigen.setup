@@ -501,6 +501,7 @@
             id="rc.cloneMaster.win"
             excludedTriggers="STARTUP"
             successor="cli.rc.cloneMaster.win"
+            filter=""
             content="@ECHO OFF&#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.devonfw}&quot;&#xA;&#xA;IF EXIST &quot;tools-cobigen&quot; (&#xA;&#x9;ECHO Folder tools-cobigen already present. Skipping cloning&#xA;) ELSE (&#xA;&#x9;git clone --branch=master %COBIGEN_REPO% tools-cobigen&#xA;)"
             targetURL="${workspace.location.cobigen.master/clone.cmd|uri}"
             encoding="UTF-8"/>
@@ -603,27 +604,61 @@
           xsi:type="setup:CompoundTask"
           name="Maven">
         <setupTask
-            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
-            id="mvn.package.eclipse"
-            excludedTriggers="BOOTSTRAP"
-            directory="${workspace.location/dev_eclipseplugin/cobigen-eclipse}"
-            command="mvn">
-          <argument>eclipse:eclipse</argument>
-          <argument>package</argument>
-          <argument>-U</argument>
-          <argument>-DskipTests</argument>
+            xsi:type="setup:CompoundTask"
+            id="workspace.maven.init.dev.linux"
+            filter="(osgi.os=linux)"
+            name="linux">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="workspace.maven.init.linux"
+              excludedTriggers="BOOTSTRAP"
+              content="WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;if [-d &quot;dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse/lib&quot;];then&#xA;&#x9;echo CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;else&#xA;&#x9;echo Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse&#xA;&#x9;maven initialize&#xA;&#x9;cd $${WS_LOC}&#xA;fi&#xA;&#xA;if [-d &quot;dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse-test/lib&quot;];then&#xA;&#x9;echo CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;else&#xA;&#x9;echo Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse-test&#xA;&#x9;maven initialize&#xA;&#x9;cd $${WS_LOC}&#xA;fi&#xA;&#xA;if [-f &quot;dev_tsplugin/cobigen/cobigen-tsplugin/target/classes/tsmerger.js&quot;];then&#xA;&#x9;echo CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;else&#xA;&#x9;echo initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd dev_tsplugin/cobigen/cobigen-tsplugin&#xA;&#x9;maven process-resources&#xA;&#x9;cd $${WS_LOC}&#xA;fi"
+              targetURL="${workspace.location/maven-init.sh|uri}"
+              encoding="UTF-8">
+            <description>Workspace maven initialization</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.init.linux.chmod"
+              excludedTriggers="STARTUP"
+              successor="workspace.maven.init.linux"
+              directory="${workspace.location}"
+              command="chmod">
+            <argument>+x</argument>
+            <argument>maven-init.sh</argument>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.init.linux.exec"
+              excludedTriggers="BOOTSTRAP"
+              predecessor="cmp.ws.init.linux.chmod"
+              directory="${workspace.location}"
+              command="maven-init.sh"/>
         </setupTask>
         <setupTask
-            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
-            id="mvn.install.ts"
-            excludedTriggers="BOOTSTRAP"
-            successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.3"
-            directory="${workspace.location/dev_tsplugin/cobigen/cobigen-tsplugin}"
-            command="mvn">
-          <argument>clean</argument>
-          <argument>install</argument>
-          <argument>-DskipTests</argument>
+            xsi:type="setup:CompoundTask"
+            id="workspace.maven.init.dev.win"
+            filter="(os.name=Windows*)"
+            name="windows">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="workspace.maven.init.win"
+              excludedTriggers="BOOTSTRAP"
+              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXISTS &quot;dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse/lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse-test/lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse-test&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;dev_tsplugin/cobigen/cobigen-tsplugin/target/classes/tsmerger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd dev_tsplugin/cobigen/cobigen-tsplugin&#xA;&#x9;maven process-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
+              targetURL="${workspace.location/maven-init.cmd|uri}"
+              encoding="UTF-8">
+            <description>Workspace maven initialization</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.init.win.exec"
+              excludedTriggers="BOOTSTRAP"
+              predecessor="workspace.maven.init.win"
+              directory="${workspace.location}"
+              command="maven-init.cmd"/>
+          <description></description>
         </setupTask>
+        <description>Maven initialization tasks for workspace</description>
       </setupTask>
       <setupTask
           xsi:type="setup:ResourceCreationTask"
@@ -686,17 +721,7 @@
           </predicate>
         </sourceLocator>
         <sourceLocator
-            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin-parent/cobigen-javaplugin}"
-            locateNestedProjects="true">
-          <predicate
-              xsi:type="predicates:NotPredicate">
-            <operand
-                xsi:type="predicates:NamePredicate"
-                pattern=".*-parent"/>
-          </predicate>
-        </sourceLocator>
-        <sourceLocator
-            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin-parent/cobigen-javaplugin-model}"
+            rootFolder="${workspace.location/dev_javaplugin/cobigen/cobigen-javaplugin-parent}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:NotPredicate">
@@ -791,6 +816,25 @@
   </stream>
   <stream name="master">
     <setupTask
+        xsi:type="setup:VariableTask"
+        excludedTriggers="STARTUP MANUAL"
+        name="workspace.location.install"
+        defaultValue="cobigen-master"
+        storageURI="scope://Installation"
+        label="Workspace for Project Checkout"/>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="targlet.source.location"
+        value="${workspace.location/tools-cobigen}"
+        storageURI="scope://Workspace"/>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        name="main.branch"
+        value="${workspace.location}"
+        defaultValue="cobigen-master"
+        storageURI="scope://Installation"
+        label="Folder name for main branch"/>
+    <setupTask
         xsi:type="setup:CompoundTask"
         id="cmp.git.clone.master.man"
         name="Git Clone Master">
@@ -860,76 +904,105 @@
           xsi:type="setup:CompoundTask"
           name="Maven">
         <setupTask
-            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
-            id="mvn.package.eclipse.master"
-            excludedTriggers="BOOTSTRAP"
-            directory="${workspace.location/tools-cobigen/cobigen-eclipse}"
-            command="mvn">
-          <argument>eclipse:eclipse</argument>
-          <argument>package</argument>
-          <argument>-U</argument>
-          <argument>-DskipTests</argument>
+            xsi:type="setup:CompoundTask"
+            id="workspace.maven.init.master.linux"
+            filter="(osgi.os=linux)"
+            name="linux">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="workspace.master.maven.init.linux"
+              excludedTriggers="BOOTSTRAP"
+              content="WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;if [-d &quot;tools-cobigen/cobigen-eclipse/cobigen-eclipse/lib&quot;];then&#xA;&#x9;echo CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;else&#xA;&#x9;echo Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd tools-cobigen/cobigen-eclipse/cobigen-eclipse&#xA;&#x9;maven initialize&#xA;&#x9;cd $${WS_LOC}&#xA;fi&#xA;&#xA;if [-d &quot;tools-cobigen/cobigen-eclipse/cobigen-eclipse-test/lib&quot;];then&#xA;&#x9;echo CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;else&#xA;&#x9;echo Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd tools-cobigen/cobigen-eclipse/cobigen-eclipse-test&#xA;&#x9;maven initialize&#xA;&#x9;cd $${WS_LOC}&#xA;fi&#xA;&#xA;if [-f &quot;tools-cobigen/cobigen/cobigen-tsplugin/target/classes/tsmerger.js&quot;];then&#xA;&#x9;echo CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;else&#xA;&#x9;echo initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd tools-cobigen/cobigen/cobigen-tsplugin&#xA;&#x9;maven process-resources&#xA;&#x9;cd $${WS_LOC}&#xA;fi"
+              targetURL="${workspace.location/maven-init.sh|uri}"
+              encoding="UTF-8">
+            <description>Workspace maven initialization</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.master.init.linux.chmod"
+              excludedTriggers="STARTUP"
+              successor="workspace.master.maven.init.linux"
+              directory="${workspace.location}"
+              command="chmod">
+            <argument>+x</argument>
+            <argument>maven-init.sh</argument>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.master.init.linux.exec"
+              excludedTriggers="BOOTSTRAP"
+              predecessor="cmp.ws.master.init.linux.chmod"
+              directory="${workspace.location}"
+              command="maven-init.sh"/>
         </setupTask>
         <setupTask
-            xsi:type="com.github.maybeec.oomph.task_1:cliTask"
-            id="mvn.install.ts.master"
-            excludedTriggers="BOOTSTRAP"
-            successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.3"
-            directory="${workspace.location/tools-cobigen/cobigen/cobigen-tsplugin}"
-            command="mvn">
-          <argument>clean</argument>
-          <argument>install</argument>
-          <argument>-DskipTests</argument>
+            xsi:type="setup:CompoundTask"
+            id="workspace.maven.init.master.win"
+            filter="(os.name=Windows*)"
+            name="windows">
+          <setupTask
+              xsi:type="setup:ResourceCreationTask"
+              id="workspace.master.maven.init.win"
+              excludedTriggers="BOOTSTRAP"
+              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXISTS &quot;tools-cobigen/cobigen-eclipse/cobigen-eclipse/lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd tools-cobigen/cobigen-eclipse/cobigen-eclipse&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen/cobigen-eclipse/cobigen-eclipse-test/lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd tools-cobigen/cobigen-eclipse/cobigen-eclipse-test&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen/cobigen/cobigen-tsplugin/target/classes/tsmerger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd tools-cobigen/cobigen/cobigen-tsplugin&#xA;&#x9;maven process-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
+              targetURL="${workspace.location/maven-init.cmd|uri}"
+              encoding="UTF-8">
+            <description>Workspace maven initialization</description>
+          </setupTask>
+          <setupTask
+              xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+              id="cmp.ws.master.init.win.exec"
+              excludedTriggers="BOOTSTRAP"
+              predecessor="workspace.master.maven.init.win"
+              directory="${workspace.location}"
+              command="maven-init.cmd"/>
+          <description></description>
         </setupTask>
+        <description>Maven initialization tasks for workspace</description>
       </setupTask>
       <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="resource.creation.project.master"
+          excludedTriggers="BOOTSTRAP"
+          successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.2"
+          content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;projectDescription>&#xA;&#x9;&lt;name>gh-pages&lt;/name>&#xA;&#x9;&lt;comment>&lt;/comment>&#xA;&#x9;&lt;natures>&#xA;&#x9;&#x9;&lt;nature>org.eclipse.wst.common.project.facet.core.nature&lt;/nature>&#xA;&#x9;&lt;/natures>&#xA;&lt;/projectDescription>"
+          targetURL="${workspace.location/gh-pages/.project|uri}"
+          encoding="UTF-8"/>
+      <setupTask
           xsi:type="projects:ProjectsImportTask"
-          predecessor="//@streams[name='master']/@setupTasks.1/@setupTasks.0"
-          successor="//@streams[name='master']/@setupTasks.1/@setupTasks.2">
+          successor="//@streams[name='master']/@setupTasks.4/@setupTasks.3">
         <sourceLocator
             rootFolder="${workspace.location/tools-cobigen/cobigen-eclipse}"
             locateNestedProjects="true">
           <predicate
-              xsi:type="predicates:AndPredicate">
-            <operand
-                xsi:type="predicates:NamePredicate"
-                pattern="(.*)eclipse(.*)"/>
-          </predicate>
+              xsi:type="predicates:NamePredicate"
+              pattern="cobigen-eclipse.*"/>
         </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/gh-pages}"/>
       </setupTask>
       <setupTask
-          xsi:type="maven:MavenImportTask"
-          predecessor="//@streams[name='master']/@setupTasks.1/@setupTasks.0">
+          xsi:type="maven:MavenImportTask">
         <sourceLocator
             rootFolder="${workspace.location/tools-cobigen}">
           <predicate
-              xsi:type="predicates:NotPredicate">
+              xsi:type="predicates:AndPredicate">
             <operand
-                xsi:type="predicates:NamePredicate"
-                pattern="(.*)eclipse(.*)"/>
+                xsi:type="predicates:NotPredicate">
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="(.*)eclipse(.*)"/>
+            </operand>
+            <operand
+                xsi:type="predicates:NotPredicate">
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern=".*-parent"/>
+            </operand>
           </predicate>
         </sourceLocator>
       </setupTask>
     </setupTask>
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="targlet.source.location"
-        value="${workspace.location/tools-cobigen}"
-        storageURI="scope://Workspace"/>
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="main.branch"
-        value="${workspace.location}"
-        defaultValue="cobigen-master"
-        storageURI="scope://Installation"
-        label="Folder name for main branch"/>
-    <setupTask
-        xsi:type="setup:VariableTask"
-        excludedTriggers="STARTUP MANUAL"
-        name="workspace.location.install"
-        defaultValue="cobigen-master"
-        storageURI="scope://Installation"
-        label="Workspace for Project Checkout"/>
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
