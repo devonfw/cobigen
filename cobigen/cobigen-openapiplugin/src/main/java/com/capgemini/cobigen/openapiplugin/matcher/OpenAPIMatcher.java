@@ -42,7 +42,9 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
             switch (matcherType) {
             case ELEMENT:
-                return matcher.getTarget().getClass().getSimpleName().equals(matcher.getValue());
+                // to lower case to prevent from simple error cases
+                return matcher.getTarget().getClass().getSimpleName().toLowerCase()
+                    .equals(matcher.getValue().toLowerCase());
             default:
                 break;
             }
