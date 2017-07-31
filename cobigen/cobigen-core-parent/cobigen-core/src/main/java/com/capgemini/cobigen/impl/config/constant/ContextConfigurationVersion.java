@@ -1,9 +1,8 @@
 package com.capgemini.cobigen.impl.config.constant;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Version steps of the templates configuration.
@@ -14,7 +13,7 @@ public enum ContextConfigurationVersion {
     /**
      * Initial release.
      */
-    v1_0(1f),
+    v1_0(1f, false),
 
     /**
      * ChangeLog:
@@ -23,7 +22,7 @@ public enum ContextConfigurationVersion {
      * <li>new accumulationType attribute added for matchers (#93)</li>
      * </ul>
      */
-    v2_0(2f),
+    v2_0(2f, false),
 
     /**
      * ChangeLog:
@@ -31,19 +30,24 @@ public enum ContextConfigurationVersion {
      * <li>target namespace changed</li>
      * </ul>
      */
-    v2_1(2.1f);
+    v2_1(2.1f, false);
 
     /** Comparable float representation of the version number. */
     private float floatRepresentation;
+
+    /** States whether the configuration is backward compatible to the previous version */
+    private boolean backwardCompatible;
 
     /**
      * The constructor.
      * @param floatRepresentation
      *            comparable float representation of the version number.
-     * @author mbrunnli (May 17, 2016)
+     * @param backwardCompatible
+     *            whether the configuration is backward compatible to the previous version
      */
-    private ContextConfigurationVersion(float floatRepresentation) {
+    private ContextConfigurationVersion(float floatRepresentation, boolean backwardCompatible) {
         this.floatRepresentation = floatRepresentation;
+        this.backwardCompatible = backwardCompatible;
     }
 
     /**
@@ -55,9 +59,15 @@ public enum ContextConfigurationVersion {
     }
 
     /**
+     * @return whether the configuration is backward compatible to the previous version.
+     */
+    public boolean isBackwardCompatible() {
+        return backwardCompatible;
+    }
+
+    /**
      * Get latest context configuration floatRepresentation supported by this CobiGen release.
      * @return latest context configuration floatRepresentation supported by this CobiGen release.
-     * @author mbrunnli (Jun 24, 2015)
      */
     public static ContextConfigurationVersion getLatest() {
         return values()[values().length - 1];
@@ -66,14 +76,12 @@ public enum ContextConfigurationVersion {
     /**
      * Returns the sorted float representations of the enum's values.
      * @return a sorted List
-     * @author mbrunnli (May 17, 2016)
      */
-    public static List<Float> valuesSorted() {
-        List<Float> floatVersions = Lists.newArrayListWithExpectedSize(values().length);
+    public static Map<Float, Boolean> valuesSorted() {
+        Map<Float, Boolean> floatVersions = Maps.newTreeMap();
         for (ContextConfigurationVersion v : values()) {
-            floatVersions.add(v.getFloatRepresentation());
+            floatVersions.put(v.getFloatRepresentation(), v.isBackwardCompatible());
         }
-        Collections.sort(floatVersions);
         return floatVersions;
     }
 

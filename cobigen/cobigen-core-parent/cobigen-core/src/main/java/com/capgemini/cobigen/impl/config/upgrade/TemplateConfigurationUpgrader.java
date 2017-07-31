@@ -34,7 +34,7 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
 
         switch (source) {
         case v1_2: // to v2.1
-
+        {
             DozerBeanMapper mapper = new DozerBeanMapper();
             try (InputStream stream =
                 getClass().getResourceAsStream("/dozer/config/upgrade/templatesConfiguration-v1.2-v2.1.xml")) {
@@ -46,7 +46,7 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             upgradedConfig.setVersion(new BigDecimal("2.1"));
 
             result.setResultConfigurationJaxbRootNode(upgradedConfig);
-
+        }
             break;
         default:
             throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source

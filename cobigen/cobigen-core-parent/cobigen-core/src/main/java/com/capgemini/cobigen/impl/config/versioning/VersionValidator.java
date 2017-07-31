@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.impl.config.versioning;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class VersionValidator {
     private String cobiGenVersion;
 
     /** Version steps of the configuration */
-    private List<Float> versionSteps;
+    private Map<Float, Boolean> versionSteps;
 
     /** Configuration name (just for logging) */
     private String configName;
@@ -86,9 +87,10 @@ public class VersionValidator {
                 + " is unknown to the current version of CobiGen '" + currentCobiGenVersionStr
                 + "'. No automatic upgrade could be started. Please check your configuration or upgrade CobiGen first.");
         } else { // configVersion < currentCobiGenVersion
-            for (Float versionStep : versionSteps) {
-                // If there exists a version step (breaking change) in between, throw an error
-                if (configVersion < versionStep && versionStep <= currentCobiGenVersion) {
+            for (Entry<Float, Boolean> versionStep : versionSteps.entrySet()) {
+                // newer version step which is not backward compatible
+                if (versionStep.getKey() > configVersion && versionStep.getKey() <= currentCobiGenVersion
+                    && !versionStep.getValue()) {
                     LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", configName,
                         currentCobiGenVersionStr, configName, configVersion);
                     throw new InvalidConfigurationException("The " + configName + " with version '" + configVersion
