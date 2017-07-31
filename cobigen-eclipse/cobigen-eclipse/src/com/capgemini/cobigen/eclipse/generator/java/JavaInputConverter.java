@@ -46,10 +46,9 @@ public class JavaInputConverter {
             if (elem instanceof IPackageFragment) {
                 try {
                     IPackageFragment frag = (IPackageFragment) elem;
-                    Object packageFolder =
-                        inputInterpreter.read("java", Paths.get(frag.getCorrespondingResource().getLocationURI()),
-                            Charsets.UTF_8, frag.getElementName(),
-                            ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
+                    Object packageFolder = inputInterpreter.read("java",
+                        Paths.get(frag.getCorrespondingResource().getLocationURI()), Charsets.UTF_8,
+                        frag.getElementName(), ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
                     throw new GeneratorCreationException(
@@ -68,19 +67,17 @@ public class JavaInputConverter {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
                         Class<?> loadedClass = projectClassLoader.loadClass(rootType.getFullyQualifiedName());
-                        Object[] inputSourceAndClass =
-                            new Object[] {
-                                loadedClass,
-                                inputInterpreter
-                                    .read("java", Paths.get(((ICompilationUnit) elem).getCorrespondingResource()
-                                        .getRawLocationURI()), Charsets.UTF_8, projectClassLoader) };
+                        Object[] inputSourceAndClass = new Object[] { loadedClass,
+                            inputInterpreter.read("java",
+                                Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
+                                Charsets.UTF_8, projectClassLoader) };
                         convertedInputs.add(inputSourceAndClass);
                     } catch (MalformedURLException e) {
                         throw new GeneratorCreationException("An internal exception occurred while loading Java class "
                             + rootType.getFullyQualifiedName(), e);
                     } catch (ClassNotFoundException e) {
-                        throw new GeneratorCreationException("Could not instantiate Java class "
-                            + rootType.getFullyQualifiedName(), e);
+                        throw new GeneratorCreationException(
+                            "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     } catch (InputReaderException e) {
                         throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
                     }

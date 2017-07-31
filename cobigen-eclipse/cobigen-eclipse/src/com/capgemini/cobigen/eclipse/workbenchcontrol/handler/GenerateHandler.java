@@ -65,7 +65,7 @@ public class GenerateHandler extends AbstractHandler {
                     return null;
                 }
 
-                if (!generator.isValidInput((IStructuredSelection) sel)) {
+                if (!generator.isValidInput()) {
                     MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
                         "Your current selection is not valid as input for any generation purpose. "
                             + "Please find the specification of valid inputs in the context configuration ('"
@@ -91,6 +91,7 @@ public class GenerateHandler extends AbstractHandler {
 
             } catch (InvalidConfigurationException e) {
                 openInvalidConfigurationErrorDialog(e);
+                LOG.warn("Invalid configuration.", e);
             } catch (CobiGenRuntimeException e) {
                 PlatformUIUtil.openErrorDialog(e.getMessage(), e);
                 LOG.error("CobiGen Error: {}", e.getMessage(), e);
@@ -122,10 +123,8 @@ public class GenerateHandler extends AbstractHandler {
      * Opens up a message dialog for displaying further guidance on context configuration issues.
      * @param e
      *            {@link InvalidConfigurationException} occurred
-     * @author mbrunnli (Jan 11, 2016)
      */
     private void openInvalidConfigurationErrorDialog(InvalidConfigurationException e) {
-        LOG.warn("Generate command triggered with invalid configuration.", e);
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), "Invalid context configuration!", null,
                 "Any context/templates configuration has been changed into an invalid state "
