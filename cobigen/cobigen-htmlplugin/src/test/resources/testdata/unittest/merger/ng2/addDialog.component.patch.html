@@ -1,0 +1,11 @@
+<h1 md-dialog-title>{{title}}</h1>
+<form id="addDialog" #dialogForm = "ngForm">
+    <md-input-container style="width:100%;">
+        <input md-input name = "newField" [placeholder]= "'datagrid.columns.newField' | translate" [(ngModel)] = "item.newField" required>
+    </md-input-container>
+
+    <md-dialog-actions>
+        <button type = "button" md-button md-dialog-close>{{'buttons.cancel' | translate}}</button>
+        <button type = "button" md-button [disabled] = "!dialogForm.form.valid" (click)="dialogRef.close(item)"> {{'buttons.save' | translate}} </button>
+    </md-dialog-actions>
+</form>

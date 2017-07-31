@@ -6,6 +6,7 @@
  */
 package com.capgemini.cobigen.javaplugin.merger.libextension;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -381,7 +382,29 @@ public class CustomModelWriter implements ModelWriter {
                     buffer.write(entry.getKey());
                     buffer.write('=');
                 }
-                buffer.write(entry.getValue().toString());
+
+                if (entry.getValue().getParameterValue() instanceof JavaAnnotation) {
+                    writeAnnotation((JavaAnnotation) entry.getValue().getParameterValue());
+                } else if (entry.getValue().getParameterValue() instanceof Collection<?>) {
+                    Collection<?> annotations = (Collection<?>) entry.getValue().getParameterValue();
+                    Object[] a = annotations.toArray();
+                    buffer.write("{");
+                    for (int i = 0; i < annotations.toArray().length; i++) {
+                        if (a[i] instanceof JavaAnnotation) {
+                            writeAnnotation((JavaAnnotation) a[i]);
+                        } else {
+                            if (i > 0) {
+                                buffer.write(", " + a[i].toString());
+                            } else {
+                                buffer.write(a[i].toString());
+                            }
+                        }
+                    }
+                    buffer.write("}");
+                } else {
+                    buffer.write(entry.getValue().toString());
+                }
+
                 if (iterator.hasNext()) {
                     buffer.write(',');
                     buffer.newline();

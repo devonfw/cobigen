@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-core-api</artifactId>
   <name>CobiGen Core - API</name>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
   <packaging>jar</packaging>
 
   <parent>
