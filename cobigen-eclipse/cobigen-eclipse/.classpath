@@ -18,7 +18,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core-7.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/qdox-2.0-M3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-4.1.0-SNAPSHOT.jar" sourcepath="/cobigen-core"/>
 	<classpathentry exported="true" kind="lib" path="lib/cobigen-core-api-4.1.0-SNAPSHOT.jar"/>
