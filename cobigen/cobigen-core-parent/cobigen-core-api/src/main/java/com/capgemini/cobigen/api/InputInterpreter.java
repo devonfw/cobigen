@@ -8,36 +8,41 @@ import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 
 /**
- * The InputProcessor is responsible for
+ * The implements operations for reading or processing inputs.
  */
 public interface InputInterpreter {
 
     /**
-     * Will return the set of combined input objects if the given input combines multiple input objects
-     * @param type
-     *            of the input. Used to resolve the input reader for this input
+     * Checks whether there is at least one input reader, which interprets the given input as combined input.
+     * @param input
+     *            object
+     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
+     *         combined input,<code>false</code>, otherwise
+     */
+    public boolean combinesMultipleInputs(Object input);
+
+    /**
+     * Determines the set of input objects derived from the given container input recursively
      * @param input
      *            the combined input object
      * @param inputCharset
      *            to be used for reading new inputs
      * @return a list of input objects, the generation should be triggered for each.
      */
-    public List<Object> getInputObjectsRecursively(String type, Object input, Charset inputCharset);
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset);
 
     /**
-     * Will return the set of combined input objects if the given input combines multiple input objects
-     * @param type
-     *            of the input. Used to resolve the input reader for this input
+     * Determines the set of input objects derived from the given container input
      * @param input
      *            the combined input object
      * @param inputCharset
      *            to be used for reading new inputs
      * @return a list of input objects, the generation should be triggered for each.
      */
-    public List<Object> getInputObjects(String type, Object input, Charset inputCharset);
+    public List<Object> getInputObjects(Object input, Charset inputCharset);
 
     /**
-     * Reads the content at a path via a fitting {@link InputReader} and returns a cobigen compliant input
+     * Reads the content at a path via a fitting {@link InputReader} and returns a CobiGen compliant input
      * @param type
      *            of the input to be read. Is used to resolve a fitting InputReader
      * @param path

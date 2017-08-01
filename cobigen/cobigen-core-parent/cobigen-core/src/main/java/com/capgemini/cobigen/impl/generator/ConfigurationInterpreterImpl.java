@@ -97,17 +97,6 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         return templates;
     }
 
-    @Cached
-    @Override
-    public boolean combinesMultipleInputs(Object input) {
-        List<Trigger> matchingTriggers = getMatchingTriggers(input);
-        for (Trigger trigger : matchingTriggers) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
-        }
-        return false;
-    }
-
     @Override
     public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
@@ -164,7 +153,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      *            object
      * @return the {@link List} of matching {@link Trigger}s
      */
-    private List<Trigger> getMatchingTriggers(Object matcherInput) {
+    List<Trigger> getMatchingTriggers(Object matcherInput) {
 
         LOG.debug("Retrieve matching triggers.");
         List<Trigger> matchingTrigger = Lists.newLinkedList();
