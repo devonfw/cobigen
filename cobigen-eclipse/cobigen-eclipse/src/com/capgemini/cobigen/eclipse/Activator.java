@@ -1,7 +1,5 @@
 package com.capgemini.cobigen.eclipse;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -14,12 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
-import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.workbenchcontrol.ConfigurationProjectListener;
-import com.capgemini.cobigen.impl.PluginRegistry;
-import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -61,30 +55,6 @@ public class Activator extends AbstractUIPlugin {
         super.start(context);
         plugin = this;
 
-        Iterator<GeneratorPluginActivator> pluginIterator =
-            ServiceLoader.load(GeneratorPluginActivator.class).iterator();
-        if (pluginIterator.hasNext()) {
-            LOG.info("Loading Plugins");
-        } else {
-            LOG.error("No Plugins Found!");
-        }
-        while (pluginIterator.hasNext()) {
-            GeneratorPluginActivator loadedPlugin = pluginIterator.next();
-            LOG.debug(" * {} found", loadedPlugin.getClass().getName());
-            PluginRegistry.loadPlugin(loadedPlugin.getClass());
-        }
-        Iterator<TextTemplateEngine> tempEngineIterator = ServiceLoader.load(TextTemplateEngine.class).iterator();
-        if (tempEngineIterator.hasNext()) {
-            LOG.info("Loading Plugins");
-        } else {
-            LOG.error("No Plugins Found!");
-        }
-        while (tempEngineIterator.hasNext()) {
-            TextTemplateEngine loadedPlugin = tempEngineIterator.next();
-            LOG.debug(" * {} found", loadedPlugin.getClass().getName());
-            TemplateEngineRegistry.register(loadedPlugin.getClass());
-        }
-
         startConfigurationProjectListener();
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
@@ -103,8 +73,7 @@ public class Activator extends AbstractUIPlugin {
                     if (configurationProjectListenerStarted) {
                         return;
                     }
-                    ResourcesPlugin.getWorkspace().addResourceChangeListener(
-                        configurationProjectListener,
+                    ResourcesPlugin.getWorkspace().addResourceChangeListener(configurationProjectListener,
                         IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.POST_BUILD
                             | IResourceChangeEvent.POST_CHANGE);
                     configurationProjectListenerStarted = true;

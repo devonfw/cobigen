@@ -10,7 +10,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +22,10 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationExceptio
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
+import com.capgemini.cobigen.eclipse.generator.generic.FileInputConverter;
+import com.capgemini.cobigen.eclipse.generator.generic.FileInputGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
-import com.capgemini.cobigen.eclipse.generator.xml.FileInputConverter;
-import com.capgemini.cobigen.eclipse.generator.xml.FileInputGeneratorWrapper;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.google.common.collect.Lists;
 
@@ -58,16 +60,31 @@ public class GeneratorWrapperFactory {
         if (extractedInputs.size() > 0) {
             CobiGen cobigen = initializeGenerator();
 
+            Display.getDefault().syncExec(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+
+            ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+            progressMonitor.open();
+            progressMonitor.getProgressMonitor().beginTask("Reading inputs...", 0);
             Object firstElement = extractedInputs.get(0);
-            if (firstElement instanceof IJavaElement) {
-                LOG.info("Create new CobiGen instance for java inputs...");
-                return new JavaInputGeneratorWrapper(cobigen,
-                    ((IJavaElement) firstElement).getJavaProject().getProject(),
-                    JavaInputConverter.convertInput(extractedInputs, CobiGenFactory.getInputInterpreter()));
-            } else if (firstElement instanceof IFile) {
-                LOG.info("Create new CobiGen instance for file inputs...");
-                return new FileInputGeneratorWrapper(cobigen, ((IFile) firstElement).getProject(),
-                    FileInputConverter.convertInput(cobigen, extractedInputs));
+
+            try {
+                if (firstElement instanceof IJavaElement) {
+                    LOG.info("Create new CobiGen instance for java inputs...");
+                    return new JavaInputGeneratorWrapper(cobigen,
+                        ((IJavaElement) firstElement).getJavaProject().getProject(),
+                        JavaInputConverter.convertInput(extractedInputs, cobigen));
+                } else if (firstElement instanceof IFile) {
+                    LOG.info("Create new CobiGen instance for file inputs...");
+                    return new FileInputGeneratorWrapper(cobigen, ((IFile) firstElement).getProject(),
+                        FileInputConverter.convertInput(cobigen, extractedInputs));
+                }
+            } finally {
+                progressMonitor.close();
             }
         }
         return null;
