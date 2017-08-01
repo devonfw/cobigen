@@ -19,11 +19,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -45,20 +43,15 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
-import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.impl.PluginRegistry;
-import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.maven.utils.MojoUtils;
 import com.capgemini.cobigen.maven.validation.InputPreProcessor;
-import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -68,10 +61,6 @@ import com.google.common.collect.Sets;
 @Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.TEST, requiresProject = true,
     defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyCollection = ResolutionScope.TEST)
 public class GenerateMojo extends AbstractMojo {
-
-    static {
-        TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
-    }
 
     /** Maven Project, which is currently built */
     @Component
@@ -116,20 +105,9 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Iterator<GeneratorPluginActivator> pluginIterator =
-            ServiceLoader.load(GeneratorPluginActivator.class).iterator();
-        if (pluginIterator.hasNext()) {
-            getLog().info("Loading Plugins");
-        } else {
-            getLog().error("No Plugins Found!");
-        }
-        while (pluginIterator.hasNext()) {
-            GeneratorPluginActivator loadedPlugin = pluginIterator.next();
-            getLog().debug(" * " + loadedPlugin.getClass().getName() + " found");
-            PluginRegistry.loadPlugin(loadedPlugin.getClass());
-        }
+        CobiGen cobiGen = createCobiGenInstance();
 
-        List<Object> inputs = collectInputs(CobiGenFactory.getInputInterpreter());
+        List<Object> inputs = collectInputs(cobiGen);
         if (inputs.isEmpty()) {
             getLog().info("No inputs specified for generation!");
             getLog().info("");
@@ -140,6 +118,43 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("");
             return;
         }
+
+        List<GenerableArtifact> generableArtifacts = collectIncrements(cobiGen, inputs);
+        generableArtifacts.addAll(collectTemplates(cobiGen, inputs));
+
+        try {
+            for (Object input : inputs) {
+                getLog().debug("Invoke CobiGen for input " + input);
+                List<Class<?>> utilClasses = resolveUtilClasses();
+                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
+                    Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
+                if (!report.isSuccessful()) {
+                    for (Throwable e : report.getErrors()) {
+                        getLog().error(e.getMessage(), e);
+                    }
+                    throw new MojoFailureException("Generation not successfull", report.getErrors().get(0));
+                }
+            }
+        } catch (CobiGenRuntimeException e) {
+            getLog().error(e.getMessage(), e);
+            throw new MojoFailureException(e.getMessage(), e);
+        } catch (MojoFailureException e) {
+            throw e;
+        } catch (Throwable e) {
+            getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
+            throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Creates an instance of {@link CobiGen} based on a given configuration project or configuration jar.
+     * @return the initialized {@link CobiGen} instance
+     * @throws MojoExecutionException
+     *             if the configuration could not be read
+     * @throws MojoFailureException
+     *             if no configuration is given
+     */
+    private CobiGen createCobiGenInstance() throws MojoExecutionException, MojoFailureException {
         CobiGen cobiGen;
         if (configurationFolder != null) {
             try {
@@ -167,31 +182,7 @@ public class GenerateMojo extends AbstractMojo {
                         + " or inject an archive as plugin dependency.");
             }
         }
-        List<GenerableArtifact> generableArtifacts = collectIncrements(cobiGen, inputs);
-        generableArtifacts.addAll(collectTemplates(cobiGen, inputs));
-
-        try {
-            for (Object input : inputs) {
-                getLog().debug("Invoke CobiGen for input " + input);
-                List<Class<?>> utilClasses = resolveUtilClasses();
-                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
-                    Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
-                if (!report.isSuccessful()) {
-                    for (Throwable e : report.getErrors()) {
-                        getLog().error(e.getMessage(), e);
-                    }
-                    throw new MojoFailureException("Generation not successfull", report.getErrors().get(0));
-                }
-            }
-        } catch (CobiGenRuntimeException e) {
-            getLog().error(e.getMessage(), e);
-            throw new MojoFailureException(e.getMessage(), e);
-        } catch (MojoFailureException e) {
-            throw e;
-        } catch (Throwable e) {
-            getLog().error("An error occured while executing CobiGen: " + e.getMessage(), e);
-            throw new MojoFailureException("An error occured while executing CobiGen: " + e.getMessage(), e);
-        }
+        return cobiGen;
     }
 
     /**
@@ -263,6 +254,7 @@ public class GenerateMojo extends AbstractMojo {
             final List<Path> foundPaths = new LinkedList<>();
             try {
                 Files.walkFileTree(configFolder, new SimpleFileVisitor<Path>() {
+
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         if (file.toString().endsWith(".class")) {
@@ -279,7 +271,9 @@ public class GenerateMojo extends AbstractMojo {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-            } catch (IOException e) {
+            } catch (
+
+            IOException e) {
                 getLog().error(e);
             }
 
@@ -294,7 +288,9 @@ public class GenerateMojo extends AbstractMojo {
                 commonParent = commonParent.getParent();
             }
 
-            for (Path path : foundPaths) {
+            for (
+
+            Path path : foundPaths) {
                 try {
                     result.add(loadClassByPath(path, classRealm));
                 } catch (ClassNotFoundException e) {
@@ -310,13 +306,13 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Collects/Converts all inputs from {@link #inputPackages} and {@link #inputFiles} into CobiGen
      * compatible formats
-     * @param inputInterpreter
+     * @param cobigen
      *            to interpret input objects
      * @return the list of CobiGen compatible inputs
      * @throws MojoFailureException
      *             if the project {@link ClassLoader} could not be retrieved
      */
-    private List<Object> collectInputs(InputInterpreter inputInterpreter) throws MojoFailureException {
+    private List<Object> collectInputs(CobiGen cobigen) throws MojoFailureException {
         getLog().debug("Collect inputs...");
         List<Object> inputs = Lists.newLinkedList();
 
@@ -340,8 +336,8 @@ public class GenerateMojo extends AbstractMojo {
                     if (exists(sourcePath) && isReadable(sourcePath) && isDirectory(sourcePath)) {
                         Object packageFolder;
                         try {
-                            packageFolder = inputInterpreter.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8,
-                                inputPackage, cl);
+                            packageFolder =
+                                cobigen.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
                             inputs.add(packageFolder);
                             sourceFound = true;
                         } catch (InputReaderException e) {
@@ -364,7 +360,7 @@ public class GenerateMojo extends AbstractMojo {
         if (inputFiles != null && !inputFiles.isEmpty()) {
             for (File file : inputFiles) {
                 getLog().debug("Resolve file '" + file.toURI().toString() + "'");
-                Object input = InputPreProcessor.process(inputInterpreter, file, cl);
+                Object input = InputPreProcessor.process(cobigen, file, cl);
                 inputs.add(input);
             }
         }
