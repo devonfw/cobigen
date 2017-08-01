@@ -8,7 +8,7 @@
   </parent>
   <artifactId>cobigen-tempeng-velocity</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <name>CobiGen Template Engine Velocity</name>
+  <name>CobiGen - Velocity Template Engine</name>
 
   <properties>
     <skip.deployment>false</skip.deployment>
