@@ -6,18 +6,23 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
+import com.capgemini.cobigen.impl.extension.ServiceLookup;
+import com.capgemini.cobigen.impl.generator.CobiGenImpl;
 import com.capgemini.cobigen.impl.util.FileSystemUtil;
 
 /**
  * CobiGen's Factory to create new instances of {@link CobiGen}.
  */
 public class CobiGenFactory {
+
+    static {
+        ServiceLookup.detectServices();
+    }
 
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
@@ -41,14 +46,6 @@ public class CobiGenFactory {
         }
 
         return ProxyFactory.getProxy(new CobiGenImpl(configurationHolder));
-    }
-
-    /**
-     * Creates and returns a new {@link InputInterpreter} instance.
-     * @return InputInterpreter
-     */
-    public static InputInterpreter getInputInterpreter() {
-        return new InputInterpreterImpl();
     }
 
 }

@@ -6,7 +6,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.TemplateEngineRegistry;
+import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
 import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 
 /**

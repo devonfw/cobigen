@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.generator;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -9,6 +9,7 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 
 /**
  * Implementation of the CobiGen API for input processing

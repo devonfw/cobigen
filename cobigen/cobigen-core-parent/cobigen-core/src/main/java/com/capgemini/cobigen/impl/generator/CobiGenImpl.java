@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.generator;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -69,9 +69,8 @@ public class CobiGenImpl implements CobiGen {
         this.configurationHolder = configurationHolder;
 
         // Create proxy of ConfigurationInterpreter to cache method calls
-        ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
-        configurationInterpreter = ProxyFactory.getProxy(impl);
-        inputInterpreter = ProxyFactory.getProxy(CobiGenFactory.getInputInterpreter());
+        configurationInterpreter = ProxyFactory.getProxy(new ConfigurationInterpreterImpl(configurationHolder));
+        inputInterpreter = ProxyFactory.getProxy(new InputInterpreterImpl());
     }
 
     @Override
@@ -104,9 +103,8 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp =
-            new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath, forceOverride,
-                logicClasses, rawModel);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath,
+            forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -133,9 +131,8 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp =
-            new GenerationProcessor(configurationHolder, input, Lists.newArrayList(generableArtifact), targetRootPath,
-                forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input,
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
