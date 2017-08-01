@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.generator.xml;
+package com.capgemini.cobigen.eclipse.generator.generic;
 
 import java.nio.charset.Charset;
 import java.nio.file.Paths;

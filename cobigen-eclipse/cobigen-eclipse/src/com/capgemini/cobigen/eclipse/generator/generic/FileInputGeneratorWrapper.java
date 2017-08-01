@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.generator.xml;
+package com.capgemini.cobigen.eclipse.generator.generic;
 
 import java.util.List;
 import java.util.Map;
