@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.extension;
 
 import java.util.Collections;
 import java.util.Map;

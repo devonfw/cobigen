@@ -5,9 +5,9 @@ import java.util.Map.Entry;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 
 /**
  * The {@link InputValidator} takes care of valid API user input, e.g., checks for null references
