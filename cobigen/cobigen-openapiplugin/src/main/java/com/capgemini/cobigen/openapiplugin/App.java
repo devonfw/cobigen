@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
+import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;

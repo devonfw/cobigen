@@ -19,12 +19,12 @@ public class OpenAPIMatcherTest {
     @Test
     public void testValidComponentDefMatching() {
 
-        ComponentDef component = new ComponentDef();
-        component.setComponent("Tablemanagement");
-        component.setVersion("v1");
+        ComponentDef componentDef = new ComponentDef();
+        componentDef.setComponent("Tablemanagement");
+        componentDef.setVersion("v1");
 
         OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDef", component));
+        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDef", componentDef));
 
         assertThat(matches).isTrue();
     }
@@ -35,12 +35,12 @@ public class OpenAPIMatcherTest {
     @Test
     public void testInvalidComponentDefMatching() {
 
-        ComponentDef component = new ComponentDef();
-        component.setComponent("Tablemanagement");
-        component.setVersion("v1");
+        ComponentDef componentDef = new ComponentDef();
+        componentDef.setComponent("Tablemanagement");
+        componentDef.setVersion("v1");
 
         OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDefs", component));
+        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDefs", componentDef));
 
         assertThat(matches).isFalse();
     }

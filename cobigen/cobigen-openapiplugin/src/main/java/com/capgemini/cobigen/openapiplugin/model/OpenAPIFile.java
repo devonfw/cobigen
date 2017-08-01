@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.inputreader.to;
+package com.capgemini.cobigen.openapiplugin.model;
 
 import java.net.URI;
 import java.nio.file.Path;
