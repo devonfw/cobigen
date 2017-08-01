@@ -10,8 +10,8 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
+import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
@@ -51,7 +51,8 @@ public class OpenAPIInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof OpenAPIFile) {
+        if (input != null
+            && input.getClass().getPackage().toString().equals(OpenAPIFile.class.getPackage().toString())) {
             return true;
         } else {
             return false;
@@ -401,7 +402,7 @@ public class OpenAPIInputReader implements InputReader {
 
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
-        return new LinkedList<>();
+        return getInputObjects(input, inputCharset);
     }
 
     /**
@@ -414,13 +415,13 @@ public class OpenAPIInputReader implements InputReader {
         for (String key : input.getPaths().keySet()) {
             String[] mp = key.split("/");
             if (added.indexOf(mp[1]) < 0) {
-                ComponentDef component = new ComponentDef();
-                component.setComponent(mp[1]);
-                component.setVersion(mp[2]);
-                component.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
-                component.getEntities().addAll(getObjectDefinitions(input, mp[1]));
+                ComponentDef componentDef = new ComponentDef();
+                componentDef.setComponent(mp[1]);
+                componentDef.setVersion(mp[2]);
+                componentDef.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
+                componentDef.getEntities().addAll(getObjectDefinitions(input, mp[1]));
 
-                objects.add(component);
+                objects.add(componentDef);
                 added.add(mp[1]);
             }
         }
