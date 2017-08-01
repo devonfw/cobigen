@@ -4,11 +4,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.InputInterpreter;
+import com.capgemini.cobigen.api.annotation.Cached;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.extension.PluginRegistry;
 
 /**
@@ -16,16 +19,53 @@ import com.capgemini.cobigen.impl.extension.PluginRegistry;
  */
 public class InputInterpreterImpl implements InputInterpreter {
 
-    @Override
-    public List<Object> getInputObjectsRecursively(String type, Object input, Charset inputCharset) {
-        return getInputReader(type).getInputObjectsRecursively(input, inputCharset);
+    /** Configuration interpreter instance */
+    private ConfigurationInterpreterImpl configurationInterpreter;
+
+    /**
+     * Creates a new instance of the {@link InputInterpreterImpl} with the given
+     * {@link ConfigurationInterpreter} for input matching capabilities.
+     * @param configurationInterpreter
+     *            {@link ConfigurationInterpreter}
+     */
+    public InputInterpreterImpl(ConfigurationInterpreterImpl configurationInterpreter) {
+        this.configurationInterpreter = configurationInterpreter;
     }
 
+    @Cached
     @Override
-    public List<Object> getInputObjects(String type, Object input, Charset inputCharset) {
-        return getInputReader(type).getInputObjects(input, inputCharset);
+    public boolean combinesMultipleInputs(Object input) {
+        List<Trigger> matchingTriggers = configurationInterpreter.getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
+        }
+        return false;
     }
 
+    @Cached
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        List<Trigger> matchingTriggers = configurationInterpreter.getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().getInputObjectsRecursively(input, inputCharset);
+        }
+        throw new CobiGenRuntimeException("No trigger found matching the input.");
+    }
+
+    @Cached
+    @Override
+    public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        List<Trigger> matchingTriggers = configurationInterpreter.getMatchingTriggers(input);
+        for (Trigger trigger : matchingTriggers) {
+            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            return triggerInterpreter.getInputReader().getInputObjects(input, inputCharset);
+        }
+        throw new CobiGenRuntimeException("No trigger found matching the input.");
+    }
+
+    // not cached by intention
     @Override
     public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
         throws InputReaderException {

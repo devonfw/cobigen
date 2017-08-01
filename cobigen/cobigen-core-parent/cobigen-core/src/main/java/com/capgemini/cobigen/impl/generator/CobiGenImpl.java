@@ -43,22 +43,6 @@ public class CobiGenImpl implements CobiGen {
      */
     private InputInterpreter inputInterpreter;
 
-    @Override
-    public List<Object> getInputObjectsRecursively(String type, Object input, Charset inputCharset) {
-        return inputInterpreter.getInputObjectsRecursively(type, input, inputCharset);
-    }
-
-    @Override
-    public List<Object> getInputObjects(String type, Object input, Charset inputCharset) {
-        return inputInterpreter.getInputObjects(type, input, inputCharset);
-    }
-
-    @Override
-    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
-        throws InputReaderException {
-        return inputInterpreter.read(type, path, inputCharset, additionalArguments);
-    }
-
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
@@ -69,8 +53,10 @@ public class CobiGenImpl implements CobiGen {
         this.configurationHolder = configurationHolder;
 
         // Create proxy of ConfigurationInterpreter to cache method calls
-        configurationInterpreter = ProxyFactory.getProxy(new ConfigurationInterpreterImpl(configurationHolder));
-        inputInterpreter = ProxyFactory.getProxy(new InputInterpreterImpl());
+        ConfigurationInterpreterImpl configurationInterpreterImplProxy =
+            ProxyFactory.getProxy(new ConfigurationInterpreterImpl(configurationHolder));
+        configurationInterpreter = configurationInterpreterImplProxy;
+        inputInterpreter = ProxyFactory.getProxy(new InputInterpreterImpl(configurationInterpreterImplProxy));
     }
 
     @Override
@@ -157,7 +143,23 @@ public class CobiGenImpl implements CobiGen {
 
     @Override
     public boolean combinesMultipleInputs(Object input) {
-        return configurationInterpreter.combinesMultipleInputs(input);
+        return inputInterpreter.combinesMultipleInputs(input);
+    }
+
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjectsRecursively(input, inputCharset);
+    }
+
+    @Override
+    public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjects(input, inputCharset);
+    }
+
+    @Override
+    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
+        throws InputReaderException {
+        return inputInterpreter.read(type, path, inputCharset, additionalArguments);
     }
 
     @Override
