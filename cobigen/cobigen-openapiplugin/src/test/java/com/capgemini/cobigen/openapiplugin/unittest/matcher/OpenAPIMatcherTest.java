@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.to.MatcherTo;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.matcher.OpenAPIMatcher;
+import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 
 /**
  * Test suite for {@link OpenAPIMatcher}

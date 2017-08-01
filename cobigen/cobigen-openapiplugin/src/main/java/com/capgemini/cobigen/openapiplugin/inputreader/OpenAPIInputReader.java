@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.inputreader.to.OpenAPIFile;
-import com.capgemini.cobigen.openapiplugin.inputreader.to.PathDef;
+import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
+import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 
 import io.swagger.models.HttpMethod;
@@ -62,11 +61,7 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object input) {
         Map<String, Object> pojoModel = new HashMap<>();
-        ComponentDef cmp = ((ComponentDef) input);
-        pojoModel.put(ModelConstant.COMPONENT, cmp.getComponent());
-        pojoModel.put(ModelConstant.SERVICE_VERSION, cmp.getVersion());
-        pojoModel.put(ModelConstant.DEFINITIONS, getDefinitions(cmp.getEntities()));
-        pojoModel.put(ModelConstant.PATHS, getPaths(cmp.getPaths()));
+        pojoModel.put("model", input);
 
         return pojoModel;
     }
@@ -423,8 +418,7 @@ public class OpenAPIInputReader implements InputReader {
                 component.setComponent(mp[1]);
                 component.setVersion(mp[2]);
                 component.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
-                component.getEntities()
-                    .addAll(getObjectDefinitions(input, input.getPaths(), input.getPaths().keySet(), mp[1]));
+                component.getEntities().addAll(getObjectDefinitions(input, mp[1]));
 
                 objects.add(component);
                 added.add(mp[1]);
@@ -485,13 +479,12 @@ public class OpenAPIInputReader implements InputReader {
      * @param component
      * @return
      */
-    private List<ModelImpl> getObjectDefinitions(Swagger input, Map<String, Path> map, Set<String> keySet,
-        String component) {
+    private List<ModelImpl> getObjectDefinitions(Swagger input, String component) {
         List<ModelImpl> objects = new LinkedList<>();
         List<String> added = new LinkedList<>();
-        for (String key : keySet) {
+        for (String key : input.getPaths().keySet()) {
             if (key.contains(component)) {
-                for (Operation op : map.get(key).getOperations()) {
+                for (Operation op : input.getPaths().get(key).getOperations()) {
                     if (op.getResponses() != null) {
                         for (String responseKey : op.getResponses().keySet()) {
                             if (op.getResponses().get(responseKey).getSchema() != null) {

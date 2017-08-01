@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.inputreader.to;
+package com.capgemini.cobigen.openapiplugin.model;
 
 import java.util.LinkedList;
 import java.util.List;
