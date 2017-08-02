@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.impl.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
 import com.capgemini.cobigen.stubs.TemplateEngineStub;
 
 import junit.framework.TestCase;

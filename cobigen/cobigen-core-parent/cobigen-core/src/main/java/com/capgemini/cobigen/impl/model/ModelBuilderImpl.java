@@ -15,12 +15,12 @@ import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
 import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
