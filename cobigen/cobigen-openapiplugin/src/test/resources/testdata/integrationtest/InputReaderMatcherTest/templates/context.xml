@@ -4,6 +4,7 @@
   <trigger id="testTemplates" type="openapi" templateFolder="testTemplates">
     <containerMatcher type="element" value="OpenAPIFile"/>
     <matcher type="element" value="ComponentDef">
+      <variableAssignment type="property" key="version" value="version"/>
     </matcher>
   </trigger>
 </contextConfiguration>
