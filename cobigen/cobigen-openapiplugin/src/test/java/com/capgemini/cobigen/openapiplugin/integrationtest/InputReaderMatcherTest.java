@@ -90,6 +90,30 @@ public class InputReaderMatcherTest {
     }
 
     /**
+     * Tests variable assignment resolution of PROPERTY type at the example of the component version
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testVariableAssignment_propertyVersion() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile =
+            cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+
+        String templateName = "testVariableAssignment_propertyVersion.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_propertyVersion.txt").toFile()).exists()
+            .hasContent("v1");
+    }
+
+    /**
      * Finds a template or throws an assertion error
      * @param cobigen
      *            {@link CobiGen} instance

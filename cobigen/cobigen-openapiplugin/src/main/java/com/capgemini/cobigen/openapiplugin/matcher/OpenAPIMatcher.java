@@ -69,7 +69,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             case PROPERTY:
                 Class<?> target = matcher.getTarget().getClass();
                 try {
-                    Field field = target.getField(matcher.getValue());
+                    Field field = target.getDeclaredField(va.getValue());
                     field.setAccessible(true);
                     Object o = field.get(matcher.getTarget());
 
