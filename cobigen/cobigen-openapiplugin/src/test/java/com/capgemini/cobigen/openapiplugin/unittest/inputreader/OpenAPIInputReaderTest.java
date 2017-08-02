@@ -32,6 +32,6 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
 
         assertThat(inputObjects).hasSize(2);
-        assertThat(inputObjects).extracting("name").containsExactly("tablemanagement", "salesmanagement");
+        assertThat(inputObjects).extracting("component").containsExactly("tablemanagement", "salesmanagement");
     }
 }
