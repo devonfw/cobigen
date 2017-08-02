@@ -31,7 +31,7 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
@@ -68,7 +68,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      * Creates a new {@link CheckStateListener} instance
      *
      * @param cobigenWrapper
-     *            currently used {@link JavaGeneratorWrapper} instance
+     *            currently used {@link JavaInputGeneratorWrapper} instance
      * @param page
      *            current {@link SelectFilesPage} reference
      * @param batch
@@ -115,6 +115,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             if (!batch) {
                 selectNewResources();
                 selectMergeableResources();
+                selectOverridingResources();
             } else {
                 selectAllResources(paths.keySet());
             }
@@ -370,6 +371,21 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             }
             worklist
                 .addAll(Arrays.asList(((SelectFileContentProvider) resourcesTree.getContentProvider()).getChildren(o)));
+        }
+    }
+
+    /**
+     * Sets all mergeable files to be selected
+     */
+    private void selectOverridingResources() {
+
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        for (String path : cobigenWrapper.getOverridingFiles(selectedIncrements)) {
+            Object mergableTreeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
+            if (mergableTreeObject != null) {
+                resourcesTree.setChecked(mergableTreeObject, true);
+            }
         }
     }
 

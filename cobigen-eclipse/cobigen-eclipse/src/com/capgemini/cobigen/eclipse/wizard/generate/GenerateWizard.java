@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.AbstractGenerateWizard;
 import com.capgemini.cobigen.eclipse.wizard.generate.common.SelectAttributesPage;
@@ -42,9 +42,9 @@ public class GenerateWizard extends AbstractGenerateWizard {
      */
     private void initializeWizard() {
         page1 = new SelectFilesPage(cobigenWrapper, false);
-        if (cobigenWrapper instanceof JavaGeneratorWrapper) {
+        if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
             page2 =
-                new SelectAttributesPage(((JavaGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
+                new SelectAttributesPage(((JavaInputGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
         }
     }
 
@@ -52,7 +52,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
     public void addPages() {
 
         addPage(page1);
-        if (cobigenWrapper instanceof JavaGeneratorWrapper) {
+        if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
             addPage(page2);
         }
     }
@@ -65,9 +65,9 @@ public class GenerateWizard extends AbstractGenerateWizard {
     @Override
     protected void generateContents(ProgressMonitorDialog dialog) {
 
-        if (cobigenWrapper instanceof JavaGeneratorWrapper) {
+        if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
             for (String attr : page2.getUncheckedAttributes()) {
-                ((JavaGeneratorWrapper) cobigenWrapper).removeFieldFromModel(attr);
+                ((JavaInputGeneratorWrapper) cobigenWrapper).removeFieldFromModel(attr);
             }
         }
 
