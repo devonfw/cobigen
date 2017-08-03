@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -74,8 +73,7 @@ public class GenerateHandler extends AbstractHandler {
                     return null;
                 }
 
-                if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
-                    && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
+                if (!generator.isSingleNonContainerInput()) {
                     WizardDialog wiz =
                         new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
