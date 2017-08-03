@@ -51,7 +51,7 @@ public class OpenAPIInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input != null
+        if (input != null && input.getClass().getPackage() != null
             && input.getClass().getPackage().toString().equals(OpenAPIFile.class.getPackage().toString())) {
             return true;
         } else {
