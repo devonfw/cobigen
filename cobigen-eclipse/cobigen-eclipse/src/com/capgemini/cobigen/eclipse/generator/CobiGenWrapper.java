@@ -146,6 +146,13 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * @return whether the input represents a single non container input
+     */
+    public boolean isSingleNonContainerInput() {
+        return singleNonContainerInput;
+    }
+
+    /**
      * Generates the the list of templates based on the given {@link #inputs}.
      * @param templates
      *            to be generated
