@@ -9,19 +9,20 @@ import java.util.Scanner;
 
 import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
+import com.reprezen.kaizen.oasparser.OpenApi3Parser;
 
-import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 import io.swagger.parser.Swagger20Parser;
 
 public class App {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        String content = new Scanner(new File("C:\\Users\\rudiazma\\Desktop\\devonfw.yaml")).useDelimiter("\\Z").next();
+        String content = new Scanner(new File("G:\\Devon-dist_2.2.0\\workspaces_vs\\default\\devonfw30.yaml"))
+            .useDelimiter("\\Z").next();
         Swagger swagger = new Swagger20Parser().parse(content);
 
-        ModelImpl mod = (ModelImpl) swagger.getDefinitions().get("SampleData");
         OpenAPIInputReader inp = new OpenAPIInputReader();
-        File g = new File("D:\\Users\\rudiazma\\Desktop\\devonfw.yaml");
+        File g = new File("G:\\Devon-dist_2.2.0\\workspaces_vs\\default\\devonfw30.yaml");
+        OpenApi3Parser parser = new OpenApi3Parser().parse(g);
         OpenAPIFile file = new OpenAPIFile(g.toPath(), swagger);
         if (inp.isValidInput(file)) {
             List<Object> inputs = inp.getInputObjects(file, Charset.forName("UTF-8"));
