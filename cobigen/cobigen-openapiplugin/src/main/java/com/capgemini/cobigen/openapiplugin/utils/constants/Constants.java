@@ -58,6 +58,8 @@ public class Constants {
     /**
      * Type of a field of the input class ({@link String})
      */
-    public static final String NOTNULL = "@NotNull";
+    public static final String NOTNULL = "NotNull";
+
+    public static final String UNIQUE = "unique";
 
 }

@@ -3,35 +3,63 @@ package com.capgemini.cobigen.openapiplugin.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.swagger.models.ModelImpl;
-
 /**
  *
  */
-public class EntityDef extends ModelImpl {
+public class EntityDef {
 
-    private String component;
+    private ComponentDef component;
 
-    private List<PathDef> paths;
+    private String componentName;
+
+    private String name;
+
+    private String description;
+
+    private List<PropertyDef> properties;
 
     public EntityDef() {
-        paths = new LinkedList<>();
+        properties = new LinkedList<>();
     }
 
-    public String getComponent() {
+    public ComponentDef getComponent() {
         return component;
     }
 
-    public void setComponent(String component) {
+    public void setComponent(ComponentDef component) {
         this.component = component;
     }
 
-    public List<PathDef> getPaths() {
-        return paths;
+    public String getName() {
+        return name;
     }
 
-    public void setPaths(List<PathDef> paths) {
-        this.paths = paths;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getComponentName() {
+        return componentName;
+    }
+
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
+    }
+
+    public List<PropertyDef> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<PropertyDef> properties) {
+        this.properties = properties;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

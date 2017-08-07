@@ -3,6 +3,8 @@ package com.capgemini.cobigen.openapiplugin.model;
 import java.net.URI;
 import java.nio.file.Path;
 
+import com.reprezen.kaizen.oasparser.model3.OpenApi3;
+
 import io.swagger.models.Swagger;
 
 /** Swagger file transfer object which contains the {@link Path} and the name of the file */
@@ -12,7 +14,7 @@ public class OpenAPIFile {
     private Path location;
 
     /** Open API AST */
-    private Swagger ast;
+    private OpenApi3 ast;
 
     /**
      * Creates a new transfer object for a file
@@ -21,7 +23,7 @@ public class OpenAPIFile {
      * @param ast
      *            {@link Swagger} AST
      */
-    public OpenAPIFile(Path location, Swagger ast) {
+    public OpenAPIFile(Path location, OpenApi3 ast) {
         this.location = location;
         this.ast = ast;
     }
@@ -51,7 +53,7 @@ public class OpenAPIFile {
      * The swagger AST of the file
      * @return the swagger AST
      */
-    public Swagger getAST() {
+    public OpenApi3 getAST() {
         return ast;
     }
 }

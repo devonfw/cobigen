@@ -7,6 +7,7 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.openapiplugin.matcher.OpenAPIMatcher;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
+import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 
 /**
  * Test suite for {@link OpenAPIMatcher}
@@ -19,12 +20,11 @@ public class OpenAPIMatcherTest {
     @Test
     public void testValidComponentDefMatching() {
 
-        ComponentDef componentDef = new ComponentDef();
-        componentDef.setComponent("Tablemanagement");
-        componentDef.setVersion("v1");
+        EntityDef entityDef = new EntityDef();
+        entityDef.setComponentName("Tablemanagement");
 
         OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDef", componentDef));
+        boolean matches = matcher.matches(new MatcherTo("element", "EntityDef", entityDef));
 
         assertThat(matches).isTrue();
     }
@@ -35,12 +35,11 @@ public class OpenAPIMatcherTest {
     @Test
     public void testInvalidComponentDefMatching() {
 
-        ComponentDef componentDef = new ComponentDef();
-        componentDef.setComponent("Tablemanagement");
-        componentDef.setVersion("v1");
+        EntityDef entityDef = new EntityDef();
+        entityDef.setComponentName("Tablemanagement");
 
         OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDefs", componentDef));
+        boolean matches = matcher.matches(new MatcherTo("element", "EntityDefs", entityDef));
 
         assertThat(matches).isFalse();
     }
