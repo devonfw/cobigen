@@ -3,8 +3,8 @@
 
   <trigger id="testTemplates" type="openapi" templateFolder="testTemplates">
     <containerMatcher type="element" value="OpenAPIFile"/>
-    <matcher type="element" value="ComponentDef">
-      <variableAssignment type="property" key="version" value="version"/>
+    <matcher type="element" value="EntityDef">
+      <variableAssignment type="property" key="name" value="name"/>
     </matcher>
   </trigger>
 </contextConfiguration>

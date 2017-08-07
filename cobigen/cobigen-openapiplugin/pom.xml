@@ -25,14 +25,13 @@
     <dependency>
       <groupId>com.reprezen.kaizen</groupId>
       <artifactId>openapi-parser</artifactId>
-      <version>0.0.1.201708021609</version>
-      <type>pom</type>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>io.swagger</groupId>
       <artifactId>swagger-parser</artifactId>
       <version>1.0.32</version>
-      </dependency> -->
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.capgemini</groupId>
@@ -53,11 +52,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>kaizen-openapi-parser-repo</id>
-      <name>KaiZen-OpenApi-Parser Repository</name>
-      <url>https://dl.bintray.com/reprezen/KaiZen-OpenApi-Parser/</url>
-    </repository>
-  </repositories>
 </project>

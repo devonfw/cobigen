@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.openapiplugin.inputreader;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -11,37 +10,23 @@ import java.util.Map;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
+import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
+import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
+import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.model3.OpenApi3;
+import com.reprezen.kaizen.oasparser.model3.Path;
+import com.reprezen.kaizen.oasparser.model3.Schema;
+import com.reprezen.kaizen.oasparser.ovl3.SchemaImpl;
 
-import io.swagger.models.HttpMethod;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.RefModel;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.BaseIntegerProperty;
-import io.swagger.models.properties.BinaryProperty;
-import io.swagger.models.properties.ByteArrayProperty;
-import io.swagger.models.properties.DecimalProperty;
-import io.swagger.models.properties.DoubleProperty;
-import io.swagger.models.properties.EmailProperty;
-import io.swagger.models.properties.FloatProperty;
-import io.swagger.models.properties.IntegerProperty;
-import io.swagger.models.properties.LongProperty;
-import io.swagger.models.properties.PasswordProperty;
-import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
-import io.swagger.models.properties.StringProperty;
-import io.swagger.parser.Swagger20Parser;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Swagger definition files
@@ -53,6 +38,11 @@ public class OpenAPIInputReader implements InputReader {
     public boolean isValidInput(Object input) {
         if (input != null && input.getClass().getPackage() != null
             && input.getClass().getPackage().toString().equals(OpenAPIFile.class.getPackage().toString())) {
+            for (String key : ((OpenAPIFile) input).getAST().getSchemas().keySet()) {
+                if (((OpenAPIFile) input).getAST().getSchemas().get(key).getTitle() == null) {
+                    return false;
+                }
+            }
             return true;
         } else {
             return false;
@@ -77,7 +67,7 @@ public class OpenAPIInputReader implements InputReader {
         for (PathDef pathDef : pathsDefs) {
             pathValues = new HashMap<>();
             pathValues.put(ModelConstant.PATH_URL, pathDef.getPathURI());
-            pathValues.put(ModelConstant.OPERATIONS, getOperations(pathDef.getPath().getOperationMap()));
+            // pathValues.put(ModelConstant.OPERATIONS, getOperations(pathDef.getPath().getOperationMap()));
             paths.add(pathValues);
         }
         return paths;
@@ -87,39 +77,39 @@ public class OpenAPIInputReader implements InputReader {
      * @param operationMap
      * @return
      */
-    private List<Map<String, Object>> getOperations(Map<HttpMethod, Operation> operationMap) {
-        List<Map<String, Object>> operations = new LinkedList<>();
-        Map<String, Object> opValues;
-        for (HttpMethod op : operationMap.keySet()) {
-            opValues = new HashMap<>();
-            opValues.put(ModelConstant.HTTP_OPERATION, op.name());
-            if (operationMap.get(op).getSummary() != null) {
-                opValues.put(ModelConstant.SUMMARY, operationMap.get(op).getSummary());
-            }
-            if (operationMap.get(op).getDescription() != null) {
-                opValues.put(ModelConstant.DESCRIPTION, operationMap.get(op).getDescription());
-            }
-            if (operationMap.get(op).getProduces() != null) {
-                opValues.put(ModelConstant.PRODUCES, operationMap.get(op).getProduces());
-            }
-            if (operationMap.get(op).getParameters() != null) {
-                opValues.put(ModelConstant.PARAMETERS,
-                    getParameters(operationMap.get(op).getParameters(), operationMap.get(op).getConsumes()));
-            }
-            if (operationMap.get(op).getConsumes() != null) {
-
-                opValues.put(ModelConstant.CONSUMES, operationMap.get(op).getConsumes());
-            }
-
-            if (operationMap.get(op).getResponses() != null) {
-                opValues.put(ModelConstant.RESPONSES, getResponses(operationMap.get(op).getResponses()));
-            } else {
-                opValues.put(ModelConstant.RESPONSES, new LinkedList<>());
-            }
-            operations.add(opValues);
-        }
-        return operations;
-    }
+    // private List<Map<String, Object>> getOperations(Map<HttpMethod, Operation> operationMap) {
+    // List<Map<String, Object>> operations = new LinkedList<>();
+    // Map<String, Object> opValues;
+    // for (HttpMethod op : operationMap.keySet()) {
+    // opValues = new HashMap<>();
+    // opValues.put(ModelConstant.HTTP_OPERATION, op.name());
+    // if (operationMap.get(op).getSummary() != null) {
+    // opValues.put(ModelConstant.SUMMARY, operationMap.get(op).getSummary());
+    // }
+    // if (operationMap.get(op).getDescription() != null) {
+    // opValues.put(ModelConstant.DESCRIPTION, operationMap.get(op).getDescription());
+    // }
+    // if (operationMap.get(op).getProduces() != null) {
+    // opValues.put(ModelConstant.PRODUCES, operationMap.get(op).getProduces());
+    // }
+    // if (operationMap.get(op).getParameters() != null) {
+    // opValues.put(ModelConstant.PARAMETERS,
+    // getParameters(operationMap.get(op).getParameters(), operationMap.get(op).getConsumes()));
+    // }
+    // if (operationMap.get(op).getConsumes() != null) {
+    //
+    // opValues.put(ModelConstant.CONSUMES, operationMap.get(op).getConsumes());
+    // }
+    //
+    // if (operationMap.get(op).getResponses() != null) {
+    // opValues.put(ModelConstant.RESPONSES, getResponses(operationMap.get(op).getResponses()));
+    // } else {
+    // opValues.put(ModelConstant.RESPONSES, new LinkedList<>());
+    // }
+    // operations.add(opValues);
+    // }
+    // return operations;
+    // }
 
     /**
      * @param responses
@@ -155,39 +145,39 @@ public class OpenAPIInputReader implements InputReader {
      * @param consumes
      * @return
      */
-    private List<Map<String, Object>> getParameters(List<Parameter> parameters, List<String> consumes) {
-        List<Map<String, Object>> params = new LinkedList<>();
-        Map<String, Object> paramValues;
-        for (Parameter param : parameters) {
-            paramValues = new HashMap<>();
-            paramValues.put(ModelConstant.NAME, param.getName());
-            if (param.getDescription() != null) {
-                paramValues.put(ModelConstant.DESCRIPTION, param.getDescription());
-            }
-            paramValues.put(ModelConstant.CONSTRAINTS, getConstraints(param));
-            if (param instanceof PathParameter) {
-                paramValues.put(ModelConstant.TYPE,
-                    buildType(((PathParameter) param).getType(), ((PathParameter) param).getFormat(), null, null));
-            }
-            if (param instanceof QueryParameter) {
-                paramValues.put(ModelConstant.TYPE,
-                    buildType(((QueryParameter) param).getType(), ((QueryParameter) param).getFormat(), null, null));
-            }
-            if (param instanceof BodyParameter) {
-                if (((BodyParameter) param).getSchema() != null) {
-                    paramValues.put(ModelConstant.TYPE,
-                        ((RefModel) ((BodyParameter) param).getSchema()).getSimpleRef());
-                }
-            }
-            if (param instanceof FormParameter) {
-                paramValues.put(ModelConstant.MULTIPART, true);
-            }
-
-            params.add(paramValues);
-
-        }
-        return params;
-    }
+    // private List<Map<String, Object>> getParameters(List<Parameter> parameters, List<String> consumes) {
+    // List<Map<String, Object>> params = new LinkedList<>();
+    // Map<String, Object> paramValues;
+    // for (Parameter param : parameters) {
+    // paramValues = new HashMap<>();
+    // paramValues.put(ModelConstant.NAME, param.getName());
+    // if (param.getDescription() != null) {
+    // paramValues.put(ModelConstant.DESCRIPTION, param.getDescription());
+    // }
+    // paramValues.put(ModelConstant.CONSTRAINTS, getConstraints(param));
+    // if (param instanceof PathParameter) {
+    // paramValues.put(ModelConstant.TYPE,
+    // buildType(((PathParameter) param).getType(), ((PathParameter) param).getFormat(), null, null));
+    // }
+    // if (param instanceof QueryParameter) {
+    // paramValues.put(ModelConstant.TYPE,
+    // buildType(((QueryParameter) param).getType(), ((QueryParameter) param).getFormat(), null, null));
+    // }
+    // if (param instanceof BodyParameter) {
+    // if (((BodyParameter) param).getSchema() != null) {
+    // paramValues.put(ModelConstant.TYPE,
+    // ((RefModel) ((BodyParameter) param).getSchema()).getSimpleRef());
+    // }
+    // }
+    // if (param instanceof FormParameter) {
+    // paramValues.put(ModelConstant.MULTIPART, true);
+    // }
+    //
+    // params.add(paramValues);
+    //
+    // }
+    // return params;
+    // }
 
     /**
      * @param param
@@ -218,62 +208,62 @@ public class OpenAPIInputReader implements InputReader {
      * @param entities
      * @return
      */
-    private Object getDefinitions(List<ModelImpl> entities) {
-        List<Map<String, Object>> definitions = new LinkedList<>();
-        Map<String, Object> defValues;
-        for (ModelImpl model : entities) {
-            defValues = new HashMap<>();
-            defValues.put(ModelConstant.NAME, model.getName());
-            if (model.getDescription() != null) {
-                defValues.put(ModelConstant.DESCRIPTION, model.getDescription());
-            }
-            if (model.getRequired() != null) {
-                defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
-            } else {
-                defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
-            }
-            definitions.add(defValues);
-        }
-        return definitions;
-    }
+    // private Object getDefinitions(List<ModelImpl> entities) {
+    // List<Map<String, Object>> definitions = new LinkedList<>();
+    // Map<String, Object> defValues;
+    // for (ModelImpl model : entities) {
+    // defValues = new HashMap<>();
+    // defValues.put(ModelConstant.NAME, model.getName());
+    // if (model.getDescription() != null) {
+    // defValues.put(ModelConstant.DESCRIPTION, model.getDescription());
+    // }
+    // if (model.getRequired() != null) {
+    // defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), model.getRequired()));
+    // } else {
+    // defValues.put(ModelConstant.FIELDS, getFields(model.getProperties(), new LinkedList<String>()));
+    // }
+    // definitions.add(defValues);
+    // }
+    // return definitions;
+    // }
 
     /**
      * @param properties
      * @param required
      * @return
      */
-    private List<Map<String, Object>> getFields(Map<String, Property> properties, List<String> required) {
-
-        List<Map<String, Object>> fields = new LinkedList<>();
-        Map<String, Object> fieldValues;
-        if (properties != null) {
-            for (String key : properties.keySet()) {
-                fieldValues = new HashMap<>();
-
-                fieldValues.put(ModelConstant.NAME, key);
-                if (properties.get(key) instanceof RefProperty) {
-                    fieldValues.put(ModelConstant.TYPE, ((RefProperty) properties.get(key)).getSimpleRef());
-                    fieldValues.put(ModelConstant.IS_REFERENCE, true);
-                } else if (properties.get(key) instanceof ArrayProperty) {
-                    ArrayProperty array = (ArrayProperty) properties.get(key);
-                    if (array.getItems() instanceof RefProperty) {
-                        fieldValues.put(ModelConstant.TYPE, ((RefProperty) array.getItems()).getSimpleRef());
-                        fieldValues.put(ModelConstant.IS_COLLECTION, true);
-                        fieldValues.put(ModelConstant.IS_REFERENCE, true);
-                    }
-                } else {
-                    fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key).getType(),
-                        properties.get(key).getFormat(), properties.get(key), key));
-                }
-                fieldValues.put(ModelConstant.CONSTRAINTS, getConstraints(properties.get(key), required, key));
-                if (properties.get(key).getDescription() != null) {
-                    fieldValues.put(ModelConstant.DESCRIPTION, properties.get(key).getDescription());
-                }
-                fields.add(fieldValues);
-            }
-        }
-        return fields;
-    }
+    // private List<Map<String, Object>> getFields(Map<String, Property> properties, List<String> required) {
+    //
+    // List<Map<String, Object>> fields = new LinkedList<>();
+    // Map<String, Object> fieldValues;
+    // if (properties != null) {
+    // for (String key : properties.keySet()) {
+    // fieldValues = new HashMap<>();
+    //
+    // fieldValues.put(ModelConstant.NAME, key);
+    // if (properties.get(key) instanceof RefProperty) {
+    // fieldValues.put(ModelConstant.TYPE, ((RefProperty) properties.get(key)).getSimpleRef());
+    // fieldValues.put(ModelConstant.IS_REFERENCE, true);
+    // } else if (properties.get(key) instanceof ArrayProperty) {
+    // ArrayProperty array = (ArrayProperty) properties.get(key);
+    // if (array.getItems() instanceof RefProperty) {
+    // fieldValues.put(ModelConstant.TYPE, ((RefProperty) array.getItems()).getSimpleRef());
+    // fieldValues.put(ModelConstant.IS_COLLECTION, true);
+    // fieldValues.put(ModelConstant.IS_REFERENCE, true);
+    // }
+    // } else {
+    // fieldValues.put(ModelConstant.TYPE, buildType(properties.get(key).getType(),
+    // properties.get(key).getFormat(), properties.get(key), key));
+    // }
+    // fieldValues.put(ModelConstant.CONSTRAINTS, getConstraints(properties.get(key), required, key));
+    // if (properties.get(key).getDescription() != null) {
+    // fieldValues.put(ModelConstant.DESCRIPTION, properties.get(key).getDescription());
+    // }
+    // fields.add(fieldValues);
+    // }
+    // }
+    // return fields;
+    // }
 
     /**
      * @param property
@@ -281,99 +271,61 @@ public class OpenAPIInputReader implements InputReader {
      * @param key
      * @return
      */
-    private Map<String, Object> getConstraints(Property property, List<String> required, String key) {
+    private Map<String, Object> getConstraints(Schema property) {
         Map<String, Object> constraints = new HashMap<>();
-        if (required.contains(key)) {
-            constraints.put(ModelConstant.REQUIRED, true);
-        }
-        if (property instanceof IntegerProperty || property instanceof LongProperty) {
-            BaseIntegerProperty prop = (BaseIntegerProperty) property;
-            if (prop.getMaximum() != null) {
-                constraints.put(ModelConstant.MAXIMUM, prop.getMaximum());
-            }
-            if (prop.getMinimum() != null) {
-                constraints.put(ModelConstant.MINIMUM, prop.getMinimum());
-            }
-        } else if (property instanceof FloatProperty || property instanceof DoubleProperty) {
-            DecimalProperty prop = (DecimalProperty) property;
-            if (prop.getMaximum() != null) {
-                constraints.put(ModelConstant.MAXIMUM, prop.getMaximum());
-            }
-            if (prop.getMinimum() != null) {
-                constraints.put(ModelConstant.MINIMUM, prop.getMinimum());
-            }
-        } else if (property instanceof ArrayProperty) {
+        constraints.put(ModelConstant.MAXIMUM, property.getMaximum());
+        constraints.put(ModelConstant.MINIMUM, property.getMinimum());
+        constraints.put(ModelConstant.MAX_LENGTH, property.getMaxLength());
+        constraints.put(ModelConstant.MIN_LENGTH, property.getMinLength());
+        constraints.put(Constants.NOTNULL, property.isNullable());
+        constraints.put(Constants.UNIQUE, property.isUniqueItems());
 
-        } else if (property instanceof StringProperty || property instanceof EmailProperty
-            || property instanceof ByteArrayProperty) {
-
-            StringProperty str = (StringProperty) property;
-
-            if (str.getMaxLength() != null) {
-                constraints.put(ModelConstant.MAX_LENGTH, str.getMaxLength());
-            }
-            if (str.getMinLength() != null) {
-                constraints.put(ModelConstant.MIN_LENGTH, str.getMinLength());
-            }
-        } else if (property instanceof PasswordProperty) {
-
-            PasswordProperty pass = (PasswordProperty) property;
-            if (pass.getMaxLength() != null) {
-                constraints.put(ModelConstant.MAX_LENGTH, pass.getMaxLength());
-            }
-            if (pass.getMinLength() != null) {
-                constraints.put(ModelConstant.MIN_LENGTH, pass.getMinLength());
-            }
-        } else if (property instanceof BinaryProperty) {
-            BinaryProperty bin = (BinaryProperty) property;
-            if (bin.getMaxLength() != null) {
-                constraints.put(ModelConstant.MAX_LENGTH, bin.getMaxLength());
-            }
-            if (bin.getMinLength() != null) {
-                constraints.put(ModelConstant.MIN_LENGTH, bin.getMinLength());
-            }
-        } else {
-            return constraints;
-        }
         return constraints;
     }
 
     /**
      * @param type
      * @param format
+     * @param schema
      * @param property
      * @param key
      * @return
      */
-    private String buildType(String type, String format, Property property, String key) {
-        if (type.equals("integer") && format.equals("int32")) {
-            return Constants.INTEGER;
-        } else if (type.equals("number") && format.equals("double")) {
-            return Constants.DOUBLE;
-        } else if (type.equals("integer") && format.equals("int64")) {
-            return Constants.LONG;
-        } else if (type.equals("boolean")) {
-            return Constants.BOOLEAN;
-        } else if (type.equals("string") && format == null) {
-            return Constants.STRING;
-        } else if (type.equals("object")) {
-            return key;
-        } else if (property instanceof RefProperty) {
-            return ((RefProperty) property).getSimpleRef();
-        } else if (property instanceof ByteArrayProperty) {
-            return Constants.BYTE;
-        } else if (type.equals("string") && format.equals("date")) {
-            return Constants.DATE;
-        } else if (type.equals("string") && format.equals("date-time")) {
-            return Constants.TIMESTAMP;
-        } else if (type.equals("string") && format.equals("binary")) {
-            return Constants.FLOAT;
-        } else if (type.equals("string") && format.equals("email")) {
-            return Constants.STRING;
-        } else if (type.equals("string") && format.equals("password")) {
-            return Constants.STRING;
+    private String buildType(Schema schema) {
+        if (schema.getType() != null && schema.getFormat() != null) {
+            if (schema.getType().equals("integer") && schema.getFormat().equals("int32")) {
+                return Constants.INTEGER;
+            } else if (schema.getType().equals("number") && schema.getFormat().equals("double")) {
+                return Constants.DOUBLE;
+            } else if (schema.getType().equals("integer") && schema.getFormat().equals("int64")) {
+                return Constants.LONG;
+            } else if (schema.getType().equals("string") && schema.getFormat().equals("date")) {
+                return Constants.DATE;
+            } else if (schema.getType().equals("string") && schema.getFormat().equals("date-time")) {
+                return Constants.TIMESTAMP;
+            } else if (schema.getType().equals("string") && schema.getFormat().equals("binary")) {
+                return Constants.FLOAT;
+            } else if (schema.getType().equals("string") && schema.getFormat().equals("email")) {
+                return Constants.STRING;
+            } else if (schema.getType().equals("string") && schema.getFormat().equals("password")) {
+                return Constants.STRING;
+            } else {
+                return Constants.STRING;
+            }
+        } else if (schema.getType() != null && schema.getFormat() == null) {
+            if (schema.getType().equals("string") && schema.getFormat() == null) {
+                return Constants.STRING;
+            } else if (schema.getType().equals("boolean")) {
+                return Constants.BOOLEAN;
+            } else if (schema.getType().equals("array")) {
+                String[] mp = ((SchemaImpl) schema.getItemsSchema()).getReference().getFragment().split("/");
+                return "List<" + mp[mp.length - 1] + ">";
+            } else {
+                return Constants.STRING;
+            }
         } else {
-            return Constants.STRING;
+            String[] mp = ((SchemaImpl) schema).getReference().getFragment().split("/");
+            return mp[mp.length - 1];
         }
 
     }
@@ -390,7 +342,7 @@ public class OpenAPIInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
-            inputs.addAll(getComponents(((OpenAPIFile) input).getAST()));
+            inputs.addAll(getEntities(((OpenAPIFile) input).getAST()));
         }
         return inputs;
     }
@@ -405,35 +357,76 @@ public class OpenAPIInputReader implements InputReader {
         return getInputObjects(input, inputCharset);
     }
 
+    private List<EntityDef> getEntities(OpenApi3 openApi) {
+        List<EntityDef> objects = new LinkedList<>();
+        List<String> added = new LinkedList<>();
+        for (String key : openApi.getSchemas().keySet()) {
+            EntityDef entityDef = new EntityDef();
+            entityDef.setName(key);
+            entityDef.setDescription(openApi.getSchema(key).getDescription());
+            ComponentDef componentDef = new ComponentDef();
+            entityDef.setProperties(getFields(openApi.getSchema(key).getProperties()));
+            entityDef.setComponentName(openApi.getSchema(key).getTitle());
+            componentDef.setPaths(getPaths(openApi.getPaths(), openApi.getSchema(key).getTitle()));
+            entityDef.setComponent(componentDef);
+            objects.add(entityDef);
+        }
+        return objects;
+
+    }
+
+    /**
+     * @param properties
+     * @return
+     */
+    private List<PropertyDef> getFields(Map<String, ? extends Schema> properties) {
+        List<PropertyDef> objects = new LinkedList<>();
+        for (String key : properties.keySet()) {
+            PropertyDef property = new PropertyDef();
+            property.setName(key);
+            property.setDescription(properties.get(key).getDescription());
+            property.setType(buildType(properties.get(key)));
+            if (properties.get(key).getRequiredFields().contains(key)) {
+                property.setRequired(true);
+            } else {
+                property.setRequired(false);
+            }
+            property.setConstraints(this.getConstraints(properties.get(key)));
+            objects.add(property);
+        }
+
+        return objects;
+    }
+
     /**
      * @param input
      * @return
      */
-    private List<ComponentDef> getComponents(Swagger input) {
-        List<ComponentDef> objects = new LinkedList<>();
-        List<String> added = new LinkedList<>();
-        for (String key : input.getPaths().keySet()) {
-            String[] mp = key.split("/");
-            if (added.indexOf(mp[1]) < 0) {
-                ComponentDef componentDef = new ComponentDef();
-                componentDef.setComponent(mp[1]);
-                componentDef.setVersion(mp[2]);
-                componentDef.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
-                componentDef.getEntities().addAll(getObjectDefinitions(input, mp[1]));
-
-                objects.add(componentDef);
-                added.add(mp[1]);
-            }
-        }
-        return objects;
-    }
+    // private List<ComponentDef> getComponents(Swagger input) {
+    // List<ComponentDef> objects = new LinkedList<>();
+    // List<String> added = new LinkedList<>();
+    // for (String key : input.getPaths().keySet()) {
+    // String[] mp = key.split("/");
+    // if (added.indexOf(mp[1]) < 0) {
+    // ComponentDef componentDef = new ComponentDef();
+    // componentDef.setComponent(mp[1]);
+    // componentDef.setVersion(mp[2]);
+    // // componentDef.getPaths().addAll(getPaths(input.getPaths(), mp[1]));
+    // componentDef.getEntities().addAll(getObjectDefinitions(input, mp[1]));
+    //
+    // objects.add(componentDef);
+    // added.add(mp[1]);
+    // }
+    // }
+    // return objects;
+    // }
 
     /**
      * @param paths
      * @param component
      * @return
      */
-    private List<PathDef> getPaths(Map<String, Path> paths, String component) {
+    private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
             if (pathKey.contains(component)) {
@@ -446,6 +439,7 @@ public class OpenAPIInputReader implements InputReader {
                 path.setPathURI(pathUri);
                 if (pathKey.contains(mp[1])) {
                     path.setPath(paths.get(pathKey));
+                    path.setVersion(mp[2]);
                 }
                 pathDefs.add(path);
             }
@@ -459,18 +453,11 @@ public class OpenAPIInputReader implements InputReader {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
-
-        try {
-            String contents = new String(Files.readAllBytes(path), inputCharset);
-            Swagger swagger = new Swagger20Parser().parse(contents);
-            if (swagger == null) {
-                throw new InputReaderException(path + " is not a valid OpenAPI file");
-            }
-            return new OpenAPIFile(path, swagger);
-        } catch (IOException e) {
-            throw new InputReaderException(
-                "An error occurred on reading the file " + path.toAbsolutePath().toUri().toString());
+        OpenApi3 openApi = (OpenApi3) new OpenApi3Parser().parse(path.toUri());
+        if (openApi == null) {
+            throw new InputReaderException(path + " is not a valid OpenAPI file");
         }
+        return new OpenAPIFile(path, openApi);
     }
 
     /**
@@ -480,55 +467,55 @@ public class OpenAPIInputReader implements InputReader {
      * @param component
      * @return
      */
-    private List<ModelImpl> getObjectDefinitions(Swagger input, String component) {
-        List<ModelImpl> objects = new LinkedList<>();
-        List<String> added = new LinkedList<>();
-        for (String key : input.getPaths().keySet()) {
-            if (key.contains(component)) {
-                for (Operation op : input.getPaths().get(key).getOperations()) {
-                    if (op.getResponses() != null) {
-                        for (String responseKey : op.getResponses().keySet()) {
-                            if (op.getResponses().get(responseKey).getSchema() != null) {
-                                if (op.getResponses().get(responseKey).getSchema() instanceof RefProperty
-                                    && input.getDefinitions()
-                                        .get(((RefProperty) op.getResponses().get(responseKey).getSchema())
-                                            .getSimpleRef()) instanceof ModelImpl
-                                    && !added.contains(((RefProperty) op.getResponses().get(responseKey).getSchema())
-                                        .getSimpleRef())) {
-                                    ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
-                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
-                                    inputObject.setName(
-                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
-                                    objects.add(inputObject);
-                                    added.add(
-                                        ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
-                                }
-                            }
-                        }
-                    }
-                    if (op.getParameters() != null) {
-                        for (Parameter param : op.getParameters()) {
-                            if (param instanceof BodyParameter) {
-                                if (((BodyParameter) param).getSchema() instanceof RefProperty
-                                    && input.getDefinitions()
-                                        .get(((RefProperty) ((BodyParameter) param).getSchema())
-                                            .getSimpleRef()) instanceof ModelImpl
-                                    && !added
-                                        .contains(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef())) {
-                                    ModelImpl inputObject = (ModelImpl) input.getDefinitions()
-                                        .get(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
-                                    inputObject
-                                        .setName(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
-                                    objects.add(inputObject);
-                                    added.add(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return objects;
-    }
+    // private List<ModelImpl> getObjectDefinitions(Swagger input, String component) {
+    // List<ModelImpl> objects = new LinkedList<>();
+    // List<String> added = new LinkedList<>();
+    // for (String key : input.getPaths().keySet()) {
+    // if (key.contains(component)) {
+    // for (Operation op : input.getPaths().get(key).getOperations()) {
+    // if (op.getResponses() != null) {
+    // for (String responseKey : op.getResponses().keySet()) {
+    // if (op.getResponses().get(responseKey).getSchema() != null) {
+    // if (op.getResponses().get(responseKey).getSchema() instanceof RefProperty
+    // && input.getDefinitions()
+    // .get(((RefProperty) op.getResponses().get(responseKey).getSchema())
+    // .getSimpleRef()) instanceof ModelImpl
+    // && !added.contains(((RefProperty) op.getResponses().get(responseKey).getSchema())
+    // .getSimpleRef())) {
+    // ModelImpl inputObject = (ModelImpl) input.getDefinitions().get(
+    // ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+    // inputObject.setName(
+    // ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+    // objects.add(inputObject);
+    // added.add(
+    // ((RefProperty) op.getResponses().get(responseKey).getSchema()).getSimpleRef());
+    // }
+    // }
+    // }
+    // }
+    // if (op.getParameters() != null) {
+    // for (Parameter param : op.getParameters()) {
+    // if (param instanceof BodyParameter) {
+    // if (((BodyParameter) param).getSchema() instanceof RefProperty
+    // && input.getDefinitions()
+    // .get(((RefProperty) ((BodyParameter) param).getSchema())
+    // .getSimpleRef()) instanceof ModelImpl
+    // && !added
+    // .contains(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef())) {
+    // ModelImpl inputObject = (ModelImpl) input.getDefinitions()
+    // .get(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+    // inputObject
+    // .setName(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+    // objects.add(inputObject);
+    // added.add(((RefProperty) ((BodyParameter) param).getSchema()).getSimpleRef());
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // return objects;
+    // }
 
 }
