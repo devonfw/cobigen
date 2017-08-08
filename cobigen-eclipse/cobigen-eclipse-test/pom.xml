@@ -172,7 +172,7 @@
     </repository>
     <repository>
       <id>cobigen-plugins</id>
-      <url>http://de-mucevolve02/files/cobigen/updatesite/experimental/</url>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
       <layout>p2</layout>
     </repository>
   </repositories>

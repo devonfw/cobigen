@@ -72,7 +72,7 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/nightly</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
@@ -99,7 +99,7 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/experimental</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
@@ -126,7 +126,7 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/stable</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
