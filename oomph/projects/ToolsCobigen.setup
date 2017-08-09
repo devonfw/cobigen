@@ -106,6 +106,8 @@
         <requirement
             name="com.capgemini.cobigen-tempeng-freemarker"/>
         <requirement
+            name="com.capgemini.cobigen-tempeng-velocity"/>
+        <requirement
             name="com.capgemini.cobigen-senchaplugin"/>
         <requirement
             name="com.capgemini.cobigen-textmerger"/>
@@ -141,6 +143,10 @@
               url="http://download.eclipse.org/technology/swtbot/snapshots"/>
           <repository
               url="http://de-mucevolve02/files/cobigen/updatesite/experimental/"/>
+          <repository
+              url="http://de-mucevolve02/files/cobigen/updatesite/stable/"/>
+          <repository
+              url="http://de-mucevolve02/files/cobigen/updatesite/nightly/"/>
         </repositoryList>
       </targlet>
     </setupTask>
