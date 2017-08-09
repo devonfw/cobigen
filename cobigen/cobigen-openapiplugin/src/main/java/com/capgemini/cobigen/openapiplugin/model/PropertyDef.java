@@ -12,6 +12,12 @@ public class PropertyDef {
 
     private String type;
 
+    private String format;
+
+    private boolean isCollection;
+
+    private boolean isEntity;
+
     private String description;
 
     private boolean required;
@@ -20,6 +26,8 @@ public class PropertyDef {
 
     public PropertyDef() {
         constraints = new HashMap<>();
+        setIsCollection(false);
+        setIsEntity(false);
     }
 
     public String getName() {
@@ -38,7 +46,7 @@ public class PropertyDef {
         this.type = type;
     }
 
-    public boolean isRequired() {
+    public boolean getRequired() {
         return required;
     }
 
@@ -60,6 +68,30 @@ public class PropertyDef {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public boolean getIsCollection() {
+        return isCollection;
+    }
+
+    public void setIsCollection(boolean isCollection) {
+        this.isCollection = isCollection;
+    }
+
+    public boolean getIsEntity() {
+        return isEntity;
+    }
+
+    public void setIsEntity(boolean isEntity) {
+        this.isEntity = isEntity;
     }
 
 }

@@ -5,8 +5,6 @@ import java.nio.file.Path;
 
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 
-import io.swagger.models.Swagger;
-
 /** Swagger file transfer object which contains the {@link Path} and the name of the file */
 public class OpenAPIFile {
 
@@ -21,7 +19,7 @@ public class OpenAPIFile {
      * @param location
      *            {@link URI} to the file
      * @param ast
-     *            {@link Swagger} AST
+     *            {@link OpenApi3} AST
      */
     public OpenAPIFile(Path location, OpenApi3 ast) {
         this.location = location;
