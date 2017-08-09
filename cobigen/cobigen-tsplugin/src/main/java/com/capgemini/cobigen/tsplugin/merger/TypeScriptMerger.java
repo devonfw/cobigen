@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -35,6 +37,9 @@ public class TypeScriptMerger implements Merger {
     /** The conflict resolving mode */
     private boolean patchOverrides;
 
+    /** Cached script engines to not evaluate dependent scripts again and again */
+    private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
+
     /**
      * Creates a new {@link TypeScriptMerger}
      *
@@ -45,7 +50,6 @@ public class TypeScriptMerger implements Merger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
     public TypeScriptMerger(String type, boolean patchOverrides) {
-
         this.type = type;
         this.patchOverrides = patchOverrides;
     }
@@ -85,31 +89,36 @@ public class TypeScriptMerger implements Merger {
      */
     private String executeJS(File base, ScriptExecutable executable, String scriptName) {
 
-        ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        if (!scriptEngines.containsKey(scriptName)) {
 
-        Compilable jsCompilable = (Compilable) jsEngine;
-        CompiledScript jsScript;
-        try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream("/" + scriptName))) {
-            jsScript = jsCompilable.compile(reader);
-        } catch (ScriptException e) {
-            throw new MergeException(base, "Could not compile " + scriptName
-                + " script on initialization. This is most properly a bug. Please report on GitHub.", e);
-        } catch (IOException e) {
-            throw new MergeException(base, "Could not read " + scriptName
-                + " script on initialization. This is most properly a bug. Please report on Github.", e);
+            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("nashorn");
+
+            Compilable jsCompilable = (Compilable) jsEngine;
+            CompiledScript jsScript;
+            try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream("/" + scriptName))) {
+                jsScript = jsCompilable.compile(reader);
+            } catch (ScriptException e) {
+                throw new MergeException(base, "Could not compile " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on GitHub.", e);
+            } catch (IOException e) {
+                throw new MergeException(base, "Could not read " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
+            }
+
+            ScriptContext scriptCtxt = jsEngine.getContext();
+            Bindings engineScope = scriptCtxt.getBindings(ScriptContext.ENGINE_SCOPE);
+            try {
+                jsEngine.eval("global = {}"); // simulate global object
+                jsScript.eval(engineScope);
+            } catch (ScriptException e) {
+                throw new MergeException(base, "Could not evaluate " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
+            }
+
+            scriptEngines.put(scriptName, jsEngine);
         }
 
-        ScriptContext scriptCtxt = jsEngine.getContext();
-        Bindings engineScope = scriptCtxt.getBindings(ScriptContext.ENGINE_SCOPE);
-        try {
-            jsEngine.eval("global = {}"); // simulate global object
-            jsScript.eval(engineScope);
-        } catch (ScriptException e) {
-            throw new MergeException(base, "Could not evaluate " + scriptName
-                + " script on initialization. This is most properly a bug. Please report on Github.", e);
-        }
-
-        Invocable jsInvocable = (Invocable) jsEngine;
+        Invocable jsInvocable = (Invocable) scriptEngines.get(scriptName);
         try {
             return (String) executable.exec(jsInvocable);
         } catch (NoSuchMethodException e) {
