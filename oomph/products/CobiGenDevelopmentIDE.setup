@@ -36,49 +36,49 @@
       licenseConfirmationDisabled="true">
     <requirement
         name="org.eclipse.m2e.feature.feature.group"
-        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
+        versionRange="[1.8.0,1.9.0)"/>
     <requirement
         name="org.eclipse.m2e.logback.feature.feature.group"
-        versionRange="[1.6.2.20150902-0002,1.6.2.20150902-0002]"/>
+        versionRange="[1.8.0,1.9.0)"/>
     <requirement
         name="org.eclipse.egit.feature.group"
-        versionRange="[4.6.1.201703071140-r,4.6.1.201703071140-r]"/>
+        versionRange="[4.8.0,4.9.0)"/>
     <requirement
         name="org.eclipse.oomph.p2.feature.group"
-        versionRange="[1.7.0.v20170228-1751,1.7.0.v20170228-1751]"/>
+        versionRange="[1.8.0,1.9.0)"/>
     <requirement
         name="org.eclipse.oomph.setup.feature.group"
-        versionRange="[1.7.0.v20170305-1123,1.7.0.v20170305-1123]"/>
+        versionRange="[1.9.0,1.10.0)"/>
     <requirement
-        name="org.eclipse.oomph.setup.git.feature.group"
-        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
-    <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group"
-        versionRange="[1.7.0.v20170104-1401,1.7.0.v20170104-1401]"/>
+        name="org.eclipse.oomph.setup.ui.ide.feature.group"
+        versionRange="[1.5.0,1.6.0)"/>
     <requirement
         name="org.eclipse.swtbot.feature.group"
-        versionRange="2.6.0"/>
+        versionRange="[2.7.0,2.8.0)"/>
     <requirement
         name="org.eclipse.swtbot.eclipse.feature.group"
-        versionRange="2.6.0"/>
+        versionRange="[2.7.0,2.8.0)"/>
+    <requirement
+        name="org.eclipse.swtbot.eclipse.test.junit.feature.group"
+        versionRange="[2.7.0,2.8.0)"/>
     <requirement
         name="org.eclipse.swtbot.ide.feature.group"
-        versionRange="2.6.0"/>
+        versionRange="[2.7.0,2.8.0)"/>
     <requirement
         name="org.eclipse.swtbot.generator.feature.feature.group"
-        versionRange="2.6.0"/>
+        versionRange="[2.7.0,2.8.0)"/>
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"
-        versionRange="[0.15.0.201207090124,0.15.0.201207090124]"/>
+        versionRange="[0.15.0,0.15.1)"/>
     <requirement
         name="de.bastiankrol.startexplorer.feature.feature.group"
         versionRange="[1.7.0,1.7.0]"/>
     <requirement
         name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"
-        versionRange="3.8.3"/>
+        versionRange="[3.9.0,3.10.0)"/>
     <requirement
         name="org.sonatype.tycho.m2e.feature.feature.group"
-        versionRange="[0.9.0.201609252021,0.9.0.201609252021]"/>
+        versionRange="[0.9.0,0.10.0)"/>
     <repository
         url="http://fabioz.github.io/startexplorer/update/"/>
     <repository
@@ -88,7 +88,7 @@
     <repository
         url="http://download.eclipse.org/technology/m2e/releases"/>
     <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
         url="http://download.eclipse.org/technology/swtbot/snapshots"/>
     <repository
