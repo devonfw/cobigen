@@ -18,7 +18,7 @@ public class OpenAPIMatcherTest {
      * Test valid {@link ComponentDef} matching
      */
     @Test
-    public void testValidComponentDefMatching() {
+    public void testValidEntityDefMatching() {
 
         EntityDef entityDef = new EntityDef();
         entityDef.setComponentName("Tablemanagement");
@@ -33,7 +33,7 @@ public class OpenAPIMatcherTest {
      * Test non valid {@link ComponentDef} matching
      */
     @Test
-    public void testInvalidComponentDefMatching() {
+    public void testInvalidEntityDefMatching() {
 
         EntityDef entityDef = new EntityDef();
         entityDef.setComponentName("Tablemanagement");

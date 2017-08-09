@@ -151,4 +151,8 @@ public class ModelConstant {
     public static final String RESPONSES = "responses";
 
     public static final String MULTIPART = "multipart";
+
+    public static final String MAX_ITEMS = null;
+
+    public static final String MIN_ITEMS = null;
 }
