@@ -279,7 +279,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages
+     * @return all available increments
      */
     public ComparableIncrement[] getAllIncrements() {
 
@@ -306,7 +306,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages (sorted and element ALL_INCREMENT_ID added on top)
+     * @return all available increments (sorted and element ALL_INCREMENT_ID added on top)
      */
     public List<TemplateTo> getAllTemplates() {
         return matchingTemplates;

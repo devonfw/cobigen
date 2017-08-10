@@ -95,7 +95,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         } else if (event.getSource().equals(incrementSelector)) {
             performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
-            performCheckLogicForALLPackage(incrementSelector, checkedElements);
+            performCheckLogicForALLIncrement(incrementSelector, checkedElements);
 
             Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
             Set<String> workspaceExternalPaths = Sets.newHashSet();
@@ -295,11 +295,11 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Performs an intelligent check logic, e.g. check/uncheck all packages when selecting "all"
      * @param incrementSelector
-     *            the {@link CheckboxTableViewer} listing all generation packages
+     *            the {@link CheckboxTableViewer} listing all increments
      * @param selectedElements
      *            the {@link Set} of all elements checked by the user
      */
-    private void performCheckLogicForALLPackage(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
+    private void performCheckLogicForALLIncrement(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
 
         Set<Object> addedDiff = new HashSet<>(selectedElements);
         Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
