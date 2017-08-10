@@ -84,7 +84,7 @@ node {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
 								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
 										throw err
 									}
@@ -102,7 +102,6 @@ node {
 			}
 			
 			stage('process test results') {
-				sh "find . -name *.xml -exec touch {} \\;"
 				// added 'allowEmptyResults:true' to prevent failure in case of no tests
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
 			}
