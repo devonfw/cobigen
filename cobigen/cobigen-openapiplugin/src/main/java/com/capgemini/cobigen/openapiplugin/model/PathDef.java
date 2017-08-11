@@ -1,6 +1,6 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
-import com.reprezen.kaizen.oasparser.model3.Path;
+import java.util.List;
 
 /**
  *
@@ -11,7 +11,16 @@ public class PathDef {
 
     private String version;
 
-    private Path path;
+    private List<OperationDef> operations;
+
+    public PathDef(String pathURI, String version) {
+        this.version = version;
+        this.pathURI = pathURI;
+    }
+
+    public PathDef() {
+        version = "v1";
+    }
 
     public String getPathURI() {
         return pathURI;
@@ -21,12 +30,12 @@ public class PathDef {
         this.pathURI = pathURI;
     }
 
-    public Path getPath() {
-        return path;
+    public List<OperationDef> getOperations() {
+        return operations;
     }
 
-    public void setPath(Path path) {
-        this.path = path;
+    public void setOperations(List<OperationDef> operations) {
+        this.operations = operations;
     }
 
     public String getVersion() {
