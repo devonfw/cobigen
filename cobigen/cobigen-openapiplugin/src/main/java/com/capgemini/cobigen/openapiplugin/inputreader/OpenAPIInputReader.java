@@ -12,6 +12,7 @@ import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
+import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
@@ -442,15 +443,20 @@ public class OpenAPIInputReader implements InputReader {
         for (String pathKey : paths.keySet()) {
             if (pathKey.contains(component)) {
                 String[] mp = pathKey.split("/");
-                PathDef path = new PathDef();
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {
                     pathUri = pathUri.concat(mp[i] + "/");
                 }
-                path.setPathURI(pathUri);
+                PathDef path = new PathDef(pathUri, mp[2]);
                 if (pathKey.contains(mp[1])) {
-                    path.setPath(paths.get(pathKey));
-                    path.setVersion(mp[2]);
+                    for (String opKey : paths.get(pathKey).getOperations().keySet()) {
+                        OperationDef operation = new OperationDef(opKey);
+                        operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
+                        operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
+                        operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
+                        operation.setTags((List<String>) paths.get(pathKey).getOperation(opKey).getTags());
+                        path.getOperations().add(operation);
+                    }
                 }
                 pathDefs.add(path);
             }

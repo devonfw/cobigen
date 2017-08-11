@@ -8,8 +8,6 @@ import java.util.List;
  */
 public class ComponentDef {
 
-    private String version;
-
     private List<PathDef> paths;
 
     public List<PathDef> getPaths() {
@@ -21,15 +19,6 @@ public class ComponentDef {
     }
 
     public ComponentDef() {
-        version = "v1";
         paths = new LinkedList<>();
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 }
