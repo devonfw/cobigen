@@ -117,10 +117,19 @@ node {
 					if (!non_deployable_branches.contains(origin_branch)) {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+							
 							if (origin_branch != 'dev_eclipseplugin'){
-								sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2Bundle -Dmaven.test.skip=true"
-								sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
-								sh "mvn -s ${MAVEN_SETTINGS} install -Pexperimental -Dmaven.test.skip=true"
+								def deployRoot = ""
+								if(origin_branch == 'dev_core'){
+									deployRoot = "cobigen-core"
+								}
+								dir(deployRoot) {
+									// we currently need these three steps to assure the correct sequence of packaging,
+									// manifest extension, osgi bundling, and upload
+									sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2Bundle -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
+								}
 							}
 						}
 					}
