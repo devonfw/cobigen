@@ -146,7 +146,7 @@
           <repository
               url="http://de-mucevolve02/files/cobigen/updatesite/stable/"/>
           <repository
-              url="http://de-mucevolve02/files/cobigen/updatesite/nightly/"/>
+              url="http://de-mucevolve02/files/cobigen/updatesite/ci/"/>
         </repositoryList>
       </targlet>
     </setupTask>
