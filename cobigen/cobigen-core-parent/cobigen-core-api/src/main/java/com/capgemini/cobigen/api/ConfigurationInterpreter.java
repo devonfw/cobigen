@@ -46,15 +46,6 @@ public interface ConfigurationInterpreter {
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException;
 
     /**
-     * Checks whether there is at least one input reader, which interprets the given input as combined input.
-     * @param input
-     *            object
-     * @return <code>true</code> if there is at least one input reader, which interprets the given input as
-     *         combined input,<code>false</code>, otherwise
-     */
-    public boolean combinesMultipleInputs(Object input);
-
-    /**
      * Resolves the destination path of a template for a given root path to generate to as well as a given
      * input to be used for variable resolution.
      * @param targetRootPath

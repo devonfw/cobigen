@@ -98,7 +98,7 @@ node {
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
 				notifyFailed()
-				return
+				return // do the return outside of stage area to exit the pipeline
 			}
 			
 			stage('process test results') {
@@ -117,6 +117,20 @@ node {
 					if (!non_deployable_branches.contains(origin_branch)) {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+							
+							if (origin_branch != 'dev_eclipseplugin'){
+								def deployRoot = ""
+								if(origin_branch == 'dev_core'){
+									deployRoot = "cobigen-core"
+								}
+								dir(deployRoot) {
+									// we currently need these three steps to assure the correct sequence of packaging,
+									// manifest extension, osgi bundling, and upload
+									sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2Bundle -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
+								}
+							}
 						}
 					}
 				}
@@ -126,6 +140,7 @@ node {
 				stage('integration-test') {
 					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
 					build job: 'dev_eclipseplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
+					build job: 'dev_mavenplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
 				}
 			}
 

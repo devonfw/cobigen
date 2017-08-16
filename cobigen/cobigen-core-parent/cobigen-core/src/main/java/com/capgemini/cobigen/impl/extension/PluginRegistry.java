@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.extension;
 
 import java.util.Collections;
 import java.util.Map;
@@ -141,7 +141,7 @@ public class PluginRegistry {
         if (triggerInterpreter != null) {
             triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
         }
-        InputValidator.validateTriggerInterpreter(triggerInterpreter);
+        InputValidator.validateTriggerInterpreter(triggerInterpreter, triggerType);
         return triggerInterpreter;
     }
 
