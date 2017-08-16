@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.generator;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +47,8 @@ import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
+import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Lists;

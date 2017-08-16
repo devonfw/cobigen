@@ -1,6 +1,5 @@
-package com.capgemini.cobigen.impl.exceptions;
+package com.capgemini.cobigen.api.exception;
 
-import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 
 /**
  * Occurs if a variable expression in the configuration xml is unknown

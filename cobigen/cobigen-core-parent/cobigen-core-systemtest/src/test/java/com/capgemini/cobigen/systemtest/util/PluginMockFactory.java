@@ -14,7 +14,7 @@ import java.util.HashMap;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.test.matchers.MatcherToMatcher;
 import com.capgemini.cobigen.test.matchers.VariableAssignmentToMatcher;
 
