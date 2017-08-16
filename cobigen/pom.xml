@@ -106,6 +106,7 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.0.2</version>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <archive>
                 <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
               </archive>
@@ -126,6 +127,7 @@
             </executions>
             <extensions>true</extensions>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <instructions>
                 <Fragment-Host>com.capgemini.cobigen.eclipse</Fragment-Host>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
