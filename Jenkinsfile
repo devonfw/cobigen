@@ -118,10 +118,10 @@ node {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 							
-							if (origin_branch != 'dev_eclipseplugin'){
+							if (origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_core'){
 								def deployRoot = ""
-								if(origin_branch == 'dev_core'){
-									deployRoot = "cobigen-core"
+								if(origin_branch == 'dev_javaplugin'){
+									deployRoot = "cobigen-javaplugin"
 								}
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
