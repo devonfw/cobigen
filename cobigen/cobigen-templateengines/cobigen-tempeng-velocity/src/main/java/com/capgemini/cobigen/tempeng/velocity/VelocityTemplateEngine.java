@@ -3,6 +3,7 @@ package com.capgemini.cobigen.tempeng.velocity;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -16,12 +17,10 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.extension.TextTemplate;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
 import com.capgemini.cobigen.tempeng.velocity.log.LogChuteDelegate;
-import com.capgemini.cobigen.tempeng.velocity.runtime.resources.NullResourceCach;
+import com.capgemini.cobigen.tempeng.velocity.runtime.resources.NullResourceCache;
 import com.capgemini.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
 
-/**
- * Template engine for Apache Velocity
- */
+/** Template engine for Apache Velocity */
 public class VelocityTemplateEngine implements TextTemplateEngine {
 
     /** Template Engine name */
@@ -53,8 +52,7 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
         engine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, new Boolean(false));
         engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, ResourceManagerDelegate.class.getName());
         engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, new Boolean(true));
-        engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CACHE_CLASS, NullResourceCach.class.getName());
-
+        engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CACHE_CLASS, NullResourceCache.class.getName());
     }
 
     @Override
@@ -70,12 +68,16 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
     @Override
     public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
         engine.setProperty(RuntimeConstants.OUTPUT_ENCODING, outputEncoding);
-        engine.init();
+        executeInThisClassloader(null, (p) -> {
+            engine.init();
+            return null;
+        });
+
         Context context = new VelocityContext(model);
         Template vmTemplate = null;
         try {
-            vmTemplate = engine.getTemplate(template.getRelativeTemplatePath());
-
+            vmTemplate =
+                executeInThisClassloader(template.getRelativeTemplatePath(), (path) -> engine.getTemplate(path));
         } catch (Throwable e) {
             throw new CobiGenRuntimeException("An error occured while retrieving the Velocity template "
                 + template.getAbsoluteTemplatePath() + " from the Velocity configuration.", e);
@@ -92,7 +94,6 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
                     "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
             }
         }
-
     }
 
     @Override
@@ -100,4 +101,27 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
         engine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, templateFolderPath.toString());
     }
 
+    /**
+     * Execute a function within the classloader loading THIS class to circumvent from velocity classpath
+     * conflicts in osgi environments
+     * @param <T>
+     *            parameter type of the function
+     * @param <R>
+     *            return type of the function
+     * @param param
+     *            function parameter
+     * @param exec
+     *            function to be called
+     * @return the return value of the function
+     */
+    private <T, R> R executeInThisClassloader(T param, Function<T, R> exec) {
+        Thread thread = Thread.currentThread();
+        ClassLoader loader = thread.getContextClassLoader();
+        thread.setContextClassLoader(this.getClass().getClassLoader());
+        try {
+            return exec.apply(param);
+        } finally {
+            thread.setContextClassLoader(loader);
+        }
+    }
 }

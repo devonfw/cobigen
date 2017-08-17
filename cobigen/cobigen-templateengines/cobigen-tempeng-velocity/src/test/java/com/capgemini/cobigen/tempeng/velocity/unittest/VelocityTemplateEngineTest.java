@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity;
+package com.capgemini.cobigen.tempeng.velocity.unittest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.extension.TextTemplate;
+import com.capgemini.cobigen.tempeng.velocity.VelocityTemplateEngine;
 
 /**
  *
