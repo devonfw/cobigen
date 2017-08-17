@@ -6,15 +6,47 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
   <name>CobiGen OASP4J Templates</name>
-  
+
   <parent>
     <groupId>com.capgemini</groupId>
     <artifactId>cobigen-templates-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
-  
+
   <properties>
+    <java.version>1.8</java.version>
     <skip.deployment>false</skip.deployment>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.oasp.java.modules</groupId>
+      <artifactId>oasp4j-basic</artifactId>
+      <version>2.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-util-pojo</artifactId>
+      <version>7.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.oasp.java.modules</groupId>
+      <artifactId>oasp4j-test</artifactId>
+      <version>2.4.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
