@@ -2,7 +2,8 @@ properties([
   parameters([
     string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
     string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
-   ])
+   ]),
+   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]
 ])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
