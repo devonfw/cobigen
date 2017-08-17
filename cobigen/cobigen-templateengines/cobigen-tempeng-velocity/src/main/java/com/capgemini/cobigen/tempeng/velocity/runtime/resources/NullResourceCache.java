@@ -9,7 +9,7 @@ import org.apache.velocity.runtime.resource.ResourceCache;
 /**
  * A non-cache implementation of the ResourceCache interface.
  */
-public class NullResourceCach implements ResourceCache {
+public class NullResourceCache implements ResourceCache {
 
     @Override
     public Iterator enumerateKeys() {

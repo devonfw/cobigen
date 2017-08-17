@@ -24,15 +24,14 @@ public class ResourceManagerDelegate implements ResourceManager {
     }
 
     @Override
-    public Resource getResource(String arg0, int arg1, String arg2) throws ResourceNotFoundException,
-        ParseErrorException {
+    public Resource getResource(String arg0, int arg1, String arg2)
+        throws ResourceNotFoundException, ParseErrorException {
         return manager.getResource(arg0, arg1, arg2);
     }
 
     @Override
     public void initialize(RuntimeServices arg0) {
         manager.initialize(arg0);
-
     }
 
 }
