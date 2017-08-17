@@ -139,6 +139,11 @@
                 <id>com.capgemini.cobigen-tempeng-freemarker</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-tempeng-velocity</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
             </extraRequirements>
           </dependency-resolution>
         </configuration>
@@ -171,8 +176,18 @@
       <layout>p2</layout>
     </repository>
     <repository>
-      <id>cobigen-plugins</id>
+      <id>cobigen-plugins-exp</id>
       <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>cobigen-plugins-ci</id>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>cobigen-plugins-stable</id>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
       <layout>p2</layout>
     </repository>
   </repositories>
