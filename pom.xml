@@ -274,7 +274,7 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
@@ -285,7 +285,7 @@
       </build>
     </profile>
     <profile>
-      <id>nightly</id>
+      <id>ci</id>
       <build>
         <plugins>
           <plugin>
@@ -301,8 +301,8 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
-                  <toDir>files/cobigen/updatesite/nightly/${project.artifactId}</toDir>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -328,7 +328,7 @@
                 <configuration>
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
