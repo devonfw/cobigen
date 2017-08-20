@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Widget;
 
 /**
  * Customized {@link CheckboxTreeViewer} which fires changed events if setting an array of checked elements
- * @author mbrunnli (15.03.2013)
  */
 public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
 
@@ -17,7 +16,6 @@ public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
      * Creates a new {@link CustomizedCheckboxTreeViewer} with {@link SWT#BORDER} style
      * @param parent
      *            of this viewer
-     * @author mbrunnli (15.03.2013)
      */
     public CustomizedCheckboxTreeViewer(Composite parent) {
         super(parent, SWT.BORDER);

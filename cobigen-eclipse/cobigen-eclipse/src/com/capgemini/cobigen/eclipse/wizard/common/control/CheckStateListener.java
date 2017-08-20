@@ -1,13 +1,18 @@
 package com.capgemini.cobigen.eclipse.wizard.common.control;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -23,7 +28,7 @@ import org.slf4j.MDC;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.tools.PathUtil;
+import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
@@ -33,7 +38,10 @@ import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * This {@link CheckStateListener} provides the check / uncheck of the increments list and the generation
@@ -50,8 +58,8 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /** The {@link SelectFilesPage} of the wizard providing the different viewer */
     private SelectFilesPage page;
 
-    /** Lastly checked generation packages */
-    private Set<Object> lastCheckedIncrements = new HashSet<>();
+    /** Lastly selected increments */
+    private Set<IncrementTo> selectedIncrements = new HashSet<>();
 
     /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
@@ -67,7 +75,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      *            states whether the check state listener should run in batch mode
      */
     public CheckStateListener(CobiGenWrapper cobigenWrapper, SelectFilesPage page, boolean batch) {
-
         this.cobigenWrapper = cobigenWrapper;
         this.page = page;
         this.batch = batch;
@@ -83,23 +90,33 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
-                .setCheckedResources(resourcesTree.getCheckedElements());
+                .setSelectedResources(resourcesTree.getCheckedElements());
             refreshNodes(event);
         } else if (event.getSource().equals(incrementSelector)) {
             performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
             performCheckLogicForALLPackage(incrementSelector, checkedElements);
 
-            Set<String> paths = getSelectedGenerationPaths();
-            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths);
+            Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
+            Set<String> workspaceExternalPaths = Sets.newHashSet();
+            for (String path : paths.keySet()) {
+                if (cobigenWrapper.isWorkspaceExternalPath(path)) {
+                    workspaceExternalPaths.add(path);
+                }
+            }
+            List<OffWorkspaceResourceTreeNode> offScopeResourceTree = buildOffScopeResourceTree(workspaceExternalPaths);
+            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet(),
+                offScopeResourceTree);
+            page.setDisplayedfilePathToTemplateMapping(paths);
+
             resourcesTree.setCheckedElements(new Object[0]);
             resourcesTree.refresh();
             resourcesTree.expandAll();
             if (!batch) {
-                setSimulatedResourcesChecked();
-                setMergeableResourcesChecked();
+                selectNewResources();
+                selectMergeableResources();
             } else {
-                setAllResourcesChecked();
+                selectAllResources(paths.keySet());
             }
         }
 
@@ -107,6 +124,101 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         LOG.info("Calculating of changed preview file tree finished.");
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    }
+
+    /**
+     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files to be generated.
+     * @param pathsStr
+     *            paths as strings to be built as a tree
+     * @return the list of root nodes.
+     */
+    private List<OffWorkspaceResourceTreeNode> buildOffScopeResourceTree(Set<String> pathsStr) {
+        Set<Path> paths = Sets.newHashSet();
+        for (String p : pathsStr) {
+            paths.add(Paths.get(p));
+        }
+
+        List<OffWorkspaceResourceTreeNode> rootResources = Lists.newArrayList();
+
+        Map<Path, Set<Path>> prefixToSuffixMap = Maps.newHashMap();
+        for (Path path : paths) {
+            MapUtils.deepMapAdd(prefixToSuffixMap, path.getRoot(), path.subpath(0, path.getNameCount()));
+        }
+
+        for (Path prefix : prefixToSuffixMap.keySet()) {
+            OffWorkspaceResourceTreeNode curr = new OffWorkspaceResourceTreeNode(null, prefix);
+            buildOffScopeResourceTree(curr, prefixToSuffixMap.get(prefix));
+            rootResources.add(curr);
+        }
+        return rootResources;
+    }
+
+    /**
+     * Builds the {@link OffWorkspaceResourceTreeNode} for workspace external files. This is the recursive
+     * function to process a parent node and all its subsequent paths.
+     * @param parent
+     *            {@link OffWorkspaceResourceTreeNode} parent node
+     * @param childPaths
+     *            relative child paths of the parent node
+     */
+    private void buildOffScopeResourceTree(OffWorkspaceResourceTreeNode parent, Set<Path> childPaths) {
+
+        Path emptyPath = Paths.get("");
+
+        Map<Path, Set<Path>> prefixToSuffixMap = Maps.newHashMap();
+
+        Path lonelyChildPath = emptyPath;
+        if (childPaths.size() == 1) {
+            lonelyChildPath = childPaths.iterator().next();
+        }
+
+        for (int i = 1;; i++) {
+            prefixToSuffixMap.clear();
+            Path pathPrefix = emptyPath;
+            for (Path path : childPaths) {
+                pathPrefix = path.subpath(i - 1, i);
+                Path pathSuffix = null;
+                if (i < path.getNameCount()) {
+                    pathSuffix = path.subpath(i, path.getNameCount());
+                }
+                MapUtils.deepMapAdd(prefixToSuffixMap, pathPrefix, pathSuffix);
+            }
+            if (childPaths.size() != 1 && prefixToSuffixMap.size() != 1
+                || childPaths.size() == 1 && i == lonelyChildPath.getNameCount() - 1) {
+                break;
+            } else {
+                Path newRootPath = parent.getPath().resolve(pathPrefix);
+                parent.setPath(newRootPath);
+            }
+        }
+
+        for (Entry<Path, Set<Path>> entry : prefixToSuffixMap.entrySet()) {
+            OffWorkspaceResourceTreeNode child;
+            if (entry.getValue().size() == 1) {
+                Path suffix = entry.getValue().iterator().next();
+                Path path = entry.getKey();
+                if (suffix != null) {
+                    if (suffix.getNameCount() > 1) {
+                        Path folderSuffix = suffix.subpath(0, suffix.getNameCount() - 1);
+                        path = entry.getKey().resolve(folderSuffix);
+                        child = new OffWorkspaceResourceTreeNode(parent, path);
+                        child.addChild(new OffWorkspaceResourceTreeNode(child,
+                            suffix.subpath(suffix.getNameCount() - 1, suffix.getNameCount())));
+                    } else {
+                        child = new OffWorkspaceResourceTreeNode(parent, path);
+                        child.addChild(new OffWorkspaceResourceTreeNode(child, suffix));
+                    }
+                } else {
+                    child = new OffWorkspaceResourceTreeNode(parent, path);
+                }
+            } else {
+                child = new OffWorkspaceResourceTreeNode(parent, entry.getKey());
+                if (entry.getValue() != null) {
+                    buildOffScopeResourceTree(child, entry.getValue());
+                }
+            }
+            parent.addChild(child);
+        }
     }
 
     /**
@@ -180,102 +292,70 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Returns all generation paths of the currently selected generation packages
-     * @return all generation paths of the currently selected generation packages
-     */
-    private Set<String> getSelectedGenerationPaths() {
-
-        Set<String> paths = new HashSet<>();
-        for (Object o : lastCheckedIncrements) {
-            if (o instanceof ComparableIncrement) {
-                ComparableIncrement pkg = ((ComparableIncrement) o);
-                paths.addAll(getDestinationPaths(pkg));
-                if (pkg.getId().equals("all")) {
-                    break;
-                }
-            }
-        }
-        return paths;
-    }
-
-    /**
-     * Returns the set of all workspace relative destination paths for the templates of the given
-     * {@link ComparableIncrement} but only for the {@link CobiGenWrapper#getCurrentRepresentingInput()}.
-     * @param pkg
-     *            {@link ComparableIncrement} the template destination paths should be retrieved for
-     * @return the {@link HashSet} of destination paths
-     */
-    private Set<String> getDestinationPaths(ComparableIncrement pkg) {
-
-        Set<String> paths = new HashSet<>();
-        for (TemplateTo template : pkg.getTemplates()) {
-            Path targetAbsolutePath = cobigenWrapper.resolveTemplateDestinationPath(template);
-            paths.add(PathUtil.getProjectDependentFile(cobigenWrapper.getGenerationTargetProject(), targetAbsolutePath)
-                .getFullPath().toString());
-        }
-        return paths;
-    }
-
-    /**
      * Performs an intelligent check logic, e.g. check/uncheck all packages when selecting "all"
-     * @param packageSelector
+     * @param incrementSelector
      *            the {@link CheckboxTableViewer} listing all generation packages
-     * @param checkedElements
+     * @param selectedElements
      *            the {@link Set} of all elements checked by the user
      */
-    private void performCheckLogicForALLPackage(CheckboxTreeViewer packageSelector, Set<Object> checkedElements) {
+    private void performCheckLogicForALLPackage(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
 
-        Set<Object> addedDiff = new HashSet<>(checkedElements);
-        Set<Object> removedDiff = new HashSet<>(lastCheckedIncrements);
-        addedDiff.removeAll(lastCheckedIncrements);
-        removedDiff.removeAll(checkedElements);
-        ComparableIncrement all = new ComparableIncrement("all", "All", null, Lists.<TemplateTo> newLinkedList(),
-            Lists.<IncrementTo> newLinkedList());
-        if (!lastCheckedIncrements.contains(all) && addedDiff.contains(all)) {
-            selectAllPackages(packageSelector);
-        } else if (lastCheckedIncrements.contains(all) && removedDiff.contains(all)) {
-            setAllChecked(packageSelector, false);
-            lastCheckedIncrements.clear();
+        Set<Object> addedDiff = new HashSet<>(selectedElements);
+        Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
+        addedDiff.removeAll(selectedIncrements);
+        removedDiff.removeAll(selectedElements);
+        ComparableIncrement all =
+            new ComparableIncrement(CobiGenWrapper.ALL_INCREMENT_ID, CobiGenWrapper.ALL_INCREMENT_NAME, null,
+                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList());
+        if (!selectedIncrements.contains(all) && addedDiff.contains(all)) {
+            setStateOfAllIncrements(incrementSelector, true);
+            setSelectedIncrements(Arrays.asList((Object[]) incrementSelector.getInput()));
+        } else if (selectedIncrements.contains(all) && removedDiff.contains(all)) {
+            setStateOfAllIncrements(incrementSelector, false);
+            selectedIncrements.clear();
         } else if (!removedDiff.isEmpty()) {
-            lastCheckedIncrements = checkedElements;
-            lastCheckedIncrements.remove(all);
-            packageSelector.setChecked(all, false);
+            setSelectedIncrements(selectedElements);
+            selectedIncrements.remove(all);
+            incrementSelector.setChecked(all, false);
         } else {
-            lastCheckedIncrements = checkedElements;
+            setSelectedIncrements(selectedElements);
+        }
+    }
+
+    /**
+     * Casts the selected elements coming from the content provider to a list of {@link IncrementTo}s.
+     * @param selectedElements
+     *            {@link IncrementTo}s from the increment content provider
+     */
+    private void setSelectedIncrements(Collection<Object> selectedElements) {
+        selectedIncrements.clear();
+        for (Object o : selectedElements) {
+            if (o instanceof IncrementTo) {
+                selectedIncrements.add((IncrementTo) o);
+            }
         }
     }
 
     /**
      * Sets all checkboxes of the package selector to be checked
-     * @param packageSelector
+     * @param incrementSelector
      *            {@link CheckboxTreeViewer}
      * @param checked
      *            <code>true</code> for all check boxes being checked, <code>false</code> otherwise
      */
-    private void setAllChecked(CheckboxTreeViewer packageSelector, boolean checked) {
+    private void setStateOfAllIncrements(CheckboxTreeViewer incrementSelector, boolean checked) {
 
         TreePath[] rootPaths =
-            ((SelectIncrementContentProvider) packageSelector.getContentProvider()).getAllRootPaths();
+            ((SelectIncrementContentProvider) incrementSelector.getContentProvider()).getAllRootPaths();
         for (TreePath path : rootPaths) {
-            packageSelector.setSubtreeChecked(path, checked);
+            incrementSelector.setSubtreeChecked(path, checked);
         }
     }
 
     /**
-     * Selects all packages in the package selector
-     * @param incrementSelector
-     *            package selector
+     * Sets all resources which will be created to be initially selected
      */
-    private void selectAllPackages(CheckboxTreeViewer incrementSelector) {
-
-        setAllChecked(incrementSelector, true);
-        lastCheckedIncrements = new HashSet<>(Arrays.asList((Object[]) incrementSelector.getInput()));
-    }
-
-    /**
-     * Sets all simulated resources to be initially checked
-     */
-    private void setSimulatedResourcesChecked() {
+    private void selectNewResources() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         LinkedList<Object> worklist = Lists.newLinkedList(Arrays.asList(
@@ -283,7 +363,9 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         while (worklist.peek() != null) {
             Object o = worklist.poll();
-            if (o instanceof IJavaElementStub || o instanceof IResourceStub) {
+            if (o instanceof IJavaElementStub || o instanceof IResourceStub
+                || (o instanceof OffWorkspaceResourceTreeNode
+                    && !Files.exists(((OffWorkspaceResourceTreeNode) o).getAbsolutePath()))) {
                 resourcesTree.setChecked(o, true);
             }
             worklist
@@ -292,14 +374,14 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     }
 
     /**
-     * Sets all mergeable files to be checked
+     * Sets all mergeable files to be selected
      */
-    private void setMergeableResourcesChecked() {
+    private void selectMergeableResources() {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (IFile file : cobigenWrapper.getMergeableFiles()) {
-            Object mergableTreeObject = ((SelectFileContentProvider) resourcesTree.getContentProvider())
-                .getProvidedObject(file.getFullPath().toString());
+        for (String path : cobigenWrapper.getMergeableFiles(selectedIncrements)) {
+            Object mergableTreeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
             if (mergableTreeObject != null) {
                 resourcesTree.setChecked(mergableTreeObject, true);
             }
@@ -308,13 +390,15 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
     /**
      * Sets all resources to be checked or unchecked
+     * @param currentlyDisplayedPaths
+     *            all currently displayed paths
      */
-    private void setAllResourcesChecked() {
+    private void selectAllResources(Set<String> currentlyDisplayedPaths) {
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        for (IFile f : cobigenWrapper.getAllTargetFilesOfFirstInput()) {
-            Object treeObject = ((SelectFileContentProvider) resourcesTree.getContentProvider())
-                .getProvidedObject(f.getFullPath().toString());
+        for (String path : currentlyDisplayedPaths) {
+            Object treeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
             if (treeObject != null) {
                 resourcesTree.setChecked(treeObject, true);
             }
