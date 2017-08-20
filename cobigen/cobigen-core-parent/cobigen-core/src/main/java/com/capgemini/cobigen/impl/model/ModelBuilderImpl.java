@@ -1,17 +1,28 @@
 package com.capgemini.cobigen.impl.model;
 
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.VariableAssignment;
+import com.capgemini.cobigen.impl.config.entity.Variables;
+import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.validator.InputValidator;
+import com.google.common.collect.Maps;
 
 /**
  * The {@link ModelBuilderImpl} is responsible to create the object models for a given object. Therefore, it
@@ -19,6 +30,9 @@ import com.capgemini.cobigen.impl.validator.InputValidator;
  * {@link MatcherInterpreter}s
  */
 public class ModelBuilderImpl implements ModelBuilder {
+
+    /** Namespace of the context and CobiGen variables retrieved by cobigen-core */
+    public static final String NS_VARIABLES = "variables";
 
     /** Input object for which a new object model should be created */
     private Object generatorInput;
@@ -77,12 +91,35 @@ public class ModelBuilderImpl implements ModelBuilder {
      *            to be enriched
      * @param triggerInterpreter
      *            {@link TriggerInterpreter} to resolve the variables
+     * @param template
+     *            the internal {@link Template} representation
+     * @param targetRootPath
      * @return the adapted model reference.
      */
     public Map<String, Object> enrichByContextVariables(Map<String, Object> model,
-        TriggerInterpreter triggerInterpreter) {
-        model.put("variables",
-            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter));
+        TriggerInterpreter triggerInterpreter, Template template, Path targetRootPath) {
+        Map<String, String> variables = Maps.newHashMap();
+        Map<String, String> contextVariables =
+            new ContextVariableResolver(generatorInput, trigger).resolveVariables(triggerInterpreter).asMap();
+        Map<String, String> templateProperties = template.getVariables().asMap();
+        Properties targetCobiGenProperties = CobiGenPropertiesReader.load(targetRootPath);
+        // if there are properties overriding each other, throw an exception for better usability.
+        // This is most probably a not intended mechanism such that we simply will not support it.
+        Set<String> intersection = new HashSet<>(contextVariables.keySet());
+        intersection.retainAll(templateProperties.keySet());
+        Set<String> intersection2 = new HashSet<>(contextVariables.keySet());
+        intersection2.retainAll(targetCobiGenProperties.keySet());
+        if (!intersection.isEmpty() || !intersection2.isEmpty()) {
+            throw new CobiGenRuntimeException("There are conflicting variables coming from the context configuration "
+                + "as well as coming from the " + ConfigurationConstants.COBIGEN_PROPERTIES + " file. "
+                + "This is most probably an unintended behavior and thus is not supported. The following variables are "
+                + "declared twice (once in " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME + " and once in "
+                + ConfigurationConstants.COBIGEN_PROPERTIES + " file): " + Arrays.toString(intersection.toArray()));
+        }
+        variables.putAll(contextVariables);
+        variables.putAll(templateProperties);
+        variables.putAll(new Variables(targetCobiGenProperties).asMap());
+        model.put(NS_VARIABLES, variables);
         return model;
     }
 
