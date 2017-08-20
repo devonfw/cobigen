@@ -2,7 +2,8 @@ properties([
   parameters([
     string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
     string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
-   ])
+   ]),
+   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]
 ])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
@@ -80,13 +81,11 @@ node {
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									if(origin_branch!='dev_eclipseplugin'){
-										sh "mvn -s ${MAVEN_SETTINGS} clean package"
-									}else{
+									nodejs(nodeJSInstallationName: '6.11') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
 								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
 										throw err
 									}
@@ -100,7 +99,7 @@ node {
 			if (currentBuild.result == 'UNSTABLE') {
 				setBuildStatus("Complete","FAILURE")
 				notifyFailed()
-				return
+				return // do the return outside of stage area to exit the pipeline
 			}
 			
 			stage('process test results') {
@@ -119,15 +118,30 @@ node {
 					if (!non_deployable_branches.contains(origin_branch)) {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+							
+							if (origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_core'){
+								def deployRoot = ""
+								if(origin_branch == 'dev_javaplugin'){
+									deployRoot = "cobigen-javaplugin"
+								}
+								dir(deployRoot) {
+									// we currently need these three steps to assure the correct sequence of packaging,
+									// manifest extension, osgi bundling, and upload
+									sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2Bundle -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
+								}
+							}
 						}
 					}
 				}
 			}
 
-			if(origin_branch != 'dev_eclipseplugin'){
+			if(origin_branch != 'dev_eclipseplugin' || origin_branch != 'dev_mavenplugin' || origin_branch != 'master'){
 				stage('integration-test') {
 					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
 					build job: 'dev_eclipseplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
+					build job: 'dev_mavenplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
 				}
 			}
 

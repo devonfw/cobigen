@@ -2,20 +2,13 @@ package com.capgemini.cobigen.javaplugin.inputreader.to;
 
 import java.net.URI;
 
-/**
- * Package transfer object which contains the {@link URI} of the package folder and the package name
- * @author mbrunnli (03.06.2014)
- */
+/** Package transfer object which contains the {@link URI} of the package folder and the package name */
 public class PackageFolder {
 
-    /**
-     * {@link URI} to the package folder
-     */
+    /** {@link URI} to the package folder */
     private URI location;
 
-    /**
-     * Package name
-     */
+    /** Package name */
     private String packageName;
 
     /**
@@ -29,7 +22,6 @@ public class PackageFolder {
      *            {@link URI} to the package folder
      * @param packageName
      *            package name
-     * @author mbrunnli (07.06.2014)
      */
     public PackageFolder(URI location, String packageName) {
         this.location = location;
@@ -45,7 +37,6 @@ public class PackageFolder {
      *            package name
      * @param classLoader
      *            for type resolution while parsing the package children
-     * @author mbrunnli (07.06.2014)
      */
     public PackageFolder(URI location, String packageName, ClassLoader classLoader) {
         this.location = location;
@@ -56,7 +47,6 @@ public class PackageFolder {
     /**
      * Returns the folder location {@link URI} of the package
      * @return the folder location {@link URI} of the package
-     * @author mbrunnli (07.06.2014)
      */
     public URI getLocation() {
         return location;
@@ -66,7 +56,6 @@ public class PackageFolder {
      * Sets the location of the package (last package element)
      * @param location
      *            new value of location
-     * @author mbrunnli (17.10.2014)
      */
     public void setLocation(URI location) {
         this.location = location;
@@ -75,7 +64,6 @@ public class PackageFolder {
     /**
      * Returns the package's name
      * @return the package's name
-     * @author mbrunnli (07.06.2014)
      */
     public String getPackageName() {
         return packageName;
@@ -85,7 +73,6 @@ public class PackageFolder {
      * Sets the package's name
      * @param packageName
      *            new value of packageName
-     * @author mbrunnli (17.10.2014)
      */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
@@ -94,7 +81,6 @@ public class PackageFolder {
     /**
      * Returns the field 'classLoader'
      * @return value of classLoader
-     * @author mbrunnli (17.10.2014)
      */
     public ClassLoader getClassLoader() {
         return classLoader;
@@ -104,10 +90,13 @@ public class PackageFolder {
      * Sets the class loader for type resolving while parsing children
      * @param classLoader
      *            new value of classLoader
-     * @author mbrunnli (17.10.2014)
      */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
+    @Override
+    public String toString() {
+        return "PackageFolder[packageName=" + packageName + ", location=" + location.toString() + "]";
+    }
 }
