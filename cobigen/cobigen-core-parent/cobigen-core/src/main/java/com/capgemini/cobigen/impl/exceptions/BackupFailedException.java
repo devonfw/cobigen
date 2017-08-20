@@ -16,7 +16,6 @@ public class BackupFailedException extends CobiGenRuntimeException {
      * Creates a new {@link BackupFailedException} with the given message
      * @param message
      *            message
-     * @author mbrunnli (Jun 24, 2015)
      */
     public BackupFailedException(String message) {
         super(message);
@@ -28,7 +27,6 @@ public class BackupFailedException extends CobiGenRuntimeException {
      *            message
      * @param cause
      *            original cause
-     * @author mbrunnli (Jun 24, 2015)
      */
     public BackupFailedException(String message, Throwable cause) {
         super(message, cause);

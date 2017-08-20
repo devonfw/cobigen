@@ -13,15 +13,15 @@ public interface ${variables.entityName} {
    *
    * @return the {@link ${variables.entityName}}s ID
    */
-	${getSimpleEntityTypeAsLongReference(field)} ${resolveIdGetter(field)};
+	${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,variables.component)};
 	
-	<#assign idVar = resolveIdVariableName(field)>
+	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
 	/**
 	* Sets a new {@link ${variables.entityName}} with the given ID.
 	* 
 	* @param ${idVar} of the {@link ${variables.entityName}} to be set
 	*/
-	void ${resolveIdSetter(field)}(${getSimpleEntityTypeAsLongReference(field)} ${idVar});
+	void ${OaspUtil.resolveIdSetter(field,false,variables.component)}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar});
 <#else>
 	/**
    * Returns the field ${field.name}.
