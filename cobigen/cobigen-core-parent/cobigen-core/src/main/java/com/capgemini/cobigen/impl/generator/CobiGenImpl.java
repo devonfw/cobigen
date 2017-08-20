@@ -1,5 +1,6 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.generator;
 
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,9 @@ import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
+import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.ModelBuilder;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
@@ -36,6 +39,11 @@ public class CobiGenImpl implements CobiGen {
     private ConfigurationInterpreter configurationInterpreter;
 
     /**
+     * {@link InputInterpreter} which handles InputReader delegates
+     */
+    private InputInterpreter inputInterpreter;
+
+    /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
      *
      * @param configurationHolder
@@ -45,8 +53,10 @@ public class CobiGenImpl implements CobiGen {
         this.configurationHolder = configurationHolder;
 
         // Create proxy of ConfigurationInterpreter to cache method calls
-        ConfigurationInterpreterImpl impl = new ConfigurationInterpreterImpl(configurationHolder);
-        configurationInterpreter = ProxyFactory.getProxy(impl);
+        ConfigurationInterpreterImpl configurationInterpreterImplProxy =
+            ProxyFactory.getProxy(new ConfigurationInterpreterImpl(configurationHolder));
+        configurationInterpreter = configurationInterpreterImplProxy;
+        inputInterpreter = ProxyFactory.getProxy(new InputInterpreterImpl(configurationInterpreterImplProxy));
     }
 
     @Override
@@ -133,7 +143,23 @@ public class CobiGenImpl implements CobiGen {
 
     @Override
     public boolean combinesMultipleInputs(Object input) {
-        return configurationInterpreter.combinesMultipleInputs(input);
+        return inputInterpreter.combinesMultipleInputs(input);
+    }
+
+    @Override
+    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjectsRecursively(input, inputCharset);
+    }
+
+    @Override
+    public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        return inputInterpreter.getInputObjects(input, inputCharset);
+    }
+
+    @Override
+    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
+        throws InputReaderException {
+        return inputInterpreter.read(type, path, inputCharset, additionalArguments);
     }
 
     @Override
@@ -155,4 +181,5 @@ public class CobiGenImpl implements CobiGen {
     public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
         return configurationInterpreter.resolveTemplateDestinationPath(targetRootPath, template, input);
     }
+
 }
