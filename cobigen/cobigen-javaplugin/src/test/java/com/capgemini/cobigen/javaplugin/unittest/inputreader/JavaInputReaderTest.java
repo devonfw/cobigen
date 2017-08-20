@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.Charsets;
 import org.junit.Test;
@@ -21,8 +20,6 @@ import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassW
 import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithRecursiveAnnotations;
 import com.capgemini.cobigen.javaplugin.util.JavaModelUtil;
 import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
-import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
 import com.google.common.collect.Lists;
 import com.thoughtworks.qdox.model.JavaClass;
 
@@ -138,26 +135,6 @@ public class JavaInputReaderTest {
             .createModel(new Object[] { JavaParserUtil.getFirstJavaClass(new FileReader(javaSourceFile)), javaClass });
         assertThat(model).as("No model has been created!").isNotNull();
 
-    }
-
-    /**
-     * Test method for {@link JavaInputReader#getTemplateMethods(Object)}. Checks whether the returning Map
-     * contains isSubtypeOf and isAstract as template methods.
-     */
-    @Test
-    public void testgetTemplateMethods() {
-        // create instance
-        JavaInputReader reader = new JavaInputReader();
-
-        // create test data
-        Map<String, Object> methods = reader.getTemplateMethods(getClass());
-        Set<String> keys = methods.keySet();
-
-        // validate
-        assertThat(keys.contains("isSubtypeOf")).isTrue();
-        assertThat(keys.contains("isAbstract")).isTrue();
-        assertThat(methods.get("isSubtypeOf") instanceof IsSubtypeOfMethod).isTrue();
-        assertThat(methods.get("isAbstract") instanceof IsAbstractMethod).isTrue();
     }
 
     /**

@@ -30,6 +30,8 @@ public abstract class AbstractCobiGenWrapper {
 
     /**
      * Creates a new generator instance
+     * @param inputSourceProject
+     *            project the input files have been selected from
      *
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project "RF-Generation" is not existent
@@ -40,9 +42,10 @@ public abstract class AbstractCobiGenWrapper {
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public AbstractCobiGenWrapper()
+    public AbstractCobiGenWrapper(IProject inputSourceProject)
         throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
         cobiGen = initializeGenerator();
+        targetProject = inputSourceProject;
     }
 
     /**
@@ -64,17 +67,6 @@ public abstract class AbstractCobiGenWrapper {
         ResourcesPluginUtil.refreshConfigurationProject();
         IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
         return CobiGenFactory.create(generatorProj.getLocationURI());
-    }
-
-    /**
-     * Sets the generation root target for all templates
-     *
-     * @param proj
-     *            {@link IProject} which represents the target root
-     */
-    public void setGenerationTargetProject(IProject proj) {
-
-        targetProject = proj;
     }
 
     /**

@@ -2,12 +2,12 @@ package com.capgemini.cobigen.unittest.config.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Map;
+import net.sf.mmm.util.lang.api.CaseSyntax;
 
 import org.junit.Test;
 
+import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
-import com.google.common.collect.Maps;
 
 /**
  * Test suite for {@link PathExpressionResolver}
@@ -21,9 +21,12 @@ public class PathExpressionResolverTest {
     private static PathExpressionResolver target;
 
     static {
-        Map<String, String> variables = Maps.newHashMap();
+        Variables variables = new Variables();
         variables.put("v1", "praefix Value Suffix");
         variables.put("v2", "Praefix Value Suffix");
+        variables.put("variablename", "PrefixValueSuffix");
+        variables.put("variablekey", "prefix_value_suffix");
+        variables.put("PackageName", "my.pkg.name");
         target = new PathExpressionResolver(variables);
     }
 
@@ -114,5 +117,17 @@ public class PathExpressionResolverTest {
     public void testEvaluateExpressionConcatenation() {
         assertThat(target.evaluateExpressions("asdf${variables.v1?lower_case?removePrefix('praefix')} asdf"))
             .isEqualTo("asdf value suffix asdf");
+    }
+
+    /**
+     * Test of {@link PathExpressionResolver#evaluateExpressions(String)} using the {@link CaseSyntax} with
+     * arbitrary cases.
+     */
+    @Test
+    public void testEvaluateExpressionCaseSyntax() {
+
+        assertThat(target.evaluateExpressions("foo-$_VariableName_$-bar-$_variableName_$-some"))
+            .isEqualTo("foo-PrefixValueSuffix-bar-prefixValueSuffix-some");
+        assertThat(target.evaluateExpressions("foo$_VariableName_$bar")).isEqualTo("fooPrefixValueSuffixbar");
     }
 }

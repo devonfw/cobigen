@@ -15,7 +15,6 @@ import java.util.Collections;
 
 /**
  * FileSystem utils.
- * @author mbrunnli (16.02.2015)
  */
 public class FileSystemUtil {
 
@@ -29,7 +28,6 @@ public class FileSystemUtil {
      * @throws IOException
      *             if the {@link File} the {@link URI} points to could not be read.
      * @return the {@link Path} dependent on the {@link FileSystem} used
-     * @author mbrunnli (16.02.2015)
      */
     public static Path createFileSystemDependentPath(URI targetUri) throws IOException {
 
