@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.api.constants;
 
+import java.util.Properties;
+
 /**
  * External accessible configuration constants.
  */
@@ -13,4 +15,7 @@ public class ConfigurationConstants {
 
     /** Templates configuration file name */
     public static final String TEMPLATES_CONFIG_FILENAME = "templates.xml";
+
+    /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
+    public static final String COBIGEN_PROPERTIES = "cobigen.properties";
 }

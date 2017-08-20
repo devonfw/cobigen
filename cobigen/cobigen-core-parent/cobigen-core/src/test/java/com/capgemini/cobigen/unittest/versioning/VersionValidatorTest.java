@@ -52,7 +52,6 @@ public class VersionValidatorTest {
     /**
      * Testing the CobiGen version with higher version number than configuration. However, there is no
      * breaking change in between.
-     * @author mbrunnli (May 17, 2016)
      */
     @Test
     public void testValidCobiGenVersion_higherButNonBreaking_templatesConfiguration() {
