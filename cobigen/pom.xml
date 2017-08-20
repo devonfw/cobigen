@@ -22,6 +22,7 @@
     <module>cobigen-senchaplugin</module>
     <module>cobigen-htmlplugin</module>
     <module>cobigen-tsplugin</module>
+    <module>cobigen-templateengines</module>
   </modules>
 
   <build>
@@ -59,6 +60,42 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings
+          only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.codehaus.mojo
+                    </groupId>
+                    <artifactId>
+                      build-helper-maven-plugin
+                    </artifactId>
+                    <versionRange>
+                      [1.4,)
+                    </versionRange>
+                    <goals>
+                      <goal>add-source</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <profiles>
@@ -71,6 +108,7 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.0.2</version>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <archive>
                 <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
               </archive>
@@ -91,8 +129,9 @@
             </executions>
             <extensions>true</extensions>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <instructions>
-                <Fragment-Host>com.capgemini.cobigen.eclipse</Fragment-Host>
+                <Fragment-Host>com.capgemini.cobigen.eclipse;bundle-version=3.0.0</Fragment-Host>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                 <Embed-Dependency>*;scope=!test</Embed-Dependency>
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
