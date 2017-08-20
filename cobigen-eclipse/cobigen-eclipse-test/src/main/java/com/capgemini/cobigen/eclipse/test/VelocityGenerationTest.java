@@ -41,8 +41,13 @@ public class VelocityGenerationTest extends SystemTest {
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
     }
 
+    /**
+     * Tests a simple generation using velocity template engine.
+     * @throws Exception
+     *             test fails
+     */
     @Test
-    public void testMutlipleTemplates_differentTrigger_samePath() throws Exception {
+    public void simpleVelocityBasedGeneration() throws Exception {
 
         // create a new temporary java project and copy java class used as an input for CobiGen
         String testProjectName = "TestInputProj";
