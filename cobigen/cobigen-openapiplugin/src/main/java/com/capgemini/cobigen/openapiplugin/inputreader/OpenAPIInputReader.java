@@ -2,6 +2,7 @@ package com.capgemini.cobigen.openapiplugin.inputreader;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -454,7 +455,10 @@ public class OpenAPIInputReader implements InputReader {
                         operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
                         operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
                         operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setTags((List<String>) paths.get(pathKey).getOperation(opKey).getTags());
+                        operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
+                        if (path.getOperations() == null) {
+                            path.setOperations(new ArrayList<OperationDef>());
+                        }
                         path.getOperations().add(operation);
                     }
                 }
