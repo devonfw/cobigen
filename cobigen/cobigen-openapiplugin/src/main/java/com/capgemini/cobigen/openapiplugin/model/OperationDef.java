@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class OperationDef {
 
     private String summary;
 
-    private List<String> tags;
+    private Collection<String> tags;
 
     public OperationDef(String type) {
         this.type = type;
@@ -73,11 +74,11 @@ public class OperationDef {
         this.summary = summary;
     }
 
-    public List<String> getTags() {
+    public Collection<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(Collection<String> tags) {
         this.tags = tags;
     }
 
