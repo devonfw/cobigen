@@ -21,6 +21,8 @@
     <module>cobigen-jsonplugin</module>
     <module>cobigen-senchaplugin</module>
     <module>cobigen-htmlplugin</module>
+    <module>cobigen-tsplugin</module>
+    <module>cobigen-templateengines</module>
   </modules>
 
   <build>
@@ -106,6 +108,7 @@
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.0.2</version>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <archive>
                 <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
               </archive>
@@ -126,8 +129,9 @@
             </executions>
             <extensions>true</extensions>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <instructions>
-                <Fragment-Host>com.capgemini.cobigen.eclipse</Fragment-Host>
+                <Fragment-Host>com.capgemini.cobigen.eclipse;bundle-version=3.0.0</Fragment-Host>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                 <Embed-Dependency>*;scope=!test</Embed-Dependency>
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>

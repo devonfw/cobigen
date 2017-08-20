@@ -1,10 +1,12 @@
 package com.capgemini.cobigen.api.extension;
 
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.annotation.ExceptionFacade;
+import com.capgemini.cobigen.api.exception.InputReaderException;
 
 /**
  * This is an extension point to enable further generator input support. Implementations should inherit this
@@ -72,5 +74,21 @@ public interface InputReader {
      * @return a list of input objects, the generation should be triggered for each.
      */
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset);
+
+    /**
+     * Reads the content at a path and returns a cobigen compliant input
+     * @param path
+     *            the {@link Path} to the object. Can also point to a folder
+     * @param inputCharset
+     *            of the input
+     * @param additionalArguments
+     *            depending on the InputReader implementation
+     * @return Object that is a valid input
+     * @throws InputReaderException
+     *             if the Path cannot be read
+     * @throws IllegalArgumentException
+     *             if the provided additional arguments do not suffice the used implementation
+     */
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException;
 
 }

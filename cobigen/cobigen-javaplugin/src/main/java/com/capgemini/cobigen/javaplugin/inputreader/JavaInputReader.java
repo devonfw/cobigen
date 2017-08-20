@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsAbstractMethod;
-import com.capgemini.cobigen.javaplugin.util.freemarkerutil.IsSubtypeOfMethod;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -120,9 +118,9 @@ public class JavaInputReader implements InputReader {
      * @param recursively
      *            states, whether the children should be retrieved recursively
      * @return the list of children. In this case {@link File} objects
-     * @author mbrunnli (18.01.2015)
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
+        LOG.debug("Retrieve input object for input {} {}", input, recursively ? "recursively" : "");
         List<Object> javaClasses = new LinkedList<>();
         if (input instanceof PackageFolder) {
             File packageFolder = new File(((PackageFolder) input).getLocation());
@@ -169,6 +167,7 @@ public class JavaInputReader implements InputReader {
 
             }
         }
+        LOG.debug("{} java classes found!", javaClasses.size());
         return javaClasses;
     }
 
@@ -185,17 +184,18 @@ public class JavaInputReader implements InputReader {
     private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 
         List<File> files = new LinkedList<>();
-        List<File> isDirectory = new LinkedList<>();
+        List<File> directories = new LinkedList<>();
         if (packageFolder.isDirectory()) {
             for (File f : packageFolder.listFiles()) {
                 if (f.isFile() && f.getName().endsWith(".java")) {
                     files.add(f);
+                    LOG.debug("Found java source {}", f.getAbsolutePath());
                 } else if (f.isDirectory()) {
-                    isDirectory.add(f);
+                    directories.add(f);
                 }
             }
             if (recursively) {
-                for (File dir : isDirectory) {
+                for (File dir : directories) {
                     files.addAll(retrieveAllJavaSourceFiles(dir, recursively));
                 }
             }
@@ -240,8 +240,6 @@ public class JavaInputReader implements InputReader {
             throw new IllegalArgumentException(
                 "There is no ClassLoader for the given input. Perhaps you used a bootstrap class (e.g.java.lang.String) as input which is not supported");
         }
-        methodMap.put("isAbstract", new IsAbstractMethod(classloader));
-        methodMap.put("isSubtypeOf", new IsSubtypeOfMethod(classloader));
         return methodMap;
     }
 

@@ -1,7 +1,6 @@
 package com.capgemini.cobigen.javaplugin.unittest.matcher.resolver;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -56,13 +55,7 @@ public class JavaMatcherTests {
         String regex = "((.+\\.)?([^.]+))\\.(datatype)\\.common\\.api(\\..*)?\\.([^.]+)";
 
         Map<String, String> result = javaMatcher.getResolvedVariables(null, regex, inputValue, variables);
-        assertNull("Expected detail to be null: " + result.toString(), result.get("detail"));
-
-        regex = "((.+\\.)?([^\\.]+))\\.([^\\.]+)\\.dataaccess\\.api(\\..*)?\\.([^\\.]+)Embeddable";
-        inputValue = "de.tukl.abc.project.standard.datatype.common.api.someEmbeddable";
-
-        result = javaMatcher.getResolvedVariables(null, regex, inputValue, variables);
-        assertNull("Expected detail to be null: " + result.toString(), result.get("detail"));
+        assertThat(result.get("detail")).as("value of detail").isEmpty();
     }
 
     /**
@@ -90,13 +83,7 @@ public class JavaMatcherTests {
         String regex = "((.+\\.)?([^.]+))\\.(datatype)\\.common\\.api(\\..*)?\\.([^.]+)";
 
         Map<String, String> result = javaMatcher.getResolvedVariables(null, regex, inputValue, variables);
-        assertNotNull("Expected detail to be not null: " + result.toString(), result.get("detail"));
-
-        regex = "((.+\\.)?([^.]+))\\.([^.]+)\\.dataaccess\\.api(\\..*)?\\.([^.]+)Embeddable";
-        inputValue = "de.tukl.abc.project.standard.datatype.dataaccess.api.my.subpackage.someEmbeddable";
-
-        result = javaMatcher.getResolvedVariables(null, regex, inputValue, variables);
-        assertNotNull("Expected detail to be not null: " + result.toString(), result.get("detail"));
+        assertThat(result.get("detail")).as("value of detail").isEqualTo(".subpackage");
     }
 
 }
