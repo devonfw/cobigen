@@ -1,0 +1,1 @@
+<#list pojo.fields as field>${field.type},</#list>

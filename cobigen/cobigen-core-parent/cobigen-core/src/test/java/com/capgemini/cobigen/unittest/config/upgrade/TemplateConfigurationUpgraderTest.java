@@ -55,7 +55,7 @@ public class TemplateConfigurationUpgraderTest {
             .hasSameContentAs(sourceTestdata);
 
         version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
-        assertThat(version).as("Target version").isEqualTo(TemplatesConfigurationVersion.v2_1);
+        assertThat(version).as("Target version").isEqualTo(TemplatesConfigurationVersion.v4_0);
 
         XMLUnit.setIgnoreWhitespace(true);
         new XMLTestCase() {
@@ -68,7 +68,6 @@ public class TemplateConfigurationUpgraderTest {
      * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 22, 2015)
      */
     @Test
     public void testCorrectV2_1SchemaDetection() throws Exception {
@@ -78,6 +77,6 @@ public class TemplateConfigurationUpgraderTest {
 
         TemplatesConfigurationVersion version =
             new TemplateConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
-        assertThat(version).isEqualTo(TemplatesConfigurationVersion.v2_1);
+        assertThat(version).isEqualTo(TemplatesConfigurationVersion.v4_0);
     }
 }

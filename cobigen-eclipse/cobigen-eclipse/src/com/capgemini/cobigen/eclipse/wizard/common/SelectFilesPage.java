@@ -1,17 +1,18 @@
 package com.capgemini.cobigen.eclipse.wizard.common;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -26,7 +27,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.prefs.BackingStoreException;
@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.eclipse.Activator;
-import com.capgemini.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.eclipse.wizard.common.control.ButtonListener;
@@ -45,10 +44,11 @@ import com.capgemini.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectIncrementContentProvider;
+import com.capgemini.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.CustomizedCheckboxTreeViewer;
 import com.capgemini.cobigen.eclipse.wizard.common.widget.SimulatedCheckboxTreeViewer;
 import com.capgemini.cobigen.impl.config.entity.Template;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 /**
  * The {@link SelectFilesPage} displays a resource tree of all resources that may be change by the generation
@@ -76,6 +76,9 @@ public class SelectFilesPage extends WizardPage {
 
     /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
     private boolean batch;
+
+    /** Value of {@link #setDisplayedfilePathToTemplateMapping(Map)} */
+    private Map<String, Set<TemplateTo>> displayedfilePathToTemplateMapping;
 
     /** Possible check states */
     public static enum CHECK_STATE {
@@ -219,7 +222,7 @@ public class SelectFilesPage extends WizardPage {
 
         resourcesTree.setContentProvider(cp);
         resourcesTree.setLabelProvider(lp);
-        resourcesTree.setInput(new IProject[] { cobigenWrapper.getGenerationTargetProject() });
+        resourcesTree.setInput(ResourcesPlugin.getWorkspace().getRoot().getProjects());
         resourcesTree.expandToLevel(AbstractTreeViewer.ALL_LEVELS);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.grabExcessHorizontalSpace = true;
@@ -235,76 +238,61 @@ public class SelectFilesPage extends WizardPage {
 
     @Override
     public boolean canFlipToNextPage() {
-
         return resourcesTree.getCheckedElements().length > 0;
     }
 
     /**
-     * Returns the set of all paths to files which should be generated
      * @return the set of all paths to files which should be generated
      */
-    public Set<String> getFilePathsToBeGenerated() {
+    private Set<String> getFilePathsToBeGenerated() {
 
         Set<String> filesToBeGenerated = new HashSet<>();
-        Object[] checkedElements = resourcesTree.getCheckedElements();
-        for (Object e : checkedElements) {
-            if (e instanceof IJavaElement) {
-                filesToBeGenerated.add(((IJavaElement) e).getPath().toString());
-            } else if (e instanceof IResource) {
-                filesToBeGenerated.add(((IResource) e).getFullPath().toString());
+        Object[] selectedElements = resourcesTree.getCheckedElements();
+        for (Object e : selectedElements) {
+            if (e instanceof ICompilationUnit) {
+                filesToBeGenerated.add(((ICompilationUnit) e).getPath().toString());
+            } else if (e instanceof IFile) {
+                filesToBeGenerated.add(((IFile) e).getFullPath().toString());
+            } else if (e instanceof OffWorkspaceResourceTreeNode && !((OffWorkspaceResourceTreeNode) e).hasChildren()) {
+                filesToBeGenerated.add(((OffWorkspaceResourceTreeNode) e).getAbsolutePathStr());
             }
         }
         return filesToBeGenerated;
     }
 
     /**
-     * Returns a {@link Set} containing the {@link Template}s, that are included in the selected
-     * {@link ComparableIncrement}s
-     * @return the {@link Set} of {@link Template}s
+     * @return a {@link Set} containing the {@link Template}s, that are included in the selected
+     *         {@link ComparableIncrement}s
      */
     public List<TemplateTo> getTemplatesToBeGenerated() {
 
-        Set<IncrementTo> selectedIncrements = Sets.newHashSet();
-        for (Object checkedElement : incrementSelector.getCheckedElements()) {
-            if (checkedElement instanceof IncrementTo) {
-                selectedIncrements.add((IncrementTo) checkedElement);
-            }
+        List<TemplateTo> templatesToBeGenerated = Lists.newArrayList();
+        for (String pathToBeGenerated : getFilePathsToBeGenerated()) {
+            templatesToBeGenerated.addAll(displayedfilePathToTemplateMapping.get(pathToBeGenerated));
         }
 
-        ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-        DetermineTemplatesJob job =
-            new DetermineTemplatesJob(getFilePathsToBeGenerated(), selectedIncrements, cobigenWrapper);
-        try {
-            dialog.run(true, false, job);
-        } catch (InvocationTargetException | InterruptedException e) {
-            String message =
-                "An internal error occured while invoking the job for determining the templates to generate.";
-            LOG.error(message, e);
-            throw new CobiGenEclipseRuntimeException(message, e);
-        }
-
-        // forward potential occurred exception
-        if (job.isExceptionOccurred()) {
-            throw job.getOccurredException();
-        }
-
-        return job.getResultTemplates();
+        return templatesToBeGenerated;
     }
 
     /**
-     * Returns all selected {@link IResource}s of the {@link TreeViewer}
-     * @return all selected {@link IResource}s of the {@link TreeViewer}
+     * @return all selected {@link IncrementTo}s of the {@link TreeViewer} for increment selection
      */
-    public List<Object> getSelectedResources() {
-
-        List<Object> selectedResources = new LinkedList<>();
-        Object[] checkedElements = resourcesTree.getCheckedElements();
-        for (Object e : checkedElements) {
-            if (e instanceof IJavaElement || e instanceof IResource) {
-                selectedResources.add(e);
+    public List<IncrementTo> getSelectedIncrements() {
+        List<IncrementTo> increments = Lists.newArrayList();
+        for (Object o : Arrays.asList(incrementSelector.getCheckedElements())) {
+            if (o instanceof IncrementTo) {
+                increments.add((IncrementTo) o);
             }
         }
-        return selectedResources;
+        return increments;
+    }
+
+    /**
+     * @return all selected {@link IResource}s and {@link IJavaElement}s of the {@link TreeViewer} for file
+     *         selection
+     */
+    public List<Object> getSelectedResources() {
+        return Arrays.asList(resourcesTree.getCheckedElements());
     }
 
     /**
@@ -324,8 +312,9 @@ public class SelectFilesPage extends WizardPage {
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
                     incrementSelector.setChecked(element, true);
                 }
-            } else if (element.getId().equals("all")) {
-                String value = selection.node("All").get(element.getId(), CHECK_STATE.UNCHECKED.name());
+            } else if (element.getId().equals(CobiGenWrapper.ALL_INCREMENT_ID)) {
+                String value = selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).get(element.getId(),
+                    CHECK_STATE.UNCHECKED.name());
                 if (value.equals(CHECK_STATE.CHECKED.name())) {
                     incrementSelector.setChecked(element, true);
                 }
@@ -353,11 +342,12 @@ public class SelectFilesPage extends WizardPage {
                 } else {
                     selection.node(element.getTriggerId()).put(element.getId(), CHECK_STATE.UNCHECKED.name());
                 }
-            } else if (element.getId().equals("all")) {
+            } else if (element.getId().equals(CobiGenWrapper.ALL_INCREMENT_ID)) {
                 if (items[i].getChecked()) {
-                    selection.node("All").put(element.getId(), CHECK_STATE.CHECKED.name());
+                    selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).put(element.getId(), CHECK_STATE.CHECKED.name());
                 } else {
-                    selection.node("All").put(element.getId(), CHECK_STATE.UNCHECKED.name());
+                    selection.node(CobiGenWrapper.ALL_INCREMENT_NAME).put(element.getId(),
+                        CHECK_STATE.UNCHECKED.name());
                 }
             }
         }
@@ -375,11 +365,20 @@ public class SelectFilesPage extends WizardPage {
      *         <code>false</code> otherwise
      */
     public boolean isSetRememberSelection() {
-
         if (rememberSelection != null) {
             return rememberSelection.getSelection();
         }
         return false;
+    }
+
+    /**
+     * Sets the cache for the mapping between currently displayed file paths and its {@link TemplateTo}
+     * representation
+     * @param cachedMapping
+     *            cached mapping
+     */
+    public void setDisplayedfilePathToTemplateMapping(Map<String, Set<TemplateTo>> cachedMapping) {
+        displayedfilePathToTemplateMapping = cachedMapping;
     }
 
 }
