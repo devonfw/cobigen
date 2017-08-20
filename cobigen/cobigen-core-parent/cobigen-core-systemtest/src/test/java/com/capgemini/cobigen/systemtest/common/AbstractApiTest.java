@@ -6,8 +6,6 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.TemplateEngineRegistry;
-import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 
 /**
  * Abstract test implementation providing cross-cutting functionality and properties.
@@ -25,13 +23,6 @@ public abstract class AbstractApiTest {
      */
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
-
-    /**
-     * Registers the default template engine for generation.
-     */
-    static {
-        TemplateEngineRegistry.register(FreeMarkerTemplateEngine.class);
-    }
 
     /**
      * Search for template by id

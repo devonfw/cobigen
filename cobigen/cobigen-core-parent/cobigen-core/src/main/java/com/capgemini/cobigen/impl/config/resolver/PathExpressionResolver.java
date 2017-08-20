@@ -1,9 +1,9 @@
 package com.capgemini.cobigen.impl.config.resolver;
 
+import com.capgemini.cobigen.api.exception.UnknownExpressionException;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 
 /**
  * The {@link PathExpressionResolver} provides an interface for replacing any variable expression in a

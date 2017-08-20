@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl;
+package com.capgemini.cobigen.impl.generator;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -25,6 +25,7 @@ import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.base.Charsets;
@@ -96,17 +97,6 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         return templates;
     }
 
-    @Cached
-    @Override
-    public boolean combinesMultipleInputs(Object input) {
-        List<Trigger> matchingTriggers = getMatchingTriggers(input);
-        for (Trigger trigger : matchingTriggers) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
-        }
-        return false;
-    }
-
     @Override
     public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
@@ -163,7 +153,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      *            object
      * @return the {@link List} of matching {@link Trigger}s
      */
-    private List<Trigger> getMatchingTriggers(Object matcherInput) {
+    List<Trigger> getMatchingTriggers(Object matcherInput) {
 
         LOG.debug("Retrieve matching triggers.");
         List<Trigger> matchingTrigger = Lists.newLinkedList();
