@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -44,7 +45,10 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
 
     /**
      * Creates a new generator instance
-     *
+     * @param inputs
+     *            list of inputs for generation
+     * @param inputSourceProject
+     *            project from which the inputs have been selected
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project "RF-Generation" is not existent
      * @throws CoreException
@@ -54,9 +58,9 @@ public class JavaGeneratorWrapper extends CobiGenWrapper {
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public JavaGeneratorWrapper()
+    public JavaGeneratorWrapper(IProject inputSourceProject, List<Object> inputs)
         throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
-        super();
+        super(inputSourceProject, inputs);
     }
 
     @Override
