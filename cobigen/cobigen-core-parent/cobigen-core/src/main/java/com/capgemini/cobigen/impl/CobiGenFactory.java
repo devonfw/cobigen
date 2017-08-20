@@ -11,12 +11,18 @@ import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
+import com.capgemini.cobigen.impl.extension.ServiceLookup;
+import com.capgemini.cobigen.impl.generator.CobiGenImpl;
 import com.capgemini.cobigen.impl.util.FileSystemUtil;
 
 /**
  * CobiGen's Factory to create new instances of {@link CobiGen}.
  */
 public class CobiGenFactory {
+
+    static {
+        ServiceLookup.detectServices();
+    }
 
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
