@@ -73,17 +73,11 @@ node {
 					wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
 						withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pl-technical-user', usernameVariable: 'DEVON_NEXUS_USER', passwordVariable: 'DEVON_NEXUS_PASSWD']]) {
 						
-							// just skip tycho tests by targeting 'package' (running in integration-test phase) as they are not yet working due to xvnc issues
-							// current warning, which maybe points to the cause: 
-							// Xlib:  extension "RANDR" missing on display
-							// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
 									if(origin_branch!='dev_eclipseplugin'){
-										nodejs(nodeJSInstallationName: '6.11') {
-											sh "mvn -s ${MAVEN_SETTINGS} clean package"
-										}
+										sh "mvn -s ${MAVEN_SETTINGS} clean package"
 									}else{
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
@@ -118,9 +112,13 @@ node {
 			
 			stage('deploy') {
 				dir(root) {
-					if (!non_deployable_branches.contains(origin_branch)) {
-						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+					configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+						if (!non_deployable_branches.contains(origin_branch)) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+						} else if(origin_branch == 'dev_eclipseplugin') {
+							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', 	passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
+								sh "mvn -s ${MAVEN_SETTINGS} install -Dmaven.test.skip=true -PuploadCi"
+							}
 						}
 					}
 				}
