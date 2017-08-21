@@ -5,21 +5,28 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.capgemini.cobigen.eclipse.common.exceptions.InvalidInputException;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
+import com.capgemini.cobigen.eclipse.generator.generic.FileInputConverter;
+import com.capgemini.cobigen.eclipse.generator.generic.FileInputGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.generator.java.JavaInputConverter;
-import com.capgemini.cobigen.eclipse.generator.xml.XmlGeneratorWrapper;
-import com.capgemini.cobigen.eclipse.generator.xml.XmlInputConverter;
+import com.capgemini.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
+import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.google.common.collect.Lists;
 
 /**
@@ -51,23 +58,33 @@ public class GeneratorWrapperFactory {
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
         if (extractedInputs.size() > 0) {
+            CobiGen cobigen = initializeGenerator();
+
+            Display.getDefault().syncExec(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+
+            ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+            progressMonitor.open();
+            progressMonitor.getProgressMonitor().beginTask("Reading inputs...", 0);
+            Object firstElement = extractedInputs.get(0);
+
             try {
-                Object firstElement = extractedInputs.get(0);
                 if (firstElement instanceof IJavaElement) {
                     LOG.info("Create new CobiGen instance for java inputs...");
-                    return new JavaGeneratorWrapper(((IJavaElement) firstElement).getJavaProject().getProject(),
-                        JavaInputConverter.convertInput(extractedInputs));
+                    return new JavaInputGeneratorWrapper(cobigen,
+                        ((IJavaElement) firstElement).getJavaProject().getProject(),
+                        JavaInputConverter.convertInput(extractedInputs, cobigen));
                 } else if (firstElement instanceof IFile) {
-                    LOG.info("Create new CobiGen instance for xml inputs...");
-                    return new XmlGeneratorWrapper(((IFile) firstElement).getProject(),
-                        XmlInputConverter.convertInput(extractedInputs));
+                    LOG.info("Create new CobiGen instance for file inputs...");
+                    return new FileInputGeneratorWrapper(cobigen, ((IFile) firstElement).getProject(),
+                        FileInputConverter.convertInput(cobigen, extractedInputs));
                 }
-            } catch (CoreException e) {
-                LOG.error("An eclipse internal exception occurred", e);
-                throw new GeneratorCreationException("An eclipse internal exception occurred", e);
-            } catch (IOException e) {
-                LOG.error("Configuration source could not be read", e);
-                throw new GeneratorCreationException("Configuration source could not be read", e);
+            } finally {
+                progressMonitor.close();
             }
         }
         return null;
@@ -87,7 +104,6 @@ public class GeneratorWrapperFactory {
      * @throws InvalidInputException
      *             if the selection includes non supported input types or is composed in a non supported
      *             combination of inputs.
-     * @author mbrunnli (04.12.2014)
      */
     private static List<Object> extractValidEclipseInputs(IStructuredSelection selection) throws InvalidInputException {
         LOG.info("Start extraction of valid inputs from selection...");
@@ -154,5 +170,30 @@ public class GeneratorWrapperFactory {
 
         LOG.info("Finished extraction of inputs from selection successfully.");
         return inputObjects;
+    }
+
+    /**
+     * Initializes the {@link CobiGen} with the correct configuration
+     *
+     * @return the configured{@link CobiGen}
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator configuration folder does not exist
+     * @throws InvalidConfigurationException
+     *             if the context configuration is not valid
+     * @throws GeneratorCreationException
+     *             if the generator configuration project does not exist
+     */
+    private static CobiGen initializeGenerator()
+        throws GeneratorProjectNotExistentException, InvalidConfigurationException, GeneratorCreationException {
+
+        try {
+            ResourcesPluginUtil.refreshConfigurationProject();
+            IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+            return CobiGenFactory.create(generatorProj.getLocationURI());
+        } catch (CoreException e) {
+            throw new GeneratorCreationException("An eclipse internal exception occurred", e);
+        } catch (IOException e) {
+            throw new GeneratorCreationException("Configuration source could not be read", e);
+        }
     }
 }
