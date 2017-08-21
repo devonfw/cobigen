@@ -141,7 +141,7 @@ node {
 				}
 			}
 
-			if(origin_branch != 'dev_eclipseplugin' || origin_branch != 'dev_mavenplugin' || origin_branch != 'master'){
+			if(origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_mavenplugin' && origin_branch != 'master'){
 				stage('integration-test') {
 					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
 					build job: 'dev_eclipseplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
