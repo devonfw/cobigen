@@ -119,7 +119,7 @@ node {
 						if (!non_deployable_branches.contains(origin_branch)) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 							
-							if (origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_core'){
+							if (origin_branch != 'dev_core'){
 								def deployRoot = ""
 								if(origin_branch == 'dev_javaplugin'){
 									deployRoot = "cobigen-javaplugin"
@@ -131,6 +131,7 @@ node {
 									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
 									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
 								}
+							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
 								sh "mvn -s ${MAVEN_SETTINGS} install -Dmaven.test.skip=true -PuploadCi"
