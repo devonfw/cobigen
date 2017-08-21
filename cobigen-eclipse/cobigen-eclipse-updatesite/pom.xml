@@ -56,7 +56,7 @@
 
   <profiles>
     <profile>
-      <id>uploadNightly</id>
+      <id>uploadCi</id>
       <build>
         <plugins>
           <plugin>
@@ -73,7 +73,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/nightly</toDir>
+                  <toDir>files/cobigen/updatesite/ci/cobigen-eclipse</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -100,7 +100,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/experimental</toDir>
+                  <toDir>files/cobigen/updatesite/experimental/cobigen-eclipse</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -127,7 +127,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/stable</toDir>
+                  <toDir>files/cobigen/updatesite/stable/cobigen-eclipse</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
