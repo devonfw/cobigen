@@ -8,3 +8,4 @@ target
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
 cobigen/cobigen-javaplugin/src/main/resources/lib/*
 cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/main/resources/lib/
+cobigen/cobigen-xmlplugin/src/main/resources/lib/
