@@ -3,5 +3,4 @@
 <library libAttr1="1" libAttr2="2" libAttr3="3" >
      libTextContent
      <city>city</city>
-     <city>cityb</city>
 </library>
