@@ -19,13 +19,15 @@ import java.util.regex.Pattern;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.impl.util.SystemUtil;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
  * being provided as the file contents of the patch.
  */
 public class PropertyMerger implements Merger {
+
+    /** Line separator, e.g. for windows '\r\n' */
+    public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     /**
      * Merger Type to be registered
@@ -96,7 +98,6 @@ public class PropertyMerger implements Merger {
      */
     private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch)
         throws IOException {
-        String lineSeparator = SystemUtil.LINE_SEPARATOR;
 
         List<String> recordedComments = new LinkedList<>();
         Map<String, String> collection = new HashMap<>();
@@ -108,10 +109,10 @@ public class PropertyMerger implements Merger {
             line = line.trim();
             // adding key of the respective value to the collection
             if (line.startsWith("#")) {
-                collection.put("recordedComments" + count, lineSeparator + line);
+                collection.put("recordedComments" + count, LINE_SEPARATOR + line);
                 if (lastLineWasComment) {
                     String lastComment = recordedComments.remove(recordedComments.size() - 1);
-                    recordedComments.add(lastComment + lineSeparator + line);
+                    recordedComments.add(lastComment + LINE_SEPARATOR + line);
                 } else {
                     lastLineWasComment = true;
                     recordedComments.add(line);
@@ -119,7 +120,7 @@ public class PropertyMerger implements Merger {
             } else {
                 lastLineWasComment = false;
                 if (!line.trim().isEmpty()) {
-                    collection.put(line.substring(0, line.indexOf("=")), lineSeparator + line);
+                    collection.put(line.substring(0, line.indexOf("=")), LINE_SEPARATOR + line);
                 }
             }
             count++;
@@ -130,28 +131,28 @@ public class PropertyMerger implements Merger {
         String lastObservedComment = null;
         int observedEmptyLines = 0;
         count = 0;
-        for (String patchLine : patch.split(lineSeparator)) {
+        for (String patchLine : patch.split(LINE_SEPARATOR)) {
             m = p.matcher(patchLine);
             if (m.matches()) {
                 // no conflicts
                 if (!conflicts.contains(m.group(1))) {
-                    collection.put(m.group(1), lineSeparator + patchLine);
+                    collection.put(m.group(1), LINE_SEPARATOR + patchLine);
                     observedEmptyLines = 0;
                 } else {
                     if (patchOverrides) { // override the original by patch file
                         // patchLine;
-                        collection.put(m.group(1), lineSeparator + patchLine);
+                        collection.put(m.group(1), LINE_SEPARATOR + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
             } else if (patchLine.startsWith("#")) {
                 // record comment over multiple lines
                 if (lastObservedComment != null) {
-                    lastObservedComment += lineSeparator + patchLine;
-                    collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
+                    lastObservedComment += LINE_SEPARATOR + patchLine;
+                    collection.put("lastObservedComment" + count, LINE_SEPARATOR + lastObservedComment);
                 } else {
                     lastObservedComment = patchLine;
-                    collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
+                    collection.put("lastObservedComment" + count, LINE_SEPARATOR + lastObservedComment);
                 }
             } else {
                 if (lastObservedComment == null && patchLine.trim().isEmpty()) {
@@ -161,16 +162,16 @@ public class PropertyMerger implements Merger {
                     // comment if not so
                     if (lastObservedComment != null && !recordedComments.contains(lastObservedComment)) {
                         for (int i = 0; i < observedEmptyLines; i++) {
-                            collection.put("_blank" + count, lineSeparator);
+                            collection.put("_blank" + count, LINE_SEPARATOR);
                         }
-                        collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
+                        collection.put("lastObservedComment" + count, LINE_SEPARATOR + lastObservedComment);
                     }
                     lastObservedComment = null;
                     observedEmptyLines = 0;
 
                     if (!patchLine.trim().isEmpty()) {
                         // patchLine;
-                        collection.put("patchLineNotEmpty" + count, lineSeparator + patchLine);
+                        collection.put("patchLineNotEmpty" + count, LINE_SEPARATOR + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
