@@ -13,3 +13,4 @@ cobigen/cobigen-tsplugin/src/main/resources/lib/
 cobigen/cobigen-propertyplugin/src/main/resources/lib/
 cobigen/cobigen-textmerger/src/main/resources/lib/
 cobigen/cobigen-htmlplugin/src/main/resources/lib/
+cobigen/cobigen-jsonplugin/src/main/resources/lib/
