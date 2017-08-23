@@ -62,6 +62,8 @@ node {
 				root = "cobigen/cobigen-core-parent"
 			} else if (origin_branch == "dev_javaplugin") {
 				root = "cobigen/cobigen-javaplugin-parent"
+			} else if (origin_branch == "dev_jssenchaplugin") {
+                root = "cobigen/cobigen-senchaplugin"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
