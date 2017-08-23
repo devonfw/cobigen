@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -72,6 +73,7 @@ public class InputReaderMatcherTest {
      *             test fails
      */
     @Test
+    @Ignore
     public void testModel_versionProperty() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
