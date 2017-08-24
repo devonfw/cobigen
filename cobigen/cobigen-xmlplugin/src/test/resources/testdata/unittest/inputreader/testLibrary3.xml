@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<library libAttr1="1" libAttr2="2" libAttr3="3" >
+     libTextContent
+     <city>city</city>
+     <city>citya</city>
+     <city>cityb</city>
+</library>
