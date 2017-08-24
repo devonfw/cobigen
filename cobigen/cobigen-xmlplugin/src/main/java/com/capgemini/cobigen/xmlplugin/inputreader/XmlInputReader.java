@@ -1,27 +1,34 @@
 package com.capgemini.cobigen.xmlplugin.inputreader;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 
-/**
- * {@link InputReader} for XML files.
- */
+/** {@link InputReader} for XML files. */
 public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof Document) {
+        if (input instanceof Document || input instanceof Path && Files.isRegularFile((Path) input)) {
             return true;
         } else {
             return false;
@@ -161,5 +168,17 @@ public class XmlInputReader implements InputReader {
         submodel.put(ModelConstant.CHILDREN, modelChildList);
 
         return new HashMap<>(submodel);
+    }
+
+    @Override
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+        if (!Files.isDirectory(path)) {
+            try (InputStream fileIn = Files.newInputStream(path)) {
+                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(fileIn);
+            } catch (SAXException | IOException | ParserConfigurationException e) {
+                throw new InputReaderException("Could not read file " + path.toString(), e);
+            }
+        }
+        throw new IllegalArgumentException("Currently folders are not supported as Input by XmlInputReader#read");
     }
 }

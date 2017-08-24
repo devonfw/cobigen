@@ -31,7 +31,7 @@ import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.generator.CobiGenWrapper;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
-import com.capgemini.cobigen.eclipse.generator.java.JavaGeneratorWrapper;
+import com.capgemini.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
 import com.capgemini.cobigen.eclipse.wizard.common.SelectFilesPage;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileContentProvider;
 import com.capgemini.cobigen.eclipse.wizard.common.model.SelectFileLabelProvider;
@@ -68,7 +68,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      * Creates a new {@link CheckStateListener} instance
      *
      * @param cobigenWrapper
-     *            currently used {@link JavaGeneratorWrapper} instance
+     *            currently used {@link JavaInputGeneratorWrapper} instance
      * @param page
      *            current {@link SelectFilesPage} reference
      * @param batch
@@ -95,7 +95,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         } else if (event.getSource().equals(incrementSelector)) {
             performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
-            performCheckLogicForALLPackage(incrementSelector, checkedElements);
+            performCheckLogicForALLIncrement(incrementSelector, checkedElements);
 
             Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
             Set<String> workspaceExternalPaths = Sets.newHashSet();
@@ -115,6 +115,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             if (!batch) {
                 selectNewResources();
                 selectMergeableResources();
+                selectOverridingResources();
             } else {
                 selectAllResources(paths.keySet());
             }
@@ -294,11 +295,11 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
     /**
      * Performs an intelligent check logic, e.g. check/uncheck all packages when selecting "all"
      * @param incrementSelector
-     *            the {@link CheckboxTableViewer} listing all generation packages
+     *            the {@link CheckboxTableViewer} listing all increments
      * @param selectedElements
      *            the {@link Set} of all elements checked by the user
      */
-    private void performCheckLogicForALLPackage(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
+    private void performCheckLogicForALLIncrement(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
 
         Set<Object> addedDiff = new HashSet<>(selectedElements);
         Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
@@ -370,6 +371,21 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             }
             worklist
                 .addAll(Arrays.asList(((SelectFileContentProvider) resourcesTree.getContentProvider()).getChildren(o)));
+        }
+    }
+
+    /**
+     * Sets all mergeable files to be selected
+     */
+    private void selectOverridingResources() {
+
+        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+        for (String path : cobigenWrapper.getOverridingFiles(selectedIncrements)) {
+            Object mergableTreeObject =
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).getProvidedObject(path);
+            if (mergableTreeObject != null) {
+                resourcesTree.setChecked(mergableTreeObject, true);
+            }
         }
     }
 
