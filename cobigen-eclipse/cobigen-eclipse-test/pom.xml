@@ -5,7 +5,7 @@
   <artifactId>com.capgemini.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -139,6 +139,11 @@
                 <id>com.capgemini.cobigen-tempeng-freemarker</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-tempeng-velocity</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
             </extraRequirements>
           </dependency-resolution>
         </configuration>
@@ -171,8 +176,18 @@
       <layout>p2</layout>
     </repository>
     <repository>
-      <id>cobigen-plugins</id>
-      <url>http://de-mucevolve02/files/cobigen/updatesite/experimental/</url>
+      <id>cobigen-plugins-exp</id>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>cobigen-plugins-ci</id>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>cobigen-plugins-stable</id>
+      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
       <layout>p2</layout>
     </repository>
   </repositories>
