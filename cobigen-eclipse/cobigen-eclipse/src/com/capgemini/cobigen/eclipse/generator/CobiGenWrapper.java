@@ -146,6 +146,13 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * @return whether the input represents a single non container input
+     */
+    public boolean isSingleNonContainerInput() {
+        return singleNonContainerInput;
+    }
+
+    /**
      * Generates the the list of templates based on the given {@link #inputs}.
      * @param templates
      *            to be generated
@@ -272,7 +279,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages
+     * @return all available increments
      */
     public ComparableIncrement[] getAllIncrements() {
 
@@ -299,7 +306,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages (sorted and element ALL_INCREMENT_ID added on top)
+     * @return all available increments (sorted and element ALL_INCREMENT_ID added on top)
      */
     public List<TemplateTo> getAllTemplates() {
         return matchingTemplates;
