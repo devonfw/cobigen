@@ -15,13 +15,16 @@ import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.model.OperationDef;
+import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
+import com.reprezen.kaizen.oasparser.model3.Parameter;
 import com.reprezen.kaizen.oasparser.model3.Path;
+import com.reprezen.kaizen.oasparser.model3.RequestBody;
 import com.reprezen.kaizen.oasparser.model3.Response;
 import com.reprezen.kaizen.oasparser.model3.Schema;
 import com.reprezen.kaizen.oasparser.ovl3.SchemaImpl;
@@ -192,6 +195,10 @@ public class OpenAPIInputReader implements InputReader {
                         if (path.getOperations() == null) {
                             path.setOperations(new ArrayList<OperationDef>());
                         }
+                        operation.getParameters()
+                            .addAll(getParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
+                                paths.get(pathKey).getOperation(opKey).getTags(),
+                                paths.get(pathKey).getOperation(opKey).getRequestBody()));
                         path.getOperations().add(operation);
                     }
                 }
@@ -200,6 +207,66 @@ public class OpenAPIInputReader implements InputReader {
         }
 
         return pathDefs;
+    }
+
+    /**
+     * @param parameters
+     * @param tags
+     * @param requestBody
+     * @param collection
+     * @return
+     */
+    private Collection<? extends ParameterDef> getParameters(Collection<? extends Parameter> parameters,
+        Collection<String> tags, RequestBody requestBody) {
+        List<ParameterDef> parametersList = new LinkedList<>();
+        ParameterDef parameter = new ParameterDef();
+        for (Parameter param : parameters) {
+
+            switch (param.getIn()) {
+            case "path":
+                parameter.setInPath(true);
+                break;
+            case "query":
+                parameter.setInQuery(true);
+                break;
+            case "header":
+                parameter.setInHeader(true);
+                break;
+            }
+            parameter.setName(param.getName());
+            parameter.setConstraints(getConstraints(param.getSchema()));
+            parameter.setDescription(param.getDescription());
+            if (param.getSchema().getType().equals("array")) {
+                parameter.setIsCollection(true);
+                if (((SchemaImpl) ((SchemaImpl) param.getSchema()).getItemsSchema()).getReference() != null) {
+                    parameter.setIsEntity(true);
+                    String[] mp = ((SchemaImpl) ((SchemaImpl) param.getSchema()).getItemsSchema()).getReference()
+                        .getFragment().split("/");
+                    parameter.setType(mp[mp.length - 1]);
+                }
+            }
+            if (((SchemaImpl) param.getSchema()).getReference() != null) {
+                String[] mp = ((SchemaImpl) param.getSchema()).getReference().getFragment().split("/");
+                parameter.setIsEntity(true);
+                parameter.setType(mp[mp.length - 1]);
+            }
+            parameter.setType(param.getSchema().getType());
+            parameter.setFormat(param.getSchema().getFormat());
+            parametersList.add(parameter);
+        }
+        parameter = new ParameterDef();
+        if (tags.contains("searchCriteria") || tags.contains("searchcriteria")) {
+            parameter.setIsSearchCriteria(true);
+        }
+        if (requestBody != null && ((SchemaImpl) requestBody).getReference().getFragment() != null) {
+            String[] mp = ((SchemaImpl) requestBody).getReference().getFragment().split("/");
+            parameter.setType(mp[mp.length - 1]);
+        } else if (requestBody != null) {
+            parameter.setType(((SchemaImpl) requestBody).getType());
+            parameter.setFormat(((SchemaImpl) requestBody).getFormat());
+        }
+        parametersList.add(parameter);
+        return parametersList;
     }
 
     /**
@@ -212,6 +279,9 @@ public class OpenAPIInputReader implements InputReader {
         for (String resp : responses.keySet()) {
             if (resp.equals("200")) {
                 if (responses.get(resp).getContentMediaTypes() != null) {
+                    if (responses.get(resp).getContentMediaTypes().keySet().isEmpty()) {
+                        response.setIsVoid(true);
+                    }
                     for (String media : responses.get(resp).getContentMediaTypes().keySet()) {
                         if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                             .getReference() != null) {
@@ -219,6 +289,7 @@ public class OpenAPIInputReader implements InputReader {
                                 ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                                     .getReference().getFragment().split("/");
                             response.setType(mp[mp.length - 1]);
+                            response.setIsEntity(true);
                         } else if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                             .getType().equals("array")) {
                             if (((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media)
@@ -226,6 +297,7 @@ public class OpenAPIInputReader implements InputReader {
                                 String[] mp = ((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
                                     .get(media).getSchema()).getItemsSchema()).getReference().getFragment().split("/");
                                 response.setType(mp[mp.length - 1]);
+                                response.setIsEntity(true);
                             } else {
                                 response.setType(((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
                                     .get(media).getSchema()).getItemsSchema()).getType());
@@ -249,6 +321,8 @@ public class OpenAPIInputReader implements InputReader {
                     response.setIsVoid(true);
                 }
                 break;
+            } else {
+                response.setIsVoid(true);
             }
         }
         return response;

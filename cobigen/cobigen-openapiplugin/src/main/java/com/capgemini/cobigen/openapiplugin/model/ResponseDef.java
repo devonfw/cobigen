@@ -9,6 +9,8 @@ public class ResponseDef {
 
     private boolean isPaginated;
 
+    private boolean isEntity;
+
     private boolean isVoid;
 
     private String type;
@@ -17,6 +19,7 @@ public class ResponseDef {
         isArray = false;
         isPaginated = false;
         isVoid = false;
+        isEntity = false;
     }
 
     public boolean getIsArray() {
@@ -33,6 +36,14 @@ public class ResponseDef {
 
     public void setIsPaginated(boolean isPaginated) {
         this.isPaginated = isPaginated;
+    }
+
+    public boolean getIsEntity() {
+        return isEntity;
+    }
+
+    public void setIsEntity(boolean isEntity) {
+        this.isEntity = isEntity;
     }
 
     public boolean getIsVoid() {
