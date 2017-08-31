@@ -117,7 +117,7 @@ node {
 						if (!non_deployable_branches.contains(origin_branch)) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 							
-							if (origin_branch != 'dev_core'){
+							if (origin_branch != 'dev_core' && origin_branch != 'dev_mavenplugin'){
 								def deployRoot = ""
 								if(origin_branch == 'dev_javaplugin'){
 									deployRoot = "cobigen-javaplugin"
