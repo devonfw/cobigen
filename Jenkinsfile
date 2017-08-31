@@ -79,11 +79,7 @@ node {
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									if(origin_branch!='dev_eclipseplugin'){
-										sh "mvn -s ${MAVEN_SETTINGS} clean package"
-									}else{
-										sh "mvn -s ${MAVEN_SETTINGS} clean install"
-									}
+									sh "mvn -s ${MAVEN_SETTINGS} clean install"
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
