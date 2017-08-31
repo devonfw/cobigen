@@ -2,7 +2,8 @@ properties([
   parameters([
     string(name: 'TRIGGER_SHA', defaultValue: '', description: 'The sha of the commit that triggered the calling job'),
     string(name: 'TRIGGER_REPO', defaultValue: '', description: 'The URI of the commit that triggered the calling job')
-   ])
+   ]),
+   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]
 ])
 node {
     //lock(resource: "pipeline_${env.NODE_NAME}_${env.JOB_NAME}", inversePrecedence: false) {
@@ -59,6 +60,8 @@ node {
 				root = "cobigen/cobigen-templateengines/cobigen-tempeng-velocity"
 			} else if (origin_branch == "dev_core") {
 				root = "cobigen/cobigen-core-parent"
+			} else if (origin_branch == "dev_javaplugin") {
+				root = "cobigen/cobigen-javaplugin-parent"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
@@ -73,14 +76,12 @@ node {
 					wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
 						withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pl-technical-user', usernameVariable: 'DEVON_NEXUS_USER', passwordVariable: 'DEVON_NEXUS_PASSWD']]) {
 						
-							// just skip tycho tests by targeting 'package' (running in integration-test phase) as they are not yet working due to xvnc issues
-							// current warning, which maybe points to the cause: 
-							// Xlib:  extension "RANDR" missing on display
-							// waiting for https://github.com/jenkinsci/xvnc-plugin/pull/12 to add necessary +extension RANDR command
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									nodejs(nodeJSInstallationName: '6.11') {
+									if(origin_branch!='dev_eclipseplugin'){
+										sh "mvn -s ${MAVEN_SETTINGS} clean package"
+									}else{
 										sh "mvn -s ${MAVEN_SETTINGS} clean install"
 									}
 								} catch(err) {
@@ -114,11 +115,11 @@ node {
 			
 			stage('deploy') {
 				dir(root) {
-					if (!non_deployable_branches.contains(origin_branch)) {
-						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+					configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+						if (!non_deployable_branches.contains(origin_branch)) {
 							sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 							
-							if (origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_core'){
+							if (origin_branch != 'dev_core'){
 								def deployRoot = ""
 								if(origin_branch == 'dev_javaplugin'){
 									deployRoot = "cobigen-javaplugin"
@@ -131,12 +132,16 @@ node {
 									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
 								}
 							}
+						} else if(origin_branch == 'dev_eclipseplugin') {
+							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
+								sh "mvn -s ${MAVEN_SETTINGS} install -Dmaven.test.skip=true -PuploadCi"
+							}
 						}
 					}
 				}
 			}
 
-			if(origin_branch != 'dev_eclipseplugin'){
+			if(origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_mavenplugin' && origin_branch != 'master'){
 				stage('integration-test') {
 					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
 					build job: 'dev_eclipseplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
