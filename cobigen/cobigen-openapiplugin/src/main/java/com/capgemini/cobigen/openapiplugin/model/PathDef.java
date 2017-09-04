@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class PathDef {
     public PathDef(String pathURI, String version) {
         this.version = version;
         this.pathURI = pathURI;
+        operations = new LinkedList<>();
     }
 
     public PathDef() {

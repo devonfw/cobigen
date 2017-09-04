@@ -254,18 +254,21 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setFormat(param.getSchema().getFormat());
             parametersList.add(parameter);
         }
-        parameter = new ParameterDef();
-        if (tags.contains("searchCriteria") || tags.contains("searchcriteria")) {
-            parameter.setIsSearchCriteria(true);
+        for (String media : requestBody.getContentMediaTypes().keySet()) {
+            parameter = new ParameterDef();
+            if (tags.contains("searchCriteria") || tags.contains("searchcriteria")) {
+                parameter.setIsSearchCriteria(true);
+            }
+            if (requestBody != null
+                && ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
+                String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference()
+                    .getFragment().split("/");
+                parameter.setType(mp[mp.length - 1]);
+            }
+            if (parameter.getType() != null) {
+                parametersList.add(parameter);
+            }
         }
-        if (requestBody != null && ((SchemaImpl) requestBody).getReference().getFragment() != null) {
-            String[] mp = ((SchemaImpl) requestBody).getReference().getFragment().split("/");
-            parameter.setType(mp[mp.length - 1]);
-        } else if (requestBody != null) {
-            parameter.setType(((SchemaImpl) requestBody).getType());
-            parameter.setFormat(((SchemaImpl) requestBody).getFormat());
-        }
-        parametersList.add(parameter);
         return parametersList;
     }
 

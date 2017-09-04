@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ public class OperationDef {
 
     public OperationDef(String type) {
         this.type = type;
+        parameters = new LinkedList<>();
     }
 
     public String getType() {

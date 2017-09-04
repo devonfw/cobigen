@@ -39,7 +39,8 @@ public class App {
                             System.out.println(((EntityDef) inp.createModel(input).get("model")).getComponent()
                                 .getPaths().get(2).getOperations().get(0).getResponse().getType());
                         }
-
+                        System.out.println(((EntityDef) inp.createModel(input).get("model")).getComponent().getPaths()
+                            .get(2).getOperations().get(0).getParameters().get(0).getType());
                     }
                 }
             }
