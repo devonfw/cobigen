@@ -10,6 +10,10 @@ public class ComponentDef {
 
     private List<PathDef> paths;
 
+    public ComponentDef() {
+        paths = new LinkedList<>();
+    }
+
     public List<PathDef> getPaths() {
         return paths;
     }
@@ -18,7 +22,4 @@ public class ComponentDef {
         this.paths = paths;
     }
 
-    public ComponentDef() {
-        paths = new LinkedList<>();
-    }
 }

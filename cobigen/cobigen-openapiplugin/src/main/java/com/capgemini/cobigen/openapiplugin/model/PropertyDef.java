@@ -28,6 +28,7 @@ public class PropertyDef {
         constraints = new HashMap<>();
         setIsCollection(false);
         setIsEntity(false);
+        constraints = new HashMap<>();
     }
 
     public String getName() {
