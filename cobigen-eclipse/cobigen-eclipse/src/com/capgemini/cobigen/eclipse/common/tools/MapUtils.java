@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.eclipse.common.tools;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,7 +46,7 @@ public final class MapUtils {
     public static <K, V> void deepMapAddAll(Map<K, Set<V>> result, Map<K, Set<V>> toAdd) {
         for (Entry<K, Set<V>> entry : toAdd.entrySet()) {
             if (!result.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), new HashSet<>(entry.getValue()));
             } else {
                 result.get(entry.getKey()).addAll(entry.getValue());
             }

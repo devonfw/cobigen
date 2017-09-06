@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+
+  <trigger id="testBasicGeneration" type="java" templateFolder="testBasicGeneration">
+    <matcher type="fqn" value="(.+)\.Input">
+      <variableAssignment type="regex" key="package" value="1"/>
+    </matcher>
+  </trigger>
+</contextConfiguration>
