@@ -30,7 +30,7 @@ import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.impl.PluginRegistry;
+import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.systemtest.common.AbstractApiTest;
 import com.capgemini.cobigen.systemtest.util.PluginMockFactory;
