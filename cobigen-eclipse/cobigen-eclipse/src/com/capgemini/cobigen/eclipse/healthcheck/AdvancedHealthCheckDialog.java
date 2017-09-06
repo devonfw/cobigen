@@ -23,14 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.HealthCheck;
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.tools.MessageUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.impl.CobiGenFactory;
 
 /**
  * Dialog to show the health check results as well as performing the templates configuration upgrades.
@@ -41,10 +43,10 @@ public class AdvancedHealthCheckDialog extends Dialog {
     private static final Logger LOG = LoggerFactory.getLogger(AdvancedHealthCheckDialog.class);
 
     /** The HealthCheck to be executed by this dialog */
-    private com.capgemini.cobigen.api.HealthCheck healthCheck;
+    private HealthCheck healthCheck;
 
     /** The HealthCheckReport that is created by the HealthCheck */
-    private HealthCheckReport report = new HealthCheckReport();
+    private HealthCheckReport report;
 
     /** Availability of templates configuration in the found folders */
     private Set<String> hasConfiguration;
@@ -63,36 +65,29 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
     /**
      * Creates a new {@link AdvancedHealthCheckDialog} with the given parameters.
-     * @param expectedTemplatesConfigurations
-     *            expected templates configurations liked by the context configuration
-     * @param hasConfiguration
-     *            Availability of templates configuration in the found folders
-     * @param isAccessible
-     *            Accessibility of templates configuration for changes
-     * @param upgradeableConfigurations
-     *            Templates configurations, which can be upgraded
-     * @param upToDateConfigurations
-     *            Templates configurations, which are already up to date
+     * @param report
+     *            the {@link HealthCheckReport} that is used by this {@link AdvancedHealthCheckDialog}
+     * @param healthCheck
+     *            the initial {@link HealthCheck} that was created by the {@link HealthCheckDialog}
      * @throws GeneratorProjectNotExistentException
      *             if the generator project does not exist
      */
-    AdvancedHealthCheckDialog(List<String> expectedTemplatesConfigurations, Set<String> hasConfiguration,
-        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations)
+    AdvancedHealthCheckDialog(HealthCheckReport report, HealthCheck healthCheck)
         throws GeneratorProjectNotExistentException {
         super(Display.getDefault().getActiveShell());
-        this.hasConfiguration = hasConfiguration;
-        this.isAccessible = isAccessible;
-        this.upgradeableConfigurations = upgradeableConfigurations;
-        this.upToDateConfigurations = upToDateConfigurations;
-        this.expectedTemplatesConfigurations = expectedTemplatesConfigurations;
-        healthCheck = CobiGenFactory.createHealthCheck();
+        hasConfiguration = report.getHasConfiguration();
+        isAccessible = report.getIsAccessible();
+        upgradeableConfigurations = report.getUpgradeableConfigurations();
+        upToDateConfigurations = report.getUpToDateConfigurations();
+        expectedTemplatesConfigurations = report.getExpectedTemplatesConfigurations();
+        this.healthCheck = healthCheck;
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        getShell().setText(HealthCheck.ADVANCED_DIALOG_TITLE);
+        getShell().setText(HealthCheckDialogs.ADVANCED_DIALOG_TITLE);
         Composite contentParent = new Composite(parent, SWT.NONE);
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         contentParent.setLayoutData(gridData);
@@ -132,7 +127,8 @@ public class AdvancedHealthCheckDialog extends Dialog {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-                        healthCheck.upgradeTemplatesConfiguration(upgradeableConfigurations.get(key));
+                        healthCheck.upgradeTemplatesConfiguration(upgradeableConfigurations.get(key),
+                            BackupPolicy.BACKUP_IF_POSSIBLE);
                         refreshUI();
                         MDC.remove(InfrastructureConstants.CORRELATION_ID);
                     }
@@ -176,9 +172,7 @@ public class AdvancedHealthCheckDialog extends Dialog {
         try {
             report = healthCheck
                 .perform(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
-            AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(
-                report.getExpectedTemplatesConfigurations(), report.getHasConfiguration(), report.getIsAccessible(),
-                report.getUpgradeableConfigurations(), report.getUpToDateConfigurations());
+            AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(report, healthCheck);
             advancedHealthCheckDialog.setBlockOnOpen(false);
             close();
             advancedHealthCheckDialog.open();
@@ -187,29 +181,15 @@ public class AdvancedHealthCheckDialog extends Dialog {
             LOG.warn("Configuration project not found!", e);
             String s = "=> Please import the configuration project into your workspace as stated in the "
                 + "documentation of CobiGen or in the one of your project.";
-            s = enrichMsgIfMultiError(s);
+            s = MessageUtil.enrichMsgIfMultiError(s, report);
             PlatformUIUtil.openErrorDialog(s, e);
         } catch (CoreException e) {
             String s = "An eclipse internal exception occurred while retrieving the configuration folder resource.";
-            s = enrichMsgIfMultiError(s);
+            s = MessageUtil.enrichMsgIfMultiError(s, report);
             PlatformUIUtil.openErrorDialog(s, e);
             LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
         }
         ResourcesPluginUtil.refreshConfigurationProject();
         Activator.getDefault().startConfigurationProjectListener();
-    }
-
-    /**
-     * @param s
-     *            s the String that contains the previous error message
-     * @return a new enriched String if more than one error occurred while running the HealthCheck, otherwise
-     *         just returns the input String.
-     */
-    private String enrichMsgIfMultiError(String s) {
-        if (report.getNumberOfErrors() > 1) {
-            s += "\n\n"
-                + "There was more than one error while running the Health Check. See the log file for further information.";
-        }
-        return s;
     }
 }
