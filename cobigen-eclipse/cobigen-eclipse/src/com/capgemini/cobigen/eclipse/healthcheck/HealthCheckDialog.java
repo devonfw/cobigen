@@ -12,11 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.HealthCheck;
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
 import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.tools.MessageUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.impl.CobiGenFactory;
@@ -34,7 +37,17 @@ public class HealthCheckDialog {
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckDialog.class);
 
     /** HealthCheckReport instance */
-    private HealthCheckReport report = new HealthCheckReport();
+    private HealthCheckReport report;
+
+    /** HealthCheck instance */
+    private HealthCheck healthCheck;
+
+    /**
+     * Creates a new {@link HealthCheckDialog} with the given parameters.
+     */
+    public HealthCheckDialog() {
+        healthCheck = CobiGenFactory.createHealthCheck();
+    }
 
     /**
      * Executes the simple health check, checking configuration project existence, validity of context
@@ -88,12 +101,9 @@ public class HealthCheckDialog {
                     healthyCheckMessage +=
                         "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
                             + currentVersion + " / Currently Supported: " + ContextConfigurationVersion.getLatest();
-                    healthyCheckMessage = enrichMsgIfMultiError(healthyCheckMessage);
-                    try {
-                        report = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject, false);
-                    } catch (BackupFailedException b) {
-                        report = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject, true);
-                    }
+                    healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
+                    report = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject,
+                        BackupPolicy.ENFORCE_BACKUP);
                     if (!report.containsError(RuntimeException.class)) {
                         // re-run Health Check
                         Display.getCurrent().asyncExec(new Runnable() {
@@ -108,14 +118,14 @@ public class HealthCheckDialog {
                     healthyCheckMessage += "\n\nNo automatic upgrade of the context configuration possible. "
                         + "Maybe just a mistake in the context configuration?";
                     healthyCheckMessage += "\n\n=> " + e.getLocalizedMessage();
-                    healthyCheckMessage = enrichMsgIfMultiError(healthyCheckMessage);
+                    healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
                 }
             }
             PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
             LOG.warn(healthyCheckMessage, e);
         } catch (Throwable e) {
             healthyCheckMessage = "An unexpected error occurred!";
-            healthyCheckMessage = enrichMsgIfMultiError(healthyCheckMessage);
+            healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
             PlatformUIUtil.openErrorDialog(healthyCheckMessage, e);
             LOG.error(healthyCheckMessage, e);
         }
@@ -127,37 +137,33 @@ public class HealthCheckDialog {
      *            message to be shown to the user
      * @param configurationFolder
      *            path of the configuration folder to perform the upgrade
-     * @param flag
-     *            {@code false} if the method should try a context upgrade with backup or {@code true} if no
-     *            backup should be made
+     * @param backupPolicy
+     *            the {@link BackupPolicy} that should be used for the function
      * @return <code>true</code> if the upgrade has been triggered, <code>false</code> if the dialog has been
      *         aborted
      */
     private HealthCheckReport openErrorDialogWithContextUpgrade(String healthyCheckMessage, Path configurationFolder,
-        boolean flag) {
-        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(),
-            com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck.DIALOG_TITLE,
-            null, healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration", "Abort" },
-            1);
+        BackupPolicy backupPolicy) {
+        MessageDialog dialog =
+            new MessageDialog(Display.getDefault().getActiveShell(), HealthCheckDialogs.DIALOG_TITLE, null,
+                healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration", "Abort" }, 1);
         dialog.setBlockOnOpen(true);
 
         int result = dialog.open();
         if (result == 0) {
-            HealthCheckReport report =
-                CobiGenFactory.createHealthCheck().upgradeContextConfiguration(configurationFolder, flag);
+            HealthCheckReport report = healthCheck.upgradeContextConfiguration(configurationFolder, backupPolicy);
             if (report.containsError(BackupFailedException.class)) {
-                MessageDialog d = new MessageDialog(Display.getDefault().getActiveShell(),
-                    com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck.DIALOG_TITLE,
-                    null,
-                    "Backup failed while trying to upgrade the context configuration. \n Continue without Backup?",
-                    MessageDialog.ERROR, new String[] { "Upgrade Without Backup", "Abort" }, 1);
+                MessageDialog d =
+                    new MessageDialog(Display.getDefault().getActiveShell(), HealthCheckDialogs.DIALOG_TITLE, null,
+                        "Backup failed while trying to upgrade the context configuration. \n Continue without Backup?",
+                        MessageDialog.ERROR, new String[] { "Upgrade Without Backup", "Abort" }, 1);
                 dialog.setBlockOnOpen(true);
 
-                int res = d.open();
-                if (res == 0) {
-                    HealthCheckReport rep =
-                        CobiGenFactory.createHealthCheck().upgradeContextConfiguration(configurationFolder, true);
-                    return rep;
+                int newResult = d.open();
+                if (newResult == 0) {
+                    HealthCheckReport newReport =
+                        healthCheck.upgradeContextConfiguration(configurationFolder, BackupPolicy.NO_BACKUP);
+                    return newReport;
                 }
             }
             return report;
@@ -174,8 +180,7 @@ public class HealthCheckDialog {
      *            if the message box should be displayed as a warning
      */
     private void openSuccessDialog(String healthyCheckMessage, boolean warn) {
-        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(),
-            com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck.DIALOG_TITLE,
+        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), HealthCheckDialogs.DIALOG_TITLE,
             null, healthyCheckMessage, warn ? MessageDialog.WARNING : MessageDialog.INFORMATION,
             new String[] { "Advanced Health Check", "OK" }, 1);
         dialog.setBlockOnOpen(true);
@@ -183,12 +188,10 @@ public class HealthCheckDialog {
         int result = dialog.open();
         if (result == 0) {
             try {
-                HealthCheck healthCheck = CobiGenFactory.createHealthCheck();
                 report = healthCheck
                     .perform(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
-                AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(
-                    report.getExpectedTemplatesConfigurations(), report.getHasConfiguration(), report.getIsAccessible(),
-                    report.getUpgradeableConfigurations(), report.getUpToDateConfigurations());
+                AdvancedHealthCheckDialog advancedHealthCheckDialog =
+                    new AdvancedHealthCheckDialog(report, healthCheck);
                 advancedHealthCheckDialog.setBlockOnOpen(false);
                 advancedHealthCheckDialog.open();
             } catch (GeneratorProjectNotExistentException e) {
@@ -204,19 +207,4 @@ public class HealthCheckDialog {
             }
         }
     }
-
-    /**
-     * @param s
-     *            the String that contains the previous error message
-     * @return a new enriched String if more than one error occurred while running the HealthCheck, otherwise
-     *         just returns the input String.
-     */
-    private String enrichMsgIfMultiError(String s) {
-        if (report.getNumberOfErrors() > 1) {
-            s += "\n\n"
-                + "There was more than one error while running the Health Check. See the log file for further information.";
-        }
-        return s;
-    }
-
 }
