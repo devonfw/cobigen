@@ -24,13 +24,14 @@ import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.io.TemplateExtension;
 import com.capgemini.cobigen.impl.config.entity.io.TemplateScan;
 import com.capgemini.cobigen.impl.config.reader.TemplatesConfigurationReader;
+import com.capgemini.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link TemplatesConfigurationReader}
  */
-public class TemplatesConfigurationReaderTest {
+public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     /**
      * Root path to all resources used in this test case

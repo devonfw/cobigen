@@ -15,13 +15,14 @@ import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
+import com.capgemini.cobigen.unittest.config.common.AbstractUnitTest;
 import com.google.common.io.Files;
 
 /**
  * Test suite for {@link TemplateConfigurationUpgrader}
  * @author mbrunnli (Jun 22, 2015)
  */
-public class ContextConfigurationUpgraderTest {
+public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
     /** Root path to all resources used in this test case */
     private static String testFileRootPath =
