@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.unittest.config.entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,19 +9,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.config.entity.TemplateFile;
 import com.capgemini.cobigen.impl.config.entity.TemplateFolder;
 import com.capgemini.cobigen.impl.config.entity.TemplatePath;
+import com.capgemini.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**
  * Test of {@link TemplatePath} and its sub-classes.
  */
-public class TemplatePathTest extends Assertions {
+public class TemplatePathTest extends AbstractUnitTest {
 
+    /** Root path of the test resources */
     private static final String TEST_FILES_ROOT_PATH =
         "src/test/resources/testdata/unittest/config/entity/TemplatePathTest/";
 

@@ -8,15 +8,14 @@ import org.junit.Test;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 import com.capgemini.cobigen.impl.config.reader.ContextConfigurationReader;
-import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
-import com.capgemini.cobigen.stubs.TemplateEngineStub;
+import com.capgemini.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
 
 /**
  * This {@link TestCase} tests the {@link ContextConfigurationReader}
  */
-public class ContextConfigurationReaderTest {
+public class ContextConfigurationReaderTest extends AbstractUnitTest {
 
     /**
      * Root path to all resources used in this test case
@@ -41,8 +40,6 @@ public class ContextConfigurationReaderTest {
      */
     @Test
     public void testReadConfigurationFromZip() throws Exception {
-        TemplateEngineRegistry.register(TemplateEngineStub.class);
-
         CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
     }
 
