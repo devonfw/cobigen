@@ -78,14 +78,4 @@ public class TemplateConfigurationUpgraderTest {
             new TemplateConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
         assertThat(version).isEqualTo(TemplatesConfigurationVersion.v4_0);
     }
-
-    /**
-     * Tests the content of the Path parameter given in the upgradeTemplatesConfiguration method.
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testContentOfPathParameter() throws Exception {
-        System.out.println();
-    }
 }
