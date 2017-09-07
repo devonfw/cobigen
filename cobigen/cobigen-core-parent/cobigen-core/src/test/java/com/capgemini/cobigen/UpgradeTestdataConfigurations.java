@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.google.common.collect.Lists;
@@ -44,14 +45,14 @@ public class UpgradeTestdataConfigurations {
                 if (!current.toPath().getParent().getFileName().toString().startsWith("faulty")) {
                     LOG.debug("Upgrading ContextConfiguration: {}", current.toPath());
                     new ContextConfigurationUpgrader().upgradeConfigurationToLatestVersion(current.toPath().getParent(),
-                        true);
+                        BackupPolicy.NO_BACKUP);
                     current.toPath().resolveSibling("context.bak.xml").toFile().delete();
                 }
             } else if (current.getName().equals("templates.xml")) {
                 if (!current.toPath().getParent().getFileName().toString().startsWith("faulty")) {
                     LOG.debug("Upgrading TemplateConfiguration: {}", current.toPath());
                     new TemplateConfigurationUpgrader()
-                        .upgradeConfigurationToLatestVersion(current.toPath().getParent(), true);
+                        .upgradeConfigurationToLatestVersion(current.toPath().getParent(), BackupPolicy.NO_BACKUP);
                     current.toPath().resolveSibling("templates.bak.xml").toFile().delete();
                 }
             }
