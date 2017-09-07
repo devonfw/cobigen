@@ -1,0 +1,64 @@
+{
+  "buttons": {
+    "submit": "Send",
+    "search": "SEARCH",
+    "cancel": "CANCEL",
+    "save": "SAVE",
+    "clean": "CLEAR",
+    "close": "Close",
+    "addItem": "Add item",
+    "editItem": "Edit item",
+    "deleteItem": "Delete item"
+  },
+  "header": {
+    "title": "Angular2 Cobigen",
+    "error": "LOGIN ERROR"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "errorMsg": "Wrong username or password"
+  },
+  "newdatagrid": {
+    "navData": "Data",
+    "navDataSub": "Grid with data",
+    "navHome": "Home",
+    "navHomeSub": "Initial page",
+    "title": "Data grid",
+    "addTitle": "Add new item",
+    "editTitle": "Edit item",
+    "searchTip": "Search Panel",
+    "sortTip": "Clear Sorting",
+    "columns": {
+      "newField": "NEWFIELD",
+      "newField2": "NEWFIELD2"
+    },
+    "alert": {
+      "title": "Confirm",
+      "message": "Are you sure you want to delete this item?",
+      "cancelBtn": "No, Cancel",
+      "acceptBtn": "Yes, Delete"
+    }
+  },
+  "datagrid": {
+    "navData": "Data",
+    "navDataSub": "Grid with data",
+    "navHome": "Home",
+    "navHomeSub": "Initial page",
+    "title": "Data grid",
+    "addTitle": "Add new item",
+    "editTitle": "Edit item",
+    "searchTip": "Search Panel",
+    "sortTip": "Clear Sorting",
+    "columns": {
+      "newField": "NEWFIELD"
+    },
+    "alert": {
+      "title": "Confirm",
+      "message": "Are you sure you want to delete this item?",
+      "cancelBtn": "No, Cancel",
+      "acceptBtn": "Yes, Delete"
+    }
+  }
+}

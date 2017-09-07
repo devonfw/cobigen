@@ -44,7 +44,6 @@ public class GeneratorWrapperFactory {
      * @throws InvalidInputException
      *             if the selection includes non supported input types or is composed in a non supported
      *             combination of inputs.
-     * @author mbrunnli (04.12.2014)
      */
     public static CobiGenWrapper createGenerator(IStructuredSelection selection)
         throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
@@ -56,16 +55,12 @@ public class GeneratorWrapperFactory {
                 Object firstElement = extractedInputs.get(0);
                 if (firstElement instanceof IJavaElement) {
                     LOG.info("Create new CobiGen instance for java inputs...");
-                    JavaGeneratorWrapper generator = new JavaGeneratorWrapper();
-                    generator.setGenerationTargetProject(((IJavaElement) firstElement).getJavaProject().getProject());
-                    generator.setInputs(JavaInputConverter.convertInput(extractedInputs));
-                    return generator;
+                    return new JavaGeneratorWrapper(((IJavaElement) firstElement).getJavaProject().getProject(),
+                        JavaInputConverter.convertInput(extractedInputs));
                 } else if (firstElement instanceof IFile) {
                     LOG.info("Create new CobiGen instance for xml inputs...");
-                    XmlGeneratorWrapper generator = new XmlGeneratorWrapper();
-                    generator.setGenerationTargetProject(((IFile) firstElement).getProject());
-                    generator.setInputs(XmlInputConverter.convertInput(extractedInputs));
-                    return generator;
+                    return new XmlGeneratorWrapper(((IFile) firstElement).getProject(),
+                        XmlInputConverter.convertInput(extractedInputs));
                 }
             } catch (CoreException e) {
                 LOG.error("An eclipse internal exception occurred", e);

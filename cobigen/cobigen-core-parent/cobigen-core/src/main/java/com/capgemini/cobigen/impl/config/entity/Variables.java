@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 import net.sf.mmm.util.lang.api.CaseSyntax;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.api.exception.UnknownExpressionException;
+import com.capgemini.cobigen.api.util.StringUtil;
 import com.capgemini.cobigen.impl.config.reader.CobiGenPropertiesReader;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
-import com.capgemini.cobigen.impl.exceptions.UnknownExpressionException;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
-import com.capgemini.cobigen.impl.util.StringUtil;
 
 /**
  * This class is a container for variables that can inherit from parent {@link Variables} building a
