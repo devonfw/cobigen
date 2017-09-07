@@ -14,7 +14,7 @@
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
-	<java.version>1.7</java.version>
+    <java.version>1.7</java.version>
   </properties>
 
   <modules>
@@ -111,6 +111,13 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -248,6 +255,90 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>experimental</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-snapshot</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <includes>**</includes>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
+                  <serverId>iCSDFileServer</serverId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>ci</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-snapshot</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <includes>**</includes>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
+                  <serverId>iCSDFileServer</serverId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>stable</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>upload-snapshot</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <configuration>
+                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <includes>**</includes>
+                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
+                  <serverId>iCSDFileServer</serverId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <distributionManagement>
     <repository>
