@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.HealthCheck;
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
@@ -37,31 +38,30 @@ public class HealthCheckImpl implements HealthCheck {
     private HealthCheckReport healthCheckReport = new HealthCheckReport();
 
     @Override
-    public HealthCheckReport upgradeContextConfiguration(Path configurationFolder, boolean flag)
+    public HealthCheckReport upgradeContextConfiguration(Path configurationFolder, BackupPolicy backupPolicy)
         throws BackupFailedException {
         ContextConfigurationUpgrader contextConfigurationUpgrader = new ContextConfigurationUpgrader();
-        if (flag) {
-            contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, true);
-        } else {
-            contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, false);
-        }
+        contextConfigurationUpgrader.upgradeConfigurationToLatestVersion(configurationFolder, backupPolicy);
         return healthCheckReport;
     }
 
     @Override
-    public HealthCheckReport upgradeTemplatesConfiguration(Path templatesConfigurationFolder) {
+    public HealthCheckReport upgradeTemplatesConfiguration(Path templatesConfigurationFolder,
+        BackupPolicy backupPolicy) {
         LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
+        System.out.println(templatesConfigurationFolder.toString());
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
         try {
             try {
-                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
+                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
+                    backupPolicy);
                 LOG.info("Upgrade finished successfully.");
             } catch (BackupFailedException e) {
                 healthCheckReport.addError(e);
                 if (healthCheckReport.getErrors().contains(BackupFailedException.class)) {
                     templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
-                        true);
+                        BackupPolicy.NO_BACKUP);
                     LOG.info("Upgrade finished successfully but without backup.");
                 } else {
                     healthCheckReport.addError(new CobiGenRuntimeException("Upgrade aborted"));
@@ -78,11 +78,11 @@ public class HealthCheckImpl implements HealthCheck {
     }
 
     @Override
-    public HealthCheckReport upgradeAllTemplatesConfigurations(Path contextConfigurationPath) {
+    public HealthCheckReport upgradeAllConfigurations(Path contextConfigurationPath, BackupPolicy backupPolicy) {
         try {
-            upgradeContextConfiguration(contextConfigurationPath, false);
+            upgradeContextConfiguration(contextConfigurationPath, backupPolicy);
         } catch (BackupFailedException e) {
-            upgradeContextConfiguration(contextConfigurationPath, true);
+            upgradeContextConfiguration(contextConfigurationPath, BackupPolicy.NO_BACKUP);
         }
         ContextConfiguration contextConfiguration = new ContextConfiguration(contextConfigurationPath);
         List<String> expectedTemplatesConfigurations = new ArrayList<>();
@@ -92,7 +92,8 @@ public class HealthCheckImpl implements HealthCheck {
         if (expectedTemplatesConfigurations.toArray().equals(healthCheckReport.getHasConfiguration().toArray())) {
             for (final String key : expectedTemplatesConfigurations) {
                 if (healthCheckReport.getUpgradeableConfigurations().containsKey(key)) {
-                    upgradeTemplatesConfiguration(healthCheckReport.getUpgradeableConfigurations().get(key));
+                    upgradeTemplatesConfiguration(healthCheckReport.getUpgradeableConfigurations().get(key),
+                        backupPolicy);
                 }
             }
         } else {

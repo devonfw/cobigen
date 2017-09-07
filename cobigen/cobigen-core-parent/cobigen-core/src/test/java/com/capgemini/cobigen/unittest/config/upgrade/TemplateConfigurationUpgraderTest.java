@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
@@ -18,7 +19,6 @@ import com.google.common.io.Files;
 
 /**
  * Test suite for {@link TemplateConfigurationUpgrader}
- * @author mbrunnli (Jun 22, 2015)
  */
 public class TemplateConfigurationUpgraderTest {
 
@@ -34,7 +34,6 @@ public class TemplateConfigurationUpgraderTest {
      * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 22, 2015)
      */
     @Test
     public void testCorrectUpgrade_v1_2_TO_v2_1() throws Exception {
@@ -50,7 +49,7 @@ public class TemplateConfigurationUpgraderTest {
         TemplatesConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(TemplatesConfigurationVersion.v1_2);
 
-        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
+        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
         assertThat(tmpTargetConfig.toPath().resolveSibling("templates.bak.xml").toFile()).exists()
             .hasSameContentAs(sourceTestdata);
 
@@ -78,5 +77,15 @@ public class TemplateConfigurationUpgraderTest {
         TemplatesConfigurationVersion version =
             new TemplateConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
         assertThat(version).isEqualTo(TemplatesConfigurationVersion.v4_0);
+    }
+
+    /**
+     * Tests the content of the Path parameter given in the upgradeTemplatesConfiguration method.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testContentOfPathParameter() throws Exception {
+        System.out.println();
     }
 }
