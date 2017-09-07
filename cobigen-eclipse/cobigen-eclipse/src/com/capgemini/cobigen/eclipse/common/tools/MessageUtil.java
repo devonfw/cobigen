@@ -3,7 +3,7 @@ package com.capgemini.cobigen.eclipse.common.tools;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
 
 /**
- *
+ * Provides utility functions for creating dialog messages.
  */
 public class MessageUtil {
 
