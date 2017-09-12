@@ -1,8 +1,9 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
 /**
- * TODO
+ *
  */
+@SuppressWarnings("javadoc")
 public class ResponseDef {
 
     private boolean isArray;
@@ -14,6 +15,8 @@ public class ResponseDef {
     private boolean isVoid;
 
     private String type;
+
+    private String format;
 
     public ResponseDef() {
         isArray = false;
@@ -60,5 +63,13 @@ public class ResponseDef {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 }

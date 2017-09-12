@@ -3,6 +3,7 @@ package com.capgemini.cobigen.openapiplugin.model;
 /**
  * TODO
  */
+@SuppressWarnings("javadoc")
 public class ParameterDef extends PropertyDef {
 
     private boolean isSearchCriteria;

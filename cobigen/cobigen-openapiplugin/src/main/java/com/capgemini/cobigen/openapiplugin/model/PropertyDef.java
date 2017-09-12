@@ -6,6 +6,7 @@ import java.util.Map;
 /**
  *
  */
+@SuppressWarnings("javadoc")
 public class PropertyDef {
 
     private String name;
