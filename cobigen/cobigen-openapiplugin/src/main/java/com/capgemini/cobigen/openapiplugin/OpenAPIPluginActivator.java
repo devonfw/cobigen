@@ -12,6 +12,9 @@ import com.google.common.collect.Lists;
  */
 public class OpenAPIPluginActivator implements GeneratorPluginActivator {
 
+    /**
+     * Defines the trigger type
+     */
     private static final String TRIGGER_TYPE = "openapi";
 
     @Override

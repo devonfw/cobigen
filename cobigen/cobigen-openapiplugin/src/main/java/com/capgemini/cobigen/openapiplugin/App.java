@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Scanner;
 
 import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
@@ -15,14 +14,16 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 
 public class App {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        String content = new Scanner(
-            new File("C:\\Users\\rudiazma\\Documents\\bitBuckectRepos\\swagger4OASP4J\\demo\\core\\devonfw.yml"))
-                .useDelimiter("\\Z").next();
+        // String content = new Scanner(
+        // new
+        // File("C:\\Users\\rudiazma\\Documents\\bitBuckectRepos\\swagger4OASP4J\\demo\\core\\devfonfw.yml"))
+        // .useDelimiter("\\Z").next();
         // Swagger swagger = new Swagger20Parser().parse(content);
 
         OpenAPIInputReader inp = new OpenAPIInputReader();
+        OpenApi3 parser = null;
         File g = new File("C:\\Users\\rudiazma\\Documents\\bitBuckectRepos\\swagger4OASP4J\\demo\\core\\devonfw.yml");
-        OpenApi3 parser = (OpenApi3) new OpenApi3Parser().parse(g.toURI());
+        parser = (OpenApi3) new OpenApi3Parser().parse(g, true);
 
         OpenAPIFile file = new OpenAPIFile(g.toPath(), parser);
         if (inp.isValidInput(file)) {
@@ -44,6 +45,8 @@ public class App {
                     }
                 }
             }
+        } else {
+            System.out.println("no es valido");
         }
     }
 }

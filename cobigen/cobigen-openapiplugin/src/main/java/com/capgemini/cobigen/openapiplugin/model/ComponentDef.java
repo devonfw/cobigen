@@ -4,8 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * Definition that store the configuration of a oasp4j component from OpenApi
  */
+@SuppressWarnings("javadoc")
 public class ComponentDef {
 
     private List<PathDef> paths;

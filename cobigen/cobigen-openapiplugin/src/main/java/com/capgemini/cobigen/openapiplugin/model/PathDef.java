@@ -6,6 +6,7 @@ import java.util.List;
 /**
  *
  */
+@SuppressWarnings("javadoc")
 public class PathDef {
 
     private String pathURI;

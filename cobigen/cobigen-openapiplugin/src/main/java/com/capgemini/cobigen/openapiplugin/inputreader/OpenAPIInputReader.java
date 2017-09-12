@@ -19,7 +19,7 @@ import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
-import com.capgemini.cobigen.openapiplugin.utils.constants.Constants;
+import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
@@ -30,8 +30,8 @@ import com.reprezen.kaizen.oasparser.model3.Schema;
 import com.reprezen.kaizen.oasparser.ovl3.SchemaImpl;
 
 /**
- * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Swagger definition files
- * into FreeMarker models
+ * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read OpenApi3 definition
+ * files into FreeMarker models
  */
 public class OpenAPIInputReader implements InputReader {
 
@@ -54,24 +54,25 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * @param property
-     * @param required
-     * @param key
-     * @return
+     * Get constraints configurations for {@link PropertyDef} and {@link ParameterDef}
+     *
+     * @param schema
+     *            the schema with the constraint configuration
+     * @return map of different constraints
      */
-    private Map<String, Object> getConstraints(Schema property) {
+    private Map<String, Object> getConstraints(Schema schema) {
         Map<String, Object> constraints = new HashMap<>();
-        constraints.put(ModelConstant.MAXIMUM, property.getMaximum());
-        constraints.put(ModelConstant.MINIMUM, property.getMinimum());
-        if (property.getType().equals("array")) {
-            constraints.put(ModelConstant.MAX_LENGTH, property.getMaxItems());
-            constraints.put(ModelConstant.MIN_LENGTH, property.getMinItems());
-            constraints.put(Constants.UNIQUE, property.isUniqueItems());
-        } else if (property.getType().equals("string")) {
-            constraints.put(ModelConstant.MAX_LENGTH, property.getMaxLength());
-            constraints.put(ModelConstant.MIN_LENGTH, property.getMinLength());
+        constraints.put(ModelConstant.MAXIMUM, schema.getMaximum());
+        constraints.put(ModelConstant.MINIMUM, schema.getMinimum());
+        if (schema.getType().equals("array")) {
+            constraints.put(ModelConstant.MAX_LENGTH, schema.getMaxItems());
+            constraints.put(ModelConstant.MIN_LENGTH, schema.getMinItems());
+            constraints.put(ModelConstant.UNIQUE, schema.isUniqueItems());
+        } else if (schema.getType().equals("string")) {
+            constraints.put(ModelConstant.MAX_LENGTH, schema.getMaxLength());
+            constraints.put(ModelConstant.MIN_LENGTH, schema.getMinLength());
         }
-        constraints.put(Constants.NOTNULL, property.isNullable());
+        constraints.put(ModelConstant.NOTNULL, schema.isNullable());
 
         return constraints;
     }
@@ -104,12 +105,14 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Get a list of entities defined at an OpenaApi3 file returning a list of {@link EntityDef}'s
+     *
      * @param openApi
-     * @return
+     *            the model for an OpenApi3 file
+     * @return list of entities
      */
     private List<EntityDef> getEntities(OpenApi3 openApi) {
         List<EntityDef> objects = new LinkedList<>();
-        List<String> added = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
             entityDef.setName(key);
@@ -126,9 +129,13 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Get the fields of an entity returning a list of {@link PropertyDef}'s
+     *
      * @param properties
+     *            map of properties of the OpenApi3 entity definition
      * @param openApi
-     * @return
+     *            the OpenApi3 model
+     * @return List of {@link PropertyDef}'s
      */
     private List<PropertyDef> getFields(Map<String, ? extends Schema> properties, OpenApi3 openApi) {
         List<PropertyDef> objects = new LinkedList<>();
@@ -136,7 +143,7 @@ public class OpenAPIInputReader implements InputReader {
             PropertyDef property = new PropertyDef();
             property.setName(key);
             property.setDescription(properties.get(key).getDescription());
-            if (properties.get(key).getType().equals("array")) {
+            if (properties.get(key).getType().equals(Constants.ARRAY)) {
                 property.setIsCollection(true);
                 String[] mp =
                     ((SchemaImpl) properties.get(key).getItemsSchema()).getReference().getFragment().split("/");
@@ -144,7 +151,7 @@ public class OpenAPIInputReader implements InputReader {
                 if (openApi.getSchema(mp[mp.length - 1]) != null) {
                     property.setIsEntity(true);
                 }
-            } else if (properties.get(key).getType().equals("object")) {
+            } else if (properties.get(key).getType().equals(Constants.OBJECT)) {
                 String[] mp = ((SchemaImpl) properties.get(key)).getReference().getFragment().split("/");
                 property.setType(mp[mp.length - 1]);
                 property.setIsEntity(true);
@@ -168,10 +175,15 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Get a list of {@link PathDef} from a list of OpenApi paths definitions
+     *
      * @param paths
+     *            the list of OpenApi paths definitions
      * @param component
+     *            the component where the paths belong to
      * @param key
-     * @return
+     *            the ley of the path to compare with the component
+     * @return list of {@link PathDef}'s
      */
     private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component, String key) {
         List<PathDef> pathDefs = new LinkedList<>();
@@ -210,14 +222,18 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Return a list of {@link ParameterDef} from a collection of parameters of an operation
+     *
      * @param parameters
+     *            list of OpenApi parameter definition
      * @param tags
+     *            list of tags
      * @param requestBody
-     * @param collection
-     * @return
+     *            in case of body parameter
+     * @return List of {@link ParameterDef}'s
      */
-    private Collection<? extends ParameterDef> getParameters(Collection<? extends Parameter> parameters,
-        Collection<String> tags, RequestBody requestBody) {
+    private List<ParameterDef> getParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
+        RequestBody requestBody) {
         List<ParameterDef> parametersList = new LinkedList<>();
         ParameterDef parameter = new ParameterDef();
         for (Parameter param : parameters) {
@@ -236,7 +252,7 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setName(param.getName());
             parameter.setConstraints(getConstraints(param.getSchema()));
             parameter.setDescription(param.getDescription());
-            if (param.getSchema().getType().equals("array")) {
+            if (param.getSchema().getType().equals(Constants.ARRAY)) {
                 parameter.setIsCollection(true);
                 if (((SchemaImpl) ((SchemaImpl) param.getSchema()).getItemsSchema()).getReference() != null) {
                     parameter.setIsEntity(true);
@@ -254,28 +270,33 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setFormat(param.getSchema().getFormat());
             parametersList.add(parameter);
         }
-        for (String media : requestBody.getContentMediaTypes().keySet()) {
-            parameter = new ParameterDef();
-            if (tags.contains("searchCriteria") || tags.contains("searchcriteria")) {
-                parameter.setIsSearchCriteria(true);
-            }
-            if (requestBody != null
-                && ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
-                String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference()
-                    .getFragment().split("/");
-                parameter.setType(mp[mp.length - 1]);
-            }
-            if (parameter.getType() != null) {
-                parametersList.add(parameter);
+        if (requestBody != null) {
+            for (String media : requestBody.getContentMediaTypes().keySet()) {
+                parameter = new ParameterDef();
+                if (tags.contains(Constants.SEARCH_CRITERIA) || tags.contains(Constants.SEARCH_CRITERIA_MIN)) {
+                    parameter.setIsSearchCriteria(true);
+                }
+                if (((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
+                    String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema())
+                        .getReference().getFragment().split("/");
+                    parameter.setType(mp[mp.length - 1]);
+                }
+                if (parameter.getType() != null) {
+                    parametersList.add(parameter);
+                }
             }
         }
         return parametersList;
     }
 
     /**
+     * Returns a {@link ResponseDef} from a operation '200' response definition depending on the tags
+     *
      * @param responses
+     *            list of OpenApu responses definition
      * @param tags
-     * @return
+     *            list of oasp4j relative tags
+     * @return List of {@link ResponseDef}'s
      */
     private ResponseDef getResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
         ResponseDef response = new ResponseDef();
@@ -294,7 +315,7 @@ public class OpenAPIInputReader implements InputReader {
                             response.setType(mp[mp.length - 1]);
                             response.setIsEntity(true);
                         } else if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                            .getType().equals("array")) {
+                            .getType().equals(Constants.ARRAY)) {
                             if (((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media)
                                 .getSchema()).getItemsSchema()).getReference() != null) {
                                 String[] mp = ((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
@@ -305,7 +326,7 @@ public class OpenAPIInputReader implements InputReader {
                                 response.setType(((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
                                     .get(media).getSchema()).getItemsSchema()).getType());
                             }
-                            if (tags.contains("paginated")) {
+                            if (tags.contains(Constants.PAGINATED)) {
                                 response.setIsPaginated(true);
                             } else {
                                 response.setIsArray(true);
@@ -316,6 +337,9 @@ public class OpenAPIInputReader implements InputReader {
                             response.setType(
                                 ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                                     .getType());
+                            response.setFormat(
+                                ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
+                                    .getFormat());
                         } else {
                             response.setIsVoid(true);
                         }

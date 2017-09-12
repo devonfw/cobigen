@@ -4,8 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * Definition that stores the consiguration of an OpenApi definition schema
  */
+@SuppressWarnings("javadoc")
 public class EntityDef {
 
     private ComponentDef component;

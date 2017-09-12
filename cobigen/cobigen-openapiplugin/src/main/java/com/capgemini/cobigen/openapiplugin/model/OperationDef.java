@@ -7,6 +7,7 @@ import java.util.List;
 /**
  *
  */
+@SuppressWarnings("javadoc")
 public class OperationDef {
 
     private String type;
