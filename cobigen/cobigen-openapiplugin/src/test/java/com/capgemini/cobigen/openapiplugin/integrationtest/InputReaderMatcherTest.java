@@ -7,7 +7,6 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -65,30 +64,6 @@ public class InputReaderMatcherTest {
 
         List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
         assertThat(inputObjects).isNotNull().hasSize(2);
-    }
-
-    /**
-     * Tests the correct basic retrieval of ComponentDef inputs
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    @Ignore
-    public void testModel_versionProperty() throws Exception {
-        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
-
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
-
-        String templateName = "testModel_versionProperty.txt";
-        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
-
-        File targetFolder = tmpFolder.newFolder();
-        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
-        assertThat(report).isSuccessful();
-
-        assertThat(targetFolder.toPath().resolve("testModel_versionProperty.txt").toFile()).exists().hasContent("v1");
     }
 
     /**

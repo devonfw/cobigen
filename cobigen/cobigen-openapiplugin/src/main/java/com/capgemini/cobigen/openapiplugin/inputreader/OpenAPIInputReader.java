@@ -188,7 +188,7 @@ public class OpenAPIInputReader implements InputReader {
     private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component, String key) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
-            if (pathKey.contains(component) && pathKey.contains("/" + key.toLowerCase() + "/")) {
+            if (pathKey.contains(component)) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {

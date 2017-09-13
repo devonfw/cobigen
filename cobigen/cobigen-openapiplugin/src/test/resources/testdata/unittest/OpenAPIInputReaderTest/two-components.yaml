@@ -6,15 +6,27 @@ info:
   description: Example of a API definition
   version: 1.0.0
 paths:
-  /tablemanagement/v1/sampledata/:
+  /tablemanagement/v1/table/{id}:
     get:
+      operationId: findTable
       responses:
         '200':
           description: Any
-  /salesmanagement/v1/sampledata/:
+  /salemanagement/v1/sale/{id}:
+    get:
+      operationId: findSale
+      responses:
+        '200':
+          description: Any
+  /salemanagement/v1/sale/:
     post:
       responses:
         '200':
+          description: Any
+  /salemanagement/v1/new:
+    post:
+      responses:
+       '200':
           description: Any
 components:
     schemas:
@@ -22,12 +34,17 @@ components:
           title: tablemanagement
           type: object
           properties:
-            example:
+            tableExample:
               type: string
-        Sales:
-          title: salesmanagement
+              maxLength: 100
+              minLength: 5
+        Sale:
+          title: salemanagement
           type: object
           properties:
-            example:
-              type: string
+            saleExample:
+              type: number
+              format: int64
+              maximum: 100
+              minimum: 0
  
