@@ -2,7 +2,6 @@ package com.capgemini.cobigen.eclipse.common.exceptions;
 
 /**
  * Will be thrown if there is no Generator configuration project "RF-Generation" in the current workspace
- * @author mbrunnli (04.03.2013)
  */
 public class GeneratorProjectNotExistentException extends RuntimeException {
 
