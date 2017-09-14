@@ -69,7 +69,31 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     </#if>
     </#list>
 
+    addOrderBy(query, alias, ${variables.entityName?lower_case}, criteria.getSort());
     return findPaginated(criteria, query, alias);
+  }
+  
+  private void addOrderBy(JPAQuery query, EntityPathBase<${variables.entityName}Entity> alias, ${variables.entityName}Entity ${variables.entityName?lower_case}, List<OrderByTo> sort) {
+      if (sort != null && !sort.isEmpty()) {
+          for (OrderByTo orderEntry : sort) {
+          <#assign fieldFirst=pojo.fields?first>
+          <#list pojo.fields as field>
+              <#if field.name==fieldFirst.name && !field.type?contains("List") && !field.type?contains("Set")>
+              if ("${field.name}".equals(orderEntry.getName())) {
+                  if (OrderDirection.ASC.equals(orderEntry.getDirection())) {
+                    query.orderBy($(${variables.entityName?lower_case}.get${field.name?cap_first}()).asc());
+                  } else {
+                    query.orderBy($(${variables.entityName?lower_case}.get${field.name?cap_first}()).desc());
+                  }
+              }<#elseif !field.type?contains("List") && !field.type?contains("Set")>else if ("${field.name}".equals(orderEntry.getName())) {
+                  if (OrderDirection.ASC.equals(orderEntry.getDirection())) {
+                      query.orderBy($(${variables.entityName?lower_case}.get${field.name?cap_first}()).asc());
+                  } else {
+                      query.orderBy($(${variables.entityName?lower_case}.get${field.name?cap_first}()).desc());
+                  }
+              }</#if></#list>
+          }
+      }
   }
 
 }
