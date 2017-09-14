@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -23,23 +23,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.capgemini.cobigen.api.HealthCheck;
+import com.capgemini.cobigen.api.constants.BackupPolicy;
+import com.capgemini.cobigen.api.to.HealthCheckReport;
 import com.capgemini.cobigen.eclipse.Activator;
 import com.capgemini.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheck;
+import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
+import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.capgemini.cobigen.eclipse.common.tools.MessageUtil;
 import com.capgemini.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
-import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
 
 /**
- * Dialog to show the advanced health check results as well as performing the templates configuration
- * upgrades.
- * @author mbrunnli (Jun 24, 2015)
+ * Dialog to show the health check results as well as performing the templates configuration upgrades.
  */
 public class AdvancedHealthCheckDialog extends Dialog {
 
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(AdvancedHealthCheckDialog.class);
+
+    /** The HealthCheck to be executed by this dialog */
+    private HealthCheck healthCheck;
+
+    /** The HealthCheckReport that is created by the HealthCheck */
+    private HealthCheckReport report;
 
     /** Availability of templates configuration in the found folders */
     private Set<String> hasConfiguration;
@@ -58,33 +65,29 @@ public class AdvancedHealthCheckDialog extends Dialog {
 
     /**
      * Creates a new {@link AdvancedHealthCheckDialog} with the given parameters.
-     * @param expectedTemplatesConfigurations
-     *            expected templates configurations liked by the context configuration
-     * @param hasConfiguration
-     *            Availability of templates configuration in the found folders
-     * @param isAccessible
-     *            Accessibility of templates configuration for changes
-     * @param upgradeableConfigurations
-     *            Templates configurations, which can be upgraded
-     * @param upToDateConfigurations
-     *            Templates configurations, which are already up to date
-     * @author mbrunnli (Jun 24, 2015)
+     * @param report
+     *            the {@link HealthCheckReport} that is used by this {@link AdvancedHealthCheckDialog}
+     * @param healthCheck
+     *            the initial {@link HealthCheck} that was created by the {@link HealthCheckDialog}
+     * @throws GeneratorProjectNotExistentException
+     *             if the generator project does not exist
      */
-    AdvancedHealthCheckDialog(List<String> expectedTemplatesConfigurations, Set<String> hasConfiguration,
-        Set<String> isAccessible, Map<String, Path> upgradeableConfigurations, Set<String> upToDateConfigurations) {
+    AdvancedHealthCheckDialog(HealthCheckReport report, HealthCheck healthCheck)
+        throws GeneratorProjectNotExistentException {
         super(Display.getDefault().getActiveShell());
-        this.hasConfiguration = hasConfiguration;
-        this.isAccessible = isAccessible;
-        this.upgradeableConfigurations = upgradeableConfigurations;
-        this.upToDateConfigurations = upToDateConfigurations;
-        this.expectedTemplatesConfigurations = expectedTemplatesConfigurations;
+        hasConfiguration = report.getHasConfiguration();
+        isAccessible = report.getIsAccessible();
+        upgradeableConfigurations = report.getUpgradeableConfigurations();
+        upToDateConfigurations = report.getUpToDateConfigurations();
+        expectedTemplatesConfigurations = report.getExpectedTemplatesConfigurations();
+        this.healthCheck = healthCheck;
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        getShell().setText(HealthCheck.ADVANCED_DIALOG_TITLE);
+        getShell().setText(HealthCheckDialogs.ADVANCED_DIALOG_TITLE);
         Composite contentParent = new Composite(parent, SWT.NONE);
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
         contentParent.setLayoutData(gridData);
@@ -123,7 +126,11 @@ public class AdvancedHealthCheckDialog extends Dialog {
                 upgrade.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        upgradeTemplatesConfiguration(upgradeableConfigurations.get(key));
+                        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+                        healthCheck.upgradeTemplatesConfiguration(upgradeableConfigurations.get(key),
+                            BackupPolicy.BACKUP_IF_POSSIBLE);
+                        refreshUI();
+                        MDC.remove(InfrastructureConstants.CORRELATION_ID);
                     }
                 });
             } else if (!hasConfiguration.contains(key)) {
@@ -159,54 +166,30 @@ public class AdvancedHealthCheckDialog extends Dialog {
     }
 
     /**
-     * Upgrades the templates configuration within the folder with the given {@link Path}
-     * @param templatesConfigurationFolder
-     *            folder {@link Path} of the templates folder
-     * @author mbrunnli (Jun 24, 2015), updated by sholzer (29.09.2015) for issue #156
+     * Refreshes the UI to show the updated configuration.
      */
-    private void upgradeTemplatesConfiguration(Path templatesConfigurationFolder) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-        LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
-
-        Activator.getDefault().stopConfigurationListener();
-
-        TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-        boolean successful = true;
+    private void refreshUI() {
         try {
-            try {
-                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder, false);
-                LOG.info("Upgrade finished successfully.");
-            } catch (BackupFailedException e) {
-                boolean continueUpgrade =
-                    MessageDialog.openQuestion(Display.getDefault().getActiveShell(), HealthCheck.ADVANCED_DIALOG_TITLE,
-                        "Backup failed while upgrading. "
-                            + "An upgrade deletes all comments in the configuration file, "
-                            + "which will be gone without a backup. Continue anyhow?");
-                if (continueUpgrade) {
-                    templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
-                        true);
-                    LOG.info("Upgrade finished successfully.");
-                } else {
-                    LOG.info("Upgrade aborted.");
-                    successful = false;
-                }
-            }
-        } catch (Throwable e) {
-            PlatformUIUtil.openErrorDialog("An unexpected error occurred while upgrading the templates configuration",
-                e);
-            LOG.error("An unexpected error occurred while upgrading the templates configuration.", e);
-            successful = false;
-        }
-
-        // refresh by reload
-        if (successful) {
+            report = healthCheck
+                .perform(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
+            AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(report, healthCheck);
+            advancedHealthCheckDialog.setBlockOnOpen(false);
             close();
-            new AdvancedHealthCheck().execute();
+            advancedHealthCheckDialog.open();
+        } catch (GeneratorProjectNotExistentException e) {
+            report.addError(e);
+            LOG.warn("Configuration project not found!", e);
+            String s = "=> Please import the configuration project into your workspace as stated in the "
+                + "documentation of CobiGen or in the one of your project.";
+            s = MessageUtil.enrichMsgIfMultiError(s, report);
+            PlatformUIUtil.openErrorDialog(s, e);
+        } catch (CoreException e) {
+            String s = "An eclipse internal exception occurred while retrieving the configuration folder resource.";
+            s = MessageUtil.enrichMsgIfMultiError(s, report);
+            PlatformUIUtil.openErrorDialog(s, e);
+            LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
         }
-
         ResourcesPluginUtil.refreshConfigurationProject();
-
         Activator.getDefault().startConfigurationProjectListener();
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 }
