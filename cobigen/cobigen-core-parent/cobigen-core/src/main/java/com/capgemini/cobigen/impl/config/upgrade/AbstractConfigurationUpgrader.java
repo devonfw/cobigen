@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
@@ -175,14 +176,13 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *            the root folder containing the configuration with the specified
      *            {@link #configurationFilename}. See
      *            {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more information.
-     * @param ignoreFailedBackup
-     *            If is set to <code>true</code>, the backup will silently log a failed backup and return
-     *            successfully. Otherwise it will throw a {@link CobiGenRuntimeException}.
+     * @param backupPolicy
+     *            the {@link BackupPolicy} to choose if a backup is necessary or not.
      * @return if manual adoptions has to be performed after upgrading
      * @throws BackupFailedException
      *             if the backup could not be created
      */
-    public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, boolean ignoreFailedBackup) {
+    public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy) {
         boolean manualAdoptionsNecessary = false;
 
         VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
@@ -207,7 +207,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                         Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(versions[i]);
                         rootNode = unmarshallConfiguration(configurationFile, versions[i], jaxbConfigurationClass);
 
-                        createBackup(configurationFile, ignoreFailedBackup);
+                        createBackup(configurationFile, backupPolicy);
 
                         // NotYetSupportedException
                         ConfigurationUpgradeResult result = performNextUpgradeStep(versions[i], rootNode);
@@ -254,7 +254,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *             {@link CobiGenRuntimeException} by the {@link AbstractConfigurationUpgrader} with an
      *             appropriate message. {@link NotYetSupportedException}s will be forwarded untouched to the
      *             user.
-     * @author mbrunnli (Jun 22, 2015)
      */
     protected abstract ConfigurationUpgradeResult performNextUpgradeStep(VERSIONS_TYPE source,
         Object previousConfigurationRootNode) throws Exception;
@@ -264,14 +263,14 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * silently log a failed backup and return successfully.
      * @param file
      *            to be backed up
-     * @param ignoreFailedBackup
-     *            If is set to <code>true</code>, the backup will silently log a failed backup and return
-     *            successfully. Otherwise it will throw a {@link CobiGenRuntimeException}.
+     * @param backupPolicy
+     *            the {@link BackupPolicy} to choose if a backup is necessary or not. It will throw a
+     *            {@link CobiGenRuntimeException} if a backup was enforced but the creation of the backup
+     *            failed.
      * @throws BackupFailedException
      *             if the backup could not be created
-     * @author mbrunnli (Jun 22, 2015)
      */
-    private void createBackup(Path file, boolean ignoreFailedBackup) {
+    private void createBackup(Path file, BackupPolicy backupPolicy) {
         for (int i = 0;; i++) {
             Pattern p = Pattern.compile("(.+\\.)([^\\.]+)");
             Matcher matcher = p.matcher(file.getFileName().toString());
@@ -289,9 +288,14 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
             } catch (FileAlreadyExistsException e) {
                 continue;
             } catch (UnsupportedOperationException | IOException | SecurityException e) {
-                if (ignoreFailedBackup) {
+                switch (backupPolicy) {
+                case NO_BACKUP:
+                    // nothing to do because backup was not needed anyway
+                    break;
+                case BACKUP_IF_POSSIBLE:
                     LOG.warn("Could not write backup of the configuration file ('{}').", backupPath.toUri());
-                } else {
+                    break;
+                case ENFORCE_BACKUP:
                     throw new BackupFailedException("Upgrade failed. Not possible to create the backup in '"
                         + backupPath.toUri() + "' before upgrading the configuration.", e);
                 }
@@ -308,7 +312,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      * @return the class of the JAXB configuration root node with respect to the given schema version
      * @throws ClassNotFoundException
      *             if the determined JAXB configuration root node class could not be found
-     * @author mbrunnli (Jun 23, 2015)
      */
     private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
         Class<?> configurationClass =
@@ -332,7 +335,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      *             if the parser could not parse the schema
      * @throws IOException
      *             if the configuration file could not be read
-     * @author mbrunnli (Jun 23, 2015)
      */
     private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv, Class<?> jaxbConfigurationClass)
         throws JAXBException, SAXException, IOException {
