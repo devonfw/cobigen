@@ -27,9 +27,8 @@ paths:
       parameters:
         - name: amount
           in: path
-          required: true
           schema:
-            type: number
+            type: integer
             format: int64
             minimum: 10
             maximum: 200
@@ -71,6 +70,9 @@ components:
               format: int64
               maximum: 100
               minimum: 0
+          required:
+            - saleExample
+
     requestBodies:
         TableData:
           content:
