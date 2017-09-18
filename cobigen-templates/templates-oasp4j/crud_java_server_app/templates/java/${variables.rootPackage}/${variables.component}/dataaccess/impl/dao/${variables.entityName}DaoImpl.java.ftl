@@ -85,7 +85,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
             } else {
                 query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}<#if field.type?ends_with("Entity")>Id</#if>()).desc());
             }   
-            break;
+          break;
           </#if>
         </#list>
         }

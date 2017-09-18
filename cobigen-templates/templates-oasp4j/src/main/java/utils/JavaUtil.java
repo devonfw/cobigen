@@ -1,5 +1,7 @@
 package utils;
 
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,21 +207,21 @@ public class JavaUtil {
      */
     public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {
 
-        if (pojoClass != null && pojoClass.getDeclaredField(fieldName) != null) {
-            if (pojoClass.getDeclaredField(fieldName).getType().isAssignableFrom(java.util.List.class)
-                || pojoClass.getDeclaredField(fieldName).getType().isAssignableFrom(java.util.Set.class)) {
-
-                return true;
-            } else {
-
-                return false;
-            }
-        } else if (pojoClass != null && pojoClass.getField(fieldName) == null) {
-
+        if (pojoClass == null) {
             return false;
         }
 
-        return false;
+        Field field = pojoClass.getDeclaredField(fieldName);
+        if (field == null) {
+            field = pojoClass.getField(fieldName);
+        }
+        if (field == null) {
+            return false;
+        } else {
+            return field.getType().isAssignableFrom(java.util.List.class)
+                || field.getType().isAssignableFrom(java.util.Set.class);
+        }
+
     }
 
     /**
