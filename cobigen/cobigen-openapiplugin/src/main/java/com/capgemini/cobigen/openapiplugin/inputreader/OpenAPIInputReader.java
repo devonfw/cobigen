@@ -273,7 +273,8 @@ public class OpenAPIInputReader implements InputReader {
         if (requestBody != null) {
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
-                if (tags.contains(Constants.SEARCH_CRITERIA) || tags.contains(Constants.SEARCH_CRITERIA_MIN)) {
+                if (tags.contains(Constants.SEARCH_CRITERIA)
+                    || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
                     parameter.setIsSearchCriteria(true);
                 }
                 if (((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
