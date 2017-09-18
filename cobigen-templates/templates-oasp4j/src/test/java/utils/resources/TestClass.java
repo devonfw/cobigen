@@ -1,6 +1,7 @@
 package utils.resources;
 
 import java.util.List;
+import java.util.Set;
 
 import utils.resources.dataaccess.api.DeepEntity;
 
@@ -18,6 +19,8 @@ public class TestClass {
   private TestEntity entity;
 
   private List<TestEntity> entitys;
+  
+  private Set<TestEntity> setEntitys;
 
   private DeepEntity deepEntity;
 }

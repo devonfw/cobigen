@@ -1,5 +1,7 @@
 package utils;
 
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,6 +192,36 @@ public class JavaUtil {
         } else {
             return "";
         }
+    }
+
+    /**
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param fieldName
+     *            {@link String} the name of the field
+     * @return true if the field is an instance of {@link java.utils.Collections}
+     * @throws NoSuchFieldException
+     *             indicating something awefully wrong in the used model
+     * @throws SecurityException
+     *             if the field cannot be accessed.
+     */
+    public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {
+
+        if (pojoClass == null) {
+            return false;
+        }
+
+        Field field = pojoClass.getDeclaredField(fieldName);
+        if (field == null) {
+            field = pojoClass.getField(fieldName);
+        }
+        if (field == null) {
+            return false;
+        } else {
+            return field.getType().isAssignableFrom(java.util.List.class)
+                || field.getType().isAssignableFrom(java.util.Set.class);
+        }
+
     }
 
     /**
