@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
@@ -19,7 +20,6 @@ import com.google.common.io.Files;
 
 /**
  * Test suite for {@link TemplateConfigurationUpgrader}
- * @author mbrunnli (Jun 22, 2015)
  */
 public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
 
@@ -35,7 +35,6 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
      * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 22, 2015)
      */
     @Test
     public void testCorrectUpgrade_v1_2_TO_v2_1() throws Exception {
@@ -51,7 +50,7 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
         TemplatesConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(TemplatesConfigurationVersion.v1_2);
 
-        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
+        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
         assertThat(tmpTargetConfig.toPath().resolveSibling("templates.bak.xml").toFile()).exists()
             .hasSameContentAs(sourceTestdata);
 

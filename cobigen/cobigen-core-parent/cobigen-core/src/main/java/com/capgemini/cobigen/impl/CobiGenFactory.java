@@ -6,11 +6,13 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.HealthCheck;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
+import com.capgemini.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.capgemini.cobigen.impl.extension.ServiceLookup;
 import com.capgemini.cobigen.impl.generator.CobiGenImpl;
 import com.capgemini.cobigen.impl.util.FileSystemUtil;
@@ -46,6 +48,15 @@ public class CobiGenFactory {
         }
 
         return ProxyFactory.getProxy(new CobiGenImpl(configurationHolder));
+    }
+
+    /**
+     * Creates a new {@link HealthCheck}.
+     *
+     * @return a new {@link HealthCheck} instance
+     */
+    public static HealthCheck createHealthCheck() {
+        return ProxyFactory.getProxy(new HealthCheckImpl());
     }
 
 }
