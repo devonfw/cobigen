@@ -117,6 +117,25 @@ public class OpenAPIInputReaderTest {
         assertThat(pathURIs).containsExactly("/table/{id}/", "/sale/{id}/", "/sale/", "/new/");
     }
 
+    @Test
+    public void testRetrieveParameterOfPath() throws Exception {
+
+        List<Object> inputObjects = getInputs();
+        List<ComponentDef> cmps = new LinkedList<>();
+        for (Object o : inputObjects) {
+            cmps.add(((EntityDef) o).getComponent());
+        }
+        assertThat(cmps).extracting("paths").hasSize(2);
+        List<String> pathURIs = new LinkedList<>();
+        for (ComponentDef cmp : cmps) {
+            for (PathDef path : cmp.getPaths()) {
+                pathURIs.add(path.getPathURI());
+            }
+        }
+        assertThat(pathURIs).hasSize(4);
+        assertThat(pathURIs).containsExactly("/table/{id}/", "/sale/{id}/", "/sale/", "/new/");
+    }
+
     private List<Object> getInputs() throws Exception {
 
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
