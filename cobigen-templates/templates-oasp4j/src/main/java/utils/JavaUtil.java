@@ -199,7 +199,7 @@ public class JavaUtil {
      *            {@link Class}&lt;?> the class object of the pojo
      * @param fieldName
      *            {@link String} the name of the field
-     * @return true if the field is an instance of {@link java.utils.Collections}
+     * @return true if the field is an instance of java.utils.Collections
      * @throws NoSuchFieldException
      *             indicating something awefully wrong in the used model
      * @throws SecurityException
