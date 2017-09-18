@@ -159,8 +159,10 @@ public class OpenAPIInputReaderTest {
         }
         assertThat(constraints).extracting("minimum").hasSize(4);
         assertThat(constraints).extracting("maximum").hasSize(4);
-        assertThat(constraints).extracting("minimum").containsExactly(0, 10, null, null);
-        assertThat(constraints).extracting("maximum").containsExactly(50, 200, null, null);
+        assertThat(constraints).extracting("notNull").hasSize(4);
+        assertThat(constraints).extracting("minimum").contains(0, 10);
+        assertThat(constraints).extracting("maximum").contains(50, 200);
+        assertThat(constraints).extracting("notNull").containsExactly(true, false, true, true);
 
     }
 
