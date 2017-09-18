@@ -40,7 +40,7 @@ public class EclipseCobiGenUtils {
         bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
         bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
-            CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), 10000);
+            CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), 20000);
 
         // select increment and generate
         for (String increment : increments) {
