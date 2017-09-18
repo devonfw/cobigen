@@ -9,12 +9,30 @@ paths:
   /tablemanagement/v1/table/{id}:
     get:
       operationId: findTable
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 50
       responses:
         '200':
           description: Any
   /salemanagement/v1/sale/{id}:
     get:
       operationId: findSale
+      parameters:
+        - name: amount
+          in: path
+          required: true
+          schema:
+            type: number
+            format: int64
+            minimum: 10
+            maximum: 200
       responses:
         '200':
           description: Any
@@ -23,11 +41,17 @@ paths:
       responses:
         '200':
           description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/TableData'
+      tags:
+       - searchCriteria
   /salemanagement/v1/new:
     post:
       responses:
        '200':
           description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/TableData'
 components:
     schemas:
         Table:
@@ -47,4 +71,11 @@ components:
               format: int64
               maximum: 100
               minimum: 0
+    requestBodies:
+        TableData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          required: true
  
