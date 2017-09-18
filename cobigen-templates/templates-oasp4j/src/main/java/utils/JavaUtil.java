@@ -193,12 +193,11 @@ public class JavaUtil {
     }
 
     /**
-     * @param pojoClass 
-     * 				{@link Class}&lt;?> the class object of the pojo
-     * @param fieldName 
-     * 				{@link String} the name of the field
-     * @return true 
-     * 				if the field is an instance of {@link java.utils.Collections}
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param fieldName
+     *            {@link String} the name of the field
+     * @return true if the field is an instance of {@link java.utils.Collections}
      * @throws NoSuchFieldException
      *             indicating something awefully wrong in the used model
      * @throws SecurityException
@@ -206,10 +205,18 @@ public class JavaUtil {
      */
     public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {
 
-    	Class<?> type = pojoClass.getDeclaredField(fieldName).getType();
-        if (type.isAssignableFrom(java.util.List.class) || type.isAssignableFrom(java.util.Set.class)) {
+        if (pojoClass != null && pojoClass.getDeclaredField(fieldName) != null) {
+            if (pojoClass.getDeclaredField(fieldName).getType().isAssignableFrom(java.util.List.class)
+                || pojoClass.getDeclaredField(fieldName).getType().isAssignableFrom(java.util.Set.class)) {
 
-            return true;
+                return true;
+            } else {
+
+                return false;
+            }
+        } else if (pojoClass != null && pojoClass.getField(fieldName) == null) {
+
+            return false;
         }
 
         return false;
