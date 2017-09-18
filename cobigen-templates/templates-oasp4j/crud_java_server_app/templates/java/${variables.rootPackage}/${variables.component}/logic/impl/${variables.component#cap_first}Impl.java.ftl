@@ -85,10 +85,8 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
 		return this.${variables.entityName?uncap_first}Dao;
 	}
-	
-	
-	
-	 @Override
+		
+	@Override
   public ${variables.entityName}Cto find${variables.entityName}Cto(Long id) {
     LOG.debug("Get ${variables.entityName}Cto with id {} from database.", id);
     ${variables.entityName}Entity entity = get${variables.entityName}Dao().findOne(id);
@@ -97,7 +95,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     <#list pojo.fields as field>
       <#if field.type?ends_with("Entity")>
     cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
-      <#else if field.type?contains("Entity") && (field.type?starts_with("List<") || field.type?starts_with("Set<")>
+      <#else if field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
     cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?capfirst}Eto.class));
       </#if>
     </#list>
@@ -116,7 +114,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       <#list pojo.fields as field>
         <#if field.type?ends_with("Entity")>
       cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
-        <#else if field.type?contains("Entity") && (field.type?starts_with("List<") || field.type?starts_with("Set<")>
+        <#else if field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
       cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?capfirst}Eto.class));
         </#if>
       </#list>
