@@ -60,12 +60,12 @@ public class EclipseCobiGenUtils {
      */
     public static void confirmSuccessfullGeneration(SWTWorkbenchBot bot) {
         try {
-            bot.waitUntil(shellIsActive("Organize Imports"));
+            bot.waitUntil(shellIsActive("Organize Imports"), 20000);
             bot.shell("Organize Imports").bot().button(IDialogConstants.OK_LABEL).click();
         } catch (TimeoutException e) {
             // dialog just optional
         }
-        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
+        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED), 20000);
         bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
     }
 }
