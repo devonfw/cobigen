@@ -25,7 +25,7 @@
     <dependency>
       <groupId>com.reprezen.kaizen</groupId>
       <artifactId>openapi-parser</artifactId>
-      <version>0.0.1.201708181620</version>
+      <version>0.0.1.201709142043</version>
     </dependency>
     
     <dependency>
