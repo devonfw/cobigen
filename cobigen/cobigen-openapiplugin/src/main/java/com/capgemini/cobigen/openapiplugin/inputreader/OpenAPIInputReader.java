@@ -276,11 +276,17 @@ public class OpenAPIInputReader implements InputReader {
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
                     parameter.setIsSearchCriteria(true);
+                    parameter.setName("criteria");
                 }
                 if (((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
                     String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema())
                         .getReference().getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
+                    if (!parameter.getIsSearchCriteria()) {
+                        char c[] = mp[mp.length - 1].toCharArray();
+                        c[0] = Character.toLowerCase(c[0]);
+                        parameter.setName(new String(c));
+                    }
                 }
                 if (parameter.getType() != null) {
                     parametersList.add(parameter);
