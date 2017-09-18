@@ -278,6 +278,9 @@ public class JavaUtilTest {
         assertEquals("", new JavaUtil().castJavaPrimitives(clazz, "object"));
     }
 
+    /**
+     * tests if the field is {@link java.util.List} or {@link java.util.Set}
+     */
     @Test
     public void testIsCollection() throws NoSuchFieldException, SecurityException {
 
