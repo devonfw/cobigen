@@ -28,6 +28,7 @@
           <templates>
             <template>ALL</template>
           </templates>
+          <failOnNothingGenerated>true</failOnNothingGenerated>
         </configuration>
         <dependencies>
           <dependency>

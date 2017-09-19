@@ -4,7 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Collections;
 
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.maven.test.AbstractMavenTest;
@@ -91,12 +98,59 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
         assertThat(numFilesInTarget).isEqualTo(12);
     }
 
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
     @Test
     public void testClassloadingWithTemplateFolderAndTestClasses() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestClassLoadingWithTemplateFolder/");
         File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-classloading-testclasses/");
         File testProjectRoot = runMavenInvoker(testProject, testTemplatesProject);
 
-        assertThat(testProjectRoot.toPath().resolve("Sample.txt")).hasContent("Test InputEntity name");
+        assertThat(testProjectRoot.toPath().resolve("Sample.txt")).hasContent("Test InputEntity asdf");
+    }
+
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testNothingGenerated() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestNothingToGenerate/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-nomatch/");
+        runMavenInvoker(testProject, testTemplatesProject);
+    }
+
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testThrowExceptionOnNothingGenerated() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestExceptionOnNothingToGenerate/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-nomatch/");
+
+        assertThat(testProject).exists();
+
+        File testProjectRoot = tmpFolder.newFolder();
+        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
+
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setBaseDirectory(testProjectRoot);
+        request.setGoals(Collections.singletonList("package"));
+        setTestProperties(request, testTemplatesProject);
+        request.setShowErrors(true);
+        request.setDebug(false);
+        request.setGlobalSettingsFile(mvnSettingsFile);
+
+        Invoker invoker = new DefaultInvoker();
+        InvocationResult result = invoker.execute(request);
+
+        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(1);
+        assertThat(result.getExecutionException()).isNull();
     }
 }
