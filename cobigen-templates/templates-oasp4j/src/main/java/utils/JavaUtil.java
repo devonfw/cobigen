@@ -62,10 +62,23 @@ public class JavaUtil {
     public String boxJavaPrimitives(Class<?> pojoClass, String fieldName)
         throws NoSuchFieldException, SecurityException {
 
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+
         if (equalsJavaPrimitive(pojoClass, fieldName)) {
             return ClassUtils.primitiveToWrapper(pojoClass.getDeclaredField(fieldName).getType()).getSimpleName();
         } else {
-            return pojoClass.getDeclaredField(fieldName).getType().getSimpleName();
+            Field field = pojoClass.getDeclaredField(fieldName);
+            if (field == null) {
+                field = pojoClass.getField(fieldName);
+            }
+            if (field == null) {
+                throw new IllegalAccessError("Could not find field " + fieldName + " in class " + pojoClass);
+            } else {
+                return field.getType().getSimpleName();
+            }
         }
     }
 
@@ -102,7 +115,19 @@ public class JavaUtil {
     public boolean equalsJavaPrimitive(Class<?> pojoClass, String fieldName)
         throws NoSuchFieldException, SecurityException {
 
-        return pojoClass.getDeclaredField(fieldName).getType().isPrimitive();
+        if (pojoClass == null) {
+            return false;
+        }
+
+        Field field = pojoClass.getDeclaredField(fieldName);
+        if (field == null) {
+            field = pojoClass.getField(fieldName);
+        }
+        if (field == null) {
+            return false;
+        } else {
+            return field.getType().isPrimitive();
+        }
     }
 
     /**
