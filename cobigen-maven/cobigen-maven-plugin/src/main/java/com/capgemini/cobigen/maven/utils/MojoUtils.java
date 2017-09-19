@@ -22,7 +22,7 @@ public class MojoUtils {
 
         switch (inputPaths.size()) {
         case 0:
-            return Paths.get(URI.create("/"));
+            throw new IllegalArgumentException("List of paths cannot be empty.");
         case 1:
             return inputPaths.get(0);
         }

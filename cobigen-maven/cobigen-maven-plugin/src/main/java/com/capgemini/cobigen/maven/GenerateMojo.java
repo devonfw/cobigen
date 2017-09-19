@@ -201,6 +201,7 @@ public class GenerateMojo extends AbstractMojo {
                 getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
             }
         }
+
         URL contextXmlUrl = classRealm.getResource("context.xml");
         if (contextXmlUrl == null) {
             getLog().error("No context.xml could be found in the classpath!");
@@ -271,36 +272,35 @@ public class GenerateMojo extends AbstractMojo {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-            } catch (
-
-            IOException e) {
+            } catch (IOException e) {
                 getLog().error(e);
             }
 
-            Path commonParent = new MojoUtils().getCommonParent(foundPaths);
-            while (!commonParent.equals(configFolder)) {
-                try {
-                    pluginDescriptor.getClassRealm().addURL(commonParent.toUri().toURL());
-                    getLog().debug("Added " + commonParent.toUri().toURL().toString() + " to class path");
-                } catch (MalformedURLException e) {
-                    getLog().error("Could not add folder " + commonParent.toString(), e);
+            if (foundPaths.size() > 0) {
+                Path commonParent = new MojoUtils().getCommonParent(foundPaths);
+                while (!commonParent.equals(configFolder)) {
+                    try {
+                        pluginDescriptor.getClassRealm().addURL(commonParent.toUri().toURL());
+                        getLog().debug("Added " + commonParent.toUri().toURL().toString() + " to class path");
+                    } catch (MalformedURLException e) {
+                        getLog().error("Could not add folder " + commonParent.toString(), e);
+                    }
+                    commonParent = commonParent.getParent();
                 }
-                commonParent = commonParent.getParent();
-            }
 
-            for (
-
-            Path path : foundPaths) {
-                try {
-                    result.add(loadClassByPath(path, classRealm));
-                } catch (ClassNotFoundException e) {
-                    getLog().error(e);
+                for (Path path : foundPaths) {
+                    try {
+                        result.add(loadClassByPath(path, classRealm));
+                    } catch (ClassNotFoundException e) {
+                        getLog().error(e);
+                    }
                 }
+            } else {
+                getLog().warn("Could not find any compiled classes to be loaded as util classes.");
             }
         }
 
         return result;
-
     }
 
     /**
