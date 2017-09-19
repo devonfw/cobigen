@@ -55,13 +55,13 @@ public class JavaInputReader implements InputReader {
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                        ((Class<?>) inputArr[1]).getCanonicalName())) {
+                    if (((JavaClass) inputArr[0]).getFullyQualifiedName()
+                        .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                    if (((Class<?>) inputArr[0]).getCanonicalName()
+                        .equals(((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
                     }
                 }
@@ -391,7 +391,8 @@ public class JavaInputReader implements InputReader {
      *            additional arguments are ignored</li>
      *            <li>In case of path pointing to a file
      *            <ol>
-     *            </ol></li>
+     *            </ol>
+     *            </li>
      *            </ul>
      */
     @Override
@@ -430,7 +431,14 @@ public class JavaInputReader implements InputReader {
                     if (classLoader == null) {
                         return JavaParserUtil.getFirstJavaClass(pathReader);
                     } else {
-                        return JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        try {
+                            clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
+                        } catch (ClassNotFoundException e) {
+                            // ignore
+                            return firstJavaClass;
+                        }
+                        return new Object[] { firstJavaClass, clazz };
                     }
                 } else {
                     Object[] result = new Object[] { null, clazz };
