@@ -207,14 +207,8 @@
     <workingSet
         name="cobigen-maven-plugin">
       <predicate
-          xsi:type="predicates:OrPredicate">
-        <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="cobigen-maven-plugin"/>
-        <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="cobigen-maven-systemtest"/>
-      </predicate>
+          xsi:type="predicates:NamePredicate"
+          pattern="cobigen-maven-.*"/>
     </workingSet>
     <workingSet
         name="cobigen-templates-parent">
@@ -967,16 +961,8 @@
         <description>Maven initialization tasks for workspace</description>
       </setupTask>
       <setupTask
-          xsi:type="setup:ResourceCreationTask"
-          id="resource.creation.project.master"
-          excludedTriggers="BOOTSTRAP"
-          successor="//@streams[name='develop']/@setupTasks.4/@setupTasks.2"
-          content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;projectDescription>&#xA;&#x9;&lt;name>gh-pages&lt;/name>&#xA;&#x9;&lt;comment>&lt;/comment>&#xA;&#x9;&lt;natures>&#xA;&#x9;&#x9;&lt;nature>org.eclipse.wst.common.project.facet.core.nature&lt;/nature>&#xA;&#x9;&lt;/natures>&#xA;&lt;/projectDescription>"
-          targetURL="${workspace.location/gh-pages/.project|uri}"
-          encoding="UTF-8"/>
-      <setupTask
           xsi:type="projects:ProjectsImportTask"
-          successor="//@streams[name='master']/@setupTasks.4/@setupTasks.3">
+          successor="//@streams[name='master']/@setupTasks.4/@setupTasks.2">
         <sourceLocator
             rootFolder="${workspace.location/tools-cobigen/cobigen-eclipse}"
             locateNestedProjects="true">
@@ -984,8 +970,6 @@
               xsi:type="predicates:NamePredicate"
               pattern="cobigen-eclipse.*"/>
         </sourceLocator>
-        <sourceLocator
-            rootFolder="${workspace.location/gh-pages}"/>
       </setupTask>
       <setupTask
           xsi:type="maven:MavenImportTask">
