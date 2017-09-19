@@ -143,11 +143,17 @@ public class GenerateMojo extends AbstractMojo {
                 List<Class<?>> utilClasses = resolveUtilClasses();
                 GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
                     Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
+
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
                         getLog().error(e.getMessage(), e);
                     }
                     throw new MojoFailureException("Generation not successfull", report.getErrors().get(0));
+                }
+
+                if (report.getGeneratedFiles().isEmpty() && failOnNothingGenerated) {
+                    throw new MojoFailureException("The execution '" + execution.getExecutionId()
+                        + "' of cobigen-maven-plugin resulted in no file to be generated!");
                 }
             }
         } catch (CobiGenRuntimeException e) {
@@ -337,6 +343,13 @@ public class GenerateMojo extends AbstractMojo {
         return result;
     }
 
+    /**
+     * Reads the .classpath file top level to root and reads the classpathentry of kind output and returns its
+     * value
+     * @param root
+     *            the root folder to search .classpath file in
+     * @return the output path or null
+     */
     private String getClassOutputPathFromDotClasspathFile(Path root) {
         Path file = root.resolve(".classpath");
         if (Files.exists(file) && Files.isRegularFile(file)) {

@@ -32,7 +32,7 @@ public class AbstractMavenTest {
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     /** The maven settings file used by maven invoker for test execution */
-    private File mvnSettingsFile;
+    protected File mvnSettingsFile;
 
     /**
      * Copy settings file to get a file handle required by maven invoker API
@@ -95,7 +95,7 @@ public class AbstractMavenTest {
      * @param templatesProject
      *            the templates project to be used for generation. May be {@code null}
      */
-    private void setTestProperties(InvocationRequest request, File templatesProject) {
+    protected void setTestProperties(InvocationRequest request, File templatesProject) {
         Properties mavenProperties = new Properties();
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         mavenProperties.put("locRep", MavenMetadata.LOCAL_REPO);
