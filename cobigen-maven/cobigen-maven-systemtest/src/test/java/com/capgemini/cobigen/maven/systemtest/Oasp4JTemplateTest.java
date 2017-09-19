@@ -3,49 +3,17 @@ package com.capgemini.cobigen.maven.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.Properties;
 
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.maven.config.constant.MavenMetadata;
+import com.capgemini.cobigen.maven.test.AbstractMavenTest;
 
 /** Test suite for testing the maven plugin with whole released template sets */
-public class Oasp4JTemplateTest {
+public class Oasp4JTemplateTest extends AbstractMavenTest {
 
     /** Root of all test resources of this test suite */
     public static final String TEST_RESOURCES_ROOT = "src/test/resources/testdata/systemtest/Oasp4JTemplateTest/";
-
-    /** Temporary folder rule to create new temporary folder and files */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
-
-    /** The maven settings file used by maven invoker for test execution */
-    private File mvnSettingsFile;
-
-    /**
-     * Copy settings file to get a file handle required by maven invoker API
-     * @throws IOException
-     *             if the file could not be read/written
-     */
-    @Before
-    public void getSettingsFile() throws IOException {
-        mvnSettingsFile = tmpFolder.newFile();
-        Files.write(mvnSettingsFile.toPath(),
-            IOUtil.toByteArray(Oasp4JTemplateTest.class.getResourceAsStream("/test-maven-settings.xml")));
-    }
 
     /**
      * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
@@ -56,23 +24,7 @@ public class Oasp4JTemplateTest {
     @Test
     public void testEntityInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGeneration/");
-        assertThat(testProject).exists();
-
-        File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        setTestProperties(request);
-        request.setShowErrors(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
+        File testProjectRoot = runMavenInvoker(testProject);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -92,23 +44,7 @@ public class Oasp4JTemplateTest {
     @Test
     public void testEntityInputDataaccessGenerationForTemplates2_0_0() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplates2-0-0/");
-        assertThat(testProject).exists();
-
-        File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        setTestProperties(request);
-        request.setShowErrors(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
+        File testProjectRoot = runMavenInvoker(testProject);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -129,28 +65,7 @@ public class Oasp4JTemplateTest {
     public void testEntityInputDataaccessGenerationForTemplateFolder() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder/");
         File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j");
-        assertThat(testProject).exists();
-        assertThat(templatesProject).exists();
-
-        File testProjectRoot = tmpFolder.newFolder();
-        File testTemplates = tmpFolder.newFolder("templates-oasp4j");
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-        FileUtils.copyDirectoryStructure(templatesProject, testTemplates);
-
-        assertThat(testTemplates).exists();
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        setTestProperties(request);
-        request.setShowErrors(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
+        File testProjectRoot = runMavenInvoker(testProject, templatesProject);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -167,23 +82,7 @@ public class Oasp4JTemplateTest {
     @Test
     public void testPackageInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestPackageInputDataaccessGeneration/");
-        assertThat(testProject).exists();
-
-        File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        setTestProperties(request);
-        request.setShowErrors(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
+        File testProjectRoot = runMavenInvoker(testProject);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =

@@ -21,6 +21,7 @@
   <modules>
     <module>cobigen-maven-plugin</module>
     <module>cobigen-maven-systemtest</module>
+    <module>cobigen-maven-test</module>
   </modules>
 
 </project>

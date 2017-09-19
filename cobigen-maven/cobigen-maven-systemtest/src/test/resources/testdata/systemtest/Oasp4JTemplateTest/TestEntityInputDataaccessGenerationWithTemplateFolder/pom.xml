@@ -21,7 +21,7 @@
           </execution>
         </executions>
         <configuration>
-          <configurationFolder>${basedir}/../templates-oasp4j/</configurationFolder>
+          <configurationFolder>${templatesProject}/</configurationFolder>
           <inputFiles>
             <inputFile>src/main/java/io/github/devonfw/cobigen/generator/dataaccess/api/InputEntity.java</inputFile>
           </inputFiles>
