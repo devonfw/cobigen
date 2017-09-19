@@ -2,10 +2,10 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-maven-systemtest</artifactId>
+  <artifactId>cobigen-maven-test</artifactId>
   <packaging>jar</packaging>
   <version>${cobigen.maven.version}</version>
-  <name>CobiGen Maven Plugin - Systemtests</name>
+  <name>CobiGen Maven - Test Utils</name>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <java.version>1.8</java.version>
+    <skip.deployment>false</skip.deployment>
   </properties>
 
   <dependencies>
@@ -26,8 +26,8 @@
 
     <dependency>
       <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-maven-test</artifactId>
-      <version>${cobigen.maven.version}</version>
+      <artifactId>cobigen-core-test</artifactId>
+      <version>4.0.0</version>
     </dependency>
   </dependencies>
 
