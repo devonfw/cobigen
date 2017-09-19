@@ -5,8 +5,6 @@
   <artifactId>Oasp4JTemplateTest-TestEntityInputDataaccessGeneration</artifactId>
   <version>SNAPSHOT</version>
 
-  
-
   <build>
     <plugins>
       <plugin>
