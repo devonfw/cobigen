@@ -91,15 +91,12 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
         assertThat(numFilesInTarget).isEqualTo(12);
     }
 
-    /**
-     * Set test properties to the maven environment to be used in the test pom.xml files
-     * @param request
-     *            to be enriched by the test properties.
-     */
-    private void setTestProperties(InvocationRequest request) {
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        mavenProperties.put("locRep", MavenMetadata.LOCAL_REPO);
-        request.setProperties(mavenProperties);
+    @Test
+    public void testClassloadingWithTemplateFolderAndTestClasses() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestClassLoadingWithTemplateFolder/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-classloading-testclasses/");
+        File testProjectRoot = runMavenInvoker(testProject, testTemplatesProject);
+
+        assertThat(testProjectRoot.toPath().resolve("Sample.txt")).hasContent("Test InputEntity name");
     }
 }

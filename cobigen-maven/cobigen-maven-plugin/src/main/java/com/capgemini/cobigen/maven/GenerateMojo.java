@@ -62,6 +62,9 @@ import com.google.common.collect.Sets;
     defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyCollection = ResolutionScope.TEST)
 public class GenerateMojo extends AbstractMojo {
 
+    /** Keyword to generate all of a kind */
+    public static final String ALL = "ALL";
+
     /** Maven Project, which is currently built */
     @Component
     private MavenProject project;
@@ -101,6 +104,10 @@ public class GenerateMojo extends AbstractMojo {
     /** Destination root path the relative paths of templates will be resolved with. */
     @Parameter(defaultValue = "${basedir}")
     private File destinationRoot;
+
+    /** Determines whether the maven build should fail if nothing has been generated on execution */
+    @Parameter(defaultValue = "false")
+    private boolean failOnNothingGenerated;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -382,22 +389,32 @@ public class GenerateMojo extends AbstractMojo {
         throws MojoFailureException {
         List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (increments != null && !increments.isEmpty()) {
-            for (Object input : inputs) {
-                List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
-                List<String> configuredIncrements = new LinkedList<>(increments);
-                for (IncrementTo increment : matchingIncrements) {
-                    if (increments.contains(increment.getId())) {
-                        generableArtifacts.add(increment);
-                        configuredIncrements.remove(increment.getId());
-                    }
-                }
-                // error handling for increments not found
-                if (!configuredIncrements.isEmpty()) {
+            if (increments.contains(ALL)) {
+                if (increments.size() > 1) {
                     throw new MojoFailureException(
-                        "Increments with ids '" + configuredIncrements + "' not matched for input '"
-                            + getStringRepresentation(input) + "' by provided CobiGen configuration.");
+                        "You specified the 'ALL' increment to generate all available increments next to another increment, which was most probably not intended.");
                 }
 
+                for (Object input : inputs) {
+                    generableArtifacts.addAll(cobiGen.getMatchingIncrements(input));
+                }
+            } else {
+                for (Object input : inputs) {
+                    List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
+                    List<String> configuredIncrements = new LinkedList<>(increments);
+                    for (IncrementTo increment : matchingIncrements) {
+                        if (increments.contains(increment.getId())) {
+                            generableArtifacts.add(increment);
+                            configuredIncrements.remove(increment.getId());
+                        }
+                    }
+                    // error handling for increments not found
+                    if (!configuredIncrements.isEmpty()) {
+                        throw new MojoFailureException(
+                            "Increments with ids '" + configuredIncrements + "' not matched for input '"
+                                + getStringRepresentation(input) + "' by provided CobiGen configuration.");
+                    }
+                }
             }
         }
         return generableArtifacts;
@@ -416,20 +433,31 @@ public class GenerateMojo extends AbstractMojo {
     private List<GenerableArtifact> collectTemplates(CobiGen cobiGen, List<Object> inputs) throws MojoFailureException {
         List<GenerableArtifact> generableArtifacts = new ArrayList<>();
         if (templates != null && !templates.isEmpty()) {
-            for (Object input : inputs) {
-                List<TemplateTo> matchingTemplates = cobiGen.getMatchingTemplates(input);
-                List<String> configuredTemplates = new LinkedList<>(templates);
-                for (TemplateTo template : matchingTemplates) {
-                    if (templates.contains(template.getId())) {
-                        generableArtifacts.add(template);
-                        configuredTemplates.remove(template.getId());
-                    }
+            if (templates.contains(ALL)) {
+                if (templates.size() > 1) {
+                    throw new MojoFailureException(
+                        "You specified the 'ALL' template to generate all available templates next to another template, which was most probably not intended.");
                 }
-                // error handling for increments not found
-                if (!configuredTemplates.isEmpty()) {
-                    throw new MojoFailureException("Templates with ids '" + configuredTemplates
-                        + "' did not match package in folder '" + getStringRepresentation(input) + "'.");
 
+                for (Object input : inputs) {
+                    generableArtifacts.addAll(cobiGen.getMatchingTemplates(input));
+                }
+            } else {
+                for (Object input : inputs) {
+                    List<TemplateTo> matchingTemplates = cobiGen.getMatchingTemplates(input);
+                    List<String> configuredTemplates = new LinkedList<>(templates);
+                    for (TemplateTo template : matchingTemplates) {
+                        if (templates.contains(template.getId())) {
+                            generableArtifacts.add(template);
+                            configuredTemplates.remove(template.getId());
+                        }
+                    }
+                    // error handling for increments not found
+                    if (!configuredTemplates.isEmpty()) {
+                        throw new MojoFailureException("Templates with ids '" + configuredTemplates
+                            + "' did not match package in folder '" + getStringRepresentation(input) + "'.");
+
+                    }
                 }
             }
         }
