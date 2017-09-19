@@ -66,15 +66,15 @@ public class GenerateMojo extends AbstractMojo {
     public static final String ALL = "ALL";
 
     /** Maven Project, which is currently built */
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
     /** {@link MojoExecution} to retrieve the pom-declared plugin dependencies. */
-    @Component
+    @Parameter(defaultValue = "${mojoExecution}", readonly = true)
     private MojoExecution execution;
 
     /** {@link PluginDescriptor} to retrieve the ClassRealm for this Plug-in */
-    @Component
+    @Parameter(defaultValue = "${plugin}", readonly = true)
     public PluginDescriptor pluginDescriptor;
 
     /** Configuration folder to be used */
