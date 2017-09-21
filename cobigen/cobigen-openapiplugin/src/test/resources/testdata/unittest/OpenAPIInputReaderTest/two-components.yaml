@@ -44,7 +44,7 @@ paths:
         $ref: '#/components/requestBodies/TableData'
       tags:
        - searchCriteria
-  /salemanagement/v1/new:
+  /tablemanagement/v1/table/new:
     post:
       responses:
        '200':
