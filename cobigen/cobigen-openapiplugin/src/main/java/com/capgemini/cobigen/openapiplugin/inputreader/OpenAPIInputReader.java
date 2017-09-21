@@ -146,6 +146,8 @@ public class OpenAPIInputReader implements InputReader {
      *            map of properties of the OpenApi3 entity definition
      * @param openApi
      *            the OpenApi3 model
+     * @param entity
+     *            entity name
      * @return List of {@link PropertyDef}'s
      */
     private List<PropertyDef> getFields(Map<String, ? extends Schema> properties, OpenApi3 openApi, String entity) {
@@ -201,7 +203,7 @@ public class OpenAPIInputReader implements InputReader {
     private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component, String key) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
-            if (pathKey.contains(component)) {
+            if (pathKey.contains(component) && pathKey.contains("/" + key.toLowerCase() + "/")) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {

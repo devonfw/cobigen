@@ -116,7 +116,7 @@ public class OpenAPIInputReaderTest {
             }
         }
         assertThat(pathURIs).hasSize(4);
-        assertThat(pathURIs).containsExactly("/table/{id}/", "/sale/{id}/", "/sale/", "/new/");
+        assertThat(pathURIs).containsExactly("/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class OpenAPIInputReaderTest {
             }
         }
         assertThat(operations).extracting("type").hasSize(4);
-        assertThat(operations).extracting("type").containsExactly("get", "get", "post", "post");
+        assertThat(operations).extracting("type").containsExactly("get", "post", "get", "post");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class OpenAPIInputReaderTest {
 
         List<ParameterDef> parameters = getParametersOfOperations();
         assertThat(parameters).extracting("name").hasSize(4);
-        assertThat(parameters).extracting("name").containsExactly("id", "amount", "criteria", "table");
+        assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "criteria");
 
     }
 
@@ -162,7 +162,7 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("notNull").hasSize(4);
         assertThat(constraints).extracting("minimum").contains(0, 10);
         assertThat(constraints).extracting("maximum").contains(50, 200);
-        assertThat(constraints).extracting("notNull").containsExactly(true, false, true, true);
+        assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
 
     }
 
