@@ -98,6 +98,7 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("minimum").containsExactly(null, 0);
         assertThat(constraints).extracting("maxLength").containsExactly(100, null);
         assertThat(constraints).extracting("minLength").containsExactly(5, null);
+        assertThat(constraints).extracting("unique").containsExactly(true, false);
     }
 
     @Test

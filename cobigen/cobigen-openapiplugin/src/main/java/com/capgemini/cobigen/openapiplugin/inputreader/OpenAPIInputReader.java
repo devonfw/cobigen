@@ -75,7 +75,6 @@ public class OpenAPIInputReader implements InputReader {
             if (schema.getMinItems() != null) {
                 constraints.put(ModelConstant.MIN_LENGTH, schema.getMinItems());
             }
-            constraints.put(ModelConstant.UNIQUE, schema.isUniqueItems());
         } else if (schema.getType().equals("string")) {
             if (schema.getMaxLength() != null) {
                 constraints.put(ModelConstant.MAX_LENGTH, schema.getMaxLength());
@@ -83,6 +82,11 @@ public class OpenAPIInputReader implements InputReader {
             if (schema.getMinLength() != null) {
                 constraints.put(ModelConstant.MIN_LENGTH, schema.getMinLength());
             }
+        }
+        if (schema.isUniqueItems()) {
+            constraints.put(ModelConstant.UNIQUE, schema.isUniqueItems());
+        } else {
+            constraints.put(ModelConstant.UNIQUE, false);
         }
 
         return constraints;
@@ -130,8 +134,8 @@ public class OpenAPIInputReader implements InputReader {
             entityDef.setDescription(openApi.getSchema(key).getDescription());
             ComponentDef componentDef = new ComponentDef();
             entityDef.setProperties(getFields(openApi.getSchema(key).getProperties(), openApi, key));
-            entityDef.setComponentName(openApi.getSchema(key).getTitle());
-            componentDef.setPaths(getPaths(openApi.getPaths(), openApi.getSchema(key).getTitle(), key));
+            entityDef.setComponentName(openApi.getSchema(key).getDescription());
+            componentDef.setPaths(getPaths(openApi.getPaths(), openApi.getSchema(key).getDescription(), key));
             entityDef.setComponent(componentDef);
             objects.add(entityDef);
         }
@@ -300,6 +304,7 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setName("criteria");
                 }
                 if (((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
+                    parameter.setIsEntity(true);
                     String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema())
                         .getReference().getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
