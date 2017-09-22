@@ -54,15 +54,18 @@ paths:
 components:
     schemas:
         Table:
-          title: tablemanagement
+          title: Table
+          description: tablemanagement
           type: object
           properties:
             tableExample:
               type: string
               maxLength: 100
               minLength: 5
+              uniqueItems: true
         Sale:
-          title: salemanagement
+          title: Sale
+          description: salemanagement
           type: object
           properties:
             saleExample:
