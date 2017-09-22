@@ -19,13 +19,13 @@ paths:
 components:
     schemas:
         Table:
-          title: tablemanagement
+          description: tablemanagement
           type: object
           properties:
             example:
               type: string
         Sales:
-          title: salesmanagement
+          description: salesmanagement
           type: object
           properties:
             example:
