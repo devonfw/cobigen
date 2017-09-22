@@ -58,8 +58,10 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
         try {
             fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
         } catch (Throwable e) {
-            throw new CobiGenRuntimeException("An error occured while retrieving the FreeMarker template "
-                + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.", e);
+            throw new CobiGenRuntimeException(
+                "(Freemarker version ${freemarker.version}).An error occured while retrieving the FreeMarker template "
+                    + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.",
+                e);
         }
 
         if (fmTemplate != null) {
@@ -68,11 +70,15 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
                 env.setOutputEncoding(outputEncoding);
                 env.process();
             } catch (TemplateException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
+                throw new CobiGenRuntimeException(
+                    "(Freemarker version ${freemarker.version}).An error occurred while generating the template."
+                        + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(),
+                    e);
             } catch (Throwable e) {
                 throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
+                    "(Freemarker version ${freemarker.version}).An unkonwn error occurred while generating the template "
+                        + template.getAbsoluteTemplatePath(),
+                    e);
             }
         }
     }
