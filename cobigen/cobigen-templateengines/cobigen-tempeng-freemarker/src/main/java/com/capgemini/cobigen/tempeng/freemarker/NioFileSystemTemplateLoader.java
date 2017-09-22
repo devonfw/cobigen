@@ -33,7 +33,8 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
     @Override
     public Object findTemplateSource(String name) throws IOException {
         if (templatesRoot == null) {
-            throw new CobiGenRuntimeException("No template root has been defined. This is a bug.");
+            throw new CobiGenRuntimeException(
+                "(Freemarker version ${freemarker.version}).No template root has been defined. This is a bug.");
         }
         return templatesRoot.resolve(name);
     }
@@ -46,7 +47,8 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
             attrs = Files.readAttributes(templatePath, BasicFileAttributes.class);
             return attrs.lastModifiedTime().toMillis();
         } catch (IOException e) {
-            LOG.warn("An error occured while resolving the last modified file attribute of path '{}'.",
+            LOG.warn(
+                "(Freemarker version ${freemarker.version}).An error occured while resolving the last modified file attribute of path '{}'.",
                 templatePath.toAbsolutePath().toString(), e);
         }
         return 0;
