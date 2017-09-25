@@ -206,7 +206,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                     matchingTrigger.add(trigger);
                 }
             } else if (LOG.isDebugEnabled()) {
-                LOG.debug("Invalid input for trigger {} of type {}. Input of class '{}':", trigger.getId(),
+                LOG.debug("Invalid input for trigger {} of type {}. Input of class '{}': {}", trigger.getId(),
                     trigger.getType(), matcherInput.getClass(),
                     matcherInput.getClass().isArray() ? Arrays.toString((Object[]) matcherInput) : matcherInput);
             }
