@@ -35,14 +35,10 @@ import com.thoughtworks.qdox.model.JavaSource;
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Java classes into
  * FreeMarker models
- *
- * @author mbrunnli (15.10.2013)
  */
 public class JavaInputReader implements InputReader {
 
-    /**
-     * Logger instance
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(JavaInputReader.class);
 
     @Override
@@ -55,14 +51,22 @@ public class JavaInputReader implements InputReader {
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                        ((Class<?>) inputArr[1]).getCanonicalName())) {
+                    if (((JavaClass) inputArr[0]).getFullyQualifiedName()
+                        .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
+                    } else {
+                        LOG.debug("Invalid array input, not reflecting the same java class: JavaClass[{}], Class<>[{}]",
+                            ((JavaClass) inputArr[0]).getFullyQualifiedName(),
+                            ((Class<?>) inputArr[1]).getCanonicalName());
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                    if (((Class<?>) inputArr[0]).getCanonicalName()
+                        .equals(((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
+                    } else {
+                        LOG.debug("Invalid array input, not reflecting the same java class: JavaClass[{}], Class<>[{}]",
+                            ((JavaClass) inputArr[1]).getFullyQualifiedName(),
+                            ((Class<?>) inputArr[0]).getCanonicalName());
                     }
                 }
             }
@@ -391,7 +395,8 @@ public class JavaInputReader implements InputReader {
      *            additional arguments are ignored</li>
      *            <li>In case of path pointing to a file
      *            <ol>
-     *            </ol></li>
+     *            </ol>
+     *            </li>
      *            </ul>
      */
     @Override

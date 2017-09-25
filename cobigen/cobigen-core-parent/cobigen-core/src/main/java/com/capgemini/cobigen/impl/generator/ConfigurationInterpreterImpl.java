@@ -155,12 +155,12 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      */
     List<Trigger> getMatchingTriggers(Object matcherInput) {
 
-        LOG.debug("Retrieve matching triggers.");
+        LOG.debug("Retrieve matching triggers...");
         List<Trigger> matchingTrigger = Lists.newLinkedList();
         for (Trigger trigger : configurationHolder.readContextConfiguration().getTriggers()) {
             TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-            LOG.debug("Check {} to match the input.", trigger);
+            LOG.debug("Check {} to match the input...", trigger);
 
             if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
                 LOG.debug("Matcher input is marked as valid.");
@@ -205,6 +205,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 if (triggerMatches) {
                     matchingTrigger.add(trigger);
                 }
+            } else {
+                LOG.debug("Invalid input for trigger {} of type {} matchers the input.", trigger.getId(),
+                    trigger.getType());
             }
         }
         return matchingTrigger;
