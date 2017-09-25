@@ -50,5 +50,5 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   @Override
   public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
     return this.${variables.component}.find${variables.entityName}Ctos(searchCriteriaTo);
-
+  }
 }
