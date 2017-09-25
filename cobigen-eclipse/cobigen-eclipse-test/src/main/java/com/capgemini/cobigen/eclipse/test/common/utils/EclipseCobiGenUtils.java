@@ -29,7 +29,7 @@ public class EclipseCobiGenUtils {
      * @param bot
      *            the {@link SWTWorkbenchBot} of the test
      * @param input
-     *            input of cobigen to be selected
+     *            input of CobiGen to be selected
      * @param increments
      *            increments to be generated.
      * @throws Exception

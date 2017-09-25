@@ -106,11 +106,6 @@
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.capgemini.cobigen-openapiplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
                 <id>com.capgemini.cobigen-propertyplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
@@ -175,27 +170,12 @@
       <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
       <layout>p2</layout>
     </repository>
-    <repository>
-      <id>cobigen-plugins-exp</id>
-      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
-      <layout>p2</layout>
-    </repository>
-    <repository>
-      <id>cobigen-plugins-ci</id>
-      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
-      <layout>p2</layout>
-    </repository>
-    <repository>
-      <id>cobigen-plugins-stable</id>
-      <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
-      <layout>p2</layout>
-    </repository>
   </repositories>
 
   <profiles>
     <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
     <profile>
-      <id>MarsBuild</id>
+      <id>p2-build-mars</id>
       <repositories>
         <repository>
           <id>eclipse-mars-sr2-test</id>
@@ -205,11 +185,41 @@
       </repositories>
     </profile>
     <profile>
-      <id>NeonBuild</id>
+      <id>p2-build-neon</id>
       <repositories>
         <repository>
           <id>eclipse-neon-sr2-test</id>
           <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-ci</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-ci</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-experimental</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-ci</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-stable</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-stable</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

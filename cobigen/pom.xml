@@ -100,7 +100,7 @@
 
   <profiles>
     <profile>
-      <id>p2Bundle</id> <!-- Bundle and P2 -->
+      <id>p2-bundle</id> <!-- Bundle and P2 -->
       <build>
         <plugins>
           <plugin>
