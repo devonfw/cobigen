@@ -20,11 +20,10 @@
     "password": "Contraseña",
     "errorMsg": "Nombre de usuario o contraseña incorrectos"
   },
+  "home": "Inicio",
   "${variables.component}datagrid": {
     "navData": "${variables.etoName}_ES",
     "navDataSub": "Tabla de ${variables.etoName}_ES",
-    "navHome": "Inicio",
-    "navHomeSub": "Página de inicio",
     "title": "Tabla de ${variables.etoName?cap_first}_ES",
     "addtitle": "Añadir nueva fila",
     "editTitle": "Editar fila existente",

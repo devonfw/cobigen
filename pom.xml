@@ -258,7 +258,7 @@
 
   <profiles>
     <profile>
-      <id>experimental</id>
+      <id>p2-upload-experimental</id>
       <build>
         <plugins>
           <plugin>
@@ -267,7 +267,7 @@
             <executions>
               <execution>
                 <id>upload-snapshot</id>
-                <phase>install</phase>
+                <phase>deploy</phase>
                 <goals>
                   <goal>upload</goal>
                 </goals>
@@ -285,7 +285,7 @@
       </build>
     </profile>
     <profile>
-      <id>ci</id>
+      <id>p2-upload-ci</id>
       <build>
         <plugins>
           <plugin>
@@ -294,7 +294,7 @@
             <executions>
               <execution>
                 <id>upload-snapshot</id>
-                <phase>install</phase>
+                <phase>deploy</phase>
                 <goals>
                   <goal>upload</goal>
                 </goals>
@@ -312,7 +312,7 @@
       </build>
     </profile>
     <profile>
-      <id>stable</id>
+      <id>p2-upload-stable</id>
       <build>
         <plugins>
           <plugin>
@@ -321,7 +321,7 @@
             <executions>
               <execution>
                 <id>upload-snapshot</id>
-                <phase>install</phase>
+                <phase>deploy</phase>
                 <goals>
                   <goal>upload</goal>
                 </goals>

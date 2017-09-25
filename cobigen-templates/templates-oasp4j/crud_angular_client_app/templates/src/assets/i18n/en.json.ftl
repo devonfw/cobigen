@@ -20,11 +20,10 @@
     "password": "Password",
     "errorMsg": "Wrong username or password"
   },
+  "home": "Home",
   "${variables.component}datagrid": {
     "navData": "${variables.etoName}_EN",
     "navDataSub": "Grid of ${variables.etoName}_EN",
-    "navHome": "Home",
-    "navHomeSub": "Initial page",
     "title": "${variables.etoName?cap_first}_EN grid",
     "addTitle": "Add new item",
     "editTitle": "Edit item",

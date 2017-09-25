@@ -8,9 +8,7 @@ import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
-/**
- * The {@link JavaParserUtil} class provides helper functions for generating parsed inputs
- */
+/** The {@link JavaParserUtil} class provides helper functions for generating parsed inputs */
 public class JavaParserUtil {
 
     /**
@@ -20,7 +18,6 @@ public class JavaParserUtil {
      * @param reader
      *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
      */
     public static JavaClass getFirstJavaClass(Reader... reader) {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
@@ -38,7 +35,6 @@ public class JavaParserUtil {
      * @param reader
      *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
-     * @author mbrunnli (01.10.2014)
      */
     public static JavaClass getFirstJavaClass(ClassLoader classLoader, Reader... reader) {
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
@@ -56,7 +52,6 @@ public class JavaParserUtil {
      * @param reader
      *            {@link Reader}s which contents should be parsed
      * @return the parsed {@link JavaClass}
-     * @author mbrunnli (01.10.2014)
      */
     private static JavaClass getFirstJavaClass(ClassLibraryBuilder classLibraryBuilder, Reader... reader) {
         JavaSource source = null;
@@ -82,7 +77,6 @@ public class JavaParserUtil {
      * @param canonicalType
      *            the String representation of the canonical type to be resolved
      * @return the resolved simple type as String representation.
-     * @author fkreis (24.06.15)
      */
     public static String resolveToSimpleType(String canonicalType) {
         String simpleType = new String(canonicalType).replaceAll("(([\\w]+\\.))", "");

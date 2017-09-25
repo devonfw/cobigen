@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.eclipse.generator;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -8,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,6 @@ import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -29,7 +28,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,6 @@ import com.capgemini.cobigen.eclipse.common.tools.MapUtils;
 import com.capgemini.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.capgemini.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
-import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -93,22 +90,20 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /**
      * Creates a new {@link CobiGenWrapper}
+     * @param cobiGen
+     *            initialized {@link CobiGen} instance
      * @param inputs
      *            list of inputs for generation
      * @param inputSourceProject
      *            project from which the inputs have been selected
-     * @throws CoreException
-     *             if an internal eclipse exception occurs
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
-     * @throws IOException
-     *             if the generator project could not be found or read
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public CobiGenWrapper(IProject inputSourceProject, List<Object> inputs)
-        throws GeneratorProjectNotExistentException, CoreException, InvalidConfigurationException, IOException {
-        super(inputSourceProject);
+    public CobiGenWrapper(CobiGen cobiGen, IProject inputSourceProject, List<Object> inputs)
+        throws GeneratorProjectNotExistentException, InvalidConfigurationException {
+        super(cobiGen, inputSourceProject);
         setInputs(inputs);
 
         for (IProject proj : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
@@ -124,9 +119,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private void setInputs(List<Object> inputs) {
         this.inputs = inputs;
 
-        LOG.info("Set new generator inputs. Calculating matching templates...");
+        LOG.info("Set new generator inputs: {}", inputs);
         matchingTemplates = Lists.newLinkedList();
 
+        LOG.debug("Calculating matching templates...");
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
         AnalyzeInputJob job = new AnalyzeInputJob(cobiGen, inputs);
         try {
@@ -146,8 +142,17 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         matchingTemplates = job.getResultMatchingTemplates();
+        LOG.debug("Matching templates: {}", matchingTemplates);
         singleNonContainerInput = job.isResultSingleNonContainerInput();
-        LOG.info("Finished analyzing generation input.");
+        LOG.debug("SingleNonContainerInput: {}", singleNonContainerInput);
+        LOG.debug("Finished analyzing generation input.");
+    }
+
+    /**
+     * @return whether the input represents a single non container input
+     */
+    public boolean isSingleNonContainerInput() {
+        return singleNonContainerInput;
     }
 
     /**
@@ -244,7 +249,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * Retrieves the {@link ClassLoader} of the input.
      * @return the {@link ClassLoader} of the input or a newly created one of the input's project
      */
-    private ClassLoader getInputClassloader() {
+    protected ClassLoader getInputClassloader() {
         Object firstInput = inputs.get(0);
         if (firstInput instanceof Class<?>) {
             return ((Class<?>) firstInput).getClassLoader();
@@ -277,7 +282,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * @return all available generation packages
+     * @return all available increments
      */
     public ComparableIncrement[] getAllIncrements() {
 
@@ -300,11 +305,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         result.push(all);
         ComparableIncrement[] array = result.toArray(new ComparableIncrement[0]);
         Arrays.sort(array);
+        LOG.debug("Available Increments: {}", result);
         return array;
     }
 
     /**
-     * @return all available generation packages (sorted and element ALL_INCREMENT_ID added on top)
+     * @return all available increments (sorted and element ALL_INCREMENT_ID added on top)
      */
     public List<TemplateTo> getAllTemplates() {
         return matchingTemplates;
@@ -332,6 +338,28 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns project dependent paths of all resources which are marked to be overridable (just of
+     * {@link #getCurrentRepresentingInput()})
+     * @param increments
+     *            to be considered
+     * @return The set of all overridable project dependent file paths
+     */
+    public Set<String> getOverridingFiles(Collection<IncrementTo> increments) {
+        if (increments.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+            Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+            increments = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+        }
+        Set<String> overridablePaths = Sets.newHashSet();
+        Map<String, Set<TemplateTo>> templateDestinationPaths = getTemplateDestinationPaths(increments);
+        for (Entry<String, Set<TemplateTo>> entry : templateDestinationPaths.entrySet()) {
+            if (isOverridableFile(entry.getValue())) {
+                overridablePaths.add(entry.getKey());
+            }
+        }
+        return overridablePaths;
     }
 
     /**
@@ -395,6 +423,44 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Checks whether the given object is marked as overridable
+     * @param path
+     *            workspace relative path to be checked
+     * @param consideredIncrements
+     *            increments to be considered for the check
+     * @return <code>true</code> if the given object will be overwritten<br>
+     *         <code>false</code> otherwise
+     */
+    public boolean isOverridableFile(String path, Collection<IncrementTo> consideredIncrements) {
+        if (path != null) {
+            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
+                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
+                consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+            }
+            Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
+            return isOverridableFile(templates);
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the given object is marked as mergable
+     * @param templates
+     *            templates to be checked
+     * @return <code>true</code> if the given object can be merged<br>
+     *         <code>false</code> otherwise
+     */
+    private boolean isOverridableFile(Set<TemplateTo> templates) {
+        for (TemplateTo template : templates) {
+            if (template.getMergeStrategy() != null
+                && template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Resolves all target files for the given templates. Only resources which are located in the workspace
      * will be returned.
      * @param generatedTemplates
@@ -407,7 +473,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         List<Object> inputs;
         boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(this.inputs.get(0));
         if (combinesMultipleInputs) {
-            inputs = new JavaInputReader().getInputObjects(this.inputs.get(0), Charsets.UTF_8);
+            inputs = cobiGen.getInputObjects(this.inputs.get(0), Charsets.UTF_8);
         } else {
             inputs = this.inputs;
         }
@@ -561,7 +627,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children = new JavaInputReader().getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
+            List<Object> children = cobiGen.getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
             // we have to return one of the children do enable correct variable solution in the user interface
             return children.get(0);
         } else {
@@ -587,14 +653,35 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * thrown. Thus, getting a boolean value can be interpreted as "selection supported, but currently not
      * matching trigger".
      *
-     * @param selection
-     *            the selection made
      * @return true, if all items are supported by the same trigger(s)<br>
      *         false, if they are not supported by any trigger at all
      * @throws InvalidInputException
      *             if the input could not be read as expected
      */
-    public abstract boolean isValidInput(IStructuredSelection selection) throws InvalidInputException;
+    public boolean isValidInput() throws InvalidInputException {
+        LOG.debug("Start checking selection validity for the use as Java input.");
+
+        Iterator<?> it = inputs.iterator();
+        List<String> firstTriggers = null;
+
+        try {
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                List<String> matchingTriggerIds = cobiGen.getMatchingTriggerIds(tmp);
+
+                if (firstTriggers == null) {
+                    firstTriggers = matchingTriggerIds;
+                } else if (!firstTriggers.equals(matchingTriggerIds)) {
+                    throw new InvalidInputException(
+                        "You selected at least two inputs, which are not matching the same triggers. "
+                            + "For batch processing all inputs have to match the same triggers.");
+                }
+            }
+        } finally {
+            LOG.debug("Ended checking selection validity for the use as Java input.");
+        }
+        return firstTriggers != null && !firstTriggers.isEmpty();
+    }
 
     /**
      * Resolves the template's destination paths by while using the {@link #getCurrentRepresentingInput()} as
