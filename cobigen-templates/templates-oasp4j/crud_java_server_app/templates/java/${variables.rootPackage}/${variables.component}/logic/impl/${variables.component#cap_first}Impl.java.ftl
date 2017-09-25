@@ -95,8 +95,8 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     <#list pojo.fields as field>
       <#if field.type?ends_with("Entity")>
     cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
-      <#else if field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?capfirst}Eto.class));
+      <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
+    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
       </#if>
     </#list>
  
@@ -114,8 +114,8 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       <#list pojo.fields as field>
         <#if field.type?ends_with("Entity")>
       cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
-        <#else if field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?capfirst}Eto.class));
+        <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
+      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
         </#if>
       </#list>
       ctos.add(cto);
