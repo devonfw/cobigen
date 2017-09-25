@@ -129,10 +129,7 @@
 
   <profiles>
     <profile>
-      <id>MarsBuild</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>p2-build-mars</id>
       <repositories>
         <repository>
           <id>eclipse-mars</id>
@@ -142,7 +139,7 @@
       </repositories>
     </profile>
     <profile>
-      <id>NeonBuild</id>
+      <id>p2-build-neon</id>
       <repositories>
         <repository>
           <id>eclipse-neon</id>

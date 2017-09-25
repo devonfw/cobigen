@@ -5,7 +5,7 @@
   <artifactId>com.capgemini.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>2.1.1</version>
+  <version>3.0.0</version>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <tycho.testArgLine>-XX:MaxPermSize=256m</tycho.testArgLine>
+    <tycho.testArgLine>-Xms512m -Xmx2048m -XX:+DisableExplicitGC -XX:MaxPermSize=256m</tycho.testArgLine>
   </properties>
 
   <dependencies>
@@ -89,6 +89,56 @@
                 <id>com.capgemini.cobigen.eclipse.feature.feature.group</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-htmlplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-javaplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-jsonplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-propertyplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-senchaplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-textmerger</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-tsplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-xmlplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-tempeng-freemarker</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-tempeng-velocity</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
             </extraRequirements>
           </dependency-resolution>
         </configuration>
@@ -125,7 +175,7 @@
   <profiles>
     <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
     <profile>
-      <id>MarsBuild</id>
+      <id>p2-build-mars</id>
       <repositories>
         <repository>
           <id>eclipse-mars-sr2-test</id>
@@ -135,11 +185,41 @@
       </repositories>
     </profile>
     <profile>
-      <id>NeonBuild</id>
+      <id>p2-build-neon</id>
       <repositories>
         <repository>
           <id>eclipse-neon-sr2-test</id>
           <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-ci</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-ci</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-experimental</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-ci</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>p2-build-stable</id>
+      <repositories>
+        <repository>
+          <id>cobigen-plugins-stable</id>
+          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

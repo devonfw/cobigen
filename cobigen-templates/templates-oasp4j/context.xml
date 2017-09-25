@@ -63,7 +63,8 @@
         <matcher type="nodename" value="entity-mappings">
             <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
         </matcher>
-    </trigger><trigger id="sencha_architect_project" type="java" templateFolder="sencha_architect_project">
+    </trigger>
+    <trigger id="sencha_architect_project" type="java" templateFolder="sencha_architect_project">
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
           <variableAssignment type="regex" key="rootPackage" value="1"/>
           <variableAssignment type="regex" key="domain" value="3"/>
@@ -80,14 +81,6 @@
       </matcher>
     </trigger>
     <trigger id="crud_angular_client_app" type="java" templateFolder="crud_angular_client_app">
-      <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
-          <variableAssignment type="regex" key="rootPackage" value="1"/>
-          <variableAssignment type="regex" key="domain" value="3"/>
-          <variableAssignment type="regex" key="component" value="4"/>
-          <variableAssignment type="regex" key="etoName" value="5"/>
-      </matcher>
-    </trigger>
-    <trigger id="crud_angular2_client_app" type="java" templateFolder="crud_angular2_client_app">
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
           <variableAssignment type="regex" key="rootPackage" value="1"/>
           <variableAssignment type="regex" key="domain" value="3"/>

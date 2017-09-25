@@ -23,16 +23,10 @@ import com.thoughtworks.qdox.model.JavaClass;
  */
 public class JavaMatcher implements MatcherInterpreter {
 
-    /**
-     * Assigning logger to JavaClassMatcher
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(JavaMatcher.class);
 
-    /**
-     * Currently supported matcher types
-     *
-     * @author mbrunnli (08.04.2014)
-     */
+    /** Currently supported matcher types */
     private enum MatcherType {
         /** Full Qualified Name Matching */
         FQN,
@@ -42,11 +36,7 @@ public class JavaMatcher implements MatcherInterpreter {
         EXPRESSION
     }
 
-    /**
-     * Available variable types for the matcher
-     *
-     * @author mbrunnli (08.04.2014)
-     */
+    /** Available variable types for the matcher */
     private enum VariableType {
         /** Constant variable assignment */
         CONSTANT,
@@ -62,6 +52,7 @@ public class JavaMatcher implements MatcherInterpreter {
             switch (matcherType) {
             case FQN:
                 String fqn = getFqn(matcher);
+                LOG.debug("Matching input FQN {} against regex '{}'", fqn, matcher.getValue());
                 return fqn != null && fqn.matches(matcher.getValue());
             case PACKAGE:
                 return matcher.getTarget() instanceof PackageFolder
@@ -200,23 +191,23 @@ public class JavaMatcher implements MatcherInterpreter {
                     // thrown when value == null
                     return value;
                 } catch (NumberFormatException e) {
-                    LOG.error("The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
-                        + " representing a regular expression group.\nCurrent value: '{}'", va.getType().toUpperCase(),
-                        matcherType.toString(), va.getValue(), e);
-                    throw new InvalidConfigurationException(
-                        "The VariableAssignment '"
-                            + va.getType().toUpperCase()
-                            + "' of Matcher of type '"
-                            + matcherType.toString()
-                            + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
-                            + va.getValue() + "'");
-                } catch (IndexOutOfBoundsException e) {
-                    LOG.error("The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
-                        + " group not in range.\nCurrent value: '{}'", va.getType().toUpperCase(),
-                        matcherType.toString(), va.getValue(), e);
+                    LOG.error(
+                        "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
+                            + " representing a regular expression group.\nCurrent value: '{}'",
+                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
                         + "' of Matcher of type '" + matcherType.toString()
-                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue() + "'");
+                        + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
+                        + va.getValue() + "'");
+                } catch (IndexOutOfBoundsException e) {
+                    LOG.error(
+                        "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
+                            + " group not in range.\nCurrent value: '{}'",
+                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
+                    throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
+                        + "' of Matcher of type '" + matcherType.toString()
+                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue()
+                        + "'");
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {

@@ -21,12 +21,15 @@ import com.capgemini.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
  */
 public class EclipseCobiGenUtils {
 
+    /** Default timeout for waiting on generation results or build results */
+    public static final int DEFAULT_TIMEOUT = 40000;
+
     /**
      * Selects the the increment with the given name and generates it.
      * @param bot
      *            the {@link SWTWorkbenchBot} of the test
      * @param input
-     *            input of cobigen to be selected
+     *            input of CobiGen to be selected
      * @param increments
      *            increments to be generated.
      * @throws Exception
@@ -37,10 +40,10 @@ public class EclipseCobiGenUtils {
 
         // Open generation wizard with new file as Input
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-        bot.waitUntil(new AllJobsAreFinished(), 20000); // build might take some time
+        bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
         input.contextMenu("CobiGen").menu("Generate...").click();
         bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
-            CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), 10000);
+            CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), DEFAULT_TIMEOUT);
 
         // select increment and generate
         for (String increment : increments) {
@@ -60,12 +63,12 @@ public class EclipseCobiGenUtils {
      */
     public static void confirmSuccessfullGeneration(SWTWorkbenchBot bot) {
         try {
-            bot.waitUntil(shellIsActive("Organize Imports"));
+            bot.waitUntil(shellIsActive("Organize Imports"), DEFAULT_TIMEOUT);
             bot.shell("Organize Imports").bot().button(IDialogConstants.OK_LABEL).click();
         } catch (TimeoutException e) {
             // dialog just optional
         }
-        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED));
+        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED), DEFAULT_TIMEOUT);
         bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
     }
 }

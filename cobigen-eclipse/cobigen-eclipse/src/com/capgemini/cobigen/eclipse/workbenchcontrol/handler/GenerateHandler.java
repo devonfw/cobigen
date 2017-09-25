@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -59,58 +58,60 @@ public class GenerateHandler extends AbstractHandler {
                 LOG.info("Initiating CobiGen...");
                 CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
                 if (generator == null) {
+                    LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
                     MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
                         "The current selection is currently not supported as valid input.");
-                    LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
                     return null;
                 }
 
-                if (!generator.isValidInput((IStructuredSelection) sel)) {
+                if (!generator.isValidInput()) {
+                    LOG.info("No matching Trigger. Exiting generate command.");
                     MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
                         "Your current selection is not valid as input for any generation purpose. "
                             + "Please find the specification of valid inputs in the context configuration ('"
                             + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml').");
-                    LOG.info("No matching Trigger. Exiting generate command.");
                     return null;
                 }
 
-                if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
-                    && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
+                if (!generator.isSingleNonContainerInput()) {
+                    LOG.info("Open Generate Wizard (Batchmode) ...");
                     WizardDialog wiz =
                         new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
-                    LOG.info("Generate Wizard (Batchmode) opened.");
-                } else if (((IStructuredSelection) sel).size() == 1) {
+                    LOG.debug("Generate Wizard (Batchmode) opened.");
+                } else {
+                    LOG.info("Open Generate Wizard ...");
                     WizardDialog wiz =
                         new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
                     wiz.setPageSize(new Point(800, 500));
                     wiz.open();
-                    LOG.info("Generate Wizard opened.");
+                    LOG.debug("Generate Wizard opened.");
                 }
 
             } catch (InvalidConfigurationException e) {
+                LOG.warn("Invalid configuration.", e);
                 openInvalidConfigurationErrorDialog(e);
             } catch (CobiGenRuntimeException e) {
-                PlatformUIUtil.openErrorDialog(e.getMessage(), e);
                 LOG.error("CobiGen Error: {}", e.getMessage(), e);
+                PlatformUIUtil.openErrorDialog(e.getMessage(), e);
             } catch (GeneratorProjectNotExistentException e) {
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator configuration project not found!",
-                    "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
-                        + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
                 LOG.error(
                     "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
                     ResourceConstants.CONFIG_PROJECT_NAME, e);
+                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator configuration project not found!",
+                    "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
+                        + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
             } catch (GeneratorCreationException e) {
+                LOG.error("Could not create an instance of the generator.", e);
                 PlatformUIUtil
                     .openErrorDialog("Could not initialize CobiGen for the given selection: " + e.getMessage(), e);
-                LOG.error("Could not create an instance of the generator.", e);
             } catch (InvalidInputException e) {
-                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
                 LOG.info("Invalid input selected for generation: {}", e.getMessage());
+                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
             } catch (Throwable e) {
-                PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
                 LOG.error("An unexpected exception occurred!", e);
+                PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
             }
         }
 
@@ -122,10 +123,8 @@ public class GenerateHandler extends AbstractHandler {
      * Opens up a message dialog for displaying further guidance on context configuration issues.
      * @param e
      *            {@link InvalidConfigurationException} occurred
-     * @author mbrunnli (Jan 11, 2016)
      */
     private void openInvalidConfigurationErrorDialog(InvalidConfigurationException e) {
-        LOG.warn("Generate command triggered with invalid configuration.", e);
         MessageDialog dialog =
             new MessageDialog(Display.getDefault().getActiveShell(), "Invalid context configuration!", null,
                 "Any context/templates configuration has been changed into an invalid state "
