@@ -5,7 +5,7 @@
   <artifactId>cobigen-templates-oasp4j</artifactId>
   <version>dev-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>CobiGen OASP Templates</name>
+  <name>CobiGen OASP4J Templates</name>
 
   <parent>
     <groupId>com.capgemini</groupId>
