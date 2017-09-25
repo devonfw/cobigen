@@ -81,7 +81,11 @@ node {
 							// load jenkins managed global maven settings file
 							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 								try {
-									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+									if(origin_branch == 'master') {
+										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-stable"
+									} else {
+										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-ci"
+									}
 								} catch(err) {
 									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
 									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
@@ -125,14 +129,14 @@ node {
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
 									// manifest extension, osgi bundling, and upload
-									sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2Bundle -Dmaven.test.skip=true"
-									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2Bundle p2:site -Dmaven.test.skip=true"
-									sh "mvn -s ${MAVEN_SETTINGS} install -Pci -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-upload-ci,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
 								}
 							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
-								sh "mvn -s ${MAVEN_SETTINGS} install -Dmaven.test.skip=true -PuploadCi"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true -Pp2-upload-ci,p2-build-mars,p2-build-ci"
 							}
 						}
 					}
@@ -160,13 +164,13 @@ node {
 
 def notifyFailed() {
 
-    step([$class: 'Mailer',
-      notifyEveryUnstableBuild: true,
-      recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
-                                      [$class: 'RequesterRecipientProvider'],
-				      [$class: 'DevelopersRecipientProvider'],
-				      [$class: 'FailingTestSuspectsRecipientProvider'],
-				      [$class: 'UpstreamComitterRecipientProvider']])])
+    //step([$class: 'Mailer',
+    //  notifyEveryUnstableBuild: true,
+    //  recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
+    //                                  [$class: 'RequesterRecipientProvider'],
+    //				      [$class: 'DevelopersRecipientProvider'],
+    //				      [$class: 'FailingTestSuspectsRecipientProvider'],
+    //				      [$class: 'UpstreamComitterRecipientProvider']])])
     
     emailext(body: '${DEFAULT_CONTENT}', mimeType: 'text/html',
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
