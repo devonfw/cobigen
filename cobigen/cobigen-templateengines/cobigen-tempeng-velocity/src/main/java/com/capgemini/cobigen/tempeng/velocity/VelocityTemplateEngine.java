@@ -79,19 +79,25 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
             vmTemplate =
                 executeInThisClassloader(template.getRelativeTemplatePath(), (path) -> engine.getTemplate(path));
         } catch (Throwable e) {
-            throw new CobiGenRuntimeException("An error occured while retrieving the Velocity template "
-                + template.getAbsoluteTemplatePath() + " from the Velocity configuration.", e);
+            throw new CobiGenRuntimeException(
+                "(Velocity version ${velocity.version}).An error occured while retrieving the Velocity template "
+                    + template.getAbsoluteTemplatePath() + " from the Velocity configuration.",
+                e);
         }
 
         if (vmTemplate != null) {
             try {
                 vmTemplate.merge(context, out);
             } catch (VelocityException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
+                throw new CobiGenRuntimeException(
+                    "(Velocity version ${velocity.version}).An error occurred while generating the template "
+                        + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(),
+                    e);
             } catch (Throwable e) {
                 throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
+                    "(Velocity version ${velocity.version}).An unkonwn error occurred while generating the template "
+                        + template.getAbsoluteTemplatePath(),
+                    e);
             }
         }
     }
