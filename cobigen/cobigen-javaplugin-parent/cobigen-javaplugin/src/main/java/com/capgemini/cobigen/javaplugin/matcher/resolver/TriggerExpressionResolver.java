@@ -63,7 +63,6 @@ public class TriggerExpressionResolver {
      *            to be evaluated
      * @return <code>true</code> if the expression is valid,<br>
      *         <code>false</code>, otherwise or if any exception occurred during the evaluation
-     * @author mbrunnli (05.04.2013)
      */
     public boolean evaluateExpression(String expression) {
         Matcher m = instanceOfPattern.matcher(expression);

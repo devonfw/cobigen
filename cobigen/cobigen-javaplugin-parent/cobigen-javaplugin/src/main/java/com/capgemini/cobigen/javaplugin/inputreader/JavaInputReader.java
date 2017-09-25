@@ -402,6 +402,10 @@ public class JavaInputReader implements InputReader {
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Read input file {} by java plugin with charset {} and additional arguments {}...", path,
+                inputCharset, Arrays.toString(additionalArguments));
+        }
         ClassLoader classLoader = null;
         if (Files.isDirectory(path)) {
             String packageName = null;
@@ -417,8 +421,9 @@ public class JavaInputReader implements InputReader {
                     "Expected packageName:String and classLoader:ClassLoader as additional arguments but was "
                         + toString(additionalArguments));
             }
-
-            return new PackageFolder(path.toUri(), packageName, classLoader);
+            PackageFolder packageFolder = new PackageFolder(path.toUri(), packageName, classLoader);
+            LOG.debug("Read {}.", packageFolder);
+            return packageFolder;
         } else {
             Class<?> clazz = null;
             for (Object addArg : additionalArguments) {
@@ -433,9 +438,13 @@ public class JavaInputReader implements InputReader {
                 // lambdas
                 if (clazz == null) {
                     if (classLoader == null) {
-                        return JavaParserUtil.getFirstJavaClass(pathReader);
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
+                        LOG.debug("Read {}.", firstJavaClass);
+                        return firstJavaClass;
                     } else {
-                        return JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        LOG.debug("Read {}.", firstJavaClass);
+                        return firstJavaClass;
                     }
                 } else {
                     Object[] result = new Object[] { null, clazz };
@@ -443,6 +452,9 @@ public class JavaInputReader implements InputReader {
                         result[0] = JavaParserUtil.getFirstJavaClass(pathReader);
                     } else {
                         result[0] = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                    }
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Read {}.", Arrays.toString(result));
                     }
                     return result;
                 }
