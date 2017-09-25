@@ -163,14 +163,6 @@ node {
 }
 
 def notifyFailed() {
-
-    //step([$class: 'Mailer',
-    //  notifyEveryUnstableBuild: true,
-    //  recipients: emailextrecipients([[$class: 'CulpritsRecipientProvider'],
-    //                                  [$class: 'RequesterRecipientProvider'],
-    //				      [$class: 'DevelopersRecipientProvider'],
-    //				      [$class: 'FailingTestSuspectsRecipientProvider'],
-    //				      [$class: 'UpstreamComitterRecipientProvider']])])
     
     emailext(body: '${DEFAULT_CONTENT}', mimeType: 'text/html',
          replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
