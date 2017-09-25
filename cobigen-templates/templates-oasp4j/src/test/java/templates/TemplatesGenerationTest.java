@@ -17,6 +17,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     /**
      * Test successful generation of all templates based on an entity
      * @throws Exception
+     *             test fails
      */
     @Test
     public void testAllTemplatesGeneration_EntityInput() throws Exception {
