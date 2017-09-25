@@ -23,9 +23,7 @@ import com.thoughtworks.qdox.model.JavaClass;
  */
 public class JavaMatcher implements MatcherInterpreter {
 
-    /**
-     * Assigning logger to JavaClassMatcher
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(JavaMatcher.class);
 
     /** Currently supported matcher types */

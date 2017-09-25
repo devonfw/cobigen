@@ -23,9 +23,7 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaType;
 
-/**
- * The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser
- */
+/** The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser */
 public class ParsedJavaModelBuilder {
 
     /** Cached input pojo class in order to avoid unnecessary efforts */
@@ -287,9 +285,8 @@ public class ParsedJavaModelBuilder {
                 paramList = new ArrayList<>();
                 paramList.add(attrType);
             }
-            JavaMethod setter =
-                javaClass.getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList,
-                    false);
+            JavaMethod setter = javaClass
+                .getMethod("set" + StringUtils.capitalize((String) attr.get(ModelConstant.NAME)), paramList, false);
             if (setter != null) {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
@@ -392,9 +389,8 @@ public class ParsedJavaModelBuilder {
         for (Map<String, Object> attr : attributes) {
             JavaMethod getter = null;
             try {
-                getter =
-                    javaClass
-                        .getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
+                getter = javaClass.getMethod("get" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null,
+                    false);
             } catch (Exception e) {
                 getter =
                     javaClass.getMethod("is" + StringUtil.capFirst((String) attr.get(ModelConstant.NAME)), null, false);
