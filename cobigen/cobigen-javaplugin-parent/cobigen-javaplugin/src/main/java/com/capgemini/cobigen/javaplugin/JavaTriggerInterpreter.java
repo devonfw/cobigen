@@ -6,21 +6,16 @@ import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.capgemini.cobigen.javaplugin.matcher.JavaMatcher;
 
-/**
- * {@link TriggerInterpreter} implementation of a Java Interpreter
- */
+/** {@link TriggerInterpreter} implementation of a Java Interpreter */
 public class JavaTriggerInterpreter implements TriggerInterpreter {
 
-    /**
-     * {@link TriggerInterpreter} type to be registered
-     */
+    /** {@link TriggerInterpreter} type to be registered */
     public String type;
 
     /**
      * Creates a new Java Interpreter
      * @param type
      *            to be registered
-     * @author mbrunnli (08.04.2014)
      */
     public JavaTriggerInterpreter(String type) {
         this.type = type;

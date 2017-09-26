@@ -77,7 +77,7 @@ export class ${variables.component?cap_first}DataGridComponent implements OnInit
                     this.translate.get('${variables.component}datagrid.columns.' + column.name).subscribe( (res) => {
                         column.label = res;
                     });
-                } )
+                });
                 me.dataTable.refresh();
         });
 

@@ -119,9 +119,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private void setInputs(List<Object> inputs) {
         this.inputs = inputs;
 
-        LOG.info("Set new generator inputs. Calculating matching templates...");
+        LOG.info("Set new generator inputs: {}", inputs);
         matchingTemplates = Lists.newLinkedList();
 
+        LOG.debug("Calculating matching templates...");
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
         AnalyzeInputJob job = new AnalyzeInputJob(cobiGen, inputs);
         try {
@@ -141,8 +142,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         matchingTemplates = job.getResultMatchingTemplates();
+        LOG.debug("Matching templates: {}", matchingTemplates);
         singleNonContainerInput = job.isResultSingleNonContainerInput();
-        LOG.info("Finished analyzing generation input.");
+        LOG.debug("SingleNonContainerInput: {}", singleNonContainerInput);
+        LOG.debug("Finished analyzing generation input.");
     }
 
     /**
@@ -302,6 +305,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         result.push(all);
         ComparableIncrement[] array = result.toArray(new ComparableIncrement[0]);
         Arrays.sort(array);
+        LOG.debug("Available Increments: {}", result);
         return array;
     }
 
@@ -396,7 +400,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
             }
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
-            return isMergableFile(templates);
+            if (templates != null) {
+                return isMergableFile(templates);
+            }
         }
         return false;
     }

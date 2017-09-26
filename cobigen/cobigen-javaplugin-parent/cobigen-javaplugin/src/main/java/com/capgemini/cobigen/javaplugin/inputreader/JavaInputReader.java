@@ -35,14 +35,10 @@ import com.thoughtworks.qdox.model.JavaSource;
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Java classes into
  * FreeMarker models
- *
- * @author mbrunnli (15.10.2013)
  */
 public class JavaInputReader implements InputReader {
 
-    /**
-     * Logger instance
-     */
+    /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(JavaInputReader.class);
 
     @Override
@@ -55,14 +51,22 @@ public class JavaInputReader implements InputReader {
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
-                    if (((JavaClass) inputArr[0]).getFullyQualifiedName().equals(
-                        ((Class<?>) inputArr[1]).getCanonicalName())) {
+                    if (((JavaClass) inputArr[0]).getFullyQualifiedName()
+                        .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
                         return true;
+                    } else {
+                        LOG.debug("Invalid array input, not reflecting the same java class: JavaClass[{}], Class<>[{}]",
+                            ((JavaClass) inputArr[0]).getFullyQualifiedName(),
+                            ((Class<?>) inputArr[1]).getCanonicalName());
                     }
                 } else if (inputArr[0] instanceof Class<?> && inputArr[1] instanceof JavaClass) {
-                    if (((Class<?>) inputArr[0]).getCanonicalName().equals(
-                        ((JavaClass) inputArr[1]).getFullyQualifiedName())) {
+                    if (((Class<?>) inputArr[0]).getCanonicalName()
+                        .equals(((JavaClass) inputArr[1]).getFullyQualifiedName())) {
                         return true;
+                    } else {
+                        LOG.debug("Invalid array input, not reflecting the same java class: JavaClass[{}], Class<>[{}]",
+                            ((JavaClass) inputArr[1]).getFullyQualifiedName(),
+                            ((Class<?>) inputArr[0]).getCanonicalName());
                     }
                 }
             }
@@ -391,12 +395,17 @@ public class JavaInputReader implements InputReader {
      *            additional arguments are ignored</li>
      *            <li>In case of path pointing to a file
      *            <ol>
-     *            </ol></li>
+     *            </ol>
+     *            </li>
      *            </ul>
      */
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Read input file {} by java plugin with charset {} and additional arguments {}...", path,
+                inputCharset, Arrays.toString(additionalArguments));
+        }
         ClassLoader classLoader = null;
         if (Files.isDirectory(path)) {
             String packageName = null;
@@ -412,8 +421,9 @@ public class JavaInputReader implements InputReader {
                     "Expected packageName:String and classLoader:ClassLoader as additional arguments but was "
                         + toString(additionalArguments));
             }
-
-            return new PackageFolder(path.toUri(), packageName, classLoader);
+            PackageFolder packageFolder = new PackageFolder(path.toUri(), packageName, classLoader);
+            LOG.debug("Read {}.", packageFolder);
+            return packageFolder;
         } else {
             Class<?> clazz = null;
             for (Object addArg : additionalArguments) {
@@ -428,9 +438,13 @@ public class JavaInputReader implements InputReader {
                 // lambdas
                 if (clazz == null) {
                     if (classLoader == null) {
-                        return JavaParserUtil.getFirstJavaClass(pathReader);
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
+                        LOG.debug("Read {}.", firstJavaClass);
+                        return firstJavaClass;
                     } else {
-                        return JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                        LOG.debug("Read {}.", firstJavaClass);
+                        return firstJavaClass;
                     }
                 } else {
                     Object[] result = new Object[] { null, clazz };
@@ -438,6 +452,9 @@ public class JavaInputReader implements InputReader {
                         result[0] = JavaParserUtil.getFirstJavaClass(pathReader);
                     } else {
                         result[0] = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
+                    }
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Read {}.", Arrays.toString(result));
                     }
                     return result;
                 }

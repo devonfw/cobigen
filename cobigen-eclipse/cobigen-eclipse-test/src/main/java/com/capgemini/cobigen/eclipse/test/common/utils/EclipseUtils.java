@@ -85,11 +85,11 @@ public class EclipseUtils {
         SWTBotButton finishButton = bot.button("Finish");
         bot.waitUntil(widgetIsEnabled(finishButton));
         finishButton.click();
-        bot.waitUntil(new AllJobsAreFinished(), 20000);
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-        bot.waitUntil(new AllJobsAreFinished(), 20000);
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-        bot.waitUntil(new AllJobsAreFinished(), 20000);
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     }
 
     /**
@@ -102,14 +102,14 @@ public class EclipseUtils {
      *             if anything happens during build
      */
     public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) throws CoreException {
-        bot.waitUntil(new AllJobsAreFinished(), 20000);
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
         configurationProject.contextMenu("Maven").menu("Update Project...").click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-        bot.waitUntil(new AllJobsAreFinished(), 20000);
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     }
 
     /**

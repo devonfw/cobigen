@@ -41,5 +41,14 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
     return this.${variables.component}.find${variables.entityName}Etos(searchCriteriaTo);
   }
+  
+  @Override
+  public ${variables.entityName}Cto get${variables.entityName}Cto(long id) {
+    return this.${variables.component}.find${variables.entityName}Cto(id);
+  }
 
+  @Override
+  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
+    return this.${variables.component}.find${variables.entityName}Ctos(searchCriteriaTo);
+  }
 }

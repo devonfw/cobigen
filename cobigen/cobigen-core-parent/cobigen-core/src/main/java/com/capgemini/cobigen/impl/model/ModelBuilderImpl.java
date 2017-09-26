@@ -94,6 +94,7 @@ public class ModelBuilderImpl implements ModelBuilder {
      * @param template
      *            the internal {@link Template} representation
      * @param targetRootPath
+     *            target root for generation
      * @return the adapted model reference.
      */
     public Map<String, Object> enrichByContextVariables(Map<String, Object> model,
