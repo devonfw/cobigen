@@ -45,5 +45,24 @@
     </dependency>
 
   </dependencies>
+  
+  <build>
+    <plugins>
+      <!-- Inject FreeMarker Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
