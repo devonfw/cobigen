@@ -7,6 +7,7 @@ import java.util.Map;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.extension.TextTemplate;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
+import com.capgemini.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
 
 import freemarker.cache.NullCacheStorage;
 import freemarker.core.Environment;
@@ -59,8 +60,8 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
             fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
         } catch (Throwable e) {
             throw new CobiGenRuntimeException(
-                "(Freemarker version ${freemarker.version}).An error occured while retrieving the FreeMarker template "
-                    + template.getAbsoluteTemplatePath() + " from the FreeMarker configuration.",
+                "An error occured while retrieving the FreeMarker template " + template.getAbsoluteTemplatePath()
+                    + " from the FreeMarker configuration. (FreeMarker v" + FreemarkerMetadata.VERSION + " )",
                 e);
         }
 
@@ -70,14 +71,12 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
                 env.setOutputEncoding(outputEncoding);
                 env.process();
             } catch (TemplateException e) {
-                throw new CobiGenRuntimeException(
-                    "(Freemarker version ${freemarker.version}).An error occurred while generating the template."
-                        + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(),
-                    e);
+                throw new CobiGenRuntimeException("An error occurred while generating the template. (FreeMarker v"
+                    + FreemarkerMetadata.VERSION + ")" + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
             } catch (Throwable e) {
                 throw new CobiGenRuntimeException(
-                    "(Freemarker version ${freemarker.version}).An unkonwn error occurred while generating the template "
-                        + template.getAbsoluteTemplatePath(),
+                    "An unkonwn error occurred while generating the template. (FreeMarker v"
+                        + FreemarkerMetadata.VERSION + ")" + template.getAbsoluteTemplatePath(),
                     e);
             }
         }
