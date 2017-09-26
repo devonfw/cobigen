@@ -5,7 +5,7 @@
   <artifactId>com.capgemini.cobigen.eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In</name>
   <packaging>eclipse-plugin</packaging>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 
   <parent>
     <groupId>com.capgemini</groupId>
