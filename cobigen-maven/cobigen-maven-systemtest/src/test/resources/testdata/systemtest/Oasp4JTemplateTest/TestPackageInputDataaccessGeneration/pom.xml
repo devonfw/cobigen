@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capgemini</groupId>
   <artifactId>Oasp4JTemplateTest-TestPackageInputDataaccessGeneration</artifactId>
-  <version>SNAPSHOT</version>
+  <version>dev-SNAPSHOT</version>
 
   <build>
     <plugins>
