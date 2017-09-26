@@ -13,7 +13,7 @@
   </parent>
 
   <properties>
-    <skip.deployment>false</skip.deployment>
+    <skip.deployment>true</skip.deployment><!-- Change to false if you change version to snapshot  -->
   </properties>
 
 </project>
