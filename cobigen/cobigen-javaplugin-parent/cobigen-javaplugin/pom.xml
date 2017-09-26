@@ -15,6 +15,7 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
+    <eclipse.host.version>3.0.1</eclipse.host.version>
   </properties>
 
   <dependencies>
