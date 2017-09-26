@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In
 Bundle-SymbolicName: com.capgemini.cobigen.eclipse;singleton:=true
-Bundle-Version: 3.0.0
+Bundle-Version: 3.0.1
 Bundle-Activator: com.capgemini.cobigen.eclipse.Activator
 Bundle-Vendor: Capgemini
 Require-Bundle: org.eclipse.ui;bundle-version="3.104.0",
