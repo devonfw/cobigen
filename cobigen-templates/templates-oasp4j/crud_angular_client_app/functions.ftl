@@ -41,7 +41,7 @@
 <#-- Adds the input fields for the filter with types -->
 <#macro getNG2Type_Grid_Search>
   <#list pojo.fields as field>
-      <md-input-container>
+      <md-input-container style="width:100%;">
         <input mdInput name ="${field.name}" type="${getType(field.type)}" ngModel [placeholder]= "'${variables.component}datagrid.columns.${field.name}' | translate">
       </md-input-container>
    </#list>

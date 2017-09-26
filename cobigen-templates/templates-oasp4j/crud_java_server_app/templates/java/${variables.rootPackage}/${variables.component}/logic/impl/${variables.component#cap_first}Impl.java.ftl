@@ -85,5 +85,44 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
 		return this.${variables.entityName?uncap_first}Dao;
 	}
+		
+	@Override
+  public ${variables.entityName}Cto find${variables.entityName}Cto(Long id) {
+    LOG.debug("Get ${variables.entityName}Cto with id {} from database.", id);
+    ${variables.entityName}Entity entity = get${variables.entityName}Dao().findOne(id);
+    ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
+    cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
+    <#list pojo.fields as field>
+      <#if field.type?ends_with("Entity")>
+    cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
+      <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
+    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
+      </#if>
+    </#list>
+ 
+    return cto;
+  }
+
+  @Override
+  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
+    criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
+    PaginatedListTo<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
+    List<${variables.entityName}Cto> ctos = new ArrayList<>();
+    for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getResult()) {
+      ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
+      cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
+      <#list pojo.fields as field>
+        <#if field.type?ends_with("Entity")>
+      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
+        <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
+      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
+        </#if>
+      </#list>
+      ctos.add(cto);
+      
+    }
+    return PaginatedListTo<>(ctos, ${variables.entityName}getPagination());
+  }
+	
 
 }

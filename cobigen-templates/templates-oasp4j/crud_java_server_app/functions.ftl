@@ -8,7 +8,7 @@
 <#macro generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion isSearchCriteria=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-  <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")> <#-- do not generate field for multiple relation -->
+  <#if !JavaUtil.isCollection(classObject, field.name)> <#-- do not generate field for multiple relation -->
    	 private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
   </#if>
 <#elseif field.type?contains("Embeddable")>
@@ -31,7 +31,7 @@
 <#macro generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=true, isInterface=false, isSearchCriteria=false>
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-   <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")> <#-- do not generate getters & setters for multiple relation -->
+   <#if !JavaUtil.isCollection(classObject, field.name)> <#-- do not generate getters & setters for multiple relation -->
     	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
     	<#if implementsInterface>@Override</#if>
     	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,"")} <#if isInterface>;<#else>{

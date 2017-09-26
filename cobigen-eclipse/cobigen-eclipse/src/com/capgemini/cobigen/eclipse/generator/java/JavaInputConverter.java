@@ -66,18 +66,13 @@ public class JavaInputConverter {
                     try {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
-                        Class<?> loadedClass = projectClassLoader.loadClass(rootType.getFullyQualifiedName());
-                        Object[] inputSourceAndClass = new Object[] { loadedClass,
-                            inputInterpreter.read("java",
-                                Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
-                                Charsets.UTF_8, projectClassLoader) };
-                        convertedInputs.add(inputSourceAndClass);
+                        Object input = inputInterpreter.read("java",
+                            Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
+                            Charsets.UTF_8, projectClassLoader);
+                        convertedInputs.add(input);
                     } catch (MalformedURLException e) {
                         throw new GeneratorCreationException("An internal exception occurred while loading Java class "
                             + rootType.getFullyQualifiedName(), e);
-                    } catch (ClassNotFoundException e) {
-                        throw new GeneratorCreationException(
-                            "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
                     } catch (InputReaderException e) {
                         throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
                     }

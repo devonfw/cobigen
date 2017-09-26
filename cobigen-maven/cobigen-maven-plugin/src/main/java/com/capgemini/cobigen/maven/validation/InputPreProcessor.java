@@ -1,20 +1,18 @@
 package com.capgemini.cobigen.maven.validation;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Paths;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.xml.sax.SAXException;
 
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.xmlplugin.util.XmlUtil;
+import com.capgemini.cobigen.api.InputInterpreter;
+import com.capgemini.cobigen.api.exception.InputReaderException;
+import com.capgemini.cobigen.maven.utils.XmlUtil;
 import com.google.common.base.Charsets;
-import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * Input pre-processor, which tries to identify valid file inputs for CobiGen
@@ -28,12 +26,15 @@ public class InputPreProcessor {
      *            {@link File} converted into any CobiGen valid input format
      * @param cl
      *            {@link ClassLoader} to be used, when considering Java-related inputs
+     * @param inputInterpreter
+     *            parse cobiGen compliant input from the file
      * @throws MojoFailureException
      *             if the input retrieval did not result in a valid CobiGen input
      * @return a CobiGen valid input
      * @author mbrunnli (16.02.2015)
      */
-    public static Object process(File file, ClassLoader cl) throws MojoFailureException {
+    public static Object process(InputInterpreter inputInterpreter, File file, ClassLoader cl)
+        throws MojoFailureException {
 
         if (!file.exists() || !file.canRead()) {
             throw new MojoFailureException("Could not read input file " + file.getAbsolutePath());
@@ -41,9 +42,8 @@ public class InputPreProcessor {
 
         Object input = null;
         try {
-            input =
-                JavaParserUtil.getFirstJavaClass(cl, new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
-        } catch (ParseException | FileNotFoundException e) {
+            input = inputInterpreter.read("java", Paths.get(file.toURI()), Charsets.UTF_8, cl);
+        } catch (InputReaderException e) {
             // was not a java resource, try something else
         }
 

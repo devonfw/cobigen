@@ -8,9 +8,7 @@ import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
 import com.google.common.collect.Lists;
 
-/**
- * Plug-in activator to be registered to the PluginRegistry of CobiGen by any client.
- */
+/** Plug-in activator to be registered to the PluginRegistry of CobiGen by any client. */
 public class JavaPluginActivator implements GeneratorPluginActivator {
 
     @Override

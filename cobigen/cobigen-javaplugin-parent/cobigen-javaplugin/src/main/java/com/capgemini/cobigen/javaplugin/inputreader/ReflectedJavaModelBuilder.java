@@ -36,19 +36,13 @@ import com.google.common.collect.Maps;
  */
 public class ReflectedJavaModelBuilder {
 
-    /**
-     * Assigning logger to JavaModelBuilder
-     */
+    /** Assigning logger to JavaModelBuilder */
     private static final Logger LOG = LoggerFactory.getLogger(ReflectedJavaModelBuilder.class);
 
-    /**
-     * Cached input pojo class in order to avoid unnecessary efforts
-     */
+    /** Cached input pojo class in order to avoid unnecessary efforts */
     private Class<?> cachedPojo;
 
-    /**
-     * Cached model related to the cached input pojo
-     */
+    /** Cached model related to the cached input pojo */
     private Map<String, Object> cachedModel;
 
     /**
@@ -122,8 +116,8 @@ public class ReflectedJavaModelBuilder {
         while (it.hasNext()) {
             PojoPropertyDescriptor fieldDescriptor = (PojoPropertyDescriptor) it.next();
             if (!fieldDescriptor.getAccessors().isEmpty()) {
-                existingFields.put(fieldDescriptor.getName(), (Field) fieldDescriptor.getAccessors().iterator().next()
-                    .getAccessibleObject());
+                existingFields.put(fieldDescriptor.getName(),
+                    (Field) fieldDescriptor.getAccessors().iterator().next().getAccessibleObject());
             }
         }
 
@@ -395,8 +389,8 @@ public class ReflectedJavaModelBuilder {
                         annotationParameters.put(getter.getName(), enumValues);
                     } else if (value instanceof Object[]) {
                         // annotationParameters.put(getter.getName(), value);
-                        annotationParameters
-                            .put(getter.getName(), Lists.newLinkedList(Arrays.asList((Object[]) value)));
+                        annotationParameters.put(getter.getName(),
+                            Lists.newLinkedList(Arrays.asList((Object[]) value)));
                     } else if (value instanceof Enum<?>) {
                         annotationParameters.put(getter.getName(), ((Enum<?>) value).name());
 

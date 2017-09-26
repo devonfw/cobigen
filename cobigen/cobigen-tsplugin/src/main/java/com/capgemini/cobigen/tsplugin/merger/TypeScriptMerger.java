@@ -2,39 +2,43 @@ package com.capgemini.cobigen.tsplugin.merger;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.tsplugin.merger.constants.Constants;
 
 /**
- * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level
+ * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.
  */
 public class TypeScriptMerger implements Merger {
 
-    /**
-     * Merger Type to be registered
-     */
+    /** OS specific line separator */
+    private static final String LINE_SEP = System.getProperty("line.separator");
+
+    /** Merger Type to be registered */
     private String type;
 
-    /**
-     * The conflict resolving mode
-     */
+    /** The conflict resolving mode */
     private boolean patchOverrides;
+
+    /** Cached script engines to not evaluate dependent scripts again and again */
+    private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
 
     /**
      * Creates a new {@link TypeScriptMerger}
@@ -46,7 +50,6 @@ public class TypeScriptMerger implements Merger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      */
     public TypeScriptMerger(String type, boolean patchOverrides) {
-
         this.type = type;
         this.patchOverrides = patchOverrides;
     }
@@ -58,142 +61,106 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-        return tsMerger(patchOverrides, base, patch, targetCharset);
 
+        String baseFileContents;
+        try {
+            baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read base file!", e);
+        }
+
+        String mergedContents =
+            executeJS(base, invocable -> invocable.invokeFunction("merge", baseFileContents, patch, patchOverrides),
+                Constants.TSMERGER_JS);
+
+        return runBeautifierExcludingImports(base, mergedContents);
     }
 
     /**
-     * @param patchOverrides
-     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
-     *            if <code>false</code>, conflicts will be resolved by using the base contents
+     * Executes the call specified by {@code executable} parameter on the script given by {@code scriptName}
+     * with the javascript engine Nashorn.
      * @param base
-     *            the existent base file
-     * @param patch
-     *            the patch string
-     * @param targetCharset
-     *            target char set of the file to be read and write
-     * @return contents merged
+     *            the existent base file just for error reporting
+     * @param scriptName
+     *            name of the script to be executed. Should exist in the root of the build path
+     * @param executable
+     *            {@link ScriptExecutable} running the script call itself
+     * @return return value of the script casted to {@link String}
      */
-    private String tsMerger(boolean patchOverrides, File base, String patch, String targetCharset) {
+    private String executeJS(File base, ScriptExecutable executable, String scriptName) {
 
-        String mergedContents = "";
-        String cmdError = "";
+        if (!scriptEngines.containsKey(scriptName)) {
 
-        try (InputStream mergerASStream = TypeScriptMerger.class.getResourceAsStream("/" + Constants.TSMERGER_JS)) {
+            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("nashorn");
 
-            Path tmpDir = Files.createTempDirectory(Constants.COBIGEN_TS);
-            Path filePath = tmpDir.resolve(Constants.TSMERGER_JS);
-            Path filePatch = tmpDir.resolve(Constants.PATCH_TS);
-            File outputFile = new File(tmpDir.toAbsolutePath().toString() + Constants.MERGED_CONTENTS);
-            outputFile.createNewFile();
-            Files.copy(mergerASStream, filePath);
-            Files.copy(IOUtils.toInputStream(patch, "UTF-8"), filePatch);
-
-            List<String> commands = new LinkedList<>();
-
-            if (SystemUtils.IS_OS_WINDOWS) {
-                commands.add("cmd.exe");
-                commands.add("/c");
+            Compilable jsCompilable = (Compilable) jsEngine;
+            CompiledScript jsScript;
+            try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream("/" + scriptName))) {
+                jsScript = jsCompilable.compile(reader);
+            } catch (ScriptException e) {
+                throw new MergeException(base, "Could not compile " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on GitHub.", e);
+            } catch (IOException e) {
+                throw new MergeException(base, "Could not read " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
             }
 
-            commands.add("node");
-            commands.add(filePath.toAbsolutePath().toString());
-            if (patchOverrides) {
-                commands.add("-f");
+            ScriptContext scriptCtxt = jsEngine.getContext();
+            Bindings engineScope = scriptCtxt.getBindings(ScriptContext.ENGINE_SCOPE);
+            try {
+                jsEngine.eval("global = {}"); // simulate global object
+                jsScript.eval(engineScope);
+            } catch (ScriptException e) {
+                throw new MergeException(base, "Could not evaluate " + scriptName
+                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
             }
 
-            commands.add("-b");
-            commands.add(base.getAbsolutePath().toString());
-            commands.add("-p");
-            commands.add(filePatch.toAbsolutePath().toString());
-            commands.add("-o");
-            commands.add(outputFile.getAbsolutePath().toString());
-            commands.add("-e");
-            commands.add(targetCharset);
-            ProcessBuilder builder = new ProcessBuilder(commands);
-            builder.redirectErrorStream(true);
-
-            Process p = builder.start();
-
-            try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
-                BufferedReader r = new BufferedReader(rdr)) {
-                String line;
-                while (true) {
-                    line = r.readLine();
-                    if (line != null) {
-                        cmdError = cmdError.concat(line);
-                    } else {
-                        break;
-                    }
-                }
-                if (!cmdError.equals("")) {
-                    throw new MergeException(base, cmdError);
-                }
-            }
-
-            mergedContents = readMergedContentsFile(outputFile, targetCharset);
-
-        } catch (IOException e) {
-            throw new MergeException(base, "An error during merge process occurred!");
+            scriptEngines.put(scriptName, jsEngine);
         }
-        return mergedContents;
 
-    }
-
-    /**
-     * Calls the jsBeautifier script to beautify the merged code
-     *
-     * @param mergedContents
-     *            the merged coded
-     * @return the merged code beautified
-     */
-    private String beautifier(String mergedContents) {
-        Context cxBeautify = Context.enter();
-        Scriptable scopeBeautify = cxBeautify.initStandardObjects();
-        try (InputStream beautifierASStream = TypeScriptMerger.class.getResourceAsStream(Constants.BEAUTIFY_JS);
-            Reader readerBeautifier = new InputStreamReader(beautifierASStream)) {
-            cxBeautify.evaluateReader(scopeBeautify, readerBeautifier, "__beautify.js", 1, null);
-        } catch (IOException e) {
-            throw new MergeException(new File(""), "Error reading jsBeautifier script");
+        Invocable jsInvocable = (Invocable) scriptEngines.get(scriptName);
+        try {
+            return (String) executable.exec(jsInvocable);
+        } catch (NoSuchMethodException e) {
+            throw new MergeException(base,
+                "Invalid API of " + scriptName + " script used. This is most properly a bug. Please report on Github.",
+                e);
+        } catch (ScriptException e) {
+            throw new MergeException(base, "Execution of the script " + scriptName + " raised an error.", e);
         }
-        scopeBeautify.put("jsCode", scopeBeautify, mergedContents);
-        String result = "";
-        result = (String) cxBeautify.evaluateString(scopeBeautify, "js_beautify(jsCode, {indent_size:" + 4 + "})",
-            "inline", 1, null);
-        if (result.equals("")) {
-            throw new MergeException(new File(""), "An error ocurred with beautify.js script!");
-        }
-        return result;
     }
 
     /**
      * Reads the output.ts temporary file to get the merged contents
-     * @param output
-     *            the output.ts file
-     * @param targetCharset
-     *            target char set of the file to be read and write
+     * @param base
+     *            base file just for exception handling
+     * @param mergedContents
+     *            merged typescript code
      * @return merged contents already beautified
-     * @throws IOException
-     *             if merged.ts file cannot be read
      */
-    private String readMergedContentsFile(File output, String targetCharset) throws IOException {
-        String imports = "";
-        String mergedContents = "";
+    private String runBeautifierExcludingImports(File base, String mergedContents) {
+        StringBuilder imports = new StringBuilder();
+        StringBuilder body = new StringBuilder();
 
-        try (FileInputStream finStrm = new FileInputStream(output);
-            InputStreamReader inR = new InputStreamReader(finStrm, targetCharset);
-            BufferedReader br = new BufferedReader(inR)) {
+        try (StringReader inR = new StringReader(mergedContents); BufferedReader br = new BufferedReader(inR)) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("import ")) {
-                    imports = imports.concat(line);
-                    imports = imports.concat("\n");
+                    imports.append(line);
+                    imports.append(LINE_SEP);
                 } else {
-                    mergedContents = mergedContents.concat(line);
+                    body.append(line);
                 }
             }
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not process merged contents for formatting.", e);
         }
-        return imports + "\n\n" + beautifier(mergedContents);
+
+        String formattedBody =
+            executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
+                "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
+
+        return imports + LINE_SEP + LINE_SEP + formattedBody;
     }
 
 }

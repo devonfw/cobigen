@@ -51,6 +51,7 @@
     <increment name="SDlogic_impl" description="CRUD SpringData logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}RepoImpl.java"/>
     </increment>
     <increment name="tos" description="TO's">
@@ -64,6 +65,7 @@
     <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
     </increment>
