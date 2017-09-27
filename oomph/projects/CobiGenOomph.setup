@@ -3,10 +3,10 @@
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:com.github.maybeec.oomph.task="http://maybeec.github.io/oomph-task-cli/1.0"
+    xmlns:git="http://www.eclipse.org/oomph/setup/git/1.0"
     xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
-    xsi:schemaLocation="http://maybeec.github.io/oomph-task-cli/1.0 https://raw.githubusercontent.com/maybeec/oomph-task-cli/master/task-cli-updatesite/model/Oomph-cli-task-1.0.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore"
     name="tools.cobigen.oomph"
     label="CobiGen Oomph Setup">
   <setupTask
@@ -54,70 +54,12 @@
   </setupTask>
   <stream name="gh-pages">
     <setupTask
-        xsi:type="setup:CompoundTask"
-        id="cmp.git.clone.master.man"
-        name="Git Clone Master">
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          id="tasks.unzip.external.ressources.linux.man"
-          filter="(osgi.os=linux)"
-          name="linux">
-        <setupTask
-            xsi:type="setup:ResourceCreationTask"
-            id="rc.cloneMaster.linux.man"
-            excludedTriggers="BOOTSTRAP"
-            successor="cmp.clone.master.linux.chmod.man"
-            content="COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;if [-d &quot;tools-cobigen&quot;];then&#xA;&#x9;echo Folder tools-cobigen already present. Skipping cloning&#xA;else&#xA;&#x9;git clone --branch=master $COBIGEN_REPO tools-cobigen&#xA;fi"
-            targetURL="${workspace.location/clone.sh|uri}"
-            encoding="UTF-8"/>
-        <setupTask
-            xsi:type="com.github.maybeec.oomph.task:cliTask"
-            id="cmp.clone.master.linux.chmod.man"
-            excludedTriggers="BOOTSTRAP"
-            successor="cli.rc.cloneMaster.linux.man"
-            directory="${workspace.location}"
-            command="chmod">
-          <argument>+x</argument>
-          <argument>clone.sh</argument>
-          <description></description>
-        </setupTask>
-        <setupTask
-            xsi:type="com.github.maybeec.oomph.task:cliTask"
-            id="cli.rc.cloneMaster.linux.man"
-            excludedTriggers="BOOTSTRAP"
-            directory="${workspace.location}"
-            command="./clone.sh">
-          <description>Executes the cloneMaster.sh script</description>
-        </setupTask>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:CompoundTask"
-          id="cmp.clone.master.win.man"
-          filter="(os.name=Windows*)"
-          name="windows">
-        <setupTask
-            xsi:type="setup:ResourceCreationTask"
-            id="rc.cloneMaster.win.man"
-            excludedTriggers="BOOTSTRAP"
-            successor="cli.rc.cloneMaster.win.man"
-            content="@ECHO OFF&#xA;SET COBIGEN_REPO=&quot;${github.remoteURIs.cobigen}&quot;&#xA;&#xA;IF EXIST &quot;tools-cobigen&quot; (&#xA;&#x9;ECHO Folder tools-cobigen already present. Skipping cloning&#xA;) ELSE (&#xA;&#x9;git clone --branch=master %COBIGEN_REPO% tools-cobigen&#xA;)"
-            targetURL="${workspace.location/clone.cmd|uri}"
-            encoding="UTF-8"/>
-        <setupTask
-            xsi:type="com.github.maybeec.oomph.task:cliTask"
-            id="cli.rc.cloneMaster.win.man"
-            excludedTriggers="BOOTSTRAP"
-            directory="${workspace.location}"
-            command="clone.cmd">
-          <description>Executes the clone.cmd script in cobigen-master workspace</description>
-        </setupTask>
-        <description>Download tasks for external ressources on windows</description>
-      </setupTask>
-      <description></description>
-    </setupTask>
+        xsi:type="git:GitCloneTask"
+        id="cobigen.oomph.clone"
+        remoteURI="${github.remoteURIs.cobigen}"
+        pushURI="${github.remoteURIs.cobigen}"/>
     <setupTask
         xsi:type="setup:CompoundTask"
-        predecessor="cmp.git.clone.master.man"
         name="Workspace Setup">
       <setupTask
           xsi:type="projects:ProjectsImportTask">
