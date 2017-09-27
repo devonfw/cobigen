@@ -997,5 +997,5 @@
   <logicalProjectContainer
       xsi:type="setup:Project"
       href="http://devonfw.github.io/devon-ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
-  <description>Tools Cobigen provides cool stuff.</description>
+  <description>CobiGen is the Code-based incremental Generator used in multiple projects at Capgemini.</description>
 </setup:Project>
