@@ -19,6 +19,8 @@ public class PropertyDef {
 
     private boolean isEntity;
 
+    private String componentName;
+
     private String description;
 
     private boolean required;
@@ -94,6 +96,14 @@ public class PropertyDef {
 
     public void setIsEntity(boolean isEntity) {
         this.isEntity = isEntity;
+    }
+
+    public String getComponentName() {
+        return componentName;
+    }
+
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
     }
 
 }
