@@ -167,7 +167,10 @@ public class OpenAPIInputReader implements InputReader {
                 property.setType(mp[mp.length - 1]);
                 if (openApi.getSchema(mp[mp.length - 1]) != null) {
                     property.setIsEntity(true);
-                    property.setComponentName(openApi.getSchema(mp[mp.length - 1]).getDescription());
+                    if (openApi.getSchema(mp[mp.length - 1]).getDescription()
+                        .equals(openApi.getSchema(entity).getDescription())) {
+                        property.setSameComponent(true);
+                    }
                 }
             } else if (properties.get(key).getType().equals(Constants.OBJECT)) {
                 String[] mp = ((SchemaImpl) properties.get(key)).getReference().getFragment().split("/");
