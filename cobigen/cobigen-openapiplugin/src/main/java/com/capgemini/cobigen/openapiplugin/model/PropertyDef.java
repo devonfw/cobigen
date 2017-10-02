@@ -19,7 +19,7 @@ public class PropertyDef {
 
     private boolean isEntity;
 
-    private String componentName;
+    private boolean sameComponent;
 
     private String description;
 
@@ -32,6 +32,7 @@ public class PropertyDef {
         setIsCollection(false);
         setIsEntity(false);
         constraints = new HashMap<>();
+        setSameComponent(false);
     }
 
     public String getName() {
@@ -98,12 +99,11 @@ public class PropertyDef {
         this.isEntity = isEntity;
     }
 
-    public String getComponentName() {
-        return componentName;
+    public boolean getSameComponent() {
+        return sameComponent;
     }
 
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
+    public void setSameComponent(boolean sameComponent) {
+        this.sameComponent = sameComponent;
     }
-
 }
