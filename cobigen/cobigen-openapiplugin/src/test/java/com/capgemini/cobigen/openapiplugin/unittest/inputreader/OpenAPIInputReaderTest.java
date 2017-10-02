@@ -57,8 +57,8 @@ public class OpenAPIInputReaderTest {
         for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
         }
-        assertThat(properties).hasSize(2);
-        assertThat(properties).extracting("name").containsExactly("tableExample", "saleExample");
+        assertThat(properties).hasSize(3);
+        assertThat(properties).extracting("name").containsExactly("tableExample", "saleExample", "table");
     }
 
     @Test
@@ -75,10 +75,10 @@ public class OpenAPIInputReaderTest {
             types.add(property.getType());
             formats.add(property.getFormat());
         }
-        assertThat(types).hasSize(2);
-        assertThat(formats).hasSize(2);
-        assertThat(types).containsExactly("string", "number");
-        assertThat(formats).containsExactly(null, "int64");
+        assertThat(types).hasSize(3);
+        assertThat(formats).hasSize(3);
+        assertThat(types).containsExactly("string", "number", "Table");
+        assertThat(formats).containsExactly(null, "int64", null);
     }
 
     @Test
@@ -93,12 +93,12 @@ public class OpenAPIInputReaderTest {
         for (PropertyDef property : properties) {
             constraints.add(property.getConstraints());
         }
-        assertThat(constraints).hasSize(2);
-        assertThat(constraints).extracting("maximum").containsExactly(null, 100);
-        assertThat(constraints).extracting("minimum").containsExactly(null, 0);
-        assertThat(constraints).extracting("maxLength").containsExactly(100, null);
-        assertThat(constraints).extracting("minLength").containsExactly(5, null);
-        assertThat(constraints).extracting("unique").containsExactly(true, false);
+        assertThat(constraints).hasSize(3);
+        assertThat(constraints).extracting("maximum").containsExactly(null, 100, null);
+        assertThat(constraints).extracting("minimum").containsExactly(null, 0, null);
+        assertThat(constraints).extracting("maxLength").containsExactly(100, null, null);
+        assertThat(constraints).extracting("minLength").containsExactly(5, null, null);
+        assertThat(constraints).extracting("unique").containsExactly(true, false, false);
     }
 
     @Test
