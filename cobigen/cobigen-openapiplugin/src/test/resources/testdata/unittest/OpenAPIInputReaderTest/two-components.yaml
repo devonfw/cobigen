@@ -73,6 +73,8 @@ components:
               format: int64
               maximum: 100
               minimum: 0
+            table:
+              $ref: '#/components/schemas/Table'
           required:
             - saleExample
 
