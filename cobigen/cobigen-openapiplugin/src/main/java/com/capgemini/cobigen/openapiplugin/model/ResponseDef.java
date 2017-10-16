@@ -18,6 +18,8 @@ public class ResponseDef {
 
     private String format;
 
+    private String mediaType;
+
     public ResponseDef() {
         isArray = false;
         isPaginated = false;
@@ -71,5 +73,13 @@ public class ResponseDef {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }
