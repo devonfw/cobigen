@@ -54,8 +54,8 @@ paths:
 components:
     schemas:
         Table:
-          title: Table
-          description: tablemanagement
+          x-component: tablemanagement
+          description: Entity definiton of Table
           type: object
           properties:
             tableExample:
@@ -64,8 +64,8 @@ components:
               minLength: 5
               uniqueItems: true
         Sale:
-          title: Sale
-          description: salemanagement
+          x-component: salemanagement
+          description: Entity definiton of Table
           type: object
           properties:
             saleExample:

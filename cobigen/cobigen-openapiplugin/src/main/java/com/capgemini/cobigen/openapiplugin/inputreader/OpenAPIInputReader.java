@@ -134,8 +134,9 @@ public class OpenAPIInputReader implements InputReader {
             entityDef.setDescription(openApi.getSchema(key).getDescription());
             ComponentDef componentDef = new ComponentDef();
             entityDef.setProperties(getFields(openApi.getSchema(key).getProperties(), openApi, key));
-            entityDef.setComponentName(openApi.getSchema(key).getDescription());
-            componentDef.setPaths(getPaths(openApi.getPaths(), openApi.getSchema(key).getDescription(), key));
+            entityDef.setComponentName(openApi.getSchema(key).getExtensions().get("x-component").toString());
+            componentDef.setPaths(getPaths(openApi.getPaths(),
+                openApi.getSchema(key).getExtensions().get("x-component").toString(), key));
             entityDef.setComponent(componentDef);
             objects.add(entityDef);
         }
@@ -305,6 +306,7 @@ public class OpenAPIInputReader implements InputReader {
         if (requestBody != null) {
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
+                parameter.setMediaType(media);
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
                     parameter.setIsSearchCriteria(true);
@@ -350,6 +352,7 @@ public class OpenAPIInputReader implements InputReader {
                         response.setIsVoid(true);
                     }
                     for (String media : responses.get(resp).getContentMediaTypes().keySet()) {
+                        response.setMediaType(media);
                         if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                             .getReference() != null) {
                             String[] mp =
