@@ -301,7 +301,7 @@ public class GenerationProcessor {
         }
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
         templateEngine.setTemplateFolder(
