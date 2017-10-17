@@ -10,7 +10,6 @@ import java.util.Set;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.UnknownExpressionException;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
@@ -35,9 +34,6 @@ public class TemplatesConfiguration {
     /** {@link Trigger}, all templates of this configuration depend on */
     private Trigger trigger;
 
-    /** {@link TriggerInterpreter} the trigger has been interpreted with */
-    private TriggerInterpreter triggerInterpreter;
-
     /** {@link TextTemplateEngine} to be used for the template set covered by this configuration. */
     private String templateEngine;
 
@@ -49,8 +45,6 @@ public class TemplatesConfiguration {
      *            configuration root path
      * @param trigger
      *            {@link Trigger} of this {@link TemplatesConfiguration}
-     * @param triggerInterpreter
-     *            the trigger has been interpreted with
      * @throws UnknownContextVariableException
      *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
@@ -58,17 +52,15 @@ public class TemplatesConfiguration {
      * @throws InvalidConfigurationException
      *             if the given templates.xml is not valid
      */
-    public TemplatesConfiguration(Path configRoot, Trigger trigger, TriggerInterpreter triggerInterpreter)
-        throws InvalidConfigurationException {
+    public TemplatesConfiguration(Path configRoot, Trigger trigger) throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
         templatesFolderName = trigger.getTemplateFolder();
-        templates = reader.loadTemplates(trigger, triggerInterpreter);
+        templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
         templateEngine = reader.getTemplateEngine();
         this.trigger = trigger;
-        this.triggerInterpreter = triggerInterpreter;
     }
 
     /**
@@ -97,14 +89,6 @@ public class TemplatesConfiguration {
      */
     public Trigger getTrigger() {
         return trigger;
-    }
-
-    /**
-     * Returns the field 'triggerInterpreter'
-     * @return value of triggerInterpreter
-     */
-    public TriggerInterpreter getTriggerInterpreter() {
-        return triggerInterpreter;
     }
 
     /**

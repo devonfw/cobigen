@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.google.common.collect.Maps;
 
@@ -54,19 +53,17 @@ public class ConfigurationHolder {
      * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache.
      * @param trigger
      *            to get matcher declarations from
-     * @param triggerInterpreter
-     *            to get the matcher implementation from
      * @return the {@link TemplatesConfiguration}
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
      */
-    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger, TriggerInterpreter triggerInterpreter) {
+    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
         if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
             templatesConfigurations.put(trigger.getTemplateFolder(),
                 Maps.<String, TemplatesConfiguration> newHashMap());
 
-            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger, triggerInterpreter);
+            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
             templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
         }
 
