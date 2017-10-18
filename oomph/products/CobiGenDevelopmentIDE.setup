@@ -42,7 +42,7 @@
         versionRange="[1.8.0,1.9.0)"/>
     <requirement
         name="org.eclipse.egit.feature.group"
-        versionRange="[4.8.0,4.9.0)"/>
+        versionRange="[4.9.0,4.10.0)"/>
     <requirement
         name="org.eclipse.oomph.p2.feature.group"
         versionRange="[1.8.0,1.9.0)"/>
