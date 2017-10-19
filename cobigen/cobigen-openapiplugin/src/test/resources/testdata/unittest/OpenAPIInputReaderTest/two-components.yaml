@@ -63,6 +63,8 @@ components:
               maxLength: 100
               minLength: 5
               uniqueItems: true
+          x-manytomany: Table
+          x-onetoone: Sale
         Sale:
           x-component: salemanagement
           description: Entity definiton of Table
@@ -73,8 +75,7 @@ components:
               format: int64
               maximum: 100
               minimum: 0
-            table:
-              $ref: '#/components/schemas/Table'
+          x-onetoone: Table
           required:
             - saleExample
 

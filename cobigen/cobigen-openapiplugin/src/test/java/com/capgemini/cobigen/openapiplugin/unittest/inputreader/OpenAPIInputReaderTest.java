@@ -18,6 +18,7 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
+import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -57,8 +58,8 @@ public class OpenAPIInputReaderTest {
         for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
         }
-        assertThat(properties).hasSize(3);
-        assertThat(properties).extracting("name").containsExactly("tableExample", "saleExample", "table");
+        assertThat(properties).hasSize(2);
+        assertThat(properties).extracting("name").containsExactly("tableExample", "saleExample");
     }
 
     @Test
@@ -75,10 +76,10 @@ public class OpenAPIInputReaderTest {
             types.add(property.getType());
             formats.add(property.getFormat());
         }
-        assertThat(types).hasSize(3);
-        assertThat(formats).hasSize(3);
-        assertThat(types).containsExactly("string", "number", "Table");
-        assertThat(formats).containsExactly(null, "int64", null);
+        assertThat(types).hasSize(2);
+        assertThat(formats).hasSize(2);
+        assertThat(types).containsExactly("string", "number");
+        assertThat(formats).containsExactly(null, "int64");
     }
 
     @Test
@@ -93,12 +94,12 @@ public class OpenAPIInputReaderTest {
         for (PropertyDef property : properties) {
             constraints.add(property.getConstraints());
         }
-        assertThat(constraints).hasSize(3);
-        assertThat(constraints).extracting("maximum").containsExactly(null, 100, null);
-        assertThat(constraints).extracting("minimum").containsExactly(null, 0, null);
-        assertThat(constraints).extracting("maxLength").containsExactly(100, null, null);
-        assertThat(constraints).extracting("minLength").containsExactly(5, null, null);
-        assertThat(constraints).extracting("unique").containsExactly(true, false, false);
+        assertThat(constraints).hasSize(2);
+        assertThat(constraints).extracting("maximum").containsExactly(null, 100);
+        assertThat(constraints).extracting("minimum").containsExactly(null, 0);
+        assertThat(constraints).extracting("maxLength").containsExactly(100, null);
+        assertThat(constraints).extracting("minLength").containsExactly(5, null);
+        assertThat(constraints).extracting("unique").containsExactly(true, false);
     }
 
     @Test
@@ -165,6 +166,19 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("maximum").contains(50, 200);
         assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
 
+    }
+
+    @Test
+    public void testRetrieveRelationShips() throws Exception {
+        List<Object> inputObjects = getInputs();
+        List<RelationShip> relationships = new LinkedList<>();
+        for (Object o : inputObjects) {
+            relationships.addAll(((EntityDef) o).getRelationShips());
+        }
+
+        assertThat(relationships).hasSize(3);
+        assertThat(relationships).extracting("type").containsExactly("manytomany", "onetoone", "onetoone");
+        assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table");
     }
 
     private List<Object> getInputs() throws Exception {
