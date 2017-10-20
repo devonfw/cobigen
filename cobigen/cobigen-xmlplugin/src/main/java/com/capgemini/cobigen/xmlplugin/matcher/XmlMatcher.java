@@ -40,7 +40,7 @@ public class XmlMatcher implements MatcherInterpreter {
      */
     private enum MatcherType {
         /** Document's root name */
-        NODENAME, // ELEMENT
+        NODENAME,
         /** Xpath expression group assignment */
         XPATH
     }
@@ -74,7 +74,7 @@ public class XmlMatcher implements MatcherInterpreter {
                 }
                 break;
             case XPATH:
-                // TODO #112
+                // #112
                 Object targetXpath = matcher.getTarget();
 
                 DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -82,8 +82,8 @@ public class XmlMatcher implements MatcherInterpreter {
                 try {
                     builder = builderFactory.newDocumentBuilder();
                 } catch (ParserConfigurationException e) {
+                    LOG.info("Document builder initialization failed!");
                     e.printStackTrace();
-
                 }
 
                 if (targetXpath instanceof Document) {
@@ -104,6 +104,7 @@ public class XmlMatcher implements MatcherInterpreter {
                         return nodeList.item(0).getFirstChild().getNodeValue() != null;
                     } catch (XPathExpressionException e) {
                         // TODO Auto-generated catch block
+                        LOG.info("Matcher Xpath expression is not correct!");
                         e.printStackTrace();
                     }
                 }
@@ -148,40 +149,34 @@ public class XmlMatcher implements MatcherInterpreter {
                     e.printStackTrace();
 
                 }
-
                 if (targetXpath instanceof Document) {
-                    Document document = ((Document) targetXpath);
-                    String resultXpath = "Error_See_XMLMatcher";
-
-                    XPath xPath = XPathFactory.newInstance().newXPath();
-                    String expression = matcher.getValue(); // TODO: CHANGE THIS TO va.getValueName??
-
-                    System.out.println("Expresion Xpath:\t" + expression);
-                    System.out.println("I AM IN resolveVariables");
-
-                    NodeList nodeList;
-                    try {
-                        nodeList = (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
-                        for (int i = 0; i < nodeList.getLength(); i++) {
-                            resultXpath = nodeList.item(i).getFirstChild().getNodeValue();
-
-                            // resolvedVariables.put(va.getVarName(), resultXpath);
-                            System.out.println(resultXpath);
-                        }
-                    } catch (XPathExpressionException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
                     resolvedVariables = new HashMap<>();
                     for (VariableAssignmentTo va : variableAssignments) {
-                        resolvedVariables.put(va.getVarName(), resultXpath);
+                        Document document = ((Document) targetXpath);
+                        String resultXpath = "Error_See_XMLMatcher";
+
+                        XPath xPath = XPathFactory.newInstance().newXPath();
+                        String expression = va.getValue();
+
+                        System.out.println("Expresion Xpath:\t" + expression);
+                        System.out.println("I AM IN resolveVariables");
+
+                        NodeList nodeList;
+                        try {
+                            nodeList = (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
+                            for (int i = 0; i < nodeList.getLength(); i++) {
+                                resultXpath = nodeList.item(i).getFirstChild().getNodeValue();
+
+                                resolvedVariables.put(va.getVarName(), resultXpath);
+                                System.out.println(resultXpath);
+                            }
+                        } catch (XPathExpressionException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                     }
                     return resolvedVariables;
                 }
-                // resolvedVariables = new HashMap<>();
-                // resolvedVariables.put(matcher.getType(), matcher.getValue());
-                // return resolvedVariables;
             default:
                 break;
             }
