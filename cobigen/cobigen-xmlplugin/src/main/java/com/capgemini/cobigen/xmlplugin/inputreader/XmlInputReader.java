@@ -41,6 +41,8 @@ public class XmlInputReader implements InputReader {
             Document doc = (Document) input;
             Element rootElement = doc.getDocumentElement();
             Map<String, Object> model = new HashMap<>();
+            // JAIME: one option for the Xpath
+            model.put("doc", doc);
             model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
             return new HashMap<>(model);
         } else {
