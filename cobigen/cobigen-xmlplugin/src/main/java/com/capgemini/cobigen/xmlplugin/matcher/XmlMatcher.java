@@ -4,18 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
@@ -106,7 +97,9 @@ public class XmlMatcher implements MatcherInterpreter {
                 }
                 return resolvedVariables;
             case XPATH:
-                
+                if (logic.resolveVariablesXPath(matcher, variableAssignments) != null) {
+                    return logic.resolveVariablesXPath(matcher, variableAssignments);
+                }
             default:
                 break;
             }

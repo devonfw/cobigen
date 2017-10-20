@@ -62,7 +62,7 @@ public class XPathLogic {
         return false;
     }
 
-    public Map<String, String> resolveVariablesXPath(MatcherTo matcher, Map<String, String> resolvedVariables,
+    public Map<String, String> resolveVariablesXPath(MatcherTo matcher,
         List<VariableAssignmentTo> variableAssignments) {
         // TODO #112
         Object targetXpath = matcher.getTarget();
@@ -76,7 +76,7 @@ public class XPathLogic {
 
         }
         if (targetXpath instanceof Document) {
-            resolvedVariables = new HashMap<>();
+            Map<String, String> resolvedVariables = new HashMap<>();
             for (VariableAssignmentTo va : variableAssignments) {
                 Document document = ((Document) targetXpath);
                 String resultXpath = "Error_See_XMLMatcher";
