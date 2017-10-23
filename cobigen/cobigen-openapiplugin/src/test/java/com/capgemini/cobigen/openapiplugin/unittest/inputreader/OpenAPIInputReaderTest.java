@@ -176,9 +176,10 @@ public class OpenAPIInputReaderTest {
             relationships.addAll(((EntityDef) o).getRelationShips());
         }
 
-        assertThat(relationships).hasSize(3);
-        assertThat(relationships).extracting("type").containsExactly("manytomany", "onetoone", "onetoone");
-        assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table");
+        assertThat(relationships).hasSize(4);
+        assertThat(relationships).extracting("type").containsExactly("manytomany", "onetoone", "onetoone", "onetomany");
+        assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table", "Table");
+        assertThat(relationships).extracting("unidirectional").containsExactly(true, false, false, true);
     }
 
     private List<Object> getInputs() throws Exception {
