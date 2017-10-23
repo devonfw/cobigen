@@ -76,6 +76,7 @@ components:
               maximum: 100
               minimum: 0
           x-onetoone: Table
+          x-onetomany: Table
           required:
             - saleExample
 
