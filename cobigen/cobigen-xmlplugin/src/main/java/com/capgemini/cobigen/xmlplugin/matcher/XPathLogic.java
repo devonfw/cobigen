@@ -46,13 +46,18 @@ public class XPathLogic {
             System.out.println("Expresion Xpath:\t" + expression);
             System.out.println("I AM IN matches");
 
-            NodeList nodeList;
+            NodeList nodeList = null;
             try {
                 nodeList = (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
+                if (nodeList == null) {
+                    return false;
+                } else {
+                    return true;
                 }
-                return nodeList.item(0).getFirstChild().getNodeValue() != null;
+                // for (int i = 0; i < nodeList.getLength(); i++) {
+                // System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
+                // }
+                // return nodeList.item(0).getFirstChild().getNodeValue() != null;
             } catch (XPathExpressionException e) {
                 // TODO Auto-generated catch block
                 LOG.info("Matcher Xpath expression is not correct!");
@@ -86,16 +91,13 @@ public class XPathLogic {
 
                 System.out.println("Expresion Xpath:\t" + expression);
                 System.out.println("I AM IN resolveVariables");
+                System.out.println(document.hasAttributes() + " " + document.getNodeValue());
 
-                NodeList nodeList;
+                String entity = new String();
                 try {
-                    nodeList = (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        resultXpath = nodeList.item(i).getFirstChild().getNodeValue();
-
-                        resolvedVariables.put(va.getVarName(), resultXpath);
-                        System.out.println(resultXpath);
-                    }
+                    entity = (String) xPath.compile("[" + expression + "]").evaluate(document, XPathConstants.STRING);
+                    System.out.println(entity);
+                    resolvedVariables.put(va.getVarName(), entity);
                 } catch (XPathExpressionException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

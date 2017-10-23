@@ -41,8 +41,10 @@ public class XmlInputReader implements InputReader {
             Document doc = (Document) input;
             Element rootElement = doc.getDocumentElement();
             Map<String, Object> model = new HashMap<>();
+
             // JAIME: one option for the Xpath
             model.put("doc", doc);
+
             model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
             return new HashMap<>(model);
         } else {
@@ -57,7 +59,13 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
-        return false;
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+                return true;
+            }
+        }
+        return true;
     }
 
     /**
