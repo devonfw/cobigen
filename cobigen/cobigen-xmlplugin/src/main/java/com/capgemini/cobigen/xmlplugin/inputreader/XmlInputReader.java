@@ -59,13 +59,11 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
-        if (input instanceof Document) {
-            Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
-                return true;
-            }
-        }
-        return true;
+        /*
+         * if (input instanceof Document) { Document doc = (Document) input; if
+         * (doc.getFirstChild().getNodeName().equals("xmi:XMI")) { return true; } }
+         */
+        return false;
     }
 
     /**

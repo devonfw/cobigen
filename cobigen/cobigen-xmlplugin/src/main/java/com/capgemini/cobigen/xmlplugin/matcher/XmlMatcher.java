@@ -35,7 +35,9 @@ public class XmlMatcher implements MatcherInterpreter {
         /** Document's root name */
         NODENAME,
         /** Xpath expression group assignment */
-        XPATH, UML
+        XPATH,
+        /** UML expression group assignment */
+        UML
     }
 
     /**
@@ -110,7 +112,7 @@ public class XmlMatcher implements MatcherInterpreter {
                     VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
                     switch (variableType) {
                     case XPATH:
-                        resolvedVariables.putAll(logic.resolveVariablesXPath(matcher, variableAssignments));
+                        resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
                     }
                     return resolvedVariables;
                 }
