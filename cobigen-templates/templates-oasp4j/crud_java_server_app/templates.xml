@@ -29,6 +29,15 @@
     <templateExtension ref="${variables.entityName}EntityRegistrationBean.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}Repo.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}RepoCustom.java" mergeStrategy="javamerge"/>
+    
+    <templateExtension ref="${variables.entityName}MybatisDao.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Mapper.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}MybatisImpl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}Mybatis.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}MybatisRestServiceImpl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}MybatisRestService.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}SearchCriteria.java" mergeStrategy="javamerge"/>
+    
   </templates>
 
   <templateScans>
@@ -47,6 +56,30 @@
       <templateRef ref="${variables.entityName}EntityRegistrationBean.java"/>
       <templateRef ref="${variables.entityName}Repo.java"/>
       <templateRef ref="${variables.entityName}RepoCustom.java"/>
+    </increment>
+     <increment name="mybatis_crud" description="CRUD Mybatis">
+      <templateRef ref="${variables.entityName}MybatisDao.java"/>
+      <templateRef ref="${variables.entityName}Mapper.java"/>
+      <templateRef ref="${variables.entityName}Mapper.xml"/>
+    </increment>
+    <increment name="mybatis_logic_impl" description="CRUD logic Mybatis(all in one)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="${variables.component#cap_first}MybatisImpl.java"/>
+      <templateRef ref="${variables.component#cap_first}Mybatis.java"/>
+    </increment>
+     <increment name="mybatis_rest_service_impl" description="Mybatis CRUD REST services">
+      <templateRef ref="${variables.component#cap_first}MybatisRestServiceImpl.java"/>
+      <templateRef ref="${variables.component#cap_first}MybatisRestService.java"/>
+    </increment>
+    <increment name="mybatistos" description="Mybatis TO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractEto.java"/>
+      <templateRef ref="PaginatedListToWrapper.java"/>
+      <templateRef ref="${variables.entityName}Eto.java"/>
+      <templateRef ref="${variables.entityName}Cto.java"/>
+      <templateRef ref="${variables.entityName}.java"/>
+      <templateRef ref="${variables.entityName}SearchCriteria.java"/>
     </increment>
     <increment name="SDlogic_impl" description="CRUD SpringData logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
