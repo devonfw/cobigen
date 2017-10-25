@@ -35,7 +35,9 @@ public class XmlMatcher implements MatcherInterpreter {
         /** Document's root name */
         NODENAME,
         /** Xpath expression group assignment */
-        XPATH
+        XPATH,
+        /** UML expression group assignment */
+        UML
     }
 
     /**
@@ -56,9 +58,10 @@ public class XmlMatcher implements MatcherInterpreter {
     public boolean matches(MatcherTo matcher) {
         try {
             MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
+            Object target = matcher.getTarget();
             switch (matcherType) {
             case NODENAME:
-                Object target = matcher.getTarget();
+
                 if (target instanceof Document) {
                     String documentRootName = ((Document) target).getDocumentElement().getNodeName();
                     // return documentRootName.equals(matcher.getValue());
@@ -68,7 +71,14 @@ public class XmlMatcher implements MatcherInterpreter {
                 break;
             case XPATH:
                 return logic.matchesXPath(matcher, LOG);
+
+            case UML:
+                if (target instanceof Document) {
+                    return ((Document) target).getDocumentElement().getNodeName().equals(matcher.getValue());
+                }
+                break;
             }
+
         } catch (IllegalArgumentException e) {
             LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
         }
@@ -94,11 +104,17 @@ public class XmlMatcher implements MatcherInterpreter {
                     case REGEX:
                         // TODO #64
                     }
+                    return resolvedVariables;
                 }
-                return resolvedVariables;
             case XPATH:
-                if (logic.resolveVariablesXPath(matcher, variableAssignments) != null) {
-                    return logic.resolveVariablesXPath(matcher, variableAssignments);
+                resolvedVariables = new HashMap<>();
+                for (VariableAssignmentTo va : variableAssignments) {
+                    VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+                    switch (variableType) {
+                    case XPATH:
+                        resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
+                    }
+                    return resolvedVariables;
                 }
             default:
                 break;
