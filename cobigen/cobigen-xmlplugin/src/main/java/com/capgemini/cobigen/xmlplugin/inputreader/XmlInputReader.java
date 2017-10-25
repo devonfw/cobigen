@@ -12,6 +12,10 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,7 +63,6 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
-
         if (input instanceof Document) {
             Document doc = (Document) input;
             if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
@@ -76,13 +79,32 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
-        if (input instanceof Document) {
-            Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
-                return true;
+
+        List<Object> list = new LinkedList<>();
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String expression = "XMI/Model/packagedElement";
+
+        NodeList nodeList = null;
+        try {
+            nodeList = (NodeList) xPath.compile(expression).evaluate(input, XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                list.add(nodeList.item(i));
             }
+        } catch (XPathExpressionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        return new LinkedList<>();
+        //
+        // if (input instanceof Document) {
+        // Document doc = (Document) input;
+        // System.out.println("Root Tag: " + doc.getFirstChild().getNodeName());
+        //
+        // if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+        // XmiClassReader xmiClassReader = new XmiClassReader();
+        // return xmiClassReader.getClassNames(doc);
+        // }
+        // }
+        return list;
     }
 
     /**
@@ -92,14 +114,7 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
-        if (input instanceof Document) {
-            Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
-                // no recursive call, needs to be adapted.
-                return getInputObjects(input, inputCharset);
-            }
-        }
-        return new LinkedList<>();
+        return getInputObjects(input, inputCharset);
     }
 
     /**

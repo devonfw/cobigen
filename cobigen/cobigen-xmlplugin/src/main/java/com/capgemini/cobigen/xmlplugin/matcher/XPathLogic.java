@@ -75,6 +75,7 @@ public class XPathLogic {
             e.printStackTrace();
 
         }
+        System.out.println(targetXpath.getClass());
         if (targetXpath instanceof Document) {
             Document document = ((Document) targetXpath);
 
