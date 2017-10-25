@@ -59,10 +59,13 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
-        /*
-         * if (input instanceof Document) { Document doc = (Document) input; if
-         * (doc.getFirstChild().getNodeName().equals("xmi:XMI")) { return true; } }
-         */
+
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -73,6 +76,12 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+                return true;
+            }
+        }
         return new LinkedList<>();
     }
 
@@ -83,6 +92,13 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+                // no recursive call, needs to be adapted.
+                return getInputObjects(input, inputCharset);
+            }
+        }
         return new LinkedList<>();
     }
 
