@@ -22,9 +22,10 @@ public class XmiClassReader {
 
     /**
      *
-     * @return a list of objects wich represent the name of every class in the given xmi.
+     * @return a list of objects which represent the name of every class in the given xmi.
      */
     List<Object> getClassNames() {
         return null;
     }
+
 }
