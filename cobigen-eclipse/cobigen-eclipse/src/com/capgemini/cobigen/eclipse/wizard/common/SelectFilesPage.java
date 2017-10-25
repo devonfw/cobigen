@@ -62,7 +62,7 @@ public class SelectFilesPage extends WizardPage {
     /** {@link TreeViewer} of the simulated generation targets */
     private CheckboxTreeViewer resourcesTree;
 
-    /** List of generation packages */
+    /** List of increments */
     private CheckboxTreeViewer incrementSelector;
 
     /** Container holding the right site of the UI, containing a label and the resources tree */
@@ -121,7 +121,7 @@ public class SelectFilesPage extends WizardPage {
         containerLeft.setLayout(new GridLayout(1, false));
 
         Label label = new Label(containerLeft, SWT.NONE);
-        label.setText("Filter (generation packages):");
+        label.setText("Filter (increments):");
 
         incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
         incrementSelector.setContentProvider(new SelectIncrementContentProvider());

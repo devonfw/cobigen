@@ -1,13 +1,12 @@
 package com.capgemini.cobigen.senchaplugin.integrationtest;
 
 import java.io.File;
-import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -15,10 +14,6 @@ import org.junit.rules.TemporaryFolder;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.impl.PluginRegistry;
-import com.capgemini.cobigen.javaplugin.JavaPluginActivator;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
-import com.capgemini.cobigen.senchaplugin.SenchaPluginActivator;
 import com.capgemini.cobigen.senchaplugin.integrationtest.testdata.ModelCreationTest;
 
 import junit.framework.AssertionFailedError;
@@ -37,26 +32,16 @@ public class SenchaIntegrationTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    /**
-     * Common test setup
-     */
-    @Before
-    public void setup() {
-        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
-    }
-
     @Test
     public void testCorrectModelGeneration() throws Exception {
-
-        PluginRegistry.loadPlugin(SenchaPluginActivator.class);
-        PluginRegistry.loadPlugin(JavaPluginActivator.class);
 
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
         Object[] input = new Object[] { ModelCreationTest.class,
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+            cobiGen.read("java",
+                Paths.get("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"),
+                Charsets.UTF_8) };
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;

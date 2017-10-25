@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,8 +24,6 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.impl.PluginRegistry;
-import com.capgemini.cobigen.xmlplugin.XmlPluginActivator;
 
 import junit.framework.AssertionFailedError;
 
@@ -52,19 +49,9 @@ public class XmlPluginIntegrationTest {
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     /**
-     * Common test setup
-     * @author fkreis (19.11.2014)
-     */
-    @BeforeClass
-    public static void setup() {
-        PluginRegistry.loadPlugin(XmlPluginActivator.class);
-    }
-
-    /**
      * Tests the xml reader integration for single attributes
      * @throws Exception
      *             test fails
-     * @author fkreis (19.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_SingleAttribute() throws Exception {
@@ -247,7 +234,6 @@ public class XmlPluginIntegrationTest {
      *            generated contents to be expected (asserted)
      * @throws Exception
      *             if anything fails.
-     * @author mbrunnli (Jan 9, 2016)
      */
     private void generateTemplateAndTestOutput(String templateId, String outputFileName, String expectedFileContents)
         throws Exception {

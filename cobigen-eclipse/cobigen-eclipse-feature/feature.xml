@@ -2,16 +2,15 @@
 <feature
       id="com.capgemini.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="2.1.1"
+      version="3.1.0.qualifier"
       provider-name="Capgemini">
 
    <description>
-      The CobiGen is an incremental generator which is able to generate at least every text-base contents using templates.
-The CobiGen is also capable of merging Java, XML and Property contents. The only necessary input is a valid compiling Java-Class.
+      The CobiGen is an incremental generator framework based on text template engines like FreeMarker or Velocity.
    </description>
 
    <copyright>
-      Copyright © Capgemini 2013-2016. All rights reserved.
+      Copyright © Capgemini 2013-2017. All rights reserved.
    </copyright>
 
    <license url="">

@@ -139,7 +139,8 @@ public class CobigenJavaWrapperTest extends SystemTest {
         IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
         IFile generationResult = proj.getFile("TestOutput.txt");
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualTo("SimpleInputSimpleInput2");
+            // we do not make any guarantees on the ordering
+            assertThat(IOUtils.toString(in)).isIn("SimpleInputSimpleInput2", "SimpleInput2SimpleInput");
         }
     }
 }

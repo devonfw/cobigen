@@ -76,7 +76,7 @@ public class Oasp4JTemplateTest {
         assertThat(result.getExecutionException()).isNull();
         assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
 
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 3 from entity_infrastructure, 4 from daos, 1 input file
@@ -106,7 +106,6 @@ public class Oasp4JTemplateTest {
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         request.setProperties(mavenProperties);
         request.setShowErrors(true);
-        request.setDebug(true);
         request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
@@ -115,7 +114,7 @@ public class Oasp4JTemplateTest {
         assertThat(result.getExecutionException()).isNull();
         assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
 
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 3 from entity_infrastructure, 4 from daos, 1 input file
@@ -151,7 +150,6 @@ public class Oasp4JTemplateTest {
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         request.setProperties(mavenProperties);
         request.setShowErrors(true);
-        request.setDebug(true);
         request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
@@ -160,11 +158,10 @@ public class Oasp4JTemplateTest {
         assertThat(result.getExecutionException()).isNull();
         assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
 
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
+        assertThat(numFilesInTarget).isEqualTo(2);
     }
 
     /**
@@ -196,7 +193,6 @@ public class Oasp4JTemplateTest {
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
         request.setProperties(mavenProperties);
         request.setShowErrors(true);
-        request.setDebug(true);
         request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
@@ -205,11 +201,10 @@ public class Oasp4JTemplateTest {
         assertThat(result.getExecutionException()).isNull();
         assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
 
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
+        assertThat(numFilesInTarget).isEqualTo(2);
     }
 
     /**
@@ -241,7 +236,7 @@ public class Oasp4JTemplateTest {
         assertThat(result.getExecutionException()).isNull();
         assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
 
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 2+2 from entity_infrastructure, 4+2 from daos, 2 input files
