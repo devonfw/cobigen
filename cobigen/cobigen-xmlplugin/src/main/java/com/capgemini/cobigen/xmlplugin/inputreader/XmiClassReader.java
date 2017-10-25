@@ -2,6 +2,10 @@ package com.capgemini.cobigen.xmlplugin.inputreader;
 
 import java.util.List;
 
+import org.w3c.dom.Document;
+
+import com.capgemini.cobigen.api.to.MatcherTo;
+
 /**
  * Extracts class names out of xmi files to generate multiple classes out of one source file.
  */
@@ -25,6 +29,14 @@ public class XmiClassReader {
      * @return a list of objects which represent the name of every class in the given xmi.
      */
     List<Object> getClassNames() {
+        return null;
+    }
+
+    Document getInput(MatcherTo matcher) {
+        Object targetXpath = matcher.getTarget();
+        if (targetXpath instanceof Document) {
+            return ((Document) targetXpath);
+        }
         return null;
     }
 
