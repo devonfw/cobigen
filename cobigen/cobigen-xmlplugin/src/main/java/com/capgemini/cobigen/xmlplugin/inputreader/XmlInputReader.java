@@ -102,7 +102,6 @@ public class XmlInputReader implements InputReader {
             }
 
             Element root = newXmlDocument.createElement("xmi:XMI");
-            String finalExpression = expression + "[" + i + "]";
 
             Node node = list.item(i);
             newXmlDocument.appendChild(root);
@@ -114,7 +113,7 @@ public class XmlInputReader implements InputReader {
         /*
          * List<Object> list = new LinkedList<>(); XPath xPath = XPathFactory.newInstance().newXPath(); String
          * expression = "XMI/Model/packagedElement";
-         * 
+         *
          * NodeList nodeList = null; try { nodeList = (NodeList) xPath.compile(expression).evaluate(input,
          * XPathConstants.NODESET); for (int i = 0; i < nodeList.getLength(); i++) {
          * list.add(nodeList.item(i)); } } catch (XPathExpressionException e) { // TODO Auto-generated catch
