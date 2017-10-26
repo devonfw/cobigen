@@ -80,20 +80,46 @@ public class XmlInputReader implements InputReader {
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
 
-        List<Object> list = new LinkedList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
-        String expression = "XMI/Model/packagedElement";
+        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        Document newXmlDocument = null;
 
-        NodeList nodeList = null;
+        NodeList list = null;
         try {
-            nodeList = (NodeList) xPath.compile(expression).evaluate(input, XPathConstants.NODESET);
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                list.add(nodeList.item(i));
-            }
-        } catch (XPathExpressionException e) {
+            list = (NodeList) xPath.evaluate(expression, input, XPathConstants.NODESET);
+        } catch (XPathExpressionException e1) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e1.printStackTrace();
         }
+
+        List<Object> docsList = new LinkedList<>();
+        for (int i = 0; i < list.getLength(); i++) {
+            try {
+                newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            } catch (ParserConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            Element root = newXmlDocument.createElement("xmi:XMI");
+            String finalExpression = expression + "[" + i + "]";
+
+            Node node = list.item(i);
+            newXmlDocument.appendChild(root);
+            Node copyNode = newXmlDocument.importNode(node, true);
+            root.appendChild(copyNode);
+            docsList.add(newXmlDocument);
+        }
+        return docsList;
+        /*
+         * List<Object> list = new LinkedList<>(); XPath xPath = XPathFactory.newInstance().newXPath(); String
+         * expression = "XMI/Model/packagedElement";
+         * 
+         * NodeList nodeList = null; try { nodeList = (NodeList) xPath.compile(expression).evaluate(input,
+         * XPathConstants.NODESET); for (int i = 0; i < nodeList.getLength(); i++) {
+         * list.add(nodeList.item(i)); } } catch (XPathExpressionException e) { // TODO Auto-generated catch
+         * block e.printStackTrace(); }
+         */
         //
         // if (input instanceof Document) {
         // Document doc = (Document) input;
@@ -104,7 +130,6 @@ public class XmlInputReader implements InputReader {
         // return xmiClassReader.getClassNames(doc);
         // }
         // }
-        return list;
     }
 
     /**
