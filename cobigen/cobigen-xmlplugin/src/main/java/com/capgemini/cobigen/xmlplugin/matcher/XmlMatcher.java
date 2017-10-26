@@ -97,6 +97,10 @@ public class XmlMatcher implements MatcherInterpreter {
             case XPATH:
                 System.out.println("la variables es xpath con value: " + va.getValue());
                 resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
+                break;
+            case CONSTANT:
+                resolvedVariables.put(va.getVarName(), va.getValue());
+                break;
             }
 
         }

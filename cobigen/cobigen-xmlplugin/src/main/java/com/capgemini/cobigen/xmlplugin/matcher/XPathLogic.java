@@ -84,10 +84,10 @@ public class XPathLogic {
 
             System.out.println("Expresion Xpath:\t" + expression);
             System.out.println("I AM IN resolveVariables");
-            System.out.println(document.hasAttributes() + " " + document.getNodeValue());
 
             try {
-                entity = (String) xPath.compile(expression).evaluate(document, XPathConstants.STRING);
+                NodeList list = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
+                entity = list.item(0).getNodeValue();
                 System.out.println("Entity resolvedVaribales: " + entity);
             } catch (XPathExpressionException e) {
                 // TODO Auto-generated catch block
