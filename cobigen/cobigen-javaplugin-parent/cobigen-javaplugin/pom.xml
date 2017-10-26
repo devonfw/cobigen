@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-javaplugin</artifactId>
   <name>CobiGen - Java Plug-in</name>
-  <version>1.6.0</version>
+  <version>1.6.1</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -15,6 +15,7 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
+    <eclipse.host.version>3.0.1</eclipse.host.version>
   </properties>
 
   <dependencies>
