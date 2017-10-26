@@ -443,8 +443,18 @@ public class JavaInputReader implements InputReader {
                         return firstJavaClass;
                     } else {
                         JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
-                        LOG.debug("Read {}.", firstJavaClass);
-                        return firstJavaClass;
+                        try {
+                            clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
+                        } catch (ClassNotFoundException e) {
+                            // ignore
+	                        LOG.debug("Read {}.", firstJavaClass);
+                            return firstJavaClass;
+                        }
+						Object[] result = new Object[] { firstJavaClass, clazz };
+						if(LOG.isDebugEnabled()) {
+	                        LOG.debug("Read {}.", Arrays.toString(result));
+						}
+                        return result;
                     }
                 } else {
                     Object[] result = new Object[] { null, clazz };

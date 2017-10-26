@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
 
   <parent>

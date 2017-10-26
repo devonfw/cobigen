@@ -400,7 +400,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
             }
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
-            return isMergableFile(templates);
+            if (templates != null) {
+                return isMergableFile(templates);
+            }
         }
         return false;
     }
