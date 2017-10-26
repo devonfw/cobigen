@@ -34,7 +34,7 @@ public class XmlMatcher implements MatcherInterpreter {
         /** Document's root name */
         NODENAME,
         /** Xpath expression group assignment */
-        COSA, UML
+        DOCUMENT, UML
     }
 
     /**
@@ -66,13 +66,13 @@ public class XmlMatcher implements MatcherInterpreter {
                         && matcher.getValue().matches(documentRootName);
                 }
                 break;
-            case COSA:
-                System.out.println("el matcher " + matcher.getTarget().getClass().getSimpleName());
+            case DOCUMENT:
+                System.out.println("The matcher " + matcher.getTarget().getClass().getSimpleName());
                 return matcher.getTarget().getClass().getSimpleName().toLowerCase()
                     .equals(matcher.getValue().toLowerCase());
 
             case UML:
-                System.out.println("el container " + ((Document) target).getDocumentElement().getNodeName());
+                System.out.println("The container " + ((Document) target).getDocumentElement().getNodeName());
                 if (target instanceof Document) {
                     return ((Document) target).getDocumentElement().getNodeName().equals(matcher.getValue());
                 }
@@ -89,13 +89,13 @@ public class XmlMatcher implements MatcherInterpreter {
     public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
         throws InvalidConfigurationException {
 
-        System.out.println("llegas aki");
+        System.out.println("Gets to this point");
         Map<String, String> resolvedVariables = new HashMap<>();
         for (VariableAssignmentTo va : variableAssignments) {
             VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
             switch (variableType) {
             case XPATH:
-                System.out.println("la variables es xpath con value: " + va.getValue());
+                System.out.println("The variable is Xpath with value: " + va.getValue());
                 resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
                 break;
             case CONSTANT:
