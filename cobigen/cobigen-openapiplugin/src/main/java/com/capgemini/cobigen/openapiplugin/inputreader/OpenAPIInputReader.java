@@ -154,64 +154,61 @@ public class OpenAPIInputReader implements InputReader {
      */
     private List<RelationShip> getRealtionShips(OpenApi3 openApi, String key) {
         List<RelationShip> relationShips = new LinkedList<>();
+        boolean sameComponent;
         for (String relationship : openApi.getSchema(key).getExtensions().keySet()) {
-            if (relationship.contains(Constants.ONE_TO_ONE) || relationship.contains(Constants.MANY_TO_ONE)
-                || relationship.contains(Constants.ONE_TO_MANY) || relationship.contains(Constants.MANY_TO_MANY)) {
-                // if (openApi.getSchema(key).getExtension(Constants.COMPONENT_EXT).toString()
-                // .equals(openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
-                // .getExtension(Constants.COMPONENT_EXT).toString())) {
+            sameComponent = false;
+            if (relationship.equals(Constants.ONE_TO_ONE) || relationship.equals(Constants.MANY_TO_ONE)
+                || relationship.equals(Constants.ONE_TO_MANY) || relationship.equals(Constants.MANY_TO_MANY)) {
+                if (openApi.getSchema(key).getExtension(Constants.COMPONENT_EXT)
+                    .equals(openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.COMPONENT_EXT))) {
+                    sameComponent = true;
+                }
                 if (relationship.equals(Constants.MANY_TO_ONE)) {
-                    if (openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
                         .getExtension(Constants.ONE_TO_MANY) != null
-                        && openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
-                            .getExtension(Constants.ONE_TO_MANY).toString().equals(key)) {
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.ONE_TO_MANY).equals(key)) {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, true));
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
                     } else {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, false));
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
                     }
                 } else if (relationship.equals(Constants.ONE_TO_MANY)) {
-                    if (openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
                         .getExtension(Constants.MANY_TO_ONE) != null
-                        && openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
-                            .getExtension(Constants.MANY_TO_ONE).toString().equals(key)) {
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.MANY_TO_ONE).equals(key)) {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, true));
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
                     } else {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, false));
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
                     }
                 } else if (relationship.equals(Constants.ONE_TO_ONE)) {
-                    System.out.println(openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString()));
-                    if (openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
                         .getExtension(Constants.ONE_TO_ONE) != null
-                        && openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
-                            .getExtension(Constants.ONE_TO_ONE).toString().equals(key)) {
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.ONE_TO_ONE).equals(key)) {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, true));
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
                     } else {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, false));
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
                     }
                 } else {
-                    System.out.println(openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString()));
-                    if (openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
                         .getExtension(Constants.MANY_TO_MANY) != null
-                        && openApi.getSchema(openApi.getSchema(key).getExtension(relationship).toString())
-                            .getExtension(Constants.MANY_TO_MANY).toString().equals(key)) {
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.MANY_TO_MANY).equals(key)) {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, true));
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
                     } else {
                         relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), true, false));
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
                     }
                 }
-                // } else {
-                // System.out.println("aki q entra");
-                // relationShips.add(new RelationShip(relationship.substring(2),
-                // openApi.getSchema(key).getExtension(relationship).toString()));
-                // }
             }
         }
         return relationShips;
