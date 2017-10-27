@@ -80,19 +80,23 @@ public class XmlInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
 
         XPath xPath = XPathFactory.newInstance().newXPath();
-        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        NodeList nodeList = null;
+        NodeList packList = null;
         Document newXmlDocument = null;
 
-        NodeList list = null;
+        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        String pack = "XMI/Model/packagedElement[@type='uml:Package']";
+
         try {
-            list = (NodeList) xPath.evaluate(expression, input, XPathConstants.NODESET);
+            nodeList = (NodeList) xPath.evaluate(expression, input, XPathConstants.NODESET);
+            packList = (NodeList) xPath.evaluate(pack, input, XPathConstants.NODESET);
         } catch (XPathExpressionException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
         List<Object> docsList = new LinkedList<>();
-        for (int i = 0; i < list.getLength(); i++) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
             try {
                 newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             } catch (ParserConfigurationException e) {
@@ -101,12 +105,17 @@ public class XmlInputReader implements InputReader {
             }
 
             Element root = newXmlDocument.createElement("xmi:XMI");
-
-            Node node = list.item(i);
             newXmlDocument.appendChild(root);
-            Node copyNode = newXmlDocument.importNode(node, true);
+
+            Node node = packList.item(0);
+            Node copyNode = newXmlDocument.importNode(node, false);
             root.appendChild(copyNode);
+
+            Node node2 = nodeList.item(i);
+            Node copyNode2 = newXmlDocument.importNode(node2, true);
+            root.appendChild(copyNode2);
             docsList.add(newXmlDocument);
+
         }
         return docsList;
     }

@@ -83,8 +83,9 @@ public class App {
         }
         printXmlDocument((Document) docsList.get(0));
 
-        nodeList = (NodeList) xPath.evaluate("XMI/packagedElement/@name", docsList.get(1), XPathConstants.NODESET);
-        // System.out.println("Result: " + nodeList.item(0).getNodeValue());
+        nodeList = (NodeList) xPath.evaluate("XMI/packagedElement/packagedElement/@name", docsList.get(0),
+            XPathConstants.NODESET);
+        System.out.println("Result: " + nodeList.item(0).getNodeValue());
 
         /*
          * System.out.println("Expresion Xpath:\t" + expression); NodeList nodeList = (NodeList)
