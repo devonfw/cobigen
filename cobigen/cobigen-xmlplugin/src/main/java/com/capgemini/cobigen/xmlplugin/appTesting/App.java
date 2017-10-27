@@ -44,8 +44,8 @@ public class App {
 
         try {
             document = builder.parse(new FileInputStream(
-                "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
-            // "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
+                // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
+                "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
