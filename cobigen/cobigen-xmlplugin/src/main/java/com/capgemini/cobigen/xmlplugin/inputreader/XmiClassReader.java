@@ -1,15 +1,21 @@
 package com.capgemini.cobigen.xmlplugin.inputreader;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.api.to.MatcherTo;
@@ -55,6 +61,40 @@ public class XmiClassReader {
         }
         // combine xpath with input
         return classesNames;
+    }
+
+    public List<Object> getInputObjects(Object input, Charset inputCharset) {
+
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        Document newXmlDocument = null;
+
+        NodeList list = null;
+        try {
+            list = (NodeList) xPath.evaluate(expression, input, XPathConstants.NODESET);
+        } catch (XPathExpressionException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        List<Object> docsList = new LinkedList<>();
+        for (int i = 0; i < list.getLength(); i++) {
+            try {
+                newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            } catch (ParserConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            Element root = newXmlDocument.createElement("xmi:XMI");
+
+            Node node = list.item(i);
+            newXmlDocument.appendChild(root);
+            Node copyNode = newXmlDocument.importNode(node, true);
+            root.appendChild(copyNode);
+            docsList.add(newXmlDocument);
+        }
+        return docsList;
     }
 
     Document getInput(MatcherTo matcher) {
