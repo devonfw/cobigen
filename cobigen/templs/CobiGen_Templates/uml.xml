@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" xmi:id="EAPK_519F94A0_25E5_4650_B4B5_3772FAB9501D" name="Logical View" visibility="public">
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_22B1BBEF_796F_44fc_82F1_FDE885553FDF" name="Bill" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_691B324B_82DE_4b3c_9CE7_746AA8C3BC97" name="id" visibility="private" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LI000001_82DE_4b3c_9CE7_746AA8C3BC97" value="1"/>
+					<upperValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LI000002_82DE_4b3c_9CE7_746AA8C3BC97" value="1"/>
+					<type xmi:idref="EAJava_int"/>
+				</ownedAttribute>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+</xmi:XMI>
