@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -44,8 +45,8 @@ public class App {
 
         try {
             document = builder.parse(new FileInputStream(
-                "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
-
+                // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
+                "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -54,11 +55,13 @@ public class App {
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        String pack = "XMI/Model/packagedElement[@type='uml:Package']";
 
-        NodeList list = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
+        NodeList nodeList = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
+        NodeList packList = (NodeList) xPath.evaluate(pack, document, XPathConstants.NODESET);
 
         List<Object> docsList = new LinkedList<>();
-        for (int i = 0; i < list.getLength(); i++) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
             try {
                 newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             } catch (ParserConfigurationException e) {
@@ -67,17 +70,28 @@ public class App {
             }
 
             Element root = newXmlDocument.createElement("xmi:XMI");
-
-            Node node = list.item(i);
             newXmlDocument.appendChild(root);
-            Node copyNode = newXmlDocument.importNode(node, true);
+
+            Node nodePack = packList.item(0);
+            NamedNodeMap newNode = nodePack.getAttributes();
+
+            System.out.println(newNode.item(0).getNodeName());
+            System.out.println(newNode.item(0).getNodeValue());
+            // out: "api"
+            // newXmlDocument.add(new Element(getNodeName()), ?)
+
+            Node copyNode = newXmlDocument.importNode(nodePack, true);
+            root.appendChild(copyNode);
+
+            Node node = nodeList.item(i);
+            copyNode = newXmlDocument.importNode(node, true);
             root.appendChild(copyNode);
             docsList.add(newXmlDocument);
         }
-        printXmlDocument((Document) docsList.get(3));
+        printXmlDocument((Document) docsList.get(0));
 
-        list = (NodeList) xPath.evaluate("XMI/packagedElement/@name", docsList.get(1), XPathConstants.NODESET);
-        System.out.println("Result: " + list.item(0).getNodeValue());
+        nodeList = (NodeList) xPath.evaluate("XMI/packagedElement/@name", docsList.get(1), XPathConstants.NODESET);
+        System.out.println("Result: " + nodeList.item(0).getNodeValue());
 
         /*
          * System.out.println("Expresion Xpath:\t" + expression); NodeList nodeList = (NodeList)
