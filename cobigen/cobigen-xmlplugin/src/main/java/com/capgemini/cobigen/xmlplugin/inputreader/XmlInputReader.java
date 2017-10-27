@@ -58,8 +58,7 @@ public class XmlInputReader implements InputReader {
 
     /**
      * {@inheritDoc}.<br>
-     * Since the {@link XmlInputReader} does not support multiple input objects it always returns
-     * <code>false</code>.
+     * Returns <code>true</code> if the input is an XMI Document, otherwise returns <code>false</code>.
      */
     @Override
     public boolean combinesMultipleInputObjects(Object input) {
@@ -74,8 +73,8 @@ public class XmlInputReader implements InputReader {
 
     /**
      * {@inheritDoc}<br>
-     * Since the {@link XmlInputReader} does not support multiple input objects it always returns an empty
-     * {@link List}.
+     * Splits an XMI Document into multiple sub-documents, one per each found class. Returns a {@link List} of
+     * DocumentImpl.
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
@@ -110,25 +109,6 @@ public class XmlInputReader implements InputReader {
             docsList.add(newXmlDocument);
         }
         return docsList;
-        /*
-         * List<Object> list = new LinkedList<>(); XPath xPath = XPathFactory.newInstance().newXPath(); String
-         * expression = "XMI/Model/packagedElement";
-         *
-         * NodeList nodeList = null; try { nodeList = (NodeList) xPath.compile(expression).evaluate(input,
-         * XPathConstants.NODESET); for (int i = 0; i < nodeList.getLength(); i++) {
-         * list.add(nodeList.item(i)); } } catch (XPathExpressionException e) { // TODO Auto-generated catch
-         * block e.printStackTrace(); }
-         */
-        //
-        // if (input instanceof Document) {
-        // Document doc = (Document) input;
-        // System.out.println("Root Tag: " + doc.getFirstChild().getNodeName());
-        //
-        // if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
-        // XmiClassReader xmiClassReader = new XmiClassReader();
-        // return xmiClassReader.getClassNames(doc);
-        // }
-        // }
     }
 
     /**
