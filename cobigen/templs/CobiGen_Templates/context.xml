@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+    <trigger id="uml_test" type="xml" templateFolder="uml_test">
+        <containerMatcher type="uml" value="xmi:XMI"/>
+        <matcher type="document" value="DocumentImpl">
+        	<variableAssignment type="xpath" key="className" value="XMI/packagedElement/@name"/>
+        </matcher>
+    </trigger>
+</contextConfiguration>
