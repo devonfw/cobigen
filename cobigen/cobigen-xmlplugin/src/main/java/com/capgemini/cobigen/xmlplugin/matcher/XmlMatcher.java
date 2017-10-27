@@ -33,8 +33,10 @@ public class XmlMatcher implements MatcherInterpreter {
     private enum MatcherType {
         /** Document's root name */
         NODENAME,
-        /** Xpath expression group assignment */
-        DOCUMENT, UML
+        /** Should match if input is a Document */
+        DOCUMENT,
+        /** Container matcher for UML diagrams */
+        UML
     }
 
     /**
@@ -67,12 +69,9 @@ public class XmlMatcher implements MatcherInterpreter {
                 }
                 break;
             case DOCUMENT:
-                System.out.println("The matcher " + matcher.getTarget().getClass().getSimpleName());
                 return matcher.getTarget().getClass().getSimpleName().toLowerCase()
                     .equals(matcher.getValue().toLowerCase());
-
             case UML:
-                System.out.println("The container " + ((Document) target).getDocumentElement().getNodeName());
                 if (target instanceof Document) {
                     return ((Document) target).getDocumentElement().getNodeName().equals(matcher.getValue());
                 }
@@ -89,13 +88,31 @@ public class XmlMatcher implements MatcherInterpreter {
     public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
         throws InvalidConfigurationException {
 
-        System.out.println("Gets to this point");
         Map<String, String> resolvedVariables = new HashMap<>();
+        try {
+            MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
+            switch (matcherType) {
+            case NODENAME:
+                for (VariableAssignmentTo va : variableAssignments) {
+                    VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+                    switch (variableType) {
+                    case CONSTANT:
+                        resolvedVariables.put(va.getVarName(), va.getValue());
+                        return resolvedVariables;
+                    case REGEX:
+                        // TODO #64
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Matcher type '{}' not registered --> no match!", matcher.getType());
+        }
+
+        // In case of being an XMI document
         for (VariableAssignmentTo va : variableAssignments) {
             VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
             switch (variableType) {
             case XPATH:
-                System.out.println("The variable is Xpath with value: " + va.getValue());
                 resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
                 break;
             case CONSTANT:
@@ -105,40 +122,6 @@ public class XmlMatcher implements MatcherInterpreter {
 
         }
         return resolvedVariables;
-        // try {
-        // MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
-        // Map<String, String> resolvedVariables;
-        // switch (matcherType) {
-        // case NODENAME:
-        // resolvedVariables = new HashMap<>();
-        // for (VariableAssignmentTo va : variableAssignments) {
-        // VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
-        // switch (variableType) {
-        // case CONSTANT:
-        // resolvedVariables.put(va.getVarName(), va.getValue());
-        // break;
-        // case REGEX:
-        // // TODO #64
-        // }
-        // return resolvedVariables;
-        // }
-        // case XPATH:
-        // resolvedVariables = new HashMap<>();
-        // for (VariableAssignmentTo va : variableAssignments) {
-        // VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
-        // switch (variableType) {
-        // case XPATH:
-        // resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
-        // }
-        // return resolvedVariables;
-        // }
-        // default:
-        // break;
-        // }
-        // } catch (IllegalArgumentException e) {
-        // LOG.warn("Matcher type '{}' not registered --> no match!", matcher.getType());
-        // }
-        // return Maps.newHashMap();
     }
 
 }
