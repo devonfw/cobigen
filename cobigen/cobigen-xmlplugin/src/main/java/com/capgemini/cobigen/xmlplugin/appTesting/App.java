@@ -15,7 +15,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -72,21 +71,26 @@ public class App {
             Element root = newXmlDocument.createElement("xmi:XMI");
             newXmlDocument.appendChild(root);
 
-            Node nodePack = packList.item(0);
-            NamedNodeMap newNode = nodePack.getAttributes();
+            // Node nodePack = packList.item(0).getAttributes().getNamedItem("name");
 
-            System.out.println(newNode.item(0).getNodeName());
-            System.out.println(newNode.item(0).getNodeValue());
+            // System.out.println(nodePack.getAttributes().getNamedItem("name"));
             // out: "api"
             // newXmlDocument.add(new Element(getNodeName()), ?)
 
-            Node copyNode = newXmlDocument.importNode(nodePack, true);
-            root.appendChild(copyNode);
+            // Node nodePack = packList.item(i);
+            // Node copyNode = newXmlDocument.importNode(nodePack, false);
+            // root.appendChild(copyNode);
 
-            Node node = nodeList.item(i);
+            Node node = packList.item(0);
+            Node copyNode = newXmlDocument.importNode(node, false);
+            root.appendChild(copyNode);
+            docsList.add(newXmlDocument);
+
+            node = nodeList.item(i);
             copyNode = newXmlDocument.importNode(node, true);
             root.appendChild(copyNode);
             docsList.add(newXmlDocument);
+
         }
         printXmlDocument((Document) docsList.get(0));
 
