@@ -113,7 +113,7 @@ public class XmlInputReader implements InputReader {
 
             Node node2 = nodeList.item(i);
             Node copyNode2 = newXmlDocument.importNode(node2, true);
-            root.appendChild(copyNode2);
+            copyNode.appendChild(copyNode2);
             docsList.add(newXmlDocument);
 
         }

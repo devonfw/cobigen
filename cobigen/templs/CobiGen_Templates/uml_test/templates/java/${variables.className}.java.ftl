@@ -1,4 +1,4 @@
-package umlTest;
+package ${variables.package?replace(' ', '')};
 
 <#assign root = doc["XMI/Model/packagedElement/packagedElement[@name='${variables.className}']"]>
 

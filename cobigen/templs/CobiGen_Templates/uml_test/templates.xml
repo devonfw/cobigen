@@ -7,7 +7,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates/java" destinationPath="src/main/java/umlTest"/>
+    <templateScan templatePath="templates/java" destinationPath="src/main/java/${variables.package?replace(' ', '')}"/>
   </templateScans>
 
   <increments>

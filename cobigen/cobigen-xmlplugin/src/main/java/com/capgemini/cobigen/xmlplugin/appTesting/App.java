@@ -44,7 +44,7 @@ public class App {
 
         try {
             document = builder.parse(new FileInputStream(
-                // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
+                // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\uml.xml"));
                 "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
         } catch (SAXException e) {
             e.printStackTrace();
@@ -71,13 +71,14 @@ public class App {
             Element root = newXmlDocument.createElement("xmi:XMI");
             newXmlDocument.appendChild(root);
 
+            // TODO: Is this going to work for multiple packages??
             Node node = packList.item(0);
             Node copyNode = newXmlDocument.importNode(node, false);
             root.appendChild(copyNode);
 
             Node node2 = nodeList.item(i);
             Node copyNode2 = newXmlDocument.importNode(node2, true);
-            root.appendChild(copyNode2);
+            copyNode.appendChild(copyNode2);
             docsList.add(newXmlDocument);
 
         }
