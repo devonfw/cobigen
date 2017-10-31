@@ -57,7 +57,8 @@ public class XPathLogic {
 
             try {
                 NodeList list = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
-                entity = list.item(1).getNodeValue(); // 1 because the class name is on the second tag
+                // TODO: Is this going to work for every case?
+                entity = list.item(0).getNodeValue();
             } catch (XPathExpressionException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
