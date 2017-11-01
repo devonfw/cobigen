@@ -43,6 +43,7 @@ public class App {
      * @throws XPathExpressionException
      *             indicates an error of the XPath
      */
+    @SuppressWarnings("null")
     public static void main(String[] args) throws XPathExpressionException {
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
