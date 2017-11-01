@@ -2,6 +2,10 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import com.capgemini.devonfw.module.mybatis.common.SearchCriteria;
+import java.sql.Timestamp;
+import java.sql.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This is the {@link SearchCriteria search criteria} 

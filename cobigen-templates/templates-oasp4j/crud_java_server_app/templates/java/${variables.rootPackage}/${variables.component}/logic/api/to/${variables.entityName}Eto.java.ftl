@@ -6,6 +6,9 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.en
 
 import java.util.List;
 import java.util.Set;
+import java.sql.Timestamp;
+import java.sql.Date;
+
 
 /**
  * Entity transport object of ${variables.entityName}
