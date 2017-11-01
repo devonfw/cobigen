@@ -27,10 +27,22 @@ import org.xml.sax.SAXException;
  */
 public class App {
 
+    /**
+     *
+     */
     private static Document document;
 
+    /**
+     *
+     */
     private static Document newXmlDocument;
 
+    /**
+     * @param args
+     *            unused
+     * @throws XPathExpressionException
+     *             indicates an error of the XPath
+     */
     public static void main(String[] args) throws XPathExpressionException {
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -45,7 +57,8 @@ public class App {
         try {
             document = builder.parse(new FileInputStream(
                 // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\uml.xml"));
-                "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
+                // "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
+                "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\classDiagramExample.xml"));
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -53,51 +66,79 @@ public class App {
         }
 
         XPath xPath = XPathFactory.newInstance().newXPath();
-        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
         String pack = "XMI/Model/packagedElement[@type='uml:Package']";
 
-        NodeList nodeList = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
+        // NodeList nodeList = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
         NodeList packList = (NodeList) xPath.evaluate(pack, document, XPathConstants.NODESET);
 
         List<Object> docsList = new LinkedList<>();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            try {
-                newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            } catch (ParserConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
-            Element root = newXmlDocument.createElement("xmi:XMI");
-            newXmlDocument.appendChild(root);
-
-            // TODO: Is this going to work for multiple packages??
-            Node node = packList.item(0);
-            Node copyNode = newXmlDocument.importNode(node, false);
-            root.appendChild(copyNode);
-
-            Node node2 = nodeList.item(i);
-            Node copyNode2 = newXmlDocument.importNode(node2, true);
-            copyNode.appendChild(copyNode2);
-            docsList.add(newXmlDocument);
-
+        docsList = recursiveExtractor(docsList, packList, "");
+        // output for testing purposes
+        System.out.println("--genereated " + docsList.size() + " new documents--");
+        for (Object d : docsList) {
+            System.out.println(" s");
+            printXmlDocument((Document) d);
         }
-        printXmlDocument((Document) docsList.get(0));
+    }
 
-        nodeList = (NodeList) xPath.evaluate("XMI/packagedElement/packagedElement/@name", docsList.get(0),
-            XPathConstants.NODESET);
-        System.out.println("Result: " + nodeList.item(0).getNodeValue());
+    /**
+     * This recursive function extracts classes and paths out of a xml file and generates for every class a
+     * new xmi file.
+     *
+     * The first call should use an empty path, an empty docList and the whole document as the NodeList If
+     * necessary the packages can be manipulated by providing a pre-package through the path.
+     *
+     * @param docList
+     *            contains every new generated xmi file consisting of only one class and package annotation
+     * @param nl
+     *            the list of nodes to work with in this recursion.
+     * @param path
+     *            provides the package for every new recursive call
+     * @return a list of objects (new xmi files)
+     */
+    private static List<Object> recursiveExtractor(List<Object> docList, NodeList nl, String path) {
 
-        /*
-         * System.out.println("Expresion Xpath:\t" + expression); NodeList nodeList = (NodeList)
-         * xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
-         * System.out.println(nodeList.getLength()); for (int i = 0; i < nodeList.getLength(); i++) {
-         * System.out.println(nodeList.item(i)); expression = "packagedElement[@type='uml:Class']/@name";
-         * NodeList nodeList2 = (NodeList) xPath.compile(expression).evaluate(nodeList.item(i),
-         * XPathConstants.NODESET); for (int j = 0; j < nodeList2.getLength(); j++) {
-         * System.out.println(nodeList2.item(j)); } }
-         */
+        for (int i = 0; i < nl.getLength(); i++) {
+            // not sure if this statement will cause some errors in the future; which items have attributes?
+            if (nl.item(i).hasAttributes()) {
+                if (nl.item(i).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Package")) {
+                    recursiveExtractor(docList, nl.item(i).getChildNodes(),
+                        path + "." + nl.item(i).getAttributes().getNamedItem("name").getTextContent());
+                } else if (nl.item(i).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Class")) {
+                    docList.add(generateNewClass(nl.item(i), path));
+                }
+            }
+        }
+        // System.out.println("-------recursive-anchor--------");
+        return docList;
+    }
 
+    /**
+     * Generates a new xmi file for any given class node and package.
+     *
+     * @param n
+     *            This node needs to represent an class. It will be the source for the new xml file
+     * @param pack
+     *            The package of the class.
+     * @return A document which represents one class.
+     */
+    private static Object generateNewClass(Node n, String pack) {
+        try {
+            newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Element pa = newXmlDocument.createElement("package");
+        pa.setAttribute("name", pack);
+        Element root = newXmlDocument.createElement("xmi:XMI");
+        newXmlDocument.appendChild(root);
+        Node copyNode = newXmlDocument.importNode(n, false);
+        root.appendChild(pa);
+        pa.appendChild(copyNode);
+        return newXmlDocument;
     }
 
     public static void printXmlDocument(Document document) {
