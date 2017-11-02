@@ -1,0 +1,100 @@
+package com.capgemini.cobigen.test.assertj;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.assertj.core.api.AbstractAssert;
+import org.custommonkey.xmlunit.XMLTestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+
+import com.capgemini.cobigen.api.constants.ConfigurationConstants;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
+import com.capgemini.cobigen.api.to.HealthCheckReport;
+
+/**
+ * AssertJ assertion for {@link GenerationReportTo}.
+ */
+public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAssert, HealthCheckReport> {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckReportAssert.class);
+
+    /**
+     * The constructor.
+     * @param actual
+     *            {@link HealthCheckReport} to be asserted
+     */
+    public HealthCheckReportAssert(HealthCheckReport actual) {
+        super(actual, HealthCheckReportAssert.class);
+    }
+
+    /**
+     * Checks whether the {@link GenerationReportTo} reports a successful generation. In case of a
+     * non-successful generation report, warnings and errors will be reported in the assertion error message.
+     * @return the {@link HealthCheckReportAssert}
+     */
+
+    public HealthCheckReportAssert isSuccessful() {
+        try {
+            assertThat(actual.getErrorMessages()).overridingErrorMessage(
+                "Upgrade was not successfull. Error Messages: %s // Please see the printed stack traces in the LOG.",
+                actual.getErrorMessages()).isEmpty();
+            assertThat(actual.getErrors()).overridingErrorMessage(
+                "Upgrade was not successfull. Error Messages: %s // Errors: %s. Please see the printed stack traces in the LOG.",
+                actual.getErrorMessages(), actual.getErrors()).isEmpty();
+        } catch (AssertionError e) {
+            for (Throwable entry : actual.getErrors()) {
+                LOG.error(entry.getMessage(), entry);
+            }
+            throw e;
+        }
+        return this;
+    }
+
+    /**
+     * Return the version of the document given.
+     * @param configRoot
+     *            root directory of the configuration
+     * @return
+     * @throws Exception
+     */
+    public HealthCheckReportAssert isOfConextVersion(Path configRoot, String version) throws Exception {
+
+        Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = factory.newDocumentBuilder();
+        Document doc = db.parse(Files.newInputStream(contextFile));
+
+        new XMLTestCase() {
+        }.assertXpathEvaluatesTo(version, "/contextConfiguration/@version", doc);
+
+        return this;
+    }
+
+    /**
+     * Return the version of the document given.
+     * @param configRoot
+     *            root directory of the configuration
+     * @return
+     * @throws Exception
+     */
+    public HealthCheckReportAssert isOfTemplatesVersion(Path configRoot, String version) throws Exception {
+
+        Path templateFile = configRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = factory.newDocumentBuilder();
+        Document doc = db.parse(Files.newInputStream(templateFile));
+
+        new XMLTestCase() {
+        }.assertXpathEvaluatesTo(version, "/templatesConfiguration/@version", doc);
+
+        return this;
+    }
+}
