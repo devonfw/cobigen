@@ -1,4 +1,4 @@
-package ${variables.package?replace(' ', '')};
+package ${variables.component?replace(' ', '')};
 
 <#assign root = doc["XMI/Model/packagedElement/packagedElement[@name='${variables.className}']"]>
 

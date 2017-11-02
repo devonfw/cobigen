@@ -80,43 +80,20 @@ public class XmlInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
 
         XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList nodeList = null;
-        NodeList packList = null;
-        Document newXmlDocument = null;
-
-        String expression = "XMI/Model/packagedElement/packagedElement[@type='uml:Class']";
+        XmiSplitter splitter = new XmiSplitter();
         String pack = "XMI/Model/packagedElement[@type='uml:Package']";
 
+        NodeList packList = null;
         try {
-            nodeList = (NodeList) xPath.evaluate(expression, input, XPathConstants.NODESET);
             packList = (NodeList) xPath.evaluate(pack, input, XPathConstants.NODESET);
-        } catch (XPathExpressionException e1) {
+        } catch (XPathExpressionException e) {
             // TODO Auto-generated catch block
-            e1.printStackTrace();
+            e.printStackTrace();
         }
 
         List<Object> docsList = new LinkedList<>();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            try {
-                newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            } catch (ParserConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
-            Element root = newXmlDocument.createElement("xmi:XMI");
-            newXmlDocument.appendChild(root);
-
-            Node node = packList.item(0);
-            Node copyNode = newXmlDocument.importNode(node, false);
-            root.appendChild(copyNode);
-
-            Node node2 = nodeList.item(i);
-            Node copyNode2 = newXmlDocument.importNode(node2, true);
-            copyNode.appendChild(copyNode2);
-            docsList.add(newXmlDocument);
-
-        }
+        docsList = splitter.recursiveExtractor(docsList, packList, "");
         return docsList;
     }
 

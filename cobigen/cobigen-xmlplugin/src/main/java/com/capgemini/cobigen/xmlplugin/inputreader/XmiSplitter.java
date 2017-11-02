@@ -1,88 +1,31 @@
-package com.capgemini.cobigen.xmlplugin.appTesting;
+package com.capgemini.cobigen.xmlplugin.inputreader;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.SAXException;
 
 /**
- * Hello world!
+ * Splits an XMI document into subdocuments, one per class found.
  *
  */
-public class App {
+
+public class XmiSplitter {
 
     /**
-     *
-     */
+    *
+    */
     private static Document document;
 
     /**
-     *
-     */
+    *
+    */
     private static Document newXmlDocument;
-
-    /**
-     * @param args
-     *            unused
-     * @throws XPathExpressionException
-     *             indicates an error of the XPath
-     */
-    @SuppressWarnings("null")
-    public static void main(String[] args) throws XPathExpressionException {
-
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        try {
-            builder = builderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-
-        }
-
-        try {
-            String currentDirectory = System.getProperty("user.dir");
-            document = builder.parse(new FileInputStream(currentDirectory
-                + "\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\classDiagramExample.xml"));
-            // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
-            // "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        String pack = "XMI/Model/packagedElement[@type='uml:Package']";
-
-        // NodeList nodeList = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
-        NodeList packList = (NodeList) xPath.evaluate(pack, document, XPathConstants.NODESET);
-
-        List<Object> docsList = new LinkedList<>();
-
-        docsList = recursiveExtractor(docsList, packList, "");
-        // output for testing purposes
-        System.out.println("--generated " + docsList.size() + " new documents--");
-        for (Object d : docsList) {
-            System.out.println(" s");
-            printXmlDocument((Document) d);
-        }
-    }
 
     /**
      * This recursive function extracts classes and paths out of a xml file and generates for every class a
@@ -99,7 +42,7 @@ public class App {
      *            provides the package for every new recursive call
      * @return a list of objects (new xmi files)
      */
-    private static List<Object> recursiveExtractor(List<Object> docList, NodeList nl, String path) {
+    public List<Object> recursiveExtractor(List<Object> docList, NodeList nl, String path) {
 
         for (int i = 0; i < nl.getLength(); i++) {
             // not sure if this statement will cause some errors in the future; which items have attributes?
@@ -144,10 +87,4 @@ public class App {
         return newXmlDocument;
     }
 
-    public static void printXmlDocument(Document document) {
-        DOMImplementationLS domImplementationLS = (DOMImplementationLS) document.getImplementation();
-        LSSerializer lsSerializer = domImplementationLS.createLSSerializer();
-        String string = lsSerializer.writeToString(document);
-        System.out.println(string);
-    }
 }
