@@ -8,7 +8,7 @@
         <if test ="searchCriteria != null">
         <where>
         <#list pojo.fields as field>
-        <#if !field.name?contains("modificationCounter")>
+        <#if (field.type!='boolean' &&  field.type!='int' &&  field.type!='long' &&  field.type!='float' &&  field.type!='double' && field.type!='short')>
             <if test="searchCriteria.${field.name} != null">
                and ${field.name} = ${r"#{"}searchCriteria.${field.name}}
             </if>
