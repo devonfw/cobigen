@@ -191,7 +191,7 @@ public class App {
 
                     if (n.hasAttributes()) {
                         TreeMap<String, String> map = new TreeMap<>();
-                        Element newAttribute = newXmlDocument.createElement("Attribute");
+                        Element newAttribute = newXmlDocument.createElement("attribute");
                         for (int l = 0; l < n.getAttributes().getLength(); l++) {
                             // System.out.println(n.getAttributes().item(l));
                             // System.out.println(n.getAttributes().item(l).getNodeName());
@@ -223,9 +223,36 @@ public class App {
                     }
                 }
                 if (loc.item(i).getNodeName().equals("ownedOperation")) {
-                    // System.out.println(
-                    // no.getAttributes().getNamedItem("name").getTextContent() + " has Operation:
-                    // ownedOperation ");
+                    Node n = loc.item(i);
+
+                    if (n.hasAttributes()) {
+                        TreeMap<String, String> map = new TreeMap<>();
+                        Element newOperation = newXmlDocument.createElement("operation");
+                        for (int l = 0; l < n.getAttributes().getLength(); l++) {
+                            // System.out.println(n.getAttributes().item(l));
+                            // System.out.println(n.getAttributes().item(l).getNodeName());
+                            // System.out.println(n.getAttributes().item(l).getTextContent());
+
+                            // TODO .equals -> isMemberOf(ListOfAttributes)
+                            if (n.getAttributes().item(l).getNodeName().equals("visibility")) {
+                                map.put(n.getAttributes().item(l).getNodeName(),
+                                    n.getAttributes().item(l).getTextContent());
+                            }
+                            if (n.getAttributes().item(l).getNodeName().equals("name")) {
+                                map.put(n.getAttributes().item(l).getNodeName(),
+                                    n.getAttributes().item(l).getTextContent());
+                            }
+
+                            if (!map.isEmpty()) {
+                                while (!map.isEmpty()) {
+                                    newOperation.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
+                                    map.remove(map.firstEntry().getKey());
+                                }
+                            }
+
+                        }
+                        returnList.add(newOperation);
+                    }
                 }
             }
 
