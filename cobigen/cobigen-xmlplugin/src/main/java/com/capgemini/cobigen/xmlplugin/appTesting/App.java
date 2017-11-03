@@ -104,6 +104,7 @@ public class App {
         for (int i = 0; i < nl.getLength(); i++) {
             // not sure if this statement will cause some errors in the future; which items have attributes?
             if (nl.item(i).hasAttributes()) {
+                // TODO: catch cases where getNamedItem("abc") = null -> already catched from .equals("abc")?
                 if (nl.item(i).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Package")) {
                     recursiveExtractor(docList, nl.item(i).getChildNodes(),
                         // path + "." + this is for getting all the parent packages (right now is not needed).
@@ -142,6 +143,22 @@ public class App {
         root.appendChild(pa);
         pa.appendChild(copyNode);
         return newXmlDocument;
+    }
+
+    /**
+     *
+     * @param n
+     * @return
+     */
+    private static List<Node> getClassAttributes(NodeList node) {
+        List<Element> list = null;
+        for (int n = 0; n < node.getLength(); n++) {
+            if (node.item(n).hasAttributes()
+                && node.item(n).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Property")) {
+                list.add((Element) node.item(n));
+            }
+        }
+        return null;
     }
 
     public static void printXmlDocument(Document document) {
