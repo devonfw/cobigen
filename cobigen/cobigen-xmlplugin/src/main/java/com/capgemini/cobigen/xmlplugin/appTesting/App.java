@@ -198,15 +198,8 @@ public class App {
                             // System.out.println(n.getAttributes().item(l).getTextContent());
 
                             // TODO .equals -> isMemberOf(ListOfAttributes)
-                            if (n.getAttributes().item(l).getNodeName().equals("visibility")) {
-                                map.put(n.getAttributes().item(l).getNodeName(),
-                                    n.getAttributes().item(l).getTextContent());
-                            }
-                            if (n.getAttributes().item(l).getNodeName().equals("name")) {
-                                map.put(n.getAttributes().item(l).getNodeName(),
-                                    n.getAttributes().item(l).getTextContent());
-                            }
-                            if (n.getAttributes().item(l).getNodeName().equals("isStatic")) {
+
+                            if (exportAttribute(n.getAttributes().item(l).getNodeName())) {
                                 map.put(n.getAttributes().item(l).getNodeName(),
                                     n.getAttributes().item(l).getTextContent());
                             }
@@ -236,6 +229,19 @@ public class App {
 
             return returnList;
         }
+    }
+
+    private static boolean exportAttribute(String att) {
+        // TODO could be solved smarter: some kind of attribute definition at the top
+        ArrayList<String> t = new ArrayList<>();
+        t.add("visibility");
+        t.add("name");
+        t.add("isStatic");
+
+        if (t.contains(att)) {
+            return true;
+        }
+        return false;
     }
 
     public static void printXmlDocument(Document document) {
