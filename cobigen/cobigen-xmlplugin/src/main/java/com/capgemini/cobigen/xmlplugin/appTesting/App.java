@@ -79,7 +79,7 @@ public class App {
         // output for testing purposes
         System.out.println("--generated " + docsList.size() + " new documents--");
         for (Object d : docsList) {
-            System.out.println(" s");
+            System.out.println(" ");
             printXmlDocument((Document) d);
         }
     }
@@ -135,6 +135,7 @@ public class App {
             e.printStackTrace();
         }
 
+        List<Node> attributes = getClassAttributes(n);
         Element pa = newXmlDocument.createElement("package");
         pa.setAttribute("name", pack);
         Element root = newXmlDocument.createElement("xmi:XMI");
@@ -150,15 +151,33 @@ public class App {
      * @param n
      * @return
      */
-    private static List<Node> getClassAttributes(NodeList node) {
-        List<Element> list = null;
+    private static List<Node> getClassAttributes(Node no) {
+        if (no == null) {
+            return null;
+        }
+        System.out.println("++++++++++Class: " + no.getAttributes().getNamedItem("name"));
+
+        NodeList node = no.getChildNodes();
+
+        List<Node> list = null;
         for (int n = 0; n < node.getLength(); n++) {
-            if (node.item(n).hasAttributes()
-                && node.item(n).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Property")) {
-                list.add((Element) node.item(n));
+
+            if (node.item(n).hasAttributes()) {
+                System.out.println("node(" + n + ")");
+
+                // System.out.println("+++++++++++++Attribute:+++++++++++");
+                for (int i = 0; i < node.item(n).getAttributes().getLength(); i++) {
+                    System.out.println(node.item(n).getAttributes().item(i).getNodeName());
+                }
+                if (node.item(n).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Property")) {
+                    // System.out.println(node.item(n) == null);
+                    // list.add(node.item(n));
+                    // System.out.println("Node: size " + list.size());
+                    // System.out.println("Node: item" + node.item(n));
+                }
             }
         }
-        return null;
+        return list;
     }
 
     public static void printXmlDocument(Document document) {
