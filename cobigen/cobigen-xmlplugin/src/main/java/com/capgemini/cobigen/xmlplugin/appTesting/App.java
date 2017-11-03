@@ -268,10 +268,19 @@ public class App {
                         for (int j = 0; j < children.getLength(); j++) {
                             Node child = children.item(j);
                             if (child.getNodeName().equals("ownedParameter")) {
-                                String type = child.getAttributes().item(0).getTextContent();
-                                type = type.replace("EAJava_", "");
+                                Boolean returnFlag = isOperationReturn(child);
+                                for (int k = 0; k < child.getAttributes().getLength(); k++) {
+                                    if (child.getAttributes().item(k).getNodeName().equals("type")) {
+                                        String type = child.getAttributes().item(k).getTextContent();
+                                        type = type.replace("EAJava_", "");
 
-                                newOperation.setAttribute("type", type);
+                                        if (returnFlag) {
+                                            newOperation.setAttribute("returnType", type);
+                                        } else {
+                                            newOperation.setAttribute("inType", type);
+                                        }
+                                    }
+                                }
                             }
                         }
                         returnList.add(newOperation);
@@ -286,6 +295,21 @@ public class App {
 
             return returnList;
         }
+    }
+
+    /**
+     * @param child
+     * @return
+     */
+    private static Boolean isOperationReturn(Node child) {
+        for (int i = 0; i < child.getAttributes().getLength(); i++) {
+            if (child.getAttributes().item(i).getNodeName().equals("direction")) {
+                if (child.getAttributes().item(i).getNodeValue().equals("return")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void printXmlDocument(Document document) {
