@@ -12,6 +12,7 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.google.common.collect.Maps;
 
 /**
  * {@link MatcherInterpreter} for XML matcher configurations.
@@ -60,7 +61,6 @@ public class XmlMatcher implements MatcherInterpreter {
             Object target = matcher.getTarget();
             switch (matcherType) {
             case NODENAME:
-
                 if (target instanceof Document) {
                     String documentRootName = ((Document) target).getDocumentElement().getNodeName();
                     // return documentRootName.equals(matcher.getValue());
@@ -98,30 +98,32 @@ public class XmlMatcher implements MatcherInterpreter {
                     switch (variableType) {
                     case CONSTANT:
                         resolvedVariables.put(va.getVarName(), va.getValue());
-                        return resolvedVariables;
                     case REGEX:
                         // TODO #64
                     }
                 }
+                return resolvedVariables;
+            default:
+                break;
             }
+            // In case of being an XMI document
+            for (VariableAssignmentTo va : variableAssignments) {
+                VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+                switch (variableType) {
+                case XPATH:
+                    resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
+                    break;
+                case CONSTANT:
+                    resolvedVariables.put(va.getVarName(), va.getValue());
+                    break;
+                }
+
+            }
+            return resolvedVariables;
         } catch (IllegalArgumentException e) {
             LOG.warn("Matcher type '{}' not registered --> no match!", matcher.getType());
         }
-
-        // In case of being an XMI document
-        for (VariableAssignmentTo va : variableAssignments) {
-            VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
-            switch (variableType) {
-            case XPATH:
-                resolvedVariables.put(va.getVarName(), logic.resolveVariablesXPath(matcher, va));
-                break;
-            case CONSTANT:
-                resolvedVariables.put(va.getVarName(), va.getValue());
-                break;
-            }
-
-        }
-        return resolvedVariables;
+        return Maps.newHashMap();
     }
 
 }
