@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -161,12 +162,13 @@ public class App {
      */
     private static List<Element> getClassAttributes(Node no) {
         if (no == null) {
-            System.out.println("Class was NULL");
+            // System.out.println("Class was NULL");
             return null;
         }
 
         if (!no.hasChildNodes()) {
-            System.out.println(no.getAttributes().getNamedItem("name").getTextContent() + " has no Attribute");
+            // System.out.println(no.getAttributes().getNamedItem("name").getTextContent() + " has no
+            // Attribute");
             return null;
         } else {
             List<Element> returnList = new ArrayList<>();
@@ -174,44 +176,50 @@ public class App {
             for (int i = 0; i < loc.getLength(); i++) {
                 // System.out.println("Att: " + loc.item(i).getNodeName());
                 if (loc.item(i).getNodeName().equals("ownedAttribute")) {
-                    System.out.println(
-                        no.getAttributes().getNamedItem("name").getTextContent() + " has Attribute: ownedAttribute ");
+                    // System.out.println(
+                    // no.getAttributes().getNamedItem("name").getTextContent() + " has Attribute:
+                    // ownedAttribute ");
                     Node n = loc.item(i);
 
                     if (n.hasAttributes()) {
+                        TreeMap<String, String> map = new TreeMap<>();
                         for (int l = 0; l < n.getAttributes().getLength(); l++) {
-                            System.out.println(n.getAttributes().item(l));
+                            // System.out.println(n.getAttributes().item(l));
                             // System.out.println(n.getAttributes().item(l).getNodeName());
                             // System.out.println(n.getAttributes().item(l).getTextContent());
 
                             // TODO .equals -> isMemberOf(ListOfAttributes)
                             if (n.getAttributes().item(l).getNodeName().equals("visibility")) {
-                                Element newAttribute = newXmlDocument.createElement("Attribute");
-                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                map.put(n.getAttributes().item(l).getNodeName(),
                                     n.getAttributes().item(l).getTextContent());
-                                returnList.add(newAttribute);
                             }
                             if (n.getAttributes().item(l).getNodeName().equals("name")) {
-                                Element newAttribute = newXmlDocument.createElement("Attribute");
-                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                map.put(n.getAttributes().item(l).getNodeName(),
                                     n.getAttributes().item(l).getTextContent());
-                                returnList.add(newAttribute);
                             }
                             if (n.getAttributes().item(l).getNodeName().equals("isStatic")) {
-                                Element newAttribute = newXmlDocument.createElement("Attribute");
-                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                map.put(n.getAttributes().item(l).getNodeName(),
                                     n.getAttributes().item(l).getTextContent());
-                                returnList.add(newAttribute);
                             }
+
+                            if (!map.isEmpty()) {
+                                Element newAttribute = newXmlDocument.createElement("Attribute");
+                                while (!map.isEmpty()) {
+                                    newAttribute.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
+                                    map.remove(map.firstEntry().getKey());
+                                    // TODO: maybe we need some other kind of newAttribute.set...?
+                                }
+                                returnList.add(newAttribute);
+
+                            }
+
                         }
                     }
-
-                    Element newAttribute = newXmlDocument.createElement("Attribute");
-                    newAttribute.setAttribute("name", "value");
                 }
                 if (loc.item(i).getNodeName().equals("ownedOperation")) {
-                    System.out.println(
-                        no.getAttributes().getNamedItem("name").getTextContent() + " has Operation: ownedOperation ");
+                    // System.out.println(
+                    // no.getAttributes().getNamedItem("name").getTextContent() + " has Operation:
+                    // ownedOperation ");
                 }
             }
 
