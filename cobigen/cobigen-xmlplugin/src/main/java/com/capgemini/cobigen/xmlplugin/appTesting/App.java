@@ -29,14 +29,8 @@ import org.xml.sax.SAXException;
  */
 public class App {
 
-    /**
-     *
-     */
     private static Document document;
 
-    /**
-     *
-     */
     private static Document newXmlDocument;
 
     /**
@@ -61,8 +55,6 @@ public class App {
             String currentDirectory = System.getProperty("user.dir");
             document = builder.parse(new FileInputStream(currentDirectory
                 + "\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\classDiagramExample.xml"));
-            // "c:\\Users\\jdiazgon\\Documents\\repositorios\\interns-uml-plugin\\master\\RestaurantAsDiagram\\restaurantUseCaseSequence.xml"));
-            // "C:\\EclipseOomph\\workspaces\\cobigen-development\\dev_xmlplugin_ruben\\cobigen\\cobigen-xmlplugin\\src\\main\\java\\com\\capgemini\\cobigen\\xmlplugin\\appTesting\\restaurantUseCaseSequence.xml"));
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -72,13 +64,11 @@ public class App {
         XPath xPath = XPathFactory.newInstance().newXPath();
         String pack = "XMI/Model/packagedElement[@type='uml:Package']";
 
-        // NodeList nodeList = (NodeList) xPath.evaluate(expression, document, XPathConstants.NODESET);
         NodeList packList = (NodeList) xPath.evaluate(pack, document, XPathConstants.NODESET);
-
         List<Object> docsList = new LinkedList<>();
 
         docsList = recursiveExtractor(docsList, packList, "");
-        // output for testing purposes
+
         System.out.println("--generated " + docsList.size() + " new documents--");
         for (Object d : docsList) {
             System.out.println(" ");
@@ -116,20 +106,19 @@ public class App {
                 }
             }
         }
-        // System.out.println("-------recursive-anchor--------");
         return docList;
     }
 
     /**
      * Generates a new xmi file for any given class node and package.
      *
-     * @param n
-     *            This node needs to represent an class. It will be the source for the new xml file
+     * @param classNode
+     *            This node represents a class. It is the source for the new xml file.
      * @param pack
      *            The package of the class.
      * @return A document which represents one class.
      */
-    private static Object generateNewClass(Node n, String pack) {
+    private static Object generateNewClass(Node classNode, String pack) {
         try {
             newXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
@@ -137,27 +126,27 @@ public class App {
             e.printStackTrace();
         }
 
-        List<Element> attributes = getClassAttributes(n);
+        List<Element> attributes = getClassAttributes(classNode);
 
-        Element pa = newXmlDocument.createElement("Package");
-        pa.setAttribute("name", pack);
+        Element packageElement = newXmlDocument.createElement("package");
+        packageElement.setAttribute("name", pack);
 
         Element root = newXmlDocument.createElement("xmi:XMI");
         newXmlDocument.appendChild(root);
 
-        Node copyNode = newXmlDocument.importNode(n, false);
+        Node newClassDoc = newXmlDocument.importNode(classNode, false);
+        Element newClassElement = newXmlDocument.createElement("class");
+        newClassElement.setAttribute("name", newClassDoc.getAttributes().getNamedItem("name").getTextContent());
+        newClassElement.setAttribute("visibility",
+            newClassDoc.getAttributes().getNamedItem("visibility").getTextContent());
 
-        Element newClass = newXmlDocument.createElement("Class");
-        newClass.setAttribute("name", copyNode.getAttributes().getNamedItem("name").getTextContent());
-        newClass.setAttribute("visibility", copyNode.getAttributes().getNamedItem("visibility").getTextContent());
-
-        root.appendChild(pa);
+        root.appendChild(packageElement);
         if (attributes != null) {
             for (int i = 0; i < attributes.size(); i++) {
-                newClass.appendChild(attributes.get(i));
+                newClassElement.appendChild(attributes.get(i));
             }
         }
-        pa.appendChild(newClass);
+        packageElement.appendChild(newClassElement);
 
         return newXmlDocument;
     }
@@ -168,130 +157,108 @@ public class App {
      * @return null if there are no attributes, otherwise it returns a list of nodes where every node
      *         represent an attribute.
      */
-    private static List<Element> getClassAttributes(Node no) {
-        if (no == null) {
-            // System.out.println("Class was NULL");
+    private static List<Element> getClassAttributes(Node classNode) {
+        if (classNode == null || !classNode.hasChildNodes()) {
             return null;
         }
 
-        if (!no.hasChildNodes()) {
-            // System.out.println(no.getAttributes().getNamedItem("name").getTextContent() + " has no
-            // Attribute");
-            return null;
-        } else {
-            List<Element> returnList = new ArrayList<>();
-            NodeList loc = no.getChildNodes();
-            for (int i = 0; i < loc.getLength(); i++) {
-                // System.out.println("Att: " + loc.item(i).getNodeName());
-                if (loc.item(i).getNodeName().equals("ownedAttribute")) {
-                    // System.out.println(
-                    // no.getAttributes().getNamedItem("name").getTextContent() + " has Attribute:
-                    // ownedAttribute ");
-                    Node n = loc.item(i);
+        List<Element> returnList = new ArrayList<>();
+        NodeList nodes = classNode.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            if (nodes.item(i).getNodeName().equals("ownedAttribute")) {
+                Node childNode = nodes.item(i);
 
-                    if (n.hasAttributes()) {
-                        TreeMap<String, String> map = new TreeMap<>();
-                        Element newAttribute = newXmlDocument.createElement("Attribute");
-                        for (int l = 0; l < n.getAttributes().getLength(); l++) {
-                            // System.out.println(n.getAttributes().item(l));
-                            // System.out.println(n.getAttributes().item(l).getNodeName());
-                            // System.out.println(n.getAttributes().item(l).getTextContent());
+                if (childNode.hasAttributes()) {
 
-                            // TODO .equals -> isMemberOf(ListOfAttributes)
-
-                            if (exportAttribute(n.getAttributes().item(l).getNodeName())) {
-                                map.put(n.getAttributes().item(l).getNodeName(),
-                                    n.getAttributes().item(l).getTextContent());
-                            }
-
-                            if (!map.isEmpty()) {
-                                while (!map.isEmpty()) {
-                                    newAttribute.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
-                                    map.remove(map.firstEntry().getKey());
-                                }
-                            }
-
+                    TreeMap<String, String> map = new TreeMap<>();
+                    Element newAttribute = newXmlDocument.createElement("attribute");
+                    for (int l = 0; l < childNode.getAttributes().getLength(); l++) {
+                        if (exportAttribute(childNode.getAttributes().item(l).getNodeName())) {
+                            map.put(childNode.getAttributes().item(l).getNodeName(),
+                                childNode.getAttributes().item(l).getTextContent());
                         }
-                        // For getting the type of the attribute (int, string, long...)
-                        NodeList children = n.getChildNodes();
-                        for (int j = 0; j < children.getLength(); j++) {
-                            if (children.item(j).getNodeName().equals("type")) {
-                                String type = children.item(j).getAttributes().item(0).getTextContent();
-                                type = type.replace("EAJava_", "");
-
-                                newAttribute.setAttribute("type", type);
+                        if (!map.isEmpty()) {
+                            while (!map.isEmpty()) {
+                                newAttribute.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
+                                map.remove(map.firstEntry().getKey());
                             }
                         }
-                        returnList.add(newAttribute);
                     }
-                }
-
-                if (loc.item(i).getNodeName().equals("ownedOperation")) {
-                    Node n = loc.item(i);
-
-                    if (n.hasAttributes()) {
-                        TreeMap<String, String> map = new TreeMap<>();
-                        Element newOperation = newXmlDocument.createElement("Operation");
-                        for (int l = 0; l < n.getAttributes().getLength(); l++) {
-                            // System.out.println(n.getAttributes().item(l));
-                            // System.out.println(n.getAttributes().item(l).getNodeName());
-                            // System.out.println(n.getAttributes().item(l).getTextContent());
-
-                            // TODO .equals -> isMemberOf(ListOfAttributes)
-                            if (n.getAttributes().item(l).getNodeName().equals("visibility")) {
-                                map.put(n.getAttributes().item(l).getNodeName(),
-                                    n.getAttributes().item(l).getTextContent());
-                            }
-                            if (n.getAttributes().item(l).getNodeName().equals("name")) {
-                                map.put(n.getAttributes().item(l).getNodeName(),
-                                    n.getAttributes().item(l).getTextContent());
-                            }
-
-                            if (!map.isEmpty()) {
-                                while (!map.isEmpty()) {
-                                    newOperation.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
-                                    map.remove(map.firstEntry().getKey());
-                                }
-                            }
-
+                    // For getting the type of the attribute (int, string, long...)
+                    NodeList children = childNode.getChildNodes();
+                    for (int j = 0; j < children.getLength(); j++) {
+                        if (children.item(j).getNodeName().equals("type")) {
+                            String type = children.item(j).getAttributes().item(0).getTextContent();
+                            type = type.replace("EAJava_", "");
+                            newAttribute.setAttribute("type", type);
                         }
+                    }
+                    returnList.add(newAttribute);
+                }
+            }
 
-                        // For getting the type of the method (int, string, long...)
-                        NodeList children = n.getChildNodes();
-                        for (int j = 0; j < children.getLength(); j++) {
-                            Node child = children.item(j);
-                            if (child.getNodeName().equals("ownedParameter")) {
-                                Boolean returnFlag = isOperationReturn(child);
-                                for (int k = 0; k < child.getAttributes().getLength(); k++) {
-                                    if (child.getAttributes().item(k).getNodeName().equals("type")) {
-                                        String type = child.getAttributes().item(k).getTextContent();
-                                        type = type.replace("EAJava_", "");
+            if (nodes.item(i).getNodeName().equals("ownedOperation")) {
+                Node n = nodes.item(i);
+                if (n.hasAttributes()) {
+                    TreeMap<String, String> map = new TreeMap<>();
+                    Element newOperation = newXmlDocument.createElement("operation");
+                    for (int l = 0; l < n.getAttributes().getLength(); l++) {
+                        if (extractOperation(n.getAttributes().item(l).getNodeName())) {
+                            map.put(n.getAttributes().item(l).getNodeName(),
+                                n.getAttributes().item(l).getTextContent());
+                        }
+                        if (!map.isEmpty()) {
+                            while (!map.isEmpty()) {
+                                newOperation.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
+                                map.remove(map.firstEntry().getKey());
+                            }
+                        }
+                    }
 
-                                        if (returnFlag) {
-                                            newOperation.setAttribute("returnType", type);
-                                        } else {
-                                            newOperation.setAttribute("inType", type);
-                                        }
+                    // For getting the type of the method (int, string, long...)
+                    NodeList children = n.getChildNodes();
+                    for (int j = 0; j < children.getLength(); j++) {
+                        Node child = children.item(j);
+                        if (child.getNodeName().equals("ownedParameter")) {
+                            Boolean returnFlag = isOperationReturn(child);
+                            for (int k = 0; k < child.getAttributes().getLength(); k++) {
+                                if (child.getAttributes().item(k).getNodeName().equals("type")) {
+                                    String type = child.getAttributes().item(k).getTextContent();
+                                    type = type.replace("EAJava_", "");
+
+                                    if (returnFlag) {
+                                        newOperation.setAttribute("returnType", type);
+                                    } else {
+                                        newOperation.setAttribute("inType", type);
                                     }
                                 }
                             }
                         }
-                        returnList.add(newOperation);
                     }
+                    returnList.add(newOperation);
                 }
             }
-
-            // Element newAttribute = newXmlDocument.createElement("Attribute");
-            // newAttribute.setAttribute("name", "value");
-
-            // returnList.add(newAttribute);
-
-            return returnList;
         }
+        return returnList;
+
+    }
+
+    private static boolean extractOperation(String op) {
+        // TODO could be solved smarter: some kind of attribute definition at the top
+        // Really bad performance
+        ArrayList<String> t = new ArrayList<>();
+        t.add("visibility");
+        t.add("name");
+
+        if (t.contains(op)) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean exportAttribute(String att) {
         // TODO could be solved smarter: some kind of attribute definition at the top
+        // Really bad performance
         ArrayList<String> t = new ArrayList<>();
         t.add("visibility");
         t.add("name");
@@ -303,10 +270,6 @@ public class App {
         return false;
     }
 
-    /**
-     * @param child
-     * @return
-     */
     private static Boolean isOperationReturn(Node child) {
         for (int i = 0; i < child.getAttributes().getLength(); i++) {
             if (child.getAttributes().item(i).getNodeName().equals("direction")) {
