@@ -138,18 +138,26 @@ public class App {
         }
 
         List<Element> attributes = getClassAttributes(n);
+
         Element pa = newXmlDocument.createElement("package");
         pa.setAttribute("name", pack);
+
         Element root = newXmlDocument.createElement("xmi:XMI");
         newXmlDocument.appendChild(root);
+
         Node copyNode = newXmlDocument.importNode(n, false);
+
+        Element newClass = newXmlDocument.createElement("class");
+        newClass.setAttribute("name", copyNode.getAttributes().getNamedItem("name").getTextContent());
+        newClass.setAttribute("visibility", copyNode.getAttributes().getNamedItem("visibility").getTextContent());
+
         root.appendChild(pa);
-        pa.appendChild(copyNode);
         if (attributes != null) {
             for (int i = 0; i < attributes.size(); i++) {
-                pa.appendChild(attributes.get(i));
+                newClass.appendChild(attributes.get(i));
             }
         }
+        pa.appendChild(newClass);
 
         return newXmlDocument;
     }
@@ -183,6 +191,7 @@ public class App {
 
                     if (n.hasAttributes()) {
                         TreeMap<String, String> map = new TreeMap<>();
+                        Element newAttribute = newXmlDocument.createElement("Attribute");
                         for (int l = 0; l < n.getAttributes().getLength(); l++) {
                             // System.out.println(n.getAttributes().item(l));
                             // System.out.println(n.getAttributes().item(l).getNodeName());
@@ -203,17 +212,14 @@ public class App {
                             }
 
                             if (!map.isEmpty()) {
-                                Element newAttribute = newXmlDocument.createElement("Attribute");
                                 while (!map.isEmpty()) {
                                     newAttribute.setAttribute(map.firstEntry().getKey(), map.firstEntry().getValue());
                                     map.remove(map.firstEntry().getKey());
-                                    // TODO: maybe we need some other kind of newAttribute.set...?
                                 }
-                                returnList.add(newAttribute);
-
                             }
 
                         }
+                        returnList.add(newAttribute);
                     }
                 }
                 if (loc.item(i).getNodeName().equals("ownedOperation")) {
