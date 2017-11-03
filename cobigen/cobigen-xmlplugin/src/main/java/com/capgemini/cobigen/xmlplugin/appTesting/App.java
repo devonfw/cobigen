@@ -139,7 +139,7 @@ public class App {
 
         List<Element> attributes = getClassAttributes(n);
 
-        Element pa = newXmlDocument.createElement("package");
+        Element pa = newXmlDocument.createElement("Package");
         pa.setAttribute("name", pack);
 
         Element root = newXmlDocument.createElement("xmi:XMI");
@@ -147,7 +147,7 @@ public class App {
 
         Node copyNode = newXmlDocument.importNode(n, false);
 
-        Element newClass = newXmlDocument.createElement("class");
+        Element newClass = newXmlDocument.createElement("Class");
         newClass.setAttribute("name", copyNode.getAttributes().getNamedItem("name").getTextContent());
         newClass.setAttribute("visibility", copyNode.getAttributes().getNamedItem("visibility").getTextContent());
 
@@ -191,7 +191,7 @@ public class App {
 
                     if (n.hasAttributes()) {
                         TreeMap<String, String> map = new TreeMap<>();
-                        Element newAttribute = newXmlDocument.createElement("attribute");
+                        Element newAttribute = newXmlDocument.createElement("Attribute");
                         for (int l = 0; l < n.getAttributes().getLength(); l++) {
                             // System.out.println(n.getAttributes().item(l));
                             // System.out.println(n.getAttributes().item(l).getNodeName());
@@ -219,15 +219,26 @@ public class App {
                             }
 
                         }
+                        // For getting the type of the attribute (int, string, long...)
+                        NodeList children = n.getChildNodes();
+                        for (int j = 0; j < children.getLength(); j++) {
+                            if (children.item(j).getNodeName().equals("type")) {
+                                String type = children.item(j).getAttributes().item(0).getTextContent();
+                                type = type.replace("EAJava_", "");
+
+                                newAttribute.setAttribute("type", type);
+                            }
+                        }
                         returnList.add(newAttribute);
                     }
                 }
+
                 if (loc.item(i).getNodeName().equals("ownedOperation")) {
                     Node n = loc.item(i);
 
                     if (n.hasAttributes()) {
                         TreeMap<String, String> map = new TreeMap<>();
-                        Element newOperation = newXmlDocument.createElement("operation");
+                        Element newOperation = newXmlDocument.createElement("Operation");
                         for (int l = 0; l < n.getAttributes().getLength(); l++) {
                             // System.out.println(n.getAttributes().item(l));
                             // System.out.println(n.getAttributes().item(l).getNodeName());
@@ -250,6 +261,18 @@ public class App {
                                 }
                             }
 
+                        }
+
+                        // For getting the type of the method (int, string, long...)
+                        NodeList children = n.getChildNodes();
+                        for (int j = 0; j < children.getLength(); j++) {
+                            Node child = children.item(j);
+                            if (child.getNodeName().equals("ownedParameter")) {
+                                String type = child.getAttributes().item(0).getTextContent();
+                                type = type.replace("EAJava_", "");
+
+                                newOperation.setAttribute("type", type);
+                            }
                         }
                         returnList.add(newOperation);
                     }
