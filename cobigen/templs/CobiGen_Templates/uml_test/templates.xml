@@ -7,7 +7,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates/java" destinationPath="src/main/java/${variables.component?replace(' ', '')}"/>
+    <templateScan templatePath="templates/java" destinationPath="src/main/java"/>
   </templateScans>
 
   <increments>

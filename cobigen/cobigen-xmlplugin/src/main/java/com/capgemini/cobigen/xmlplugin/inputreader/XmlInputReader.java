@@ -46,7 +46,7 @@ public class XmlInputReader implements InputReader {
             Element rootElement = doc.getDocumentElement();
             Map<String, Object> model = new HashMap<>();
 
-            // JAIME: one option for the Xpath
+            // For processing variables inside the template
             model.put("doc", doc);
 
             model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
@@ -79,22 +79,29 @@ public class XmlInputReader implements InputReader {
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
 
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        XmiSplitter splitter = new XmiSplitter();
-        String pack = "XMI/Model/packagedElement[@type='uml:Package']";
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+                XPath xPath = XPathFactory.newInstance().newXPath();
+                XmiSplitter splitter = new XmiSplitter();
+                String pack = "XMI/Model/packagedElement[@type='uml:Package']";
 
-        NodeList packList = null;
-        try {
-            packList = (NodeList) xPath.evaluate(pack, input, XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                NodeList packList = null;
+                try {
+                    packList = (NodeList) xPath.evaluate(pack, input, XPathConstants.NODESET);
+                } catch (XPathExpressionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                List<Object> docsList = new LinkedList<>();
+
+                docsList = splitter.recursiveExtractor(docsList, packList, "");
+                return docsList;
+            }
         }
+        return new LinkedList<>();
 
-        List<Object> docsList = new LinkedList<>();
-
-        docsList = splitter.recursiveExtractor(docsList, packList, "");
-        return docsList;
     }
 
     /**
