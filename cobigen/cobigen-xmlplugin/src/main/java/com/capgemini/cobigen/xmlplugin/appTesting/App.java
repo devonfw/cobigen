@@ -135,12 +135,12 @@ public class App {
             e.printStackTrace();
         }
 
-        List<Node> attributes = getClassAttributes(n);
+        // List<Node> attributes = getClassAttributes(n);
         Element pa = newXmlDocument.createElement("package");
         pa.setAttribute("name", pack);
         Element root = newXmlDocument.createElement("xmi:XMI");
         newXmlDocument.appendChild(root);
-        Node copyNode = newXmlDocument.importNode(n, false);
+        Node copyNode = newXmlDocument.importNode(n, true);
         root.appendChild(pa);
         pa.appendChild(copyNode);
         return newXmlDocument;
