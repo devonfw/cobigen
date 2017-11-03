@@ -2,6 +2,7 @@ package com.capgemini.cobigen.xmlplugin.appTesting;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -135,49 +136,92 @@ public class App {
             e.printStackTrace();
         }
 
-        // List<Node> attributes = getClassAttributes(n);
+        List<Element> attributes = getClassAttributes(n);
         Element pa = newXmlDocument.createElement("package");
         pa.setAttribute("name", pack);
         Element root = newXmlDocument.createElement("xmi:XMI");
         newXmlDocument.appendChild(root);
-        Node copyNode = newXmlDocument.importNode(n, true);
+        Node copyNode = newXmlDocument.importNode(n, false);
         root.appendChild(pa);
         pa.appendChild(copyNode);
+        if (attributes != null) {
+            for (int i = 0; i < attributes.size(); i++) {
+                pa.appendChild(attributes.get(i));
+            }
+        }
+
         return newXmlDocument;
     }
 
     /**
-     *
+     * This function generates a new node for every attribute for a given class.
      * @param n
-     * @return
+     * @return null if there are no attributes, otherwise it returns a list of nodes where every node
+     *         represent an attribute.
      */
-    private static List<Node> getClassAttributes(Node no) {
+    private static List<Element> getClassAttributes(Node no) {
         if (no == null) {
+            System.out.println("Class was NULL");
             return null;
         }
-        System.out.println("++++++++++Class: " + no.getAttributes().getNamedItem("name"));
 
-        NodeList node = no.getChildNodes();
+        if (!no.hasChildNodes()) {
+            System.out.println(no.getAttributes().getNamedItem("name").getTextContent() + " has no Attribute");
+            return null;
+        } else {
+            List<Element> returnList = new ArrayList<>();
+            NodeList loc = no.getChildNodes();
+            for (int i = 0; i < loc.getLength(); i++) {
+                // System.out.println("Att: " + loc.item(i).getNodeName());
+                if (loc.item(i).getNodeName().equals("ownedAttribute")) {
+                    System.out.println(
+                        no.getAttributes().getNamedItem("name").getTextContent() + " has Attribute: ownedAttribute ");
+                    Node n = loc.item(i);
 
-        List<Node> list = null;
-        for (int n = 0; n < node.getLength(); n++) {
+                    if (n.hasAttributes()) {
+                        for (int l = 0; l < n.getAttributes().getLength(); l++) {
+                            System.out.println(n.getAttributes().item(l));
+                            // System.out.println(n.getAttributes().item(l).getNodeName());
+                            // System.out.println(n.getAttributes().item(l).getTextContent());
 
-            if (node.item(n).hasAttributes()) {
-                System.out.println("node(" + n + ")");
+                            // TODO .equals -> isMemberOf(ListOfAttributes)
+                            if (n.getAttributes().item(l).getNodeName().equals("visibility")) {
+                                Element newAttribute = newXmlDocument.createElement("Attribute");
+                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                    n.getAttributes().item(l).getTextContent());
+                                returnList.add(newAttribute);
+                            }
+                            if (n.getAttributes().item(l).getNodeName().equals("name")) {
+                                Element newAttribute = newXmlDocument.createElement("Attribute");
+                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                    n.getAttributes().item(l).getTextContent());
+                                returnList.add(newAttribute);
+                            }
+                            if (n.getAttributes().item(l).getNodeName().equals("isStatic")) {
+                                Element newAttribute = newXmlDocument.createElement("Attribute");
+                                newAttribute.setAttribute(n.getAttributes().item(l).getNodeName(),
+                                    n.getAttributes().item(l).getTextContent());
+                                returnList.add(newAttribute);
+                            }
+                        }
+                    }
 
-                // System.out.println("+++++++++++++Attribute:+++++++++++");
-                for (int i = 0; i < node.item(n).getAttributes().getLength(); i++) {
-                    System.out.println(node.item(n).getAttributes().item(i).getNodeName());
+                    Element newAttribute = newXmlDocument.createElement("Attribute");
+                    newAttribute.setAttribute("name", "value");
                 }
-                if (node.item(n).getAttributes().getNamedItem("xmi:type").getTextContent().equals("uml:Property")) {
-                    // System.out.println(node.item(n) == null);
-                    // list.add(node.item(n));
-                    // System.out.println("Node: size " + list.size());
-                    // System.out.println("Node: item" + node.item(n));
+                if (loc.item(i).getNodeName().equals("ownedOperation")) {
+                    System.out.println(
+                        no.getAttributes().getNamedItem("name").getTextContent() + " has Operation: ownedOperation ");
                 }
             }
+
+            // Element newAttribute = newXmlDocument.createElement("Attribute");
+            // newAttribute.setAttribute("name", "value");
+
+            // returnList.add(newAttribute);
+
+            return returnList;
         }
-        return list;
     }
 
     public static void printXmlDocument(Document document) {
