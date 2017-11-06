@@ -2,7 +2,7 @@
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
     <trigger id="uml_test" type="xml" templateFolder="uml_test">
         <containerMatcher type="uml" value="xmi:XMI"/>
-        <matcher type="document" value="DocumentImpl">
+        <matcher type="xpath" value="//packageElement[type='class']">
             <variableAssignment type="xpath" key="component" value="XMI/package/@name"/>
         	<variableAssignment type="xpath" key="className" value="XMI/package/packagedElement/@name"/>
         </matcher>
