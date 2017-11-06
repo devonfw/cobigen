@@ -1,7 +1,6 @@
 package com.capgemini.cobigen.unittest.healthcheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static com.capgemini.cobigen.test.assertj.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +26,7 @@ public class HealthCheckTest {
     /**
      * Root Path where to test data is stored
      */
-    private static final Path rootTestPath =
-        new File("src/test/resources/testdata/unittest/healthcheck/HealthCheckTest").toPath();
+    private static final Path rootTestPath = new File("src/test/resources/testdata/unittest/HealthCheckTest").toPath();
 
     /**
      * Tempfolder used for running executionFolder.
@@ -124,29 +122,6 @@ public class HealthCheckTest {
     }
 
     /**
-     * Test if UpgradeAll method upgrades all.
-     * @throws Exception
-     *             not thrown
-     */
-    @Test
-    public void testSuccessfulUpgradeAllConfigurations() throws Exception {
-        // arrange
-        HealthCheckImpl healthcheck = new HealthCheckImpl();
-        BackupPolicy backupPolicy = BackupPolicy.ENFORCE_BACKUP;
-        Path configurationFolder = rootTestPath.resolve("successfulUpgradeAll");
-        Path executionFolder = tempFolder.getRoot().toPath().resolve("testSuccessfulUpgradeAll");
-        FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
-        // act
-        HealthCheckReport report = healthcheck.upgradeAllConfigurations(executionFolder, backupPolicy);
-        // assert
-        assertThat(report).isSuccessful();
-        assertThat(report).isOfConextVersion(executionFolder,
-            TemplatesConfigurationVersion.getLatest().getFloatRepresentation() + "");
-        assertThat(report).isOfConextVersion(executionFolder,
-            ContextConfigurationVersion.getLatest().getFloatRepresentation() + "");
-    }
-
-    /**
      * Test Error Message when Context Configuration is incorrect.
      * @throws IOException
      */
@@ -218,26 +193,6 @@ public class HealthCheckTest {
         HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
         System.out.print(report.getErrors());
         assertThat(report).isOfConextVersion(executionFolder, "2.0");
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = InvalidConfigurationException.class)
-    public void testFailingUpgradeAllConfigurations() throws Exception {
-        // arrange
-        HealthCheckImpl healthcheck = new HealthCheckImpl();
-        BackupPolicy backupPolicy = BackupPolicy.ENFORCE_BACKUP;
-        Path configurationFolder = rootTestPath.resolve("failingUpgradeAll");
-        Path executionFolder = tempFolder.getRoot().toPath().resolve("testFailingUpgradeAll");
-        FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
-        // act
-        HealthCheckReport report = healthcheck.upgradeAllConfigurations(executionFolder, backupPolicy);
-        // assert
-        System.out.print("Erik Report outcome" + report.getErrors());
-        // Test CobigenRunntimeException Update of the templates configuration was not successful, please
-        // retry
-        // test failing of template
     }
 
 }
