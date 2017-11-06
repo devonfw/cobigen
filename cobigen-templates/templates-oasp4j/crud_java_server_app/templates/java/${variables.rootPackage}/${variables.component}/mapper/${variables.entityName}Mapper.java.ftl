@@ -25,7 +25,7 @@ public interface ${variables.entityName}Mapper extends GenericMybatisMapper<${po
    * @param ${pojo.name?uncap_first} {@link ${pojo.name}}.
   */
   @Options(useGeneratedKeys = true)
-  @Insert("Insert into ${variables.entityName}(<#list pojo.fields as field>${field.name} <#sep>,</#list>) values (<#list pojo.fields as field>${r"#{"}${field.name}} <#sep>,</#list>)")
+  @Insert("Insert into ${variables.entityName}(id, modificationCounter, <#list pojo.fields as field>${field.name} <#sep>,</#list>) values (${r"#{"}id} ,${r"#{"}modificationCounter} ,<#list pojo.fields as field>${r"#{"}${field.name}} <#sep>,</#list>)")
   void insert(${pojo.name} ${pojo.name?uncap_first});
 
 /**
