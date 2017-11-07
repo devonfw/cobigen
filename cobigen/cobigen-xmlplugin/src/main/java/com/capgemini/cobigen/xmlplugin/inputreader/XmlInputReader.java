@@ -96,6 +96,7 @@ public class XmlInputReader implements InputReader {
 
                 List<Object> docsList = new LinkedList<>();
 
+                splitter.setDocument(doc);
                 docsList = splitter.recursiveExtractor(docsList, packList, "");
                 return docsList;
             }
