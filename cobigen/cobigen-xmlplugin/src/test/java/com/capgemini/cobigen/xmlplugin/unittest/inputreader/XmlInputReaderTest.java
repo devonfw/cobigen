@@ -60,8 +60,19 @@ public class XmlInputReaderTest {
         List<Object> elements = xmlInputReader.getInputObjectsRecursively(doc, Charset.forName("UTF-8"));
 
         // assert
-        assertThat(elements).extracting(createXpathExtractor("XMI/package/packagedElement/@name"))
+        assertThat(elements)
+            .extracting(
+                createXpathExtractor("XMI/Model/packagedElement/packagedElement/packagedElement/packagedElement/@name"))
             .containsExactlyInAnyOrder("Student", "User", "Marks", "Teacher");
+
+        if (createXpathExtractor(
+            "XMI/Model/packagedElement/packagedElement/packagedElement/packagedElement/ownedOperation/@name") != null) {
+
+            assertThat(elements)
+                .extracting(createXpathExtractor(
+                    "XMI/Model/packagedElement/packagedElement/packagedElement/packagedElement/ownedOperation/@name"))
+                .containsExactlyInAnyOrder("newOperation");
+        }
     }
 
     /**
