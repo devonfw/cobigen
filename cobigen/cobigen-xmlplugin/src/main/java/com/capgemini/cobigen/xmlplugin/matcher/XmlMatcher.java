@@ -75,8 +75,10 @@ public class XmlMatcher implements MatcherInterpreter {
     }
 
     /**
+     * Creates a new namespace aware XPath object for xpath evaluation
      * @param target
-     * @return
+     *            the matcher target
+     * @return the created {@link XPath} object
      */
     private XPath createXpathObject(Object target) {
         Document fullDoc = getDoc(target, 0);
@@ -157,15 +159,26 @@ public class XmlMatcher implements MatcherInterpreter {
         }
     }
 
+    /**
+     * Resolves the given xpath expression on the given doc.
+     * @param doc
+     *            target document
+     * @param xpathExpression
+     *            xpath expression
+     * @return the text content of the first node resulting from the xpath or the empty string if the xpath
+     *         results in an empty list
+     */
     private String resolveVariablesXPath(Document doc, String xpathExpression) {
         XPath xPath = XPathFactory.newInstance().newXPath();
-
+        LOG.debug("Evaluating xpath {}", xpathExpression);
         try {
             NodeList list = (NodeList) xPath.evaluate(xpathExpression, doc, XPathConstants.NODESET);
             if (list.getLength() > 0) {
                 // currently, we just allow strings as variable assignment values
+                LOG.debug("... found {} nodes.", list.getLength());
                 return list.item(0).getTextContent();
             } else {
+                LOG.debug("... nothing found.", list.getLength());
                 return ""; // we have to return empty string as of Variables restrictions of cobigen-core
             }
         } catch (XPathExpressionException e) {

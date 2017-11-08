@@ -104,23 +104,24 @@ public class XmlInputReader implements InputReader {
         if (input instanceof Document) {
             Document doc = (Document) input;
             DocumentTraversal traversal = (DocumentTraversal) doc;
-            TreeWalker createTreeWalker =
+            TreeWalker treeWalker =
                 traversal.createTreeWalker(doc.getDocumentElement(), NodeFilter.SHOW_ELEMENT, null, false);
-            Node nextNode = createTreeWalker.nextNode();
+            Node nextNode = treeWalker.nextNode();
             List<Object> docsList = new LinkedList<>();
             while (nextNode != null) {
                 try {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     factory.setNamespaceAware(true);
                     Document newXmlDocument = factory.newDocumentBuilder().newDocument();
-                    // newXmlDocument.setPrefix(doc.getPrefix());
                     Node importNode = newXmlDocument.importNode(nextNode, true);
                     newXmlDocument.appendChild(importNode);
+                    newXmlDocument.normalizeDocument();
+                    // newXmlDocument = transferNamespaces(doc, newXmlDocument);
                     docsList.add(new Document[] { doc, newXmlDocument });
                 } catch (ParserConfigurationException e) {
                     throw new IllegalStateException("Could not create new xml document.", e);
                 }
-                nextNode = createTreeWalker.nextNode();
+                nextNode = treeWalker.nextNode();
             }
 
             return docsList;
