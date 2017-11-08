@@ -42,8 +42,8 @@ public class XPathGenerationTest {
 
         File targetFolder = tmpFolder.newFolder("testXpathAccess");
         GenerationReportTo report = cobigen.generate(compliantInput, matchingTemplates.get(0), targetFolder.toPath());
-        assertThat(report).isSuccessful();
 
+        assertThat(report).isSuccessful();
         assertThat(targetFolder.toPath().resolve("DocXPath.txt")).hasContent("Bill");
     }
 

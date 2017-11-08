@@ -223,7 +223,7 @@ public class XmlInputReaderTest {
         expectedModel.put("library", expectedSubModel);
 
         assertThat(model).isNotNull();
-        assertThat(expectedModel).isEqualTo(model);
+        assertThat(model.get("library")).isNotNull().isEqualTo(expectedSubModel);
     }
 
     /**
@@ -250,9 +250,9 @@ public class XmlInputReaderTest {
         Map<String, Object> model = xmlInputReader.createModel(doc);
 
         // prepare expected model
-        Map<String, Object> expectedSubModel = new HashMap<>();
+        Map<String, Object> expectedLibraryModel = new HashMap<>();
 
-        expectedSubModel.put(ModelConstant.NODE_NAME, "library");
+        expectedLibraryModel.put(ModelConstant.NODE_NAME, "library");
 
         // attribute nodes
         List<Map<String, Object>> attributes = new LinkedList<>();
@@ -268,18 +268,18 @@ public class XmlInputReaderTest {
         libAttr3Map.put(ModelConstant.ATTRIBUTE_NAME, "libAttr3");
         libAttr3Map.put(ModelConstant.ATTRIBUTE_VALUE, "3");
         attributes.add(libAttr3Map);
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr1", "1"); // single attr
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr2", "2");
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr3", "3");
-        expectedSubModel.put(ModelConstant.ATTRIBUTES, attributes); // attr list
+        expectedLibraryModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr1", "1"); // single attr
+        expectedLibraryModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr2", "2");
+        expectedLibraryModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr3", "3");
+        expectedLibraryModel.put(ModelConstant.ATTRIBUTES, attributes); // attr list
 
         // text nodes
         String libTextContent = "libTextContent";
         List<String> libraryTextList = new LinkedList<>();
         libraryTextList.add(libTextContent);
 
-        expectedSubModel.put(ModelConstant.TEXT_NODES, libraryTextList);
-        expectedSubModel.put(ModelConstant.TEXT_CONTENT, libTextContent);
+        expectedLibraryModel.put(ModelConstant.TEXT_NODES, libraryTextList);
+        expectedLibraryModel.put(ModelConstant.TEXT_CONTENT, libTextContent);
 
         // child nodes
         List<Map<String, Object>> children = new LinkedList<>();
@@ -294,17 +294,12 @@ public class XmlInputReaderTest {
         city.put(ModelConstant.TEXT_NODES, cityTextList);
         city.put(ModelConstant.CHILDREN, new LinkedList<>());
         children.add(city);
-        expectedSubModel.put("city", city);
+        expectedLibraryModel.put("city", city);
 
-        expectedSubModel.put(ModelConstant.CHILDREN, children);
-
-        // expected model
-
-        Map<String, Object> expectedModel = new HashMap<>();
-        expectedModel.put("library", expectedSubModel);
+        expectedLibraryModel.put(ModelConstant.CHILDREN, children);
 
         assertThat(model).isNotNull();
-        assertThat(expectedModel).isEqualTo(model);
+        assertThat(model.get("library")).isNotNull().isEqualTo(expectedLibraryModel);
     }
 
     /**
@@ -334,9 +329,9 @@ public class XmlInputReaderTest {
         Map<String, Object> model = xmlInputReader.createModel(doc);
 
         // prepare expected model
-        Map<String, Object> expectedSubModel = new HashMap<>();
+        Map<String, Object> expectedModel = new HashMap<>();
 
-        expectedSubModel.put(ModelConstant.NODE_NAME, "library");
+        expectedModel.put(ModelConstant.NODE_NAME, "library");
 
         // attribute nodes
         List<Map<String, Object>> attributes = new LinkedList<>();
@@ -352,18 +347,18 @@ public class XmlInputReaderTest {
         libAttr3Map.put(ModelConstant.ATTRIBUTE_NAME, "libAttr3");
         libAttr3Map.put(ModelConstant.ATTRIBUTE_VALUE, "3");
         attributes.add(libAttr3Map);
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr1", "1"); // single attr
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr2", "2");
-        expectedSubModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr3", "3");
-        expectedSubModel.put(ModelConstant.ATTRIBUTES, attributes); // attr list
+        expectedModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr1", "1"); // single attr
+        expectedModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr2", "2");
+        expectedModel.put(ModelConstant.SINGLE_ATTRIBUTE + "libAttr3", "3");
+        expectedModel.put(ModelConstant.ATTRIBUTES, attributes); // attr list
 
         // text nodes
         String libTextContent = "libTextContent";
         List<String> libraryTextList = new LinkedList<>();
         libraryTextList.add(libTextContent);
 
-        expectedSubModel.put(ModelConstant.TEXT_NODES, libraryTextList);
-        expectedSubModel.put(ModelConstant.TEXT_CONTENT, libTextContent);
+        expectedModel.put(ModelConstant.TEXT_NODES, libraryTextList);
+        expectedModel.put(ModelConstant.TEXT_CONTENT, libTextContent);
 
         // child nodes
         List<Map<String, Object>> children = new LinkedList<>();
@@ -403,15 +398,10 @@ public class XmlInputReaderTest {
         cityb.put(ModelConstant.CHILDREN, new LinkedList<>());
         children.add(cityb);
 
-        expectedSubModel.put(ModelConstant.CHILDREN, children);
-
-        // expected model
-
-        Map<String, Object> expectedModel = new HashMap<>();
-        expectedModel.put("library", expectedSubModel);
+        expectedModel.put(ModelConstant.CHILDREN, children);
 
         assertThat(model).isNotNull();
-        assertThat(expectedModel).isEqualTo(model);
+        assertThat(model.get("library")).isNotNull().isEqualTo(expectedModel);
     }
 
 }
