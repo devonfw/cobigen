@@ -12,16 +12,15 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
@@ -32,7 +31,8 @@ public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof Document || input instanceof Path && Files.isRegularFile((Path) input)) {
+        if (input instanceof Document || input instanceof Document[] && ((Document[]) input).length == 2
+            || input instanceof Path && Files.isRegularFile((Path) input)) {
             return true;
         } else {
             return false;
@@ -42,18 +42,40 @@ public class XmlInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object input) {
         if (isValidInput(input)) {
-            Document doc = (Document) input;
-            Element rootElement = doc.getDocumentElement();
-            Map<String, Object> model = new HashMap<>();
-
-            // For processing variables inside the template
-            model.put("doc", doc);
-
-            model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
-            return new HashMap<>(model);
+            if (input instanceof Document) {
+                Map<String, Object> model = new HashMap<>();
+                fillModel((Document) input, model, "doc");
+                return model;
+            } else if (input instanceof Document[]) {
+                Map<String, Object> model = new HashMap<>();
+                fillModel(((Document[]) input)[0], model, "doc");
+                fillModel(((Document[]) input)[1], model, "elemDoc");
+                return model;
+            } else {
+                throw new IllegalArgumentException(
+                    "XmlInputReader::createModel(Object) called with invalid parameter value. This is a bug.");
+            }
         } else {
             return null;
         }
+    }
+
+    /**
+     * Adds the given document to the given model. First, the string based model is derived and added by the
+     * root node's key. Second, the document itself is added under the given XPath root key.
+     * @param doc
+     *            the document to be processed
+     * @param model
+     *            the model to be enriched
+     * @param xpathRootKey
+     *            key of the document in the model to be accessible for xpath expressions
+     */
+    private void fillModel(Document doc, Map<String, Object> model, String xpathRootKey) {
+        Element rootElement = doc.getDocumentElement();
+        // custom extracted model for more convenient navigation in the template languages
+        model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
+        // complete access to allow xpath
+        model.put(xpathRootKey, doc);
     }
 
     /**
@@ -64,7 +86,7 @@ public class XmlInputReader implements InputReader {
     public boolean combinesMultipleInputObjects(Object input) {
         if (input instanceof Document) {
             Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
+            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) { // TODO: this should not be hard coded
                 return true;
             }
         }
@@ -81,26 +103,30 @@ public class XmlInputReader implements InputReader {
 
         if (input instanceof Document) {
             Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) {
-                XPath xPath = XPathFactory.newInstance().newXPath();
-                XmiSplitter splitter = new XmiSplitter();
-                String pack = "XMI/Model/packagedElement[@type='uml:Package']";
-
-                NodeList packList = null;
+            DocumentTraversal traversal = (DocumentTraversal) doc;
+            TreeWalker createTreeWalker =
+                traversal.createTreeWalker(doc.getDocumentElement(), NodeFilter.SHOW_ELEMENT, null, false);
+            Node nextNode = createTreeWalker.nextNode();
+            List<Object> docsList = new LinkedList<>();
+            while (nextNode != null) {
                 try {
-                    packList = (NodeList) xPath.evaluate(pack, input, XPathConstants.NODESET);
-                } catch (XPathExpressionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    Document newXmlDocument = factory.newDocumentBuilder().newDocument();
+                    // newXmlDocument.setPrefix(doc.getPrefix());
+                    Node importNode = newXmlDocument.importNode(nextNode, true);
+                    newXmlDocument.appendChild(importNode);
+                    docsList.add(new Document[] { doc, newXmlDocument });
+                } catch (ParserConfigurationException e) {
+                    throw new IllegalStateException("Could not create new xml document.", e);
                 }
-
-                List<Object> docsList = new LinkedList<>();
-
-                docsList = splitter.recursiveExtractor(docsList, packList, "");
-                return docsList;
+                nextNode = createTreeWalker.nextNode();
             }
+
+            return docsList;
         }
-        return new LinkedList<>();
+        throw new IllegalArgumentException(
+            "XmlInputReader::getInputObjects(Object,Charset) called with a wrong input parameter. This is a bug!");
 
     }
 
@@ -210,7 +236,9 @@ public class XmlInputReader implements InputReader {
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         if (!Files.isDirectory(path)) {
             try (InputStream fileIn = Files.newInputStream(path)) {
-                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(fileIn);
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                return factory.newDocumentBuilder().parse(fileIn);
             } catch (SAXException | IOException | ParserConfigurationException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
             }

@@ -1,52 +1,100 @@
 package com.capgemini.cobigen.xmlplugin.integrationtest;
 
+import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.assertj.core.api.iterable.Extractor;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 
 import junit.framework.AssertionFailedError;
 
-/**
- * Test suite for testing the xml plugin correctly integrated with cobigen-core.
- */
+/** Test suite for testing the xml plugin correctly integrated with cobigen-core. */
 public class XmlPluginIntegrationTest {
 
-    /**
-     * Test configuration to CobiGen
-     */
-    private File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
+    /** Test resources root */
+    private static final String testFileRootPath = "src/test/resources/testdata/integrationtest/";
 
-    /**
-     * Test input file
-     */
-    private File testinput = new File("src/test/resources/testdata/integrationtest/testInput.xml");
+    /** Test configuration to CobiGen */
+    private File cobigenConfigFolder = new File(testFileRootPath + "templates");
 
-    /**
-     * Temporary folder interface
-     */
+    /** Test input file */
+    private File testinput = new File(testFileRootPath + "testInput.xml");
+
+    /** UTF-8 Charset */
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
+
+    /** Temporary folder interface */
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+    /**
+     * Tests simple extraction of entities out of XMI UML.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testSimpleUmlEntityExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest =
+            matchingTemplates.stream().filter(e -> e.getId().equals("${className}.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("Student.txt", "User.txt", "Marks.txt",
+            "Teacher.txt");
+
+        // assertThat(targetFolder.toPath().resolve("Student.txt"))
+        // .hasContent("public Student EAID_4509184A_D724_495f_AAEB_1ACE1AD90879");
+        // assertThat(targetFolder.toPath().resolve("User.txt"))
+        // .hasContent("public User EAID_C2E366C0_510F_4145_B650_110537B98360");
+        // assertThat(targetFolder.toPath().resolve("Marks.txt"))
+        // .hasContent("public Marks EAID_1D7DCE81_651D_40f2_A6E5_A522CF6E0C64");
+        // assertThat(targetFolder.toPath().resolve("Teacher.txt"))
+        // .hasContent("public Teacher EAID_6EA6FC61_FB9B_4e8e_98A1_30BD386AEA9A");
+    }
 
     /**
      * Tests the xml reader integration for single attributes
@@ -64,7 +112,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for attribute list
      * @throws Exception
      *             test fails
-     * @author fkreis (25.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_AttributeList() throws Exception {
@@ -77,7 +124,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text content
      * @throws Exception
      *             test fails
-     * @author fkreis (25.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_TextContent() throws Exception {
@@ -90,7 +136,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_TextNodes() throws Exception {
@@ -103,7 +148,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_SingleChild() throws Exception {
@@ -115,7 +159,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_ChildList() throws Exception {
@@ -128,7 +171,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_VariablesConstant() throws Exception {
@@ -158,7 +200,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_attachTexts to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
@@ -175,7 +216,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_override_attachTexts to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
@@ -192,7 +232,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge() throws Exception {
@@ -209,7 +248,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_override to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
@@ -273,5 +311,26 @@ public class XmlPluginIntegrationTest {
         if (!templateFound) {
             throw new AssertionFailedError("Test template not found");
         }
+    }
+
+    /**
+     * Creates a new AssertJ Extractor for any xpath
+     * @param xpathExpression
+     *            xpath to be executed
+     * @return the values of the xpath evaluation
+     */
+    private Extractor<Object, String> createXpathExtractor(final String xpathExpression) {
+        return new Extractor<Object, String>() {
+            @Override
+            public String extract(Object input) {
+                XPath xPath = XPathFactory.newInstance().newXPath();
+                try {
+                    return ((NodeList) xPath.evaluate(xpathExpression, input, XPathConstants.NODESET)).item(0)
+                        .getTextContent();
+                } catch (XPathExpressionException e) {
+                    throw new AssertionError(e);
+                }
+            }
+        };
     }
 }

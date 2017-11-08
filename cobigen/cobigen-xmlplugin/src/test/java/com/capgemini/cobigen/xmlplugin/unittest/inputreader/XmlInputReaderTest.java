@@ -13,76 +13,91 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.assertj.core.api.iterable.Extractor;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.xmlplugin.inputreader.ModelConstant;
 import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
 
 /**
- *
- * @author fkreis (10.11.2014)
+ * Unit tests for {@link XmlInputReader}
  */
 public class XmlInputReaderTest {
 
-    /**
-     * Root path to all resources used in this test case
-     */
+    /** UTF-8 Charset */
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
+
+    /** Root path to all resources used in this test case */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/inputreader/";
 
     /**
-     * Tests simple extraction of entities out of XMI UML.
+     * Tests the model building for container elements.
      * @throws Exception
      *             test fails
      */
     @Test
-    public void testSimpleUmlEntityExtraction() throws Exception {
-        // arrange
+    @SuppressWarnings({ "unchecked", "null" })
+    public void testModelCreationForContainerElements() throws Exception {
         XmlInputReader xmlInputReader = new XmlInputReader();
-        File xmlFile = new File(testFileRootPath + "completeUmlXmi.xml");
-        Object doc = xmlInputReader.read(xmlFile.toPath(), Charset.forName("UTF-8"));
+        File xmlFile = new File(testFileRootPath + "simpleXml.xml");
+        Object doc = xmlInputReader.read(xmlFile.toPath(), UTF_8);
 
-        // precondition
-        boolean validInput = xmlInputReader.isValidInput(doc);
-        assertThat(validInput).isTrue();
+        List<Object> inputObjects = xmlInputReader.getInputObjects(doc, UTF_8);
 
-        // act
-        boolean combinesMultipleInputObjects = xmlInputReader.combinesMultipleInputObjects(doc);
-        assertThat(combinesMultipleInputObjects).isTrue();
-        List<Object> elements = xmlInputReader.getInputObjectsRecursively(doc, Charset.forName("UTF-8"));
+        Map<String, Object> aStringModel = null, bStringModel = null, brStringModel = null;
+        Document aDoc = null, bDoc = null, brDoc = null;
+        for (Object inputObj : inputObjects) {
+            Map<String, Object> model = xmlInputReader.createModel(inputObj);
+            if (model.containsKey("a")) {
+                aStringModel = (Map<String, Object>) model.get("a");
+                aDoc = (Document) model.get("elemDoc");
+            } else if (model.containsKey("b")) {
+                bStringModel = (Map<String, Object>) model.get("b");
+                bDoc = (Document) model.get("elemDoc");
+            } else if (model.containsKey("br")) {
+                brStringModel = (Map<String, Object>) model.get("br");
+                brDoc = (Document) model.get("elemDoc");
+            } else {
+                throw new AssertionError("The result contains an unexpected model.");
+            }
+        }
 
-        // assert
-        assertThat(elements).extracting(createXpathExtractor("XMI/package/packagedElement/@name"))
-            .containsExactlyInAnyOrder("Student", "User", "Marks", "Teacher");
+        // check string model
+        assertThat(aStringModel).isNotNull();
+        assertThat(aStringModel.get("_at_attr")).isNotNull().isEqualTo("blubb");
+        assertThat(aStringModel.get("br")).isNotNull();
+
+        assertThat(bStringModel).isNotNull();
+        assertThat(bStringModel.get("_text_")).isEqualTo("");
+
+        assertThat(brStringModel).isNotNull();
+        assertThat(brStringModel.get("_text_")).isEqualTo("abc");
+
+        // check for existence of correct dom doc
+        assertThat(aDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("a");
+        assertThat(bDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("b");
+        assertThat(brDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("br");
     }
 
     /**
-     * Creates a new AssertJ Extractor for any xpath
-     * @param xpathExpression
-     *            xpath to be executed
-     * @return the values of the xpath evaluation
+     * Tests the correct retrieval of input objects. Here: generically return all elements of the input
+     * document as a new document.
+     * @throws Exception
+     *             test fails
      */
-    private Extractor<Object, String> createXpathExtractor(final String xpathExpression) {
-        return new Extractor<Object, String>() {
-            @Override
-            public String extract(Object input) {
-                XPath xPath = XPathFactory.newInstance().newXPath();
-                try {
-                    return ((NodeList) xPath.evaluate(xpathExpression, input, XPathConstants.NODESET)).item(0)
-                        .getTextContent();
-                } catch (XPathExpressionException e) {
-                    throw new AssertionError(e);
-                }
-            }
-        };
+    @Test
+    public void testGetInputObjects() throws Exception {
+        XmlInputReader xmlInputReader = new XmlInputReader();
+        File xmlFile = new File(testFileRootPath + "simpleXml.xml");
+        Object doc = xmlInputReader.read(xmlFile.toPath(), UTF_8);
+
+        List<Object> inputObjects = xmlInputReader.getInputObjects(doc, UTF_8);
+
+        // root is not part of the list by intention
+        assertThat(inputObjects).extracting(e -> ((Document[]) e)[1].getDocumentElement().getNodeName())
+            .containsExactlyInAnyOrder("a", "b", "br");
     }
 
     /**
@@ -128,9 +143,6 @@ public class XmlInputReaderTest {
      *             test fails
      * @throws SAXException
      *             test fails
-     * @author fkreis (10.11.2014)
-     * @author (modified) sholzer, 2017-05-12: reduced complexity of the test case and adapted new modul
-     *         structure.
      */
     @Test
     public void testCreateModel() throws ParserConfigurationException, SAXException, IOException {
@@ -223,8 +235,6 @@ public class XmlInputReaderTest {
      *             test fails
      * @throws SAXException
      *             test fails
-     *
-     * @author sholzer, 2017-05-12: for branch completeness
      */
     @Test
     public void testCreateModel2() throws ParserConfigurationException, SAXException, IOException {
@@ -309,7 +319,6 @@ public class XmlInputReaderTest {
      *             test fails
      * @throws SAXException
      *             test fails
-     * @author sholzer, 2017-05-12
      */
     @Test
     public void testCreateModel3() throws ParserConfigurationException, SAXException, IOException {
