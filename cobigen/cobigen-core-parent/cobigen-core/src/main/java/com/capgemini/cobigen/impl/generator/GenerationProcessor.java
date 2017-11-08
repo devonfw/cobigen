@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -51,7 +53,6 @@ import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -89,12 +90,17 @@ public class GenerationProcessor {
     /** Target root path to resolve dependent templates' destination path with */
     private Path targetRootPath;
 
+    /** {@link InputInterpreter} which handles InputReader delegates */
+    private InputInterpreter inputInterpreter;
+
     /**
      * Creates a new {@link GenerationProcessor} instance. Due to caching, one instance should only be used
      * for one generation request.
      *
      * @param configurationHolder
      *            {@link ConfigurationHolder} instance
+     * @param inputInterpreter
+     *            {@link InputInterpreter}
      * @param input
      *            generator input object
      * @param generableArtifacts
@@ -112,13 +118,14 @@ public class GenerationProcessor {
      * @param rawModel
      *            externally adapted model to be used for generation.
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Object input,
+    public GenerationProcessor(ConfigurationHolder configurationHolder, InputInterpreter inputInterpreter, Object input,
         List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
         List<Class<?>> logicClasses, Map<String, Object> rawModel) {
 
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         this.configurationHolder = configurationHolder;
+        this.inputInterpreter = inputInterpreter;
         this.forceOverride = forceOverride;
         this.input = input;
         this.generableArtifacts = generableArtifacts;
@@ -301,7 +308,7 @@ public class GenerationProcessor {
         }
 
         List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
         templateEngine.setTemplateFolder(
@@ -479,8 +486,8 @@ public class GenerationProcessor {
     private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter, Trigger trigger) {
 
         InputReader inputReader = triggerInterpreter.getInputReader();
-        List<Object> inputObjects = Lists.newArrayList(input);
-        if (inputReader.combinesMultipleInputObjects(input)) {
+        List<Object> inputObjects = new ArrayList<>();
+        if (inputInterpreter.combinesMultipleInputs(input)) {
 
             // check whether the inputs should be retrieved recursively
             boolean retrieveInputsRecursively = false;
@@ -509,6 +516,8 @@ public class GenerationProcessor {
                     it.remove();
                 }
             }
+        } else {
+            inputObjects.add(input);
         }
         return inputObjects;
     }

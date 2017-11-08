@@ -36,11 +36,7 @@ public class InputInterpreterImpl implements InputInterpreter {
     @Override
     public boolean combinesMultipleInputs(Object input) {
         List<Trigger> matchingTriggers = configurationInterpreter.getMatchingTriggers(input);
-        for (Trigger trigger : matchingTriggers) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            return triggerInterpreter.getInputReader().combinesMultipleInputObjects(input);
-        }
-        return false;
+        return matchingTriggers.stream().anyMatch(e -> e.matchesByContainerMatcher());
     }
 
     @Cached

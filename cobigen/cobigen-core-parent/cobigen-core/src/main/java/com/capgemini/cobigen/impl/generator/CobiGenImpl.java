@@ -38,9 +38,7 @@ public class CobiGenImpl implements CobiGen {
      */
     private ConfigurationInterpreter configurationInterpreter;
 
-    /**
-     * {@link InputInterpreter} which handles InputReader delegates
-     */
+    /** {@link InputInterpreter} which handles InputReader delegates */
     private InputInterpreter inputInterpreter;
 
     /**
@@ -89,8 +87,8 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath,
-            forceOverride, logicClasses, rawModel);
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, inputInterpreter, input,
+            generableArtifacts, targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
 
@@ -117,7 +115,7 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input,
+        GenerationProcessor gp = new GenerationProcessor(configurationHolder, inputInterpreter, input,
             Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
         return gp.generate();
     }
