@@ -15,20 +15,14 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.assertj.core.api.iterable.Extractor;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -86,14 +80,14 @@ public class XmlPluginIntegrationTest {
         assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("Student.txt", "User.txt", "Marks.txt",
             "Teacher.txt");
 
-        // assertThat(targetFolder.toPath().resolve("Student.txt"))
-        // .hasContent("public Student EAID_4509184A_D724_495f_AAEB_1ACE1AD90879");
-        // assertThat(targetFolder.toPath().resolve("User.txt"))
-        // .hasContent("public User EAID_C2E366C0_510F_4145_B650_110537B98360");
-        // assertThat(targetFolder.toPath().resolve("Marks.txt"))
-        // .hasContent("public Marks EAID_1D7DCE81_651D_40f2_A6E5_A522CF6E0C64");
-        // assertThat(targetFolder.toPath().resolve("Teacher.txt"))
-        // .hasContent("public Teacher EAID_6EA6FC61_FB9B_4e8e_98A1_30BD386AEA9A");
+        assertThat(targetFolder.toPath().resolve("Student.txt"))
+            .hasContent("public Student EAID_4509184A_D724_495f_AAEB_1ACE1AD90879");
+        assertThat(targetFolder.toPath().resolve("User.txt"))
+            .hasContent("public User EAID_C2E366C0_510F_4145_B650_110537B98360");
+        assertThat(targetFolder.toPath().resolve("Marks.txt"))
+            .hasContent("public Marks EAID_1D7DCE81_651D_40f2_A6E5_A522CF6E0C64");
+        assertThat(targetFolder.toPath().resolve("Teacher.txt"))
+            .hasContent("public Teacher EAID_6EA6FC61_FB9B_4e8e_98A1_30BD386AEA9A");
     }
 
     /**
@@ -311,26 +305,5 @@ public class XmlPluginIntegrationTest {
         if (!templateFound) {
             throw new AssertionFailedError("Test template not found");
         }
-    }
-
-    /**
-     * Creates a new AssertJ Extractor for any xpath
-     * @param xpathExpression
-     *            xpath to be executed
-     * @return the values of the xpath evaluation
-     */
-    private Extractor<Object, String> createXpathExtractor(final String xpathExpression) {
-        return new Extractor<Object, String>() {
-            @Override
-            public String extract(Object input) {
-                XPath xPath = XPathFactory.newInstance().newXPath();
-                try {
-                    return ((NodeList) xPath.evaluate(xpathExpression, input, XPathConstants.NODESET)).item(0)
-                        .getTextContent();
-                } catch (XPathExpressionException e) {
-                    throw new AssertionError(e);
-                }
-            }
-        };
     }
 }
