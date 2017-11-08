@@ -18,6 +18,7 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
+import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
@@ -68,7 +69,7 @@ public class OpenAPIInputReader implements InputReader {
         if (schema.getMinimum() != null) {
             constraints.put(ModelConstant.MINIMUM, schema.getMinimum());
         }
-        if (schema.getType().equals("array")) {
+        if (schema.getType().equals(Constants.ARRAY)) {
             if (schema.getMaxItems() != null) {
                 constraints.put(ModelConstant.MAX_LENGTH, schema.getMaxItems());
             }
@@ -134,13 +135,83 @@ public class OpenAPIInputReader implements InputReader {
             entityDef.setDescription(openApi.getSchema(key).getDescription());
             ComponentDef componentDef = new ComponentDef();
             entityDef.setProperties(getFields(openApi.getSchema(key).getProperties(), openApi, key));
-            entityDef.setComponentName(openApi.getSchema(key).getDescription());
-            componentDef.setPaths(getPaths(openApi.getPaths(), openApi.getSchema(key).getDescription(), key));
+            entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
+            componentDef.setPaths(getPaths(openApi.getPaths(),
+                openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString(), key));
             entityDef.setComponent(componentDef);
+            entityDef.setRelationShips(getRealtionShips(openApi, key));
             objects.add(entityDef);
         }
         return objects;
 
+    }
+
+    /**
+     * @param properties
+     * @param openApi
+     * @param key
+     * @return
+     */
+    private List<RelationShip> getRealtionShips(OpenApi3 openApi, String key) {
+        List<RelationShip> relationShips = new LinkedList<>();
+        boolean sameComponent;
+        for (String relationship : openApi.getSchema(key).getExtensions().keySet()) {
+            sameComponent = false;
+            if (relationship.equals(Constants.ONE_TO_ONE) || relationship.equals(Constants.MANY_TO_ONE)
+                || relationship.equals(Constants.ONE_TO_MANY) || relationship.equals(Constants.MANY_TO_MANY)) {
+                if (openApi.getSchema(key).getExtension(Constants.COMPONENT_EXT)
+                    .equals(openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.COMPONENT_EXT))) {
+                    sameComponent = true;
+                }
+                if (relationship.equals(Constants.MANY_TO_ONE)) {
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.ONE_TO_MANY) != null
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.ONE_TO_MANY).equals(key)) {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
+                    } else {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
+                    }
+                } else if (relationship.equals(Constants.ONE_TO_MANY)) {
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.MANY_TO_ONE) != null
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.MANY_TO_ONE).equals(key)) {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
+                    } else {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
+                    }
+                } else if (relationship.equals(Constants.ONE_TO_ONE)) {
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.ONE_TO_ONE) != null
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.ONE_TO_ONE).equals(key)) {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
+                    } else {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
+                    }
+                } else {
+                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                        .getExtension(Constants.MANY_TO_MANY) != null
+                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
+                            .getExtension(Constants.MANY_TO_MANY).equals(key)) {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
+                    } else {
+                        relationShips.add(new RelationShip(relationship.substring(2),
+                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
+                    }
+                }
+            }
+        }
+        return relationShips;
     }
 
     /**
@@ -162,17 +233,10 @@ public class OpenAPIInputReader implements InputReader {
             property.setDescription(properties.get(key).getDescription());
             if (properties.get(key).getType().equals(Constants.ARRAY)) {
                 property.setIsCollection(true);
-                String[] mp =
-                    ((SchemaImpl) properties.get(key).getItemsSchema()).getReference().getFragment().split("/");
-                property.setType(mp[mp.length - 1]);
-                if (openApi.getSchema(mp[mp.length - 1]) != null) {
-                    property.setIsEntity(true);
+                property.setType(((SchemaImpl) properties.get(key).getItemsSchema()).getType());
+                if (((SchemaImpl) properties.get(key).getItemsSchema()).getFormat() != null) {
+                    property.setFormat(((SchemaImpl) properties.get(key).getItemsSchema()).getFormat());
                 }
-            } else if (properties.get(key).getType().equals(Constants.OBJECT)) {
-                String[] mp = ((SchemaImpl) properties.get(key)).getReference().getFragment().split("/");
-                property.setType(mp[mp.length - 1]);
-                property.setIsEntity(true);
-                ;
             } else {
                 property.setType(properties.get(key).getType());
                 if (properties.get(key).getFormat() != null) {
@@ -298,6 +362,7 @@ public class OpenAPIInputReader implements InputReader {
         if (requestBody != null) {
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
+                parameter.setMediaType(media);
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
                     parameter.setIsSearchCriteria(true);
@@ -343,6 +408,7 @@ public class OpenAPIInputReader implements InputReader {
                         response.setIsVoid(true);
                     }
                     for (String media : responses.get(resp).getContentMediaTypes().keySet()) {
+                        response.setMediaType(media);
                         if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
                             .getReference() != null) {
                             String[] mp =
