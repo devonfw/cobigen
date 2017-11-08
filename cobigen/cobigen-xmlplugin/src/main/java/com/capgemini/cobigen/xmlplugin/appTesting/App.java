@@ -130,32 +130,62 @@ public class App {
         }
 
         Node rootNode = document.getFirstChild();
-        NodeList children = rootNode.getChildNodes();
+        Element rootTag = (Element) newXmlDocument.importNode(rootNode, false);
 
-        Node parent = newXmlDocument.importNode(n.getParentNode(), false);
-
-        Element rootTag = newXmlDocument.createElement("xmi:XMI");
-        // Copies attributes of rootNode to rootTag
-        for (int i = 0; i < rootNode.getAttributes().getLength(); i++) {
-            rootTag.setAttribute(rootNode.getAttributes().item(i).getNodeName(),
-                rootNode.getAttributes().item(i).getTextContent());
-        }
-        // Copies the necessary children of the rootNode to rootTag
-        for (int i = 0; i < children.getLength(); i++) {
-            if (children.item(i).getNodeName().equals("xmi:Documentation")) {
-                Element documentation = newXmlDocument.createElement("xmi:Documentation");
-            } else if (children.item(i).getNodeName().equals("uml:Model")) {
-                // rootTag.appendChild(children.item(i));
-            }
-        }
+        Node copyNode = newXmlDocument.importNode(n, true);
+        Node parentNode = n.getParentNode();
 
         newXmlDocument.appendChild(rootTag);
 
-        Node copyNode = newXmlDocument.importNode(n, true);
-        parent.appendChild(copyNode);
-        rootTag.appendChild(parent);
+        List<Node> parentList = new LinkedList<>();
+        if (parentNode == null) {
+            rootTag.appendChild(copyNode);
+        } else {
+            parentList = extractParentNodes(parentNode);
+        }
+
+        if (parentList.size() > 0) {
+            appendingToParent(copyNode, parentList);
+            // We append the last one because it contains all the child elements
+            Node childNode = newXmlDocument.importNode(parentList.get(parentList.size() - 1), true);
+            rootTag.appendChild(newXmlDocument.importNode(childNode, true));
+        }
 
         return newXmlDocument;
+    }
+
+    /**
+     * Appends the children of each parent in the correct order
+     * @param copyNode
+     *            class node to append at the end
+     * @param parentList
+     *            list of parents
+     */
+    private static void appendingToParent(Node copyNode, List<Node> parentList) {
+        // Parent tags are stored in reverse order, we get the last one
+        for (int i = parentList.size() - 2; i >= 0; i--) {
+            parentList.get(i + 1).appendChild(parentList.get(i));
+            if (i == 0) {
+                // For the last parent tag, we append the class
+                parentList.get(0).appendChild(copyNode);
+            }
+        }
+    }
+
+    /**
+     * Extracts all the parent nodes from the given node
+     * @param parentNode
+     *            The node from which we are going to take the parents from
+     * @return List<Node>
+     */
+    private static List<Node> extractParentNodes(Node parentNode) {
+        List<Node> parentList = new LinkedList<>();
+        // While we don't reach the root tag, we get the parent nodes of the class
+        while (!parentNode.getNodeName().equals("xmi:XMI")) {
+            parentList.add(newXmlDocument.importNode(parentNode, false));
+            parentNode = parentNode.getParentNode();
+        }
+        return parentList;
     }
 
     public static void printXmlDocument(Document document) {
