@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Matcher;
@@ -72,10 +71,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // then
         assertThat(templates).isNotNull().hasSize(6);
@@ -103,10 +101,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // this one is a predefined template and shall not be overwritten by scan...
         String templateIdFoo2Class = "prefix_Foo2Class.java";
@@ -140,10 +137,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // validation
 
@@ -185,10 +181,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // validation
         String templateIdFooClass = "prefix2_Foo2Class.java";
@@ -224,7 +219,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
             new File(testFileRootPath + "faulty_duplicate_template_extension").toPath());
-        reader.loadTemplates(null, null);
+        reader.loadTemplates(null);
     }
 
     /**
@@ -238,7 +233,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
             new File(testFileRootPath + "faulty_unhooked_template_extension").toPath());
-        reader.loadTemplates(null, null);
+        reader.loadTemplates(null);
     }
 
     /**
@@ -252,7 +247,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
-        reader.loadTemplates(null, null);
+        reader.loadTemplates(null);
     }
 
     /**
@@ -269,10 +264,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = reader.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = reader.loadTemplates(trigger);
         Map<String, Increment> increments = reader.loadIncrements(templates, trigger);
 
         // validation
@@ -293,7 +287,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
             new File(testFileRootPath + "faulty_duplicate_template_scan_name").toPath());
-        reader.loadTemplates(null, null);
+        reader.loadTemplates(null);
     }
 
     /**
@@ -306,7 +300,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_invalid_template_scan_ref").toPath());
-        reader.loadTemplates(null, null);
+        reader.loadTemplates(null);
     }
 
     /**
@@ -321,10 +315,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
         Map<String, Increment> increments = target.loadIncrements(templates, trigger);
 
         // validation
@@ -373,10 +366,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
         assertThat(templates).hasSize(2);
 
         // validation
@@ -412,10 +404,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
         assertThat(templates).hasSize(2);
 
         // validation
@@ -449,10 +440,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // act
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
         assertThat(templates).hasSize(2);
 
         // assert
@@ -481,10 +471,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // validation
         assertThat(templates).hasSize(1);
@@ -519,10 +508,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-        TriggerInterpreter triggerInterpreter = null;
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger, triggerInterpreter);
+        Map<String, Template> templates = target.loadTemplates(trigger);
 
         // validation
         assertThat(templates).hasSize(3);

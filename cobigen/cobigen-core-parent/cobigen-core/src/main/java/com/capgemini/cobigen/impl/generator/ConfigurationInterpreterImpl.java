@@ -75,7 +75,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
-                templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
+                templatesConfiguration.getTrigger()));
         }
         LOG.debug("{} matching increments found.", increments.size());
         return increments;
@@ -104,8 +104,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        Template templateEty =
-            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
+        Template templateEty = configurationHolder.readTemplatesConfiguration(trigger).getTemplate(template.getId());
         try {
             String resolvedDestinationPath =
                 new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
@@ -127,12 +126,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      * @param trigger
      *            the parent {@link Trigger}
      * @return the {@link List} of {@link IncrementTo}s
-     * @param triggerInterpreter
-     *            {@link TriggerInterpreter} the trigger has been interpreted with
      */
     // TODO create ToConverter
-    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger,
-        TriggerInterpreter triggerInterpreter) {
+    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger) {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
@@ -141,7 +137,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
             }
             incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
+                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
     }
@@ -166,6 +162,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 LOG.debug("Matcher input is marked as valid.");
                 boolean triggerMatches =
                     GenerationProcessor.matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
+                if (triggerMatches) {
+                    matchingTrigger.add(trigger);
+                }
 
                 // if a match has been found do not check container matchers in addition for performance
                 // issues.
@@ -200,11 +199,11 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                             }
                         }
                     }
+                    if (triggerMatches) {
+                        matchingTrigger.add(new Trigger(trigger, true));
+                    }
                 }
                 LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
-                if (triggerMatches) {
-                    matchingTrigger.add(trigger);
-                }
             }
         }
         return matchingTrigger;
@@ -226,10 +225,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : getMatchingTriggers(matcherInput)) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-
-            TemplatesConfiguration templatesConfiguration =
-                configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+            TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
             if (templatesConfiguration != null) {
                 templateConfigurations.add(templatesConfiguration);
             }

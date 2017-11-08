@@ -33,7 +33,6 @@ import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.UnknownExpressionException;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.constant.MavenMetadata;
 import com.capgemini.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.capgemini.cobigen.impl.config.entity.Increment;
@@ -182,8 +181,6 @@ public class TemplatesConfigurationReader {
      *
      * @param trigger
      *            {@link Trigger} for which the templates should be loaded
-     * @param triggerInterpreter
-     *            {@link TriggerInterpreter} the trigger has been interpreted with
      * @return the mapping of template names to the corresponding {@link Template}
      * @throws UnknownContextVariableException
      *             if the destination path contains an undefined context variable
@@ -192,7 +189,7 @@ public class TemplatesConfigurationReader {
      * @throws InvalidConfigurationException
      *             if there are multiple templates with the same name
      */
-    public Map<String, Template> loadTemplates(Trigger trigger, TriggerInterpreter triggerInterpreter)
+    public Map<String, Template> loadTemplates(Trigger trigger)
         throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
         Map<String, Template> templates = new HashMap<>();
@@ -219,7 +216,7 @@ public class TemplatesConfigurationReader {
             List<TemplateScan> scans = templateScans.getTemplateScan();
             if (scans != null) {
                 for (TemplateScan scan : scans) {
-                    scanTemplates(scan, templates, trigger, triggerInterpreter);
+                    scanTemplates(scan, templates, trigger);
                 }
             }
         }
@@ -267,11 +264,8 @@ public class TemplatesConfigurationReader {
      *            is the {@link Map} where to add the templates.
      * @param trigger
      *            the templates are from
-     * @param triggerInterpreter
-     *            of the {@link Trigger}
      */
-    private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger,
-        TriggerInterpreter triggerInterpreter) {
+    private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger) {
 
         String templatePath = scan.getTemplatePath();
         TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
@@ -289,8 +283,7 @@ public class TemplatesConfigurationReader {
             }
         }
 
-        scanTemplates((TemplateFolder) templateFolder, "", scan, templates, trigger, triggerInterpreter,
-            Sets.<String> newHashSet());
+        scanTemplates((TemplateFolder) templateFolder, "", scan, templates, trigger, Sets.<String> newHashSet());
     }
 
     /**
@@ -307,14 +300,11 @@ public class TemplatesConfigurationReader {
      *            is the {@link Map} where to add the templates.
      * @param trigger
      *            the templates are from
-     * @param triggerInterpreter
-     *            of the {@link Trigger}
      * @param observedTemplateNames
      *            observed template name during template scan. Needed for conflict detection
      */
     private void scanTemplates(TemplateFolder templateFolder, String currentPath, TemplateScan scan,
-        Map<String, Template> templates, Trigger trigger, TriggerInterpreter triggerInterpreter,
-        HashSet<String> observedTemplateNames) {
+        Map<String, Template> templates, Trigger trigger, HashSet<String> observedTemplateNames) {
 
         String currentPathWithSlash = currentPath;
         if (!currentPathWithSlash.isEmpty()) {
@@ -324,7 +314,7 @@ public class TemplatesConfigurationReader {
         for (TemplatePath child : templateFolder.getChildren()) {
             if (child.isFolder()) {
                 scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
-                    trigger, triggerInterpreter, observedTemplateNames);
+                    trigger, observedTemplateNames);
             } else {
                 String templateFileName = child.getFileName();
                 String templateNameWithoutExtension = stripTemplateFileending(templateFileName);
@@ -421,7 +411,7 @@ public class TemplatesConfigurationReader {
      * @return the mapping of increment names to the corresponding {@link Increment}
      * @param templates
      *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, TriggerInterpreter)}
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
      * @param trigger
      *            {@link Trigger} for which the templates should be loaded
      * @throws InvalidConfigurationException
@@ -461,7 +451,7 @@ public class TemplatesConfigurationReader {
      *            retrieve the data
      * @param templates
      *            {@link Map} of all templates (see
-     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger, TriggerInterpreter)}
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
      * @param increments
      *            {@link Map} of all retrieved increments
      * @throws InvalidConfigurationException
