@@ -79,21 +79,6 @@ public class XmlInputReader implements InputReader {
     }
 
     /**
-     * {@inheritDoc}.<br>
-     * Returns <code>true</code> if the input is an XMI Document, otherwise returns <code>false</code>.
-     */
-    @Override
-    public boolean combinesMultipleInputObjects(Object input) {
-        if (input instanceof Document) {
-            Document doc = (Document) input;
-            if (doc.getFirstChild().getNodeName().equals("xmi:XMI")) { // TODO: this should not be hard coded
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * {@inheritDoc}<br>
      * Splits an XMI Document into multiple sub-documents, one per each found class. Returns a {@link List} of
      * DocumentImpl.
