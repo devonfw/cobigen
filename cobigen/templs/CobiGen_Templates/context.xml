@@ -3,8 +3,8 @@
     <trigger id="uml_test" type="xml" templateFolder="uml_test">
         <containerMatcher type="uml" value="xmi:XMI"/>
         <matcher type="Document" value="DocumentImpl">
-            <variableAssignment type="xpath" key="component" value="XMI/Model/packagedElement/packagedElement/packagedElement/@name"/>
-        	<variableAssignment type="xpath" key="className" value="XMI/Model/packagedElement/packagedElement/packagedElement/packagedElement/@name"/>
+            <variableAssignment type="xpath" key="component" value="XMI/Model/packagedElement/@name"/>
+        	<variableAssignment type="xpath" key="className" value="XMI/Model/packagedElement/packagedElement/@name"/>
         </matcher>
     </trigger>
 </contextConfiguration>

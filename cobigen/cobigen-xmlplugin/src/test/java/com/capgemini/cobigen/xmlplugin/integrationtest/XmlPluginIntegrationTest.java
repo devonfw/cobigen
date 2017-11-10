@@ -91,6 +91,41 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
+     * Tests simple extraction of entities out of XMI UML.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testUmlMethodAttributeExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest = matchingTemplates.stream()
+            .filter(e -> e.getId().equals("${className}MethodsAttributes.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentMethodsAttributes.txt",
+            "UserMethodsAttributes.txt", "MarksMethodsAttributes.txt", "TeacherMethodsAttributes.txt");
+
+        assertThat(targetFolder.toPath().resolve("StudentMethodsAttributes.txt")).hasContent("public newOperation");
+        assertThat(targetFolder.toPath().resolve("UserMethodsAttributes.txt")).hasContent("");
+        assertThat(targetFolder.toPath().resolve("MarksMethodsAttributes.txt"))
+            .hasContent("private int attributeExample");
+        assertThat(targetFolder.toPath().resolve("TeacherMethodsAttributes.txt")).hasContent("");
+    }
+
+    /**
      * Tests the xml reader integration for single attributes
      * @throws Exception
      *             test fails
