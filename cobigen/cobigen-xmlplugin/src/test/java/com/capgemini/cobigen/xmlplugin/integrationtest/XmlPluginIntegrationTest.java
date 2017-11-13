@@ -91,7 +91,7 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
-     * Tests simple extraction of entities out of XMI UML.
+     * Tests simple extraction of methods and attributes out of XMI UML.
      * @throws Exception
      *             test fails
      */
@@ -123,6 +123,45 @@ public class XmlPluginIntegrationTest {
         assertThat(targetFolder.toPath().resolve("MarksMethodsAttributes.txt"))
             .hasContent("private int attributeExample");
         assertThat(targetFolder.toPath().resolve("TeacherMethodsAttributes.txt")).hasContent("");
+    }
+
+    /**
+     * Tests the generation of entities out of XMI UML. In the class example it has an attribute from which it
+     * has to generate getters and setters.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testUmlEntityExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest = matchingTemplates.stream()
+            .filter(e -> e.getId().equals("${className}Entity.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentEntity.txt", "UserEntity.txt",
+            "MarksEntity.txt", "TeacherEntity.txt");
+
+        assertThat(targetFolder.toPath().resolve("MarksEntity.txt"))
+            .hasContent("import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
+                + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=Marks)\n"
+                + "public class MarksEntity extends ApplicationPersistenceEntity implements Marks {\n"
+                + "private static final long serialVersionUID = 1L;\n" + "private int attributeExample;\n"
+                + "@Override\n" + "public Integer getAttributeExample(){\n" + "return this.attributeExample;\n" + "}\n"
+                + "public void setAttributeExample(Integer attributeExample){\n"
+                + "this.attributeExample = attributeExample;\n" + "}\n" + "}");
     }
 
     /**
