@@ -126,8 +126,8 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
-     * Tests the generation of entities out of XMI UML. In the class example it has an attribute from which it
-     * has to generate getters and setters.
+     * Tests the generation of entities out of XMI UML. </br>
+     * In the class example it has an attribute from which it has to generate getters and setters.
      * @throws Exception
      *             test fails
      */

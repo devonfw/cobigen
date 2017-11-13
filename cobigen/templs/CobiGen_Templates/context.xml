@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
-    <trigger id="uml_test" type="xml" templateFolder="uml_test">
-        <containerMatcher type="uml" value="xmi:XMI"/>
-        <matcher type="Document" value="DocumentImpl">
-            <variableAssignment type="xpath" key="component" value="XMI/Model/packagedElement/@name"/>
-        	<variableAssignment type="xpath" key="className" value="XMI/Model/packagedElement/packagedElement/@name"/>
-        </matcher>
-    </trigger>
+  <trigger id="uml_classdiag_test" type="xml" templateFolder="uml_test">
+    <containerMatcher type="xpath" value="/xmi:XMI//packagedElement[@xmi:type='uml:Class']" />
+    <matcher type="xpath" value="/packagedElement[@xmi:type='uml:Class']">
+      <variableAssignment type="constant" key="component" value="ExamplePackage"/>
+      <variableAssignment type="xpath" key="className" value="/packagedElement/@name"/>
+    </matcher>
+  </trigger>
 </contextConfiguration>
