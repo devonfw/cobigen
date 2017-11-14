@@ -162,6 +162,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 LOG.debug("Matcher input is marked as valid.");
                 boolean triggerMatches =
                     GenerationProcessor.matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
+                if (triggerMatches) {
+                    matchingTrigger.add(trigger);
+                }
 
                 // if a match has been found do not check container matchers in addition for performance
                 // issues.
@@ -196,11 +199,11 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                             }
                         }
                     }
+                    if (triggerMatches) {
+                        matchingTrigger.add(new Trigger(trigger, true));
+                    }
                 }
                 LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
-                if (triggerMatches) {
-                    matchingTrigger.add(trigger);
-                }
             }
         }
         return matchingTrigger;

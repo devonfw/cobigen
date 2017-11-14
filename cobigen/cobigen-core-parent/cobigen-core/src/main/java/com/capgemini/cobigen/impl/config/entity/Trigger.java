@@ -6,40 +6,29 @@ import java.util.List;
 
 /**
  * Storage class for trigger data provided within the context.xml
- * @author trippl (05.04.2013)
- *
  */
 public class Trigger {
 
-    /**
-     * Technical id
-     */
+    /** Technical id */
     private String id;
 
-    /**
-     * Identifies the {@link Trigger}.
-     */
+    /** Identifies the {@link Trigger}. */
     private String type;
 
-    /**
-     * Folder in which the configuration.xml is located in
-     */
+    /** Folder in which the configuration.xml is located in */
     private String templateFolder;
 
-    /**
-     * Input charset, which should be used to read the inputs
-     */
+    /** Input charset, which should be used to read the inputs */
     private Charset inputCharset;
 
-    /**
-     * All available matchers
-     */
+    /** All available matchers */
     private List<Matcher> matchers;
 
-    /**
-     * All available container matchers
-     */
+    /** All available container matchers */
     private List<ContainerMatcher> containerMatchers;
+
+    /** States if the trigger has been matched by a container matcher */
+    private boolean matchesByContainerMatcher;
 
     /**
      * Creates a new {@link Trigger} for the given data
@@ -55,7 +44,6 @@ public class Trigger {
      *            all declared {@link Matcher}s for this trigger
      * @param containerMatchers
      *            all declared {@link ContainerMatcher}s for this trigger
-     * @author trippl (05.04.2013)
      */
     public Trigger(String id, String type, String templateFolder, Charset inputCharset, List<Matcher> matcher,
         List<ContainerMatcher> containerMatchers) {
@@ -63,68 +51,76 @@ public class Trigger {
         this.type = type;
         this.templateFolder = templateFolder;
         this.inputCharset = inputCharset;
-        matchers = matcher == null ? new LinkedList<Matcher>() : matcher;
-        this.containerMatchers = containerMatchers == null ? new LinkedList<ContainerMatcher>() : containerMatchers;
+        matchers = matcher == null ? new LinkedList<>() : matcher;
+        this.containerMatchers = containerMatchers == null ? new LinkedList<>() : containerMatchers;
     }
 
     /**
-     * Liefert das Feld 'id' zurück.
-     * @return Wert von id
-     * @author mbrunnli (08.04.2014)
+     * Copy constructor to reset {@link #matchesByContainerMatcher}, e.g. enable it
+     * @param trigger
+     *            to be copied
+     * @param matchesByContainerMatcher
+     *            see {@link #matchesByContainerMatcher()}
+     */
+    public Trigger(Trigger trigger, boolean matchesByContainerMatcher) {
+        id = trigger.id;
+        type = trigger.type;
+        templateFolder = trigger.templateFolder;
+        inputCharset = trigger.inputCharset;
+        matchers = trigger.matchers;
+        containerMatchers = trigger.containerMatchers;
+        this.matchesByContainerMatcher = matchesByContainerMatcher;
+    }
+
+    /**
+     * @return the technical ID
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Returns the {@link Trigger}'s {@link #type}
-     * @return the trigger id
-     * @author trippl (05.04.2013)
+     * @return the {@link Trigger}'s {@link #type}
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Returns the template folder name
      * @return the template folder name
-     * @author mbrunnli (08.04.2014)
      */
     public String getTemplateFolder() {
         return templateFolder;
     }
 
     /**
-     * Returns the field 'inputCharset'
-     * @return value of inputCharset
-     * @author mbrunnli (06.06.2014)
+     * @return the specified inputCharset
      */
     public Charset getInputCharset() {
         return inputCharset;
     }
 
     /**
-     * Returns all available matchers
      * @return all available matchers
-     * @author mbrunnli (08.04.2014)
      */
     public List<Matcher> getMatcher() {
         return matchers;
     }
 
     /**
-     * Returns the field 'containerMatchers'
-     * @return value of containerMatchers
-     * @author mbrunnli (13.10.2014)
+     * @return all available containerMatchers
      */
     public List<ContainerMatcher> getContainerMatchers() {
         return containerMatchers;
     }
 
     /**
-     * {@inheritDoc}
-     * @author trippl (22.04.2013)
+     * @return <code>true</code> iff the trigger has been activated by a matching container matcher
      */
+    public boolean matchesByContainerMatcher() {
+        return matchesByContainerMatcher;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -136,19 +132,11 @@ public class Trigger {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (09.04.2014)
-     */
     @Override
     public int hashCode() {
         return id.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     * @author mbrunnli (Jun 17, 2015)
-     */
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[id='" + id + "']";
