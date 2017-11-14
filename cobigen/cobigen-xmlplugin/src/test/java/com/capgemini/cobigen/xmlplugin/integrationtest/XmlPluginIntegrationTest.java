@@ -154,14 +154,16 @@ public class XmlPluginIntegrationTest {
         assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentEntity.txt", "UserEntity.txt",
             "MarksEntity.txt", "TeacherEntity.txt");
 
-        assertThat(targetFolder.toPath().resolve("MarksEntity.txt"))
-            .hasContent("import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
-                + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=Marks)\n"
-                + "public class MarksEntity extends ApplicationPersistenceEntity implements Marks {\n"
-                + "private static final long serialVersionUID = 1L;\n" + "private int attributeExample;\n"
-                + "@Override\n" + "public Integer getAttributeExample(){\n" + "return this.attributeExample;\n" + "}\n"
-                + "public void setAttributeExample(Integer attributeExample){\n"
-                + "this.attributeExample = attributeExample;\n" + "}\n" + "}");
+        assertThat(targetFolder.toPath().resolve("MarksEntity.txt")).hasContent("import java.util.List;\n"
+            + "import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
+            + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=Marks)\n"
+            + "public class MarksEntity extends ApplicationPersistenceEntity implements Marks {\n"
+            + "private static final long serialVersionUID = 1L;\n" + "private int attributeExample;\n"
+            + "// I want one\n" + "private Student student;\n" + "@Override\n" + "public Student getStudent(){\n"
+            + "return this.student;\n" + "}\n" + "@Override\n" + "public void setStudent(Student student){\n"
+            + "student = this.student;\n" + "}\n" + "@Override\n" + "public Integer getAttributeExample(){\n"
+            + "return this.attributeExample;\n" + "}\n" + "public void setAttributeExample(Integer attributeExample){\n"
+            + "this.attributeExample = attributeExample;\n" + "}\n" + "}");
     }
 
     /**
