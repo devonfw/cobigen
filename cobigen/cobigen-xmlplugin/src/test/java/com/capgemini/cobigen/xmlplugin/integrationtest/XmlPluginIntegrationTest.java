@@ -127,7 +127,12 @@ public class XmlPluginIntegrationTest {
 
     /**
      * Tests the generation of entities out of XMI UML. </br>
-     * In the class example it has an attribute from which it has to generate getters and setters.
+     * </br>
+     * In marks class there is an attribute from which it has to generate getters and setters and also the
+     * associations between marks and the rest of connected classes. </br>
+     * </br>
+     * The file nullMultiplicity contains a class called TestingNullMultiplicity which is connected to marks
+     * but without multiplicity defined.
      * @throws Exception
      *             test fails
      */
@@ -135,7 +140,7 @@ public class XmlPluginIntegrationTest {
     public void testUmlEntityExtraction() throws Exception {
         // arrange
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
-        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        File xmlFile = configFolder.resolve("nullMultiplicity.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
         Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
@@ -152,7 +157,7 @@ public class XmlPluginIntegrationTest {
         assertThat(generate).isSuccessful();
         File[] files = targetFolder.listFiles();
         assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentEntity.txt", "UserEntity.txt",
-            "MarksEntity.txt", "TeacherEntity.txt");
+            "MarksEntity.txt", "TeacherEntity.txt", "TestingNullMultiplicityEntity.txt");
 
         assertThat(targetFolder.toPath().resolve("MarksEntity.txt")).hasContent("import java.util.List;\n"
             + "import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
@@ -164,6 +169,12 @@ public class XmlPluginIntegrationTest {
             + "student = this.student;\n" + "}\n" + "@Override\n" + "public Integer getAttributeExample(){\n"
             + "return this.attributeExample;\n" + "}\n" + "public void setAttributeExample(Integer attributeExample){\n"
             + "this.attributeExample = attributeExample;\n" + "}\n" + "}");
+
+        assertThat(targetFolder.toPath().resolve("TestingNullMultiplicityEntity.txt")).hasContent(
+            "import java.util.List;\n" + "import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
+                + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=TestingNullMultiplicity)\n"
+                + "public class TestingNullMultiplicityEntity extends ApplicationPersistenceEntity implements TestingNullMultiplicity {\n"
+                + "private static final long serialVersionUID = 1L;\n" + "}\n");
     }
 
     /**
