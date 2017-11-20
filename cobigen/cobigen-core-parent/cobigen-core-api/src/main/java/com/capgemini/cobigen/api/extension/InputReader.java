@@ -35,17 +35,7 @@ public interface InputReader {
     public Map<String, Object> createModel(Object input);
 
     /**
-     * States whether the given input object combines multiple input objects to be used for generation
-     * @param input
-     *            to be checked
-     * @return <code>true</code> if the given input combines multiple input objects for generation<br>
-     *         <code>false</code>, otherwise
-     */
-    public boolean combinesMultipleInputObjects(Object input);
-
-    /**
-     * Will return the set of combined input objects if the given input combines multiple input objects (resp.
-     * {@link #combinesMultipleInputObjects(Object)} returns <code>true</code>).
+     * Will return the set of combined input objects if the given input combines multiple input objects.
      * @param input
      *            the combined input object
      * @param inputCharset
