@@ -181,7 +181,7 @@ public class HealthCheckReport {
     }
 
     /**
-     * @return the current configuration
+     * @return the current configuration folder
      */
     public Set<String> getHasConfiguration() {
         return hasConfiguration;
