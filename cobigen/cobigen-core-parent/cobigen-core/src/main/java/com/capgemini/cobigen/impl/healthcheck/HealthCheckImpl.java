@@ -84,12 +84,21 @@ public class HealthCheckImpl implements HealthCheck {
         } catch (BackupFailedException e) {
             upgradeContextConfiguration(contextConfigurationPath, BackupPolicy.NO_BACKUP);
         }
+
         ContextConfiguration contextConfiguration = new ContextConfiguration(contextConfigurationPath);
         List<String> expectedTemplatesConfigurations = new ArrayList<>();
+        Set<String> hasConfiguration = Sets.newHashSet();
+        Map<String, Path> upgradeableConfigurations = healthCheckReport.getUpgradeableConfigurations();
+
         for (Trigger t : contextConfiguration.getTriggers()) {
             expectedTemplatesConfigurations.add(t.getTemplateFolder());
+            hasConfiguration.add(t.getTemplateFolder());
         }
-        if (expectedTemplatesConfigurations.toArray().equals(healthCheckReport.getHasConfiguration().toArray())) {
+        healthCheckReport.setHasConfiguration(hasConfiguration);
+        upgradeableConfigurations.put("TempOne", contextConfigurationPath.resolve("TempOne"));
+        healthCheckReport.setUpgradeableConfigurations(upgradeableConfigurations);
+
+        if (expectedTemplatesConfigurations.toString().equals(healthCheckReport.getHasConfiguration().toString())) {
             for (final String key : expectedTemplatesConfigurations) {
                 if (healthCheckReport.getUpgradeableConfigurations().containsKey(key)) {
                     upgradeTemplatesConfiguration(healthCheckReport.getUpgradeableConfigurations().get(key),
@@ -97,7 +106,7 @@ public class HealthCheckImpl implements HealthCheck {
                 }
             }
         } else {
-            LOG.error("Expected template configuration doesn't equal the actual template configuration");
+            LOG.error("Expected template configuration does not equal the actual template configuration");
             throw new CobiGenRuntimeException("Update of the templates configuration was not successful, please retry");
         }
         return healthCheckReport;

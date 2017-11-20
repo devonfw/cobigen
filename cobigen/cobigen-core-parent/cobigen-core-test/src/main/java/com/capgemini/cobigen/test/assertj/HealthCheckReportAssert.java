@@ -44,10 +44,10 @@ public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAss
     public HealthCheckReportAssert isSuccessful() {
         try {
             assertThat(actual.getErrorMessages()).overridingErrorMessage(
-                "Upgrade was not successfull. Error Messages: %s // Please see the printed stack traces in the LOG.",
+                "Upgrade was not successful. Error Messages: %s // Please see the printed stack traces in the LOG.",
                 actual.getErrorMessages()).isEmpty();
             assertThat(actual.getErrors()).overridingErrorMessage(
-                "Upgrade was not successfull. Error Messages: %s // Errors: %s. Please see the printed stack traces in the LOG.",
+                "Upgrade was not successful. Error Messages: %s // Errors: %s. Please see the printed stack traces in the LOG.",
                 actual.getErrorMessages(), actual.getErrors()).isEmpty();
         } catch (AssertionError e) {
             for (Throwable entry : actual.getErrors()) {
