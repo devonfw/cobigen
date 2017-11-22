@@ -16,6 +16,7 @@ import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
 import com.capgemini.cobigen.impl.healthcheck.HealthCheckImpl;
 
 /**
@@ -134,7 +135,7 @@ public class HealthCheckTest {
         Path executionFolder = tempFolder.getRoot().toPath().resolve("testSuccessfulUpgradeAll");
         Path templateFolder = executionFolder.resolve("TempOne");
         FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
-        // act TODO fix the method by setting configs
+        // act
         HealthCheckReport report = healthcheck.upgradeAllConfigurations(executionFolder, backupPolicy);
         // assert
         assertThat(report).isSuccessful();
@@ -179,26 +180,26 @@ public class HealthCheckTest {
     }
 
     /**
-     * test failing context configuration upgrade with at least two template configurations. Testing an
-     * invalid version number, but correct schema.
+     * test failing incorrect context configuration upgrade with at least two template with a wrong version
+     * number.
      * @throws Exception
      */
-    @Test(expected = InvalidConfigurationException.class)
+    @Test(expected = BackupFailedException.class)
     public void testFailingUpgradeContextConfigurationWithTwoTemplateConfigs() throws Exception {
 
         HealthCheckImpl healthcheck = new HealthCheckImpl();
-        BackupPolicy backuppolicy = BackupPolicy.ENFORCE_BACKUP;
+        BackupPolicy backuppolicy = null;
         Path configurationFolder = rootTestPath.resolve("failingContextConfigWithTwoTemps");
         Path executionFolder =
             tempFolder.getRoot().toPath().resolve("testFailingUpgradeContextConfigurationWithTwoTemps");
         FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
         // act
-        HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
+        healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
     }
 
     /**
-     * test report of one failing context configuration upgrade with no linked templates configuration.
-     * Version number should stay the same.
+     * test report of one failing context configuration upgrade with no linked templates. Version number
+     * should stay the same.
      * @throws Exception
      */
     @Test
