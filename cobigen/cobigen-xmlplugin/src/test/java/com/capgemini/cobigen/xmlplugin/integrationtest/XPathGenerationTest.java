@@ -18,10 +18,11 @@ import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 
 /**
- *
+ * Test suite for integrating XPath typed matchers and variable assignments
  */
 public class XPathGenerationTest {
 
+    /** JUnit rule to savely create and cleanup temporary test folders */
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 

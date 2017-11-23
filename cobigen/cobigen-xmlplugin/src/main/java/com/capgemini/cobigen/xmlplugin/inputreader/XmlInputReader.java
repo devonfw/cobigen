@@ -101,7 +101,6 @@ public class XmlInputReader implements InputReader {
                     Node importNode = newXmlDocument.importNode(nextNode, true);
                     newXmlDocument.appendChild(importNode);
                     newXmlDocument.normalizeDocument();
-                    // newXmlDocument = transferNamespaces(doc, newXmlDocument);
                     docsList.add(new Document[] { doc, newXmlDocument });
                 } catch (ParserConfigurationException e) {
                     throw new IllegalStateException("Could not create new xml document.", e);
