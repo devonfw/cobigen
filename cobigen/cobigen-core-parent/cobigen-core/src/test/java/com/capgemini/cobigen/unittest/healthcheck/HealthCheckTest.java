@@ -16,7 +16,6 @@ import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.to.HealthCheckReport;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
-import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
 import com.capgemini.cobigen.impl.healthcheck.HealthCheckImpl;
 
 /**
@@ -177,24 +176,6 @@ public class HealthCheckTest {
         System.out.print(report.getErrors());
         assertThat(report.getErrors().toString())
             .contains("Templates Configuration does not match any current or legacy schema definitions.");
-    }
-
-    /**
-     * test failing incorrect context configuration upgrade with at least two template with a wrong version
-     * number.
-     * @throws Exception
-     */
-    @Test(expected = BackupFailedException.class)
-    public void testFailingUpgradeContextConfigurationWithTwoTemplateConfigs() throws Exception {
-
-        HealthCheckImpl healthcheck = new HealthCheckImpl();
-        BackupPolicy backuppolicy = null;
-        Path configurationFolder = rootTestPath.resolve("failingContextConfigWithTwoTemps");
-        Path executionFolder =
-            tempFolder.getRoot().toPath().resolve("testFailingUpgradeContextConfigurationWithTwoTemps");
-        FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
-        // act
-        healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
     }
 
     /**
