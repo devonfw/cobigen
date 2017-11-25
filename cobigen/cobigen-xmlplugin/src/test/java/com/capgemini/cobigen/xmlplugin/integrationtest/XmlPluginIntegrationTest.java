@@ -1,12 +1,17 @@
 package com.capgemini.cobigen.xmlplugin.integrationtest;
 
+import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,31 +27,155 @@ import org.w3c.dom.Document;
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
 
 import junit.framework.AssertionFailedError;
 
-/**
- * Test suite for testing the xml plugin correctly integrated with cobigen-core.
- */
+/** Test suite for testing the xml plugin correctly integrated with cobigen-core. */
 public class XmlPluginIntegrationTest {
 
-    /**
-     * Test configuration to CobiGen
-     */
-    private File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
+    /** Test resources root */
+    private static final String testFileRootPath = "src/test/resources/testdata/integrationtest/";
 
-    /**
-     * Test input file
-     */
-    private File testinput = new File("src/test/resources/testdata/integrationtest/testInput.xml");
+    /** Test configuration to CobiGen */
+    private File cobigenConfigFolder = new File(testFileRootPath + "templates");
 
-    /**
-     * Temporary folder interface
-     */
+    /** Test input file */
+    private File testinput = new File(testFileRootPath + "testInput.xml");
+
+    /** UTF-8 Charset */
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
+
+    /** Temporary folder interface */
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+    /**
+     * Tests simple extraction of entities out of XMI UML.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testSimpleUmlEntityExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest =
+            matchingTemplates.stream().filter(e -> e.getId().equals("${className}.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("Student.txt", "User.txt", "Marks.txt",
+            "Teacher.txt");
+
+        assertThat(targetFolder.toPath().resolve("Student.txt"))
+            .hasContent("public Student EAID_4509184A_D724_495f_AAEB_1ACE1AD90879");
+        assertThat(targetFolder.toPath().resolve("User.txt"))
+            .hasContent("public User EAID_C2E366C0_510F_4145_B650_110537B98360");
+        assertThat(targetFolder.toPath().resolve("Marks.txt"))
+            .hasContent("public Marks EAID_1D7DCE81_651D_40f2_A6E5_A522CF6E0C64");
+        assertThat(targetFolder.toPath().resolve("Teacher.txt"))
+            .hasContent("public Teacher EAID_6EA6FC61_FB9B_4e8e_98A1_30BD386AEA9A");
+    }
+
+    /**
+     * Tests simple extraction of methods and attributes out of XMI UML.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testUmlMethodAttributeExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest = matchingTemplates.stream()
+            .filter(e -> e.getId().equals("${className}MethodsAttributes.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentMethodsAttributes.txt",
+            "UserMethodsAttributes.txt", "MarksMethodsAttributes.txt", "TeacherMethodsAttributes.txt");
+
+        assertThat(targetFolder.toPath().resolve("StudentMethodsAttributes.txt")).hasContent("public newOperation");
+        assertThat(targetFolder.toPath().resolve("UserMethodsAttributes.txt")).hasContent("");
+        assertThat(targetFolder.toPath().resolve("MarksMethodsAttributes.txt"))
+            .hasContent("private int attributeExample");
+        assertThat(targetFolder.toPath().resolve("TeacherMethodsAttributes.txt")).hasContent("");
+    }
+
+    /**
+     * Tests the generation of entities out of XMI UML. </br>
+     * </br>
+     * In marks class there is an attribute from which it has to generate getters and setters and also the
+     * associations between marks and the rest of connected classes. </br>
+     * </br>
+     * The file nullMultiplicity contains a class called TestingNullMultiplicity which is connected to marks
+     * but without multiplicity defined.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testUmlEntityExtraction() throws Exception {
+        // arrange
+        Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
+        File xmlFile = configFolder.resolve("nullMultiplicity.xml").toFile();
+        CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
+
+        // act
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(doc);
+        List<TemplateTo> templateOfInterest = matchingTemplates.stream()
+            .filter(e -> e.getId().equals("${className}Entity.txt")).collect(Collectors.toList());
+        assertThat(templateOfInterest).hasSize(1);
+
+        GenerationReportTo generate = cobigen.generate(doc, templateOfInterest, targetFolder.toPath());
+
+        // assert
+        assertThat(generate).isSuccessful();
+        File[] files = targetFolder.listFiles();
+        assertThat(files).extracting(e -> e.getName()).containsExactlyInAnyOrder("StudentEntity.txt", "UserEntity.txt",
+            "MarksEntity.txt", "TeacherEntity.txt", "TestingNullMultiplicityEntity.txt");
+
+        assertThat(targetFolder.toPath().resolve("MarksEntity.txt")).hasContent("import java.util.List;\n"
+            + "import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
+            + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=Marks)\n"
+            + "public class MarksEntity extends ApplicationPersistenceEntity implements Marks {\n"
+            + "private static final long serialVersionUID = 1L;\n" + "private int attributeExample;\n"
+            + "// I want one\n" + "private Student student;\n" + "@Override\n" + "public Student getStudent(){\n"
+            + "return this.student;\n" + "}\n" + "@Override\n" + "public void setStudent(Student student){\n"
+            + "student = this.student;\n" + "}\n" + "@Override\n" + "public Integer getAttributeExample(){\n"
+            + "return this.attributeExample;\n" + "}\n" + "public void setAttributeExample(Integer attributeExample){\n"
+            + "this.attributeExample = attributeExample;\n" + "}\n" + "}");
+
+        assertThat(targetFolder.toPath().resolve("TestingNullMultiplicityEntity.txt")).hasContent(
+            "import java.util.List;\n" + "import javax.persistence.Column;\n" + "import javax.persistence.Entity;\n"
+                + "import javax.persistence.Table;\n" + "@Entity\n" + "@Table(name=TestingNullMultiplicity)\n"
+                + "public class TestingNullMultiplicityEntity extends ApplicationPersistenceEntity implements TestingNullMultiplicity {\n"
+                + "private static final long serialVersionUID = 1L;\n" + "}\n");
+    }
 
     /**
      * Tests the xml reader integration for single attributes
@@ -64,7 +193,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for attribute list
      * @throws Exception
      *             test fails
-     * @author fkreis (25.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_AttributeList() throws Exception {
@@ -77,7 +205,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text content
      * @throws Exception
      *             test fails
-     * @author fkreis (25.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_TextContent() throws Exception {
@@ -90,7 +217,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_TextNodes() throws Exception {
@@ -103,7 +229,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_SingleChild() throws Exception {
@@ -115,7 +240,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_ChildList() throws Exception {
@@ -128,7 +252,6 @@ public class XmlPluginIntegrationTest {
      * Tests the xml reader integration for text nodes
      * @throws Exception
      *             test fails
-     * @author fkreis (26.11.2014)
      */
     @Test
     public void testXmlReaderIntegration_VariablesConstant() throws Exception {
@@ -158,7 +281,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_attachTexts to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
@@ -175,7 +297,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_override_attachTexts to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
@@ -192,7 +313,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge() throws Exception {
@@ -209,7 +329,6 @@ public class XmlPluginIntegrationTest {
      * Tests the merge strategy xmlmerge_override to exist and being registered.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jan 10, 2016)
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
