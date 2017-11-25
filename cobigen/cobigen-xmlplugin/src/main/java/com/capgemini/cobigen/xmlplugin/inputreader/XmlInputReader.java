@@ -18,6 +18,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
@@ -28,7 +31,8 @@ public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof Document || input instanceof Path && Files.isRegularFile((Path) input)) {
+        if (input instanceof Document || input instanceof Document[] && ((Document[]) input).length == 2
+            || input instanceof Path && Files.isRegularFile((Path) input)) {
             return true;
         } else {
             return false;
@@ -38,34 +42,77 @@ public class XmlInputReader implements InputReader {
     @Override
     public Map<String, Object> createModel(Object input) {
         if (isValidInput(input)) {
-            Document doc = (Document) input;
-            Element rootElement = doc.getDocumentElement();
-            Map<String, Object> model = new HashMap<>();
-            model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
-            return new HashMap<>(model);
+            if (input instanceof Document) {
+                Map<String, Object> model = new HashMap<>();
+                fillModel((Document) input, model, "doc");
+                return model;
+            } else if (input instanceof Document[]) {
+                Map<String, Object> model = new HashMap<>();
+                fillModel(((Document[]) input)[0], model, "doc");
+                fillModel(((Document[]) input)[1], model, "elemDoc");
+                return model;
+            } else {
+                throw new IllegalArgumentException(
+                    "XmlInputReader::createModel(Object) called with invalid parameter value. This is a bug.");
+            }
         } else {
             return null;
         }
     }
 
     /**
-     * {@inheritDoc}.<br>
-     * Since the {@link XmlInputReader} does not support multiple input objects it always returns
-     * <code>false</code>.
+     * Adds the given document to the given model. First, the string based model is derived and added by the
+     * root node's key. Second, the document itself is added under the given XPath root key.
+     * @param doc
+     *            the document to be processed
+     * @param model
+     *            the model to be enriched
+     * @param xpathRootKey
+     *            key of the document in the model to be accessible for xpath expressions
      */
-    @Override
-    public boolean combinesMultipleInputObjects(Object input) {
-        return false;
+    private void fillModel(Document doc, Map<String, Object> model, String xpathRootKey) {
+        Element rootElement = doc.getDocumentElement();
+        // custom extracted model for more convenient navigation in the template languages
+        model.put(rootElement.getNodeName(), deriveSubModel(rootElement));
+        // complete access to allow xpath
+        model.put(xpathRootKey, doc);
     }
 
     /**
      * {@inheritDoc}<br>
-     * Since the {@link XmlInputReader} does not support multiple input objects it always returns an empty
-     * {@link List}.
+     * Splits an XMI Document into multiple sub-documents, one per each found class. Returns a {@link List} of
+     * DocumentImpl.
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
-        return new LinkedList<>();
+
+        if (input instanceof Document) {
+            Document doc = (Document) input;
+            DocumentTraversal traversal = (DocumentTraversal) doc;
+            TreeWalker treeWalker =
+                traversal.createTreeWalker(doc.getDocumentElement(), NodeFilter.SHOW_ELEMENT, null, false);
+            Node nextNode = treeWalker.nextNode();
+            List<Object> docsList = new LinkedList<>();
+            while (nextNode != null) {
+                try {
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    Document newXmlDocument = factory.newDocumentBuilder().newDocument();
+                    Node importNode = newXmlDocument.importNode(nextNode, true);
+                    newXmlDocument.appendChild(importNode);
+                    newXmlDocument.normalizeDocument();
+                    docsList.add(new Document[] { doc, newXmlDocument });
+                } catch (ParserConfigurationException e) {
+                    throw new IllegalStateException("Could not create new xml document.", e);
+                }
+                nextNode = treeWalker.nextNode();
+            }
+
+            return docsList;
+        }
+        throw new IllegalArgumentException(
+            "XmlInputReader::getInputObjects(Object,Charset) called with a wrong input parameter. This is a bug!");
+
     }
 
     /**
@@ -75,7 +122,7 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
-        return new LinkedList<>();
+        return getInputObjects(input, inputCharset);
     }
 
     /**
@@ -174,7 +221,9 @@ public class XmlInputReader implements InputReader {
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         if (!Files.isDirectory(path)) {
             try (InputStream fileIn = Files.newInputStream(path)) {
-                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(fileIn);
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                return factory.newDocumentBuilder().parse(fileIn);
             } catch (SAXException | IOException | ParserConfigurationException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
             }
