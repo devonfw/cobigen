@@ -55,8 +55,7 @@ public interface InputReader {
     public Map<String, Object> getTemplateMethods(Object input);
 
     /**
-     * Will return the set of combined input objects if the given input combines multiple input objects (resp.
-     * {@link #combinesMultipleInputObjects(Object)} returns <code>true</code>).
+     * Will return the set of combined input objects if the given input combines multiple input objects.
      * @param input
      *            the combined input object
      * @param inputCharset

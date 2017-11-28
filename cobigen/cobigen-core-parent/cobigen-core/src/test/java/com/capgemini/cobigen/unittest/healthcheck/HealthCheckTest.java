@@ -51,7 +51,7 @@ public class HealthCheckTest {
         HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backupPolicy);
         // assert
         assertThat(report).isSuccessful();
-        assertThat(report).isOfConextVersion(executionFolder,
+        assertThat(report).isOfContextVersion(executionFolder,
             ContextConfigurationVersion.getLatest().getFloatRepresentation() + "");
     }
 
@@ -73,7 +73,7 @@ public class HealthCheckTest {
         HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backupPolicy);
         // assert
         assertThat(report).isSuccessful();
-        assertThat(report).isOfConextVersion(executionFolder,
+        assertThat(report).isOfContextVersion(executionFolder,
             ContextConfigurationVersion.getLatest().getFloatRepresentation() + "");
 
     }
@@ -96,7 +96,7 @@ public class HealthCheckTest {
         HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backupPolicy);
         // assert
         assertThat(report).isSuccessful();
-        assertThat(report).isOfConextVersion(executionFolder,
+        assertThat(report).isOfContextVersion(executionFolder,
             ContextConfigurationVersion.getLatest().getFloatRepresentation() + "");
     }
 
@@ -138,7 +138,7 @@ public class HealthCheckTest {
         HealthCheckReport report = healthcheck.upgradeAllConfigurations(executionFolder, backupPolicy);
         // assert
         assertThat(report).isSuccessful();
-        assertThat(report).isOfConextVersion(executionFolder,
+        assertThat(report).isOfContextVersion(executionFolder,
             ContextConfigurationVersion.getLatest().getFloatRepresentation() + "");
         assertThat(report).isOfTemplatesVersion(templateFolder, "2.1");
     }
@@ -146,6 +146,7 @@ public class HealthCheckTest {
     /**
      * Test Error Message when Context Configuration is incorrect.
      * @throws IOException
+     *             if failing test fails
      */
     @Test(expected = InvalidConfigurationException.class)
     public void testFailingContextConfigUpgrade() throws IOException {
@@ -182,6 +183,7 @@ public class HealthCheckTest {
      * test report of one failing context configuration upgrade with no linked templates. Version number
      * should stay the same.
      * @throws Exception
+     *             if failing test fails
      */
     @Test
     public void testFailingUpgradeContextConfigurationWithNoTemplatesConfig() throws Exception {
@@ -194,7 +196,7 @@ public class HealthCheckTest {
         // act
         HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
         System.out.print(report.getErrors());
-        assertThat(report).isOfConextVersion(executionFolder, "2.0");
+        assertThat(report).isOfContextVersion(executionFolder, "2.0");
     }
 
 }

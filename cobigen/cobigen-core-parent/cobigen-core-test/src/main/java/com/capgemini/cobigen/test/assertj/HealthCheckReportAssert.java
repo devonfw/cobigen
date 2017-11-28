@@ -59,13 +59,16 @@ public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAss
     }
 
     /**
-     * Return the version of the document given.
+     * Returns the version of the document given and the version of the current template verison
      * @param configRoot
      *            root directory of the configuration
-     * @return
+     * @param version
+     *            is the current context version
+     * @return the version of the document given and the version of the current template verison
      * @throws Exception
+     *             if a problem with the comparison occurs
      */
-    public HealthCheckReportAssert isOfConextVersion(Path configRoot, String version) throws Exception {
+    public HealthCheckReportAssert isOfContextVersion(Path configRoot, String version) throws Exception {
 
         Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -79,11 +82,14 @@ public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAss
     }
 
     /**
-     * Return the version of the document given.
+     * Return the version of the document given and the version of the current template version
      * @param configRoot
-     *            root directory of the configuration
-     * @return
+     *            root directory of the template file
+     * @param version
+     *            is the current template version
+     * @return the version of the document given and the version of the current template version
      * @throws Exception
+     *             if a problem with the comparison occurs
      */
     public HealthCheckReportAssert isOfTemplatesVersion(Path configRoot, String version) throws Exception {
 
