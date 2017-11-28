@@ -75,6 +75,32 @@
                visible="true">
          </separator>
       </menuContribution>
+  
+      <menuContribution
+        allPopups="false"
+        locationURI="popup:#CompilationUnitEditorContext?after=additions">
+        <separator
+                name="com.capgemini.cobigen.eclipseplugin.separator5"
+                visible="true">
+        </separator>
+        <menu
+               label="CobiGen">
+            <command
+                  commandId="com.capgemini.cobigen.eclipseplugin.generate"
+                  label="Generate..."
+                  style="push">
+            </command>
+            <command
+                  commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                  label="Health Check..."
+                  style="push">
+            </command>
+         </menu>
+         <separator
+               name="com.capgemini.cobigen.eclipseplugin.separator6"
+               visible="true">
+         </separator>
+      </menuContribution>
    </extension>
 
 </plugin>
