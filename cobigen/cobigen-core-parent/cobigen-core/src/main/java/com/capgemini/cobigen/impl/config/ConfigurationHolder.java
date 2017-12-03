@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.impl.config;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
@@ -14,7 +15,7 @@ import com.google.common.collect.Maps;
 public class ConfigurationHolder {
 
     /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
-    private Map<String, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+    private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
     /** Cached context configuration */
     private ContextConfiguration contextConfiguration;
@@ -39,7 +40,9 @@ public class ConfigurationHolder {
      *            configuration file}.
      */
     public void invalidateTemplatesConfiguration(Path path) {
-        templatesConfigurations.remove(path.toUri().toString());
+        Path templateFolder = configurationPath.relativize(path);
+        templateFolder = templateFolder.subpath(0, templateFolder.getNameCount());
+        templatesConfigurations.remove(templateFolder);
     }
 
     /**
@@ -59,15 +62,15 @@ public class ConfigurationHolder {
      */
     public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
+        Path templateFolder = Paths.get(trigger.getTemplateFolder());
         if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
-            templatesConfigurations.put(trigger.getTemplateFolder(),
-                Maps.<String, TemplatesConfiguration> newHashMap());
+            templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
             TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
-            templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
+            templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
         }
 
-        return templatesConfigurations.get(trigger.getTemplateFolder()).get(trigger.getId());
+        return templatesConfigurations.get(templateFolder).get(trigger.getId());
     }
 
     /**
