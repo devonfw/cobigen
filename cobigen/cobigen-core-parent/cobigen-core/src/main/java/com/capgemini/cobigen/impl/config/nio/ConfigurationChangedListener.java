@@ -156,7 +156,7 @@ public class ConfigurationChangedListener implements Runnable {
                 Path child = dir.resolve(relativeFilePath);
 
                 // print out event
-                LOG.trace("{}: {}", event.kind().name(), child);
+                LOG.debug("{}: {}", event.kind().name(), child);
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
