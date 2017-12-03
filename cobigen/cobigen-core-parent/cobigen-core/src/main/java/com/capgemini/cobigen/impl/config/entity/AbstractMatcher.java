@@ -1,19 +1,14 @@
 package com.capgemini.cobigen.impl.config.entity;
 
-/**
- * Common declaration of all available matcher types
- * @author mbrunnli (13.10.2014)
- */
+import java.util.Objects;
+
+/** Common declaration of all available matcher types */
 public abstract class AbstractMatcher {
 
-    /**
-     * Matcher type
-     */
+    /** Matcher type */
     private String type;
 
-    /**
-     * Matcher value to be matched against
-     */
+    /** Matcher value to be matched against */
     private String value;
 
     /**
@@ -22,7 +17,6 @@ public abstract class AbstractMatcher {
      *            matcher type
      * @param value
      *            to match against
-     * @author mbrunnli (08.04.2014)
      */
     public AbstractMatcher(String type, String value) {
         this.type = type;
@@ -45,5 +39,10 @@ public abstract class AbstractMatcher {
      */
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, value);
     }
 }
