@@ -65,7 +65,7 @@ public class ConfigCacheTest extends AbstractApiTest {
             List<String> replaced = lines.map(line -> line.replace("Dao", "Entity")).collect(Collectors.toList());
             Files.write(contextConfig, replaced);
         }
-        Thread.sleep(200);
+        Thread.sleep(500);
 
         // check again
         assertThat(cobigen.getMatchingTriggerIds(input)).isEmpty();
@@ -107,7 +107,7 @@ public class ConfigCacheTest extends AbstractApiTest {
                     .collect(Collectors.toList());
             Files.write(contextConfig, replaced);
         }
-        Thread.sleep(200);
+        Thread.sleep(500);
 
         // check again
         assertThat(cobigen.getMatchingTemplates(input)).hasSize(1);
