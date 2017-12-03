@@ -43,7 +43,7 @@ public class PluginMockFactory {
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
 
-        when(triggerInterpreter.getType()).thenReturn("java");
+        when(triggerInterpreter.getType()).thenReturn("mockplugin");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
         when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 

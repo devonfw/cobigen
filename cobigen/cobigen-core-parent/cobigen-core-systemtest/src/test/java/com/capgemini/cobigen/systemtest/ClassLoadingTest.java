@@ -114,7 +114,7 @@ public class ClassLoadingTest extends AbstractApiTest {
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
 
-        when(triggerInterpreter.getType()).thenReturn("java");
+        when(triggerInterpreter.getType()).thenReturn("mockplugin");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
         when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
@@ -125,7 +125,6 @@ public class ClassLoadingTest extends AbstractApiTest {
             .thenReturn(true);
 
         // Simulate container children resolution of any plug-in
-        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
         when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
 
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
