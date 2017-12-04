@@ -3,7 +3,6 @@ package com.capgemini.cobigen.impl.config.nio;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -45,9 +44,8 @@ public class ConfigurationChangedListener implements Runnable {
     /** The configuration of CobiGen */
     private ConfigurationHolder configurationHolder;
 
+    /** Watch Keys tracking files */
     private final Map<WatchKey, Path> keys = new HashMap<>();
-
-    private Path configurationPath;
 
     /**
      * Creates a new {@link ConfigurationChangedListener} to watch the configuration.
@@ -63,7 +61,6 @@ public class ConfigurationChangedListener implements Runnable {
         Objects.requireNonNull(configurationPath, "Configuration path must not be null.");
         Objects.requireNonNull(configurationHolder, "ConfigurationHolder must not be null.");
         this.configurationHolder = configurationHolder;
-        this.configurationPath = configurationPath;
 
         watcher = FileSystems.getDefault().newWatchService();
 
@@ -77,11 +74,6 @@ public class ConfigurationChangedListener implements Runnable {
      */
     public void start() {
         new Thread(this).start();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>) event;
     }
 
     /**
@@ -114,7 +106,6 @@ public class ConfigurationChangedListener implements Runnable {
      *             if files could not be read
      */
     private void registerAll(final Path root) throws IOException {
-        // register directory and sub-directories
         Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -138,24 +129,20 @@ public class ConfigurationChangedListener implements Runnable {
 
             Path dir = keys.get(key);
             if (dir == null) {
-                System.err.println("WatchKey not recognized!!");
+                LOG.error(
+                    "WatchKey not recognized!! This is most probably a bug and might lead to incorrect change detection within the configuration folder.");
                 continue;
             }
 
             for (WatchEvent<?> event : key.pollEvents()) {
                 Kind<?> kind = event.kind();
 
-                // TBD - provide example of how OVERFLOW event is handled
-                if (kind == OVERFLOW) {
-                    continue;
-                }
-
                 // Context for directory entry event is the file name of entry
-                WatchEvent<Path> ev = cast(event);
+                @SuppressWarnings("unchecked")
+                WatchEvent<Path> ev = (WatchEvent<Path>) event;
                 Path relativeFilePath = ev.context();
                 Path child = dir.resolve(relativeFilePath);
 
-                // print out event
                 LOG.debug("{}: {}", event.kind().name(), child);
 
                 // if directory is created, and watching recursively, then
@@ -166,7 +153,7 @@ public class ConfigurationChangedListener implements Runnable {
                             registerAll(child);
                         }
                     } catch (IOException x) {
-                        // ignore to keep sample readable
+                        LOG.warn("Could not read directory {} to register file change listener.", child, x);
                     }
                 }
 
