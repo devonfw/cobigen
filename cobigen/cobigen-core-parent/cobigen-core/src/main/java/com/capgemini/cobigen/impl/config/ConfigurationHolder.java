@@ -47,7 +47,7 @@ public class ConfigurationHolder {
      */
     public void invalidateTemplatesConfiguration(Path path) {
         Path templateFolder = configurationPath.relativize(path);
-        templateFolder = templateFolder.subpath(0, templateFolder.getNameCount());
+        templateFolder = templateFolder.subpath(0, templateFolder.getNameCount() - 1);
         templatesConfigurations.remove(templateFolder);
         LOG.debug("Templates configuration cache invalidated for template folder {}.", templateFolder);
     }
@@ -71,7 +71,7 @@ public class ConfigurationHolder {
     public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
         Path templateFolder = Paths.get(trigger.getTemplateFolder());
-        if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
+        if (!templatesConfigurations.containsKey(templateFolder)) {
             templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
             TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
