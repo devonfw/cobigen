@@ -1,7 +1,11 @@
 package com.capgemini.cobigen.impl.config;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -13,8 +17,11 @@ import com.google.common.collect.Maps;
  */
 public class ConfigurationHolder {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
+
     /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
-    private Map<String, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+    private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
     /** Cached context configuration */
     private ContextConfiguration contextConfiguration;
@@ -39,7 +46,10 @@ public class ConfigurationHolder {
      *            configuration file}.
      */
     public void invalidateTemplatesConfiguration(Path path) {
-        templatesConfigurations.remove(path.toUri().toString());
+        Path templateFolder = configurationPath.relativize(path);
+        templateFolder = templateFolder.subpath(0, templateFolder.getNameCount() - 1);
+        templatesConfigurations.remove(templateFolder);
+        LOG.debug("Templates configuration cache invalidated for template folder {}.", templateFolder);
     }
 
     /**
@@ -47,6 +57,7 @@ public class ConfigurationHolder {
      */
     public void invalidateContextConfiguration() {
         contextConfiguration = null;
+        LOG.debug("Context configuration cache invalidated.");
     }
 
     /**
@@ -59,15 +70,15 @@ public class ConfigurationHolder {
      */
     public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
-        if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
-            templatesConfigurations.put(trigger.getTemplateFolder(),
-                Maps.<String, TemplatesConfiguration> newHashMap());
+        Path templateFolder = Paths.get(trigger.getTemplateFolder());
+        if (!templatesConfigurations.containsKey(templateFolder)) {
+            templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
             TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
-            templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
+            templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
         }
 
-        return templatesConfigurations.get(trigger.getTemplateFolder()).get(trigger.getId());
+        return templatesConfigurations.get(templateFolder).get(trigger.getId());
     }
 
     /**
