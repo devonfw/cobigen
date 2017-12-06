@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.impl.config.entity;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -104,14 +105,14 @@ public class Trigger {
      * @return all available matchers
      */
     public List<Matcher> getMatcher() {
-        return matchers;
+        return new ArrayList<>(matchers);
     }
 
     /**
      * @return all available containerMatchers
      */
     public List<ContainerMatcher> getContainerMatchers() {
-        return containerMatchers;
+        return new ArrayList<>(containerMatchers);
     }
 
     /**

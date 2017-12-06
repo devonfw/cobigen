@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
     <trigger id="trigger1" type="test" templateFolder="templates">
-        <containerMatcher type="or" value="?" retrieveObjectsRecursively="false"/>
+        <containerMatcher type="container" value="?" retrieveObjectsRecursively="false"/>
         <matcher type="or" value="?"/>
         <matcher type="not" value="?" accumulationType="NOT"/>
     </trigger>

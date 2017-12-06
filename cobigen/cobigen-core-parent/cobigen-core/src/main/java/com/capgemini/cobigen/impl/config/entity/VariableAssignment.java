@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.impl.config.entity;
 
+import java.util.Objects;
+
 /**
  * A {@link VariableAssignment} key value pair, which will be interpreted by any plug-in declaring the
  * {@link #type}
@@ -66,12 +68,8 @@ public class VariableAssignment {
         return value;
     }
 
-    // /**
-    // * {@inheritDoc}
-    // * @author mbrunnli (24.10.2013)
-    // */
-    // @Override
-    // public int hashCode() {
-    // return key.hashCode();
-    // }
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, varName, value);
+    }
 }
