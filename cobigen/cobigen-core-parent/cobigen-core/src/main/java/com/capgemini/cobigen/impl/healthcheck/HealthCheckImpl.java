@@ -98,7 +98,7 @@ public class HealthCheckImpl implements HealthCheck {
         upgradeableConfigurations.put("TempOne", contextConfigurationPath.resolve("TempOne"));
         healthCheckReport.setUpgradeableConfigurations(upgradeableConfigurations);
 
-        if (expectedTemplatesConfigurations.toString().equals(healthCheckReport.getHasConfiguration().toString())) {
+        if (expectedTemplatesConfigurations.containsAll(healthCheckReport.getHasConfiguration())) {
             for (final String key : expectedTemplatesConfigurations) {
                 if (healthCheckReport.getUpgradeableConfigurations().containsKey(key)) {
                     upgradeTemplatesConfiguration(healthCheckReport.getUpgradeableConfigurations().get(key),
