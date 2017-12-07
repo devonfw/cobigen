@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import com.capgemini.cobigen.api.annotation.ExceptionFacade;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
+import com.capgemini.cobigen.impl.util.ExceptionUtil;
 
 /**
  * This is the interceptor processing {@link ExceptionFacade} annotations. It wraps each return value with a
@@ -18,11 +19,11 @@ public class ExceptionFacadeInterceptor extends AbstractInterceptor {
 
         // just skip if annotation is not available
         if (isActive(method, ExceptionFacade.class)) {
-            return method.invoke(getTargetObject(), args);
+            return ExceptionUtil.invokeTarget(getTargetObject(), method, args);
         }
 
         try {
-            Object result = method.invoke(getTargetObject(), args);
+            Object result = ExceptionUtil.invokeTarget(getTargetObject(), method, args);
             // if internal API class, proxy again
             if (result.getClass().getPackage().getName().startsWith("com.capgemini.cobigen.api")) {
                 result = ProxyFactory.getProxy(result);

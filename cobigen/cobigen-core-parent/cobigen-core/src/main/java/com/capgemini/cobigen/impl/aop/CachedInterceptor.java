@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.annotation.Cached;
+import com.capgemini.cobigen.impl.util.ExceptionUtil;
 
 /**
  * The {@link CachedInterceptor} enables caching of several requests on the same method. Therefore, the cache
@@ -33,7 +34,7 @@ public class CachedInterceptor extends AbstractInterceptor {
         if (!isActive(method, Cached.class)
             && !isActive(getTargetObject().getClass().getMethod(method.getName(), method.getParameterTypes()),
                 Cached.class)) {
-            return method.invoke(getTargetObject(), args);
+            return ExceptionUtil.invokeTarget(getTargetObject(), method, args);
         }
 
         // Ask cache
@@ -53,7 +54,7 @@ public class CachedInterceptor extends AbstractInterceptor {
         }
 
         // execute target implementation
-        returnValue = method.invoke(getTargetObject(), args);
+        returnValue = ExceptionUtil.invokeTarget(getTargetObject(), method, args);
 
         // persist cache
         persistCache(keyHash, method, returnValue);
