@@ -3,6 +3,7 @@ package com.capgemini.cobigen.api;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.capgemini.cobigen.api.annotation.Cached;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
@@ -43,6 +44,7 @@ public interface ConfigurationInterpreter {
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
      */
+    @Cached
     public List<TemplateTo> getMatchingTemplates(Object matcherInput) throws InvalidConfigurationException;
 
     /**

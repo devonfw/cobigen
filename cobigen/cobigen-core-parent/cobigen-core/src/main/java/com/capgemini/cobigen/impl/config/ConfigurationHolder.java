@@ -4,10 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.google.common.collect.Maps;
@@ -16,9 +12,6 @@ import com.google.common.collect.Maps;
  * Cached in-memory CobiGen configuration.
  */
 public class ConfigurationHolder {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
 
     /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
     private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
@@ -36,28 +29,6 @@ public class ConfigurationHolder {
      */
     public ConfigurationHolder(Path configurationPath) {
         this.configurationPath = configurationPath;
-    }
-
-    /**
-     * Removes all instances of the {@link TemplatesConfiguration} given by the provided {@link Path} from the
-     * cache.
-     * @param path
-     *            {@link Path} of the {@link ConfigurationConstants#TEMPLATES_CONFIG_FILENAME templates
-     *            configuration file}.
-     */
-    public void invalidateTemplatesConfiguration(Path path) {
-        Path templateFolder = configurationPath.relativize(path);
-        templateFolder = templateFolder.subpath(0, templateFolder.getNameCount() - 1);
-        templatesConfigurations.remove(templateFolder);
-        LOG.debug("Templates configuration cache invalidated for template folder {}.", templateFolder);
-    }
-
-    /**
-     * Removes the {@link ContextConfiguration} from the cache.
-     */
-    public void invalidateContextConfiguration() {
-        contextConfiguration = null;
-        LOG.debug("Context configuration cache invalidated.");
     }
 
     /**

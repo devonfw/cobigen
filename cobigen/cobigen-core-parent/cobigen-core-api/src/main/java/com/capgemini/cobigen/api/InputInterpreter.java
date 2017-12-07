@@ -7,9 +7,7 @@ import java.util.List;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.extension.InputReader;
 
-/**
- * The implements operations for reading or processing inputs.
- */
+/** The implements operations for reading or processing inputs. */
 public interface InputInterpreter {
 
     /**
@@ -22,24 +20,13 @@ public interface InputInterpreter {
     public boolean combinesMultipleInputs(Object input);
 
     /**
-     * Determines the set of input objects derived from the given container input recursively
+     * Resolves any input, which serves as a container and returns the list of contained inputs, which are
+     * valid for generation.
      * @param input
-     *            the combined input object
-     * @param inputCharset
-     *            to be used for reading new inputs
-     * @return a list of input objects, the generation should be triggered for each.
+     *            container to resolve
+     * @return the list of matching entries in the container or the input itself if it is not a container.
      */
-    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset);
-
-    /**
-     * Determines the set of input objects derived from the given container input
-     * @param input
-     *            the combined input object
-     * @param inputCharset
-     *            to be used for reading new inputs
-     * @return a list of input objects, the generation should be triggered for each.
-     */
-    public List<Object> getInputObjects(Object input, Charset inputCharset);
+    public List<Object> resolveContainers(Object input);
 
     /**
      * Reads the content at a path via a fitting {@link InputReader} and returns a CobiGen compliant input
@@ -57,7 +44,7 @@ public interface InputInterpreter {
      * @throws IllegalArgumentException
      *             if the provided additional arguments do not suffice the used InputReader
      */
-    public abstract Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
+    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
         throws InputReaderException;
 
 }
