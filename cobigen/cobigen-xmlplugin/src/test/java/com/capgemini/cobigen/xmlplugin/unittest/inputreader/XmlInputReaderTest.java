@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.capgemini.cobigen.xmlplugin.inputreader.ModelConstant;
@@ -47,18 +48,18 @@ public class XmlInputReaderTest {
         List<Object> inputObjects = xmlInputReader.getInputObjects(doc, UTF_8);
 
         Map<String, Object> aStringModel = null, bStringModel = null, brStringModel = null;
-        Document aDoc = null, bDoc = null, brDoc = null;
+        Node aDoc = null, bDoc = null, brDoc = null;
         for (Object inputObj : inputObjects) {
             Map<String, Object> model = xmlInputReader.createModel(inputObj);
             if (model.containsKey("a")) {
                 aStringModel = (Map<String, Object>) model.get("a");
-                aDoc = (Document) model.get("elemDoc");
+                aDoc = (Node) model.get("elemDoc");
             } else if (model.containsKey("b")) {
                 bStringModel = (Map<String, Object>) model.get("b");
-                bDoc = (Document) model.get("elemDoc");
+                bDoc = (Node) model.get("elemDoc");
             } else if (model.containsKey("br")) {
                 brStringModel = (Map<String, Object>) model.get("br");
-                brDoc = (Document) model.get("elemDoc");
+                brDoc = (Node) model.get("elemDoc");
             } else {
                 throw new AssertionError("The result contains an unexpected model.");
             }
@@ -76,9 +77,9 @@ public class XmlInputReaderTest {
         assertThat(brStringModel.get("_text_")).isEqualTo("abc");
 
         // check for existence of correct dom doc
-        assertThat(aDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("a");
-        assertThat(bDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("b");
-        assertThat(brDoc).isNotNull().extracting(e -> e.getDocumentElement().getNodeName()).containsExactly("br");
+        assertThat(aDoc).isNotNull().extracting(e -> e.getNodeName()).containsExactly("a");
+        assertThat(bDoc).isNotNull().extracting(e -> e.getNodeName()).containsExactly("b");
+        assertThat(brDoc).isNotNull().extracting(e -> e.getNodeName()).containsExactly("br");
     }
 
     /**
@@ -96,8 +97,8 @@ public class XmlInputReaderTest {
         List<Object> inputObjects = xmlInputReader.getInputObjects(doc, UTF_8);
 
         // root is not part of the list by intention
-        assertThat(inputObjects).extracting(e -> ((Document[]) e)[1].getDocumentElement().getNodeName())
-            .containsExactlyInAnyOrder("a", "b", "br");
+        assertThat(inputObjects).extracting(e -> ((Node[]) e)[1].getNodeName()).containsExactlyInAnyOrder("a", "b",
+            "br");
     }
 
     /**
