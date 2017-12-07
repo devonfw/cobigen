@@ -11,7 +11,7 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.impl.annotation.ProxyFactory;
+import com.capgemini.cobigen.impl.aop.ProxyFactory;
 import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 

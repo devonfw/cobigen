@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
-import com.capgemini.cobigen.impl.annotation.ProxyFactory;
+import com.capgemini.cobigen.impl.aop.ProxyFactory;
 import com.google.common.collect.Maps;
 
 /**

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.annotation;
+package com.capgemini.cobigen.impl.aop;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -99,11 +99,11 @@ public final class ProxyFactory {
     private static Set<String> collectAnnotations(Class<?> targetObjectClass) {
         Set<String> annotationClasses = new HashSet<>();
         for (Annotation a : targetObjectClass.getAnnotations()) {
-            annotationClasses.add(a.getClass().getCanonicalName());
+            annotationClasses.add(a.annotationType().getCanonicalName());
         }
         for (Method m : targetObjectClass.getMethods()) {
             for (Annotation a : m.getAnnotations()) {
-                annotationClasses.add(a.getClass().getCanonicalName());
+                annotationClasses.add(a.annotationType().getCanonicalName());
             }
         }
         return annotationClasses;
