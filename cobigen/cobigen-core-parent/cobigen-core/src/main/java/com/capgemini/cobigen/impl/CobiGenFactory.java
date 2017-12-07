@@ -11,7 +11,6 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
-import com.capgemini.cobigen.impl.config.nio.ConfigurationChangedListener;
 import com.capgemini.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.capgemini.cobigen.impl.extension.ServiceLookup;
 import com.capgemini.cobigen.impl.generator.CobiGenImpl;
@@ -43,9 +42,6 @@ public class CobiGenFactory {
         Path configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
 
         ConfigurationHolder configurationHolder = new ConfigurationHolder(configFolder);
-        if (!FileSystemUtil.isZipFile(configFileOrFolder)) {
-            new ConfigurationChangedListener(configFolder, configurationHolder);
-        }
 
         return ProxyFactory.getProxy(new CobiGenImpl(configurationHolder));
     }
