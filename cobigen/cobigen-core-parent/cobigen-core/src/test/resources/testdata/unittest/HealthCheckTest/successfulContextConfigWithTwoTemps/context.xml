@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contextConfiguration xmlns="http://capgemini.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="2.0">
+  <triggers>
+    <trigger id="resources_resources_spring_common" type="java" templateFolder="TempOne">
+      <matcher type="fqn" value="*" accumulationType="NOT">
+        <variableAssignment type="constant" key="foo" value="BLUBB1"/>
+        <variableAssignment type="constant" key="bar" value="BLAABB1"/>
+      </matcher>
+    </trigger>
+    
+    <trigger id="resources_resources_spring_common" type="java" templateFolder="TempTwo">
+      <matcher type="fqn" value="*" accumulationType="NOT">
+        <variableAssignment type="constant" key="foo" value="BLUBB1"/>
+        <variableAssignment type="constant" key="bar" value="BLAABB1"/>
+      </matcher>
+    </trigger>
+  </triggers>
+</contextConfiguration>
