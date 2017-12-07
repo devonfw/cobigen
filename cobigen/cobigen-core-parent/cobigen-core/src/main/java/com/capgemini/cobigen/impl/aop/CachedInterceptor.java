@@ -1,8 +1,9 @@
-package com.capgemini.cobigen.impl.annotation;
+package com.capgemini.cobigen.impl.aop;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -23,18 +24,30 @@ public class CachedInterceptor extends AbstractInterceptor {
     private static final Logger LOG = LoggerFactory.getLogger(CachedInterceptor.class);
 
     /** Mapping of input object to method name to method result */
-    private Map<Object, Map<Method, Object>> _cache = new WeakHashMap<>();
+    private Map<Object, Map<Method, Object>> _cache = new HashMap<>();
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         // just skip if annotation is not available
-        if (isActive(method, Cached.class)) {
+        if (!isActive(method, Cached.class)
+            && !isActive(getTargetObject().getClass().getMethod(method.getName(), method.getParameterTypes()),
+                Cached.class)) {
             return method.invoke(getTargetObject(), args);
         }
 
         // Ask cache
-        Object returnValue = askCache(args[0], method);
+        // int keyHash = UUID.randomUUID().toString().hashCode();// Arrays.toString(args).hashCode()
+        int keyHash;
+        if (args.length > 1) {
+            keyHash = Objects.hash(args[0], args[1]);
+        } else if (args.length > 0) {
+            keyHash = args[0].hashCode();
+        } else {
+            keyHash = "default".hashCode();
+        }
+
+        Object returnValue = askCache(keyHash, method);
         if (returnValue != null) {
             return returnValue;
         }
@@ -43,25 +56,25 @@ public class CachedInterceptor extends AbstractInterceptor {
         returnValue = method.invoke(getTargetObject(), args);
 
         // persist cache
-        persistCache(args[0], method, returnValue);
+        persistCache(keyHash, method, returnValue);
 
         return returnValue;
     }
 
     /**
      * Asks the cache for an already available value for the given input and the given Method
-     * @param input
-     *            object of the method call
+     * @param paramHash
+     *            hash value of the parameters to serve as a key for caching
      * @param method
      *            {@link Method} to be called
      * @return the cached return value or {@code null} if the cache does not contain this value.
      */
-    private Object askCache(Object input, Method method) {
-        if (_cache.containsKey(input)) {
-            if (_cache.get(input).containsKey(method)) {
+    private Object askCache(int paramHash, Method method) {
+        if (_cache.containsKey(paramHash)) {
+            if (_cache.get(paramHash).containsKey(method)) {
                 LOG.debug("Value for method {}#{} retrieved from cache.", method.getClass().getName(),
                     method.getName());
-                return _cache.get(input).get(method);
+                return _cache.get(paramHash).get(method);
             }
         }
         return null;
@@ -69,19 +82,19 @@ public class CachedInterceptor extends AbstractInterceptor {
 
     /**
      * Persists the given return value for the given method call with the given input parameter in the cache.
-     * @param input
-     *            object of the method call
+     * @param paramHash
+     *            hash value of the parameters to serve as a key for caching
      * @param method
      *            {@link Method} to be called
      * @param returnValue
      *            to be cached
      */
-    private void persistCache(Object input, Method method, Object returnValue) {
-        if (!_cache.containsKey(input)) {
+    private void persistCache(int paramHash, Method method, Object returnValue) {
+        if (!_cache.containsKey(paramHash)) {
             // setting initial size to 4 as memory optimization due to the fact, that the cache is currently
             // just used for ConfigurationInterpreter, which just has four public methods.
-            _cache.put(input, new HashMap<Method, Object>(4));
+            _cache.put(paramHash, new HashMap<Method, Object>(4));
         }
-        _cache.get(input).put(method, returnValue);
+        _cache.get(paramHash).put(method, returnValue);
     }
 }

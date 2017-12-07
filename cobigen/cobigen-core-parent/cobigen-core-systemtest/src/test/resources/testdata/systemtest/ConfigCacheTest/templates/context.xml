@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
-  <trigger id="t1" type="java" templateFolder="testTemplates">
-    <matcher type="fqn" value="([^\.]+)Dao">
-    </matcher>
-  </trigger>
-</contextConfiguration>
