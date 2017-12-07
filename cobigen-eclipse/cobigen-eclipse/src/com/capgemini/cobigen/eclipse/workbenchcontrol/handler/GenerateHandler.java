@@ -7,7 +7,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
@@ -49,14 +48,14 @@ public class GenerateHandler extends AbstractHandler {
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);
 
-        if (sel instanceof IStructuredSelection) {
+        if (sel instanceof ISelection) {
 
             // when this handler is executed, we should we should be sure, that the selection is currently
             // supported by the following implementation
 
             try {
                 LOG.info("Initiating CobiGen...");
-                CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator((IStructuredSelection) sel);
+                CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(sel);
                 if (generator == null) {
                     LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
                     MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
