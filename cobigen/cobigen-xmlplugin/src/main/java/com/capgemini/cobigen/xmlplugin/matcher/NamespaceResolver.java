@@ -5,20 +5,20 @@ import java.util.Iterator;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
-import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /** Namespace Resolver backed by an existing DOM Document */
 public class NamespaceResolver implements NamespaceContext {
 
     /** the delegating source document */
-    private Document sourceDocument;
+    private Node sourceDocument;
 
     /**
      * This constructor stores the source document to search the namespaces in it.
      * @param document
      *            source document
      */
-    public NamespaceResolver(Document document) {
+    public NamespaceResolver(Node document) {
         sourceDocument = document;
     }
 

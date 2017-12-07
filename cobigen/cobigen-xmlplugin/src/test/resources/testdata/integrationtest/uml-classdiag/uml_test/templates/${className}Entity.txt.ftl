@@ -1,6 +1,6 @@
 <#ftl ns_prefixes={"xmi":"http://schema.omg.org/spec/XMI/2.1"}>
 <#compress>
-<#assign name = elemDoc["/packagedElement/@name"]>
+<#assign name = elemDoc["./@name"]>
 <#assign connectors = doc["xmi:XMI/xmi:Extension/connectors/connector"]>
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class ${variables.className}Entity extends ApplicationPersistenceEntity i
     private static final long serialVersionUID = 1L;
 
     <#-- Class attributes -->
-    <#list elemDoc["/packagedElement/ownedAttribute"] as attribute>
+    <#list elemDoc["./ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
     ${attribute["@visibility"]} ${attribute["type/@xmi:idref"]?replace("EAJava_","")} ${attribute["@name"]};
         </#if>
@@ -88,7 +88,7 @@ public class ${variables.className}Entity extends ApplicationPersistenceEntity i
     </#list>
 
     
-    <#list elemDoc["/packagedElement/ownedAttribute"] as attribute>
+    <#list elemDoc["./ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
     @Override
             <#if (attribute["type/@xmi:idref"]) == "EAJava_int">

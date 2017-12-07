@@ -12,6 +12,7 @@ import javax.xml.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
@@ -26,6 +27,9 @@ public class XmlMatcher implements MatcherInterpreter {
 
     /** Assigning logger to XmlClassMatcher */
     private static final Logger LOG = LoggerFactory.getLogger(XmlMatcher.class);
+
+    /** XPath object to evaluate xpath expressions with */
+    private static final XPath XPathObj = XPathFactory.newInstance().newXPath();
 
     /** Currently supported matcher types */
     private enum MatcherType {
@@ -52,18 +56,16 @@ public class XmlMatcher implements MatcherInterpreter {
             case NODENAME:
                 if (target instanceof Document) {
                     String documentRootName = ((Document) target).getDocumentElement().getNodeName();
-                    // return documentRootName.equals(matcher.getValue());
                     return documentRootName != null && !documentRootName.equals("")
                         && matcher.getValue().matches(documentRootName);
                 }
                 break;
             case XPATH:
-                Document targetDoc = getDoc(target, 1);
+                Node targetNode = getDocElem(target, 1);
                 XPath xPath = createXpathObject(target);
                 String xpathExpression = matcher.getValue();
                 try {
-                    return ((NodeList) xPath.evaluate(xpathExpression, targetDoc, XPathConstants.NODESET))
-                        .getLength() > 0;
+                    return (boolean) xPath.evaluate(xpathExpression, targetNode, XPathConstants.BOOLEAN);
                 } catch (XPathExpressionException e) {
                     throw new CobiGenRuntimeException("Invalid XPath expression: " + xpathExpression, e);
                 }
@@ -81,10 +83,9 @@ public class XmlMatcher implements MatcherInterpreter {
      * @return the created {@link XPath} object
      */
     private XPath createXpathObject(Object target) {
-        Document fullDoc = getDoc(target, 0);
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        xPath.setNamespaceContext(new NamespaceResolver(fullDoc));
-        return xPath;
+        Node fullDoc = getDocElem(target, 0);
+        XPathObj.setNamespaceContext(new NamespaceResolver(fullDoc));
+        return XPathObj;
     }
 
     /**
@@ -100,12 +101,12 @@ public class XmlMatcher implements MatcherInterpreter {
      *            index pointing at the document to be returned in case of {@link Document} array as target
      * @return the preferred {@link Document}
      */
-    private Document getDoc(Object target, int preferredIndex) {
-        Document targetDoc;
+    private Node getDocElem(Object target, int preferredIndex) {
+        Node targetDoc;
         if (target instanceof Document) {
-            targetDoc = (Document) target;
-        } else if (target instanceof Document[]) {
-            targetDoc = ((Document[]) target)[preferredIndex];
+            targetDoc = ((Document) target).getDocumentElement();
+        } else if (target instanceof Node[]) {
+            return ((Node[]) target)[preferredIndex];
         } else {
             throw new IllegalArgumentException(
                 "Unknown input object of type " + target.getClass() + " in matcher execution.");
@@ -130,7 +131,7 @@ public class XmlMatcher implements MatcherInterpreter {
                         break;
                     case XPATH:
                         resolvedVariables.put(va.getVarName(),
-                            resolveVariablesXPath(getDoc(matcher.getTarget(), 1), va.getValue()));
+                            resolveVariablesXPath(getDocElem(matcher.getTarget(), 1), va.getValue()));
                         break;
                     }
                 }
@@ -144,7 +145,7 @@ public class XmlMatcher implements MatcherInterpreter {
                 switch (variableType) {
                 case XPATH:
                     resolvedVariables.put(va.getVarName(),
-                        resolveVariablesXPath(getDoc(matcher.getTarget(), 1), va.getValue()));
+                        resolveVariablesXPath(getDocElem(matcher.getTarget(), 1), va.getValue()));
                     break;
                 case CONSTANT:
                     resolvedVariables.put(va.getVarName(), va.getValue());
@@ -168,7 +169,7 @@ public class XmlMatcher implements MatcherInterpreter {
      * @return the text content of the first node resulting from the xpath or the empty string if the xpath
      *         results in an empty list
      */
-    private String resolveVariablesXPath(Document doc, String xpathExpression) {
+    private String resolveVariablesXPath(Node doc, String xpathExpression) {
         XPath xPath = XPathFactory.newInstance().newXPath();
         LOG.debug("Evaluating xpath {}", xpathExpression);
         try {

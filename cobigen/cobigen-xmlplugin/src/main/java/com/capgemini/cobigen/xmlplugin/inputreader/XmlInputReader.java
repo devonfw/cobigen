@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -29,11 +31,16 @@ import com.capgemini.cobigen.api.extension.InputReader;
 /** {@link InputReader} for XML files. */
 public class XmlInputReader implements InputReader {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlInputReader.class);
+
     @Override
     public boolean isValidInput(Object input) {
-        if (input instanceof Document || input instanceof Document[] && ((Document[]) input).length == 2
-            || input instanceof Path && Files.isRegularFile((Path) input)) {
+        if (input instanceof Document || input instanceof Path && Files.isRegularFile((Path) input)) {
             return true;
+        } else if (input instanceof Node[] && ((Node[]) input).length == 2) {
+            Node[] inputArr = (Node[]) input;
+            return inputArr[0] instanceof Document;
         } else {
             return false;
         }
@@ -44,12 +51,14 @@ public class XmlInputReader implements InputReader {
         if (isValidInput(input)) {
             if (input instanceof Document) {
                 Map<String, Object> model = new HashMap<>();
-                fillModel((Document) input, model, "doc");
+                fillModel((Document) input, model, ModelConstant.ROOT_DOC);
                 return model;
-            } else if (input instanceof Document[]) {
+            } else if (input instanceof Node[]) {
                 Map<String, Object> model = new HashMap<>();
-                fillModel(((Document[]) input)[0], model, "doc");
-                fillModel(((Document[]) input)[1], model, "elemDoc");
+                // Document newXmlDocument = createSubDoc(nextNode);
+
+                fillModel((Document) ((Node[]) input)[0], model, ModelConstant.ROOT_DOC);
+                fillModel(((Node[]) input)[1], model, ModelConstant.ROOT_ELEMDOC);
                 return model;
             } else {
                 throw new IllegalArgumentException(
@@ -78,6 +87,15 @@ public class XmlInputReader implements InputReader {
         model.put(xpathRootKey, doc);
     }
 
+    /** @see #fillModel(Document, Map, String) */
+    @SuppressWarnings("javadoc")
+    private void fillModel(Node rootNode, Map<String, Object> model, String xpathRootKey) {
+        // custom extracted model for more convenient navigation in the template languages
+        model.put(rootNode.getNodeName(), deriveSubModel((Element) rootNode));
+        // complete access to allow xpath
+        model.put(xpathRootKey, rootNode);
+    }
+
     /**
      * {@inheritDoc}<br>
      * Splits an XMI Document into multiple sub-documents, one per each found class. Returns a {@link List} of
@@ -85,6 +103,9 @@ public class XmlInputReader implements InputReader {
      */
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
+
+        LOG.debug("Retrieve xml input objects...");
+        long start = System.currentTimeMillis();
 
         if (input instanceof Document) {
             Document doc = (Document) input;
@@ -94,20 +115,14 @@ public class XmlInputReader implements InputReader {
             Node nextNode = treeWalker.nextNode();
             List<Object> docsList = new LinkedList<>();
             while (nextNode != null) {
-                try {
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setNamespaceAware(true);
-                    Document newXmlDocument = factory.newDocumentBuilder().newDocument();
-                    Node importNode = newXmlDocument.importNode(nextNode, true);
-                    newXmlDocument.appendChild(importNode);
-                    newXmlDocument.normalizeDocument();
-                    docsList.add(new Document[] { doc, newXmlDocument });
-                } catch (ParserConfigurationException e) {
-                    throw new IllegalStateException("Could not create new xml document.", e);
-                }
+                docsList.add(new Node[] { doc, nextNode });
                 nextNode = treeWalker.nextNode();
             }
 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("{} sub trees extracted in {}s", docsList.size(),
+                    (System.currentTimeMillis() - start) / 1000d);
+            }
             return docsList;
         }
         throw new IllegalArgumentException(
@@ -223,6 +238,11 @@ public class XmlInputReader implements InputReader {
             try (InputStream fileIn = Files.newInputStream(path)) {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
+                // disable validations by default to increase overall performance
+                factory.setValidating(false);
+                factory.setFeature("http://xml.org/sax/features/validation", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
                 return factory.newDocumentBuilder().parse(fileIn);
             } catch (SAXException | IOException | ParserConfigurationException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
