@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.impl.annotation;
+package com.capgemini.cobigen.impl.aop;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;

@@ -1,6 +1,5 @@
 package com.capgemini.cobigen.impl.config.resolver;
 
-import com.capgemini.cobigen.api.exception.UnknownExpressionException;
 import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -26,22 +25,6 @@ public class PathExpressionResolver {
 
         super();
         this.variables = variables;
-    }
-
-    /**
-     * Checks whether all expressions in the given string are valid and can be resolved
-     *
-     * @param relativeUnresolvedPath
-     *            virtual target folder path to be checked for resolved
-     * @throws UnknownExpressionException
-     *             if there is an unknown variable modifier
-     * @throws UnknownContextVariableException
-     *             if there is a unknown context variable used in the string
-     */
-    public void checkExpressions(String relativeUnresolvedPath)
-        throws UnknownExpressionException, UnknownContextVariableException {
-
-        evaluateExpressions(relativeUnresolvedPath);
     }
 
     /**
