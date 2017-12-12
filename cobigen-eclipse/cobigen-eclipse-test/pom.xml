@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <tycho.testArgLine>-Xms512m -Xmx2048m -XX:+DisableExplicitGC -XX:MaxPermSize=256m</tycho.testArgLine>
+    <tycho.testArgLine>-Xms512m -Xmx2048m -XX:+DisableExplicitGC</tycho.testArgLine>
   </properties>
 
   <dependencies>

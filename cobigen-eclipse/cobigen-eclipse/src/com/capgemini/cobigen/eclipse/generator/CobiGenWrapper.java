@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.io.Charsets;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -472,14 +471,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     public Set<String> getAllTargetPathsInWorkspace(List<TemplateTo> generatedTemplates) {
         Set<String> paths = new HashSet<>();
 
-        List<Object> inputs;
-        boolean combinesMultipleInputs = cobiGen.combinesMultipleInputs(this.inputs.get(0));
-        if (combinesMultipleInputs) {
-            inputs = cobiGen.getInputObjects(this.inputs.get(0), Charsets.UTF_8);
-        } else {
-            inputs = this.inputs;
-        }
-
+        List<Object> inputs = cobiGen.resolveContainers(this.inputs.get(0));
         for (TemplateTo template : generatedTemplates) {
             for (Object input : inputs) {
                 String path = resolveWorkspaceDependentTemplateDestinationPath(template, input);
@@ -628,13 +620,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         }
 
         // we currently only supporting one container at a time as valid selection
-        if (cobiGen.combinesMultipleInputs(inputs.get(0))) {
-            List<Object> children = cobiGen.getInputObjectsRecursively(inputs.get(0), Charsets.UTF_8);
-            // we have to return one of the children do enable correct variable solution in the user interface
-            return children.get(0);
-        } else {
-            return inputs.get(0);
-        }
+        List<Object> children = cobiGen.resolveContainers(inputs.get(0));
+        // we have to return one of the children do enable correct variable solution in the user interface
+        return children.get(0);
     }
 
     /**

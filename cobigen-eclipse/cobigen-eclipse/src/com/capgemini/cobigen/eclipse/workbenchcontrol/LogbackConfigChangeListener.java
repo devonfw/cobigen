@@ -50,7 +50,6 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
      * change listener will track the context.xml and logback.xml files to be reloaded, when they change.
      * @param generatorConfProj
      *            generator configuration folder
-     * @author mbrunnli (10.04.2013)
      */
     public LogbackConfigChangeListener(IProject generatorConfProj) {
 
