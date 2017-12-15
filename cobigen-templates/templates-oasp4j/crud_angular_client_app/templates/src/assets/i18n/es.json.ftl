@@ -30,7 +30,7 @@
   "SHARE": "COMPARTIR",
   "CLOSE": "CERRAR",
   "ERROR": "ERROR",
-  "${variables.component?lower_case}"": {
+  "${variables.component?lower_case}": {
     "title": "SampleData_ES_Tabla",
     "subtitle": "SampleData_ES_Descripción",
     "addtitle": "Añadir nueva fila",
