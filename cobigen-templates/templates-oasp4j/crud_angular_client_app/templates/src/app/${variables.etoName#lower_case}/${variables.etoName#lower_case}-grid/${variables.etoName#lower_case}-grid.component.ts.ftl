@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ITdDataTableColumn, TdDataTableColumnComponent, TdDataTableComponent, TdDialogService, IPageChangeEvent, ITdDataTableSortChangeEvent } from '@covalent/core';
+import { ITdDataTableColumn, 
+         TdDataTableColumnComponent,
+         TdDataTableComponent,
+         TdDialogService,
+         IPageChangeEvent,
+         ITdDataTableSortChangeEvent } from '@covalent/core';
 import { MatDialogRef, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
@@ -17,6 +22,7 @@ import { Pagination } from '../../core/interfaces/pagination';
   styleUrls: ['./${variables.etoName?lower_case}-grid.component.scss']
 })
 export class ${variables.etoName?cap_first}GridComponent implements OnInit {
+
   @ViewChild('dataTable') dataTable: TdDataTableComponent;
 
   data: any = [];
@@ -31,8 +37,8 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     page: 1,
     total: 1,
   };
+  
   private sorting: any[] = [];
-
   pageSize = 8;
   pageSizes: number[] = [8, 16, 24];
   selectedRow: any;
@@ -186,7 +192,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     e.selected ? this.selectedRow = e.row : this.selectedRow = undefined;
   }
   
-  clearfilters(form): void {
+  clearFilters(form): void {
     form.reset();
     this.getSampleData();
   }
