@@ -18,7 +18,7 @@ paths:
 components:
     schemas:
         Table:
-          description: tablemanagement
+          x-component: tablemanagement
           type: object
           properties:
             example:
