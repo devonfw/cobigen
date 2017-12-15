@@ -37,7 +37,7 @@
       <templateRef ref="${variables.etoName#lower_case}-grid.component.specs.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.specs.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.module.ts""/>
+      <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
       <templateRef ref="home.component.html"/>
       <templateRef ref="app.module.ts"/>
       <templateRef ref="app-routing.module.ts"/>
