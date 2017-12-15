@@ -1,18 +1,20 @@
 {
-"buttons": {
-  "submit": "Enviar",
-  "close": "Cerrar",
-  "cancel": "CANCELAR",
-  "save": "GUARDAR",
-  "search": "BUSCAR",
-  "clean": "LIMPIAR",
-  "addItem": "Añadir fila",
-  "editItem": "Editar fila",
-  "deleteItem": "Eliminar fila"
-},
+  "buttons": {
+    "submit": "Enviar",
+    "close": "Cerrar",
+    "cancel": "CANCELAR",
+    "save": "GUARDAR",
+    "search": "BUSCAR",
+    "clean": "LIMPIAR",
+    "addItem": "Añadir fila",
+    "editItem": "Editar fila",
+    "deleteItem": "Eliminar fila"
+  },
   "header": {
-    "title": "Aplicacion Angular de ${variables.domain}",
-    "error": "Error de acceso"
+    "title": "OASP4JS",
+    "error": "Error de acceso",
+    "EN": "Inglés",
+    "ES": "Español"
   },
   "login": {
     "title": "Acceso",
@@ -21,28 +23,37 @@
     "errorMsg": "Nombre de usuario o contraseña incorrectos"
   },
   "home": "Inicio",
-  "${variables.component}datagrid": {
-    "navData": "${variables.etoName}_ES",
-    "navDataSub": "Tabla de ${variables.etoName}_ES",
-    "title": "Tabla de ${variables.etoName?cap_first}_ES",
+  "description": "Descripción",
+  "example": "Ejemplo",
+  "example description": "Descripción de Ejemplo",
+  "LIKE": "ME GUSTA",
+  "SHARE": "COMPARTIR",
+  "CLOSE": "CERRAR",
+  "ERROR": "ERROR",
+  "${variables.component?lower_case}"": {
+    "title": "SampleData_ES_Tabla",
+    "subtitle": "SampleData_ES_Descripción",
     "addtitle": "Añadir nueva fila",
     "editTitle": "Editar fila existente",
     "searchTip": "Panel de búsqueda",
     "sortTip": "Limpiar Ordenación",
-    "columns": {
-      <#list pojo.fields as field>
-        <#if field?has_next>
-      "${field.name}": "${field.name?cap_first}_ES",
-        <#else>
-      "${field.name}": "${field.name?cap_first}_ES"
-        </#if>
-      </#list>
-    },
     "alert": {
-      "title": "Confirmación",
-      "message": "¿Seguro que deseas eliminar esta fila?",
+      "acceptBtn": "Sí, Eliminar",
       "cancelBtn": "No, Cancelar",
-      "acceptBtn": "Sí, Eliminar"
+      "title": "Confirmación",
+      "message": "¿Seguro que deseas eliminar esta fila?"
+    },
+    "${variables.etoName?cap_first}": {
+      "title": "${variables.etoName?cap_first}_ES_Grid",
+      "subtitle": "${variables.etoName?cap_first}_ES_Descripción",
+      "navData": "${variables.etoName?cap_first}_ES",
+      "navDataSub": "${variables.etoName?cap_first}_ES",
+      "navDataSubDescription": "${variables.etoName?cap_first}_EN_Descripción",          
+      "columns": {
+      <#list pojo.fields as field>
+        "${field.name?lower_case}": "${field.name?cap_first}_ES"<#if field?has_next>,</#if>
+      </#list>
+      }
     }
   }
 }
