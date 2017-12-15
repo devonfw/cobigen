@@ -1,5 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { ${variables.etoName?cap_first}Service } from './${variabless.etoName?lower_case}.service';
+import { ${variables.etoName?cap_first}Service } from './${variables.etoName?lower_case}.service';
 
 describe('${variables.etoName?cap_first}Service', () => {
   beforeEach(() => {
