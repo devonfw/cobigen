@@ -1,5 +1,5 @@
 {
-"buttons": {
+  "buttons": {
     "submit": "Send",
     "search": "SEARCH",
     "cancel": "CANCEL",
@@ -11,8 +11,10 @@
     "deleteItem": "Delete item"
   },
   "header": {
-    "title": "${variables.domain} Angular application",
-    "error": "LOGIN ERROR"
+    "title": "OASP4JS",
+    "error": "LOGIN ERROR",
+    "EN": "English",
+    "ES": "Spanish"
   },
   "login": {
     "title": "Login",
@@ -21,28 +23,35 @@
     "errorMsg": "Wrong username or password"
   },
   "home": "Home",
-  "${variables.component}datagrid": {
-    "navData": "${variables.etoName}_EN",
-    "navDataSub": "Grid of ${variables.etoName}_EN",
-    "title": "${variables.etoName?cap_first}_EN grid",
-    "addTitle": "Add new item",
+  "description": "Description",
+  "example": "Example",
+  "example description": "Example Description",
+  "LIKE": "LIKE",
+  "SHARE": "SHARE",
+  "CLOSE": "CLOSE",
+  "ERROR": "ERROR",    
+  "${variables.component?lower_case}": {
+    "addTitle": "Add new item",        
     "editTitle": "Edit item",
     "searchTip": "Search Panel",
     "sortTip": "Clear Sorting",
-    "columns": {
-      <#list pojo.fields as field>
-        <#if field?has_next>
-      "${field.name}": "${field.name?cap_first}_EN",
-        <#else>
-      "${field.name}": "${field.name?cap_first}_EN"
-        </#if>
-      </#list>
-    },
     "alert": {
-      "title": "Confirm",
-      "message": "Are you sure you want to delete this item?",
+      "acceptBtn": "Yes, Delete",
       "cancelBtn": "No, Cancel",
-      "acceptBtn": "Yes, Delete"
+      "title": "Confirm",
+      "message": "Are you sure you want to delete this item?"
+    },
+    "${variables.etoName?cap_first}": {
+      "title": "${variables.etoName?cap_first}_EN_Grid",
+      "subtitle": "${variables.etoName?cap_first}_EN_Description",
+      "navData": "${variables.etoName?cap_first}_EN",
+      "navDataSub": "${variables.etoName?cap_first}_EN",
+      "navDataSubDescription": "${variables.etoName?cap_first}_EN_Description",
+      "columns": {
+      <#list pojo.fields as field>
+        "${field.name?lower_case}": "${field.name?cap_first}_EN"<#if field?has_next>,</#if>
+      </#list>
+      }
     }
   }
 }
