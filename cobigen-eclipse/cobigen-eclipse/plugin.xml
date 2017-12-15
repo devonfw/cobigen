@@ -79,7 +79,7 @@
              allPopups="false"
              locationURI="popup:org.eclipse.ui.popup.any?after=additions">
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator8"
+                name="com.capgemini.cobigen.eclipseplugin.separator5"
                 visible="true">
           </separator>
           <menu
@@ -105,7 +105,7 @@
              </visibleWhen>
            </menu>
             <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator9"
+                name="com.capgemini.cobigen.eclipseplugin.separator6"
                 visible="true">
             </separator>
        </menuContribution>
