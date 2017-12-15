@@ -54,8 +54,8 @@ paths:
 components:
     schemas:
         Table:
-          title: Table
-          description: tablemanagement
+          x-component: tablemanagement
+          description: Entity definiton of Table
           type: object
           properties:
             tableExample:
@@ -63,9 +63,11 @@ components:
               maxLength: 100
               minLength: 5
               uniqueItems: true
+          x-manytomany: Table
+          x-onetoone: Sale
         Sale:
-          title: Sale
-          description: salemanagement
+          x-component: salemanagement
+          description: Entity definiton of Table
           type: object
           properties:
             saleExample:
@@ -73,6 +75,8 @@ components:
               format: int64
               maximum: 100
               minimum: 0
+          x-onetoone: Table
+          x-onetomany: Table
           required:
             - saleExample
 

@@ -18,6 +18,7 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
+import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -167,6 +168,21 @@ public class OpenAPIInputReaderTest {
 
     }
 
+    @Test
+    public void testRetrieveRelationShips() throws Exception {
+        List<Object> inputObjects = getInputs();
+        List<RelationShip> relationships = new LinkedList<>();
+        for (Object o : inputObjects) {
+            relationships.addAll(((EntityDef) o).getRelationShips());
+        }
+
+        assertThat(relationships).hasSize(4);
+        assertThat(relationships).extracting("type").containsExactly("manytomany", "onetoone", "onetoone", "onetomany");
+        assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table", "Table");
+        assertThat(relationships).extracting("unidirectional").containsExactly(false, false, false, true);
+        assertThat(relationships).extracting("sameComponent").containsExactly(true, false, false, false);
+    }
+
     private List<Object> getInputs() throws Exception {
 
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
@@ -195,4 +211,5 @@ public class OpenAPIInputReaderTest {
         return parameters;
 
     }
+
 }

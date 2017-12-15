@@ -14,6 +14,8 @@ public class ParameterDef extends PropertyDef {
 
     private boolean inHeader;
 
+    private String mediaType;
+
     public ParameterDef() {
         super();
         isSearchCriteria = false;
@@ -53,5 +55,13 @@ public class ParameterDef extends PropertyDef {
 
     public void setInHeader(boolean inHeader) {
         this.inHeader = inHeader;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }
