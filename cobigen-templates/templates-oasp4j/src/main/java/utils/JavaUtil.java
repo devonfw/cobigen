@@ -320,4 +320,51 @@ public class JavaUtil {
             return "Field";
         }
     }
+
+    /**
+     * returns the Angular5 type associated with a Java primitive
+     *
+     * @param simpleType
+     *            :{@link String} the type to be parsed
+     * @return the corresponding Angular type or 'any' otherwise
+     */
+    public String getAngularType(String simpleType) {
+
+        switch (simpleType) {
+        case "boolean":
+            return "boolean";
+        case "Boolean":
+            return "boolean";
+        case "short":
+            return "number";
+        case "Short":
+            return "number";
+        case "int":
+            return "number";
+        case "Integer":
+            return "number";
+        case "long":
+            return "number";
+        case "Long":
+            return "number";
+        case "float":
+            return "number";
+        case "Float":
+            return "number";
+        case "double":
+            return "number";
+        case "Double":
+            return "number";
+        case "char":
+            return "string";
+        case "Character":
+            return "string";
+        case "String":
+            return "string";
+        case "byte":
+            return "number";
+        default:
+            return "any";
+        }
+    }
 }

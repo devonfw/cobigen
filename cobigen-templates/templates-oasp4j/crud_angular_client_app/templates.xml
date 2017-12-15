@@ -3,18 +3,15 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component}addDialog.component.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.component}addDialog.component.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.component}dataGrid.component.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.component}dataGrid.component.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.component}dataGrid.service.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="home.component.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="BusinessOperations.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
-    <templateExtension ref="serverPath.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="app.routing.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge"/>
   </templates>
 
   <templateScans>
@@ -23,22 +20,27 @@
 
   <increments>
     <increment name="app_angular_structure" description="Angular OASP4J URL">
-        <templateRef ref="serverPath.ts"/>
+        <templateRef ref="environment.ts"/>
+        <templateRef ref="environment.prod.ts"/>
     </increment>
     <increment name="app_angular_i18n" description="Angular i18n">
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
     </increment>
     <increment name="app_angular_oasp4j_component" description="Angular OASP4J Component">
-      <templateRef ref="${variables.component}addDialog.component.html"/>
-      <templateRef ref="${variables.component}addDialog.component.ts"/>
-      <templateRef ref="${variables.component}dataGrid.component.html"/>
-      <templateRef ref="${variables.component}dataGrid.component.ts"/>
-      <templateRef ref="${variables.component}dataGrid.service.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.scss"/>
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.service.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
       <templateRef ref="home.component.html"/>
-      <templateRef ref="BusinessOperations.ts"/>
       <templateRef ref="app.module.ts"/>
-      <templateRef ref="app.routing.ts"/>
+      <templateRef ref="app-routing.module.ts"/>
     </increment>
   </increments>
 </templatesConfiguration>
