@@ -70,4 +70,10 @@ public class ModelConstant {
      */
     public static final String CHILDREN = "Children";
 
+    /** Model key constant "doc" */
+    static final String ROOT_DOC = "doc";
+
+    /** Model key constant for "elemDoc" representing the partial document in a container */
+    public static final String ROOT_ELEMDOC = "elemDoc";
+
 }
