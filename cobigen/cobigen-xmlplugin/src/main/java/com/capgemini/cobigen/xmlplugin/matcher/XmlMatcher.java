@@ -67,7 +67,10 @@ public class XmlMatcher implements MatcherInterpreter {
                 try {
                     return (boolean) xPath.evaluate(xpathExpression, targetNode, XPathConstants.BOOLEAN);
                 } catch (XPathExpressionException e) {
-                    throw new CobiGenRuntimeException("Invalid XPath expression: " + xpathExpression, e);
+                    if (checkXPathSyntax(xpathExpression)) {
+                        return false;
+                    }
+                    throw new InvalidConfigurationException(xpathExpression, "Invalid XPath expression", e);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -77,12 +80,29 @@ public class XmlMatcher implements MatcherInterpreter {
     }
 
     /**
+     * Checks whether a given XPath syntax is correct or not.
+     * @param xpathExpression
+     *            the xPath expression
+     * @return true if the syntax is correct
+     */
+    private boolean checkXPathSyntax(String xpathExpression) {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        try {
+            xpath.compile(xpathExpression);
+        } catch (XPathExpressionException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Creates a new namespace aware XPath object for xpath evaluation
      * @param target
      *            the matcher target
      * @return the created {@link XPath} object
      */
-    private XPath createXpathObject(Object target) {
+    public XPath createXpathObject(Object target) {
         Node fullDoc = getDocElem(target, 0);
         XPathObj.setNamespaceContext(new NamespaceResolver(fullDoc));
         return XPathObj;
