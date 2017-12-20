@@ -102,7 +102,7 @@ public class XmlMatcher implements MatcherInterpreter {
      *            the matcher target
      * @return the created {@link XPath} object
      */
-    public XPath createXpathObject(Object target) {
+    private XPath createXpathObject(Object target) {
         Node fullDoc = getDocElem(target, 0);
         XPathObj.setNamespaceContext(new NamespaceResolver(fullDoc));
         return XPathObj;
