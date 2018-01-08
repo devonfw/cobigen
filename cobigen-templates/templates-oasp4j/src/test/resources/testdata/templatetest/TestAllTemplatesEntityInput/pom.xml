@@ -46,6 +46,11 @@
             <artifactId>cobigen-xmlplugin</artifactId>
             <version>3.1.0</version>
           </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-openapiplugin</artifactId>
+            <version>1.0.1</version>
+          </dependency>
         </dependencies>
       </plugin>
     </plugins>

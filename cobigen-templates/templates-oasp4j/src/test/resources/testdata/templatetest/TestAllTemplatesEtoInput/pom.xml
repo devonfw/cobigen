@@ -61,6 +61,11 @@
             <artifactId>cobigen-jsonplugin</artifactId>
             <version>1.2.0</version>
           </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-openapiplugin</artifactId>
+            <version>1.0.1</version>
+          </dependency>
         </dependencies>
       </plugin>
     </plugins>
