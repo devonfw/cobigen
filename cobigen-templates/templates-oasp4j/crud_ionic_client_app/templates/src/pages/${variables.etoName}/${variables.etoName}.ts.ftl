@@ -3,8 +3,14 @@ import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { ${variables.etoName}BusinessProvider } from './provider/${variables.etoName}-business/${variables.etoName}-business';
 import { ${variables.etoName}storeProvider } from './provider/${variables.etoName}store/${variables.etoName}store';
-import { ${variables.etoName}Item } from './${variables.etoName}Item'
 
+export interface ${variables.etoName}CheckboxItem {
+   <#list pojo.fields as field>
+     ${field.name}:<#if (field.type=="long"||field.type=="int")> number <#else> ${field.type} </#if>,
+     </#list>
+     checkbox: boolean
+ }
+     
 @IonicPage()
 @Component({
   selector: '${variables.etoName}-table',
@@ -13,7 +19,7 @@ import { ${variables.etoName}Item } from './${variables.etoName}Item'
 export class ${variables.etoName}Page {
 
   Delete_and_Modified_Buttons_Disabled: boolean = true;
-  Lastoperation: ${variables.etoName}Item[];
+  Lastoperation: ${variables.etoName}CheckboxItem[];
   tabletoshow: any = []
   FIRSTPAGINATIONTHRESHOLD = 15;
   NEXTELEMENTSTOLOAD = 10;

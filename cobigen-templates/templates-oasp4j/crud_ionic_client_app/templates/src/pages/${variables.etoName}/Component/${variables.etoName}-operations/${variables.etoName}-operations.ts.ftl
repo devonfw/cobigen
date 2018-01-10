@@ -5,13 +5,18 @@ import { ${variables.etoName}Page } from '../../${variables.etoName}';
 import { ${variables.etoName}operationsdialogComponent } from './${variables.etoName}-operations-dialog/${variables.etoName}-operations-dialog'
 import { ${variables.etoName}storeProvider } from '../../provider/${variables.etoName}store/${variables.etoName}store';
 import { ${variables.etoName}BusinessProvider } from '../../provider/${variables.etoName}-business/${variables.etoName}-business';
-import { ${variables.etoName}Item } from '../../${variables.etoName}Item';
 /**
  * Generated class for the ${variables.etoName}OperationsComponent component.
  *
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
+
+export interface ${variables.etoName}Item {
+   <#list pojo.fields as field>
+     ${field.name}:<#if (field.type=="long"||field.type=="int")> number <#else> ${field.type} </#if>,
+     </#list>
+ }
 
 @Component({
   selector: '${variables.etoName}-operations',

@@ -5,7 +5,6 @@
   <templates>
     <templateExtension ref="${variables.etoName}-operations.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="${variables.etoName}.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName}Item.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="${variables.etoName}.module.ts" mergeStrategy="tsmerge_override"/>
@@ -26,7 +25,7 @@
   </templateScans>
 
   <increments>
-    <increment name="app_angular_structure" description="Ionic OASP4J URL">
+    <increment name="app_ionic_structure" description="Ionic OASP4J URL">
         <templateRef ref="serverPath.ts"/>
     </increment>
     <increment name="ionic_i18n" description="Ionic i18n">
@@ -35,7 +34,6 @@
     </increment>
     <increment name="ionic_component" description="Ionic Grid">
       <templateRef ref="${variables.etoName}.ts"/>
-      <templateRef ref="${variables.etoName}Item.ts"/>
       <templateRef ref="app.component.ts"/>
       <templateRef ref="app.module.ts"/>
       <templateRef ref="${variables.etoName}.module.ts"/>
