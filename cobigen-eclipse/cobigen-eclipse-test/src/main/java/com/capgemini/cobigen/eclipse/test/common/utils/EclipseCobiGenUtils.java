@@ -22,7 +22,7 @@ import com.capgemini.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
 public class EclipseCobiGenUtils {
 
     /** Default timeout for waiting on generation results or build results */
-    public static final int DEFAULT_TIMEOUT = 10000;
+    public static final int DEFAULT_TIMEOUT = 15000;
 
     /**
      * Selects the the increment with the given name and generates it.

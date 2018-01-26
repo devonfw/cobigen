@@ -131,6 +131,11 @@
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen-openapiplugin</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
                 <id>com.capgemini.cobigen-tempeng-freemarker</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
