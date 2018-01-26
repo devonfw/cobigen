@@ -33,6 +33,9 @@ public class OpenAPITest extends SystemTest {
     /** Root path of the Test Resources */
     private static final String resourcesRootPath = "src/main/resources/OpenAPITest/";
 
+    /** Line separator, e.g. for windows '\r\n' */
+    public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+
     /**
      * Setup workbench appropriately for tests
      * @throws Exception
@@ -77,10 +80,52 @@ public class OpenAPITest extends SystemTest {
         // check assertions
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-        IFile generationResult = proj.getFile("src/main/java/TestOutput2.txt");
+        IFile generationResult = proj.getFile(
+            "src/com/capgemini/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualTo("This is a test");
+            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+                "package com.capgemini.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                    "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                    "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "    @GET" + LINE_SEPARATOR + //
+                    "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
+                    "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+                    "    public SampleData customMethod(@PathParam(\"id\") @Max(100) @Min(0) long id);" + LINE_SEPARATOR
+                    + //
+                    LINE_SEPARATOR + //
+                    "    @DELETE" + LINE_SEPARATOR + //
+                    "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
+                    "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+                    "    public Boolean deleteCustomSampleData(@PathParam(\"id\") @Max(100) @Min(0) long id);"
+                    + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "    @POST" + LINE_SEPARATOR + //
+                    "    @Path(\"/sampledata/customSave/\")" + LINE_SEPARATOR + //
+                    "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+                    "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+                    "    public PaginatedListTo<SampleDataEto> saveCustomSampleData(SampleDataEto sampleData);"
+                    + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "    @POST" + LINE_SEPARATOR + //
+                    "    @Path(\"/sampledata/customSearch/\")" + LINE_SEPARATOR + //
+                    "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+                    "    @Produces(MediaType.IMAGE_PNG_VALUE)" + LINE_SEPARATOR + //
+                    "    public PaginatedListTo<SampleDataEto> findCustomSampleDataEtos(SampleDataSearchCriteriaTo criteria);"
+                    + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "}");
+        }
+
+        generationResult = proj
+            .getFile("src/com/capgemini/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+                "package com.capgemini.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                    "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "}");
         }
     }
-
 }
