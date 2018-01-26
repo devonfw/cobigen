@@ -12,7 +12,6 @@ import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.aop.ProxyFactory;
-import com.capgemini.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
 /**
@@ -141,7 +140,6 @@ public class PluginRegistry {
         if (triggerInterpreter != null) {
             triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
         }
-        InputValidator.validateTriggerInterpreter(triggerInterpreter, triggerType);
         return triggerInterpreter;
     }
 
