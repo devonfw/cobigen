@@ -48,70 +48,66 @@ public class GenerateHandler extends AbstractHandler {
 
         ISelection sel = HandlerUtil.getCurrentSelection(event);
 
-        if (sel instanceof ISelection) {
+        // when this handler is executed, we should we should be sure, that the selection is currently
+        // supported by the following implementation
 
-            // when this handler is executed, we should we should be sure, that the selection is currently
-            // supported by the following implementation
-
-            try {
-                LOG.info("Initiating CobiGen...");
-                CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(sel);
-                if (generator == null) {
-                    LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
-                    MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
-                        "The current selection is currently not supported as valid input.");
-                    return null;
-                }
-
-                if (!generator.isValidInput()) {
-                    LOG.info("No matching Trigger. Exiting generate command.");
-                    MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
-                        "Your current selection is not valid as input for any generation purpose. "
-                            + "Please find the specification of valid inputs in the context configuration ('"
-                            + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml').");
-                    return null;
-                }
-
-                if (!generator.isSingleNonContainerInput()) {
-                    LOG.info("Open Generate Wizard (Batchmode) ...");
-                    WizardDialog wiz =
-                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(generator));
-                    wiz.setPageSize(new Point(800, 500));
-                    wiz.open();
-                    LOG.debug("Generate Wizard (Batchmode) opened.");
-                } else {
-                    LOG.info("Open Generate Wizard ...");
-                    WizardDialog wiz =
-                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
-                    wiz.setPageSize(new Point(800, 500));
-                    wiz.open();
-                    LOG.debug("Generate Wizard opened.");
-                }
-
-            } catch (InvalidConfigurationException e) {
-                LOG.warn("Invalid configuration.", e);
-                openInvalidConfigurationErrorDialog(e);
-            } catch (CobiGenRuntimeException e) {
-                LOG.error("CobiGen Error: {}", e.getMessage(), e);
-                PlatformUIUtil.openErrorDialog(e.getMessage(), e);
-            } catch (GeneratorProjectNotExistentException e) {
-                LOG.error(
-                    "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
-                    ResourceConstants.CONFIG_PROJECT_NAME, e);
-                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator configuration project not found!",
-                    "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
-                        + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
-            } catch (GeneratorCreationException e) {
-                LOG.error("Could not create an instance of the generator.", e);
-                PlatformUIUtil
-                    .openErrorDialog("Could not initialize CobiGen for the given selection: " + e.getMessage(), e);
-            } catch (InvalidInputException e) {
-                LOG.info("Invalid input selected for generation: {}", e.getMessage());
-                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
-            } catch (Throwable e) {
-                LOG.error("An unexpected exception occurred!", e);
-                PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
+        try {
+            LOG.info("Initiating CobiGen...");
+            CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(sel);
+            if (generator == null) {
+                LOG.info("Invalid selection. No CobiGen instance created. Exiting generate command.");
+                MessageDialog.openError(HandlerUtil.getActiveShell(event), "Not yet supported!",
+                    "The current selection is currently not supported as valid input.");
+                return null;
             }
+
+            if (!generator.isValidInput()) {
+                LOG.info("No matching Trigger. Exiting generate command.");
+                MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
+                    "Your current selection is not valid as input for any generation purpose. "
+                        + "Please find the specification of valid inputs in the context configuration ('"
+                        + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml').");
+                return null;
+            }
+
+            if (!generator.isSingleNonContainerInput()) {
+                LOG.info("Open Generate Wizard (Batchmode) ...");
+                WizardDialog wiz =
+                    new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateBatchWizard(generator));
+                wiz.setPageSize(new Point(800, 500));
+                wiz.open();
+                LOG.debug("Generate Wizard (Batchmode) opened.");
+            } else {
+                LOG.info("Open Generate Wizard ...");
+                WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator));
+                wiz.setPageSize(new Point(800, 500));
+                wiz.open();
+                LOG.debug("Generate Wizard opened.");
+            }
+
+        } catch (InvalidConfigurationException e) {
+            LOG.warn("Invalid configuration.", e);
+            openInvalidConfigurationErrorDialog(e);
+        } catch (CobiGenRuntimeException e) {
+            LOG.error("CobiGen Error: {}", e.getMessage(), e);
+            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
+        } catch (GeneratorProjectNotExistentException e) {
+            LOG.error(
+                "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
+                ResourceConstants.CONFIG_PROJECT_NAME, e);
+            MessageDialog.openError(HandlerUtil.getActiveShell(event), "Generator configuration project not found!",
+                "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
+                    + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
+        } catch (GeneratorCreationException e) {
+            LOG.error("Could not create an instance of the generator.", e);
+            PlatformUIUtil.openErrorDialog("Could not initialize CobiGen for the given selection: " + e.getMessage(),
+                e);
+        } catch (InvalidInputException e) {
+            LOG.info("Invalid input selected for generation: {}", e.getMessage());
+            MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "Invalid selection", e.getMessage());
+        } catch (Throwable e) {
+            LOG.error("An unexpected exception occurred!", e);
+            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
         }
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
