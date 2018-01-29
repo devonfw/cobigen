@@ -12,7 +12,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,6 +26,7 @@ import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.exception.PluginNotAvailableException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
@@ -34,33 +34,30 @@ import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
-import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
-import com.capgemini.cobigen.impl.config.entity.Matcher;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.capgemini.cobigen.impl.config.entity.Variables;
-import com.capgemini.cobigen.impl.config.entity.io.AccumulationType;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.PluginProcessingException;
 import com.capgemini.cobigen.impl.exceptions.UnknownTemplateException;
 import com.capgemini.cobigen.impl.extension.PluginRegistry;
 import com.capgemini.cobigen.impl.extension.TemplateEngineRegistry;
+import com.capgemini.cobigen.impl.generator.api.GenerationProcessor;
+import com.capgemini.cobigen.impl.generator.api.InputResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.capgemini.cobigen.impl.validator.InputValidator;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
  */
-public class GenerationProcessor {
+public class GenerationProcessorImpl implements GenerationProcessor {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(GenerationProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerationProcessorImpl.class);
 
     /** {@link ConfigurationHolder} for configuration caching purposes */
     private ConfigurationHolder configurationHolder;
@@ -70,9 +67,6 @@ public class GenerationProcessor {
 
     /** Input to process generation for */
     private Object input;
-
-    /** Artifacts to generate, e.g. templates or increments */
-    private List<? extends GenerableArtifact> generableArtifacts;
 
     /** Singletons of the Java classes to be served by the model implementing template logic */
     private Map<String, Object> logicClassesModel;
@@ -89,52 +83,20 @@ public class GenerationProcessor {
     /** Target root path to resolve dependent templates' destination path with */
     private Path targetRootPath;
 
+    /** {@link InputResolver} instance */
+    private InputResolver inputResolver;
+
     /**
-     * Creates a new {@link GenerationProcessor} instance. Due to caching, one instance should only be used
-     * for one generation request.
-     *
+     * Creates a new generation processor. This instance should be used once per generate call as of the
+     * internal state cannot be reused.
      * @param configurationHolder
      *            {@link ConfigurationHolder} instance
-     * @param input
-     *            generator input object
-     * @param generableArtifacts
-     *            a {@link List} of artifacts to be generated
-     * @param targetRootPath
-     *            target root path to generate to (to be used to resolve the dependent template destination
-     *            paths)
-     * @param forceOverride
-     *            if <code>true</code> and the destination path is already existent, the contents will be
-     *            overwritten by the generated ones iff there is no merge strategy defined by the templates
-     *            configuration. (default: {@code false})
-     * @param logicClasses
-     *            a {@link List} of java class files, which will be included as accessible beans in the
-     *            template model. Such classes can be used to implement more complex template logic.
-     * @param rawModel
-     *            externally adapted model to be used for generation.
+     * @param inputResolver
+     *            {@link InputResolver} instance
      */
-    public GenerationProcessor(ConfigurationHolder configurationHolder, Object input,
-        List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath, boolean forceOverride,
-        List<Class<?>> logicClasses, Map<String, Object> rawModel) {
-
-        InputValidator.validateInputsUnequalNull(input, generableArtifacts);
-
+    public GenerationProcessorImpl(ConfigurationHolder configurationHolder, InputResolver inputResolver) {
         this.configurationHolder = configurationHolder;
-        this.forceOverride = forceOverride;
-        this.input = input;
-        this.generableArtifacts = generableArtifacts;
-        if (logicClasses != null) {
-            loadLogicClasses(logicClasses);
-        }
-        this.rawModel = rawModel;
-        try {
-            tmpTargetRootPath = Files.createTempDirectory("cobigen-");
-            LOG.info("Temporary working directory: {}", tmpTargetRootPath);
-        } catch (IOException e) {
-            throw new CobiGenRuntimeException("Could not create temporary folder.", e);
-        }
-        this.targetRootPath = targetRootPath;
-
-        generationReport = new GenerationReportTo();
+        this.inputResolver = inputResolver;
     }
 
     /**
@@ -156,14 +118,30 @@ public class GenerationProcessor {
         }
     }
 
-    /**
-     * Generates code by processing the {@link List} of {@link GenerableArtifact}s for the given input.
-     * @return {@link GenerationReportTo the GenerationReport}
-     */
-    GenerationReportTo generate() {
+    @Override
+    public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        InputValidator.validateInputsUnequalNull(input, generableArtifacts);
+
+        // initialize
+        this.forceOverride = forceOverride;
+        this.input = input;
+        if (logicClasses != null) {
+            loadLogicClasses(logicClasses);
+        }
+        this.rawModel = rawModel;
+        try {
+            tmpTargetRootPath = Files.createTempDirectory("cobigen-");
+            LOG.info("Temporary working directory: {}", tmpTargetRootPath);
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Could not create temporary folder.", e);
+        }
+        this.targetRootPath = targetRootPath;
+        generationReport = new GenerationReportTo();
 
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
+        // generate
         Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (TemplateTo template : templatesToBeGenerated) {
             try {
@@ -300,8 +278,8 @@ public class GenerationProcessor {
                 + inputReader.getClass() + " (derived from trigger '" + trigger.getId() + "')");
         }
 
-        List<Object> inputObjects = collectInputObjects(input, triggerInterpreter, trigger);
-        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        List<Object> inputObjects = inputResolver.resolveContainerElements(input, trigger);
+        TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
         templateEngine.setTemplateFolder(
@@ -369,8 +347,8 @@ public class GenerationProcessor {
                         if (merger != null) {
                             mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
-                            throw new InvalidConfigurationException(
-                                "No merger for merge strategy '" + templateEty.getMergeStrategy() + "' found.");
+                            throw new PluginNotAvailableException(trigger.getType(),
+                                "merge strategy '" + templateEty.getMergeStrategy() + "'");
                         }
 
                         if (mergeResult != null) {
@@ -466,97 +444,55 @@ public class GenerationProcessor {
         return model;
     }
 
-    /**
-     * Collects all input objects. Especially, resolves container inputs.
-     * @param input
-     *            object
-     * @param triggerInterpreter
-     *            {@link TriggerInterpreter} to be used
-     * @param trigger
-     *            {@link Trigger} to be used
-     * @return the {@link List} of collected input objects.
-     */
-    private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter, Trigger trigger) {
-
-        InputReader inputReader = triggerInterpreter.getInputReader();
-        List<Object> inputObjects = Lists.newArrayList(input);
-        if (inputReader.combinesMultipleInputObjects(input)) {
-
-            // check whether the inputs should be retrieved recursively
-            boolean retrieveInputsRecursively = false;
-            for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
-                if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                    if (!retrieveInputsRecursively) {
-                        retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            if (retrieveInputsRecursively) {
-                inputObjects = inputReader.getInputObjectsRecursively(input, trigger.getInputCharset());
-            } else {
-                inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
-            }
-
-            // Remove non matching inputs
-            Iterator<Object> it = inputObjects.iterator();
-            while (it.hasNext()) {
-                Object next = it.next();
-                if (!matches(next, trigger.getMatcher(), triggerInterpreter)) {
-                    it.remove();
-                }
-            }
-        }
-        return inputObjects;
-    }
-
-    /**
-     * Checks whether the list of matches matches the matcher input according to the given trigger
-     * interpreter.
-     * @param matcherInput
-     *            input for the matcher
-     * @param matcherList
-     *            list of matchers to be checked
-     * @param triggerInterpreter
-     *            to called for checking retrieving the matchers matching result
-     * @return <code>true</code> if the given matcher input matches the matcher list<br>
-     *         <code>false</code>, otherwise
-     */
-    public static boolean matches(Object matcherInput, List<Matcher> matcherList,
-        TriggerInterpreter triggerInterpreter) {
-        boolean matcherSetMatches = false;
-        LOG.debug("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
-        MATCHER_LOOP:
-        for (Matcher matcher : matcherList) {
-            MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
-            LOG.debug("Check {} ...", matcherTo);
-            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                switch (matcher.getAccumulationType()) {
-                case NOT:
-                    LOG.debug("NOT Matcher matches -> trigger match fails.");
-                    matcherSetMatches = false;
-                    break MATCHER_LOOP;
-                case OR:
-                case AND:
-                    LOG.debug("Matcher matches.");
-                    matcherSetMatches = true;
-                    break;
-                default:
-                }
-            } else {
-                if (matcher.getAccumulationType() == AccumulationType.AND) {
-                    LOG.debug("AND Matcher does not match -> trigger match fails.");
-                    matcherSetMatches = false;
-                    break MATCHER_LOOP;
-                }
-            }
-        }
-        LOG.debug("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
-        return matcherSetMatches;
-    }
+    // /**
+    // * Collects all input objects. Especially, resolves container inputs.
+    // * @param input
+    // * object
+    // * @param triggerInterpreter
+    // * {@link TriggerInterpreter} to be used
+    // * @param trigger
+    // * {@link Trigger} to be used
+    // * @return the {@link List} of collected input objects.
+    // */
+    // private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter, Trigger
+    // trigger) {
+    //
+    // InputReader inputReader = triggerInterpreter.getInputReader();
+    // List<Object> inputObjects = new ArrayList<>();
+    // if (inputInterpreter.combinesMultipleInputs(input)) {
+    //
+    // // check whether the inputs should be retrieved recursively
+    // boolean retrieveInputsRecursively = false;
+    // for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+    // MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+    // if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+    // if (!retrieveInputsRecursively) {
+    // retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
+    // } else {
+    // break;
+    // }
+    // }
+    // }
+    //
+    // if (retrieveInputsRecursively) {
+    // inputObjects = inputReader.getInputObjectsRecursively(input, trigger.getInputCharset());
+    // } else {
+    // inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+    // }
+    //
+    // // Remove non matching inputs
+    // Iterator<Object> it = inputObjects.iterator();
+    // while (it.hasNext()) {
+    // Object next = it.next();
+    // if (!matcherEvaluator.matches(next, trigger.getMatcher(), triggerInterpreter)) {
+    // it.remove();
+    // }
+    // }
+    // } else {
+    // inputObjects.add(input);
+    // }
+    // return inputObjects;
+    // }
 
     /**
      * Generates the given template contents using the given model and writes the contents into the given
