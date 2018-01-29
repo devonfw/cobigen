@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.filesystem.EFS;
@@ -57,7 +58,7 @@ public class LinkSelectionAdapter extends SelectionAdapter {
         File[] patches = referenceFile.getParentFile().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.matches(baseName + "\\.patch\\.[0-9]+\\." + fileextension);
+                return name.matches(Pattern.quote(baseName) + "\\.patch\\.[0-9]+\\." + fileextension);
             }
         });
         return patches;
