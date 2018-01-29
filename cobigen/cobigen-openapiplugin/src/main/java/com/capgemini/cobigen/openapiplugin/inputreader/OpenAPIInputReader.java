@@ -22,6 +22,8 @@ import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.jsonoverlay.Reference;
+import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
 import com.reprezen.kaizen.oasparser.model3.Path;
@@ -271,7 +273,7 @@ public class OpenAPIInputReader implements InputReader {
     private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component, String key) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
-            if (pathKey.contains(component) && pathKey.contains("/" + key.toLowerCase() + "/")) {
+            if (pathKey.contains(component)) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {
@@ -333,7 +335,8 @@ public class OpenAPIInputReader implements InputReader {
                 break;
             }
             parameter.setName(param.getName());
-            Map<String, Object> constraints = getConstraints(param.getSchema());
+            Schema schema = param.getSchema();
+            Map<String, Object> constraints = getConstraints(schema);
             if (param.isRequired()) {
                 constraints.put(ModelConstant.NOTNULL, true);
             } else {
@@ -341,24 +344,24 @@ public class OpenAPIInputReader implements InputReader {
             }
             parameter.setConstraints(constraints);
             parameter.setDescription(param.getDescription());
-            if (param.getSchema().getType().equals(Constants.ARRAY)) {
+            if (schema.getType().equals(Constants.ARRAY)) {
                 parameter.setIsCollection(true);
-                if (((SchemaImpl) ((SchemaImpl) param.getSchema()).getItemsSchema()).getReference() != null) {
+                if (schema.getItemsSchemaReference() != null) {
                     parameter.setIsEntity(true);
-                    String[] mp = ((SchemaImpl) ((SchemaImpl) param.getSchema()).getItemsSchema()).getReference()
-                        .getFragment().split("/");
+                    String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
                 }
             }
-            if (((SchemaImpl) param.getSchema()).getReference() != null) {
-                String[] mp = ((SchemaImpl) param.getSchema()).getReference().getFragment().split("/");
+            if (param.getSchemaReference() != null) {
+                String[] mp = param.getSchemaReference().getFragment().split("/");
                 parameter.setIsEntity(true);
                 parameter.setType(mp[mp.length - 1]);
             }
-            parameter.setType(param.getSchema().getType());
-            parameter.setFormat(param.getSchema().getFormat());
+            parameter.setType(schema.getType());
+            parameter.setFormat(schema.getFormat());
             parametersList.add(parameter);
         }
+
         if (requestBody != null) {
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
@@ -368,10 +371,10 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setIsSearchCriteria(true);
                     parameter.setName("criteria");
                 }
-                if (((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema()).getReference() != null) {
+                if (requestBody.getContentMediaTypes().get(media).getSchemaReference() != null) {
                     parameter.setIsEntity(true);
-                    String[] mp = ((SchemaImpl) requestBody.getContentMediaTypes().get(media).getSchema())
-                        .getReference().getFragment().split("/");
+                    String[] mp =
+                        requestBody.getContentMediaTypes().get(media).getSchemaReference().getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
                     if (!parameter.getIsSearchCriteria()) {
                         char c[] = mp[mp.length - 1].toCharArray();
@@ -403,30 +406,26 @@ public class OpenAPIInputReader implements InputReader {
         ResponseDef response = new ResponseDef();
         for (String resp : responses.keySet()) {
             if (resp.equals("200")) {
-                if (responses.get(resp).getContentMediaTypes() != null) {
-                    if (responses.get(resp).getContentMediaTypes().keySet().isEmpty()) {
+                Map<String, MediaType> contentMediaTypes = responses.get(resp).getContentMediaTypes();
+                if (contentMediaTypes != null) {
+                    if (contentMediaTypes.isEmpty()) {
                         response.setIsVoid(true);
                     }
-                    for (String media : responses.get(resp).getContentMediaTypes().keySet()) {
+                    for (String media : contentMediaTypes.keySet()) {
                         response.setMediaType(media);
-                        if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                            .getReference() != null) {
-                            String[] mp =
-                                ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                                    .getReference().getFragment().split("/");
+                        Reference schemaReference = contentMediaTypes.get(media).getSchemaReference();
+                        Schema schema = contentMediaTypes.get(media).getSchema();
+                        if (schemaReference != null) {
+                            String[] mp = schemaReference.getFragment().split("/");
                             response.setType(mp[mp.length - 1]);
                             response.setIsEntity(true);
-                        } else if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                            .getType().equals(Constants.ARRAY)) {
-                            if (((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media)
-                                .getSchema()).getItemsSchema()).getReference() != null) {
-                                String[] mp = ((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
-                                    .get(media).getSchema()).getItemsSchema()).getReference().getFragment().split("/");
+                        } else if (schema.getType().equals(Constants.ARRAY)) {
+                            if (schema.getItemsSchemaReference() != null) {
+                                String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
                                 response.setType(mp[mp.length - 1]);
                                 response.setIsEntity(true);
                             } else {
-                                response.setType(((SchemaImpl) ((SchemaImpl) responses.get(resp).getContentMediaTypes()
-                                    .get(media).getSchema()).getItemsSchema()).getType());
+                                response.setType(schema.getItemsSchema().getType());
                             }
                             if (tags.contains(Constants.PAGINATED)) {
                                 response.setIsPaginated(true);
@@ -434,14 +433,9 @@ public class OpenAPIInputReader implements InputReader {
                                 response.setIsArray(true);
                             }
 
-                        } else if (((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                            .getType() != null) {
-                            response.setType(
-                                ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                                    .getType());
-                            response.setFormat(
-                                ((SchemaImpl) responses.get(resp).getContentMediaTypes().get(media).getSchema())
-                                    .getFormat());
+                        } else if (schema.getType() != null) {
+                            response.setType(schema.getType());
+                            response.setFormat(schema.getFormat());
                         } else {
                             response.setIsVoid(true);
                         }
@@ -463,7 +457,7 @@ public class OpenAPIInputReader implements InputReader {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
-        OpenApi3 openApi = (OpenApi3) new OpenApi3Parser().parse(path.toUri());
+        OpenApi3 openApi = new OpenApi3Parser().parse(path.toUri());
         if (openApi == null) {
             throw new InputReaderException(path + " is not a valid OpenAPI file");
         }
