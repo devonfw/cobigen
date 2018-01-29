@@ -15,7 +15,7 @@ public class CobiGenDialogConstants {
     public static final String DIALOG_TITLE_ERROR = "Error";
 
     /** Dialog constants of the health check */
-    public class HealthCheck {
+    public class HealthCheckDialogs {
 
         /** Commonly used dialog title for the Basic Health Check */
         public static final String DIALOG_TITLE = "Health Check";

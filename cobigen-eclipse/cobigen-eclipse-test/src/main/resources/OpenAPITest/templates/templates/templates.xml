@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+	<templates>
+    	<templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge"/>
+    </templates>
+    
+    <templateScans>
+    	<templateScan templatePath="templates" destinationPath="src"/>
+  	</templateScans>
+  	
+    <increments>
+	    <increment name="rest_service_impl" description="CRUD REST services">
+	      <templateRef ref="${variables.component#cap_first}RestService.java"/>
+	    </increment>
+    </increments>
+</templatesConfiguration>

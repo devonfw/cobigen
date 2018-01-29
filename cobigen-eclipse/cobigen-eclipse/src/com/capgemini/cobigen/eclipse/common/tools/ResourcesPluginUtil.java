@@ -15,7 +15,6 @@ import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorProjectNotExiste
 
 /**
  *
- * @author mbrunnli (Jun 24, 2015)
  */
 public class ResourcesPluginUtil {
 
@@ -24,7 +23,6 @@ public class ResourcesPluginUtil {
 
     /**
      * Refreshes the configuration project from the file system.
-     * @author mbrunnli (Jun 24, 2015)
      */
     public static void refreshConfigurationProject() {
         try {
