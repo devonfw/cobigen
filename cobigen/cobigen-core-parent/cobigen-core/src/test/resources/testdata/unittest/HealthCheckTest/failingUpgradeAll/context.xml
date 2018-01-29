@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="2.0">
+
+  <trigger id="test" type="x" templateFolder="TempOne">
+    <matcher type="fqn" value="*" accumulationType="NOT">
+      <variableAssignment type="constant" key="foo" value="BLUBB1"/>
+      <variableAssignment type="constant" key="bar" value="BLAABB1"/>
+    </matcher>
+  </trigger>  
+
+</contextConfiguration>

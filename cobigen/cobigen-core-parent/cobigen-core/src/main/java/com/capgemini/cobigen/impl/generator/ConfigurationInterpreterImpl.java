@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +16,9 @@ import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
 import com.capgemini.cobigen.impl.config.TemplatesConfiguration;
-import com.capgemini.cobigen.impl.config.entity.ContainerMatcher;
 import com.capgemini.cobigen.impl.config.entity.Increment;
 import com.capgemini.cobigen.impl.config.entity.Template;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
@@ -26,9 +26,9 @@ import com.capgemini.cobigen.impl.config.entity.Variables;
 import com.capgemini.cobigen.impl.config.resolver.PathExpressionResolver;
 import com.capgemini.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.capgemini.cobigen.impl.extension.PluginRegistry;
+import com.capgemini.cobigen.impl.generator.api.TriggerMatchingEvaluator;
 import com.capgemini.cobigen.impl.model.ContextVariableResolver;
 import com.capgemini.cobigen.impl.validator.InputValidator;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 
 /**
@@ -43,16 +43,12 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationInterpreterImpl.class);
 
     /** {@link ConfigurationHolder} holding CobiGen's configuration */
+    @Inject
     private ConfigurationHolder configurationHolder;
 
-    /**
-     * Creates a new instance.
-     * @param configurationHolder
-     *            {@link ConfigurationHolder} holding CobiGen's configuration
-     */
-    ConfigurationInterpreterImpl(ConfigurationHolder configurationHolder) {
-        this.configurationHolder = configurationHolder;
-    }
+    /** Matching evaluator for triggers */
+    @Inject
+    private TriggerMatchingEvaluator triggerMatchingEvaluator;
 
     @Cached
     @Override
@@ -60,7 +56,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Matching trigger IDs requested.");
         List<String> matchingTriggerIds = Lists.newLinkedList();
-        for (Trigger trigger : getMatchingTriggers(matcherInput)) {
+        for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             matchingTriggerIds.add(trigger.getId());
         }
         LOG.debug("{} matching trigger IDs found.", matchingTriggerIds.size());
@@ -75,7 +71,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         List<IncrementTo> increments = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
-                templatesConfiguration.getTrigger(), templatesConfiguration.getTriggerInterpreter()));
+                templatesConfiguration.getTrigger()));
         }
         LOG.debug("{} matching increments found.", increments.size());
         return increments;
@@ -104,8 +100,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
         Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
-        Template templateEty =
-            configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter).getTemplate(template.getId());
+        Template templateEty = configurationHolder.readTemplatesConfiguration(trigger).getTemplate(template.getId());
         try {
             String resolvedDestinationPath =
                 new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
@@ -127,12 +122,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      * @param trigger
      *            the parent {@link Trigger}
      * @return the {@link List} of {@link IncrementTo}s
-     * @param triggerInterpreter
-     *            {@link TriggerInterpreter} the trigger has been interpreted with
      */
     // TODO create ToConverter
-    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger,
-        TriggerInterpreter triggerInterpreter) {
+    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger) {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
@@ -141,77 +133,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
             }
             incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger, triggerInterpreter)));
+                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
-    }
-
-    /**
-     * Returns all matching {@link Trigger}s for the given input object
-     *
-     * @param matcherInput
-     *            object
-     * @return the {@link List} of matching {@link Trigger}s
-     */
-    List<Trigger> getMatchingTriggers(Object matcherInput) {
-
-        LOG.debug("Retrieve matching triggers...");
-        List<Trigger> matchingTrigger = Lists.newLinkedList();
-        for (Trigger trigger : configurationHolder.readContextConfiguration().getTriggers()) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-            LOG.debug("Check {} to match the input...", trigger);
-
-            if (triggerInterpreter.getInputReader().isValidInput(matcherInput)) {
-                LOG.debug("Matcher input is marked as valid.");
-                boolean triggerMatches =
-                    GenerationProcessor.matches(matcherInput, trigger.getMatcher(), triggerInterpreter);
-
-                // if a match has been found do not check container matchers in addition for performance
-                // issues.
-                if (!triggerMatches) {
-                    LOG.debug("Check container matchers ...");
-                    FOR_CONTAINERMATCHER:
-                    for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                        MatcherTo containerMatcherTo =
-                            new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), matcherInput);
-                        LOG.debug("Check {} ...", containerMatcherTo);
-                        if (triggerInterpreter.getMatcher().matches(containerMatcherTo)) {
-                            LOG.debug("Match! Retrieve objects from container ...", containerMatcherTo);
-                            // keep backward-compatibility
-                            List<Object> containerResources;
-                            if (containerMatcher.isRetrieveObjectsRecursively()) {
-                                containerResources = triggerInterpreter.getInputReader()
-                                    .getInputObjectsRecursively(matcherInput, Charsets.UTF_8);
-                            } else {
-                                // the charset does not matter as we just want to see whether there is one
-                                // matcher for one of the container resources
-                                containerResources =
-                                    triggerInterpreter.getInputReader().getInputObjects(matcherInput, Charsets.UTF_8);
-                            }
-                            LOG.debug("{} objects retrieved.", containerResources.size());
-
-                            for (Object resource : containerResources) {
-                                if (GenerationProcessor.matches(resource, trigger.getMatcher(), triggerInterpreter)) {
-                                    LOG.debug("At least one object from container matches.");
-                                    triggerMatches = true;
-                                    break FOR_CONTAINERMATCHER;
-                                }
-                            }
-                        }
-                    }
-                }
-                LOG.debug("{} {}", trigger, triggerMatches ? "matches." : "does not match.");
-                if (triggerMatches) {
-                    matchingTrigger.add(trigger);
-                }
-            } else if (LOG.isDebugEnabled()) {
-                LOG.debug("Invalid input for trigger {} of type {}. Input of class '{}': {}", trigger.getId(),
-                    trigger.getType(), matcherInput.getClass(),
-                    matcherInput.getClass().isArray() ? Arrays.toString((Object[]) matcherInput) : matcherInput);
-            }
-        }
-        return matchingTrigger;
     }
 
     /**
@@ -229,11 +153,8 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
-        for (Trigger trigger : getMatchingTriggers(matcherInput)) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-
-            TemplatesConfiguration templatesConfiguration =
-                configurationHolder.readTemplatesConfiguration(trigger, triggerInterpreter);
+        for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
+            TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
             if (templatesConfiguration != null) {
                 templateConfigurations.add(templatesConfiguration);
             }

@@ -11,16 +11,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.capgemini.cobigen.unittest.config.common.AbstractUnitTest;
 import com.google.common.io.Files;
 
 /**
- * Test suite for {@link TemplateConfigurationUpgrader}
- * @author mbrunnli (Jun 22, 2015)
+ * Test suite for {@link ContextConfigurationUpgrader}
  */
 public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
@@ -36,7 +35,6 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
      * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 22, 2015)
      */
     @Test
     public void testCorrectUpgrade_v2_0_TO_v2_1() throws Exception {
@@ -52,7 +50,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
         ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(tempFolder.getRoot().toPath());
         assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
 
-        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), false);
+        sut.upgradeConfigurationToLatestVersion(tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
         assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
             .hasSameContentAs(sourceTestdata);
 
@@ -70,7 +68,6 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
      * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
      * @throws Exception
      *             test fails
-     * @author mbrunnli (Jun 22, 2015)
      */
     @Test
     public void testCorrectV2_1SchemaDetection() throws Exception {

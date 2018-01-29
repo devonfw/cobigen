@@ -35,17 +35,7 @@ public interface InputReader {
     public Map<String, Object> createModel(Object input);
 
     /**
-     * States whether the given input object combines multiple input objects to be used for generation
-     * @param input
-     *            to be checked
-     * @return <code>true</code> if the given input combines multiple input objects for generation<br>
-     *         <code>false</code>, otherwise
-     */
-    public boolean combinesMultipleInputObjects(Object input);
-
-    /**
-     * Will return the set of combined input objects if the given input combines multiple input objects (resp.
-     * {@link #combinesMultipleInputObjects(Object)} returns <code>true</code>).
+     * Will return the set of combined input objects if the given input combines multiple input objects.
      * @param input
      *            the combined input object
      * @param inputCharset
@@ -62,11 +52,11 @@ public interface InputReader {
      * @return a key to object {@link Map}. The keys are the method names and the objects are the
      *         corresponding instances of the class where the method is implemented.
      */
+    @Deprecated
     public Map<String, Object> getTemplateMethods(Object input);
 
     /**
-     * Will return the set of combined input objects if the given input combines multiple input objects (resp.
-     * {@link #combinesMultipleInputObjects(Object)} returns <code>true</code>).
+     * Will return the set of combined input objects if the given input combines multiple input objects.
      * @param input
      *            the combined input object
      * @param inputCharset

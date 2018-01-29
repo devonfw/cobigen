@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+  <templates>
+    <template id="resources_resources_spring_common" destinationPath="src/main/resources/resources/spring/common.xml" templateFile="resources/resources/spring/common.xml.ftl" />
+  </templates>
+
+</templatesConfiguration>

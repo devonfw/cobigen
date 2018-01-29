@@ -1,11 +1,10 @@
 package com.capgemini.cobigen.impl.config;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
-import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
 import com.google.common.collect.Maps;
 
@@ -15,7 +14,7 @@ import com.google.common.collect.Maps;
 public class ConfigurationHolder {
 
     /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
-    private Map<String, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+    private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
     /** Cached context configuration */
     private ContextConfiguration contextConfiguration;
@@ -33,44 +32,24 @@ public class ConfigurationHolder {
     }
 
     /**
-     * Removes all instances of the {@link TemplatesConfiguration} given by the provided {@link Path} from the
-     * cache.
-     * @param path
-     *            {@link Path} of the {@link ConfigurationConstants#TEMPLATES_CONFIG_FILENAME templates
-     *            configuration file}.
-     */
-    public void invalidateTemplatesConfiguration(Path path) {
-        templatesConfigurations.remove(path.toUri().toString());
-    }
-
-    /**
-     * Removes the {@link ContextConfiguration} from the cache.
-     */
-    public void invalidateContextConfiguration() {
-        contextConfiguration = null;
-    }
-
-    /**
      * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache.
      * @param trigger
      *            to get matcher declarations from
-     * @param triggerInterpreter
-     *            to get the matcher implementation from
      * @return the {@link TemplatesConfiguration}
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
      */
-    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger, TriggerInterpreter triggerInterpreter) {
+    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
-        if (!templatesConfigurations.containsKey(trigger.getTemplateFolder())) {
-            templatesConfigurations.put(trigger.getTemplateFolder(),
-                Maps.<String, TemplatesConfiguration> newHashMap());
+        Path templateFolder = Paths.get(trigger.getTemplateFolder());
+        if (!templatesConfigurations.containsKey(templateFolder)) {
+            templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
-            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger, triggerInterpreter);
-            templatesConfigurations.get(trigger.getTemplateFolder()).put(trigger.getId(), config);
+            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
+            templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
         }
 
-        return templatesConfigurations.get(trigger.getTemplateFolder()).get(trigger.getId());
+        return templatesConfigurations.get(templateFolder).get(trigger.getId());
     }
 
     /**

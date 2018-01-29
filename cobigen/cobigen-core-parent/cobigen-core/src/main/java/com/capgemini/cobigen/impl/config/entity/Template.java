@@ -156,4 +156,8 @@ public class Template implements TextTemplate {
         return getClass().getSimpleName() + "[name='" + getName() + "]";
     }
 
+    @Override
+    public int hashCode() {
+        return unresolvedTemplatePath.hashCode();
+    }
 }
