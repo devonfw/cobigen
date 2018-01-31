@@ -3,6 +3,7 @@ package com.capgemini.cobigen.jsonplugin.merger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -21,18 +22,13 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link JSONMerger} merges a patch and the base file of the same JSON file. The merger is a recursive
  * method that goes through all children of each {@link JsonElement} merging them if necessary
- *
  */
 public class JSONMerger implements Merger {
 
-    /**
-     * Merger Type to be registered
-     */
+    /** Merger Type to be registered */
     private String type;
 
-    /**
-     * The conflict resolving mode
-     */
+    /** The conflict resolving mode */
     private boolean patchOverrides;
 
     /**
@@ -58,19 +54,20 @@ public class JSONMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String file = base.getAbsolutePath();
         JsonObject objBase = null;
-
         JsonObject objPatch = null;
 
-        try {
+        try (FileReader reader = new FileReader(file)) {
             JsonParser parser = new JsonParser();
-            JsonElement jsonBase = parser.parse(new FileReader(file));
+            JsonElement jsonBase = parser.parse(reader);
             objBase = jsonBase.getAsJsonObject();
         } catch (JsonIOException e) {
-            throw new MergeException(base, "Not JSON file");
+            throw new MergeException(base, "Not JSON file", e);
         } catch (JsonSyntaxException e) {
-            throw new MergeException(base, "JSON syntax error. " + e.getMessage());
+            throw new MergeException(base, "JSON syntax error. ", e);
         } catch (FileNotFoundException e) {
-            throw new MergeException(base, "File not found");
+            throw new MergeException(base, "File not found", e);
+        } catch (IOException e) {
+            throw new MergeException(base, "Could not read " + file, e);
         }
 
         try {
@@ -78,9 +75,9 @@ public class JSONMerger implements Merger {
             JsonElement jsonPatch = parser.parse(patch);
             objPatch = jsonPatch.getAsJsonObject();
         } catch (JsonIOException e) {
-            throw new MergeException(base, "Not JSON patch code");
+            throw new MergeException(base, "Not JSON patch code", e);
         } catch (JsonSyntaxException e) {
-            throw new MergeException(base, "JSON Patch syntax error. " + e.getMessage());
+            throw new MergeException(base, "JSON Patch syntax error. ", e);
         }
 
         String result = null;
