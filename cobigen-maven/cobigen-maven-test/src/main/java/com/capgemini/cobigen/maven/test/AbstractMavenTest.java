@@ -78,7 +78,7 @@ public class AbstractMavenTest {
         request.setShowErrors(true);
         request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
-        request.setMavenOpts("-Xmx1024m");
+        request.setMavenOpts("-Xmx2048m");
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
