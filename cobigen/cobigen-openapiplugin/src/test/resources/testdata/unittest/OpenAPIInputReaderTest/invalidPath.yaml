@@ -1,0 +1,45 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+
+components:
+    schemas:
+        Table:
+          x-component: tablemanagement
+          description: Entity definiton of Table
+          type: object
+          properties:
+            tableExample:
+              type: string
+              maxLength: 100
+              minLength: 5
+              uniqueItems: true
+          x-manytomany: Table
+          x-onetoone: Sale
+        Sale:
+          x-component: salemanagement
+          description: Entity definiton of Table
+          type: object
+          properties:
+            saleExample:
+              type: number
+              format: int64
+              maximum: 100
+              minimum: 0
+          x-onetoone: Table
+          x-onetomany: Table
+          required:
+            - saleExample
+
+    requestBodies:
+        TableData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Table'
+          required: true
+ 
