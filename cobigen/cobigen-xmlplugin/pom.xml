@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cobigen-xmlplugin</artifactId>
   <name>CobiGen - XML Plug-In</name>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -20,13 +20,28 @@
   <dependencies>
     <dependency>
       <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>3.0.0</version>
+      <artifactId>cobigen-core-api</artifactId>
+      <version>4.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core-test</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- Just for systemtests to allow usage of CobiGen -->
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-core</artifactId>
+      <version>4.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.capgemini</groupId>
+      <artifactId>cobigen-tempeng-freemarker</artifactId>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -35,5 +50,6 @@
       <groupId>com.github.maybeec</groupId>
       <version>1.0.0</version>
     </dependency>
+    
   </dependencies>
 </project>

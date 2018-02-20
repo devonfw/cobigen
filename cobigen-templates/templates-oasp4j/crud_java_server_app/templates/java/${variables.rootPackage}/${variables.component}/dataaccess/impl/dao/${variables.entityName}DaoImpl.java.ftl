@@ -58,7 +58,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     	if (${field.name} != null) {
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
               if(${variables.entityName?lower_case}.get${fieldCapName}() != null) {
-                  query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}().getId()).eq(${field.name}));
+                  query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}Id()).eq(${field.name}));
               }
           <#else>
               query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>).eq(${field.name}));
@@ -68,8 +68,29 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     	</#compress>
     </#if>
     </#list>
+    addOrderBy(query, alias, ${variables.entityName?lower_case}, criteria.getSort());
 
     return findPaginated(criteria, query, alias);
+  }
+
+  private void addOrderBy(JPAQuery query, EntityPathBase<${variables.entityName}Entity> alias, ${variables.entityName}Entity ${variables.entityName?lower_case}, List<OrderByTo> sort) {
+    if (sort != null && !sort.isEmpty()) {
+      for (OrderByTo orderEntry : sort) {
+        switch(orderEntry.getName()) {
+        <#list pojo.fields as field>
+          <#if !JavaUtil.isCollection(classObject, field.name)>
+          case "${field.name}":
+            if (OrderDirection.ASC.equals(orderEntry.getDirection())) {
+                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}<#if field.type?ends_with("Entity")>Id</#if>()).asc());
+            } else {
+                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}<#if field.type?ends_with("Entity")>Id</#if>()).desc());
+            }   
+          break;
+          </#if>
+        </#list>
+        }
+      }
+    }
   }
 
 }

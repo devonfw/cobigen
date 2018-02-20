@@ -1,21 +1,15 @@
 package com.capgemini.cobigen.tsplugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.MergeException;
@@ -26,49 +20,13 @@ import com.capgemini.cobigen.tsplugin.merger.TypeScriptMerger;
  */
 public class TypeScriptMergerTest {
 
+    /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
-
-    /**
-     * Checks if node is installed and version. Version must be equal or superior to v6
-     */
-    @Test
-    public void checkNodeInstallationAndVersion() {
-        String version = new String();
-        int versionNumber = 0;
-        List<String> nodeVersionScript = new LinkedList<>();
-
-        if (SystemUtils.IS_OS_WINDOWS) {
-            nodeVersionScript.add("cmd.exe");
-            nodeVersionScript.add("/c");
-        }
-        nodeVersionScript.add("node");
-        nodeVersionScript.add("--version");
-        ProcessBuilder builder = new ProcessBuilder(nodeVersionScript);
-        Process p;
-        try {
-            p = builder.start();
-            try (InputStreamReader rdr = new InputStreamReader(p.getInputStream());
-                BufferedReader r = new BufferedReader(rdr)) {
-                String line;
-                while (true) {
-                    line = r.readLine();
-                    if (line == null) {
-                        break;
-                    } else {
-                        version = version.concat(line);
-                    }
-                }
-                versionNumber = Integer.parseInt(version.substring(1, 2));
-            }
-        } catch (IOException e) {
-            fail("No version of Node is installed. Please install Node 6 or superior");
-        }
-        assertThat(versionNumber).isGreaterThanOrEqualTo(6);
-    }
 
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
      * @throws MergeException
+     *             test fails
      */
     @Test
     public void testMergingNoOverrides() throws MergeException {
@@ -102,6 +60,7 @@ public class TypeScriptMergerTest {
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = true
      * @throws MergeException
+     *             test fails
      */
     @Test
     public void testMergingOverrides() throws MergeException {

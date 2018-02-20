@@ -15,12 +15,13 @@
 
   <properties>
     <maven.version>3.0</maven.version>
-	<cobigen.maven.version>2.1.0</cobigen.maven.version>
+    <cobigen.maven.version>3.1.0</cobigen.maven.version>
   </properties>
 
   <modules>
     <module>cobigen-maven-plugin</module>
     <module>cobigen-maven-systemtest</module>
+    <module>cobigen-maven-test</module>
   </modules>
 
 </project>

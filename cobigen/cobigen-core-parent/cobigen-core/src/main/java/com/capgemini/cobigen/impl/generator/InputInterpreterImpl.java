@@ -11,6 +11,7 @@ import com.capgemini.cobigen.api.InputInterpreter;
 import com.capgemini.cobigen.api.annotation.Cached;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
+import com.capgemini.cobigen.api.exception.PluginNotAvailableException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.TriggerInterpreter;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
@@ -66,10 +67,10 @@ public class InputInterpreterImpl implements InputInterpreter {
     private InputReader getInputReader(String type) {
         TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(type);
         if (triggerInterpreter == null) {
-            throw new CobiGenRuntimeException("No Plugin registered for type " + type);
+            throw new PluginNotAvailableException("TriggerInterpreter", type);
         }
         if (triggerInterpreter.getInputReader() == null) {
-            throw new CobiGenRuntimeException("No InputReader available for type " + type);
+            throw new PluginNotAvailableException("InputReader", type);
         }
 
         return triggerInterpreter.getInputReader();

@@ -2,10 +2,10 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>com.capgemini.cobigen.eclipse.updatesite</artifactId>
+  <artifactId>cobigen-eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In UpdateSite</name>
   <packaging>eclipse-repository</packaging>
-  <version>2.1.1</version>
+  <version>3.0.1</version>
 
   <parent>
     <groupId>com.capgemini</groupId>
@@ -43,99 +43,6 @@
         </executions>
       </plugin>
     </plugins>
-
-    <extensions>
-      <!-- Enabling the use of FTP -->
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ftp</artifactId>
-        <version>1.0-beta-6</version>
-      </extension>
-    </extensions>
   </build>
-
-  <profiles>
-    <profile>
-      <id>uploadNightly</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
-                  <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
-                  <toDir>files/cobigen/updatesite/nightly</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>uploadExperimental</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
-                  <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
-                  <toDir>files/cobigen/updatesite/experimental</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>uploadRelease</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>upload-release</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
-                  <includes>**</includes>
-                  <url>ftp://de-mucevolve02/</url>
-                  <toDir>files/cobigen/updatesite/stable</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

@@ -26,6 +26,7 @@ import com.capgemini.cobigen.api.constants.ConfigurationConstants;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.capgemini.cobigen.api.exception.PluginNotAvailableException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.api.extension.TextTemplateEngine;
@@ -346,8 +347,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                         if (merger != null) {
                             mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
-                            throw new InvalidConfigurationException(
-                                "No merger for merge strategy '" + templateEty.getMergeStrategy() + "' found.");
+                            throw new PluginNotAvailableException(trigger.getType(),
+                                "merge strategy '" + templateEty.getMergeStrategy() + "'");
                         }
 
                         if (mergeResult != null) {

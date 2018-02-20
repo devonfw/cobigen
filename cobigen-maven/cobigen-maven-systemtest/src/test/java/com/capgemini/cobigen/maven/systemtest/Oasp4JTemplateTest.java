@@ -3,10 +3,8 @@ package com.capgemini.cobigen.maven.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
-import java.util.Properties;
 
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -14,38 +12,15 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.maven.config.constant.MavenMetadata;
+import com.capgemini.cobigen.maven.test.AbstractMavenTest;
 
 /** Test suite for testing the maven plugin with whole released template sets */
-public class Oasp4JTemplateTest {
+public class Oasp4JTemplateTest extends AbstractMavenTest {
 
     /** Root of all test resources of this test suite */
     public static final String TEST_RESOURCES_ROOT = "src/test/resources/testdata/systemtest/Oasp4JTemplateTest/";
-
-    /** Temporary folder rule to create new temporary folder and files */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
-
-    /** The maven settings file used by maven invoker for test execution */
-    private File mvnSettingsFile;
-
-    /**
-     * Copy settings file to get a file handle required by maven invoker API
-     * @throws IOException
-     *             if the file could not be read/written
-     */
-    @Before
-    public void getSettingsFile() throws IOException {
-        mvnSettingsFile = tmpFolder.newFile();
-        Files.write(mvnSettingsFile.toPath(),
-            IOUtil.toByteArray(Oasp4JTemplateTest.class.getResourceAsStream("/test-maven-settings.xml")));
-    }
 
     /**
      * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
@@ -56,27 +31,9 @@ public class Oasp4JTemplateTest {
     @Test
     public void testEntityInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGeneration/");
-        assertThat(testProject).exists();
+        File testProjectRoot = runMavenInvoker(testProject);
 
-        File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        request.setProperties(mavenProperties);
-        request.setShowErrors(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
-
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 3 from entity_infrastructure, 4 from daos, 1 input file
@@ -94,28 +51,9 @@ public class Oasp4JTemplateTest {
     @Test
     public void testEntityInputDataaccessGenerationForTemplates2_0_0() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplates2-0-0/");
-        assertThat(testProject).exists();
+        File testProjectRoot = runMavenInvoker(testProject);
 
-        File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        request.setProperties(mavenProperties);
-        request.setShowErrors(true);
-        request.setDebug(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
-
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
         // 3 from entity_infrastructure, 4 from daos, 1 input file
@@ -134,82 +72,12 @@ public class Oasp4JTemplateTest {
     public void testEntityInputDataaccessGenerationForTemplateFolder() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder/");
         File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j");
-        assertThat(testProject).exists();
-        assertThat(templatesProject).exists();
+        File testProjectRoot = runMavenInvoker(testProject, templatesProject);
 
-        File testProjectRoot = tmpFolder.newFolder();
-        File testTemplates = tmpFolder.newFolder("templates-oasp4j");
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-        FileUtils.copyDirectoryStructure(templatesProject, testTemplates);
-
-        assertThat(testTemplates).exists();
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        request.setProperties(mavenProperties);
-        request.setShowErrors(true);
-        request.setDebug(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
-
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
             Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
-    }
-
-    /**
-     * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
-     * whether the files have been generated. Takes an entity (POJO) as input. <br/>
-     * This is the same test as {@link #testEntityInputDataaccessGeneration()} but using the oasp4j templates
-     * version 2.0.0. Those templates use Java classes that need to be loaded by the maven plugin
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testEntityInputDataaccessGenerationForTemplateFolderNestedPackages() throws Exception {
-        File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder2/");
-        File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j2");
-        assertThat(testProject).exists();
-        assertThat(templatesProject).exists();
-
-        File testProjectRoot = tmpFolder.newFolder();
-        File testTemplates = tmpFolder.newFolder("templates-oasp4j2");
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
-        FileUtils.copyDirectoryStructure(templatesProject, testTemplates);
-
-        assertThat(testTemplates).exists();
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        request.setProperties(mavenProperties);
-        request.setShowErrors(true);
-        request.setDebug(true);
-        request.setGlobalSettingsFile(mvnSettingsFile);
-
-        Invoker invoker = new DefaultInvoker();
-        InvocationResult result = invoker.execute(request);
-
-        assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
-
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
-        long numFilesInTarget =
-            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(5);
+        assertThat(numFilesInTarget).isEqualTo(2);
     }
 
     /**
@@ -221,6 +89,51 @@ public class Oasp4JTemplateTest {
     @Test
     public void testPackageInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestPackageInputDataaccessGeneration/");
+        File testProjectRoot = runMavenInvoker(testProject);
+
+        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
+        long numFilesInTarget =
+            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+        // 2+2 from entity_infrastructure, 4+2 from daos, 2 input files
+        assertThat(numFilesInTarget).isEqualTo(12);
+    }
+
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testClassloadingWithTemplateFolderAndTestClasses() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestClassLoadingWithTemplateFolder/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-classloading-testclasses/");
+        File testProjectRoot = runMavenInvoker(testProject, testTemplatesProject);
+
+        assertThat(testProjectRoot.toPath().resolve("Sample.txt")).hasContent("Test InputEntity asdf");
+    }
+
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testNothingGenerated() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestNothingToGenerate/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-nomatch/");
+        runMavenInvoker(testProject, testTemplatesProject);
+    }
+
+    /**
+     * Test class loading for a configuration folder with java util classes as well as test classes
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testThrowExceptionOnNothingGenerated() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestExceptionOnNothingToGenerate/");
+        File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-nomatch/");
+
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
@@ -229,22 +142,15 @@ public class Oasp4JTemplateTest {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(testProjectRoot);
         request.setGoals(Collections.singletonList("package"));
-        Properties mavenProperties = new Properties();
-        mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        request.setProperties(mavenProperties);
+        setTestProperties(request, testTemplatesProject);
         request.setShowErrors(true);
+        request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
 
+        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(1);
         assertThat(result.getExecutionException()).isNull();
-        assertThat(result.getExitCode()).as("Exit Code").isEqualTo(0);
-
-        assertThat(testProjectRoot.list()).containsExactly("pom.xml", "src", "target");
-        long numFilesInTarget =
-            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 2+2 from entity_infrastructure, 4+2 from daos, 2 input files
-        assertThat(numFilesInTarget).isEqualTo(12);
     }
 }
