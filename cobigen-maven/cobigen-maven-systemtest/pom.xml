@@ -26,8 +26,8 @@
 
     <dependency>
       <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-test</artifactId>
-      <version>4.0.0</version>
+      <artifactId>cobigen-maven-test</artifactId>
+      <version>${cobigen.maven.version}</version>
     </dependency>
   </dependencies>
 

@@ -3,9 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capgemini</groupId>
   <artifactId>Oasp4JTemplateTest-TestEntityInputDataaccessGeneration</artifactId>
-  <version>SNAPSHOT</version>
-
-  
+  <version>dev-SNAPSHOT</version>
 
   <build>
     <plugins>
@@ -23,7 +21,7 @@
           </execution>
         </executions>
         <configuration>
-          <configurationFolder>${basedir}/../templates-oasp4j/</configurationFolder>
+          <configurationFolder>${templatesProject}/</configurationFolder>
           <inputFiles>
             <inputFile>src/main/java/io/github/devonfw/cobigen/generator/dataaccess/api/InputEntity.java</inputFile>
           </inputFiles>
@@ -31,6 +29,23 @@
             <increment>daos</increment>
           </increments>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-tempeng-freemarker</artifactId>
+            <version>1.0.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-javaplugin</artifactId>
+            <version>1.6.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-xmlplugin</artifactId>
+            <version>3.1.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

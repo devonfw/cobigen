@@ -41,4 +41,20 @@ public interface ${variables.component?cap_first} {
    */
   ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?uncap_first});
   
+    /**
+   * Returns a composite ${variables.entityName} by its id 'id'.
+   *
+   * @param id The id 'id' of the ${variables.entityName}.
+   * @return The {@link ${variables.entityName}Cto} with id 'id'
+   */
+  ${variables.entityName}Cto find${variables.entityName}Cto(Long id);
+  
+  /**
+   * Returns a paginated list of composite ${variables.entityName}s matching the search criteria.
+   *
+   * @param criteria the {@link ${variables.entityName}SearchCriteriaTo}.
+   * @return the {@link List} of matching {@link ${variables.entityName}Cto}s.
+   */
+  PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria);
+  
 }

@@ -1,13 +1,10 @@
 package com.capgemini.cobigen.api.exception;
 
-/**
- * Exception to indicate that an InputReader encountered a problem while parsing input content.
- */
+
+/** Exception to indicate that an InputReader encountered a problem while parsing input content. */
 public class InputReaderException extends CobiGenRuntimeException {
 
-    /**
-     *
-     */
+    /** Generate serial version UID */
     private static final long serialVersionUID = -3460790488241223241L;
 
     /**

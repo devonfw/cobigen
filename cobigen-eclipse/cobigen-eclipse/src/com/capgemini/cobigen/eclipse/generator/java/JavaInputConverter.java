@@ -1,9 +1,10 @@
 package com.capgemini.cobigen.eclipse.generator.java;
 
-import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.io.Charsets;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -11,11 +12,11 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 
 import com.capgemini.cobigen.api.CobiGen;
+import com.capgemini.cobigen.api.InputInterpreter;
+import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.capgemini.cobigen.eclipse.common.tools.ClassLoaderUtil;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.javaplugin.util.JavaParserUtil;
 import com.google.common.collect.Lists;
 
 /**
@@ -28,11 +29,14 @@ public class JavaInputConverter {
      * Converts a list of IDE objects to the supported CobiGen input types
      * @param javaElements
      *            java IDE objects (mainly of type {@link IJavaElement}), which should be converted
+     * @param inputInterpreter
+     *            to interpret inputs
      * @return the corresponding {@link List} of inputs for the {@link CobiGen generator}
      * @throws GeneratorCreationException
      *             if any exception occurred during converting the inputs or creating the generator
      */
-    public static List<Object> convertInput(List<Object> javaElements) throws GeneratorCreationException {
+    public static List<Object> convertInput(List<Object> javaElements, InputInterpreter inputInterpreter)
+        throws GeneratorCreationException {
         List<Object> convertedInputs = Lists.newLinkedList();
 
         /*
@@ -42,15 +46,17 @@ public class JavaInputConverter {
             if (elem instanceof IPackageFragment) {
                 try {
                     IPackageFragment frag = (IPackageFragment) elem;
-                    PackageFolder packageFolder =
-                        new PackageFolder(frag.getResource().getLocationURI(), frag.getElementName());
-                    packageFolder.setClassLoader(ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
+                    Object packageFolder = inputInterpreter.read("java",
+                        Paths.get(frag.getCorrespondingResource().getLocationURI()), Charsets.UTF_8,
+                        frag.getElementName(), ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
                     throw new GeneratorCreationException(
                         "An internal exception occurred while building the project class loader.", e);
                 } catch (CoreException e) {
                     throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
+                } catch (InputReaderException e) {
+                    throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
                 }
             } else if (elem instanceof ICompilationUnit) {
                 // Take first input type as precondition for the input is that all input types are part of the
@@ -60,17 +66,15 @@ public class JavaInputConverter {
                     try {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
-                        Class<?> loadedClass = projectClassLoader.loadClass(rootType.getFullyQualifiedName());
-                        Object[] inputSourceAndClass =
-                            new Object[] { loadedClass, JavaParserUtil.getFirstJavaClass(projectClassLoader,
-                                new StringReader(((ICompilationUnit) elem).getSource())) };
-                        convertedInputs.add(inputSourceAndClass);
+                        Object input = inputInterpreter.read("java",
+                            Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
+                            Charsets.UTF_8, projectClassLoader);
+                        convertedInputs.add(input);
                     } catch (MalformedURLException e) {
                         throw new GeneratorCreationException("An internal exception occurred while loading Java class "
                             + rootType.getFullyQualifiedName(), e);
-                    } catch (ClassNotFoundException e) {
-                        throw new GeneratorCreationException(
-                            "Could not instantiate Java class " + rootType.getFullyQualifiedName(), e);
+                    } catch (InputReaderException e) {
+                        throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
                     }
                 } catch (MergeException e) {
                     throw new GeneratorCreationException("Could not parse Java base file: "

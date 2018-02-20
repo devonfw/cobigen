@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capgemini</groupId>
   <artifactId>Oasp4JTemplateTest-TestPackageInputDataaccessGeneration</artifactId>
-  <version>SNAPSHOT</version>
+  <version>dev-SNAPSHOT</version>
 
   <build>
     <plugins>
@@ -34,6 +34,21 @@
             <groupId>com.capgemini</groupId>
             <artifactId>cobigen-templates-oasp4j</artifactId>
             <version>1.0.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-tempeng-freemarker</artifactId>
+            <version>1.0.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-javaplugin</artifactId>
+            <version>1.6.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-xmlplugin</artifactId>
+            <version>3.1.0</version>
           </dependency>
         </dependencies>
       </plugin>
