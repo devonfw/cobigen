@@ -1,5 +1,6 @@
 package com.capgemini.cobigen.api.exception;
 
+
 /** Exception to indicate that an InputReader encountered a problem while parsing input content. */
 public class InputReaderException extends CobiGenRuntimeException {
 
