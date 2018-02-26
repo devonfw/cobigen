@@ -169,7 +169,7 @@ public class OpenAPIInputReaderTest {
 
     }
 
-    @Test // PUT IN ANOTHER TEST METHOD! (expected = InvalidConfigurationException.class)
+    @Test
     public void testRetrieveRelationShips() throws Exception {
         List<Object> inputObjects = getInputs();
         List<RelationShip> relationships = new LinkedList<>();
