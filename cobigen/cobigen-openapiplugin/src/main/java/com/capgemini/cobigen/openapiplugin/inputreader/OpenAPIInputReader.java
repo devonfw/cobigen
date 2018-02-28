@@ -140,20 +140,20 @@ public class OpenAPIInputReader implements InputReader {
             // If no x-... tag was found on the input file, throw invalid configuration
             if (openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT) == null) {
                 throw new InvalidConfigurationException(
-                    "Your Swagger file is not correctly formatted, it lacks of x-component tags.\n "
+                    "Your Swagger file is not correctly formatted, it lacks of x-component tags.\n\n"
                         + "Go to the documentation (https://github.com/devonfw/tools-cobigen/wiki/"
-                        + "howto_openapi_generation#relationships) to check how to correctly format it.\n"
-                        + "If it is still not working, check your file indentation!");
+                        + "howto_openapi_generation#relationships) to check how to correctly format it."
+                        + " If it is still not working, check your file indentation!");
             }
             entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
 
             // If the path's tag was found on the input file, throw invalid configuration
             if (openApi.getPaths().size() == 0) {
                 throw new InvalidConfigurationException(
-                    "Your Swagger file is not correctly formatted, it lacks of the correct path syntax.\n "
+                    "Your Swagger file is not correctly formatted, it lacks of the correct path syntax.\n\n"
                         + "Go to the documentation (https://github.com/devonfw/tools-cobigen/wiki/howto_openapi_"
-                        + "generation#paths) to check how to correctly format it.\n"
-                        + "If it is still not working, check your file indentation!");
+                        + "generation#paths) to check how to correctly format it."
+                        + " If it is still not working, check your file indentation!");
             }
 
             componentDef.setPaths(getPaths(openApi.getPaths(),
