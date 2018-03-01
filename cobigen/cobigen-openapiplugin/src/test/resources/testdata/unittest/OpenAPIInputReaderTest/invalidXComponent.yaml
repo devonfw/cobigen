@@ -21,39 +21,10 @@ paths:
       responses:
         '200':
           description: Any
-  /salemanagement/v1/sale/{id}:
-    get:
-      operationId: findSale
-      parameters:
-        - name: amount
-          in: path
-          schema:
-            type: integer
-            format: int64
-            minimum: 10
-            maximum: 200
-      responses:
-        '200':
-          description: Any
-  /salemanagement/v1/sale/:
-    post:
-      responses:
-        '200':
-          description: Any
-      requestBody:
-        $ref: '#/components/requestBodies/TableData'
-      tags:
-       - searchCriteria
-  /tablemanagement/v1/table/new:
-    post:
-      responses:
-       '200':
-          description: Any
-      requestBody:
-        $ref: '#/components/requestBodies/TableData'
 components:
     schemas:
         Table:
+          #There should be here "x-component: tablemanagament"
           description: Entity definiton of Table
           type: object
           properties:
@@ -62,23 +33,6 @@ components:
               maxLength: 100
               minLength: 5
               uniqueItems: true
-        Sale:
-          description: Entity definiton of Table
-          type: object
-          properties:
-            saleExample:
-              type: number
-              format: int64
-              maximum: 100
-              minimum: 0
-          required:
-            - saleExample
 
-    requestBodies:
-        TableData:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Table'
-          required: true
+
  
