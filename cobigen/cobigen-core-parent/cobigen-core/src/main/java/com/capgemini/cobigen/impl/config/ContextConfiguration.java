@@ -2,7 +2,7 @@ package com.capgemini.cobigen.impl.config;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +68,7 @@ public class ContextConfiguration {
      * @return all registered {@link Trigger}s
      */
     public List<Trigger> getTriggers() {
-        return new LinkedList<>(triggers.values());
+        return new ArrayList<>(triggers.values());
     }
 
     /**

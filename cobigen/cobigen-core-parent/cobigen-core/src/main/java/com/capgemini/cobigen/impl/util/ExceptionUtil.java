@@ -1,5 +1,10 @@
 package com.capgemini.cobigen.impl.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+
 /**
  * This class provides commonly interesting exception handling methods
  *
@@ -25,7 +30,7 @@ public class ExceptionUtil {
     public static <T extends Throwable> T getCause(Throwable e, Class<T> cause) {
 
         Throwable curr = e;
-        while (curr != null && !cause.equals(curr.getClass())) {
+        while (curr != null && !cause.isAssignableFrom(curr.getClass())) {
             curr = curr.getCause();
         }
         if (curr != null) {
@@ -51,7 +56,7 @@ public class ExceptionUtil {
 
         for (Class<?> cause : causes) {
             Throwable curr = e;
-            while (curr != null && !cause.equals(curr.getClass())) {
+            while (curr != null && !cause.isAssignableFrom(curr.getClass())) {
                 curr = curr.getCause();
             }
             if (curr != null) {
@@ -60,5 +65,31 @@ public class ExceptionUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Invoking the target method while assuring proper exception handling.
+     * @param targetObject
+     *            target object to invoke the method on
+     * @param method
+     *            to be called.
+     * @param args
+     *            parameters to be passed.
+     * @return the resulting object.
+     */
+    public static Object invokeTarget(Object targetObject, Method method, Object[] args) {
+        try {
+            return method.invoke(targetObject, args);
+        } catch (IllegalAccessException e) {
+            throw new CobiGenRuntimeException(
+                "Could not access method " + method.toGenericString() + ". This is a bug!", e);
+        } catch (InvocationTargetException e) {
+            CobiGenRuntimeException cause = ExceptionUtil.getCause(e, CobiGenRuntimeException.class);
+            if (cause != null) {
+                throw cause;
+            } else {
+                throw new CobiGenRuntimeException("Unable to invoke " + method.toGenericString() + ".", e);
+            }
+        }
     }
 }

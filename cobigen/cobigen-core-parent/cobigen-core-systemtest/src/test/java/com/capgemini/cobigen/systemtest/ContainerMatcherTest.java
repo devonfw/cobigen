@@ -222,7 +222,6 @@ public class ContainerMatcherTest extends AbstractApiTest {
         when(inputReader.isValidInput(any())).thenReturn(true);
 
         // Simulate container children resolution of any plug-in
-        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
         when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
             anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
         when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
@@ -230,10 +229,8 @@ public class ContainerMatcherTest extends AbstractApiTest {
         when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
 
         // match container
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(container)))))
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("container"), ANY, sameInstance(container)))))
             .thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(container)))))
-            .thenReturn(false);
 
         // do not match first child
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
@@ -310,7 +307,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
 
-        when(triggerInterpreter.getType()).thenReturn("java");
+        when(triggerInterpreter.getType()).thenReturn("mockplugin");
         when(triggerInterpreter.getMatcher()).thenReturn(matcher);
         when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
@@ -321,7 +318,6 @@ public class ContainerMatcherTest extends AbstractApiTest {
             .thenReturn(true);
 
         // Simulate container children resolution of any plug-in
-        when(inputReader.combinesMultipleInputObjects(argThat(sameInstance(container)))).thenReturn(true);
         if (multipleContainerChildren) {
             Object secondChildResource = new Object() {
                 @Override

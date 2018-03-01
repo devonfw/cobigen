@@ -38,7 +38,6 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
     /**
      * Initializes the {@link ConfigurationProjectListener} by registering all nested resource listener if the
      * folder already exists.
-     * @author mbrunnli (Jan 10, 2016)
      */
     public ConfigurationProjectListener() {
         IProject cobigenConfigProject =

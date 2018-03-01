@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.ConfigurationInterpreter;
 import com.capgemini.cobigen.api.InputInterpreter;
@@ -17,10 +19,9 @@ import com.capgemini.cobigen.api.to.GenerableArtifact;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.IncrementTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.annotation.ProxyFactory;
 import com.capgemini.cobigen.impl.config.ConfigurationHolder;
-import com.capgemini.cobigen.impl.config.ContextConfiguration;
 import com.capgemini.cobigen.impl.config.entity.Trigger;
+import com.capgemini.cobigen.impl.generator.api.InputResolver;
 import com.capgemini.cobigen.impl.model.ModelBuilderImpl;
 import com.google.common.collect.Lists;
 
@@ -30,34 +31,23 @@ import com.google.common.collect.Lists;
 public class CobiGenImpl implements CobiGen {
 
     /** CobiGen Configuration Cache */
+    @Inject
     private ConfigurationHolder configurationHolder;
 
     /**
      * {@link ConfigurationInterpreter} which holds a cache to improve performance for multiple requests for
      * the same input
      */
+    @Inject
     private ConfigurationInterpreter configurationInterpreter;
 
-    /**
-     * {@link InputInterpreter} which handles InputReader delegates
-     */
+    /** {@link InputInterpreter} which handles InputReader delegates */
+    @Inject
     private InputInterpreter inputInterpreter;
 
-    /**
-     * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
-     *
-     * @param configurationHolder
-     *            {@link ConfigurationHolder} holding CobiGen's configuration
-     */
-    public CobiGenImpl(ConfigurationHolder configurationHolder) {
-        this.configurationHolder = configurationHolder;
-
-        // Create proxy of ConfigurationInterpreter to cache method calls
-        ConfigurationInterpreterImpl configurationInterpreterImplProxy =
-            ProxyFactory.getProxy(new ConfigurationInterpreterImpl(configurationHolder));
-        configurationInterpreter = configurationInterpreterImplProxy;
-        inputInterpreter = ProxyFactory.getProxy(new InputInterpreterImpl(configurationInterpreterImplProxy));
-    }
+    /** {@link InputResolver} instance */
+    @Inject
+    private InputResolver inputResolver;
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
@@ -89,9 +79,8 @@ public class CobiGenImpl implements CobiGen {
         }
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input, generableArtifacts, targetRootPath,
-            forceOverride, logicClasses, rawModel);
-        return gp.generate();
+        return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input, generableArtifacts,
+            targetRootPath, forceOverride, logicClasses, rawModel);
     }
 
     @Override
@@ -117,9 +106,8 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
-        GenerationProcessor gp = new GenerationProcessor(configurationHolder, input,
+        return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input,
             Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
-        return gp.generate();
     }
 
     @Override
@@ -147,13 +135,8 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
-        return inputInterpreter.getInputObjectsRecursively(input, inputCharset);
-    }
-
-    @Override
-    public List<Object> getInputObjects(Object input, Charset inputCharset) {
-        return inputInterpreter.getInputObjects(input, inputCharset);
+    public List<Object> resolveContainers(Object input) {
+        return inputInterpreter.resolveContainers(input);
     }
 
     @Override

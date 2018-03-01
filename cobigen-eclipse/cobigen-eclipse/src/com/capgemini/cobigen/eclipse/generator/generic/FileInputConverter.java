@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.exception.InputReaderException;
+import com.capgemini.cobigen.api.exception.PluginNotAvailableException;
 import com.capgemini.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.google.common.collect.Lists;
 
@@ -66,6 +67,8 @@ public class FileInputConverter {
                         LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
                             readerType, e);
                         // try next
+                    } catch (PluginNotAvailableException e) {
+                        LOG.trace(e.getMessage(), e);
                     }
                 }
                 // try openapi as last chance as it takes too many resources:
@@ -81,10 +84,11 @@ public class FileInputConverter {
                         inputType = readerType;
                         continue;
                     } catch (InputReaderException e) {
-                        LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
-                            readerType, e);
                         throw new GeneratorCreationException(
                             "Could not read file " + inputFile.getLocationURI() + " with any input reader", e);
+                    } catch (PluginNotAvailableException e) {
+                        throw new GeneratorCreationException("Could not read file " + inputFile.getLocationURI()
+                            + " as no Plug-in for type '" + readerType + "' could be found.", e);
                     }
                 }
             } else {

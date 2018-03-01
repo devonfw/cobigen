@@ -31,7 +31,7 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     /** {@link IResourceChangeListener} for the configuration project */
-    private IResourceChangeListener configurationProjectListener = new ConfigurationProjectListener();
+    private IResourceChangeListener configurationProjectListener;
 
     /**
      * Current state of the {@link IResourceChangeListener} for the configuration project
@@ -47,6 +47,9 @@ public class Activator extends AbstractUIPlugin {
      * The constructor
      */
     public Activator() {
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        configurationProjectListener = new ConfigurationProjectListener();
+        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
     }
 
     @Override
