@@ -259,12 +259,58 @@
   <profiles>
     <profile>
       <id>p2-upload-experimental</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>experimental</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${project.baseUri}/target/repository</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${project.build.directory}/upload_repository</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>http://de-mucevolve02/files/cobigen/updatesite/experimental/cobigen-eclipse/</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${project.build.directory}/upload_repository</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -272,7 +318,7 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${project.build.directory}/upload_repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
@@ -286,12 +332,58 @@
     </profile>
     <profile>
       <id>p2-upload-ci</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>ci</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${project.baseUri}/target/repository</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${project.build.directory}/upload_repository</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>http://de-mucevolve02/files/cobigen/updatesite/ci/cobigen-eclipse/</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${project.build.directory}/upload_repository</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -299,7 +391,7 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${project.build.directory}/upload_repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
@@ -313,12 +405,58 @@
     </profile>
     <profile>
       <id>p2-upload-stable</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>stable</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${project.baseUri}/target/repository</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${project.build.directory}/upload_repository</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>http://de-mucevolve02/files/cobigen/updatesite/stable/cobigen-eclipse/</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${project.build.directory}/upload_repository</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -326,7 +464,7 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${project.build.directory}/upload_repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
                   <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
