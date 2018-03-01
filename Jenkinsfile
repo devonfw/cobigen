@@ -153,10 +153,10 @@ node {
 
 		} catch(e) {
 			if (currentBuild.result != 'UNSTABLE') {
+			  currentBuild.result = 'FAILURE'
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
-			echo "${currentBuild.result}"
 			return
 		}
 		setBuildStatus("Complete","SUCCESS")
