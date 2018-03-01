@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
@@ -181,6 +182,43 @@ public class OpenAPIInputReaderTest {
         assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table", "Table");
         assertThat(relationships).extracting("unidirectional").containsExactly(false, false, false, true);
         assertThat(relationships).extracting("sameComponent").containsExactly(true, false, false, false);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidPath() throws Exception {
+        List<Object> inputObjects = getInvalidPath();
+        List<RelationShip> relationships = new LinkedList<>();
+        for (Object o : inputObjects) {
+            relationships.addAll(((EntityDef) o).getRelationShips());
+        }
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidXComponent() throws Exception {
+        List<Object> inputObjects = getInvalidXComponent();
+        List<RelationShip> relationships = new LinkedList<>();
+        for (Object o : inputObjects) {
+            relationships.addAll(((EntityDef) o).getRelationShips());
+        }
+    }
+
+    /**
+     * This method is for reading an input file containing invalid components configuration on the Swagger
+     * file
+     */
+    private List<Object> getInvalidXComponent() throws Exception {
+        OpenAPIInputReader inputReader = new OpenAPIInputReader();
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, "invalidXComponent.yaml"), TestConstants.UTF_8);
+        return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
+    }
+
+    /**
+     * This method is for reading an input file containing invalid path configuration on the Swagger file
+     */
+    private List<Object> getInvalidPath() throws Exception {
+        OpenAPIInputReader inputReader = new OpenAPIInputReader();
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, "invalidPath.yaml"), TestConstants.UTF_8);
+        return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
     }
 
     private List<Object> getInputs() throws Exception {
