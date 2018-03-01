@@ -15,6 +15,10 @@
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
+    <online.repository.http>http://de-mucevolve02.corp.capgemini.com</online.repository.http>
+    <online.repository.ftp>ftp://de-mucevolve02.corp.capgemini.com</online.repository.ftp>
+    <local.repository>${project.build.directory}/repository</local.repository>
+    <upload.repository>${project.build.directory}/upload_repository</upload.repository>
   </properties>
 
   <modules>
@@ -285,11 +289,11 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${project.baseUri}/target/repository</url>
+                      <url>${local.repository}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
-                  <destination>${project.build.directory}/upload_repository</destination>
+                  <destination>${upload.repository}</destination>
                   <xzCompress>false</xzCompress>
                 </configuration>
               </execution>
@@ -306,9 +310,9 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>http://de-mucevolve02/files/cobigen/updatesite/experimental/cobigen-eclipse/</url>
+                  <url>${online.repository.http}/files/cobigen/updatesite/experimental/cobigen-eclipse/</url>
                   <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${project.build.directory}/upload_repository</toDir>
+                  <toDir>${upload.repository}</toDir>
                 </configuration>
               </execution>
               <execution>
@@ -318,9 +322,9 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/upload_repository</fromDir>
+                  <fromDir>${upload.repository}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <url>${online.repository.ftp}/</url>
                   <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
@@ -358,11 +362,11 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${project.baseUri}/target/repository</url>
+                      <url>${local.repository}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
-                  <destination>${project.build.directory}/upload_repository</destination>
+                  <destination>${upload.repository}</destination>
                   <xzCompress>false</xzCompress>
                 </configuration>
               </execution>
@@ -379,9 +383,9 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>http://de-mucevolve02/files/cobigen/updatesite/ci/cobigen-eclipse/</url>
+                  <url>${online.repository.http}/files/cobigen/updatesite/ci/cobigen-eclipse/</url>
                   <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${project.build.directory}/upload_repository</toDir>
+                  <toDir>${upload.repository}</toDir>
                 </configuration>
               </execution>
               <execution>
@@ -391,9 +395,9 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/upload_repository</fromDir>
+                  <fromDir>${upload.repository}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <url>${online.repository.ftp}/</url>
                   <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
@@ -431,11 +435,11 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${project.baseUri}/target/repository</url>
+                      <url>${local.repository}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
-                  <destination>${project.build.directory}/upload_repository</destination>
+                  <destination>${upload.repository}</destination>
                   <xzCompress>false</xzCompress>
                 </configuration>
               </execution>
@@ -452,9 +456,9 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>http://de-mucevolve02/files/cobigen/updatesite/stable/cobigen-eclipse/</url>
+                  <url>${online.repository.http}/files/cobigen/updatesite/stable/cobigen-eclipse/</url>
                   <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${project.build.directory}/upload_repository</toDir>
+                  <toDir>${upload.repository}</toDir>
                 </configuration>
               </execution>
               <execution>
@@ -464,9 +468,9 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/upload_repository</fromDir>
+                  <fromDir>${upload.repository}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
+                  <url>${online.repository.ftp}/</url>
                   <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
