@@ -45,7 +45,7 @@ public class InputReaderMatcherTest {
             cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
         assertThat(openApiFile).isNotNull();
 
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
         assertThat(inputObjects).isNotNull().hasSize(1);
     }
 
@@ -62,7 +62,7 @@ public class InputReaderMatcherTest {
             cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
         assertThat(openApiFile).isNotNull();
 
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
         assertThat(inputObjects).isNotNull().hasSize(2);
     }
 
@@ -77,7 +77,7 @@ public class InputReaderMatcherTest {
 
         Object openApiFile =
             cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
 
         String templateName = "testVariableAssignment_propertyName.txt";
         TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);

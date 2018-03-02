@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core-api</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
     </dependency>
     <dependency>
       <groupId>com.reprezen.kaizen</groupId>
@@ -32,13 +32,13 @@
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core-test</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.capgemini</groupId>
       <artifactId>cobigen-core</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

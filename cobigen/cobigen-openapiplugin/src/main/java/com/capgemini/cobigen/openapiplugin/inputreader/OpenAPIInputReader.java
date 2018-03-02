@@ -97,14 +97,6 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     @Override
-    public boolean combinesMultipleInputObjects(Object input) {
-        if (input instanceof OpenAPIFile) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
@@ -161,7 +153,7 @@ public class OpenAPIInputReader implements InputReader {
             componentDef.setPaths(getPaths(openApi.getPaths(),
                 openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString(), key));
             entityDef.setComponent(componentDef);
-            entityDef.setRelationShips(getRealtionShips(openApi, key));
+            entityDef.setRelationShips(getRelationships(openApi, key));
             objects.add(entityDef);
         }
         return objects;
@@ -174,7 +166,7 @@ public class OpenAPIInputReader implements InputReader {
      * @param key
      * @return
      */
-    private List<RelationShip> getRealtionShips(OpenApi3 openApi, String key) {
+    private List<RelationShip> getRelationships(OpenApi3 openApi, String key) {
         List<RelationShip> relationShips = new LinkedList<>();
         boolean sameComponent;
         for (String relationship : openApi.getSchema(key).getExtensions().keySet()) {
