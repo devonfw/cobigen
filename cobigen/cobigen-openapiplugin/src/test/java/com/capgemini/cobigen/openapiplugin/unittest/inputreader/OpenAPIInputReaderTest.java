@@ -36,7 +36,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveAllInputs() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
 
         assertThat(inputObjects).hasSize(2);
         assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale");
@@ -45,7 +45,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveAllComponentNames() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
 
         assertThat(inputObjects).hasSize(2);
         assertThat(inputObjects).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
@@ -54,7 +54,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveAllPropertiesOfEntity() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
@@ -66,7 +66,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveTypesAndFormatsOfPropertiesOfEntity() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
@@ -86,7 +86,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveConstraintsOfPropertiesOfEntity() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
@@ -106,7 +106,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrievePathsOfComponent() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
@@ -125,7 +125,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveOperationsOfPath() throws Exception {
 
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
@@ -146,7 +146,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveParametersOfOperation() throws Exception {
 
-        List<ParameterDef> parameters = getParametersOfOperations();
+        List<ParameterDef> parameters = getParametersOfOperations("two-components.yaml");
         assertThat(parameters).extracting("name").hasSize(4);
         assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "criteria");
 
@@ -155,7 +155,7 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveConstraintsOfParameter() throws Exception {
 
-        List<ParameterDef> parameters = getParametersOfOperations();
+        List<ParameterDef> parameters = getParametersOfOperations("two-components.yaml");
         List<Map<String, Object>> constraints = new LinkedList<>();
         for (ParameterDef param : parameters) {
             constraints.add(param.getConstraints());
@@ -171,7 +171,7 @@ public class OpenAPIInputReaderTest {
 
     @Test
     public void testRetrieveRelationShips() throws Exception {
-        List<Object> inputObjects = getInputs();
+        List<Object> inputObjects = getInputs("two-components.yaml");
         List<RelationShip> relationships = new LinkedList<>();
         for (Object o : inputObjects) {
             relationships.addAll(((EntityDef) o).getRelationShips());
@@ -186,50 +186,23 @@ public class OpenAPIInputReaderTest {
 
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidPath() throws Exception {
-        List<Object> inputObjects = getInvalidPath();
-        List<RelationShip> relationships = new LinkedList<>();
-        for (Object o : inputObjects) {
-            relationships.addAll(((EntityDef) o).getRelationShips());
-        }
+        List<Object> inputObjects = getInputs("invalidPath.yaml");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidXComponent() throws Exception {
-        List<Object> inputObjects = getInvalidXComponent();
-        List<RelationShip> relationships = new LinkedList<>();
-        for (Object o : inputObjects) {
-            relationships.addAll(((EntityDef) o).getRelationShips());
-        }
+        List<Object> inputObjects = getInputs("invalidXComponent.yaml");
     }
 
-    /**
-     * This method is for reading an input file containing invalid components configuration on the Swagger
-     * file
-     */
-    private List<Object> getInvalidXComponent() throws Exception {
+    private List<Object> getInputs(String testInputFilename) throws Exception {
+
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
-        Object inputObject = inputReader.read(Paths.get(testdataRoot, "invalidXComponent.yaml"), TestConstants.UTF_8);
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, testInputFilename), TestConstants.UTF_8);
         return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
     }
 
-    /**
-     * This method is for reading an input file containing invalid path configuration on the Swagger file
-     */
-    private List<Object> getInvalidPath() throws Exception {
-        OpenAPIInputReader inputReader = new OpenAPIInputReader();
-        Object inputObject = inputReader.read(Paths.get(testdataRoot, "invalidPath.yaml"), TestConstants.UTF_8);
-        return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
-    }
-
-    private List<Object> getInputs() throws Exception {
-
-        OpenAPIInputReader inputReader = new OpenAPIInputReader();
-        Object inputObject = inputReader.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
-        return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);
-    }
-
-    private List<ParameterDef> getParametersOfOperations() throws Exception {
-        List<Object> inputObjects = getInputs();
+    private List<ParameterDef> getParametersOfOperations(String testInputFilename) throws Exception {
+        List<Object> inputObjects = getInputs(testInputFilename);
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
