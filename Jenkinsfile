@@ -131,12 +131,12 @@ node {
 									// manifest extension, osgi bundling, and upload
 								sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
 								sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
-								sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-upload-ci,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-build-mars,p2-build-ci -Dmaven.test.skip=true -Dp2.upload=ci"
 								}
 							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
-								sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true -Pp2-upload-ci,p2-build-mars,p2-build-ci"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true -Pp2-build-mars,p2-build-ci -Dp2.upload=ci"
 							}
 						}
 					}
@@ -152,11 +152,12 @@ node {
 			}
 
 		} catch(e) {
-			notifyFailed()
 			if (currentBuild.result != 'UNSTABLE') {
+			  currentBuild.result = 'FAILURE'
 				setBuildStatus("Incomplete","ERROR")
 			}
-			throw e
+			notifyFailed()
+			return
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
