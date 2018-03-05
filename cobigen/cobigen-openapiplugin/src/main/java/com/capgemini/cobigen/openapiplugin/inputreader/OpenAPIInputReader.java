@@ -132,6 +132,7 @@ public class OpenAPIInputReader implements InputReader {
      */
     private List<EntityDef> getEntities(OpenApi3 openApi) {
         List<EntityDef> objects = new LinkedList<>();
+
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
             entityDef.setName(key);
@@ -149,13 +150,24 @@ public class OpenAPIInputReader implements InputReader {
             }
             entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
 
-            // If the path's tag was found on the input file, throw invalid configuration
+            // If the path's tag was not found on the input file, throw invalid configuration
             if (openApi.getPaths().size() == 0) {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of the correct path syntax.\n\n"
                         + "Go to the documentation (https://github.com/devonfw/tools-cobigen/wiki/howto_openapi_"
                         + "generation#paths) to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
+            }
+
+            // This logic is for setting the root package of the generated files
+            if (openApi.getInfo().isPresent()) {
+
+                // If an "x-rootpackage" tag is found on the file, set it to the entityDef
+                if (openApi.getInfo().getExtensions().get(Constants.PACKAGE_NAME) != null) {
+
+                    // We set the "x-rootpackage" tag of the info.
+                    entityDef.setRootPackage(openApi.getInfo().getExtensions().get(Constants.PACKAGE_NAME).toString());
+                }
             }
 
             componentDef.setPaths(getPaths(openApi.getPaths(),

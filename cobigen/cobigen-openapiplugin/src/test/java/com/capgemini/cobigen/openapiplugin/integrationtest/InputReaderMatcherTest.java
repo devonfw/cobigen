@@ -15,6 +15,7 @@ import com.capgemini.cobigen.api.CobiGen;
 import com.capgemini.cobigen.api.to.GenerationReportTo;
 import com.capgemini.cobigen.api.to.TemplateTo;
 import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 import junit.framework.AssertionFailedError;
@@ -88,6 +89,60 @@ public class InputReaderMatcherTest {
 
         assertThat(targetFolder.toPath().resolve("testVariableAssignment_propertyName.txt").toFile()).exists()
             .hasContent("Table");
+    }
+
+    /**
+     * Tests variable assignment resolution of ROOT_PACKAGE type, thus that the user can define the root
+     * package in the "info" part of the OpenAPI file
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testVariableAssignment_rootPackage() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile = cobigen.read("openapi", Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
+        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+
+        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+
+        String templateName = "testVariableAssignment_rootPackage.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_rootPackage.txt").toFile()).exists()
+            .hasContent("testingRootName");
+    }
+
+    /**
+     * Tests the case when no "x-rootPackage" tag is found, therefore the root package should be the default
+     * value defined in the context.xml
+     *
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testVariableAssignment_noRootPackageFound() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile =
+            cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
+        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+
+        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+
+        String templateName = "testVariableAssignment_rootPackage.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_rootPackage.txt").toFile()).exists()
+            .hasContent("defaultValue");
     }
 
     /**
