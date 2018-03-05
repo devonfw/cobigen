@@ -13,6 +13,8 @@ public class EntityDef {
 
     private String componentName;
 
+    private String rootPackage;
+
     private String name;
 
     private String description;
@@ -72,6 +74,14 @@ public class EntityDef {
 
     public void setRelationShips(List<RelationShip> relationShips) {
         this.relationShips = relationShips;
+    }
+
+    public String getRootPackage() {
+        return rootPackage;
+    }
+
+    public void setRootPackage(String rootPackageName) {
+        rootPackage = rootPackageName;
     }
 
 }
