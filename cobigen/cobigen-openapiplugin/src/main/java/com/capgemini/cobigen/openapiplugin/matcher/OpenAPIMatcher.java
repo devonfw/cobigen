@@ -35,7 +35,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         CONSTANT,
         /** Object property extraction */
         PROPERTY,
-        /** Regular expression group assignment */
+        /** Root package name for generation */
         ROOT_PACKAGE
     }
 
@@ -102,8 +102,9 @@ public class OpenAPIMatcher implements MatcherInterpreter {
     }
 
     /**
+     * Tries to get the root package name of the OpenAPI file.
      * @param target
-     * @return
+     * @return If a root package name was found, returns the value. If not, returns null
      */
     private String getRootPackage(Object target) {
         if (target instanceof EntityDef) {
