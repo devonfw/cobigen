@@ -13,6 +13,7 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 
 /**
  * Matcher for internal OpenAPI model.
@@ -33,7 +34,9 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         /** Constant assignment */
         CONSTANT,
         /** Object property extraction */
-        PROPERTY
+        PROPERTY,
+        /** Root package name for generation */
+        ROOT_PACKAGE
     }
 
     @Override
@@ -66,6 +69,16 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             case CONSTANT:
                 resolvedVariables.put(va.getVarName(), va.getValue());
                 break;
+            case ROOT_PACKAGE:
+                String rootPackage = getRootPackage(matcher.getTarget());
+
+                // If there is no "x-rootPackage" on the info, then set the default value
+                if (rootPackage == null) {
+                    resolvedVariables.put(va.getVarName(), va.getValue());
+                } else {
+                    resolvedVariables.put(va.getVarName(), rootPackage);
+                }
+                break;
             case PROPERTY:
                 Class<?> target = matcher.getTarget().getClass();
                 try {
@@ -86,6 +99,25 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             }
         }
         return resolvedVariables;
+    }
+
+    /**
+     * Tries to get the root package name of the OpenAPI file.
+     * @param target
+     * @return If a root package name was found, returns the value. If not, returns null
+     */
+    private String getRootPackage(Object target) {
+        if (target instanceof EntityDef) {
+            EntityDef entity = (EntityDef) target;
+            if (entity.getRootPackage() != null) {
+                return entity.getRootPackage();
+            } else {
+                return null;
+            }
+        } else {
+            throw new IllegalArgumentException(
+                "Unknown input object of type " + target.getClass() + " in matcher execution.");
+        }
     }
 
 }

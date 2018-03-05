@@ -16,6 +16,8 @@ public class Constants {
 
     public static final String COMPONENT_EXT = "x-component";
 
+    public static final String PACKAGE_NAME = "x-rootpackage";
+
     public static final String ONE_TO_ONE = "x-onetoone";
 
     public static final String MANY_TO_ONE = "x-manytoone";
