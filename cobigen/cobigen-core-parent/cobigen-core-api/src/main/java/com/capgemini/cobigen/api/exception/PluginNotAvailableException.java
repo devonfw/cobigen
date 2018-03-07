@@ -14,7 +14,8 @@ public class PluginNotAvailableException extends InvalidConfigurationException {
      *            the plugin type searched for
      */
     public PluginNotAvailableException(String component, String plugintype) {
-        super("The Plug-in with type " + plugintype + " did not serve any " + component
+        super((plugintype != null ? "The Plug-in with type " + plugintype + " did not serve any "
+            : "There is no plug-in serving ") + component
             + ". Please make sure, that you installed all necessary plug-ins and there is no typo in "
             + "type='...' values of all triggers in your context configuration as well as there are no typos "
             + "in your templates configuration's mergeStrategy='...' values.");
