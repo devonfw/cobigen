@@ -3,28 +3,22 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#cap_first}Controller" mergeStrategy="sencharchmerge"/>
-    <templateExtension ref="${variables.etoName#cap_first}" mergeStrategy="sencharchmerge"/>
-    <templateExtension ref="${variables.etoName#cap_first}s" mergeStrategy="sencharchmerge"/>
-    <templateExtension ref="${variables.etoName#cap_first}sViewController"/>
-    <templateExtension ref="${variables.etoName#cap_first}sViewModel"/>
-    <templateExtension ref="Application"/>
+    <templateExtension ref="${variables.etoName#cap_first}Controller.js" mergeStrategy="sencharchmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}.js" mergeStrategy="sencharchmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}s.js" mergeStrategy="sencharchmerge"/>
+    <templateExtension ref="${variables.etoName#cap_first}sViewController.js"/>
+    <templateExtension ref="${variables.etoName#cap_first}sViewModel.js"/>
+    <templateExtension ref="Application.js"/>
     <templateExtension ref="${variables.domain}.xds" mergeStrategy="sencharchmerge"/>
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath=""/>
+    <templateScan name="all" templatePath="templates" destinationPath=""/>
   </templateScans>
 
   <increments>
     <increment name="architect" description="Sencha Architect Project">
-      <templateRef ref="${variables.etoName#cap_first}Controller"/>
-      <templateRef ref="${variables.etoName#cap_first}"/>
-      <templateRef ref="${variables.etoName#cap_first}s"/>
-      <templateRef ref="${variables.etoName#cap_first}sViewController"/>
-      <templateRef ref="${variables.etoName#cap_first}sViewModel"/>
-      <templateRef ref="Application"/>
-      <templateRef ref="${variables.domain}.xds"/>
+      <templateScanRef ref="all" />
     </increment>
   </increments>
 </templatesConfiguration>
