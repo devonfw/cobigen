@@ -1,6 +1,4 @@
-package com.capgemini.cobigen.impl.exceptions;
-
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+package com.capgemini.cobigen.api.exception;
 
 /**
  * States that any logic has been triggered, which is currently not supported.
