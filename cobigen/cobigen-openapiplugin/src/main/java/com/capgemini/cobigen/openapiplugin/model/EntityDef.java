@@ -19,11 +19,8 @@ public class EntityDef {
 
     private List<PropertyDef> properties;
 
-    private List<RelationShip> relationShips;
-
     public EntityDef() {
         properties = new LinkedList<>();
-        relationShips = new LinkedList<>();
     }
 
     public ComponentDef getComponent() {
@@ -65,13 +62,4 @@ public class EntityDef {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public List<RelationShip> getRelationShips() {
-        return relationShips;
-    }
-
-    public void setRelationShips(List<RelationShip> relationShips) {
-        this.relationShips = relationShips;
-    }
-
 }
