@@ -19,7 +19,6 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
-import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -169,21 +168,6 @@ public class OpenAPIInputReaderTest {
 
     }
 
-    @Test
-    public void testRetrieveRelationShips() throws Exception {
-        List<Object> inputObjects = getInputs("two-components.yaml");
-        List<RelationShip> relationships = new LinkedList<>();
-        for (Object o : inputObjects) {
-            relationships.addAll(((EntityDef) o).getRelationShips());
-        }
-
-        assertThat(relationships).hasSize(4);
-        assertThat(relationships).extracting("type").containsExactly("manytomany", "onetoone", "onetoone", "onetomany");
-        assertThat(relationships).extracting("entity").containsExactly("Table", "Sale", "Table", "Table");
-        assertThat(relationships).extracting("unidirectional").containsExactly(false, false, false, true);
-        assertThat(relationships).extracting("sameComponent").containsExactly(true, false, false, false);
-    }
-
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidPath() throws Exception {
         List<Object> inputObjects = getInputs("invalidPath.yaml");
@@ -194,8 +178,47 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("invalidXComponent.yaml");
     }
 
-    private List<Object> getInputs(String testInputFilename) throws Exception {
+    @Test
+    public void testPropertyRefOneToOne() throws Exception {
+        List<Object> inputObjects = getInputs("property-ref-one-to-one.yaml");
+        boolean found = false;
+        for (Object o : inputObjects) {
+            EntityDef entityDef = (EntityDef) o;
+            if (entityDef.getName().equals("SampleData")) {
+                assertThat(entityDef.getProperties()).hasSize(1);
+                PropertyDef prop = entityDef.getProperties().get(0);
+                assertThat(prop.getType()).isEqualTo("MoreData");
+                assertThat(prop.getName()).isEqualTo("mainData");
+                assertThat(prop.getSameComponent()).isTrue();
+                // The description of the property will be ignored in compliance with the JSON specification:
+                // https://github.com/RepreZen/KaiZen-OpenApi-Parser/issues/148
+                assertThat(prop.getDescription()).isEqualTo("MoreData Desc");
+                found = true;
+            }
+        }
+        assertThat(found).as("SampleData component schema not found!").isTrue();
+    }
 
+    @Test
+    public void testPropertyRefManyToOne() throws Exception {
+        List<Object> inputObjects = getInputs("property-ref-many-to-one.yaml");
+        boolean found = false;
+        for (Object o : inputObjects) {
+            EntityDef entityDef = (EntityDef) o;
+            if (entityDef.getName().equals("SampleData")) {
+                assertThat(entityDef.getProperties()).hasSize(1);
+                PropertyDef prop = entityDef.getProperties().get(0);
+                assertThat(prop.getType()).isEqualTo("MoreData");
+                assertThat(prop.getName()).isEqualTo("mainData");
+                assertThat(prop.getSameComponent()).isTrue();
+                assertThat(prop.getDescription()).isEqualTo("a single ref to MoreData (many-to-one)");
+                found = true;
+            }
+        }
+        assertThat(found).as("SampleData component schema not found!").isTrue();
+    }
+
+    private List<Object> getInputs(String testInputFilename) throws Exception {
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
         Object inputObject = inputReader.read(Paths.get(testdataRoot, testInputFilename), TestConstants.UTF_8);
         return inputReader.getInputObjects(inputObject, TestConstants.UTF_8);

@@ -2,16 +2,19 @@ package com.capgemini.cobigen.openapiplugin.inputreader;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.InputReader;
+import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
@@ -19,9 +22,10 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
-import com.capgemini.cobigen.openapiplugin.model.RelationShip;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
 import com.reprezen.kaizen.oasparser.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
@@ -31,7 +35,6 @@ import com.reprezen.kaizen.oasparser.model3.Path;
 import com.reprezen.kaizen.oasparser.model3.RequestBody;
 import com.reprezen.kaizen.oasparser.model3.Response;
 import com.reprezen.kaizen.oasparser.model3.Schema;
-import com.reprezen.kaizen.oasparser.ovl3.SchemaImpl;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read OpenApi3 definition
@@ -59,12 +62,11 @@ public class OpenAPIInputReader implements InputReader {
 
     /**
      * Get constraints configurations for {@link PropertyDef} and {@link ParameterDef}
-     *
      * @param schema
-     *            the schema with the constraint configuration
+     *            schema to extract constraints from. Might be component property schema or parameter schema
      * @return map of different constraints
      */
-    private Map<String, Object> getConstraints(Schema schema) {
+    private Map<String, Object> extractConstraints(Schema schema) {
         Map<String, Object> constraints = new HashMap<>();
         if (schema.getMaximum() != null) {
             constraints.put(ModelConstant.MAXIMUM, schema.getMaximum());
@@ -92,7 +94,6 @@ public class OpenAPIInputReader implements InputReader {
         } else {
             constraints.put(ModelConstant.UNIQUE, false);
         }
-
         return constraints;
     }
 
@@ -100,7 +101,7 @@ public class OpenAPIInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
-            inputs.addAll(getEntities(((OpenAPIFile) input).getAST()));
+            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
         }
         return inputs;
     }
@@ -122,14 +123,15 @@ public class OpenAPIInputReader implements InputReader {
      *            the model for an OpenApi3 file
      * @return list of entities
      */
-    private List<EntityDef> getEntities(OpenApi3 openApi) {
+    private List<EntityDef> extractComponents(OpenApi3 openApi) {
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(openApi.toJson().toString());
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
             entityDef.setName(key);
             entityDef.setDescription(openApi.getSchema(key).getDescription());
             ComponentDef componentDef = new ComponentDef();
-            entityDef.setProperties(getFields(openApi.getSchema(key).getProperties(), openApi, key));
+            entityDef.setProperties(extractProperties(openApi, document, key));
 
             // If no x-... tag was found on the input file, throw invalid configuration
             if (openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT) == null) {
@@ -150,10 +152,9 @@ public class OpenAPIInputReader implements InputReader {
                         + " If it is still not working, check your file indentation!");
             }
 
-            componentDef.setPaths(getPaths(openApi.getPaths(),
-                openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString(), key));
+            componentDef.setPaths(extractPaths(openApi.getPaths(),
+                openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
             entityDef.setComponent(componentDef);
-            entityDef.setRelationShips(getRelationships(openApi, key));
             objects.add(entityDef);
         }
         return objects;
@@ -161,111 +162,112 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * @param properties
      * @param openApi
-     * @param key
-     * @return
+     *            document root
+     * @param componentSchema
+     *            component schema respectively object or entity
+     * @param property
+     *            property name to schema mapping
+     * @param targetComponent
+     *            name of the target component
+     * @return model of a property
      */
-    private List<RelationShip> getRelationships(OpenApi3 openApi, String key) {
-        List<RelationShip> relationShips = new LinkedList<>();
-        boolean sameComponent;
-        for (String relationship : openApi.getSchema(key).getExtensions().keySet()) {
-            sameComponent = false;
-            if (relationship.equals(Constants.ONE_TO_ONE) || relationship.equals(Constants.MANY_TO_ONE)
-                || relationship.equals(Constants.ONE_TO_MANY) || relationship.equals(Constants.MANY_TO_MANY)) {
-                if (openApi.getSchema(key).getExtension(Constants.COMPONENT_EXT)
-                    .equals(openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                        .getExtension(Constants.COMPONENT_EXT))) {
-                    sameComponent = true;
-                }
-                if (relationship.equals(Constants.MANY_TO_ONE)) {
-                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                        .getExtension(Constants.ONE_TO_MANY) != null
-                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                            .getExtension(Constants.ONE_TO_MANY).equals(key)) {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
-                    } else {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
-                    }
-                } else if (relationship.equals(Constants.ONE_TO_MANY)) {
-                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                        .getExtension(Constants.MANY_TO_ONE) != null
-                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                            .getExtension(Constants.MANY_TO_ONE).equals(key)) {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, false));
-                    } else {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            (String) openApi.getSchema(key).getExtension(relationship), sameComponent, true));
-                    }
-                } else if (relationship.equals(Constants.ONE_TO_ONE)) {
-                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                        .getExtension(Constants.ONE_TO_ONE) != null
-                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                            .getExtension(Constants.ONE_TO_ONE).equals(key)) {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
-                    } else {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
-                    }
-                } else {
-                    if (openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                        .getExtension(Constants.MANY_TO_MANY) != null
-                        && openApi.getSchema((String) openApi.getSchema(key).getExtension(relationship))
-                            .getExtension(Constants.MANY_TO_MANY).equals(key)) {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, false));
-                    } else {
-                        relationShips.add(new RelationShip(relationship.substring(2),
-                            openApi.getSchema(key).getExtension(relationship).toString(), sameComponent, true));
-                    }
-                }
+    private PropertyDef extractReferenceProperty(OpenApi3 openApi, Schema componentSchema,
+        Entry<String, ? extends Schema> property, String targetComponent) {
+        Schema propertySchema = property.getValue();
+        if (propertySchema.getJsonReference().sameFile(openApi.getJsonReference())) {
+            String refTypeName;
+            if (propertySchema.isItemsSchemaReference()) {
+                refTypeName =
+                    Paths.get(propertySchema.getItemsSchemaReference().getRefString()).getFileName().toString();
+            } else {
+                refTypeName = Paths.get(propertySchema.getJsonReference().getRef()).getFileName().toString();
             }
+            String thisComponent = componentSchema.getExtension(Constants.COMPONENT_EXT).toString();
+
+            boolean sameComponent;
+            if (thisComponent.equals(targetComponent)) {
+                sameComponent = true;
+            } else {
+                sameComponent = false;
+            }
+            PropertyDef propertyDef = new PropertyDef();
+            propertyDef.setIsEntity(true);
+            propertyDef.setRequired(componentSchema.getRequiredFields().contains(property.getKey()));
+            propertyDef.setSameComponent(sameComponent);
+            propertyDef.setType(refTypeName);
+            // TODO unidirectional?
+            return propertyDef;
+        } else {
+            throw new NotYetSupportedException(
+                "References across files are not yet supported. Please create an issue on GitHub if you are interested in this feature.");
         }
-        return relationShips;
     }
 
     /**
      * Get the fields of an entity returning a list of {@link PropertyDef}'s
      *
-     * @param properties
-     *            map of properties of the OpenApi3 entity definition
      * @param openApi
      *            the OpenApi3 model
-     * @param entity
+     * @param jsonDocument
+     *            parsed JSON document
+     * @param componentName
      *            entity name
      * @return List of {@link PropertyDef}'s
      */
-    private List<PropertyDef> getFields(Map<String, ? extends Schema> properties, OpenApi3 openApi, String entity) {
+    private List<PropertyDef> extractProperties(OpenApi3 openApi, Object jsonDocument, String componentName) {
+        Schema componentSchema = openApi.getSchema(componentName);
+        Map<String, ? extends Schema> properties = componentSchema.getProperties();
         List<PropertyDef> objects = new LinkedList<>();
-        for (String key : properties.keySet()) {
-            PropertyDef property = new PropertyDef();
-            property.setName(key);
-            property.setDescription(properties.get(key).getDescription());
-            if (properties.get(key).getType().equals(Constants.ARRAY)) {
-                property.setIsCollection(true);
-                property.setType(((SchemaImpl) properties.get(key).getItemsSchema()).getType());
-                if (((SchemaImpl) properties.get(key).getItemsSchema()).getFormat() != null) {
-                    property.setFormat(((SchemaImpl) properties.get(key).getItemsSchema()).getFormat());
+        for (Entry<String, ? extends Schema> prop : properties.entrySet()) {
+            String propertyName = prop.getKey();
+            Schema propertySchema = prop.getValue();
+            PropertyDef propModel;
+            if (propertySchema.getType().equals(Constants.ARRAY)) {
+                if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
+                    && propertySchema.isItemsSchemaReference()) {
+                    String targetComponentExtQueryPath =
+                        propertySchema.getItemsSchemaReference().getRefString().substring(1) + "/"
+                            + Constants.COMPONENT_EXT;
+                    List<String> targetComponent =
+                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                } else {
+                    propModel = new PropertyDef();
+                    propModel.setType(propertySchema.getItemsSchema().getType());
                 }
+
+                if (propertySchema.getItemsSchema().getFormat() != null) {
+                    propModel.setFormat(propertySchema.getItemsSchema().getFormat());
+                }
+                propModel.setIsCollection(true);
             } else {
-                property.setType(properties.get(key).getType());
-                if (properties.get(key).getFormat() != null) {
-                    property.setFormat(properties.get(key).getFormat());
+                if (propertySchema.getType().equals(Constants.OBJECT) && propertySchema.getJsonReference() != null) {
+                    String targetComponentExtQueryPath =
+                        propertySchema.getJsonReference().getRef() + "/" + Constants.COMPONENT_EXT;
+                    List<String> targetComponent =
+                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                } else {
+                    propModel = new PropertyDef();
+                    propModel.setType(propertySchema.getType());
+                }
+
+                if (propertySchema.getFormat() != null) {
+                    propModel.setFormat(propertySchema.getFormat());
                 }
             }
+            propModel.setName(propertyName);
+            propModel.setDescription(propertySchema.getDescription());
 
-            Map<String, Object> constraints = getConstraints(properties.get(key));
-            if (openApi.getSchema(entity).getRequiredFields().contains(key)) {
+            Map<String, Object> constraints = extractConstraints(propertySchema);
+            if (componentSchema.getRequiredFields().contains(propertyName)) {
                 constraints.put(ModelConstant.NOTNULL, true);
             } else {
                 constraints.put(ModelConstant.NOTNULL, false);
             }
-            property.setConstraints(constraints);
-            objects.add(property);
+            propModel.setConstraints(constraints);
+            objects.add(propModel);
         }
 
         return objects;
@@ -276,16 +278,14 @@ public class OpenAPIInputReader implements InputReader {
      *
      * @param paths
      *            the list of OpenApi paths definitions
-     * @param component
+     * @param componentName
      *            the component where the paths belong to
-     * @param key
-     *            the ley of the path to compare with the component
      * @return list of {@link PathDef}'s
      */
-    private List<PathDef> getPaths(Map<String, ? extends Path> paths, String component, String key) {
+    private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
-            if (pathKey.contains(component)) {
+            if (pathKey.contains(componentName)) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {
@@ -298,14 +298,14 @@ public class OpenAPIInputReader implements InputReader {
                         operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
                         operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
                         operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setResponse(getResponse(paths.get(pathKey).getOperation(opKey).getResponses(),
+                        operation.setResponse(extractResponse(paths.get(pathKey).getOperation(opKey).getResponses(),
                             paths.get(pathKey).getOperation(opKey).getTags()));
                         operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
                         if (path.getOperations() == null) {
                             path.setOperations(new ArrayList<OperationDef>());
                         }
                         operation.getParameters()
-                            .addAll(getParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
+                            .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
                                 paths.get(pathKey).getOperation(opKey).getTags(),
                                 paths.get(pathKey).getOperation(opKey).getRequestBody()));
                         path.getOperations().add(operation);
@@ -329,7 +329,7 @@ public class OpenAPIInputReader implements InputReader {
      *            in case of body parameter
      * @return List of {@link ParameterDef}'s
      */
-    private List<ParameterDef> getParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
+    private List<ParameterDef> extractParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
         RequestBody requestBody) {
         List<ParameterDef> parametersList = new LinkedList<>();
         ParameterDef parameter = new ParameterDef();
@@ -348,7 +348,7 @@ public class OpenAPIInputReader implements InputReader {
             }
             parameter.setName(param.getName());
             Schema schema = param.getSchema();
-            Map<String, Object> constraints = getConstraints(schema);
+            Map<String, Object> constraints = extractConstraints(schema);
             if (param.isRequired()) {
                 constraints.put(ModelConstant.NOTNULL, true);
             } else {
@@ -414,7 +414,7 @@ public class OpenAPIInputReader implements InputReader {
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
      */
-    private ResponseDef getResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
+    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
         ResponseDef response = new ResponseDef();
         for (String resp : responses.keySet()) {
             if (resp.equals("200")) {
