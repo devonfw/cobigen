@@ -13,8 +13,8 @@ import java.util.Map.Entry;
 
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.exception.NotYetSupportedException;
 import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
