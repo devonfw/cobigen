@@ -41,24 +41,28 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 			<#elseif property.constraints.maxLength?? && property.constraints.minLength??>
 	@Size(max = ${property.constraints.maxLength}, min = ${property.constraints.minLength})	
 			</#if>
-	private ${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name};
+			<#if property.isEntity>
+	private Long ${rs.entity?uncap_first}Id;
+	     <#else>
+	private ${OpenApiUtil.toJavaType(property, false)} ${property.name};
+	     </#if>
 		</#if>
 	</#if>
 </#list>
-<#list model.relationShips as rs>
+<#-- <#list model.relationShips as rs>
 	<#if rs.type != "manytomany" && rs.type != "onetomany">
     private Long ${rs.entity?uncap_first}Id;
 	</#if>
-</#list>
+</#list>-->
 
 <#list model.properties as property>
 	<#if property.name != "id">
 		<#if !property.isCollection && !property.isEntity>
-	public ${OaspUtil.getOaspTypeFromOpenAPI(property false)} get${property.name?cap_first}() {
+	public ${OpenApiUtil.toJavaType(property false)} get${property.name?cap_first}() {
 		return this.${property.name};
 	}
 	
-	public void set${property.name?cap_first}(${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name}) {
+	public void set${property.name?cap_first}(${OpenApiUtil.toJavaType(property, false)} ${property.name}) {
 		this.${property.name} = ${property.name};
 	}
 		</#if>
@@ -69,12 +73,12 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 <#list model.properties as property>
 	<#if !property.isCollection && property.isEntity>
 	@Override
-	public void set${property.name?cap_first}Id(${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name}Id) {
+	public void set${property.name?cap_first}Id(${OpenApiUtil.toJavaType(property, false)} ${property.name}Id) {
 		this.${property.name}Id = ${property.name}Id;
 	}
 	
 	@Override
-	public ${OaspUtil.getOaspTypeFromOpenAPI(property, false)} get${property.name?cap_first}Id() {
+	public ${OpenApiUtil.toJavaType(property, false)} get${property.name?cap_first}Id() {
         return this.${property.name}Id;
 	}
 	<#else>
@@ -82,7 +86,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	</#if>
 </#list>
 
-<#list model.relationShips as rs>
+<#--  <#list model.relationShips as rs>
 	<#if rs.type != "manytomany" && rs.type != "onetomany">
 	@Override
     public void set${rs.entity}Id(Long ${rs.entity?uncap_first}Id) {
@@ -94,7 +98,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 		return this.${rs.entity?uncap_first}Id;
 	}
 	</#if>
-</#list>
+</#list> -->
 
     @Override
     public int hashCode() {
@@ -105,11 +109,11 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	  result = prime * result +((this.${property.name} == null) ? 0 : this.${property.name}.hashCode());
   		</#if>
       </#list>
-      <#list model.relationShips as rs>
+     <#--  <#list model.relationShips as rs>
 	    <#if rs.type != "manytomany" && rs.type != "onetomany">
 	  result = prime * result +((this.${rs.entity?uncap_first}Id == null) ? 0 : this.${rs.entity?uncap_first}Id.hashCode());
 		</#if>
-	  </#list>
+	  </#list> -->
         return result;
     }
 
@@ -138,7 +142,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 	}
       </#if>
     </#list>
-	<#list model.relationShips as rs>
+	<#-- <#list model.relationShips as rs>
 	  <#if rs.type != "manytomany" && rs.type != "onetomany">
 	if (this.${rs.entity?uncap_first}Id == null) {
 		if (other.${rs.entity?uncap_first}Id != null) {
@@ -148,7 +152,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
 		return false;
 	}
 	  </#if>
-	</#list>
+	</#list> -->
     return true;
   }
 }

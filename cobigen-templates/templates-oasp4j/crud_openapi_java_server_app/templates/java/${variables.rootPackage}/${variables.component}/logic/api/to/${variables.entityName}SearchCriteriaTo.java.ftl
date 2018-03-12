@@ -16,15 +16,19 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 <#list model.properties as property>
 	<#if property.name != "id">
 		<#if !property.isCollection>
-	private ${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name};
+		  <#if property.isEntity>
+	private Long ${rs.entity?uncap_first}Id;
+		  <#else>
+	private ${OpenApiUtil.toJavaType(property, false)} ${property.name};
+	    </#if>
 		</#if>
 	</#if>
 </#list>
-<#list model.relationShips as rs>
+<#-- <#list model.relationShips as rs>
 	<#if rs.type != "manytomany" && rs.type != "onetomany">
     private Long ${rs.entity?uncap_first}Id;
 	</#if>
-</#list>
+</#list>-->
 
   /**
   * The constructor.
@@ -37,34 +41,30 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 <#list model.properties as property>
 	<#if property.name != "id">
 		<#if !property.isCollection && !property.isEntity>
-	public ${OaspUtil.getOaspTypeFromOpenAPI(property, false)} get${property.name?cap_first}() {
+		  <#if property.isEntity>
+  public void set${property.name?cap_first}Id(${OpenApiUtil.toJavaType(property, false)} ${property.name}Id) {
+    this.${property.name}Id = ${property.name}Id;
+  }
+  
+  public ${OpenApiUtil.toJavaType(property, false)} get${property.name?cap_first}Id() {
+        return this.${property.name}Id;
+  }		  
+		  <#else>
+	public ${OpenApiUtil.toJavaType(property, false)} get${property.name?cap_first}() {
 		return this.${property.name};
 	}
 	
-	public void set${property.name?cap_first}(${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name}) {
+	public void set${property.name?cap_first}(${OpenApiUtil.toJavaType(property, false)} ${property.name}) {
 		this.${property.name} = ${property.name};
 	}
+	   </#if>
 		</#if>
 	</#if>
 </#list>
 
-<#list model.properties as property>
-	<#if !property.isCollection && property.isEntity>
-	public void set${property.name?cap_first}Id(${OaspUtil.getOaspTypeFromOpenAPI(property, false)} ${property.name}Id) {
-		this.${property.name}Id = ${property.name}Id;
-	}
-	
-	public ${OaspUtil.getOaspTypeFromOpenAPI(property, false)} get${property.name?cap_first}Id() {
-        return this.${property.name}Id;
-	}
-	<#else>
-	
-	</#if>
-</#list>
-
-<#list model.relationShips as rs>
+<#-- <#list model.relationShips as rs>
 	<#if rs.type != "manytomany" && rs.type != "onetomany">
-    public void set${rs.entity}Id(Long ${rs.entity?uncap_first}Id) {
+  public void set${rs.entity}Id(Long ${rs.entity?uncap_first}Id) {
       this.${rs.entity?uncap_first}Id = ${rs.entity?uncap_first}Id;
 	}
 
@@ -72,6 +72,6 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 		return this.${rs.entity?uncap_first}Id;
 	}
 	</#if>
-</#list>
+</#list>-->
 
 }

@@ -15,10 +15,13 @@ public class ${variables.entityName}Cto extends AbstractCto {
 
 	private ${variables.entityName}Eto ${variables.entityName?uncap_first};
 
-<#list model.relationShips as rs>
-   <#if rs.sameComponent>
-   	private <#if rs.type == "manytomany" || rs.type == "onetomany">List<${rs.entity}Eto><#else>${rs.entity}Eto</#if> ${rs.entity?uncap_first}<#if rs.type == "manytomany" || rs.type == "onetomany">s</#if>;
-
+<#list model.properties as property>
+   <#if property.isEntity && property.sameComponent>
+    <#if property.isCollection>
+   	private List<${property.type}Eto> ${property.type?uncap_first}s;
+    <#else>
+    private ${property.type}Eto ${property.type?uncap_first};
+    </#if>
    </#if>   
 </#list>
 	public ${variables.entityName} get${variables.entityName}() {
@@ -29,7 +32,7 @@ public class ${variables.entityName}Cto extends AbstractCto {
 		this.${variables.entityName?uncap_first} = ${variables.entityName?uncap_first};
 	}
 
-<#list model.relationShips as rs>
+<#--  <#list model.relationShips as rs>
 	<#if rs.sameComponent>
 	public <#if rs.type == "manytomany" || rs.type == "onetomany">List<${rs.entity}Eto> get${rs.entity}s<#else>${rs.entity}Eto get${rs.entity}</#if>() {
 		return this.${rs.entity?uncap_first}<#if rs.type == "manytomany" || rs.type == "onetomany">s</#if>;
@@ -39,6 +42,6 @@ public class ${variables.entityName}Cto extends AbstractCto {
 		this.${rs.entity?uncap_first}<#if rs.type == "manytomany" || rs.type == "onetomany">s</#if> = ${rs.entity?uncap_first}<#if rs.type == "manytomany" || rs.type == "onetomany">s</#if>;
 	}
 	</#if>
-</#list>
+</#list>-->
 
 }
