@@ -42,35 +42,35 @@ public interface ${variables.component?cap_first} {
 
   <#list model.component.paths as path>
   	<#list path.operations as operation>
-  		<#if !OaspUtil.commonCRUDOperation(operation.operationId, variables.entityName)>
+  		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName)>
 	  		<#if operation.response.isPaginated>
 	  			<#if operation.response.isEntity>
-  	PaginatedListTo<${operation.response.type}Eto> ${operation.operationId}(
+  	PaginatedListTo<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	PaginatedListTo<${operation.response.type}> ${operation.operationId}( 
+  	PaginatedListTo<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
   			<#elseif operation.response.isArray>
   				<#if operation.response.isEntity>
-  	List<${operation.response.type}Eto> ${operation.operationId}(
+  	List<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-    List<${operation.response.type}> ${operation.operationId}(
+    List<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
   			<#elseif operation.response.isVoid>
-  	void ${operation.operationId}(
+  	void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#else>
   				<#if operation.response.isEntity>
-  	${operation.response.type}Eto ${operation.operationId}(
+  	${operation.response.type}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	${operation.response.type} ${operation.operationId}(
+  	${operation.response.type} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
   			</#if>
   			<#list operation.parameters as parameter>
   					<#if parameter.isSearchCriteria>
-  			${OaspUtil.getOaspTypeFromOpenAPI(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
+  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   					<#elseif parameter.isEntity>
-  		    ${OaspUtil.getOaspTypeFromOpenAPI(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    	<#else>
-  		    ${OaspUtil.getOaspTypeFromOpenAPI(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
+  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		    	</#if>
  				</#list>
  				);

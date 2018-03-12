@@ -67,7 +67,7 @@ public interface ${variables.component?cap_first}RestService {
   
 <#list model.component.paths as path>
 	<#list path.operations as operation>
-	    <#if !OaspUtil.commonCRUDOperation(operation.operationId, variables.entityName?cap_first)> 
+	    <#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)> 
   			<#if operation.type == "get">
   @GET
   			<#elseif operation.type == "post">
@@ -78,7 +78,7 @@ public interface ${variables.component?cap_first}RestService {
   @DELETE
   			</#if>
   @Path("${path.pathURI}")
-  			<#assign returnType = OaspUtil.returnType(operation.response)>
+  			<#assign returnType = OpenApiUtil.printJavaServiceResponseReturnType(operation.response)>
   <#list operation.parameters as parameter>
     <#if parameter.mediaType??>
  @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
@@ -87,10 +87,10 @@ public interface ${variables.component?cap_first}RestService {
   <#if operation.response.mediaType??>
   @Produces(MediaType.${OaspUtil.getSpringMediaType(operation.response.mediaType)})
   </#if>
-  public ${returnType?replace("Entity", "Eto")} ${operation.operationId}(
+  public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
-    	@PathParam("${parameter.name}")</#if>${OaspUtil.getJAVAConstraint(parameter.constraints)}${OaspUtil.getOaspTypeFromOpenAPI(parameter, true)}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);
+    	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);
   		</#if>
   	</#list>
  </#list>

@@ -44,7 +44,7 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${variabl
 
     <#list model.properties as property>
     <#compress>
-    <#assign newFieldType=OaspUtil.getOaspTypeFromOpenAPI(property, false)>
+    <#assign newFieldType=OpenApiUtil.toJavaType(property, false)>
     <#assign fieldCapName=property.name?cap_first>
     </#compress>
     	<#if property.name != "id">

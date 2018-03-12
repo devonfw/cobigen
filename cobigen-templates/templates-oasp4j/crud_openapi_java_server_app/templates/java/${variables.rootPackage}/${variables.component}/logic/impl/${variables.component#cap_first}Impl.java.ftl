@@ -82,39 +82,39 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     
     <#list model.component.paths as path>
   	<#list path.operations as operation>
-  		<#if !OaspUtil.commonCRUDOperation(operation.operationId, variables.entityName?cap_first)>
+  		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
 	  		<#if operation.response.isPaginated>
 	  			<#if operation.response.isEntity>
-  	public PaginatedListTo<${operation.response.type}Eto> ${operation.operationId}(
+  	public PaginatedListTo<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public PaginatedListTo<${operation.response.type}> ${operation.operationId}( 
+  	public PaginatedListTo<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
   			<#elseif operation.response.isArray>
   				<#if operation.response.isEntity>
-  	public List<${operation.response.type}Eto> ${operation.operationId}(
+  	public List<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-    public List<${operation.response.type}> ${operation.operationId}(
+    public List<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
   			<#elseif operation.response.isVoid>
-  	public void ${operation.operationId}(
+  	public void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#else>
   				<#if operation.response.isEntity>
-  	public ${operation.response.type}Eto ${operation.operationId}(
+  	public ${operation.response.type}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public ${operation.response.type} ${operation.operationId}(
+  	public ${operation.response.type} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
   			</#if>
   			<#list operation.parameters as parameter>
   				<#if parameter.isSearchCriteria>
-  			${OaspUtil.getOaspTypeFromOpenAPI(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, <#else>) {</#if>
+  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, <#else>) {</#if>
   				<#elseif parameter.isEntity>
-  		    ${OaspUtil.getOaspTypeFromOpenAPI(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, <#else>) {</#if>
   		    	<#else>
-  		    ${OaspUtil.getOaspTypeFromOpenAPI(parameter, true)} ${parameter.name}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, <#else>) {</#if>
   		    	</#if>
   			</#list>
-  		// TODO ${operation.operationId}
+  		// TODO ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}
   			<#if !operation.response.isVoid>
   				<#if operation.response.type == "boolean">
   		return false;

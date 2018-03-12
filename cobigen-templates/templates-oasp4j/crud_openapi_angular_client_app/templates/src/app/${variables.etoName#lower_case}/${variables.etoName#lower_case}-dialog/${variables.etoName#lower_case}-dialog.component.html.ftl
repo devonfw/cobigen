@@ -2,7 +2,7 @@
 <form (ngSubmit)="dialogRef.close(items)" #dialogForm="ngForm">
   <#list model.properties as property>
   <mat-input-container>
-    <input matInput type="${OaspUtil.getOaspTypeFromOpenAPI(property, false)}" name = "${property.name}" [placeholder]= "'${variables.component}.${variables.etoName}.columns.${property.name}' | translate" [(ngModel)] = "items.${property.name}" required>
+    <input matInput type="${OpenApiUtil.toJavaType(property, false)}" name = "${property.name}" [placeholder]= "'${variables.component}.${variables.etoName}.columns.${property.name}' | translate" [(ngModel)] = "items.${property.name}" required>
   </mat-input-container>
   </#list>
   <mat-dialog-actions>
