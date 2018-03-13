@@ -92,7 +92,7 @@ public class InputReaderMatcherTest {
     }
 
     /**
-     * Tests variable assignment resolution of ROOT_PACKAGE type, thus that the user can define the root
+     * Tests variable assignment resolution of ROOTPACKAGE type, thus that the user can define the root
      * package in the "info" part of the OpenAPI file
      * @throws Exception
      *             test fails
@@ -104,7 +104,9 @@ public class InputReaderMatcherTest {
         Object openApiFile = cobigen.read("openapi", Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
         OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
 
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
+        // TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
 
         String templateName = "testVariableAssignment_rootPackage.txt";
         TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
@@ -132,7 +134,9 @@ public class InputReaderMatcherTest {
             cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
         OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
 
-        List<Object> inputObjects = cobigen.getInputObjects(openApiFile, TestConstants.UTF_8);
+        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
+        // TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
 
         String templateName = "testVariableAssignment_rootPackage.txt";
         TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
@@ -143,6 +147,42 @@ public class InputReaderMatcherTest {
 
         assertThat(targetFolder.toPath().resolve("testVariableAssignment_rootPackage.txt").toFile()).exists()
             .hasContent("defaultValue");
+    }
+
+    /**
+     * Tests variable assignment resolution of ATTRIBUTE type, thus that the user can define any custom
+     * variables inside the schema of OpenAPI files
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testVariableAssignment_attribute() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile =
+            cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
+        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+
+        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
+        // TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
+
+        String templateName = "testVariableAssignment_attribute.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
+            .hasContent("testingAttributeTable");
+
+        template = findTemplate(cobigen, inputObjects.get(1), templateName);
+        report = cobigen.generate(inputObjects.get(1), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
+            .hasContent("testingAttributeSales");
     }
 
     /**

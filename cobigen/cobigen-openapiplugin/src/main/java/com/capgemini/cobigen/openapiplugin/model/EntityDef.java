@@ -1,7 +1,9 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Definition that stores the configuration of an OpenApi definition schema
@@ -12,6 +14,9 @@ public class EntityDef {
     private ComponentDef component;
 
     private String componentName;
+
+    // This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+    private Map<String, Object> extensionProperties = new HashMap<String, Object>();
 
     private String rootPackage;
 
@@ -34,6 +39,23 @@ public class EntityDef {
 
     public void setComponent(ComponentDef component) {
         this.component = component;
+    }
+
+    /**
+     * Sets the Map of all the extensions tags
+     * @param extensions
+     */
+    public void setUserPropertiesMap(Map<String, Object> extensions) {
+        extensionProperties = extensions;
+
+    }
+
+    public Object getUserProperty(String key) {
+        return extensionProperties.get(key);
+    }
+
+    public void setUserProperty(String key, String value) {
+        extensionProperties.put(key, value);
     }
 
     public String getName() {

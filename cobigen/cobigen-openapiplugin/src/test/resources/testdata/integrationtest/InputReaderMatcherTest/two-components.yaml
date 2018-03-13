@@ -20,12 +20,14 @@ components:
     schemas:
         Table:
           x-component: tablemanagement
+          x-test: testingAttributeTable
           type: object
           properties:
             example:
               type: string
         Sales:
           x-component: salesmanagement
+          x-test: testingAttributeSales
           type: object
           properties:
             example:

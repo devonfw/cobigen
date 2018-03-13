@@ -36,7 +36,9 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         /** Object property extraction */
         PROPERTY,
         /** Root package name for generation */
-        ROOT_PACKAGE
+        ROOTPACKAGE,
+        /** Object property extraction */
+        ATTRIBUTE
     }
 
     @Override
@@ -64,41 +66,92 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
         Map<String, String> resolvedVariables = new HashMap<>();
         for (VariableAssignmentTo va : variableAssignments) {
-            VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
-            switch (variableType) {
-            case CONSTANT:
-                resolvedVariables.put(va.getVarName(), va.getValue());
-                break;
-            case ROOT_PACKAGE:
-                String rootPackage = getRootPackage(matcher.getTarget());
-
-                // If there is no "x-rootPackage" on the info, then set the default value
-                if (rootPackage == null) {
+            try {
+                VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+                switch (variableType) {
+                case CONSTANT:
                     resolvedVariables.put(va.getVarName(), va.getValue());
-                } else {
-                    resolvedVariables.put(va.getVarName(), rootPackage);
-                }
-                break;
-            case PROPERTY:
-                Class<?> target = matcher.getTarget().getClass();
-                try {
-                    Field field = target.getDeclaredField(va.getValue());
-                    field.setAccessible(true);
-                    Object o = field.get(matcher.getTarget());
+                    break;
+                case ROOTPACKAGE:
+                    String rootPackage = getRootPackage(matcher.getTarget());
 
-                    resolvedVariables.put(va.getVarName(), o.toString());
-                } catch (NoSuchFieldException | SecurityException e) {
-                    LOG.warn(
-                        "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
-                        matcher.getValue());
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    throw new CobiGenRuntimeException("This is a programming error, please report an issue on github",
-                        e);
+                    // If there is no "x-rootPackage" on the info, then set the default value
+                    if (rootPackage == null) {
+                        resolvedVariables.put(va.getVarName(), va.getValue());
+                    } else {
+                        resolvedVariables.put(va.getVarName(), rootPackage);
+                    }
+                    break;
+                case ATTRIBUTE:
+                    Class<?> targetObject = matcher.getTarget().getClass();
+                    try {
+                        Field field = targetObject.getDeclaredField("extensionProperties");
+                        field.setAccessible(true);
+                        Object extensionProperties = field.get(matcher.getTarget());
+
+                        String attributeValue = getExtendedProperty(extensionProperties, va.getValue());
+
+                        resolvedVariables.put(va.getVarName(), attributeValue);
+                    } catch (NoSuchFieldException | SecurityException e) {
+                        LOG.warn(
+                            "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                            matcher.getValue());
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
+                        throw new CobiGenRuntimeException(
+                            "This is a programming error, please report an issue on github", e);
+                    }
+                    break;
+                case PROPERTY:
+                    Class<?> target = matcher.getTarget().getClass();
+                    try {
+                        Field field = target.getDeclaredField(va.getValue());
+                        field.setAccessible(true);
+                        Object o = field.get(matcher.getTarget());
+
+                        resolvedVariables.put(va.getVarName(), o.toString());
+                    } catch (NoSuchFieldException | SecurityException e) {
+                        LOG.warn(
+                            "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                            matcher.getValue());
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
+                        throw new CobiGenRuntimeException(
+                            "This is a programming error, please report an issue on github", e);
+                    }
+                    break;
                 }
-                break;
+            } catch (IllegalArgumentException e) {
+                throw new CobiGenRuntimeException(
+                    "Matcher or VariableAssignment type " + matcher.getType() + " not registered!", e);
             }
+
         }
         return resolvedVariables;
+    }
+
+    /**
+     * Tries to cast the object "extensionProperties" to a map like the one defined in
+     * {@link com.capgemini.cobigen.openapiplugin.model.EntityDef} . <br>
+     * <br>
+     * Additionally, tries to get a value of that map using the key passed as parameter.
+     * @param object
+     *            to be cast to a Map
+     * @param key
+     *            to search in the Map
+     * @return the value of that key, and if nothing was found, an empty string
+     */
+    private String getExtendedProperty(Object extensionProperties, String key) {
+        if (extensionProperties instanceof Map<?, ?>) {
+            Map<String, Object> properties = (Map<String, Object>) extensionProperties;
+            if (properties.containsKey(key)) {
+                return properties.get(key).toString();
+            } else {
+                return "";
+            }
+
+        } else {
+            throw new IllegalArgumentException("Unknown input object of type " + extensionProperties.getClass()
+                + " in matcher execution. This may be a programming error, please report an issue on github");
+        }
     }
 
     /**
