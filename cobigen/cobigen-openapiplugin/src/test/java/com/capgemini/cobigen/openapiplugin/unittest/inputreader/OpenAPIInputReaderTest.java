@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -39,6 +40,24 @@ public class OpenAPIInputReaderTest {
 
         assertThat(inputObjects).hasSize(2);
         assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale");
+    }
+
+    /**
+     * Tests the resolution of paths definitions
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testPathResolution() throws Exception {
+
+        List<Object> inputObjects = getInputs("paths-resolution.yaml");
+
+        assertThat(inputObjects).isNotNull();
+        List<EntityDef> collect = inputObjects.stream().map(e -> (EntityDef) e).filter(e -> e.getName().equals("Table"))
+            .collect(Collectors.toList());
+        assertThat(collect).hasSize(1);
+        assertThat(collect.get(0).getComponent().getPaths()).hasSize(2).flatExtracting(e -> e.getOperations())
+            .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null);
     }
 
     @Test
