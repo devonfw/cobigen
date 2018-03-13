@@ -38,4 +38,16 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
         runMavenInvoker(testProject, new File("").getAbsoluteFile());
     }
 
+    /**
+     * Test successful generation of all templates based on an ETO
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
+
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEtoInput/");
+        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+    }
+
 }
