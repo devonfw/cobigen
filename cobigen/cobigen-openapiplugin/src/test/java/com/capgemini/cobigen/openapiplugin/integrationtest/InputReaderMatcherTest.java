@@ -151,7 +151,10 @@ public class InputReaderMatcherTest {
 
     /**
      * Tests variable assignment resolution of ATTRIBUTE type, thus that the user can define any custom
-     * variables inside the schema of OpenAPI files
+     * variables inside the schema of OpenAPI files. <br>
+     * <br>
+     * The input test file contains one attribute per entity. We are testing here that both attributes are
+     * correctly generated
      * @throws Exception
      *             test fails
      */
@@ -178,6 +181,7 @@ public class InputReaderMatcherTest {
             .hasContent("testingAttributeTable");
 
         template = findTemplate(cobigen, inputObjects.get(1), templateName);
+        targetFolder = tmpFolder.newFolder();
         report = cobigen.generate(inputObjects.get(1), template, targetFolder.toPath());
         assertThat(report).isSuccessful();
 
