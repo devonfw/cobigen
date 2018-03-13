@@ -132,7 +132,7 @@ public class OpenAPIInputReader implements InputReader {
             ComponentDef componentDef = new ComponentDef();
             entityDef.setProperties(getFields(openApi.getSchema(key).getProperties(), openApi, key));
 
-            // If no x-... tag was found on the input file, throw invalid configuration
+            // If no x-component tag was found on the input file, throw invalid configuration
             if (openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT) == null) {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of x-component tags.\n\n"
@@ -150,6 +150,9 @@ public class OpenAPIInputReader implements InputReader {
                         + "generation#paths) to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
             }
+
+            // Sets a Map containing all the extensions of this entity
+            entityDef.setUserPropertiesMap(openApi.getSchema(key).getExtensions());
 
             // This logic is for setting the root package of the generated files
             if (openApi.getInfo().isPresent()) {

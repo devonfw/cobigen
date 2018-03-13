@@ -5,7 +5,8 @@
     <containerMatcher type="element" value="OpenAPIFile"/>
     <matcher type="element" value="EntityDef">
       <variableAssignment type="property" key="name" value="name"/>
-      <variableAssignment type="root_package" key="rootPackage" value="defaultValue"/>
+      <variableAssignment type="rootPackage" key="rootPackage" value="defaultValue"/>
+      <variableAssignment type="attribute" key="testingAttribute" value="x-test"/>
     </matcher>
   </trigger>
 </contextConfiguration>
