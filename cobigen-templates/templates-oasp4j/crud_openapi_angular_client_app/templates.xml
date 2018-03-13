@@ -15,19 +15,24 @@
   </templates>
 
   <templateScans>
-    <templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+    <templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
   </templateScans>
 
   <increments>
-    <increment name="app_angular_structure" description="Angular OASP4J URL">
-        <templateRef ref="environment.ts"/>
-        <templateRef ref="environment.prod.ts"/>
+    <increment name="oasp4js-app" description="CRUD OASP4JS Angular App">
+      <incrementRef ref="app_angular_env"/>
+      <incrementRef ref="app_angular_i18n"/>
+      <incrementRef ref="app_angular_oasp4j_component"/>
     </increment>
-    <increment name="app_angular_i18n" description="Angular i18n">
+    <increment name="app_angular_env" description="Server URL Registration">
+      <templateRef ref="environment.ts"/>
+      <templateRef ref="environment.prod.ts"/>
+    </increment>
+    <increment name="app_angular_i18n" description="i18n">
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
     </increment>
-    <increment name="app_angular_oasp4j_component" description="Angular OASP4J Component">
+    <increment name="app_angular_oasp4j_component" description="View Component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.specs.ts"/>

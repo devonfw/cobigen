@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.service.api.rest;
+package ${variables.rootPackage}.${variables.component?lower_case}.service.api.rest;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -10,10 +10,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import org.springframework.http.MediaType;
 
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName?cap_first}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}Eto;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
 
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+
+import java.math.BigDecimal;
 
 /**
  * The service interface for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
