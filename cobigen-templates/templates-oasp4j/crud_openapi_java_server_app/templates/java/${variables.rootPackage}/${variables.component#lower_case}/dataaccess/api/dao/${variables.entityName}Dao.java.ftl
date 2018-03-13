@@ -1,8 +1,8 @@
-package ${variables.rootPackage}.${variables.component}.dataaccess.api.dao;
+package ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.dao;
 
 import ${variables.rootPackage}.general.dataaccess.api.dao.ApplicationDao;
-import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.${variables.entityName}Entity;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 
 /**

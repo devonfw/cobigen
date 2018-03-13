@@ -1,5 +1,9 @@
 package utils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,70 +94,86 @@ public class OpenApiUtil {
         boolean isEntity = (boolean) parameter.get("isEntity");
 
         if (type != null) {
-            if (format != null) {
-                if (type.equals("integer") && format.equals("int32")) {
-                    if (simpleType) {
-                        typeConverted = "int";
-                    } else {
-                        typeConverted = "Integer";
+            switch (type.toLowerCase()) {
+            case "integer":
+                if (format != null) {
+                    switch (format) {
+                    case "int32":
+                        typeConverted = simpleType ? "int" : "Integer";
+                        break;
+                    case "int64":
+                        typeConverted = simpleType ? "long" : "Long";
+                        break;
+                    default:
+                        typeConverted = BigInteger.class.getSimpleName();
+                        break;
                     }
-                } else if (type.equals("number") && format.equals("double")) {
-                    if (simpleType) {
-                        typeConverted = "double";
-                    } else {
-                        typeConverted = "Double";
-                    }
-                } else if (type.equals("integer") && format.equals("int64")) {
-                    if (simpleType) {
-                        typeConverted = "long";
-                    } else {
-                        typeConverted = "Long";
-                    }
-                } else if (type.equals("string") && format.equals("date")) {
-                    typeConverted = "Date";
-                } else if (type.equals("string") && format.equals("date-time")) {
-                    typeConverted = "Timestamp";
-                } else if (type.equals("string") && format.equals("binary")) {
-                    typeConverted = "float";
-                } else if (type.equals("string") && format.equals("email")) {
-                    typeConverted = "String";
-                } else if (type.equals("string") && format.equals("password")) {
-                    typeConverted = "String";
                 } else {
-                    typeConverted = "Object";
+                    typeConverted = BigInteger.class.getSimpleName();
                 }
-            } else {
-                if (type.equals("boolean")) {
-                    if (simpleType) {
-                        typeConverted = "boolean";
-                    } else {
-                        typeConverted = "Boolean";
+                break;
+            case "number":
+                if (format != null) {
+                    switch (format) {
+                    case "float":
+                        typeConverted = simpleType ? "float" : "Float";
+                        break;
+                    case "double":
+                        typeConverted = simpleType ? "double" : "Double";
+                        break;
+                    default:
+                        typeConverted = BigDecimal.class.getSimpleName();
+                        break;
                     }
-                } else if (type.equals("string")) {
-                    typeConverted = "String";
-                } else if (type.equals("integer")) {
-                    typeConverted = "Integer";
-                } else if (type.equals("number")) {
-                    typeConverted = "BigDecimal";
                 } else {
-                    typeConverted = "Object";
+                    typeConverted = BigDecimal.class.getSimpleName();
                 }
+                break;
+            case "string":
+                if (format != null) {
+                    switch (format) {
+                    case "date":
+                        typeConverted = LocalDate.class.getSimpleName();
+                        break;
+                    case "date-time":
+                        typeConverted = Instant.class.getSimpleName();
+                        break;
+                    case "binary":
+                        typeConverted = simpleType ? "float" : "Float";
+                        break;
+                    case "email":
+                    case "password":
+                        typeConverted = String.class.getSimpleName();
+                        break;
+                    default:
+                        typeConverted = "String";
+                        break;
+                    }
+                } else {
+                    typeConverted = "String";
+                }
+                break;
+            case "boolean":
+                typeConverted = simpleType ? "boolean" : "Boolean";
+                break;
+            default:
+                typeConverted = "void";
+                break;
             }
         } else {
-            return "void";
+            typeConverted = "void";
         }
+
         if (isCollection) {
             if (isEntity) {
-                return "List<" + parameter.get("type") + ">";
+                return "List<" + parameter.get("type") + "Entity>";
             } else {
                 return "List<" + typeConverted + ">";
             }
-        } else {
-            if (isEntity) {
-                return (String) parameter.get("type");
-            }
-            return typeConverted;
+        } else if (isEntity) {
+            return (String) parameter.get("type") + "Entity";
         }
+        return typeConverted;
     }
 
     /**

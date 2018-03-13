@@ -1,14 +1,16 @@
-package ${variables.rootPackage}.${variables.component}.service.impl.rest;
+package ${variables.rootPackage}.${variables.component?lower_case}.service.impl.rest;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName?cap_first}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
-import ${variables.rootPackage}.${variables.component}.service.api.rest.${variables.component?cap_first}RestService;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.${variables.component?cap_first};
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}Eto;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component?lower_case}.service.api.rest.${variables.component?cap_first}RestService;
 
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+
+import java.math.BigDecimal;
 
 /**
  * The service implementation for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.

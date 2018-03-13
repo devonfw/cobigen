@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.logic.impl;
+package ${variables.rootPackage}.${variables.component?lower_case}.logic.impl;
 
 import java.util.Objects;
 import java.util.List;
@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capgemini.demo.general.logic.base.AbstractComponentFacade;
-import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
-import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.${variables.entityName}Entity;
+import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.dao.${variables.entityName}Dao;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.${variables.component?cap_first};
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+
+import java.math.BigDecimal;
 
 /**
  * Implementation of component interface of ${variables.component?cap_first}
