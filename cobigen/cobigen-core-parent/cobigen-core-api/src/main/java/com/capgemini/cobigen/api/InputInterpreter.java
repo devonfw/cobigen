@@ -47,4 +47,19 @@ public interface InputInterpreter {
     public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
         throws InputReaderException;
 
+    /**
+     * @param path
+     *            the {@link Path} to the object. Can also point to a folder
+     * @param inputCharset
+     *            of the input to be used
+     * @param additionalArguments
+     *            depending on the InputReader implementation
+     * @return Object that is a valid input
+     * @throws InputReaderException
+     *             if the Path cannot be read
+     * @throws IllegalArgumentException
+     *             if the provided additional arguments do not suffice the used InputReader
+     */
+    public Object readAll(Path path, Charset inputCharset, Object[] additionalArguments) throws InputReaderException;
+
 }
