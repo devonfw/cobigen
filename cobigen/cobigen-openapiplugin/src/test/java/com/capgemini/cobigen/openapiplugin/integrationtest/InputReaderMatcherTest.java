@@ -120,36 +120,6 @@ public class InputReaderMatcherTest {
     }
 
     /**
-     * Tests the case when no "x-rootPackage" tag is found, therefore the root package should be the default
-     * value defined in the context.xml
-     *
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testVariableAssignment_noRootPackageFound() throws Exception {
-        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
-
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
-        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
-
-        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
-        // TestConstants.UTF_8);
-        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
-
-        String templateName = "testVariableAssignment_rootPackage.txt";
-        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
-
-        File targetFolder = tmpFolder.newFolder();
-        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
-        assertThat(report).isSuccessful();
-
-        assertThat(targetFolder.toPath().resolve("testVariableAssignment_rootPackage.txt").toFile()).exists()
-            .hasContent("defaultValue");
-    }
-
-    /**
      * Tests variable assignment resolution of ATTRIBUTE type, thus that the user can define any custom
      * variables inside the schema of OpenAPI files. <br>
      * <br>
@@ -178,6 +148,46 @@ public class InputReaderMatcherTest {
         assertThat(report).isSuccessful();
 
         assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
+            .hasContent("testingAttributeTableiChangeGlobalVariable");
+
+        template = findTemplate(cobigen, inputObjects.get(1), templateName);
+        targetFolder = tmpFolder.newFolder();
+        report = cobigen.generate(inputObjects.get(1), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
+            .hasContent("testingAttributeSalesitIsGlobal");
+    }
+
+    /**
+     * Tests the case when <b>no</b> ATTRIBUTE was found on the OpenAPI input file for one entity. Therefore
+     * an empty string should be assigned.<br>
+     * <br>
+     * The input test file contains two entities, one has an attribute and the other one does not. We are
+     * testing here that the first entity gets his attribute and the second entity gets an empty string
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testVariableAssignment_noAttributeFound() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile =
+            cobigen.read("openapi", Paths.get(testdataRoot, "two-components-no-attribute.yaml"), TestConstants.UTF_8);
+        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+
+        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
+        // TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
+
+        String templateName = "testVariableAssignment_attribute.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
             .hasContent("testingAttributeTable");
 
         template = findTemplate(cobigen, inputObjects.get(1), templateName);
@@ -186,7 +196,7 @@ public class InputReaderMatcherTest {
         assertThat(report).isSuccessful();
 
         assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
-            .hasContent("testingAttributeSales");
+            .hasContent("");
     }
 
     /**

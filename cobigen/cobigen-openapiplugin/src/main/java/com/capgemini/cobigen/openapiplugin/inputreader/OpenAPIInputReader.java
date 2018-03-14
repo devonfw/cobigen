@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -152,18 +153,15 @@ public class OpenAPIInputReader implements InputReader {
                         + " If it is still not working, check your file indentation!");
             }
 
-            // Sets a Map containing all the extensions of this entity
-            entityDef.setUserPropertiesMap(openApi.getSchema(key).getExtensions());
-
-            // This logic is for setting the root package of the generated files
+            // Sets a Map containing all the extensions of the info part of the OpenAPI file
             if (openApi.getInfo().isPresent()) {
-
-                // If an "x-rootpackage" tag is found on the file, set it to the entityDef
-                if (openApi.getInfo().getExtensions().get(Constants.PACKAGE_NAME) != null) {
-
-                    // We set the "x-rootpackage" tag of the info.
-                    entityDef.setRootPackage(openApi.getInfo().getExtensions().get(Constants.PACKAGE_NAME).toString());
-                }
+                entityDef.setUserPropertiesMap(openApi.getInfo().getExtensions());
+            }
+            // Traverse the extensions of the entity for setting those attributes to the Map
+            Iterator<String> it = openApi.getSchema(key).getExtensions().keySet().iterator();
+            while (it.hasNext()) {
+                String keyMap = it.next();
+                entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
 
             componentDef.setPaths(extractPaths(openApi.getPaths(),
