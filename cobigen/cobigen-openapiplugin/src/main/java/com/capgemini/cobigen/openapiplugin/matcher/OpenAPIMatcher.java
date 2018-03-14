@@ -136,7 +136,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             return properties.get(key).toString();
         } else {
             LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
                 key);
             return "";
         }
