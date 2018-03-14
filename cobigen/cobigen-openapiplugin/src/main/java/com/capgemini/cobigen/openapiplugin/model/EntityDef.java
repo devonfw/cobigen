@@ -15,7 +15,9 @@ public class EntityDef {
 
     private String componentName;
 
-    // This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+    /**
+     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+     */
     private Map<String, Object> extensionProperties = new HashMap<String, Object>();
 
     private String name;
