@@ -347,7 +347,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                         if (merger != null) {
                             mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
                         } else {
-                            throw new PluginNotAvailableException("merge strategy '" + templateEty.getMergeStrategy() + "'");
+                            throw new PluginNotAvailableException(
+                                "merge strategy '" + templateEty.getMergeStrategy() + "'", null);
                         }
 
                         if (mergeResult != null) {
