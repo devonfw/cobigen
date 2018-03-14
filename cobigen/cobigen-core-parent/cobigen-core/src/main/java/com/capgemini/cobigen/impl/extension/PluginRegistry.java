@@ -148,13 +148,9 @@ public class PluginRegistry {
     /**
      * Returns a {@link Map} of all {@link TriggerInterpreter} keys.
      *
-     * @return all {@link TriggerInterpreter} keys as a set or <code>null</code> if no TriggerInterpreter
-     *         registered
+     * @return all {@link TriggerInterpreter} keys as a set of strings.
      */
     public static Set<String> getTriggerInterpreterKeySet() {
-        if (registeredTriggerInterpreter.isEmpty()) {
-            return null;
-        }
         return new HashSet(registeredTriggerInterpreter.keySet());
     }
 
