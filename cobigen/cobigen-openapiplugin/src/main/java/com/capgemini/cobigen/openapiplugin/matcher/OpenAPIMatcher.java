@@ -13,7 +13,6 @@ import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.extension.MatcherInterpreter;
 import com.capgemini.cobigen.api.to.MatcherTo;
 import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.openapiplugin.model.EntityDef;
 
 /**
  * Matcher for internal OpenAPI model.
@@ -35,10 +34,10 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         CONSTANT,
         /** Object property extraction */
         PROPERTY,
-        /** Root package name for generation */
-        ROOTPACKAGE,
-        /** Object property extraction */
-        ATTRIBUTE
+        /**
+         * Extension property extraction of the info extensions and the schema extensions of the entities
+         */
+        EXTENSION
     }
 
     @Override
@@ -72,17 +71,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
                 case CONSTANT:
                     resolvedVariables.put(va.getVarName(), va.getValue());
                     break;
-                case ROOTPACKAGE:
-                    String rootPackage = getRootPackage(matcher.getTarget());
-
-                    // If there is no "x-rootPackage" on the info, then set the default value
-                    if (rootPackage == null) {
-                        resolvedVariables.put(va.getVarName(), va.getValue());
-                    } else {
-                        resolvedVariables.put(va.getVarName(), rootPackage);
-                    }
-                    break;
-                case ATTRIBUTE:
+                case EXTENSION:
                     Class<?> targetObject = matcher.getTarget().getClass();
                     try {
                         Field field = targetObject.getDeclaredField("extensionProperties");
@@ -145,31 +134,15 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             if (properties.containsKey(key)) {
                 return properties.get(key).toString();
             } else {
+                LOG.warn(
+                    "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                    key);
                 return "";
             }
 
         } else {
             throw new IllegalArgumentException("Unknown input object of type " + extensionProperties.getClass()
                 + " in matcher execution. This may be a programming error, please report an issue on github");
-        }
-    }
-
-    /**
-     * Tries to get the root package name of the OpenAPI file.
-     * @param target
-     * @return If a root package name was found, returns the value. If not, returns null
-     */
-    private String getRootPackage(Object target) {
-        if (target instanceof EntityDef) {
-            EntityDef entity = (EntityDef) target;
-            if (entity.getRootPackage() != null) {
-                return entity.getRootPackage();
-            } else {
-                return null;
-            }
-        } else {
-            throw new IllegalArgumentException(
-                "Unknown input object of type " + target.getClass() + " in matcher execution.");
         }
     }
 

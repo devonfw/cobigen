@@ -18,8 +18,6 @@ public class EntityDef {
     // This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
     private Map<String, Object> extensionProperties = new HashMap<String, Object>();
 
-    private String rootPackage;
-
     private String name;
 
     private String description;
@@ -39,11 +37,18 @@ public class EntityDef {
     }
 
     /**
+     * @return the Map of all the extension tags
+     */
+    public Map<String, Object> getUserPropertiesMap() {
+        return extensionProperties;
+    }
+
+    /**
      * Sets the Map of all the extensions tags
      * @param extensions
      */
     public void setUserPropertiesMap(Map<String, Object> extensions) {
-        extensionProperties = extensions;
+        extensionProperties.putAll(extensions);
 
     }
 
@@ -85,14 +90,6 @@ public class EntityDef {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getRootPackage() {
-        return rootPackage;
-    }
-
-    public void setRootPackage(String rootPackageName) {
-        rootPackage = rootPackageName;
     }
 
 }

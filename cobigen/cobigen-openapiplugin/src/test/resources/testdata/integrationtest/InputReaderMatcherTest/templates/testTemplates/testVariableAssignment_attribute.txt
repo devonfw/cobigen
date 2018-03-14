@@ -1,1 +1,1 @@
-${variables.testingAttribute}
+${variables.testingAttribute}${variables.globalVariable}
