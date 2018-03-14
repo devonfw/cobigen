@@ -61,14 +61,13 @@ public class InputInterpreterImpl implements InputInterpreter {
     @Override
     public Object readAll(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
-        if (keySet == null) {
-            throw new PluginNotAvailableException("TriggerInterpreter", "type");
-        }
-        for (String s : keySet) {
-            try {
-                return getInputReader(s).read(path, inputCharset, additionalArguments);
-            } catch (InputReaderException e) {
-                // nothing to do.
+        if (keySet != null) {
+            for (String s : keySet) {
+                try {
+                    return getInputReader(s).read(path, inputCharset, additionalArguments);
+                } catch (InputReaderException e) {
+                    // nothing to do.
+                }
             }
         }
         return null;
