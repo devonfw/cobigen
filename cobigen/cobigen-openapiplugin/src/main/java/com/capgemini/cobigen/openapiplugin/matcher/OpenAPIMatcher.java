@@ -64,53 +64,55 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         throws InvalidConfigurationException {
 
         Map<String, String> resolvedVariables = new HashMap<>();
+        VariableType variableType = null;
         for (VariableAssignmentTo va : variableAssignments) {
             try {
-                VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
-                switch (variableType) {
-                case CONSTANT:
-                    resolvedVariables.put(va.getVarName(), va.getValue());
-                    break;
-                case EXTENSION:
-                    Class<?> targetObject = matcher.getTarget().getClass();
-                    try {
-                        Field field = targetObject.getDeclaredField("extensionProperties");
-                        field.setAccessible(true);
-                        Object extensionProperties = field.get(matcher.getTarget());
-
-                        String attributeValue = getExtendedProperty(extensionProperties, va.getValue());
-
-                        resolvedVariables.put(va.getVarName(), attributeValue);
-                    } catch (NoSuchFieldException | SecurityException e) {
-                        LOG.warn(
-                            "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
-                            matcher.getValue());
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        throw new CobiGenRuntimeException(
-                            "This is a programming error, please report an issue on github", e);
-                    }
-                    break;
-                case PROPERTY:
-                    Class<?> target = matcher.getTarget().getClass();
-                    try {
-                        Field field = target.getDeclaredField(va.getValue());
-                        field.setAccessible(true);
-                        Object o = field.get(matcher.getTarget());
-
-                        resolvedVariables.put(va.getVarName(), o.toString());
-                    } catch (NoSuchFieldException | SecurityException e) {
-                        LOG.warn(
-                            "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
-                            matcher.getValue());
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        throw new CobiGenRuntimeException(
-                            "This is a programming error, please report an issue on github", e);
-                    }
-                    break;
-                }
-            } catch (IllegalArgumentException e) {
+                variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+            } catch (InvalidConfigurationException e) {
                 throw new CobiGenRuntimeException(
                     "Matcher or VariableAssignment type " + matcher.getType() + " not registered!", e);
+            }
+            switch (variableType) {
+            case CONSTANT:
+                resolvedVariables.put(va.getVarName(), va.getValue());
+                break;
+            case EXTENSION:
+                Class<?> targetObject = matcher.getTarget().getClass();
+                try {
+                    Field field = targetObject.getDeclaredField("extensionProperties");
+                    field.setAccessible(true);
+                    Object extensionProperties = field.get(matcher.getTarget());
+
+                    String attributeValue =
+                        getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue());
+
+                    resolvedVariables.put(va.getVarName(), attributeValue);
+                } catch (NoSuchFieldException | SecurityException e) {
+                    LOG.warn(
+                        "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                        matcher.getValue());
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    throw new CobiGenRuntimeException("This is a programming error, please report an issue on github",
+                        e);
+                }
+                break;
+            case PROPERTY:
+                Class<?> target = matcher.getTarget().getClass();
+                try {
+                    Field field = target.getDeclaredField(va.getValue());
+                    field.setAccessible(true);
+                    Object o = field.get(matcher.getTarget());
+
+                    resolvedVariables.put(va.getVarName(), o.toString());
+                } catch (NoSuchFieldException | SecurityException e) {
+                    LOG.warn(
+                        "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                        matcher.getValue());
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    throw new CobiGenRuntimeException("This is a programming error, please report an issue on github",
+                        e);
+                }
+                break;
             }
 
         }
@@ -128,21 +130,15 @@ public class OpenAPIMatcher implements MatcherInterpreter {
      *            to search in the Map
      * @return the value of that key, and if nothing was found, an empty string
      */
-    private String getExtendedProperty(Object extensionProperties, String key) {
-        if (extensionProperties instanceof Map<?, ?>) {
-            Map<String, Object> properties = (Map<String, Object>) extensionProperties;
-            if (properties.containsKey(key)) {
-                return properties.get(key).toString();
-            } else {
-                LOG.warn(
-                    "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
-                    key);
-                return "";
-            }
-
+    private String getExtendedProperty(Map<String, Object> extensionProperties, String key) {
+        Map<String, Object> properties = extensionProperties;
+        if (properties.containsKey(key)) {
+            return properties.get(key).toString();
         } else {
-            throw new IllegalArgumentException("Unknown input object of type " + extensionProperties.getClass()
-                + " in matcher execution. This may be a programming error, please report an issue on github");
+            LOG.warn(
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                key);
+            return "";
         }
     }
 
