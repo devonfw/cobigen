@@ -33,7 +33,11 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         /** Constant assignment */
         CONSTANT,
         /** Object property extraction */
-        PROPERTY
+        PROPERTY,
+        /**
+         * Extension property extraction of the info extensions and the schema extensions of the entities
+         */
+        EXTENSION
     }
 
     @Override
@@ -60,11 +64,37 @@ public class OpenAPIMatcher implements MatcherInterpreter {
         throws InvalidConfigurationException {
 
         Map<String, String> resolvedVariables = new HashMap<>();
+        VariableType variableType = null;
         for (VariableAssignmentTo va : variableAssignments) {
-            VariableType variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+            try {
+                variableType = Enum.valueOf(VariableType.class, va.getType().toUpperCase());
+            } catch (InvalidConfigurationException e) {
+                throw new CobiGenRuntimeException(
+                    "Matcher or VariableAssignment type " + matcher.getType() + " not registered!", e);
+            }
             switch (variableType) {
             case CONSTANT:
                 resolvedVariables.put(va.getVarName(), va.getValue());
+                break;
+            case EXTENSION:
+                Class<?> targetObject = matcher.getTarget().getClass();
+                try {
+                    Field field = targetObject.getDeclaredField("extensionProperties");
+                    field.setAccessible(true);
+                    Object extensionProperties = field.get(matcher.getTarget());
+
+                    String attributeValue =
+                        getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue());
+
+                    resolvedVariables.put(va.getVarName(), attributeValue);
+                } catch (NoSuchFieldException | SecurityException e) {
+                    LOG.warn(
+                        "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                        matcher.getValue());
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    throw new CobiGenRuntimeException("This is a programming error, please report an issue on github",
+                        e);
+                }
                 break;
             case PROPERTY:
                 Class<?> target = matcher.getTarget().getClass();
@@ -84,8 +114,32 @@ public class OpenAPIMatcher implements MatcherInterpreter {
                 }
                 break;
             }
+
         }
         return resolvedVariables;
+    }
+
+    /**
+     * Tries to cast the object "extensionProperties" to a map like the one defined in
+     * {@link com.capgemini.cobigen.openapiplugin.model.EntityDef} . <br>
+     * <br>
+     * Additionally, tries to get a value of that map using the key passed as parameter.
+     * @param object
+     *            to be cast to a Map
+     * @param key
+     *            to search in the Map
+     * @return the value of that key, and if nothing was found, an empty string
+     */
+    private String getExtendedProperty(Map<String, Object> extensionProperties, String key) {
+        Map<String, Object> properties = extensionProperties;
+        if (properties.containsKey(key)) {
+            return properties.get(key).toString();
+        } else {
+            LOG.warn(
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
+                key);
+            return "";
+        }
     }
 
 }

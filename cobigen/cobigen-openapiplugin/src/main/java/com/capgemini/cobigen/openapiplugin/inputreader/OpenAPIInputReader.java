@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ public class OpenAPIInputReader implements InputReader {
             ComponentDef componentDef = new ComponentDef();
             entityDef.setProperties(extractProperties(openApi, document, key));
 
-            // If no x-... tag was found on the input file, throw invalid configuration
+            // If no x-component tag was found on the input file, throw invalid configuration
             if (openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT) == null) {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of x-component tags.\n\n"
@@ -143,13 +144,24 @@ public class OpenAPIInputReader implements InputReader {
             }
             entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
 
-            // If the path's tag was found on the input file, throw invalid configuration
+            // If the path's tag was not found on the input file, throw invalid configuration
             if (openApi.getPaths().size() == 0) {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of the correct path syntax.\n\n"
                         + "Go to the documentation (https://github.com/devonfw/tools-cobigen/wiki/howto_openapi_"
                         + "generation#paths) to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
+            }
+
+            // Sets a Map containing all the extensions of the info part of the OpenAPI file
+            if (openApi.getInfo().isPresent()) {
+                entityDef.setUserPropertiesMap(openApi.getInfo().getExtensions());
+            }
+            // Traverse the extensions of the entity for setting those attributes to the Map
+            Iterator<String> it = openApi.getSchema(key).getExtensions().keySet().iterator();
+            while (it.hasNext()) {
+                String keyMap = it.next();
+                entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
 
             componentDef.setPaths(extractPaths(openApi.getPaths(),
