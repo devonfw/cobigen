@@ -60,6 +60,6 @@ public interface InputInterpreter {
      * @throws InputReaderException
      *             if the Path cannot be read
      */
-    public Object readAll(Path path, Charset inputCharset, Object[] additionalArguments) throws InputReaderException;
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException;
 
 }

@@ -146,8 +146,8 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public Object readAll(Path path, Charset inputCharset, Object[] additionalArguments) throws InputReaderException {
-        return inputInterpreter.readAll(path, inputCharset, additionalArguments);
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+        return inputInterpreter.read(path, inputCharset, additionalArguments);
     }
 
     @Override

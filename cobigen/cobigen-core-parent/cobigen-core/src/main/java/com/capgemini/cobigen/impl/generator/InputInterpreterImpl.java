@@ -59,7 +59,7 @@ public class InputInterpreterImpl implements InputInterpreter {
     }
 
     @Override
-    public Object readAll(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
         for (String s : keySet) {
             try {

@@ -151,7 +151,7 @@ public class PluginRegistry {
      * @return all {@link TriggerInterpreter} keys as a set of strings.
      */
     public static Set<String> getTriggerInterpreterKeySet() {
-        return new HashSet(registeredTriggerInterpreter.keySet());
+        return new HashSet<>(registeredTriggerInterpreter.keySet());
     }
 
 }
