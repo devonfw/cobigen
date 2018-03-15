@@ -146,6 +146,11 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
+    public Object readAll(Path path, Charset inputCharset, Object[] additionalArguments) throws InputReaderException {
+        return inputInterpreter.readAll(path, inputCharset, additionalArguments);
+    }
+
+    @Override
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
         return configurationInterpreter.getMatchingIncrements(matcherInput);
     }

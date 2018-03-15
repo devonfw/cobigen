@@ -47,4 +47,19 @@ public interface InputInterpreter {
     public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
         throws InputReaderException;
 
+    /**
+     * Reads the content at a path via the first fitting {@link InputReader} and returns a CobiGen compliant
+     * input
+     * @param path
+     *            the {@link Path} to the object. Can also point to a folder
+     * @param inputCharset
+     *            of the input to be used
+     * @param additionalArguments
+     *            depending on the InputReader implementation
+     * @return Object that is a valid input or null if the file cannot be read by any InputReader
+     * @throws InputReaderException
+     *             if the Path cannot be read
+     */
+    public Object readAll(Path path, Charset inputCharset, Object[] additionalArguments) throws InputReaderException;
+
 }

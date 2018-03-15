@@ -1,7 +1,9 @@
 package com.capgemini.cobigen.impl.extension;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -141,6 +143,15 @@ public class PluginRegistry {
             triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
         }
         return triggerInterpreter;
+    }
+
+    /**
+     * Returns a {@link Map} of all {@link TriggerInterpreter} keys.
+     *
+     * @return all {@link TriggerInterpreter} keys as a set of strings.
+     */
+    public static Set<String> getTriggerInterpreterKeySet() {
+        return new HashSet(registeredTriggerInterpreter.keySet());
     }
 
 }
