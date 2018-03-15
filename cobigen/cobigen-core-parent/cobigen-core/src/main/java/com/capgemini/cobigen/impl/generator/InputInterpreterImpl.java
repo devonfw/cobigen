@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -55,6 +56,19 @@ public class InputInterpreterImpl implements InputInterpreter {
     public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
         throws InputReaderException {
         return getInputReader(type).read(path, inputCharset, additionalArguments);
+    }
+
+    @Override
+    public Object readAll(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+        Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
+        for (String s : keySet) {
+            try {
+                return getInputReader(s).read(path, inputCharset, additionalArguments);
+            } catch (InputReaderException e) {
+                // nothing to do.
+            }
+        }
+        return null;
     }
 
     /**
