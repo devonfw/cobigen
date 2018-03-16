@@ -76,7 +76,7 @@ public class AbstractMavenTest {
         request.setGoals(Collections.singletonList("package"));
         setTestProperties(request, templatesProject);
         request.setShowErrors(true);
-        request.setDebug(true);
+        request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setMavenOpts("-Xmx4096m");
 
