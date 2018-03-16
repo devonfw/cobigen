@@ -1,7 +1,9 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Definition that stores the configuration of an OpenApi definition schema
@@ -13,17 +15,19 @@ public class EntityDef {
 
     private String componentName;
 
+    /**
+     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+     */
+    private Map<String, Object> extensionProperties = new HashMap<String, Object>();
+
     private String name;
 
     private String description;
 
     private List<PropertyDef> properties;
 
-    private List<RelationShip> relationShips;
-
     public EntityDef() {
         properties = new LinkedList<>();
-        relationShips = new LinkedList<>();
     }
 
     public ComponentDef getComponent() {
@@ -32,6 +36,30 @@ public class EntityDef {
 
     public void setComponent(ComponentDef component) {
         this.component = component;
+    }
+
+    /**
+     * @return the Map of all the extension tags
+     */
+    public Map<String, Object> getUserPropertiesMap() {
+        return extensionProperties;
+    }
+
+    /**
+     * Sets the Map of all the extensions tags
+     * @param extensions
+     */
+    public void setUserPropertiesMap(Map<String, Object> extensions) {
+        extensionProperties.putAll(extensions);
+
+    }
+
+    public Object getUserProperty(String key) {
+        return extensionProperties.get(key);
+    }
+
+    public void setUserProperty(String key, String value) {
+        extensionProperties.put(key, value);
     }
 
     public String getName() {
@@ -64,14 +92,6 @@ public class EntityDef {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<RelationShip> getRelationShips() {
-        return relationShips;
-    }
-
-    public void setRelationShips(List<RelationShip> relationShips) {
-        this.relationShips = relationShips;
     }
 
 }
