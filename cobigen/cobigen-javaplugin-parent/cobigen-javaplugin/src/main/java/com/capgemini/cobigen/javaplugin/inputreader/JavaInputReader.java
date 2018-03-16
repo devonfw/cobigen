@@ -399,6 +399,8 @@ public class JavaInputReader implements InputReader {
      *            </ol>
      *            </li>
      *            </ul>
+     * @throws ParseException
+     *             if it failed to parse the given source
      */
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
@@ -440,20 +442,12 @@ public class JavaInputReader implements InputReader {
                 // couldn't think of another way here... Java8 compliance would made this a lot easier due to
                 // lambdas
                 if (clazz == null) {
-                    JavaClass firstJavaClass = null;
                     if (classLoader == null) {
-                        try {
-                            firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
-                            LOG.debug("Read {}.", firstJavaClass);
-                        } catch (ParseException e) {
-                        }
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
+                        LOG.debug("Read {}.", firstJavaClass);
                         return firstJavaClass;
                     } else {
-                        try {
-                            firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
-                        } catch (ParseException e) {
-                            throw new InputReaderException("Failed to read as Java input.");
-                        }
+                        JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
                         try {
                             clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
                         } catch (ClassNotFoundException e) {
@@ -480,8 +474,13 @@ public class JavaInputReader implements InputReader {
                     return result;
                 }
 
-            } catch (IOException e) {
-                throw new InputReaderException("Could not read file " + path.toString(), e);
+            } catch (IOException | ParseException e) {
+                if (e instanceof ParseException) {
+                    throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
+                } else {
+                    throw new InputReaderException("Could not read file " + path.toString(), e);
+                }
+
             }
         }
     }
