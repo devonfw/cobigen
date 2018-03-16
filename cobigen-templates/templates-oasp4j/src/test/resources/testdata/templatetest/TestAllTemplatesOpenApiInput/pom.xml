@@ -38,6 +38,11 @@
           </dependency>
           <dependency>
             <groupId>com.capgemini</groupId>
+            <artifactId>cobigen-javaplugin</artifactId>
+            <version>1.6.1</version>
+          </dependency>
+          <dependency>
+            <groupId>com.capgemini</groupId>
             <artifactId>cobigen-htmlplugin</artifactId>
             <version>1.1.0</version>
           </dependency>
