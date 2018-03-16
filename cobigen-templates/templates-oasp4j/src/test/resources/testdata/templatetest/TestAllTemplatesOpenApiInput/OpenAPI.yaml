@@ -5,6 +5,7 @@ info:
   title: Devon Example
   description: Example of a API definition
   version: 1.0.0
+  x-rootpackage: com.capgemini.demo
 paths:
   /datamanagement/v1/someData/{id}:
     get:
