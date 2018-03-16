@@ -30,8 +30,8 @@ import org.xml.sax.SAXParseException;
 import com.capgemini.cobigen.api.constants.BackupPolicy;
 import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
+import com.capgemini.cobigen.api.exception.NotYetSupportedException;
 import com.capgemini.cobigen.impl.exceptions.BackupFailedException;
-import com.capgemini.cobigen.impl.exceptions.NotYetSupportedException;
 import com.capgemini.cobigen.impl.util.ExceptionUtil;
 
 /**
