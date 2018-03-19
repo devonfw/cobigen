@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
@@ -86,7 +88,7 @@ public class JSONMergerTest {
         JSONObject jsonResult = new JSONObject(tokensResult);
 
         // assert
-        assertTrue(mergedContents.equals(jsonResult.toString(4)));
+        JSONAssert.assertEquals(mergedContents, jsonResult, JSONCompareMode.STRICT);
     }
 
     /**
