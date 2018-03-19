@@ -399,8 +399,6 @@ public class JavaInputReader implements InputReader {
      *            </ol>
      *            </li>
      *            </ul>
-     * @throws ParseException
-     *             if it failed to parse the given source
      */
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
@@ -473,14 +471,10 @@ public class JavaInputReader implements InputReader {
                     }
                     return result;
                 }
-
-            } catch (IOException | ParseException e) {
-                if (e instanceof ParseException) {
-                    throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
-                } else {
-                    throw new InputReaderException("Could not read file " + path.toString(), e);
-                }
-
+            } catch (IOException e) {
+                throw new InputReaderException("Could not read file " + path.toString(), e);
+            } catch (ParseException e) {
+                throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
             }
         }
     }
