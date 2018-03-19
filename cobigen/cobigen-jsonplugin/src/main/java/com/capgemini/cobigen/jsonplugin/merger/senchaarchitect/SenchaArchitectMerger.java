@@ -81,13 +81,13 @@ public class SenchaArchitectMerger {
      *            if <code>false</code>, conflicts will be resolved by using the base contents
      * @return the result string of the merge
      */
-    public String senchArchMerge(boolean patchOverrides) {
+    public JsonObject senchArchMerge(boolean patchOverrides) {
         Map<String, JsonObject> patchColumns = getPatchColumns(objBase);
 
         List<String> baseModelFields = getBaseModelFields(objPatch);
         senchArchMerge(patchColumns, baseModelFields, objBase, objPatch, patchOverrides);
 
-        return objBase.toString();
+        return objBase;
     }
 
     /**
