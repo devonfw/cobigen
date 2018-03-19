@@ -31,6 +31,7 @@ import com.google.common.collect.Sets;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
+import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read Java classes into
@@ -407,7 +408,9 @@ public class JavaInputReader implements InputReader {
                 inputCharset, Arrays.toString(additionalArguments));
         }
         ClassLoader classLoader = null;
+
         if (Files.isDirectory(path)) {
+
             String packageName = null;
             for (Object addArg : additionalArguments) {
                 if (packageName == null && addArg instanceof String) {
@@ -447,13 +450,13 @@ public class JavaInputReader implements InputReader {
                             clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
                         } catch (ClassNotFoundException e) {
                             // ignore
-	                        LOG.debug("Read {}.", firstJavaClass);
+                            LOG.debug("Read {}.", firstJavaClass);
                             return firstJavaClass;
                         }
-						Object[] result = new Object[] { firstJavaClass, clazz };
-						if(LOG.isDebugEnabled()) {
-	                        LOG.debug("Read {}.", Arrays.toString(result));
-						}
+                        Object[] result = new Object[] { firstJavaClass, clazz };
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Read {}.", Arrays.toString(result));
+                        }
                         return result;
                     }
                 } else {
@@ -468,9 +471,10 @@ public class JavaInputReader implements InputReader {
                     }
                     return result;
                 }
-
             } catch (IOException e) {
                 throw new InputReaderException("Could not read file " + path.toString(), e);
+            } catch (ParseException e) {
+                throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
             }
         }
     }
