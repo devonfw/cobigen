@@ -18,6 +18,7 @@
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="serverPath.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName}.scss" />
   </templates>
 
   <templateScans>
@@ -35,9 +36,10 @@
     <increment name="ionic_component" description="Ionic Grid">
       <templateRef ref="${variables.etoName}.ts"/>
       <templateRef ref="app.component.ts"/>
-      <templateRef ref="app.module.ts"/>
+      <templateRef ref="app.module.ts"/>      
       <templateRef ref="${variables.etoName}.module.ts"/>
       <templateRef ref="${variables.etoName}.html"/>
+      <templateRef ref="${variables.etoName}.scss"/>
       <templateRef ref="${variables.etoName}-operations.ts"/>
       <templateRef ref="${variables.etoName}-operations.html"/>
       <templateRef ref="${variables.etoName}-operations-dialog.ts"/>
