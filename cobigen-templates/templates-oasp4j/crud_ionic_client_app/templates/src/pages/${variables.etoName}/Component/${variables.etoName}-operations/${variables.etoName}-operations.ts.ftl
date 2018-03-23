@@ -83,7 +83,7 @@ export class ${variables.etoName}OperationsComponent {
     let index = this.${variables.etoName}Page.getindex();
     if (!index && index != 0) {
       return;
-      }
+    }
     let cleanuser = this.interfaceuser;
     let search = this.${variables.etoName}Page.tabletoshow[index]
     for(let i in cleanuser){
@@ -96,11 +96,10 @@ export class ${variables.etoName}OperationsComponent {
             
             this.${variables.etoName}Business.getTableM().subscribe(
               (data:any) => {
-                this.store.setTable(data.result);
+                this.store.setList(data.result);
                 this.${variables.etoName}Page.reload${variables.etoName}PageTable();
               }
             );
-            
           }
         )
       }
@@ -119,8 +118,7 @@ export class ${variables.etoName}OperationsComponent {
       buttons: this.DeleteButtons
     });
     prompt.present();
-    
-    
+     
   }
 
   promptModifyClicked() { 
@@ -128,7 +126,7 @@ export class ${variables.etoName}OperationsComponent {
     if (!index && index != 0) {
       return;
     }
-    let modal = this.modalCtrl.create(${variables.etoName}operationsdialogComponent, { dialog: "modify", edit:this.store.getTable()[index]});
+    let modal = this.modalCtrl.create(${variables.etoName}operationsdialogComponent, { dialog: "modify", edit:this.store.getList()[index]});
     modal.present();
     modal.onDidDismiss(() => this.${variables.etoName}Page.reload${variables.etoName}PageTable());
     
