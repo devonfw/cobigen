@@ -9,17 +9,13 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Test methods for different JSON mergers of the plugin
@@ -43,11 +39,11 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("jsonmerge", true).merge(jsonBaseFile, readJsonFile("en_patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(mergedContents);
-        JSONObject jsonResult = new JSONObject(tokensResult);
+
+        JsonObject jsonResult = new JsonParser().parse(mergedContents).getAsJsonObject();
 
         // assert
-        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 1);
+        assertTrue(jsonResult.getAsJsonObject("datagrid").getAsJsonObject("columns").size() == 1);
         assertTrue(jsonResult.has("newdatagrid"));
     }
 
@@ -63,11 +59,10 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("jsonmerge", false).merge(jsonBaseFile, readJsonFile("en_patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(mergedContents);
-        JSONObject jsonResult = new JSONObject(tokensResult);
+        JsonObject jsonResult = new JsonParser().parse(mergedContents).getAsJsonObject();
 
         // assert
-        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 5);
+        assertTrue(jsonResult.getAsJsonObject("datagrid").getAsJsonObject("columns").size() == 5);
         assertTrue(jsonResult.has("newdatagrid"));
     }
 
@@ -84,11 +79,9 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("sencharchmerge", false).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(readJsonFile("Result_json"));
-        JSONObject jsonResult = new JSONObject(tokensResult);
+        JsonObject jsonResult = new JsonParser().parse(readJsonFile("Result_json")).getAsJsonObject();
 
-        // assert
-        JSONAssert.assertEquals(mergedContents, jsonResult, JSONCompareMode.STRICT);
+        assertTrue(jsonResult.equals(new JsonParser().parse(mergedContents).getAsJsonObject()));
     }
 
     /**
@@ -104,12 +97,12 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("sencharchmerge_override", true).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(readJsonFile("ResultOverride_json"));
-        JSONObject jsonResult = new JSONObject(tokensResult);
-        JSONArray toComp = jsonResult.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
-        JSONTokener tokensJson = new JSONTokener(mergedContents);
-        JSONObject json = new JSONObject(tokensJson);
-        JSONArray toCompRes = json.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
+        JsonObject jsonResult = new JsonParser().parse(readJsonFile("ResultOverride_json")).getAsJsonObject();
+
+        JsonArray toComp = jsonResult.getAsJsonObject("descriptor").getAsJsonObject("app2").getAsJsonArray("messages");
+        JsonObject json = new JsonParser().parse(mergedContents).getAsJsonObject();
+
+        JsonArray toCompRes = json.getAsJsonObject("descriptor").getAsJsonObject("app2").getAsJsonArray("messages");
 
         // assert
         assertTrue(toCompRes.toString().equals(toComp.toString()));
