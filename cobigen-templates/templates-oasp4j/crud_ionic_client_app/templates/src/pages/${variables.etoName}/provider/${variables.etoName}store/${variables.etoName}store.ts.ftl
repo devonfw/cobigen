@@ -14,20 +14,18 @@ import { Injectable } from '@angular/core';
 export class ${variables.etoName}storeProvider {
 
   
-  
-  
-  Table : any;
+  List : any;
 
 
   constructor(public http: HttpClient) {
-    this.Table = [{<#list pojo.fields as field> ${field.name}:null,</#list>}];
+    this.List = [{<#list pojo.fields as field> ${field.name}:null,</#list>}];
   }
 
-  setTable(table:any){
-    this.Table = table;
+  setList(list:any){
+    this.List = list;
   }
 
-  getTable() : any {
-    return this.Table;
+  getList() : any {
+    return this.List;
   }
 }

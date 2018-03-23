@@ -18,7 +18,6 @@
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="serverPath.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName}.scss" />
   </templates>
 
   <templateScans>
@@ -27,7 +26,7 @@
 
   <increments>
     <increment name="app_ionic_structure" description="Ionic OASP4J URL">
-        <templateRef ref="serverPath.ts"/>
+      <templateRef ref="serverPath.ts"/>
     </increment>
     <increment name="ionic_i18n" description="Ionic i18n">
       <templateRef ref="es.json"/>
@@ -36,14 +35,14 @@
     <increment name="ionic_component" description="Ionic Grid">
       <templateRef ref="${variables.etoName}.ts"/>
       <templateRef ref="app.component.ts"/>
-      <templateRef ref="app.module.ts"/>      
+      <templateRef ref="app.module.ts"/>
       <templateRef ref="${variables.etoName}.module.ts"/>
       <templateRef ref="${variables.etoName}.html"/>
       <templateRef ref="${variables.etoName}.scss"/>
       <templateRef ref="${variables.etoName}-operations.ts"/>
       <templateRef ref="${variables.etoName}-operations.html"/>
       <templateRef ref="${variables.etoName}-operations-dialog.ts"/>
-      <templateRef ref="${variables.etoName}-operations-dialog.html"/>      
+      <templateRef ref="${variables.etoName}-operations-dialog.html"/>
       <templateRef ref="${variables.etoName}-business.ts"/>
       <templateRef ref="${variables.etoName}store.ts"/>
       <templateRef ref="business-operator.ts"/>
