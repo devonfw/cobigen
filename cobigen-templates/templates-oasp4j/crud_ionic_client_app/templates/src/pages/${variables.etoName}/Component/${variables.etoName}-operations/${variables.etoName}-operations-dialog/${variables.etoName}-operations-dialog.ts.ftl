@@ -64,12 +64,11 @@ export class ${variables.etoName}operationsdialogComponent {
         (data: any) => {
           this.${variables.etoName}Business.getTableM().subscribe(
             (data:any) => {
-              this.store.setTable(data.result);
+              this.store.setList(data.result);
             }
           );
           this.clean${variables.etoName}.id=null;
           this.dismiss();
-
         });
     }
 
@@ -83,20 +82,19 @@ export class ${variables.etoName}operationsdialogComponent {
           for (let i in data.result) {
             data.result[i].checkbox = false;
           }
-          this.store.setTable(data.result);
+          this.store.setList(data.result);
           this.dismiss();
-
         }
       )
     }
 
     clearSearch(){
-     this.${variables.etoName}Business.getTableM().subscribe(
+      this.${variables.etoName}Business.getTableM().subscribe(
        (data:any) => {
-         this.store.setTable(data.result);
-       }
-     );
-     this.dismiss();
+         this.store.setList(data.result);
+        }
+      );
+      this.dismiss();
     }
 
   }
