@@ -7,23 +7,33 @@
 <ion-header>
   <layoutheader Title="${variables.etoName}"></layoutheader>
 </ion-header>
-
-
 <ion-content padding>
-
-  <ion-grid>
-    <ion-row *ngFor="let p of tabletoshow; let i = index" [(ngModel)]="checkboxes" ngDefaultControl>
-      <ion-col>
-        <ion-checkbox (click)="NoMorethanOneCheckbox(i)" checked="{{p.checkbox}}"></ion-checkbox>
-      </ion-col>
-      <#list pojo.fields as field>
-        <ion-col>{{p.${field.name}}}</ion-col>
-        </#list>
-    </ion-row>
+  <ion-list>
+	<ion-item-sliding *ngFor="let p of tabletoshow; let i = index">
+      <ion-item [class.selected]="i === currentIndex" (click)="enableUpdateDeleteOperations(i)" >
+		  <ion-grid>
+		      <ion-row>
+		      <#list pojo.fields as field>
+		        <ion-col>{{p.${field.name}}}</ion-col>
+		      </#list>
+		    </ion-row>
+		  </ion-grid>
+      </ion-item>
+      <ion-item-options icon-start (ionSwipe)="DeleteConfirmForm(i)">
+        <button color="danger" ion-button expandable (click)="DeleteConfirmForm(i)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+      <ion-item-options side="left" (ionSwipe)="promptModifyClicked(i)">
+        <button ion-button color="secondary" ion-button expandable (click)="promptModifyClicked(i)">
+          <ion-icon name="brush"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
-  </ion-grid>
   <ion-fab bottom right>
     <button ion-fab color="blue">
       <ion-icon name="arrow-dropright"></ion-icon>
