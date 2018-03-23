@@ -3,6 +3,7 @@ package com.capgemini.cobigen.jsonplugin.merger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -58,8 +59,10 @@ public class JSONMerger implements Merger {
         JsonObject objBase = null;
         JsonObject objPatch = null;
 
-        try (JsonReader reader = new JsonReader(
-            new InputStreamReader(Files.newInputStream(base.toPath()), Charset.forName(targetCharset)));) {
+        try (InputStream in = Files.newInputStream(base.toPath());
+            InputStreamReader inSR = new InputStreamReader(in, Charset.forName(targetCharset));
+            JsonReader reader = new JsonReader(inSR);) {
+
             JsonParser parser = new JsonParser();
             JsonElement jsonBase = parser.parse(reader);
             objBase = jsonBase.getAsJsonObject();
