@@ -40,11 +40,7 @@
       <artifactId>cobigen-core</artifactId>
       <version>4.2.1</version>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core-api</artifactId>
-      <version>4.2.1</version>
-    </dependency>
+
 
     <!-- dependencies to annotations -->
     <dependency>
