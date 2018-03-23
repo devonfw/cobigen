@@ -2,22 +2,25 @@ package com.capgemini.cobigen.jsonplugin.merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.jsonplugin.merger.general.constants.Constants;
 import com.capgemini.cobigen.jsonplugin.merger.generic.GenericJSONMerger;
 import com.capgemini.cobigen.jsonplugin.merger.senchaarchitect.SenchaArchitectMerger;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 
 /**
  * The {@link JSONMerger} merges a patch and the base file of the same JSON file. The merger is a recursive
@@ -56,7 +59,10 @@ public class JSONMerger implements Merger {
         JsonObject objBase = null;
         JsonObject objPatch = null;
 
-        try (FileReader reader = new FileReader(file)) {
+        try (InputStream in = Files.newInputStream(base.toPath());
+            InputStreamReader inSR = new InputStreamReader(in, Charset.forName(targetCharset));
+            JsonReader reader = new JsonReader(inSR);) {
+
             JsonParser parser = new JsonParser();
             JsonElement jsonBase = parser.parse(reader);
             objBase = jsonBase.getAsJsonObject();
@@ -80,7 +86,7 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "JSON Patch syntax error. ", e);
         }
 
-        String result = null;
+        JsonObject result = null;
 
         // Override would be defined by patchOverrides at PluginActivator
         if (type.contains(Constants.SENCHA_ARCHITECT)) {
@@ -93,9 +99,8 @@ public class JSONMerger implements Merger {
             throw new MergeException(base, "Merge strategy not yet supported!");
         }
 
-        JSONTokener tokensBase = new JSONTokener(result);
-        JSONObject jsonBase = new JSONObject(tokensBase);
-        return jsonBase.toString(4);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(result);
     }
 
 }
