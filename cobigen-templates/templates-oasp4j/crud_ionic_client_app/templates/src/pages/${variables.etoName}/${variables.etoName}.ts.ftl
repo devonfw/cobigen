@@ -7,7 +7,7 @@ import { ${variables.etoName}storeProvider } from './provider/${variables.etoNam
 
 export interface ${variables.etoName}ListItem {
   <#list pojo.fields as field>
-    ${field.name}:<#if (field.type=="short"||field.type=="long"||field.type=="int"||field.type=="Integer"||field.type=="float"||field.type=="double")> number <#else> ${field.type} </#if>,
+    ${field.name}:${JavaUtil.getAngularType(field.type)},
     </#list>
 }
     
