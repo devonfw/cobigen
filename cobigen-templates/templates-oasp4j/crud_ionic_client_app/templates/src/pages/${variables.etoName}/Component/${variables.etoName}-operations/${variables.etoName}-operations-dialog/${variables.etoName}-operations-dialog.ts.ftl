@@ -47,7 +47,6 @@ export class ${variables.etoName}operationsdialogComponent {
 	}
 
 	dismiss() {
-		
 		this.viewCtrl.dismiss();
 		this.disables.filter = true;
 	}
