@@ -22,56 +22,56 @@ import {${variables.etoName}OperationsComponent} from '../pages/${variables.etoN
 
 
 export function translateFactory(http: HttpClient) {
-	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 @NgModule({
-	declarations: [
-		MyApp,
-		HomePage,
-		LoginPage,
-		HeaderComponent,
-		${variables.etoName}Page,
-		${variables.etoName}OperationsComponent,
-		${variables.etoName}operationsdialogComponent
-	],
-	imports: [
-		BrowserModule,
-		HttpClientModule,
-		IonicModule.forRoot(MyApp),
-		TranslateModule.forRoot({
-			loader: {
-				provide: TranslateLoader,
-				useFactory: translateFactory,
-				deps: [HttpClient]
-			}
-		})
-	],
-	bootstrap: [IonicApp],
-	entryComponents: [
-		MyApp,
-		HomePage,
-		LoginPage,
-		${variables.etoName}Page,
-		${variables.etoName}operationsdialogComponent
-	],
-	providers: [
+  declarations: [
+    MyApp,
+    HomePage,
+    LoginPage,
+    HeaderComponent,
+    ${variables.etoName}Page,
+    ${variables.etoName}OperationsComponent,
+    ${variables.etoName}operationsdialogComponent
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    IonicModule.forRoot(MyApp),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: translateFactory,
+        deps: [HttpClient]
+      }
+    })
+  ],
+  bootstrap: [IonicApp],
+  entryComponents: [
+    MyApp,
+    HomePage,
+    LoginPage,
+    ${variables.etoName}Page,
+    ${variables.etoName}operationsdialogComponent
+  ],
+  providers: [
 
-		TranslateModule,
-		StatusBar,
-		SplashScreen,
-		{provide: ErrorHandler, useClass: IonicErrorHandler},
-		BusinessOperatorProvider,
-		HttpClient,
-		LoginProvider,
-		AuthServiceProvider,
-		{provide: HTTP_INTERCEPTORS,
-			useClass: HttpinterceptorProvider,
-			multi: true},
-		${variables.etoName}BusinessProvider,
-		${variables.etoName}storeProvider,
-		
-	]
+    TranslateModule,
+    StatusBar,
+    SplashScreen,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    BusinessOperatorProvider,
+    HttpClient,
+    LoginProvider,
+    AuthServiceProvider,
+    {provide: HTTP_INTERCEPTORS,
+      useClass: HttpinterceptorProvider,
+      multi: true},
+    ${variables.etoName}BusinessProvider,
+    ${variables.etoName}storeProvider,
+    
+  ]
 })
 export class AppModule {}
 
