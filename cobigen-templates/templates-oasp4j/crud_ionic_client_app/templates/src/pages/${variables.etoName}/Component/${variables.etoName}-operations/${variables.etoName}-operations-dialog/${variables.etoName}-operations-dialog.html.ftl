@@ -23,7 +23,7 @@
     <#list pojo.fields as field>
     <ion-item>
       <ion-label>{{'${variables.component}.${variables.etoName}.${field.name}'| translate}}</ion-label>
-      <ion-input  <#if (field.type=="long"||field.type=="int")> type="number" </#if> [(ngModel)]="${variables.etoName}received.${field.name}" name="${field.name}"></ion-input>
+      <ion-input  ${JavaUtil.getAngularType(field.type)} [(ngModel)]="${variables.etoName}received.${field.name}" name="${field.name}"></ion-input>
     </ion-item>
     </#list>
      
