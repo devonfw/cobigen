@@ -11,6 +11,32 @@ from scripts.branchname_validation import check_branch_validity
 from scripts.git_authentication import git_user_authentication
 from scripts.branchname_validation import get_build_folder
 
+
+# get command line arguments and initialise global booleans
+# --dry-run -> do not change anything in git but print the steps
+# --debug -> step by step execution
+
+bool_dry = False
+bool_debug = False
+
+for o in sys.argv:
+    if o == "--dry-run":
+        bool_dry = True
+        print ('--dry-run: No changes will be made on the Git repo.')
+    elif o == "--debug":
+        print ('--debug: The script will require user interactions.')
+        bool_debug = True
+    elif o == "--help":
+        print ('This script helps deploying CobiGen modules.\n'
+               '[WARNING]: The script will access and change the Github repository.\n'
+               'Do not use it if you do not want to deploy anything.\n'
+               'Otherwise use --dry-run option.\n\n'
+               'Options: \n'
+               '--dry-run: Instead of accessing Git th script will print each step to the console.\n'
+               '--debug: Script stops after each automatic step and asks the user to continue.\n'
+               '--help: Provides a short help about the intention and possible options.')
+        sys.exit(0)
+
 input("Please clean up your working copy before running \
 the script, Press any key if it is already done")
 
@@ -114,9 +140,13 @@ else:
 #############################Step 2.2
 issueText="This issue has been automatically created. It serves as a container for all release related commits";
 def creation_of_issue():
-    github_issue_creation.make_github_issue(build_folder_name,git_username,git_password,milestoneNumber,issueText,[build_folder_name]);    
-    
- #Search for the Release issue to be used , if not found, create one:
+        if bool_dry == True:
+                print ('dry-run: would create a new issue')
+        else: 
+                github_issue_creation.make_github_issue(build_folder_name,git_username,git_password,milestoneNumber,issueText,[build_folder_name]);    
+        return
+
+#Search for the Release issue to be used , if not found, create one:
 if(release_issue_number==""):
     print("You have not entered Issue,hence Creating a new issue..");
     release_issue_number=creation_of_issue()
