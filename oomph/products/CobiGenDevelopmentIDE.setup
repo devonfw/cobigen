@@ -41,17 +41,13 @@
         name="org.eclipse.m2e.logback.feature.feature.group"
         versionRange="[1.8.0,1.9.0)"/>
     <requirement
-        name="org.eclipse.egit.feature.group"
-        versionRange="[4.9.0,4.10.0)"/>
+        name="org.eclipse.egit.feature.group"/>
     <requirement
-        name="org.eclipse.oomph.p2.feature.group"
-        versionRange="[1.9.0,1.10.0)"/>
+        name="org.eclipse.oomph.p2.feature.group"/>
     <requirement
-        name="org.eclipse.oomph.setup.feature.group"
-        versionRange="[1.9.0,1.10.0)"/>
+        name="org.eclipse.oomph.setup.feature.group"/>
     <requirement
-        name="org.eclipse.oomph.setup.ui.ide.feature.group"
-        versionRange="[1.5.0,1.6.0)"/>
+        name="org.eclipse.oomph.setup.ui.ide.feature.group"/>
     <requirement
         name="org.eclipse.swtbot.feature.group"
         versionRange="[2.7.0,2.8.0)"/>
@@ -68,17 +64,13 @@
         name="org.eclipse.swtbot.generator.feature.feature.group"
         versionRange="[2.7.0,2.8.0)"/>
     <requirement
-        name="org.sonatype.m2e.buildhelper.feature.feature.group"
-        versionRange="[0.15.0,0.15.1)"/>
+        name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
-        name="de.bastiankrol.startexplorer.feature.feature.group"
-        versionRange="[1.7.0,1.7.0]"/>
+        name="de.bastiankrol.startexplorer.feature.feature.group"/>
     <requirement
-        name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"
-        versionRange="[3.9.0,3.10.0)"/>
+        name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"/>
     <requirement
-        name="org.sonatype.tycho.m2e.feature.feature.group"
-        versionRange="[0.9.0,0.10.0)"/>
+        name="org.sonatype.tycho.m2e.feature.feature.group"/>
     <repository
         url="http://fabioz.github.io/startexplorer/update/"/>
     <repository
