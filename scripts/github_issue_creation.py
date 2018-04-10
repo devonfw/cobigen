@@ -1,27 +1,24 @@
 import os
 import json
 import requests
+import scripts.settings
 
-def make_github_issue(title,git_username,git_password,milestone=None,body=None, labels=None):
+# Function creates an issue in git hub with title,milestone,body,labels passed
+def make_github_issue(title,milestone=None,body=None, labels=None):
     '''Create an issue on github.com using the given parameters.'''
-    # Our url to create issues via POST
-    url = 'https://'+git_username+':'+git_password+'@api.github.com/repos/krashah/practice/issues'
-    # Create an authenticated session to create the issue
+    url = 'https://'+settings.git_username+':'+settings.git_password+'@api.github.com/repos/krashah/practice/issues'
     session = requests.Session()
-    session.auth = (git_username, git_password)
-    # Create our issue
+    session.auth = (settings.git_username, settings.git_password)
     issue = {'title': title,
 			 'milestone': milestone,
              'body': body,			 
              'labels': labels}
-    # Add the issue to our repository
-    r = session.post(url, json=issue)
-    data=r.json()
-    issueNumber=data["number"]
-    if r.status_code == 201:
-        print ('Successfully created Issue: '+title);
-        return issueNumber
+    response_object = session.post(url, json=issue)
+    data=response_object.json()
+    issue_number=data["number"]
+    if response_object.status_code == 201:
+        print ('Successfully created issue with title: '+title);
+        return issue_number
     else:
-        print ('Could not create Issue: '+title) 
-        print ('Response:', r.content)
+        print ('Could not create new issue with title: '+title) 
         return
