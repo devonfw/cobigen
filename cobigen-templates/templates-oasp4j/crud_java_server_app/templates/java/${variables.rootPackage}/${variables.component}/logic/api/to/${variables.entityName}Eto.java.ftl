@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Entity transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package>AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} {
+public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package || pojo.extendedType.name == "ApplicationPersistenceEntity">AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} {
 
 	private static final long serialVersionUID = 1L;
 
