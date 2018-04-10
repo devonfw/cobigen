@@ -28,7 +28,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import ${variables.rootPackage}.${variables.component}.service.impl.soap.${variables.component?cap_first}SoapServiceImpl;
 
 import io.oasp.module.rest.service.impl.RestServiceExceptionFacade;
-import io.oasp.module.rest.service.impl.json.ObjectMapperFactory;
+import io.oasp.module.json.common.base.ObjectMapperFactory;
 
 /**
  * {@link Configuration} for (REST or SOAP) services using CXF.
