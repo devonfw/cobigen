@@ -1,5 +1,5 @@
 <!--
-  Generated template for the TablePage page.
+  Generated template for the list page.
 
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
@@ -9,7 +9,7 @@
 </ion-header>
 <ion-content padding>
   <ion-list>
-    <ion-item-sliding *ngFor="let p of tabletoshow; let i = index">
+    <ion-item-sliding *ngFor="let p of listToShow; let i = index">
       <ion-item [class.selected]="i === currentIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
           <ion-row>
@@ -19,13 +19,13 @@
           </ion-row>
         </ion-grid>
       </ion-item>
-      <ion-item-options icon-start (ionSwipe)="DeleteConfirmForm(i)">
-        <button color="danger" ion-button expandable (click)="DeleteConfirmForm(i)">
+      <ion-item-options icon-start (ionSwipe)="setCurrentIndex(i);DeleteConfirmForm()">
+        <button color="danger" ion-button expandable (click)="setCurrentIndex(i);DeleteConfirmForm()">
           <ion-icon name="trash"></ion-icon>
         </button>
       </ion-item-options>
-      <ion-item-options side="left" (ionSwipe)="promptModifyClicked(i)">
-        <button ion-button color="secondary" ion-button expandable (click)="promptModifyClicked(i)">
+      <ion-item-options side="left" (ionSwipe)="setCurrentIndex(i);promptModifyClicked()">
+        <button ion-button color="secondary" ion-button expandable (click)="setCurrentIndex(i);promptModifyClicked()">
           <ion-icon name="brush"></ion-icon>
         </button>
       </ion-item-options>
@@ -39,9 +39,23 @@
       <ion-icon name="arrow-dropright"></ion-icon>
     </button>
     <ion-fab-list side="top">
-      <${variables.etoName}-operations [isDisabled]="Delete_and_Modified_Buttons_Disabled">
-      </${variables.etoName}-operations>
+      <button ion-fab class="fabButton" (click)="promptAddClicked()" >
+        <ion-icon name="add-circle"></ion-icon>
+      </button>
+      
+      <button ion-fab (click)="promptModifyClicked()" [disabled] = deleteModifiedButtonsEnabled  > 
+        <ion-icon name="brush"></ion-icon>
+      </button>
+    
+      <button ion-fab (click)="DeleteConfirmForm()" [disabled] = deleteModifiedButtonsEnabled >
+        <ion-icon name="trash"></ion-icon>
+      </button>
+      
+      <button ion-fab (click)="promptFilterClicked()" >
+        <ion-icon name="search"></ion-icon>
+      </button>
     </ion-fab-list>
   </ion-fab>
+
 
 </ion-content>

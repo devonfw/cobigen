@@ -6,7 +6,7 @@ import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { LoginPage } from '../pages/Login/Login';
-import { ${variables.etoName}Page } from '../pages/${variables.etoName}/${variables.etoName}'
+import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?uncap_first}-list/${variables.etoName?uncap_first}-list'
 
 
 @Component({
@@ -24,7 +24,7 @@ export class MyApp {
       
       this.pages = [
         { title: 'Home', component: HomePage},
-        { title :'${variables.etoName}', component: ${variables.etoName}Page},
+        { title :'${variables.etoName?uncap_first}', component: ${variables.etoName?cap_first}List},
       ];
     });
   }

@@ -9,17 +9,14 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import { LoginPage } from '../pages/Login/Login';
 import { LoginProvider } from '../providers/login/loginProvider';
-import { TranslateLoader,TranslateModule } from '@ngx-translate/core';
+import { TranslateModule,TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HeaderComponent } from '../components/header/header';
 import { HomePage } from '../pages/home/home';
 import { BusinessOperatorProvider } from '../providers/shared/business-operator';
-import { ${variables.etoName}operationsdialogComponent } from '../pages/${variables.etoName}/Component/${variables.etoName}-operations/${variables.etoName}-operations-dialog/${variables.etoName}-operations-dialog'
-import {${variables.etoName}storeProvider} from '../pages/${variables.etoName}/provider/${variables.etoName}store/${variables.etoName}store';
-import {${variables.etoName}BusinessProvider} from '../pages/${variables.etoName}/provider/${variables.etoName}-business/${variables.etoName}-business';
-import { ${variables.etoName}Page } from '../pages/${variables.etoName}/${variables.etoName}';
-import {${variables.etoName}OperationsComponent} from '../pages/${variables.etoName}/Component/${variables.etoName}-operations/${variables.etoName}-operations';
-
+import { ${variables.etoName?cap_first}Detail } from '../pages/${variables.etoName?uncap_first}-detail/${variables.etoName?uncap_first}-detail';
+import { ${variables.etoName?cap_first}Rest } from '../providers/${variables.etoName?uncap_first}-rest';
+import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?uncap_first}-list/${variables.etoName?uncap_first}-list';
 
 export function translateFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -31,9 +28,8 @@ export function translateFactory(http: HttpClient) {
     HomePage,
     LoginPage,
     HeaderComponent,
-    ${variables.etoName}Page,
-    ${variables.etoName}OperationsComponent,
-    ${variables.etoName}operationsdialogComponent
+    ${variables.etoName?cap_first}List,
+    ${variables.etoName?cap_first}Detail,
   ],
   imports: [
     BrowserModule,
@@ -52,8 +48,8 @@ export function translateFactory(http: HttpClient) {
     MyApp,
     HomePage,
     LoginPage,
-    ${variables.etoName}Page,
-    ${variables.etoName}operationsdialogComponent
+    ${variables.etoName?cap_first}List,
+    ${variables.etoName?cap_first}Detail
   ],
   providers: [
 
@@ -68,8 +64,7 @@ export function translateFactory(http: HttpClient) {
     {provide: HTTP_INTERCEPTORS,
       useClass: HttpinterceptorProvider,
       multi: true},
-    ${variables.etoName}BusinessProvider,
-    ${variables.etoName}storeProvider,
+    ${variables.etoName?cap_first}Rest,
     
   ]
 })

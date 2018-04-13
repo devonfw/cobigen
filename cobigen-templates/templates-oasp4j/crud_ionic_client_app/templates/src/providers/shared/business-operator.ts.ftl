@@ -27,7 +27,7 @@ export class BusinessOperatorProvider {
   }
 
   ${variables.etoName}Service(){
-    return this.restPath + '${variables.component}/v1/${variables.etoName}/';
+    return this.restPath + '${variables.component}/v1/${variables.etoName?uncap_first}/';
   }
 
 }
