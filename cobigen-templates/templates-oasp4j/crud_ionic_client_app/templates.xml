@@ -3,17 +3,15 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName}-operations.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName}.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#uncap_first}-detail.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#uncap_first}-list.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName}.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName}-business.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName}store.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName}-operations.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName}.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName}-operations-dialog.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName}-operations-dialog.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#uncap_first}-rest.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#uncap_first}.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="pagination.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#uncap_first}-detail.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName#uncap_first}-list.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge"/>
@@ -33,18 +31,16 @@
       <templateRef ref="en.json"/>
     </increment>
     <increment name="ionic_component" description="Ionic Grid">
-      <templateRef ref="${variables.etoName}.ts"/>
+      <templateRef ref="${variables.etoName#uncap_first}.ts"/>
       <templateRef ref="app.component.ts"/>
       <templateRef ref="app.module.ts"/>
-      <templateRef ref="${variables.etoName}.module.ts"/>
-      <templateRef ref="${variables.etoName}.html"/>
-      <templateRef ref="${variables.etoName}.scss"/>
-      <templateRef ref="${variables.etoName}-operations.ts"/>
-      <templateRef ref="${variables.etoName}-operations.html"/>
-      <templateRef ref="${variables.etoName}-operations-dialog.ts"/>
-      <templateRef ref="${variables.etoName}-operations-dialog.html"/>
-      <templateRef ref="${variables.etoName}-business.ts"/>
-      <templateRef ref="${variables.etoName}store.ts"/>
+      <templateRef ref="pagination.ts"/>
+      <templateRef ref="${variables.etoName#uncap_first}-rest.ts"/>
+      <templateRef ref="${variables.etoName#uncap_first}-list.ts"/>
+      <templateRef ref="${variables.etoName#uncap_first}-list.html"/>
+      <templateRef ref="${variables.etoName#uncap_first}-list.scss"/>
+      <templateRef ref="${variables.etoName#uncap_first}-detail.ts"/>
+      <templateRef ref="${variables.etoName#uncap_first}-detail.html"/>
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>
