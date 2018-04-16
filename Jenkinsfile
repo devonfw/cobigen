@@ -172,21 +172,15 @@ def isPRBuild() {
 }
 
 def justTemplatesChanged() {
+	// split will return a list with one element (the empty string) if called on an empty string
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
-	echo "${diff_files}"
-	if(diff_files.size() > 0) {
-		echo "List > 0"
-		for(int i=0; i < diff_files.size(); i++) {
-			if(!diff_files[i].startsWith("cobigen-templates/")) {
-				echo "'${diff_files[i]}' does not start with cobigen-templates/"
-				return false
-			}
+	for(int i=0; i < diff_files.size(); i++) {
+		if(!diff_files[i].startsWith("cobigen-templates/")) {
+			echo "'${diff_files[i]}' does not start with cobigen-templates/"
+			return false
 		}
-		return true
-	} else {
-		echo "List == 0"
-		return false // nothing changed, build whole branch
 	}
+	return true
 }
 
 def notifyFailed() {
