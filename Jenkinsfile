@@ -171,13 +171,19 @@ def isPRBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }
 
-@NonCPS //execute in one go as of serialization issues with loops
+//@NonCPS //execute in one go as of serialization issues with loops
 def justTemplatesChanged() {
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
 	echo "${diff_files}"
 	if(diff_files.size() > 0) {
 		echo "List > 0"
-		return !diff_files.any{ path ->	!path.startsWith("cobigen-templates/") }
+		for(int i=0; i < diff_files.size(); i++) {
+			if(!diff_files[i].startsWith("cobigen-templates/")) {
+				return false
+			}
+		}
+		return true
+		//return !diff_files.any{ path ->	!path.startsWith("cobigen-templates/") }
 	} else {
 		echo "List == 0"
 		return false // nothing changed, build whole branch
