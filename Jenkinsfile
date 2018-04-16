@@ -170,8 +170,8 @@ def isPRBuild() {
 }
 
 def justTemplatesChanged() {
-	withCredentials([usernamePassword(credentialsId: 'github-devonfw-ci', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-		sh "git fetch"
+	//withCredentials([usernamePassword(credentialsId: 'github-devonfw-ci', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+	//	sh "git fetch"
 		diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim()
 		echo "${diff_files}"
 		diff_files.each{ path ->
@@ -182,7 +182,7 @@ def justTemplatesChanged() {
 		}
 		echo "Just templates changed!"
 		return true
-	}
+	//}
 }
 
 def notifyFailed() {
