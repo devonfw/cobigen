@@ -170,19 +170,16 @@ def isPRBuild() {
 }
 
 def justTemplatesChanged() {
-	//withCredentials([usernamePassword(credentialsId: 'github-devonfw-ci', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-	//	sh "git fetch"
-		diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim()
-		echo "${diff_files}"
-		diff_files.each{ path ->
-			if(!path.startsWith("cobigen-templates/")) {
-				echo "More than templates changed: ${path}"
-				return false
-			}
+	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
+	echo "${diff_files}"
+	diff_files.each{ path ->
+		if(!path.startsWith("cobigen-templates/")) {
+			echo "More than templates changed: ${path}"
+			return false
 		}
-		echo "Just templates changed!"
-		return true
-	//}
+	}
+	echo "Just templates changed!"
+	return true
 }
 
 def notifyFailed() {
