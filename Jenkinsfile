@@ -49,8 +49,9 @@ node {
 			if (origin_branch == "master") {
 				if(justTemplatesChanged()) {
 					root = "cobigen-templates"
+				} else {
+					root = ""
 				}
-				root = ""
 			} else if (origin_branch == "dev_eclipseplugin") {
 				root = "cobigen-eclipse"
 			} else if (origin_branch == "dev_htmlmerger") {
