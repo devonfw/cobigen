@@ -47,7 +47,7 @@ node {
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
 			if (origin_branch == "master") {
-				if(isPRBuild() && justTemplatesChanged()) {
+				if(justTemplatesChanged()) {
 					root = "cobigen-templates"
 				}
 				root = ""
