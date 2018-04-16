@@ -172,7 +172,7 @@ def isPRBuild() {
 
 def justTemplatesChanged() {
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
-	if(!diff_files.empty) {
+	if(diff_files) { // if not empty
 		return !diff_files.any{ path ->	!path.startsWith("cobigen-templates/") }
 	} else {
 		return false // nothing changed, build whole branch
