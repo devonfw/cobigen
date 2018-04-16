@@ -47,6 +47,9 @@ node {
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
 			if (origin_branch == "master") {
+				if(isPRBuild() && justTemplatesChanged()) {
+					root = "cobigen-templates"
+				}
 				root = ""
 			} else if (origin_branch == "dev_eclipseplugin") {
 				root = "cobigen-eclipse"
@@ -63,7 +66,7 @@ node {
 			} else if (origin_branch == "dev_javaplugin") {
 				root = "cobigen/cobigen-javaplugin-parent"
 			} else if (origin_branch == "dev_jssenchaplugin") {
-                root = "cobigen/cobigen-senchaplugin"
+				root = "cobigen/cobigen-senchaplugin"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
@@ -160,6 +163,22 @@ node {
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
+}
+
+def isPRBuild() {
+    return (env.BRANCH_NAME ==~ /^PR-\d+$/)
+}
+
+def justTemplatesChanged() {
+	sh "git fetch"
+	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim()
+	
+	diff_files.each{ path ->
+		if(!path.startsWith("cobigen-templates/")) {
+			return false
+		}
+	}
+	return true
 }
 
 def notifyFailed() {
