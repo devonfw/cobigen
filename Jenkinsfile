@@ -172,15 +172,11 @@ def isPRBuild() {
 
 def justTemplatesChanged() {
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
-	echo "${diff_files}"
-	diff_files.each{ path ->
-		if(!path.startsWith("cobigen-templates/")) {
-			echo "More than templates changed: ${path}"
-			return false
-		}
+	if(!diff_files.empty) {
+		return !diff_files.any{ path ->	!path.startsWith("cobigen-templates/") }
+	} else {
+		return false // nothing changed, build whole branch
 	}
-	echo "Just templates changed!"
-	return true
 }
 
 def notifyFailed() {
