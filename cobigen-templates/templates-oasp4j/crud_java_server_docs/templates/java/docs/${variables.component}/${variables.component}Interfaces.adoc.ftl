@@ -1,4 +1,6 @@
-<#assign test=true>
+<#compress>
+:toc:
+
 == Requests of ${variables.component?cap_first}
 
 **Component Service Path:** 
@@ -10,103 +12,43 @@ Component Data <#-- Table definitions in multiple rows to avoid long lines -->
 [options="header"]
 |===
 |Name |JavaDoc |Consumes |Produces
-|${variables.component?cap_first} 
-|<#if pojo.javaDoc??>${pojo.javaDoc.comment}<#else>No javaDoc available</#if> 
-|This application accepts <#if pojo.annotations.javax_ws_rs_Consumes??>${pojo.annotations.javax_ws_rs_Consumes.value} as<#else>any</#if> Media Type 
+|${variables.component?cap_first}
+|<#if pojo.javaDoc??>${pojo.javaDoc.comment}<#else>No javaDoc available</#if>
+|This application accepts <#if pojo.annotations.javax_ws_rs_Consumes??>${pojo.annotations.javax_ws_rs_Consumes.value} as<#else>any</#if> Media Type
 |This application produces <#if pojo.annotations.javax_ws_rs_Produces??>the media type: ${pojo.annotations.javax_ws_rs_Produces.value} <#else>anything</#if>
 |===
 
-GET requests:
+<#macro request type>
+<#if JavaUtil.hasMethodWithAnnotation(classObject,type)>
 
-[options="header"]
-|===
-|Function name |javaDoc |Service Path
-<#list pojo.methods as request>
-  <#if request.annotations.javax_ws_rs_GET??>
-  <#assign test=false>
-|${request.name} 
-|<#if request.javaDoc??>${request.javaDoc.comment} <#if request.javaDoc.param?contains("{") && request.javaDoc.param?contains("}")>@Param ${request.javaDoc.param}</#if><#else>No JavaDoc available</#if> 
-|<#if request.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${request.annotations.javax_ws_rs_Path.value}<#else>This should never show: Bug</#if>
+  === ${type} Requests
+
+    [cols="10%,60%,30%", options="header"]
+    |===
+    |Function name |javaDoc |Service Path
+    <#if pojo.methods?has_content>
+     <#list pojo.methods as method>
+        <#if JavaUtil.hasAnnotation(classObject,method.name,type)>
+          |${method.name}
+          |<#if method.javaDoc??>${method.javaDoc.comment} <#if method.javaDoc.param?? && method.javaDoc.param?contains("{") && method.javaDoc.param?contains("}")>@Param ${method.javaDoc.param}</#if><#else>No JavaDoc available</#if>
+          |<#if method.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest
+          ${pojo.annotations.javax_ws_rs_Path.value}
+          ${method.annotations.javax_ws_rs_Path.value}<#else>No @Path declaration found</#if>
+        </#if>
+      </#list>
+    </#if>
+    |===
   </#if>
-</#list>
-<#if test>
-3+|No requests of this type
-</#if>
-<#assign test=true>
-|===
+</#macro>
 
-POST requests:
+<@request "GET"/>
 
-[options="header"]
-|===
-|Function name |javaDoc |Service Path
-<#list pojo.methods as request>
-  <#if request.annotations.javax_ws_rs_POST??>
-  <#assign test=false>
-|${request.name} 
-|<#if request.javaDoc??>${request.javaDoc.comment} <#if request.javaDoc.param?contains("{") && request.javaDoc.param?contains("}")>@Param ${request.javaDoc.param}</#if><#else>No JavaDoc available</#if> 
-|<#if request.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${request.annotations.javax_ws_rs_Path.value}<#else>This should never show: Bug</#if>
-  </#if>
-</#list>
-<#if test>
-3+|No requests of this type
-</#if>
-<#assign test=true>
-|===
+<@request "PUT"/>
 
-PUT requests:
+<@request "POST"/>
 
-[options="header"]
-|===
-|Function name |javaDoc |Service Path
-<#list pojo.methods as request>
-  <#if request.annotations.javax_ws_rs_PUT??>
-  <#assign test=false>
-|${request.name} 
-|<#if request.javaDoc??>${request.javaDoc.comment} <#if request.javaDoc.param?contains("{") && request.javaDoc.param?contains("}")>@Param ${request.javaDoc.param}</#if><#else>No JavaDoc available</#if> 
-|<#if request.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${request.annotations.javax_ws_rs_Path.value}<#else>This should never show: Bug</#if>
-  </#if>
-</#list>
-<#if test>
-3+|No requests of this type
-</#if>
-<#assign test=true>
-|===
+<@request "PATCH"/>
 
-DELETE requests:
+<@request "DELETE"/>
 
-[options="header"]
-|===
-|Function name |javaDoc |Service Path
-<#list pojo.methods as request>
-  <#if request.annotations.javax_ws_rs_DELETE??>
-  <#assign test=false>
-|${request.name} 
-|<#if request.javaDoc??>${request.javaDoc.comment} <#if request.javaDoc.param?contains("{") && request.javaDoc.param?contains("}")>@Param ${request.javaDoc.param}</#if><#else>No JavaDoc available</#if> 
-|<#if request.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${request.annotations.javax_ws_rs_Path.value}<#else>This should never show: Bug</#if>
-  </#if>
-</#list>
-<#if test>
-3+|No requests of this type
-</#if>
-<#assign test=true>
-|===
-
-PATCH requests:
-
-[options="header"]
-|===
-|Function name |javaDoc |Service Path
-<#list pojo.methods as request>
-  <#if request.annotations.javax_ws_rs_PATCH??>
-  <#assign test=false>
-|${request.name} 
-|<#if request.javaDoc??>${request.javaDoc.comment} <#if request.javaDoc.param?contains("{") && request.javaDoc.param?contains("}")>@Param ${request.javaDoc.param}</#if><#else>No JavaDoc available</#if> 
-|<#if request.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${request.annotations.javax_ws_rs_Path.value}<#else>This should never show: Bug</#if>
-  </#if>
-</#list>
-<#if test>
-3+|No requests of this type
-</#if>
-<#assign test=true>
-|===
+</#compress>
