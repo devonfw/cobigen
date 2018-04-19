@@ -21,6 +21,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
+    @Ignore
     public void testAllTemplatesGeneration_EntityInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEntityInput/");
@@ -33,6 +34,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
+    @Ignore
     public void testAllTemplatesGeneration_EtoInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEtoInput/");
@@ -49,6 +51,18 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesOpenApiInput/");
+        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+    }
+
+    /**
+     * Test successful generation of all templates based on a RestService
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testAllTemplatesGeneration_RestServiceInput() throws Exception {
+
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesRestServiceInput/");
         runMavenInvoker(testProject, new File("").getAbsoluteFile());
     }
 
