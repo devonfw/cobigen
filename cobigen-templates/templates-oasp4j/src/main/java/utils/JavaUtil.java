@@ -1,6 +1,8 @@
 package utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
@@ -366,5 +368,60 @@ public class JavaUtil {
         default:
             return "any";
         }
+    }
+
+    /**
+     * This method is to check if a method has a certain annotation
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param name
+     *            {@link String} the name of the field
+     * @param annotation
+     *            {@link String} the name of the annotation
+     * @return true if the field has the annotation, false if not
+     */
+    public boolean hasAnnotation(Class<?> pojoClass, String name, String annotation) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method method : pojoClass.getMethods()) {
+            if (method.getName().contains(name)) {
+                for (Annotation anno : method.getAnnotations()) {
+                    if (anno.annotationType().getCanonicalName().equals(annotation)) {
+                        return true;
+                    }
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the class has at least one method with the requested annotation
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param annotation
+     *            {@link String} the name of the annotation
+     * @return true if at least one method of the class' methods has the requested annotation
+     */
+    public boolean hasMethodWithAnnotation(Class<?> pojoClass, String annotation) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method method : pojoClass.getMethods()) {
+            for (Annotation anno : method.getAnnotations()) {
+                if (anno.annotationType().getCanonicalName().equals(annotation)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
