@@ -1,0 +1,10 @@
+// anchor:header:nomerge:anchorend
+test1
+// anchor:test:nomergenewline:anchorend
+test2
+// anchor:blabla:replace:anchorend
+test17
+// anchor:anotherone:newlinenothing:anchorend
+test3
+// anchor:footer:nomerge:anchorend
+test4
