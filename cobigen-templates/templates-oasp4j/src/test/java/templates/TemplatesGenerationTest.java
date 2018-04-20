@@ -52,4 +52,16 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
         runMavenInvoker(testProject, new File("").getAbsoluteFile());
     }
 
+    /**
+     * Test successful generation of all templates based on a RestService
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testAllTemplatesGeneration_RestServiceInput() throws Exception {
+
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesRestServiceInput/");
+        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+    }
+
 }
