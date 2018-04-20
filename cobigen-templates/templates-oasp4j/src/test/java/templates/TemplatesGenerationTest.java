@@ -21,7 +21,6 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
-    @Ignore
     public void testAllTemplatesGeneration_EntityInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEntityInput/");
@@ -34,7 +33,6 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
-    @Ignore
     public void testAllTemplatesGeneration_EtoInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEtoInput/");

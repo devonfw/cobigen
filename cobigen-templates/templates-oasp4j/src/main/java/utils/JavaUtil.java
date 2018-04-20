@@ -390,7 +390,7 @@ public class JavaUtil {
         for (Method method : pojoClass.getMethods()) {
             if (method.getName().contains(name)) {
                 for (Annotation anno : method.getAnnotations()) {
-                    if (anno.toString().contains(annotation)) {
+                    if (anno.annotationType().getCanonicalName().equals(annotation)) {
                         return true;
                     }
                 }
@@ -401,7 +401,7 @@ public class JavaUtil {
     }
 
     /**
-     * Checks if the class that has at least one method with the requested annotation
+     * Checks if the class has at least one method with the requested annotation
      *
      * @param pojoClass
      *            {@link Class}&lt;?> the class object of the pojo
@@ -417,7 +417,7 @@ public class JavaUtil {
         }
         for (Method method : pojoClass.getMethods()) {
             for (Annotation anno : method.getAnnotations()) {
-                if (anno.toString().contains(annotation)) {
+                if (anno.annotationType().getCanonicalName().equals(annotation)) {
                     return true;
                 }
             }
