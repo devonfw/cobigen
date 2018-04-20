@@ -19,16 +19,18 @@ Component Data <#-- Table definitions in multiple rows to avoid long lines -->
 |===
 
 <#macro request type>
-<#if JavaUtil.hasMethodWithAnnotation(classObject,type)>
+  <#assign annotation="javax.ws.rs.${type}">
 
-  === ${type} Requests
+  <#if JavaUtil.hasMethodWithAnnotation(classObject,annotation)>
+
+    === ${type} Requests
 
     [cols="10%,60%,30%", options="header"]
     |===
     |Function name |javaDoc |Service Path
     <#if pojo.methods?has_content>
      <#list pojo.methods as method>
-        <#if JavaUtil.hasAnnotation(classObject,method.name,type)>
+        <#if JavaUtil.hasAnnotation(classObject,method.name,annotation)>
           |${method.name}
           |<#if method.javaDoc??>${method.javaDoc.comment} <#if method.javaDoc.param?? && method.javaDoc.param?contains("{") && method.javaDoc.param?contains("}")>@Param ${method.javaDoc.param}</#if><#else>No JavaDoc available</#if>
           |<#if method.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest
@@ -38,8 +40,10 @@ Component Data <#-- Table definitions in multiple rows to avoid long lines -->
       </#list>
     </#if>
     |===
+    <#else> == ${annotation} 
   </#if>
 </#macro>
+
 
 <@request "GET"/>
 
