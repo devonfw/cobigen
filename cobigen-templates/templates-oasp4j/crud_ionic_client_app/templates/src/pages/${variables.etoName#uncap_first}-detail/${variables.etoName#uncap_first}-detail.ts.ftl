@@ -1,8 +1,10 @@
-import { NavParams, Platform, ViewController } from 'ionic-angular';
+import { NavParams, ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.etoName?uncap_first}-rest';
 import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?uncap_first}';
+import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?uncap_first}-search-criteria';
+import { Pagination } from '../../providers/interfaces/pagination'
 /**
  * Generated class for the ${variables.etoName?cap_first}Detail component.
  *
@@ -15,16 +17,19 @@ import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${var
 })
 export class ${variables.etoName?cap_first}Detail {
   
+  pagination: Pagination = { size:15, page:1, total:false };
+  ${variables.etoName?uncap_first}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
+
   ${variables.etoName?uncap_first}Received : ${variables.etoName?cap_first};
-  clean${variables.etoName?cap_first} : any;
+  clean${variables.etoName?cap_first} : ${variables.etoName?cap_first} = { <#list pojo.fields as field> ${field.name}:null,</#list> id:null, modificationCounter:null, revision:null };
+  
   translations = {title : "Dialog", message: "message" }
   dialogType = "";
   disableds : {filter : boolean } = {filter : true};
 
   constructor(
-    public platform: Platform, public params: NavParams,
-    public viewCtrl: ViewController, public translate: TranslateService,
-    public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest
+    public params: NavParams, public viewCtrl: ViewController, 
+    public translate: TranslateService, public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest
   ) {
     
     this.getTranslation("${variables.component}.${variables.etoName?uncap_first}.operations." + this.params.get('dialog'));
@@ -32,63 +37,59 @@ export class ${variables.etoName?cap_first}Detail {
     this.${variables.etoName?uncap_first}Received = this.params.get('edit');
     if(!this.${variables.etoName?uncap_first}Received) this.${variables.etoName?uncap_first}Received = { <#list pojo.fields as field> ${field.name}:null,</#list>};
     if(this.dialogType == "filter") this.disableds.filter = false;
-    this.clean${variables.etoName?cap_first} = {<#list pojo.fields as field> ${field.name}:null ,</#list> id:null};
-    
   }
 
   getTranslation(dialog:string){
-    this.translate.get(dialog).subscribe(
-      (data:any) => {
-        this.translations = data;
-      }
-    )
+    this.translations = this.translate.instant(dialog);
   }
 
-  dismiss() {
-    this.viewCtrl.dismiss();
+  dismiss(data: any) {
+    this.viewCtrl.dismiss(data);
     this.disableds.filter = true;
   }
 
   addOrModify(){
 
+    let ${variables.etoName?uncap_first}Exists = false;
+    this.clean${variables.etoName?cap_first}.id=null; 
     for(let i in this.clean${variables.etoName?cap_first}){
       this.clean${variables.etoName?cap_first}[i] = this.${variables.etoName?uncap_first}Received[i];
     }
 
-    if(this.clean${variables.etoName?cap_first}.id!= null) this.${variables.etoName?uncap_first}Received = this.clean${variables.etoName?cap_first};
-    
+    if(this.clean${variables.etoName?cap_first}.id!= null) {
+      this.${variables.etoName?uncap_first}Received = this.clean${variables.etoName?cap_first};
+      ${variables.etoName?uncap_first}Exists = true;
+    }
     this.${variables.etoName?uncap_first}Rest.save(this.${variables.etoName?uncap_first}Received).subscribe(
       (data: any) => {
-        this.${variables.etoName?uncap_first}Rest.retrieveData().subscribe(
-          (data:any) => {
-            this.${variables.etoName?uncap_first}Rest.setList(data.result);
-          }
-        );
-        this.clean${variables.etoName?cap_first}.id=null;
-        this.dismiss();
+        if(${variables.etoName?uncap_first}Exists) data.modificationCounter++;    
+        this.viewCtrl.dismiss(data);
       });
   }
 
   search(){
     for (let i in this.${variables.etoName?uncap_first}Received){
       if(this.${variables.etoName?uncap_first}Received[i]=="") delete this.${variables.etoName?uncap_first}Received[i]
+      else this.${variables.etoName?uncap_first}SearchCriteria[i] = this.${variables.etoName?uncap_first}Received[i];
     }
-    if(!this. ${variables.etoName?uncap_first}Received) return;
-    this.${variables.etoName?uncap_first}Rest.Filter(this.${variables.etoName?uncap_first}Received).subscribe(
+    if(!this.${variables.etoName?uncap_first}SearchCriteria) return;
+    this.${variables.etoName?uncap_first}Rest.search(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
       (data : any) => {
-        this.${variables.etoName?uncap_first}Rest.setList(data.result);
-        this.dismiss();
+        let dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
+        this.dismiss(dataArray);
+        this.${variables.etoName?uncap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
       }
     )
   }
 
   clearSearch(){
-    this.${variables.etoName?uncap_first}Rest.retrieveData().subscribe(
-     (data:any) => {
-       this.${variables.etoName?uncap_first}Rest.setList(data.result);
+    this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
+    this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
+     (data:any) => {        
+        let dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
+        this.dismiss(dataArray);
       }
     );
-    this.dismiss();
   }
 
 }

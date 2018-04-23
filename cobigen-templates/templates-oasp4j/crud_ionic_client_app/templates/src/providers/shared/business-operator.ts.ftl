@@ -1,8 +1,7 @@
-
 import { Injectable } from '@angular/core';
 import {url} from '../../assets/serverPath';
 /*
-  Generated class for the BussinessOperatorProvider provider.
+  Generated class for the BussinessOperator provider.
 
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.

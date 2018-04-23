@@ -2,6 +2,7 @@ import { BusinessOperatorProvider } from '../providers/shared/business-operator'
 import { Observable } from 'rxjs/Rx';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ${variables.etoName?cap_first}SearchCriteria } from './interfaces/${variables.etoName?uncap_first}-search-criteria';
 // import { HTTP } from '@ionic-native/http';
 /*
   Generated class for the ${variables.etoName?cap_first}Rest provider.
@@ -12,37 +13,26 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class ${variables.etoName?cap_first}Rest {
 
-  list : any;
-
   constructor(public http: HttpClient, public BO: BusinessOperatorProvider) {
-    this.list = [{<#list pojo.fields as field> ${field.name}:null,</#list>}];
   }
 
-  retrieveData(): Observable<any> {
-    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", {}, {});
+  retrieveData(${variables.etoName?uncap_first} : ${variables.etoName?cap_first}SearchCriteria): Observable<any> {
+    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", ${variables.etoName?uncap_first});
   }
 
-  save(fullitem: any) {
-    return this.http.post(this.BO.${variables.etoName?uncap_first}Service(), fullitem, {});
+  save(fullItem: any) {
+    return this.http.post(this.BO.${variables.etoName?uncap_first}Service(), fullItem, {});
   }
 
-  getItemId(searchitem: any): Observable<any> {
-    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", searchitem, {});
+  getItemId(searchItem: any): Observable<any> {
+    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", searchItem, {});
   }
 
   delete(id: any) {
     return this.http.delete(this.BO.${variables.etoName?uncap_first}Service() + id, {});
   }
 
-  Filter(SinglePart: any) {
-    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", SinglePart, {})
-  }
-
-  setList(list:any){
-    this.list = list;
-  }
-
-  getList() : any {
-    return this.list;
+  search(${variables.etoName?uncap_first}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria) {
+    return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", ${variables.etoName?uncap_first}SearchCriteria, {})
   }
 }
