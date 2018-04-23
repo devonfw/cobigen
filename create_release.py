@@ -4,6 +4,7 @@ import sys
 import git
 import json
 import glob
+import platform
 import requests
 import fileinput
 import subprocess
@@ -36,7 +37,7 @@ for o in sys.argv:
                'Do not use it if you do not want to deploy anything.\n'
                'Otherwise use --dry-run option.\n\n'
                'Options: \n'
-               '--dry-run: Instead of accessing Git th script will print each step to the console.\n'
+               '--dry-run: Instead of accessing Git script will print each step to the console.\n'
                '--debug: Script stops after each automatic step and asks the user to continue.\n'
                '--help: Provides a short help about the intention and possible options.')
         sys.exit(0)
@@ -49,21 +50,19 @@ init()
 
 repo = Repo('.')
 git_cmd = git.cmd.Git(".")
-software_folder_path = Path().resolve().parent.parent.parent
-software_folder_path=str(software_folder_path).replace("\\","/")
-maven_path=os.path.normpath(os.path.join(software_folder_path,"software/maven/bin"))
-process_env = {'JAVA_HOME': os.path.join(software_folder_path,"software/java/jre"), 'PATH' : maven_path}
+git_url='@api.github.com/repos/devonfw/tools-cobigen/'
 
-#Authentication of user and creation of session
-while "Invalid details" == authenticate_git_user():
-	authenticate_git_user()
+# #Authentication of user and creation of session
+while authenticate_git_user(git_url) =="Invalid details":
+	if("Authentication Successful"==authenticate_git_user(git_url)):
+	    break
 print("Authentication successful.")
 	
 #############################Step 1.1.1  
 # Enter Branch Name-mandatory
 branch_name = input("Enter branch name:")  
 #Checking if nothing is entered then ask user to enter again
-while (not (branch_name or branch_name.strip() or check_branch_validity(branch_name))):
+while (not (branch_name or branch_name.strip() or check_branch_validity(branch_name,git_url))):
     user_input=input("Please enter valid branch name, press 1 to continue or 2 if you want to change the script");
     if user_input== "1":
 	    branch_name = input("Enter branch name:");
@@ -104,18 +103,26 @@ while (not (next_version and next_version.strip())):
 print("Checking current directory path")
 current_directory_path=os.getcwd()
 print("Current working directory is: "+current_directory_path)
-if current_directory_path.find("workspaces\cobigen-master\tools-cobigen") == -1:
-    print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");sys.exit();
+if "Windows" in platform.platform():
+	tools_cobigen_path="workspaces\cobigen-master\tools-cobigen"
+else:
+	tools_cobigen_path="workspaces/cobigen-master/tools-cobigen"
+	
+if current_directory_path.find(tools_cobigen_path) == -1:
+    print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");
+    sys.exit()
 
 #############################Step 1.1.3	
 '''Check if remote "origin" is "devonfw/tools-cobigen" (git remote -v)''' 
 remote_origin=git_cmd.execute("git remote -v")
 if 'devonfw/tools-cobigen' not in remote_origin:
-    print("EXIT MESSAGE: Repo is not pointing to master origin, Please change to master branch ");sys.exit()
+    print("EXIT MESSAGE: Remote origin is not 'devonfw/tools-cobigen', Please go to correct directory");
+    sys.exit()
 
 #############################Step 1.1.4
 if repo.is_dirty():
-    print("EXIT MESSAGE: working copy is not clean");sys.exit()
+    print("EXIT MESSAGE: working copy is not clean");
+    sys.exit()
     
 #############################Step 0         
 yes = {'yes'}
@@ -125,7 +132,8 @@ value=input("Press yes/no: ").lower()
 while (value !="yes" and value!="no"):   
     value=input("Press yes/no: ").lower()
 if input in no:
-    print("EXIT MESSAGE: Correct the build failures");sys.exit() 
+    print("EXIT MESSAGE: Correct the build failures");
+    sys.exit() 
 else:
     print("Build is sucessful.")
        
@@ -139,7 +147,7 @@ input("Press any key if done:")
   
 #############################Step 2.1   
 '''Prepare GitHub '''
-url="https://"+init.git_username+":"+init.git_password+"@api.github.com/repos/devonfw/tools-cobigen/milestones"
+url="https://"+init.git_username+":"+init.git_password+git_url+"/milestones"
 response_object= requests.get(url)
 milestone_json_data = json.loads(response_object.text)
 
@@ -155,10 +163,12 @@ if matched_branch_with_version != "":
     milestone_version_in_git=milestones_in_git[split_version_from_v+2:];print(milestone_version_in_git);
     if milestone_version_in_git!=release_version:
         print("Please check if you passed the correct version to be released or check whether you missed\
-         to create a milestone for the release and create one before running the script.");sys.exit()
+        to create a milestone for the release and create one before running the script.");
+        sys.exit()
 else:
-     print("Please check if you passed the correct version to be released or check whether you missed\
-         to create a milestone for the release and create one before running the script.");sys.exit()
+    print("Please check if you passed the correct version to be released or check whether you missed\
+	to create a milestone for the release and create one before running the script.");
+    sys.exit()
       
 #############################Step 2.2
 def create_github_issue():
@@ -166,7 +176,7 @@ def create_github_issue():
 	if bool_dry == True:
 		print ('dry-run: would create a new issue with issue number 999')
 	else: 
-		github_issue_creation.make_github_issue(build_folder_name,git_username,git_password,milestoneNumber,issue_text,[build_folder_name]);	
+		github_issue_creation.make_github_issue(build_folder_name,git_url,git_username,git_password,milestoneNumber,issue_text,[build_folder_name]);	
 	return
     
  #Search for the Release issue to be used , if not found, create one:
@@ -174,7 +184,7 @@ if release_issue_number=="":
     print("You have not entered Issue,hence creating a new issue..");
     release_issue_number=create_github_issue()
 else:
-    url="https://"+init.git_username+":"+init.git_password+"@api.github.com/repos/devonfw/tools-cobigen/issues/"+release_issue_number
+    url="https://"+init.git_username+":"+init.git_password+git_url+"/issues/"+release_issue_number
     response_object= requests.get(url)
     milestone_json_data = json.loads(response_object.text)
     try:
@@ -223,7 +233,9 @@ print('Removing ''SNAPSHOT'' from dependencies in Pom.xml and committing it')
 for mapping in pom.findall('//{http://maven.apache.org/POM/4.0.0}dependency'):                           
     name  = mapping.find('{http://maven.apache.org/POM/4.0.0}version')
     if "-SNAPSHOT" in name.text:
-    	new_version=name.text.split("-");name.text=str(new_version[0]);pom.write('pom.xml')
+        new_version=name.text.split("-");
+        name.text=str(new_version[0]);
+        pom.write('pom.xml')
 if bool_dry == True:
     print ('dry-run: would add,commit,push pom.xml after removing suffix - in git')
 else:
@@ -232,18 +244,18 @@ else:
 	print("Executing git commit.."+repo.git.commit(message='#'+release_issue_number+' set release snapshot version'))
 	print("Executing git push.."+repo.git.push())
 
-#############################Step 4 
+############################Step 4 
 '''mvn clean integration-test -> check if everything is # fine, otherwise abort 
 (git reset --hard HEAD~2 && git pull) '''
 print("Testing maven integeration..")
 print("If maven clean integration-test fails,git reset --hard will be executed to revoke last commits and operation will be revoked")
-
-maven_process= subprocess.Popen('mvn clean integration-test --log-file log.txt', shell=True,env=process_env,stdout = subprocess.PIPE)
+maven_process= subprocess.Popen('mvn clean integration-test --log-file log.txt', shell=True,stdout = subprocess.PIPE)
 stdout, stderr = maven_process.communicate()
 if maven_process.returncode == "1":
-	print("Maven clean integeration fails, please see log.txt for logs located at current directory named ");
+	print("Maven clean integeration fails, please see log.txt for logs located at current directory ");
 	print("Executing git reset --hard HEAD~2.."+git_cmd.execute("git reset --hard HEAD~2"));
-	print("Executing git pull.."+repo.git.pull()); sys.exit();
+	print("Executing git pull.."+repo.git.pull());
+	sys.exit();
    
 	
 ############################Step 5
@@ -282,8 +294,8 @@ user_input=input("Please check all the changed file paths which is to be release
 list_of_lists=str(git_cmd.execute("git diff --name-only")).strip().split("\\n+")
 is_pom_changed=false;
 for list in list_of_lists:
-	if "pom.xml" in list:
-	    is_pom_changed=True
+    if "pom.xml" in list:
+        is_pom_changed=True;
     if not list.startswith(build_folder_name):
         print(list +" does not starts with "+build_folder_name);
 		# raw_input returns the empty string for "enter"
@@ -295,9 +307,9 @@ for list in list_of_lists:
 '''check if all nothing changed in any pom'''
 if is_pom_changed:
     input("Pom is changed, please check dependency tracking wiki page,press Y/y to continue else N/n to abort:")
-	if user_choice=='N' | user_choice=='n':
-            print("Executing git reset --hard HEAD.."+git_cmd.execute("git reset --hard HEAD"))
-            print("Executing git pull.."+repo.git.pull());
+    if user_choice=='N' | user_choice=='n':
+        print("Executing git reset --hard HEAD.."+git_cmd.execute("git reset --hard HEAD"))
+        print("Executing git pull.."+repo.git.pull());
 	
 #############################Step 8
 '''Set the Release version (without snapshot) and commit using "<#2>:\
@@ -306,7 +318,8 @@ print('Removing ''SNAPSHOT'' from Pom.xml and committing it')
 for mapping in pom.findall('//{http://maven.apache.org/POM/4.0.0}properties'):                           
     name  = mapping.find('{http://maven.apache.org/POM/4.0.0}cobigen.maven.version')
     if name.text== release_version+"-SNAPSHOT":
-    	new_version=release_version;name.text=str(new_version);pom.write('pom.xml')
+        new_version=release_version;name.text=str(new_version);
+        pom.write('pom.xml')
 if bool_dry == True:
     print ('dry-run: would add,commit,push pom.xml after removing suffix -SNAPSHOT in git')
 else:
