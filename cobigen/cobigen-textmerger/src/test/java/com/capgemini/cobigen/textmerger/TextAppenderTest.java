@@ -1,14 +1,10 @@
 package com.capgemini.cobigen.textmerger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.capgemini.cobigen.textmerger.TextAppender.MergeUtil;
 
 /**
  *
@@ -20,17 +16,6 @@ public class TextAppenderTest {
      * Root path to all resources used in this test case
      */
     private static String testFileRootPath = "src/test/resources/";
-
-    /**
-     *
-     */
-    private static Map<String, String> toBe = new HashMap<String, String>() {
-
-        {
-            put("// anchor:test:test:anchorend", "\nline1\n");
-            put("// anchor:test2:test2:anchorend", "\nline2\n");
-        }
-    };
 
     /**
      * Tests a merge without adding a new line before appending the patch
@@ -161,15 +146,5 @@ public class TextAppenderTest {
         Assert.assertEquals(
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedEmptyMergeStrategy.txt")),
             mergedString);
-    }
-
-    /**
-     * Tests if the method to split the patch by anchor tags actually works as it is supposed to
-     */
-    @Test
-    public void testProperMappingOfAnchorsAndText() {
-        String testString = "// anchor:test:test:anchorend \n line1 \n // anchor:test2:test2:anchorend \n line2";
-        Map<String, String> result = MergeUtil.splitByAnchors(testString);
-        Assert.assertEquals(toBe, result);
     }
 }
