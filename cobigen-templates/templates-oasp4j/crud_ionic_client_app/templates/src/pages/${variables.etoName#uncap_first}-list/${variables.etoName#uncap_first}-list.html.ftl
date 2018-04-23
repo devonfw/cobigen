@@ -19,8 +19,8 @@
           </ion-row>
         </ion-grid>
       </ion-item>
-      <ion-item-options icon-start (ionSwipe)="setCurrentIndex(i);DeleteConfirmForm()">
-        <button color="danger" ion-button expandable (click)="setCurrentIndex(i);DeleteConfirmForm()">
+      <ion-item-options icon-start (ionSwipe)="setCurrentIndex(i);showDeleteForm()">
+        <button color="danger" ion-button expandable (click)="setCurrentIndex(i);showDeleteForm()">
           <ion-icon name="trash"></ion-icon>
         </button>
       </ion-item-options>
@@ -47,7 +47,7 @@
         <ion-icon name="brush"></ion-icon>
       </button>
     
-      <button ion-fab (click)="DeleteConfirmForm()" [disabled] = deleteModifiedButtonsEnabled >
+      <button ion-fab (click)="showDeleteForm()" [disabled] = deleteModifiedButtonsEnabled >
         <ion-icon name="trash"></ion-icon>
       </button>
       

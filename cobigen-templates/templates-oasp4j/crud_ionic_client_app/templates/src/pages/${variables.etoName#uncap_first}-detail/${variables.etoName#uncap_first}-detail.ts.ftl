@@ -49,7 +49,7 @@ export class ${variables.etoName?cap_first}Detail {
     this.disableds.filter = true;
   }
 
-  AddorModify(){
+  addOrModify(){
 
     for(let i in this.clean${variables.etoName?cap_first}){
       this.clean${variables.etoName?cap_first}[i] = this.${variables.etoName?uncap_first}Received[i];
@@ -57,7 +57,7 @@ export class ${variables.etoName?cap_first}Detail {
 
     if(this.clean${variables.etoName?cap_first}.id!= null) this.${variables.etoName?uncap_first}Received = this.clean${variables.etoName?cap_first};
     
-    this.${variables.etoName?uncap_first}Rest.Save(this.${variables.etoName?uncap_first}Received).subscribe(
+    this.${variables.etoName?uncap_first}Rest.save(this.${variables.etoName?uncap_first}Received).subscribe(
       (data: any) => {
         this.${variables.etoName?uncap_first}Rest.retrieveData().subscribe(
           (data:any) => {
@@ -69,7 +69,7 @@ export class ${variables.etoName?cap_first}Detail {
       });
   }
 
-  Search(){
+  search(){
     for (let i in this.${variables.etoName?uncap_first}Received){
       if(this.${variables.etoName?uncap_first}Received[i]=="") delete this.${variables.etoName?uncap_first}Received[i]
     }

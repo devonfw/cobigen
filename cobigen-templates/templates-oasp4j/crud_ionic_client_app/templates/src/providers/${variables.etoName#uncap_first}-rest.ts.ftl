@@ -22,7 +22,7 @@ export class ${variables.etoName?cap_first}Rest {
     return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", {}, {});
   }
 
-  Save(fullitem: any) {
+  save(fullitem: any) {
     return this.http.post(this.BO.${variables.etoName?uncap_first}Service(), fullitem, {});
   }
 
@@ -30,7 +30,7 @@ export class ${variables.etoName?cap_first}Rest {
     return this.http.post(this.BO.${variables.etoName?uncap_first}Service() + "search", searchitem, {});
   }
 
-  DeleteItem(id: any) {
+  delete(id: any) {
     return this.http.delete(this.BO.${variables.etoName?uncap_first}Service() + id, {});
   }
 

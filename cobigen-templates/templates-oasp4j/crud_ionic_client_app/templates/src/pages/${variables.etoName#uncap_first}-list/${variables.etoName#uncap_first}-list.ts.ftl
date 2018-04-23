@@ -119,7 +119,7 @@ deleteTranslations: any = {};
   }
 
   // deletes the selected item
-  DeleteConfirmed() {
+  delete() {
 
   if (!this.currentIndex && this.currentIndex != 0) {
     return;
@@ -131,7 +131,7 @@ deleteTranslations: any = {};
     }
     this.${variables.etoName?uncap_first}Rest.getItemId(cleanItem).subscribe(
     (idResponse: any) => {
-    this.${variables.etoName?uncap_first}Rest.DeleteItem(idResponse.result[0].id).subscribe(
+    this.${variables.etoName?uncap_first}Rest.delete(idResponse.result[0].id).subscribe(
       (deleteresponse) => {
             
       this.${variables.etoName?uncap_first}Rest.retrieveData().subscribe(
@@ -147,7 +147,7 @@ deleteTranslations: any = {};
     this.enableUpdateDeleteOperations(this.currentIndex);
   }
   
-  DeleteConfirmForm() { 
+  showDeleteForm() { 
     
   this.deleteTranslations = this.getTranslation('${variables.component}.${variables.etoName?uncap_first}.operations.delete');
     for (let i in this.deleteButtons){
@@ -158,7 +158,7 @@ deleteTranslations: any = {};
       message: this.deleteTranslations.message,
       buttons:  [
           { text: this.deleteButtons[0].text, handler: data => {  }}, 
-          { text: this.deleteButtons[1].text, handler: data => { this.DeleteConfirmed(); } }
+          { text: this.deleteButtons[1].text, handler: data => { this.delete(); } }
          ]
       });
       prompt.present();
