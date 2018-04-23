@@ -564,5 +564,36 @@
     </setupTask>
     <description>OASP4J for Neon (Experimental)</description>
   </version>
+  <version name="Oxygen"
+      label="Oxygen"
+      requiredJavaVersion="1.8">
+    <setupTask
+        xsi:type="setup.p2:P2Task">
+      <requirement
+          name="org.eclipse.sdk.feature.group"
+          versionRange="[4.7.0,4.8.0)"/>
+      <requirement
+          name="org.eclipse.platform.feature.group"
+          versionRange="[4.7.0,4.8.0)"/>
+      <requirement
+          name="org.eclipse.pde.feature.group"
+          versionRange="[3.13.0,3.14.0)"/>
+      <requirement
+          name="org.eclipse.jdt.feature.group"
+          versionRange="[3.13.0,3.14.0)"/>
+      <requirement
+          name="org.eclipse.epp.mpc.feature.group"
+          versionRange="[1.5.0,1.6.0)"/>
+      <repository
+          url="http://download.eclipse.org/releases/oxygen"/>
+      <repository
+          url="http://download.eclipse.org/mylyn/releases/oxygen"/>
+      <repository
+          url="http://dist.springsource.com/release/TOOLS/update/e4.7/"/>
+      <repository
+          url="http://download.eclipse.org/eclipse/updates/4.7/"/>
+    </setupTask>
+    <description>Tools-Cobigen Oxygen version</description>
+  </version>
   <description>CobiGen Development IDE provides cool stuff.</description>
 </setup:Product>
