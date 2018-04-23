@@ -9,14 +9,14 @@ def authenticate_git_user():
 	while ( (init.git_username in "" )):   
 		init.git_username = input("Enter Your Git User Name....")
 		
-	token_or_password = input("How do you want to authenticate yourself? press t for token or p for password")
+	token_or_password = input("How do you want to authenticate yourself? press t[token] or p[password]")
 	while (not (token_or_password in ['t','p'] )):   
 		token_or_password = input("How do you want to authenticate yourself? press t for token or p for password")
 	if token_or_password =='t':
 		init.git_password = getpass.getpass("Enter Your Git Token.....")
 	else:
 		init.git_password = getpass.getpass("Enter Your Git Password..")
-	url = 'https://'+init.git_username+':'+init.git_password+'@api.github.com/repos/krashah/practice/issues'
+	url = 'https://'+init.git_username+':'+init.git_password+'@api.github.com/repos/devonfw/tools-cobigen'
 	session = requests.Session()
 	message=""
 	try:
@@ -26,7 +26,7 @@ def authenticate_git_user():
 		else:
 			raise Exception()
 	except:
-		print ('Wrong Git Credentials');message= "Invalid Details"
+		print ('Wrong Git Credentials');message= "Invalid details"
 	return message
     
 		

@@ -6,9 +6,9 @@ import scripts.settings
 # Function creates an issue in git hub with title,milestone,body,labels passed
 def make_github_issue(title,milestone=None,body=None, labels=None):
     '''Create an issue on github.com using the given parameters.'''
-    url = 'https://'+settings.git_username+':'+settings.git_password+'@api.github.com/repos/krashah/practice/issues'
+    url = 'https://'+init.git_username+':'+init.git_password+'@api.github.com/repos/devonfw/tools-cobigen/issues'
     session = requests.Session()
-    session.auth = (settings.git_username, settings.git_password)
+    session.auth = (init.git_username, init.git_password)
     issue = {'title': title,
 			 'milestone': milestone,
              'body': body,			 
