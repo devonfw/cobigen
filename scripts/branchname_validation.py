@@ -3,8 +3,8 @@ import requests
 import json
 
 #This Method is responsible for Checking branches in repository with branch entered by user
-def check_branch_validity(branch_name):
-    url='https://'+init.git_username+':'+init.git_password+'@api.github.com/repos/devonfw/tools-cobigen/branches/'+branch_name
+def check_branch_validity(branch_name,git_url):
+    url='https://'+init.git_username+':'+init.git_password+git_url+'/branches/'+branch_name
     response_object= requests.get(url)
     branch_repo_data = json.loads(response_object.text)
     is_branch_valid=True
