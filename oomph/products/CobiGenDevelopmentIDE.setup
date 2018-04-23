@@ -583,7 +583,7 @@
           versionRange="[3.13.0,3.14.0)"/>
       <requirement
           name="org.eclipse.epp.mpc.feature.group"
-          versionRange="[1.5.0,1.6.0)"/>
+          versionRange="[1.6.0,1.7.0)"/>
       <repository
           url="http://download.eclipse.org/releases/oxygen"/>
       <repository
