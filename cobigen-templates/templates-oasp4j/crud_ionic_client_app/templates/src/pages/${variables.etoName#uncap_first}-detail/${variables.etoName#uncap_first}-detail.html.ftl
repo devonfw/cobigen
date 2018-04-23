@@ -3,7 +3,6 @@
   <ion-toolbar color="primary" >
     <ion-title align=center>
       {{translations.title}}
-    
     </ion-title>
     
     <ion-buttons start>
