@@ -570,16 +570,25 @@
     <setupTask
         xsi:type="setup.p2:P2Task">
       <requirement
-          name="org.eclipse.sdk.feature.group"
+          name="org.eclipse.sdk.ide"
           versionRange="[4.7.0,4.8.0)"/>
       <requirement
-          name="org.eclipse.platform.feature.group"
+          name="org.eclipse.platform.ide"
+          versionRange="[4.7.0,4.8.0)"/>
+      <requirement
+          name="org.eclipse.platform.sdk"
           versionRange="[4.7.0,4.8.0)"/>
       <requirement
           name="org.eclipse.pde.feature.group"
           versionRange="[3.13.0,3.14.0)"/>
       <requirement
+          name="org.eclipse.pde.source.feature.group"
+          versionRange="[3.13.0,3.14.0)"/>
+      <requirement
           name="org.eclipse.jdt.feature.group"
+          versionRange="[3.13.0,3.14.0)"/>
+      <requirement
+          name="org.eclipse.jdt.source.feature.group"
           versionRange="[3.13.0,3.14.0)"/>
       <requirement
           name="org.eclipse.epp.mpc.feature.group"
