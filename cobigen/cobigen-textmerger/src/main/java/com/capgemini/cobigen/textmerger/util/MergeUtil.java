@@ -1,7 +1,9 @@
 package com.capgemini.cobigen.textmerger.util;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,49 +14,45 @@ import org.apache.commons.lang3.StringUtils;
 public class MergeUtil {
 
     /**
-     * The Start of the anchors, as in anchor:${documentPart}:${mergeStrategy}:anchorend
+     * Regular expression displaying what anchors should look like
      */
-    private static final String anchorStart = "anchor:";
+    private static final String anchorRegex = "\n.*anchor:.*:.*:anchorend\n";
 
     /**
-     * The End of the anchors, as in anchor:${documentPart}:${mergeStrategy}:anchorend
-     */
-    private static final String anchorEnd = ":anchorend";
-
-    /**
-     * Helper method that takes a String and fills a map, with the keys being the anchor definitions and the
-     * values being the text that come afterwards. This method exists to trim the code of
+     * Helper method that takes a String and fills a LinkedHashMap, with the keys being the anchor definitions
+     * and the values being the text that come afterwards. This method exists to trim the code of
      * merge(File,String,String)
      * @param toSplit
      *            The string that is to be split by anchors
-     * @return a Hashmap<String, String> which contains anchors as keys and the following text as values
+     * @return a LinkedHashMap<String, String> which contains anchors as keys and the following text as values
      */
-    public static HashMap<String, String> splitByAnchors(String toSplit) {
-        HashMap<String, String> result = new HashMap<>();
+    public static LinkedHashMap<String, String> splitByAnchors(String toSplit) {
+        LinkedHashMap<String, String> result = new LinkedHashMap<>();
         toSplit.trim();
-        toSplit += "anchor:";
+        toSplit += "\n anchor:::anchorend\n";
+        toSplit = "\n" + toSplit;
         String anchor;
-        int anchorstartCount = StringUtils.countMatches(toSplit, anchorStart);
-        int anchorEndCount = StringUtils.countMatches(toSplit, anchorEnd);
-        int anchorCount;
+        int anchorCount = 0;
+        Pattern regex = Pattern.compile(anchorRegex);
+        Matcher m = regex.matcher(toSplit);
+        Matcher tmp = regex.matcher(toSplit);
 
-        if (anchorstartCount > anchorEndCount) {
-            anchorCount = anchorEndCount;
-        } else {
-            anchorCount = anchorstartCount;
+        while (tmp.find()) {
+            anchorCount++;
         }
-
         if (anchorCount > 0) {
-            for (int i = 1; i <= anchorCount; i++) {
-                anchor = StringUtils.substring(toSplit, StringUtils.ordinalIndexOf(toSplit, anchorStart, i),
-                    StringUtils.ordinalIndexOf(toSplit, anchorEnd, i) + anchorEnd.length());
-                String value = StringUtils.substring(toSplit,
-                    StringUtils.ordinalIndexOf(toSplit, anchorEnd, i) + anchorEnd.length(),
-                    StringUtils.ordinalIndexOf(toSplit, anchorStart, i + 1));
-                if (anchor.matches("/.*anchor:.*:.*:anchorend/i")) {
-                    result.put(anchor, value);
+            for (int i = 1; i < anchorCount; i++) {
+                if (m.find()) {
+                    tmp = regex.matcher(toSplit);
+                    anchor = StringUtils.substring(toSplit, m.start() + 1, m.end());
+                    for (int j = 0; j <= i; j++) {
+                        tmp.find();
+                    }
+                    String value = StringUtils.substring(toSplit, m.end(), tmp.start());
+                    if (anchor.matches(".*anchor:.*:.*:anchorend.*\n")) {
+                        result.put(anchor.trim(), value.trim());
+                    }
                 }
-                result.put(anchor, value);
             }
         }
         return result;
