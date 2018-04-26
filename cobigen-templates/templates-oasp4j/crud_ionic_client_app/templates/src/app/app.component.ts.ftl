@@ -5,8 +5,9 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { LoginPage } from '../pages/Login/Login';
+import { LoginPage } from '../pages/login/login';
 import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?uncap_first}-list/${variables.etoName?uncap_first}-list'
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class MyApp {
   rootPage:any = LoginPage;
   pages:any;
   
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private auth: AuthServiceProvider ) {
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private auth: AuthServiceProvider, private translate: TranslateService ) {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
@@ -27,10 +28,11 @@ export class MyApp {
         { title :'${variables.etoName?uncap_first}', component: ${variables.etoName?cap_first}List},
       ];
     });
+        translate.setDefaultLang('en');
   }
 
-  isauthenthicated(){
-    return this.auth.getAuthenthicated();
+  isAuthenticated(){
+    return this.auth.getAuthenticated();
   }
   openPage(p){
     
