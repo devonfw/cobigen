@@ -6,6 +6,7 @@ import { ${variables.etoName?cap_first}Detail } from '../${variables.etoName?unc
 import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?uncap_first}'
 import { Pagination } from '../../providers/interfaces/pagination'
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?uncap_first}-search-criteria';
+import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 
     
 @Component({
@@ -26,8 +27,8 @@ export class ${variables.etoName?cap_first}List {
   @Input() deleteModifiedButtonsDisabled: boolean = true;
   @Input() infiniteScrollEnabled = true;
 
-  listToShow: ${variables.etoName?cap_first}[] = []
-  currentIndex: number = -1;
+  ${variables.etoName?uncap_first}s: ${variables.etoName?cap_first}[] = []
+  selectedItemIndex: number = -1;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
   public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest, public alertCtrl: AlertController, 
@@ -42,56 +43,50 @@ export class ${variables.etoName?cap_first}List {
     loading.present();
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
     this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
-      (data: any) => {
+      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
         
-        this.listToShow = this.listToShow.concat(data.result);
+        this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);
         loading.dismiss();
-      }, (err) => {
+	}, 
+	(err) => {
         console.log(err);
       }
     )
   }
   
-  public setListToShow(list:any){
-    this.listToShow = list;
-  }
-
-  public getListToShow(){
-    return this.listToShow;
-  }
-
-  public getCurrentIndex() {
+  public getSelectedItemIndex() {
   
-    if(this.currentIndex <= -1){
+    if(this.selectedItemIndex <= -1){
       return;
     }
-    return this.currentIndex;
+    return this.selectedItemIndex;
   }
 
-  public setCurrentIndex(index: number) {
-    this.currentIndex = index;
+  public setSelectedItemIndex(index: number) {
+    this.selectedItemIndex = index;
   }
 
   doRefresh(refresher) {  
   
     setTimeout(() => {
-      this.reload${variables.etoName?cap_first}ListTable();
+      this.reload${variables.etoName?cap_first}List();
       refresher.complete();
     }, 500);
   }
   
-  reload${variables.etoName?cap_first}ListTable(){
+  reload${variables.etoName?cap_first}List(){
     
-    this.listToShow = [];
+    this.${variables.etoName?uncap_first}s = [];
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
     this.deleteModifiedButtonsDisabled = true;
-    this.currentIndex = -1;
+    this.selectedItemIndex = -1;
     this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
-      (data: any) => {      
-        this.listToShow = this.listToShow.concat(data.result);      
+      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {      
+        this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);      
         this.infiniteScrollEnabled = true;
-      }, (err) => {
-            console.log(err);
+      }, 
+      (err) => {
+        console.log(err);
       }
     );
   }
@@ -103,17 +98,17 @@ export class ${variables.etoName?cap_first}List {
     return value;
   }
   
-  promptCreateClicked() {
+  create${variables.etoName?cap_first}() {
 
     let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "add", edit: null });
     modal.present();
-    modal.onDidDismiss(() => this.reload${variables.etoName?cap_first}ListTable());
+    modal.onDidDismiss(() => this.reload${variables.etoName?cap_first}List());
   }
 
-  promptSearchClicked() {
+  search${variables.etoName?cap_first}s() {
   
     this.deleteModifiedButtonsDisabled = true;
-    this.currentIndex = -1;
+    this.selectedItemIndex = -1;
     let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "filter", edit: null });
     modal.present();
     modal.onDidDismiss(data => {
@@ -121,25 +116,26 @@ export class ${variables.etoName?cap_first}List {
       else {
           this.infiniteScrollEnabled = true;
           this.${variables.etoName?uncap_first}SearchCriteria = data[0];
-          this.listToShow = data[1].result;          
+          this.${variables.etoName?uncap_first}s = data[1].result;          
       }
     });
   }
-  promptUpdateClicked() { 
+
+  updateSelected${variables.etoName?cap_first}() { 
   
-    if (!this.currentIndex && this.currentIndex != 0) {
+    if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
     }
-    let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "modify", edit:this.listToShow[this.currentIndex]});
+    let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "modify", edit:this.${variables.etoName?uncap_first}s[this.selectedItemIndex]});
     modal.present();
     modal.onDidDismiss(data => {
-      if(data == null) this.reload${variables.etoName?cap_first}ListTable();
-      else this.listToShow.splice(this.currentIndex, 1, data);
+      if(data == null) this.reload${variables.etoName?cap_first}List();
+      else this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1, data);
     });
       
   }
   
-  showDeleteAlert() { 
+  deleteSelected${variables.etoName?cap_first}() { 
     
   this.deleteTranslations = this.getTranslation('${variables.component}.${variables.etoName?uncap_first}.operations.delete');
     for (let i in this.deleteButtons){
@@ -150,30 +146,31 @@ export class ${variables.etoName?cap_first}List {
       message: this.deleteTranslations.message,
       buttons:  [
           { text: this.deleteButtons[0].text, handler: data => {  }}, 
-          { text: this.deleteButtons[1].text, handler: data => { this.delete(); } }
+          { text: this.deleteButtons[1].text, handler: data => { this.confirmDeletion(); } }
          ]
       });
       prompt.present();
     }
 
-  delete() {
+  confirmDeletion() {
 
-    if (!this.currentIndex && this.currentIndex != 0) {
+    if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
     }
     let cleanItem = this.${variables.etoName?uncap_first}ListItem;
-    let search = this.listToShow[this.currentIndex]
+    let search = this.${variables.etoName?uncap_first}s[this.selectedItemIndex]
     for(let i in cleanItem){
       cleanItem[i] = search[i];
     }
-    this.${variables.etoName?uncap_first}Rest.getItemId(cleanItem).subscribe(
-    (idResponse: any) => {
+    this.${variables.etoName?uncap_first}Rest.get${variables.etoName?cap_first}(cleanItem).subscribe(
+    (idResponse: PaginatedListTo<${variables.etoName?cap_first}>) => {
       this.${variables.etoName?uncap_first}Rest.delete(idResponse.result[0].id).subscribe(
         (deleteresponse) => {      
-            this.listToShow.splice(this.currentIndex, 1);
-            this.currentIndex = -1;
+            this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1);
+            this.selectedItemIndex = -1;
             this.deleteModifiedButtonsDisabled = true;
-            }, (err) => {
+            }, 
+            (err) => {
               console.log(err);
           }
         )
@@ -189,17 +186,18 @@ export class ${variables.etoName?cap_first}List {
 
       setTimeout(() => {
         this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
-          (data: any) => {
+          (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
               if (data.result.length == 0 && this.${variables.etoName?uncap_first}SearchCriteria.pagination.page > 1){
                 this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = this.${variables.etoName?uncap_first}SearchCriteria.pagination.page - 1;
                 this.infiniteScrollEnabled = false;
               }
               else{
-                this.listToShow = this.listToShow.concat(data.result);
+                this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);
               }
               infiniteScroll.complete();
-            }, (err) => {
-                console.log(err);
+            }, 
+            (err) => {
+              console.log(err);
             }
         )    
       }, 500);
@@ -208,12 +206,12 @@ export class ${variables.etoName?cap_first}List {
 
   enableUpdateDeleteOperations(index) {
   
-    if (this.currentIndex != index){
-      this.currentIndex = index;
+    if (this.selectedItemIndex != index){
+      this.selectedItemIndex = index;
       this.deleteModifiedButtonsDisabled = false;
     }
     else{
-      this.currentIndex = -1;
+      this.selectedItemIndex = -1;
       this.deleteModifiedButtonsDisabled = true;
     }
   }

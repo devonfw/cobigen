@@ -12,23 +12,23 @@
       <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ion-list>
-    <ion-item-sliding *ngFor="let p of listToShow; let i = index">
-      <ion-item [class.selected]="i === currentIndex" (click)="enableUpdateDeleteOperations(i)" >
+    <ion-item-sliding *ngFor="let ${variables.etoName?uncap_first} of ${variables.etoName?uncap_first}s; let i = index">
+      <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
           <ion-row>
           <#list pojo.fields as field>
-            <ion-col>{{p.${field.name}}}</ion-col>
+            <ion-col>{{${variables.etoName?uncap_first}.${field.name}}}</ion-col>
           </#list>
           </ion-row>
         </ion-grid>
       </ion-item>
-      <ion-item-options icon-start (ionSwipe)="setCurrentIndex(i);showDeleteAlert()">
-        <button color="danger" ion-button expandable (click)="setCurrentIndex(i);showDeleteAlert()">
+      <ion-item-options icon-start (ionSwipe)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
+        <button color="danger" ion-button expandable (click)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
           <ion-icon name="trash"></ion-icon>
         </button>
       </ion-item-options>
-      <ion-item-options side="left" (ionSwipe)="setCurrentIndex(i);promptUpdateClicked()">
-        <button ion-button color="secondary" ion-button expandable (click)="setCurrentIndex(i);promptUpdateClicked()">
+      <ion-item-options side="left" (ionSwipe)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
+        <button ion-button color="secondary" ion-button expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
           <ion-icon name="brush"></ion-icon>
         </button>
       </ion-item-options>
@@ -42,19 +42,19 @@
       <ion-icon name="arrow-dropright"></ion-icon>
     </button>
     <ion-fab-list side="top">
-      <button ion-fab class="fabButton" (click)="promptCreateClicked()" >
+      <button ion-fab class="fabButton" (click)="create${variables.etoName?cap_first}()" >
         <ion-icon name="add-circle"></ion-icon>
       </button>
       
-      <button ion-fab (click)="promptUpdateClicked()" [disabled] = deleteModifiedButtonsDisabled  > 
+      <button ion-fab (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled  > 
         <ion-icon name="brush"></ion-icon>
       </button>
     
-      <button ion-fab (click)="showDeleteAlert()" [disabled] = deleteModifiedButtonsDisabled >
+      <button ion-fab (click)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled >
         <ion-icon name="trash"></ion-icon>
       </button>
       
-      <button ion-fab (click)="promptSearchClicked()" >
+      <button ion-fab (click)="search${variables.etoName?cap_first}s()" >
         <ion-icon name="search"></ion-icon>
       </button>
     </ion-fab-list>

@@ -5,6 +5,7 @@ import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.
 import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?uncap_first}';
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?uncap_first}-search-criteria';
 import { Pagination } from '../../providers/interfaces/pagination'
+import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 /**
  * Generated class for the ${variables.etoName?cap_first}Detail component.
  *
@@ -25,27 +26,29 @@ export class ${variables.etoName?cap_first}Detail {
   
   translations = {title : "Dialog", message: "message" }
   dialogType = "";
-  disableds : {filter : boolean } = {filter : true};
+  filterActive : boolean = true;
 
   constructor(
-    public params: NavParams, public viewCtrl: ViewController, 
-    public translate: TranslateService, public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest
+    public params: NavParams, 
+    public viewCtrl: ViewController, 
+    public translate: TranslateService, 
+    public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest
   ) {
     
     this.getTranslation("${variables.component}.${variables.etoName?uncap_first}.operations." + this.params.get('dialog'));
     this.dialogType = this.params.get('dialog');
     this.${variables.etoName?uncap_first}Received = this.params.get('edit');
     if(!this.${variables.etoName?uncap_first}Received) this.${variables.etoName?uncap_first}Received = { <#list pojo.fields as field> ${field.name}:null,</#list>};
-    if(this.dialogType == "filter") this.disableds.filter = false;
+    if(this.dialogType == "filter") this.filterActive = false;
   }
 
   getTranslation(dialog:string){
     this.translations = this.translate.instant(dialog);
   }
 
-  dismiss(data: any) {
+  dismiss(data: Array<Object>) {
     this.viewCtrl.dismiss(data);
-    this.disableds.filter = true;
+    this.filterActive = true;
   }
 
   addOrModify(){
@@ -61,7 +64,7 @@ export class ${variables.etoName?cap_first}Detail {
       ${variables.etoName?uncap_first}Exists = true;
     }
     this.${variables.etoName?uncap_first}Rest.save(this.${variables.etoName?uncap_first}Received).subscribe(
-      (data: any) => {
+      (data: ${variables.etoName?cap_first}) => {
         if(${variables.etoName?uncap_first}Exists) data.modificationCounter++;    
         this.viewCtrl.dismiss(data);
       });
@@ -74,7 +77,7 @@ export class ${variables.etoName?cap_first}Detail {
     }
     if(!this.${variables.etoName?uncap_first}SearchCriteria) return;
     this.${variables.etoName?uncap_first}Rest.search(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
-      (data : any) => {
+      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
         let dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
         this.dismiss(dataArray);
         this.${variables.etoName?uncap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
@@ -85,7 +88,7 @@ export class ${variables.etoName?cap_first}Detail {
   clearSearch(){
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
     this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
-     (data:any) => {        
+     (data: PaginatedListTo<${variables.etoName?cap_first}>) => {        
         let dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
         this.dismiss(dataArray);
       }

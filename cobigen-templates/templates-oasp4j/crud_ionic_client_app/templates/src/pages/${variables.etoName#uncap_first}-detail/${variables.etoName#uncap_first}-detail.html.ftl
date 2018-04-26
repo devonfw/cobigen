@@ -32,13 +32,13 @@
 
 <ion-footer>
   
-  <button ion-button [hidden]=!disableds.filter (click)="addOrModify()" full>
+  <button ion-button [hidden]=!filterActive (click)="addOrModify()" full>
     {{'${variables.component}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
   </button>
-  <button ion-button [hidden]=disableds.filter (click)="search()" full >
+  <button ion-button [hidden]=filterActive (click)="search()" full >
     {{'${variables.component}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
   </button>
-  <button ion-button [hidden]=disableds.filter (click)="clearSearch()" block>
+  <button ion-button [hidden]=filterActive (click)="clearSearch()" block>
     {{'${variables.component}.${variables.etoName?uncap_first}.operations.filter.clear' | translate}}
   </button>
 
