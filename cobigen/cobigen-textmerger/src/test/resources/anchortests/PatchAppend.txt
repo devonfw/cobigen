@@ -1,8 +1,8 @@
-// anchor:header:nomerge:anchorend
+// anchor:header:nothing:anchorend
 test1
 // anchor:blabla:appendbefore:anchorend
 test6
 // anchor:anotherone:appendafter:anchorend
 test5
-// anchor:footer:nomerge:anchorend
+// anchor:footer:nothing:anchorend
 test4

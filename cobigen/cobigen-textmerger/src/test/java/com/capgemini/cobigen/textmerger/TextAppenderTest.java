@@ -1,9 +1,10 @@
 package com.capgemini.cobigen.textmerger;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -24,10 +25,10 @@ public class TextAppenderTest {
      * @author mbrunnli (03.06.2014)
      */
     @Test
-    public void testMerge_appendWithoutNewLine() throws Exception {
+    public void testMerge_appendWithoutNewLineNoAnchors() throws Exception {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")), mergedString);
+        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")));
     }
 
     /**
@@ -37,11 +38,11 @@ public class TextAppenderTest {
      * @author mbrunnli (03.06.2014)
      */
     @Test
-    public void testMerge_appendWithNewLine() throws Exception {
+    public void testMerge_appendWithNewLineNoAnchors() throws Exception {
         TextAppender appender = new TextAppender("", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")),
-            mergedString);
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")));
     }
 
     /**
@@ -51,10 +52,10 @@ public class TextAppenderTest {
      * @author mbrunnli (03.06.2014)
      */
     @Test
-    public void testMerge_appendWithNewLine_onlyIfPathIsNotEmpty() throws Exception {
+    public void testMerge_appendWithNewLineNoAnchors_onlyIfPathIsNotEmpty() throws Exception {
         TextAppender appender = new TextAppender("", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "", "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")), mergedString);
+        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")));
     }
 
     /**
@@ -68,9 +69,8 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/PatchDifferentHeaderFooter.txt")),
             "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectHeaderFooter.txt")),
-            mergedString);
+        assertThat(mergedString).isEqualTo(
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectHeaderFooter.txt")));
     }
 
     /**
@@ -83,9 +83,8 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt")), "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectHeaderFooter.txt")),
-            mergedString);
+        assertThat(mergedString).isEqualTo(
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectHeaderFooter.txt")));
     }
 
     /**
@@ -99,9 +98,8 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/PatchTestOrder.txt")), "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectOrder.txt")),
-            mergedString);
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedCorrectOrder.txt")));
     }
 
     /**
@@ -114,12 +112,12 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/PatchTestReplacement.txt")), "UTF-8");
-        Assert.assertEquals(FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedReplaced.txt")),
-            mergedString);
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedReplaced.txt")));
     }
 
     /**
-     * Tests if using the mergestrategy "appendx/xappend" appends the patch in the correct position
+     * Tests if using the mergestrategy "appendbefore/appendafter" appends the patch in the correct position
      * @throws Exception
      *             if errors occur while merging
      */
@@ -128,8 +126,8 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/PatchAppend.txt")), "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedAppendOrder.txt")), mergedString);
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedAppendOrder.txt")));
     }
 
     /**
@@ -143,8 +141,7 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/AnchoredBaseFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/PatchEmptyMergeStrategy.txt")),
             "UTF-8");
-        Assert.assertEquals(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedEmptyMergeStrategy.txt")),
-            mergedString);
+        assertThat(mergedString).isEqualTo(
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/MergedEmptyMergeStrategy.txt")));
     }
 }
