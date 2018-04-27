@@ -2,7 +2,9 @@ package com.capgemini.cobigen.textmerger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,46 +58,170 @@ public class TextAppender implements Merger {
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
+        return merge(mergedString, patch);
+    }
 
-        if (patch.contains("anchor:")) {
-            Map<String, String> splitBase = MergeUtil.splitByAnchors(mergedString);
-            Map<String, String> splitPatch = MergeUtil.splitByAnchors(mergedString);
+    /**
+     * Merges the patch into the base string
+     * @param base
+     *            target {@link String} to be merged into
+     * @param patch
+     *            {@link String} patch, which should be applied to the base file
+     * @return Merged text (not null)
+     */
+    public String merge(String base, String patch) {
+        String mergedString = "";
+        if (MergeUtil.hasAnchors(patch)) {
+            LinkedHashMap<String, String> splitBase = MergeUtil.splitByAnchors(base);
+            LinkedHashMap<String, String> splitPatch = MergeUtil.splitByAnchors(patch);
 
+            String footer = MergeUtil.getAnchorRegexDocumentpart("footer");
             String header = MergeUtil.getAnchorRegexDocumentpart("header");
+            String toAppend = "";
+
             if (MergeUtil.hasKeyMatchingRegularExpression(header, splitBase)) {
-                MergeUtil.appendText(mergedString, header, splitBase, true);
+                toAppend = MergeUtil.appendText(toAppend, header, splitBase, true, true);
+                mergedString += toAppend;
+                MergeUtil.removeKeyFromMaps(splitBase, splitPatch, header);
             } else if (MergeUtil.hasKeyMatchingRegularExpression(header, splitPatch)) {
-                MergeUtil.appendText(mergedString, header, splitPatch, true);
+                toAppend = MergeUtil.appendText(toAppend, header, splitPatch, true, true);
+                mergedString += toAppend;
+                MergeUtil.removeKeyFromMaps(splitBase, splitPatch, header);
             }
 
             String docPart = "";
-            // code to put keys and values into mergedstring
-            for (String tmpAnchor : splitBase.keySet()) {
-                // if it has a documentpart defined, create a regex for that, check if it exists in the patch
-                // and append it according to the mergestrategy
-                if (!tmpAnchor.matches(MergeUtil.getAnchorRegexDocumentpart("footer"))) {
-                    tmpAnchor =
-                        tmpAnchor.substring(tmpAnchor.indexOf(":") + 1, StringUtils.ordinalIndexOf(tmpAnchor, ":", 2));
-                    docPart = MergeUtil.getAnchorRegexDocumentpart(tmpAnchor);
-                    if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitBase)) {
-                        if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitPatch)) {
+            String mergeStrat = "";
+            String tmpAnchor;
+            LinkedHashSet<String> joinedKeySet = MergeUtil.joinKeySetsRetainOrder(splitBase, splitPatch);
+            for (Iterator<String> iterator = joinedKeySet.iterator(); iterator.hasNext();) {
+                tmpAnchor = iterator.next();
+                toAppend = "";
 
-                        } else {
-                            mergedString = MergeUtil.appendText(mergedString, docPart, splitBase, false);
+                if (!tmpAnchor.matches(footer)) {
+                    docPart = MergeUtil.getDocumentPart(tmpAnchor);
+                    mergeStrat = MergeUtil.getMergeStrategy(tmpAnchor);
+                    if (!MergeUtil.canBeSkipped(joinedKeySet, tmpAnchor)) {
+                        if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitBase)) {
+                            if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitPatch)) {
+
+                                if (mergeStrat.matches(MergeUtil.getAnchorRegexMergestrategy("newline.+"))) {
+                                    // TODO When adding new functionality, add an else if here that specifies
+                                    // how text should be added when mergestrategy can start with newline and
+                                    // doesn't just append.
+                                    if (mergeStrat
+                                        .equals(MergeUtil.getAnchorRegexMergestrategy("newlineappendbefore"))) {
+                                        toAppend += MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend += System.lineSeparator();
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    } else if (mergeStrat
+                                        .equals(MergeUtil.getAnchorRegexMergestrategy("newlineappendafter"))) {
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend += System.lineSeparator();
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    } else {
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend += System.lineSeparator();
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    }
+
+                                } else if (mergeStrat.matches(MergeUtil.getAnchorRegexMergestrategy(".*newline"))) {
+                                    // TODO When adding new functionality, add an else if here that specifies
+                                    // how text should be added when mergestrategy can end in newline and
+                                    // doesn't just append.
+                                    if (mergeStrat.equals("appendbeforenewline")) {
+                                        toAppend += System.lineSeparator();
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true);
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    } else if (mergeStrat
+                                        .equals(MergeUtil.getAnchorRegexMergestrategy("appendafternewline"))) {
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend += System.lineSeparator();
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    } else {
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend += System.lineSeparator();
+                                        mergedString += toAppend;
+                                        MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                    }
+                                    // TODO When adding new functionality, add an else if about what happens
+                                    // when newline is irrelevant here
+                                } else if (mergeStrat.equals(MergeUtil.getAnchorRegexMergestrategy("appendbefore"))) {
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true);
+                                    mergedString += toAppend;
+                                    MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                } else if (mergeStrat.equals(MergeUtil.getAnchorRegexMergestrategy("appendafter"))) {
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                    mergedString += toAppend;
+                                    MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                } else if (mergeStrat.equals(MergeUtil.getAnchorRegexMergestrategy("replace"))) {
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                    mergedString += toAppend;
+                                    MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+
+                                } else if (mergeStrat.equals(MergeUtil.getAnchorRegexMergestrategy("nomerge"))) {
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, true);
+                                    mergedString += toAppend;
+                                    MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                } else {
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                    toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                    mergedString += toAppend;
+                                    MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                                }
+
+                            } else {
+                                // TODO When adding new functionality, add an else if about what happens
+                                // when the anchor is only specified in the base, if it doesn't just append
+                                toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, true);
+                                mergedString += toAppend;
+                                MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                            }
+                            // TODO When adding new functionality, add an else if about what happens
+                            // when the anchor is only specified in the patch, if it doesn't just append
+                        } else if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitPatch)) {
+                            if (mergeStrat.matches(MergeUtil.getAnchorRegexMergestrategy(".*newline"))) {
+                                toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                toAppend += System.lineSeparator();
+                                mergedString += toAppend;
+                                MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                            } else if (mergeStrat.matches(MergeUtil.getAnchorRegexMergestrategy("newline.+"))) {
+                                toAppend += System.lineSeparator();
+                                toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                mergedString += toAppend;
+                                MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+                            }
+                            toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                            mergedString += toAppend;
+                            MergeUtil.removeKeyFromMaps(splitBase, splitPatch, docPart);
+
                         }
-                    } else if (MergeUtil.hasKeyMatchingRegularExpression(docPart, splitPatch)) {
-                        mergedString = MergeUtil.appendText(mergedString, docPart, splitPatch, false);
                     }
+                } else {
+                    if (MergeUtil.hasKeyMatchingRegularExpression(footer, splitBase)) {
+                        toAppend = MergeUtil.appendText(toAppend, footer, splitBase, false, true);
+                        mergedString += toAppend;
+                    } else if (MergeUtil.hasKeyMatchingRegularExpression(footer, splitPatch)) {
+                        toAppend = MergeUtil.appendText(toAppend, footer, splitPatch, false, true);
+                        mergedString += toAppend;
+                    }
+                    break;
                 }
             }
-
-            String footer = MergeUtil.getAnchorRegexDocumentpart("footer");
-            if (MergeUtil.hasKeyMatchingRegularExpression(footer, splitBase)) {
-                MergeUtil.appendText(mergedString, footer, splitBase, false);
-            } else if (MergeUtil.hasKeyMatchingRegularExpression(footer, splitPatch)) {
-                MergeUtil.appendText(mergedString, footer, splitPatch, false);
-            }
         } else {
+            mergedString = base;
             if (StringUtils.isNotEmpty(patch)) {
                 if (type.equalsIgnoreCase("textmerge_replace")) {
                     mergedString = patch;
@@ -106,7 +232,6 @@ public class TextAppender implements Merger {
                 mergedString += patch;
             }
         }
-        return mergedString;
+        return mergedString.trim();
     }
-
 }
