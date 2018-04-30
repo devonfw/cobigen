@@ -45,6 +45,7 @@
       <templateRef ref="${variables.etoName#uncap_first}-list.scss"/>
       <templateRef ref="${variables.etoName#uncap_first}-detail.ts"/>
       <templateRef ref="${variables.etoName#uncap_first}-detail.html"/>
+      <templateRef ref="${variables.etoName#uncap_first}-detail.scss"/>      
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>

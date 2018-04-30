@@ -20,7 +20,7 @@
   <form>
   
     <#list pojo.fields as field>
-    <ion-item>
+    <ion-item class="formItem">
       <ion-label>{{'${variables.component}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-label>
       <ion-input  ${JavaUtil.getAngularType(field.type)} [(ngModel)]="${variables.etoName?uncap_first}Received.${field.name}" name="${field.name}"></ion-input>
     </ion-item>
@@ -32,13 +32,13 @@
 
 <ion-footer>
   
-  <button ion-button [hidden]=!filterActive (click)="addOrModify()" full>
+  <button ion-button class="buttonForm" [hidden]=!filterActive (click)="addOrModify()" full>
     {{'${variables.component}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
   </button>
-  <button ion-button [hidden]=filterActive (click)="search()" full >
+  <button ion-button class="buttonForm" [hidden]=filterActive (click)="search()" full >
     {{'${variables.component}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
   </button>
-  <button ion-button [hidden]=filterActive (click)="clearSearch()" block>
+  <button ion-button class="buttonForm" [hidden]=filterActive (click)="clearSearch()" block>
     {{'${variables.component}.${variables.etoName?uncap_first}.operations.filter.clear' | translate}}
   </button>
 

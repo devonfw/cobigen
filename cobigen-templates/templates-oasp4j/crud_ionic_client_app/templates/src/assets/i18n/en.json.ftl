@@ -55,7 +55,7 @@
     }
   },
   "login": {
-    "user": "Login",
+    "user": "User",
     "username": "Username",
     "password": "Password",
     "errorMsg": "Wrong username or password"
