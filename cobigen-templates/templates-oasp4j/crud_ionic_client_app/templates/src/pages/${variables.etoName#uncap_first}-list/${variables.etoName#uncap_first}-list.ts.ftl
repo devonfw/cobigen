@@ -64,6 +64,7 @@ export class ${variables.etoName?cap_first}List {
 
   public setSelectedItemIndex(index: number) {
     this.selectedItemIndex = index;
+    this.deleteModifiedButtonsDisabled = false;
   }
 
   doRefresh(refresher) {  
@@ -126,11 +127,23 @@ export class ${variables.etoName?cap_first}List {
     if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
     }
+    let cleanItem = this.${variables.etoName?uncap_first}ListItem;
+    for (let i in cleanItem){
+      cleanItem[i] = this.${variables.etoName?uncap_first}s[this.selectedItemIndex][i]; 
+    }
     let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "modify", edit:this.${variables.etoName?uncap_first}s[this.selectedItemIndex]});
     modal.present();
     modal.onDidDismiss(data => {
       if(data == null) this.reload${variables.etoName?cap_first}List();
-      else this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1, data);
+      else{
+        for (let i in cleanItem){
+          if (data[i] != cleanItem[i]) {
+            data.modificationCounter++;
+            break;
+          }
+        }
+        this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1, data);
+      } 
     });
       
   }

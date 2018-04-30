@@ -53,19 +53,13 @@ export class ${variables.etoName?cap_first}Detail {
 
   addOrModify(){
 
-    let ${variables.etoName?uncap_first}Exists = false;
     this.clean${variables.etoName?cap_first}.id=null; 
     for(let i in this.clean${variables.etoName?cap_first}){
       this.clean${variables.etoName?cap_first}[i] = this.${variables.etoName?uncap_first}Received[i];
     }
 
-    if(this.clean${variables.etoName?cap_first}.id!= null) {
-      this.${variables.etoName?uncap_first}Received = this.clean${variables.etoName?cap_first};
-      ${variables.etoName?uncap_first}Exists = true;
-    }
     this.${variables.etoName?uncap_first}Rest.save(this.${variables.etoName?uncap_first}Received).subscribe(
-      (data: ${variables.etoName?cap_first}) => {
-        if(${variables.etoName?uncap_first}Exists) data.modificationCounter++;    
+      (data: ${variables.etoName?cap_first}) => {  
         this.viewCtrl.dismiss(data);
       });
   }
