@@ -78,7 +78,7 @@ export class ${variables.etoName?cap_first}Detail {
     if(!this.${variables.etoName?uncap_first}SearchCriteria) return;
     this.${variables.etoName?uncap_first}Rest.search(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-        let dataArray : [SampleSearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
+        let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
         dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
         this.dismiss(dataArray);
         this.${variables.etoName?uncap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
@@ -90,7 +90,7 @@ export class ${variables.etoName?cap_first}Detail {
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
     this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {        
-        let dataArray : [SampleSearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
+        let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
         dataArray = [this.${variables.etoName?uncap_first}SearchCriteria, data];
         this.dismiss(dataArray);
       }
