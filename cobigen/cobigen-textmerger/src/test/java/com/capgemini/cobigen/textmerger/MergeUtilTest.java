@@ -2,8 +2,8 @@ package com.capgemini.cobigen.textmerger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.Test;
@@ -223,9 +223,9 @@ public class MergeUtilTest {
                 put("6", "");
             }
         };
-        LinkedHashSet<String> resultSet = MergeUtil.joinKeySetsRetainOrder(testOne, testTwo);
+        ArrayList<String> resultList = MergeUtil.joinKeySetsRetainOrder(testOne, testTwo);
         String result = "";
-        for (String s : resultSet) {
+        for (String s : resultList) {
             result += s + " ";
         }
         String expected = "1 2 8 16 5 7 3 9 6 ";
@@ -237,7 +237,7 @@ public class MergeUtilTest {
      */
     @Test
     public void testSkipping() {
-        LinkedHashSet<String> test = new LinkedHashSet<String>() {
+        ArrayList<String> test = new ArrayList<String>() {
             {
                 add("// anchor:test1:test1:anchorend");
                 add("// anchor:test2:test2:anchorend");
