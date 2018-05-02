@@ -10,7 +10,8 @@ including information about its components and each of the requests for each com
 
 // anchor:components:newline:anchorend
 
-include::${variables.domain?cap_first}RESTDocComponentListing.adoc[]
+<#include "*/$\{variables.component}/$\{variables.component}RESTInterfaces.adoc.ftl">
+
 
 // anchor:footer::anchorend
 

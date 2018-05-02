@@ -6,9 +6,10 @@
   Component Data
   [options="header"]
   |===
-  |Name |JavaDoc
+  |Name |General JavaDoc |Topic
   |${variables.component?cap_first}
   |<#if pojo.javaDoc??>${pojo.javaDoc.comment}<#else>No javaDoc available</#if>
+  |<#if pojo.javaDoc.topic??>${pojo.javaDoc.topic}<#else>No topic defined</#if>
   |===
     
   === Fields

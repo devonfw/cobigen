@@ -121,7 +121,7 @@
         <variableAssignment type="regex" key="entityName" value="5"/>
       </matcher>
     </trigger>
-    <trigger id="Swagger_Docs" type="java" templateFolder="documentation/swagger">
+    <trigger id="Swagger_Docs" type="java" templateFolder="documentation/kafka">
       <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data" retrieveObjectsRecursively="false"/>
       <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data\.([^\.]+)To">
         <variableAssignment type="regex" key="rootPackage" value="1"/>
