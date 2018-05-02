@@ -2,9 +2,9 @@ package com.capgemini.cobigen.textmerger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,7 +92,7 @@ public class TextAppender implements Merger {
             String docPart = "";
             String mergeStrat = "";
             String tmpAnchor;
-            LinkedHashSet<String> joinedKeySet = MergeUtil.joinKeySetsRetainOrder(splitBase, splitPatch);
+            ArrayList<String> joinedKeySet = MergeUtil.joinKeySetsRetainOrder(splitBase, splitPatch);
             for (Iterator<String> iterator = joinedKeySet.iterator(); iterator.hasNext();) {
                 tmpAnchor = iterator.next();
                 toAppend = "";

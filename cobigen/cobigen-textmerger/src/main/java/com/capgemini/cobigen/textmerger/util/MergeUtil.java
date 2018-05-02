@@ -1,8 +1,8 @@
 package com.capgemini.cobigen.textmerger.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -29,7 +29,7 @@ public class MergeUtil {
      * merge(File,String,String)
      * @param toSplit
      *            The string that is to be split by anchors
-     * @return a LinkedHashMap<String, String> which contains anchors as keys and the following text as values
+     * @return a LinkedHashMap which contains anchors as keys and the following text as values
      */
     public static LinkedHashMap<String, String> splitByAnchors(String toSplit) {
         LinkedHashMap<String, String> result = new LinkedHashMap<>();
@@ -74,8 +74,8 @@ public class MergeUtil {
     }
 
     /**
-     * Helper method to check if a given map<String,String> contains a key that fits the given regular
-     * expression. This method exists to avoid code redundancy.
+     * Helper method to check if a given map contains a key that fits the given regular expression. This
+     * method exists to avoid code redundancy.
      * @param regex
      *            The regular expression that is to be matched.
      * @param m
@@ -92,8 +92,8 @@ public class MergeUtil {
     }
 
     /**
-     * Helper method to get a key matching the given regular expression out of a given map<String,String>.
-     * This method exists to avoid code redundancy.
+     * Helper method to get a key matching the given regular expression out of a given map. This method exists
+     * to avoid code redundancy.
      * @param regex
      *            The regular expression that the key should match.
      * @param m
@@ -116,7 +116,7 @@ public class MergeUtil {
      * used to find an anchor of a specific documentpart. This method exists to ensure consistency in creation
      * of regular expressions.
      * @param docPart
-     *            A string defining the ${documentpart} of the anchor
+     *            A string defining the documentpart of the anchor
      * @return a regular expression that matches an anchor of the specified documentpart
      */
     public static String getAnchorRegexDocumentpart(String docPart) {
@@ -128,7 +128,7 @@ public class MergeUtil {
      * used to check an anchor of a documentpart for its mergestrategy. This method exists to ensure
      * consistency in creation of regular expressions.
      * @param mergestrategy
-     *            A string defining the ${documentpart} of the anchor
+     *            A string defining the documentpart of the anchor
      * @return a regular expression that matches an anchor of the specified documentpart
      */
     public static String getAnchorRegexMergestrategy(String mergestrategy) {
@@ -202,48 +202,54 @@ public class MergeUtil {
     /**
      * Helper method that merges two keysets of maps while retaining the order of their entries. For example,
      * {1,2,3} and {1,4,3} get merged into {1,2,4,3}; {1,2,4} and {1,4,5} get merged into {1,2,4,5}
-     * @param one
+     * @param base
      *            the first map
-     * @param two
+     * @param patch
      *            the second map
      * @return a set of the keysets merged into one
      */
-    public static LinkedHashSet<String> joinKeySetsRetainOrder(Map<String, String> one, Map<String, String> two) {
-        LinkedHashSet<String> joinedSet = new LinkedHashSet<>();
+    public static ArrayList<String> joinKeySetsRetainOrder(Map<String, String> base, Map<String, String> patch) {
+        ArrayList<String> joinedSet = new ArrayList<>();
         Set<String> checkSame = new HashSet<>();
-        checkSame.addAll(one.keySet());
-        if (checkSame.retainAll(two.keySet())) {
+        checkSame.addAll(base.keySet());
+        if (checkSame.retainAll(patch.keySet())) {
             int i = 0;
             int x = 0;
 
-            for (String s : one.keySet()) {
+            for (String s : base.keySet()) {
                 i++;
-                if (two.containsKey(s)) {
-                    for (String t : two.keySet()) {
+                if (patch.containsKey(s)) {
+                    for (String t : patch.keySet()) {
                         x++;
                         if (s.equals(t) && x == i) {
-                            joinedSet.add(s);
+                            if (!joinedSet.contains(s)) {
+                                joinedSet.add(s);
+                            }
                             break;
                         } else if (!joinedSet.contains(t)) {
                             joinedSet.add(t);
-                            if (one.containsKey(t)) {
+                            if (base.containsKey(t)) {
                                 break;
                             }
                         }
                     }
                 }
-                joinedSet.add(s);
+                if (!joinedSet.contains(s)) {
+                    joinedSet.add(s);
+                }
                 x = 0;
             }
-            for (String t : two.keySet()) {
+            for (String t : patch.keySet()) {
                 if (!joinedSet.contains(t)) {
                     joinedSet.add(t);
                 }
             }
             return joinedSet;
         } else {
-            for (String s : one.keySet()) {
-                joinedSet.add(s);
+            for (String s : base.keySet()) {
+                if (!joinedSet.contains(s)) {
+                    joinedSet.add(s);
+                }
             }
             return joinedSet;
         }
@@ -260,7 +266,7 @@ public class MergeUtil {
      *         patch) of its documentpart, false if it's the first of multiple or the third an later of its
      *         documentpart
      */
-    public static boolean canBeSkipped(LinkedHashSet<String> toCheck, String anchor) {
+    public static boolean canBeSkipped(ArrayList<String> toCheck, String anchor) {
         int docPartCount = 0;
         String docPart = MergeUtil.getDocumentPart(anchor);
         String[] anchorsWithDocPart = new String[toCheck.size()];
