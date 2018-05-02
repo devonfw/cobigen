@@ -1,8 +1,7 @@
-
 import { Injectable } from '@angular/core';
 import {url} from '../../assets/serverPath';
 /*
-  Generated class for the BussinessOperatorProvider provider.
+  Generated class for the BussinessOperator provider.
 
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
@@ -27,7 +26,7 @@ export class BusinessOperatorProvider {
   }
 
   ${variables.etoName}Service(){
-    return this.restPath + '${variables.component}/v1/${variables.etoName}/';
+    return this.restPath + '${variables.component}/v1/${variables.etoName?uncap_first}/';
   }
 
 }

@@ -1,1 +1,1 @@
-export let url = "http://localhost:8081/${variables.etoName}-server/"
+export let url = "http://localhost:8081/oasp4j-${variables.etoName}-server/"
