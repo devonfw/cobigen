@@ -3,6 +3,7 @@ package com.capgemini.cobigen.textmerger.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -266,7 +267,7 @@ public class MergeUtil {
      *         patch) of its documentpart, false if it's the first of multiple or the third an later of its
      *         documentpart
      */
-    public static boolean canBeSkipped(ArrayList<String> toCheck, String anchor) {
+    public static boolean canBeSkipped(List<String> toCheck, String anchor) {
         int docPartCount = 0;
         String docPart = MergeUtil.getDocumentPart(anchor);
         String[] anchorsWithDocPart = new String[toCheck.size()];
