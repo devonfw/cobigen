@@ -16,7 +16,7 @@ def authenticate_git_user(git_url):
 		init.git_password = getpass.getpass("Enter Your Git Token.....")
 	else:
 		init.git_password = getpass.getpass("Enter Your Git Password..")
-	url = 'https://'+init.git_username+':'+init.git_password+git_url
+	url = 'https://'+init.git_username+':'+init.git_password+"@api.github.com"
 	session = requests.Session()
 	message=""
 	response_object=session.get(url)
