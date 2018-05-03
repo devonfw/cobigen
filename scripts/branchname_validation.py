@@ -4,13 +4,16 @@ import json
 
 #This Method is responsible for Checking branches in repository with branch entered by user
 def check_branch_validity(branch_name,git_url):
-    url='https://'+init.git_username+':'+init.git_password+git_url+'/branches/'+branch_name
-    response_object= requests.get(url)
-    branch_repo_data = json.loads(response_object.text)
-    is_branch_valid=True
+    if "" == branch_name:
+	    is_branch_valid=False
+    else:		
+	    is_branch_valid=True
+    url='https://'+init.git_username+':'+init.git_password+git_url+'/tree/'+branch_name
     try:
-        if branch_repo_data['message'] =='Not Found':
-	        is_branch_valid=False;print('Branch name is not valid, Enter valid branch name.')
+        response_object= requests.get(url)
+        branch_repo_data = json.loads(response_object.text)
+        if 'Not Found' in branch_repo_data['message'] or is_branch_valid==False:
+            is_branch_valid=False;print('Branch name is not valid, Enter valid branch name.')
     except:
         is_branch_valid=True;
         print('Checking validity of branch is done.')
@@ -41,7 +44,7 @@ def get_build_folder(branch_name):
         build_folder_name ='invalid';print('Please edit function get_build_folder in scripts/branchname_validation.py');
     return build_folder_name
 
-# This Method will be responsible for fetching wiki document description based \
+# This Method is responsible for fetching wiki document description based \
 #on branch name for the purpose of updating version in CobiGen.asciidoc
 def get_cobigenwiki_title_name(branch_name):
     wiki_description_name = '' 
