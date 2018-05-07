@@ -1,0 +1,4 @@
+// anchor:notheader:nomerge:anchorend
+line1
+// anchor:notfooter:nomerge:anchorend
+line2

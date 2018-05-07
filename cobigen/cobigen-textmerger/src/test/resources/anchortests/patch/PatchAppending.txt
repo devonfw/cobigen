@@ -1,0 +1,6 @@
+// anchor:part1:append:anchorend
+test1.5
+// anchor:part2:appendbefore:anchorend
+test2.5
+// anchor:part3:appendafter:anchorend
+test3.5
