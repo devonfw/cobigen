@@ -1,0 +1,8 @@
+// anchor:part1:nomerge:anchorend
+line1
+// anchor:part2:nomerge:anchorend
+line2
+// anchor:part3:append_newline:anchorend
+line3
+// anchor:part4:newline_append:anchorend
+line4
