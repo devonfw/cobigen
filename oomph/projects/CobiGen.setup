@@ -695,7 +695,7 @@
           </predicate>
         </sourceLocator>
         <sourceLocator
-            rootFolder="${workspace.location.cobigen.master/tools-cobigen/cobigen-templates}"
+            rootFolder="${workspace.location/master/cobigen-templates}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:AndPredicate">
