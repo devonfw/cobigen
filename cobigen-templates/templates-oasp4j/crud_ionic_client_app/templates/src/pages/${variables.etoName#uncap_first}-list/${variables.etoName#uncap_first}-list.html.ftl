@@ -6,6 +6,21 @@
 -->
 <ion-header>
   <layoutheader Title="${variables.etoName}"></layoutheader>
+  <header class="header-attributes">
+    <span class="header-span item item-block item-md">
+      <div class="item-inner">
+        <div class="input-wrapper">
+          <ion-label class="label label-md">
+            <ion-grid class="header-grid">
+              <ion-row> <#list pojo.fields as field>
+                <ion-col class="crop">{{'${variables.component}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-col></#list>
+              </ion-row>
+            </ion-grid>
+          </ion-label>
+        </div>
+      </div>
+    </span>
+  </header>
 </ion-header>
 <ion-content padding>
   <ion-refresher (ionRefresh)="doRefresh($event)">
