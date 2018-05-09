@@ -695,7 +695,7 @@
           </predicate>
         </sourceLocator>
         <sourceLocator
-            rootFolder="${workspace.location.cobigen.master/tools-cobigen/cobigen-templates}"
+            rootFolder="${workspace.location/master/cobigen-templates}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:AndPredicate">
@@ -802,6 +802,16 @@
         </sourceLocator>
         <sourceLocator
             rootFolder="${workspace.location/dev_tempeng_freemarker/cobigen/cobigen-templateengines/cobigen-tempeng-freemarker}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_openapiplugin/cobigen/cobigen-openapiplugin}"
             locateNestedProjects="true">
           <predicate
               xsi:type="predicates:NotPredicate">
