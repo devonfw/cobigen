@@ -810,6 +810,16 @@
                 pattern=".*-parent"/>
           </predicate>
         </sourceLocator>
+        <sourceLocator
+            rootFolder="${workspace.location/dev_openapiplugin/cobigen/cobigen-openapiplugin}"
+            locateNestedProjects="true">
+          <predicate
+              xsi:type="predicates:NotPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*-parent"/>
+          </predicate>
+        </sourceLocator>
         <description></description>
       </setupTask>
     </setupTask>
