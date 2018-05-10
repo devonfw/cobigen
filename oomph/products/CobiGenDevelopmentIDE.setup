@@ -315,13 +315,33 @@
         <description>Fetches the maven ${maven.version} archive</description>
       </setupTask>
       <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          id="rc.win.winpython"
-          excludedTriggers="STARTUP MANUAL"
-          successor="unzip.winpython"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5.zip"
-          targetURL="${tmp.download.location/winpython.zip|uri}">
-        <description>Fetches the winpython archive</description>
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86_64)"
+          name="x64">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            successor="unzip.winpython"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5-windows-x64.zip"
+            targetURL="${tmp.download.location/winpython.zip|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86)"
+          name="x86">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            successor="unzip.winpython"
+            filter=""
+            sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython32-3.6.5.0Qt5-windows-x86.zip"
+            targetURL="${tmp.download.location/winpython.zip|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
@@ -339,13 +359,32 @@
         <description>Fetches the maven ${maven.version} archive for linux</description>
       </setupTask>
       <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          id="rc.win.winpython"
-          excludedTriggers="STARTUP MANUAL"
-          filter=""
-          sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5.tar.gz"
-          targetURL="${tmp.download.location/winpython.tar.gz|uri}">
-        <description>Fetches the winpython archive</description>
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86_64)"
+          name="x64">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            filter=""
+            sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5-linux-x64.tar.gz"
+            targetURL="${tmp.download.location/winpython.tar.gz|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86)"
+          name="x86">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            filter=""
+            sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5-linux-x86.tar.gz"
+            targetURL="${tmp.download.location/winpython.tar.gz|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
