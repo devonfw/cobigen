@@ -128,8 +128,8 @@
         xsi:type="setup:VariableTask"
         id="maven.version"
         name="maven.version"
-        value="3.3.9"
-        defaultValue="3.3.9"
+        value="3.5.2"
+        defaultValue="3.5.2"
         storageURI="scope://Installation"
         label="maven version">
       <description>Maven version to be installed</description>
@@ -314,6 +314,15 @@
           targetURL="${tmp.download.location/maven.zip|uri}">
         <description>Fetches the maven ${maven.version} archive</description>
       </setupTask>
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.win.winpython"
+          excludedTriggers="STARTUP MANUAL"
+          successor="unzip.winpython"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5.zip"
+          targetURL="${tmp.download.location/winpython.zip|uri}">
+        <description>Fetches the winpython archive</description>
+      </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
     <setupTask
@@ -328,6 +337,15 @@
           sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
           targetURL="${tmp.download.location/maven.tar.gz|uri}">
         <description>Fetches the maven ${maven.version} archive for linux</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.win.winpython"
+          excludedTriggers="STARTUP MANUAL"
+          filter=""
+          sourceURL="http://de-mucevolve02/files/oomph/resources/winpython/WinPython64-3.6.5.0Qt5.tar.gz"
+          targetURL="${tmp.download.location/winpython.tar.gz|uri}">
+        <description>Fetches the winpython archive</description>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
@@ -351,6 +369,15 @@
           priority="100">
         <description>Unzips the maven binaries</description>
       </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.winpython"
+          excludedTriggers="STARTUP MANUAL"
+          zipFile="${tmp.download.location/winpython.tar.gz}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the winpython binaries</description>
+      </setupTask>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
@@ -366,6 +393,16 @@
           destinationDir="${software.location}"
           priority="100">
         <description>Unzips the maven binaries</description>
+      </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.winpython"
+          excludedTriggers="STARTUP MANUAL"
+          predecessor="rc.win.winpython"
+          zipFile="${tmp.download.location/winpython.zip}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the winpython binaries</description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
@@ -592,6 +629,12 @@
       <requirement
           name="org.eclipse.epp.mpc.feature.group"
           versionRange="[1.5.4.v20170222-1941,1.5.4.v20170222-1941]"/>
+      <requirement
+          name="org.python.pydev.feature.feature.group"
+          versionRange="[6.3.0,6.4.0)"/>
+      <requirement
+          name="org.python.pydev.feature.source.feature.group"
+          versionRange="[6.3.0,6.4.0)"/>
       <repository
           url="http://download.eclipse.org/releases/neon"/>
       <repository
@@ -600,6 +643,8 @@
           url="http://dist.springsource.com/release/TOOLS/update/e4.6/"/>
       <repository
           url="http://download.eclipse.org/eclipse/updates/4.6/"/>
+      <repository
+          url="http://www.pydev.org/updates"/>
     </setupTask>
     <description>OASP4J for Neon (Experimental)</description>
   </version>
@@ -632,6 +677,12 @@
       <requirement
           name="org.eclipse.epp.mpc.feature.group"
           versionRange="[1.6.0,1.7.0)"/>
+      <requirement
+          name="org.python.pydev.feature.feature.group"
+          versionRange="[6.3.0,6.4.0)"/>
+      <requirement
+          name="org.python.pydev.feature.source.feature.group"
+          versionRange="[6.3.0,6.4.0)"/>
       <repository
           url="http://download.eclipse.org/releases/oxygen"/>
       <repository
@@ -640,6 +691,8 @@
           url="http://dist.springsource.com/release/TOOLS/update/e4.7/"/>
       <repository
           url="http://download.eclipse.org/eclipse/updates/4.7/"/>
+      <repository
+          url="http://www.pydev.org/updates"/>
     </setupTask>
     <description>Tools-Cobigen Oxygen version</description>
   </version>
