@@ -2,23 +2,6 @@ from scripts.settings import init
 import requests
 import json
 
-#This Method is responsible for Checking branches in repository with branch entered by user
-def check_branch_validity(branch_name,git_url):
-    if "" == branch_name:
-	    is_branch_valid=False
-    else:		
-	    is_branch_valid=True
-    url='https://'+init.git_username+':'+init.git_password+git_url+'/tree/'+branch_name
-    try:
-        response_object= requests.get(url)
-        branch_repo_data = json.loads(response_object.text)
-        if 'Not Found' in branch_repo_data['message'] or is_branch_valid==False:
-            is_branch_valid=False;print('Branch name is not valid, Enter valid branch name.')
-    except:
-        is_branch_valid=True;
-        print('Checking validity of branch is done.')
-    return is_branch_valid
-
 # This Method will be responsible for getting package folder name based on branch name
 def get_build_folder(branch_name):
     build_folder_name = '' 
@@ -39,9 +22,21 @@ def get_build_folder(branch_name):
     elif(branch_name == 'dev_javaplugin'):
         build_folder_name = 'cobigen/cobigen-javaplugin-parent' 
     elif (branch_name == 'dev_jssenchaplugin'):
-        build_folder_name = 'cobigen/cobigen-senchaplugin' 
+        build_folder_name = 'cobigen/cobigen-senchaplugin'
+    elif (branch_name == 'dev_openapiplugin'):
+	    build_folder_name = 'cobigen\cobigen-openapiplugin'
+    elif (branch_name == 'dev_tsplugin'):
+	    build_folder_name = 'cobigen\cobigen-tsplugin'
+    elif (branch_name == 'dev_textmerger'):
+	    build_folder_name = 'cobigen\cobigen-textmerger'
+    elif (branch_name == 'dev_propertyplugin'):
+	    build_folder_name = 'cobigen\cobigen-propertyplugin'
+    elif (branch_name == 'dev_jsonplugin'):
+	    build_folder_name = 'cobigen\cobigen-jsonplugin'
+    elif (branch_name == 'dev_xmlplugin'):
+	    build_folder_name = 'cobigen\cobigen-xmlplugin'
     else:
-        build_folder_name ='invalid';print('Please edit function get_build_folder in scripts/branchname_validation.py');
+        build_folder_name ='invalid'
     return build_folder_name
 
 # This Method is responsible for fetching wiki document description based \
@@ -68,8 +63,6 @@ def get_cobigenwiki_title_name(branch_name):
         wiki_description_name = 'CobiGen - FreeMaker Template Engine' 
     elif (branch_name == 'dev_tempeng_velocity'):
         wiki_description_name = 'CobiGen - Velocity Template Engine' 
-    elif (branch_name == 'dev_core'):
-        wiki_description_name = 'cobigen/cobigen-core-parent' 
     elif(branch_name == 'dev_javaplugin'):
         wiki_description_name = 'Cobigen - Java Plug-in'
     elif(branch_name == 'dev_xmlplugin'):
@@ -77,5 +70,6 @@ def get_cobigenwiki_title_name(branch_name):
     elif (branch_name == 'dev_jssenchaplugin'):
         wiki_description_name = 'CobiGen - Sencha Plug-in' 
     else:
-        wiki_description_name ='invalid';print('Please edit function get_build_folder in scripts/branchname_validation.py');
+        wiki_description_name ='invalid';
+        print('Please edit function get_cobigenwiki_title_name in scripts/branchname_validation.py');
     return wiki_description_name
