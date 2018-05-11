@@ -26,6 +26,8 @@ export class ${variables.etoName?cap_first}Detail {
   
   translations = {title : "Dialog", message: "message" }
   dialogType = "";
+
+  /** If filterActive is true, then the dialog will be of type search. */
   filterActive : boolean = true;
 
   constructor(
@@ -42,16 +44,27 @@ export class ${variables.etoName?cap_first}Detail {
     if(this.dialogType == "filter") this.filterActive = false;
   }
 
-  getTranslation(dialog:string){
+  /**
+   * Translates the passed dialog to the current language
+   * @param  dialog - The passed dialog
+   */
+  private getTranslation(dialog:string){
     this.translations = this.translate.instant(dialog);
   }
 
-  dismiss(data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>]) {
+  /**
+   * Dismisses the current opened dialog and returns the result data to it's creator.
+   * @param  data - Tuple containing all the objects which the server returns .
+   */
+  private dismiss(data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>]) {
     this.viewCtrl.dismiss(data);
     this.filterActive = true;
   }
 
-  addOrModify(){
+  /**
+   * Creates the add and modify dialog and returns the result data to it's creator. 
+   */
+  public addOrModify(){
 
     this.clean${variables.etoName?cap_first}.id=null; 
     for(let i in this.clean${variables.etoName?cap_first}){
@@ -64,7 +77,10 @@ export class ${variables.etoName?cap_first}Detail {
       });
   }
 
-  search(){
+  /**
+   * Creates the search dialog. 
+   */
+  public search(){
     for (let i in this.${variables.etoName?uncap_first}Received){
       if(this.${variables.etoName?uncap_first}Received[i]=="") delete this.${variables.etoName?uncap_first}Received[i]
       else this.${variables.etoName?uncap_first}SearchCriteria[i] = this.${variables.etoName?uncap_first}Received[i];
@@ -80,6 +96,9 @@ export class ${variables.etoName?cap_first}Detail {
     )
   }
 
+  /**
+   * Clears all the search filters and returns the first data page. 
+   */
   clearSearch(){
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
     this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(

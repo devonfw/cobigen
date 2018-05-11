@@ -14,7 +14,7 @@ import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
   templateUrl: '${variables.etoName?uncap_first}-list.html',
 })
 export class ${variables.etoName?cap_first}List {
-
+  /** Contains the strings for the deletion prompt */
   deleteTranslations: any = {};
   pagination: Pagination = { size:15, page:1, total:false };
   ${variables.etoName?uncap_first}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
@@ -35,7 +35,10 @@ export class ${variables.etoName?cap_first}List {
   public translate: TranslateService, public modalCtrl: ModalController, public loadingCtrl: LoadingController
   ) {}
 
-  ionViewWillEnter() {
+  /**
+   * Runs when the page is about to enter and become the active page.
+   */
+  private ionViewWillEnter() {
   
     let loading = this.loadingCtrl.create({
       content: 'Please wait...'
@@ -49,12 +52,17 @@ export class ${variables.etoName?cap_first}List {
         loading.dismiss();
 	}, 
 	(err) => {
+        loading.dismiss();
         console.log(err);
       }
     )
   }
   
-  public getSelectedItemIndex() {
+  /**
+   * Get the selected item index.
+   * @returns The current selected item index.
+   */
+  public getSelectedItemIndex():number {
   
     if(this.selectedItemIndex <= -1){
       return;
@@ -62,12 +70,20 @@ export class ${variables.etoName?cap_first}List {
     return this.selectedItemIndex;
   }
 
+  /**
+   * Set the selected item index.
+   * @param  index The item index you want to set.
+   */
   public setSelectedItemIndex(index: number) {
     this.selectedItemIndex = index;
     this.deleteModifiedButtonsDisabled = false;
   }
 
-  doRefresh(refresher) {  
+  /**
+   * Executed after a pull-to-refresh event. It reloads the ${variables.etoName?uncap_first} list.
+   * @param  refresher Pull-to-refresh event.
+   */
+  public doRefresh(refresher) {  
   
     setTimeout(() => {
       this.reload${variables.etoName?cap_first}List();
@@ -75,7 +91,10 @@ export class ${variables.etoName?cap_first}List {
     }, 500);
   }
   
-  reload${variables.etoName?cap_first}List(){
+  /**
+   * Reloads the ${variables.etoName?uncap_first} list, retrieving the first page.
+   */
+  private reload${variables.etoName?cap_first}List(){
     
     this.${variables.etoName?uncap_first}s = [];
     this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
@@ -92,21 +111,32 @@ export class ${variables.etoName?cap_first}List {
     );
   }
   
-  getTranslation(text: string): string {
+  /**
+   * Translates a string to the current language.
+   * @param  text The string to be translated.
+   * @returns The translated string.
+   */
+  private getTranslation(text: string): string {
 
     let value: string;
     value = this.translate.instant(text);
     return value;
   }
   
-  create${variables.etoName?cap_first}() {
+  /**
+   * Presents the create dialog to the user and creates a new ${variables.etoName?uncap_first} if the data is correctly defined.
+   */
+  public create${variables.etoName?cap_first}() {
 
     let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "add", edit: null });
     modal.present();
     modal.onDidDismiss(() => this.reload${variables.etoName?cap_first}List());
   }
 
-  search${variables.etoName?cap_first}s() {
+  /**
+   * Presents the search dialog to the user and sets to the list all the found ${variables.etoName?uncap_first}s.
+   */
+  public search${variables.etoName?cap_first}s() {
   
     this.deleteModifiedButtonsDisabled = true;
     this.selectedItemIndex = -1;
@@ -122,7 +152,10 @@ export class ${variables.etoName?cap_first}List {
     });
   }
 
-  updateSelected${variables.etoName?cap_first}() { 
+  /**
+   * Presents the modify dialog and updates the selected ${variables.etoName?uncap_first}.
+   */
+  public updateSelected${variables.etoName?cap_first}() { 
   
     if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
@@ -148,11 +181,14 @@ export class ${variables.etoName?cap_first}List {
       
   }
   
-  deleteSelected${variables.etoName?cap_first}() { 
+  /**
+   * Presents a promt to the user to warn him about the deletion.
+   */
+  public deleteSelected${variables.etoName?cap_first}() { 
     
-  this.deleteTranslations = this.getTranslation('${variables.component}.${variables.etoName?uncap_first}.operations.delete');
+    this.deleteTranslations = this.getTranslation('${variables.component}.${variables.etoName?uncap_first}.operations.delete');
     for (let i in this.deleteButtons){
-    this.deleteButtons[i].text=this.deleteTranslations[this.deleteButtonNames[i]];
+      this.deleteButtons[i].text=this.deleteTranslations[this.deleteButtonNames[i]];
     }
     let prompt = this.alertCtrl.create({
       title: this.deleteTranslations.title, 
@@ -165,33 +201,33 @@ export class ${variables.etoName?cap_first}List {
       prompt.present();
     }
 
-  confirmDeletion() {
+  /**
+   * Removes the current selected item.
+   */  
+  private confirmDeletion() {
 
     if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
-    }
-    let cleanItem = this.${variables.etoName?uncap_first}ListItem;
+    }    
     let search = this.${variables.etoName?uncap_first}s[this.selectedItemIndex]
-    for(let i in cleanItem){
-      cleanItem[i] = search[i];
-    }
-    this.${variables.etoName?uncap_first}Rest.get${variables.etoName?cap_first}(cleanItem).subscribe(
-    (idResponse: PaginatedListTo<${variables.etoName?cap_first}>) => {
-      this.${variables.etoName?uncap_first}Rest.delete(idResponse.result[0].id).subscribe(
-        (deleteresponse) => {      
-            this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1);
-            this.selectedItemIndex = -1;
-            this.deleteModifiedButtonsDisabled = true;
-            }, 
-            (err) => {
-              console.log(err);
-          }
-        )
+    
+    this.${variables.etoName?uncap_first}Rest.delete(search.id).subscribe(
+      (deleteresponse) => {      
+        this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1);
+        this.selectedItemIndex = -1;
+        this.deleteModifiedButtonsDisabled = true;
+      }, 
+      (err) => {
+        console.log(err);
       }
-    )
+    );
   } 
 
-  doInfinite(infiniteScroll) {
+  /**
+   * Executed after the user reaches the end of the last page. It tries to retrieve the next data page.
+   * @param  infiniteScroll Infinite scroll event.
+   */
+  public doInfinite(infiniteScroll) {
 
     if (this.${variables.etoName?uncap_first}SearchCriteria.pagination.page <= 0) this.infiniteScrollEnabled = false;
     else {
@@ -217,7 +253,11 @@ export class ${variables.etoName?cap_first}List {
     }
   }
 
-  enableUpdateDeleteOperations(index) {
+  /**
+   * Enables the update and delete buttons for the selected ${variables.etoName?uncap_first}.
+   * @param  index The index of the selected ${variables.etoName?uncap_first} that will be allowed to be updated or deleted.
+   */
+  public enableUpdateDeleteOperations(index: number) {
   
     if (this.selectedItemIndex != index){
       this.selectedItemIndex = index;
