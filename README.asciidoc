@@ -47,7 +47,7 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 You can build CobiGen core as well as each plug-in besides the eclipse plug-in separately by stepping into the plug-in folder, e.g. for the Java plug-in you could step into `cobigen/cobigen-javaplugin` and run `mvn clean install` to build the plug-in and deploy it into your local repository.
 
-The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-maven`. The profile `p2-build-maven` builds the eclipse plug-in by retrieving eclipse mars bundles as dependencies. Without specifying the profile, the build will fail.
+The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-mars`. The profile `p2-build-mars` builds the eclipse plug-in by retrieving eclipse mars bundles as dependencies. Without specifying the profile, the build will fail.
 
 == Deploy
 
