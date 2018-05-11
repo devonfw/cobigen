@@ -4,6 +4,7 @@ target
 .flattened-pom.xml
 /.project
 .pyc
+/*.py.log
 /cobigen-eclipse/.project
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
 cobigen/cobigen-javaplugin/src/main/resources/lib/*
