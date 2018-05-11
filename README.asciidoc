@@ -1,6 +1,6 @@
-= CobiGen (Code-based incremental Generator)
-
 :toc: right
+
+= CobiGen (Code-based incremental Generator)
 
 == Usage
 
@@ -23,16 +23,24 @@ https://github.com/devonfw/tools-cobigen/wiki#architecture[CobiGen is build as a
 
 The CobiGen repository is organized in a one-branch-per-plugin schema. By that, we can release each plug-in continously and independently without side effects. On release the plug-in branch is merged to master branch such that you will find all the latest releases of each plug-in on the master branch.
 
-| Top-level folder        | Description |
-| ------------- | ------------- |
-| `cobigen-documentation`      | Contains git submodules for building and tagging the wiki. |
-| `cobigen-eclipse`      | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.      |
-| `cobigen-maven` | Contains the maven plug-in implementation.      |
-| `cobigen-review` | Project to be used for [AgileReview](https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin) |
-| `cobigen-sample` | Sample code to be used for CobiGen demonstrations |
-| `cobigen-templates` | Contains template sets for different architectures |
-| `cobigen` | Containts the code implementation of CobiGen as well as all plug-in implementations besides the eclipse plug-in and maven plug-in |
-| `ide-settings` | Contains the shared settings processed by the [oasp4j-ide](https://github.com/oasp/oasp4j-ide) |
+|===
+| Top-level folder | Description
+
+| `cobigen-documentation`      | Contains git submodules for building and tagging the wiki. 
+
+| `cobigen-eclipse`      | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
+
+| `cobigen-maven` | Contains the maven plug-in implementation.     
+
+| `cobigen-review` | Project to be used for https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin[AgileReview] 
+
+| `cobigen-sample` | Sample code to be used for CobiGen demonstrations 
+
+| `cobigen-templates` | Contains template sets for different architectures 
+
+| `cobigen` | Containts the code implementation of CobiGen as well as all plug-in implementations besides the eclipse plug-in and maven plug-in 
+
+| `ide-settings` | Contains the shared settings processed by the https://github.com/oasp/oasp4j-ide[oasp4j-ide]
 
 == Build
 
