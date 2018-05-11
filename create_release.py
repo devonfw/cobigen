@@ -605,4 +605,4 @@ print("Script has been executed successfully, below are the points that user acc
 
 '''The decisions taken by the developer and the context of the decisions throughout the script'''
 for message in user_acceptance_messages:
-    print_info(""+message)
+    print_info(">>"+message)
