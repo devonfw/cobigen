@@ -71,6 +71,12 @@
         name="org.springsource.ide.eclipse.commons.quicksearch.feature.feature.group"/>
     <requirement
         name="org.sonatype.tycho.m2e.feature.feature.group"/>
+    <requirement
+        name="org.python.pydev.feature.feature.group"
+        versionRange="[6.3.0,6.4.0)"/>
+    <requirement
+        name="org.python.pydev.feature.source.feature.group"
+        versionRange="[6.3.0,6.4.0)"/>
     <repository
         url="http://fabioz.github.io/startexplorer/update/"/>
     <repository
@@ -85,6 +91,8 @@
         url="http://download.eclipse.org/technology/swtbot/snapshots"/>
     <repository
         url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/0.9.0.201609252021/"/>
+    <repository
+        url="http://www.pydev.org/updates"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -128,8 +136,8 @@
         xsi:type="setup:VariableTask"
         id="maven.version"
         name="maven.version"
-        value="3.3.9"
-        defaultValue="3.3.9"
+        value="3.5.2"
+        defaultValue="3.5.2"
         storageURI="scope://Installation"
         label="maven version">
       <description>Maven version to be installed</description>
@@ -314,6 +322,33 @@
           targetURL="${tmp.download.location/maven.zip|uri}">
         <description>Fetches the maven ${maven.version} archive</description>
       </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86_64)"
+          name="x64">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-amd64.zip"
+            targetURL="${tmp.download.location/python.zip|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          filter="(osgi.arch=x86)"
+          name="x86">
+        <setupTask
+            xsi:type="setup:ResourceCopyTask"
+            id="rc.win.winpython"
+            excludedTriggers="STARTUP MANUAL"
+            filter=""
+            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-win32.zip"
+            targetURL="${tmp.download.location/python.zip|uri}">
+          <description>Fetches the winpython archive</description>
+        </setupTask>
+      </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
     <setupTask
@@ -366,6 +401,14 @@
           destinationDir="${software.location}"
           priority="100">
         <description>Unzips the maven binaries</description>
+      </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.python"
+          zipFile="${tmp.download.location/python.zip}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the python binaries</description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
