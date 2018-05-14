@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.capgemini.cobigen.textmerger.anchorextension.Anchor;
 import com.capgemini.cobigen.textmerger.anchorextension.MergeStrategy;
 import com.capgemini.cobigen.textmerger.anchorextension.MergeUtil;
+import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -25,8 +26,7 @@ public class MergeUtilTest {
      * Map that represents a text file split by anchors, with one large entry and one containing a wrong
      * anchor definition to test if it properly parses the text around it
      */
-    private static LinkedHashMap<Anchor, String> toBe = new LinkedHashMap<Anchor, String>() {
-
+    private static final LinkedHashMap<Anchor, String> toBe = new LinkedHashMap<Anchor, String>() {
         {
             put(new Anchor("// ", "test", testStrat, false, false), "line1");
             put(new Anchor("// ", "test2", testStrat, false, false), "line2");
@@ -101,15 +101,13 @@ public class MergeUtilTest {
             + System.lineSeparator() + "// anchor:blabla:override:anchorend" + System.lineSeparator() + "test2.5"
             + System.lineSeparator() + "// anchor:anotherone:anchorend" + System.lineSeparator() + "test3"
             + System.lineSeparator() + "// anchor:footer:append:anchorend" + System.lineSeparator() + "test4";
-        LinkedHashMap<Anchor, String> expected = new LinkedHashMap<Anchor, String>() {
-            {
-                put(new Anchor("// ", "header", testStrat, false, false), "test1");
-                put(new Anchor("// ", "test", testStrat, true, false), "test2");
-                put(new Anchor("// ", "blabla", MergeStrategy.OVERRIDE, false, false), "test2.5");
-                put(new Anchor("// ", "anotherone", testStrat, false, false), "test3");
-                put(new Anchor("// ", "footer", testStrat, false, false), "test4");
-            }
-        };
+        LinkedHashMap<Anchor, String> expected = new LinkedHashMap<>();
+
+        expected.put(new Anchor("// ", "header", testStrat, false, false), "test1");
+        expected.put(new Anchor("// ", "test", testStrat, true, false), "test2");
+        expected.put(new Anchor("// ", "blabla", MergeStrategy.OVERRIDE, false, false), "test2.5");
+        expected.put(new Anchor("// ", "anotherone", testStrat, false, false), "test3");
+        expected.put(new Anchor("// ", "footer", testStrat, false, false), "test4");
 
         Map<Anchor, String> test = new LinkedHashMap<>();
         try {
@@ -171,23 +169,22 @@ public class MergeUtilTest {
      */
     @Test
     public void testProperAppendingOfText() {
-        LinkedHashMap<Anchor, String> test = new LinkedHashMap<Anchor, String>() {
-            {
-                put(new Anchor("// ", "test", testStrat, false, false), "test1");
-            }
-        };
-        LinkedHashMap<Anchor, String> test2 = new LinkedHashMap<Anchor, String>() {
-            {
-                put(new Anchor("// ", "test", testStrat, false, false), "test2");
-            }
-        };
+        LinkedHashMap<Anchor, String> test = new LinkedHashMap<>();
+        test.put(new Anchor("// ", "test", testStrat, false, false), "test1");
+        LinkedHashMap<Anchor, String> test2 = new LinkedHashMap<>();
+        test2.put(new Anchor("// ", "test", testStrat, false, false), "test2");
+
         String testString = "", testString2 = "", testString3 = "", testString4 = "";
+
         testString = MergeUtil.appendText(testString, "test", test, false, false);
         testString = MergeUtil.appendText(testString, "test", test2, true, true);
+
         testString2 = MergeUtil.appendText(testString2, "test", test, false, false);
         testString2 = MergeUtil.appendText(testString2, "test", test2, false, true);
+
         testString3 = MergeUtil.appendText(testString3, "test", test, false, false);
         testString3 = MergeUtil.appendText(testString3, "test", test2, true, false);
+
         testString4 = MergeUtil.appendText(testString4, "test", test, false, false);
         testString4 = MergeUtil.appendText(testString4, "test", test2, false, false);
 
@@ -207,16 +204,8 @@ public class MergeUtilTest {
     public void testAddingText() {
         String test = "correct ";
         Anchor anchor = new Anchor("// ", "test", testStrat, false, false);
-        LinkedHashMap<Anchor, String> base = new LinkedHashMap<Anchor, String>() {
-            {
-                put(anchor, "");
-            }
-        };
-        LinkedHashMap<Anchor, String> patch = new LinkedHashMap<Anchor, String>() {
-            {
-                put(anchor, "");
-            }
-        };
+        Map<Anchor, String> base = ImmutableMap.<Anchor, String> builder().put(anchor, "").build();
+        Map<Anchor, String> patch = ImmutableMap.<Anchor, String> builder().put(anchor, "").build();
 
         String toAppend = "result";
         test = MergeUtil.addTextAndDeleteCurrentAnchor(test, toAppend, base, patch, anchor);
@@ -245,28 +234,23 @@ public class MergeUtilTest {
      */
     @Test
     public void testJoinedKeySetsRetainOrder() {
-        LinkedHashMap<Anchor, String> testOne = new LinkedHashMap<Anchor, String>() {
-            {
-                put(new Anchor("// ", "1", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "2", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "3", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "6", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "9", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "10", MergeStrategy.APPEND, false, false), "");
-            }
-        };
-        LinkedHashMap<Anchor, String> testTwo = new LinkedHashMap<Anchor, String>() {
-            {
-                put(new Anchor("// ", "1", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "4", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "5", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "6", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "7", MergeStrategy.APPEND, false, false), "");
-                put(new Anchor("// ", "8", MergeStrategy.APPEND, false, false), "");
-            }
-        };
-        String result = "";
+        LinkedHashMap<Anchor, String> testOne = new LinkedHashMap<>();
+        testOne.put(new Anchor("// ", "1", MergeStrategy.APPEND, false, false), "");
+        testOne.put(new Anchor("// ", "2", MergeStrategy.APPEND, false, false), "");
+        testOne.put(new Anchor("// ", "3", MergeStrategy.APPEND, false, false), "");
+        testOne.put(new Anchor("// ", "6", MergeStrategy.APPEND, false, false), "");
+        testOne.put(new Anchor("// ", "9", MergeStrategy.APPEND, false, false), "");
+        testOne.put(new Anchor("// ", "10", MergeStrategy.APPEND, false, false), "");
 
+        LinkedHashMap<Anchor, String> testTwo = new LinkedHashMap<>();
+        testTwo.put(new Anchor("// ", "1", MergeStrategy.APPEND, false, false), "");
+        testTwo.put(new Anchor("// ", "4", MergeStrategy.APPEND, false, false), "");
+        testTwo.put(new Anchor("// ", "5", MergeStrategy.APPEND, false, false), "");
+        testTwo.put(new Anchor("// ", "6", MergeStrategy.APPEND, false, false), "");
+        testTwo.put(new Anchor("// ", "7", MergeStrategy.APPEND, false, false), "");
+        testTwo.put(new Anchor("// ", "8", MergeStrategy.APPEND, false, false), "");
+
+        String result = "";
         ArrayList<Anchor> resultList = MergeUtil.joinKeySetsRetainOrder(testOne, testTwo);
         for (Anchor s : resultList) {
             result += s.getDocPart() + " ";
@@ -293,15 +277,13 @@ public class MergeUtilTest {
         Anchor test3 = new Anchor("// ", "test2", MergeStrategy.APPENDBEFORE, false, false);
         Anchor test4 = new Anchor("// ", "test2", MergeStrategy.NOMERGE, false, false);
         Anchor test5 = new Anchor("// ", "test", MergeStrategy.NOMERGE, false, false);
-        ArrayList<Anchor> testMap = new ArrayList<Anchor>() {
-            {
-                add(test1);
-                add(test2);
-                add(test3);
-                add(test4);
-                add(test5);
-            }
-        };
+
+        ArrayList<Anchor> testMap = new ArrayList<>();
+        testMap.add(test1);
+        testMap.add(test2);
+        testMap.add(test3);
+        testMap.add(test4);
+        testMap.add(test5);
         assertThat(!MergeUtil.canBeSkipped(testMap, test1));
         assertThat(MergeUtil.canBeSkipped(testMap, test2));
         assertThat(!MergeUtil.canBeSkipped(testMap, test3));
