@@ -329,7 +329,6 @@
         <setupTask
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
-            excludedTriggers="STARTUP MANUAL"
             sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-amd64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
           <description>Fetches the python archive</description>
