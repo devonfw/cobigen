@@ -2,7 +2,6 @@ package com.capgemini.cobigen.openapiplugin.inputreader;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,8 +26,10 @@ import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.reprezen.jsonoverlay.JsonOverlay;
+import com.reprezen.jsonoverlay.Overlay;
+import com.reprezen.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
-import com.reprezen.kaizen.oasparser.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
@@ -125,7 +126,7 @@ public class OpenAPIInputReader implements InputReader {
      * @return list of entities
      */
     private List<EntityDef> extractComponents(OpenApi3 openApi) {
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(openApi.toJson().toString());
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
@@ -155,7 +156,7 @@ public class OpenAPIInputReader implements InputReader {
             }
 
             // Sets a Map containing all the extensions of the info part of the OpenAPI file
-            if (openApi.getInfo().isPresent()) {
+            if (Overlay.isPresent((JsonOverlay<?>) openApi.getInfo())) {
                 entityDef.setUserPropertiesMap(openApi.getInfo().getExtensions());
             }
             // Traverse the extensions of the entity for setting those attributes to the Map
@@ -164,7 +165,6 @@ public class OpenAPIInputReader implements InputReader {
                 String keyMap = it.next();
                 entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
-
             componentDef.setPaths(extractPaths(openApi.getPaths(),
                 openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
             entityDef.setComponent(componentDef);
@@ -188,13 +188,12 @@ public class OpenAPIInputReader implements InputReader {
     private PropertyDef extractReferenceProperty(OpenApi3 openApi, Schema componentSchema,
         Entry<String, ? extends Schema> property, String targetComponent) {
         Schema propertySchema = property.getValue();
-        if (propertySchema.getJsonReference().sameFile(openApi.getJsonReference())) {
-            String refTypeName;
-            if (propertySchema.isItemsSchemaReference()) {
-                refTypeName =
-                    Paths.get(propertySchema.getItemsSchemaReference().getRefString()).getFileName().toString();
+        if (Overlay.getJsonReference(propertySchema).sameFile(Overlay.getJsonReference(openApi))) {
+            String refTypeName = componentSchema.getName();
+            if (propertySchema.getType().equals(Constants.ARRAY)) {
+                refTypeName = propertySchema.getItemsSchema().getName();
             } else {
-                refTypeName = Paths.get(propertySchema.getJsonReference().getRef()).getFileName().toString();
+                refTypeName = propertySchema.getName();
             }
             String thisComponent = componentSchema.getExtension(Constants.COMPONENT_EXT).toString();
 
@@ -237,14 +236,21 @@ public class OpenAPIInputReader implements InputReader {
             Schema propertySchema = prop.getValue();
             PropertyDef propModel;
             if (propertySchema.getType().equals(Constants.ARRAY)) {
-                if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
-                    && propertySchema.isItemsSchemaReference()) {
-                    String targetComponentExtQueryPath =
-                        propertySchema.getItemsSchemaReference().getRefString().substring(1) + "/"
-                            + Constants.COMPONENT_EXT;
-                    List<String> targetComponent =
-                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                System.out.println(propertySchema);
+                System.out.println(propertySchema.getItemsSchema());
+                System.out.println(propertySchema.getItemsSchema().getName());
+                System.out.println(propertySchema.getExtensions().size());
+                System.out.println(propertySchema.getProperties().size());
+                System.out.println(propertySchema.getDescription());
+                System.out.println(propertySchema.getName());
+                if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)) {
+                    // String targetComponentExtQueryPath =
+                    // Overlay.getReference(propertySchema, "items").getRefString().substring(1) + "/"
+                    // + Constants.COMPONENT_EXT;
+                    String targetComponent =
+                        propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT).toString();
+                    // JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getItemsSchema().getType());
@@ -255,9 +261,10 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 propModel.setIsCollection(true);
             } else {
-                if (propertySchema.getType().equals(Constants.OBJECT) && propertySchema.getJsonReference() != null) {
+                if (propertySchema.getType().equals(Constants.OBJECT)
+                    && Overlay.getJsonReference(propertySchema) != null) {
                     String targetComponentExtQueryPath =
-                        propertySchema.getJsonReference().getRef() + "/" + Constants.COMPONENT_EXT;
+                        Overlay.getJsonReference(propertySchema).getRef() + "/" + Constants.COMPONENT_EXT;
                     List<String> targetComponent =
                         JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
                     propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
@@ -371,14 +378,14 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setDescription(param.getDescription());
             if (schema.getType().equals(Constants.ARRAY)) {
                 parameter.setIsCollection(true);
-                if (schema.getItemsSchemaReference() != null) {
+                if (Overlay.getReference(schema, "items") != null) {
                     parameter.setIsEntity(true);
-                    String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
+                    String[] mp = Overlay.getReference(schema, "items").getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
                 }
             }
-            if (param.getSchemaReference() != null) {
-                String[] mp = param.getSchemaReference().getFragment().split("/");
+            if (Overlay.isReference(param, "schema")) {
+                String[] mp = Overlay.getReference(schema, "schema").getFragment().split("/");
                 parameter.setIsEntity(true);
                 parameter.setType(mp[mp.length - 1]);
             }
@@ -396,10 +403,10 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setIsSearchCriteria(true);
                     parameter.setName("criteria");
                 }
-                if (requestBody.getContentMediaTypes().get(media).getSchemaReference() != null) {
+                if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
                     parameter.setIsEntity(true);
-                    String[] mp =
-                        requestBody.getContentMediaTypes().get(media).getSchemaReference().getFragment().split("/");
+                    String[] mp = Overlay.getReference(requestBody.getContentMediaTypes().get(media), "schema")
+                        .getFragment().split("/");
                     parameter.setType(mp[mp.length - 1]);
                     if (!parameter.getIsSearchCriteria()) {
                         char c[] = mp[mp.length - 1].toCharArray();
@@ -438,15 +445,15 @@ public class OpenAPIInputReader implements InputReader {
                     }
                     for (String media : contentMediaTypes.keySet()) {
                         response.setMediaType(media);
-                        Reference schemaReference = contentMediaTypes.get(media).getSchemaReference();
+                        Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
                         Schema schema = contentMediaTypes.get(media).getSchema();
                         if (schemaReference != null) {
                             String[] mp = schemaReference.getFragment().split("/");
                             response.setType(mp[mp.length - 1]);
                             response.setIsEntity(true);
                         } else if (schema.getType().equals(Constants.ARRAY)) {
-                            if (schema.getItemsSchemaReference() != null) {
-                                String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
+                            if (Overlay.getReference(schema, "items") != null) {
+                                String[] mp = Overlay.getReference(schema, "items").getFragment().split("/");
                                 response.setType(mp[mp.length - 1]);
                                 response.setIsEntity(true);
                             } else {
