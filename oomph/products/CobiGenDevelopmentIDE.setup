@@ -328,11 +328,11 @@
           name="x64">
         <setupTask
             xsi:type="setup:ResourceCopyTask"
-            id="rc.win.winpython"
+            id="rc.win.python"
             excludedTriggers="STARTUP MANUAL"
             sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-amd64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the winpython archive</description>
+          <description>Fetches the python archive</description>
         </setupTask>
       </setupTask>
       <setupTask
@@ -341,12 +341,11 @@
           name="x86">
         <setupTask
             xsi:type="setup:ResourceCopyTask"
-            id="rc.win.winpython"
-            excludedTriggers="STARTUP MANUAL"
+            id="rc.win.python"
             filter=""
             sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-win32.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the winpython archive</description>
+          <description>Fetches the python archive</description>
         </setupTask>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
