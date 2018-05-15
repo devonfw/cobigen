@@ -10,6 +10,7 @@ import org.junit.Test;
 import constants.pojo.Field;
 import utils.resources.TestClass;
 import utils.resources.TestEntity;
+import utils.resources.dataaccess.api.DeepEntity;
 
 /**
  * Tests for {@link OaspUtil}
@@ -36,6 +37,35 @@ public class OaspUtilTest {
         field.put(Field.TYPE.toString(), "TestEntity");
         assertEquals("entityId",
             new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""));
+    }
+
+    /**
+     * Tests {@link OaspUtil#resolveIdGetter(Map,boolean,String)} <br/>
+     * This method is handled in the generation of DAOs. We are testing a concrete case when the input Entity
+     * references another Entity in the same component. Furthermore, verifies that the result is correct even
+     * if the entity name does not end with "Entity".<br/>
+     * <br/>
+     * <b>With</b>
+     * <ul>
+     * <li>Class {@link DeepEntity}</li>
+     * <li>field NAME="testEntityComponent" TYPE="TestEntityComponent", yielding a TestEntityComponent field
+     * </li>
+     * <li>byReference true</li>
+     * <li>component package of the entity</li>
+     */
+    @Test
+    public void testResolveIdGetterEntitySameComponent() throws Exception {
+
+        Map<String, Object> field = new HashMap<>();
+        DeepEntity deepEntity = new DeepEntity();
+        String component = "";
+
+        field.put(Field.NAME.toString(), "testEntityComponent");
+        field.put(Field.CANONICAL_TYPE.toString(), deepEntity.getTestEntityComponent().getClass().getCanonicalName());
+        field.put(Field.TYPE.toString(), deepEntity.getTestEntityComponent().getClass().getTypeName());
+        component = deepEntity.getClass().getPackage().getName();
+
+        assertEquals("getTestEntityComponent().getId()", new OaspUtil().resolveIdGetter(field, true, component));
     }
 
     /**
