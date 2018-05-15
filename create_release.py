@@ -172,10 +172,10 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
 
 #This Method is responsible for Checking branches in repository with branch entered by user
 def check_branch_validity(branch_name):
-    if git_cmd.execute("git ls-remote --heads origin dev_eclipseplugin | wc -l") == "0":
+    if git_cmd.execute("git ls-remote --heads origin "+branch_name+" | wc -l") == "":
 	    is_branch_valid=False
     else:
-	    is_branch_valid=True;
+	    is_branch_valid=True
     return is_branch_valid
 
 ############################Step 1.1.1  
@@ -183,12 +183,12 @@ def check_branch_validity(branch_name):
 if bool_test:
     branch_name="TODO"
 else:
-    branch_name = input("Enter branch name:")  
+    branch_name = input("Enter branch name: ")  
 
     #Checking if nothing is entered then ask user to enter again   
-    while (not branch_name.strip() or not check_branch_validity(branch_name)):
-        user_input=input("You have entered branch which doesn't exists, Please enter valid branch name");
-        branch_name = input("Enter branch name:")   
+    while (branch_name.strip() and not check_branch_validity(branch_name)):
+        print_info("You have entered branch which doesn't exists, Please enter valid branch name.");
+        branch_name = input("Enter branch name: ")   
 
 build_folder_name=get_build_folder(branch_name)
 
@@ -201,12 +201,12 @@ else:
 
 # Enter Release Number-optional 
 release_issue_number = input("Enter release issue number\
- without # prefix in case you already created one. Otherwise leave it empty:")
+ without # prefix in case you already created one. Otherwise leave it empty: ")
 
 # Enter Version to be released-mandatory
-release_version = input("Enter version number to be released...")
+release_version = input("Enter version number to be released: ")
 while (not (release_version and release_version.strip())):   
-    release_version = input("Enter version number to be released...")
+    release_version = input("Enter version number to be released: ")
 
 # Splitting version entered by user into numeric
 try:
@@ -217,9 +217,9 @@ else:
     release_version=release_version[split_version_from_v+1:]
     
 # Enter Next Version Number 
-next_version = input("Enter next version number to be set after the release...")
+next_version = input("Enter next version number to be set after the release: ")
 while (not (next_version and next_version.strip())):   
-   next_version = input("Enter next version number to be set after the release...")
+   next_version = input("Enter next version number to be set after the release: ")
  
 # Removing cobigen/ from the build folder name for milestone title and tag name"
 if "cobigen/" in build_folder_name:
@@ -241,7 +241,7 @@ if "Windows" in platform.platform():
 else:
 	tools_cobigen_path="workspaces/cobigen-master/tools-cobigen"
 	
-if current_directory_path.find(tools_cobigen_path) == -1:
+if not current_directory_path in tools_cobigen_path:
     print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");
     sys.exit()
 
@@ -254,7 +254,7 @@ if "devonfw/tools-cobigen" not in remote_origin:
 #############################Step 1.1.4
 if repo.is_dirty():
     user_choice=input("Your working directory is not clean. Please clean it,\
-    press 'yes' if it is done and you want to continue else any key to exit:").lower()
+    press 'yes' if it is done and you want to continue else any key to exit: ").lower()
     if not user_choice =="yes":
         user_acceptance_messages.append("User cleaned working directory and allowed script to run further.")
         print("[ERROR]EXIT MESSAGE: working copy is not clean");
@@ -274,11 +274,11 @@ else:
        
 #############################Step 0
 print_info("close all eclipse instances of cobigen for safety reasons of build errors in maven")
-input("Press any key if done:")
+input("Press any key if done: ")
    
 #############################Step 0
 print_info("close sourcetree for git performance reason");
-input("Press any key if done:")
+input("Press any key if done: ")
   
 #############################Step 2.1   
 '''Search for the Milestone to be released (based on #3) -> abort if not found'''
@@ -443,13 +443,13 @@ else:
             is_pom_changed=True;
         if not file_name.startswith(build_folder_name):
             print(file_name +" does not starts with "+build_folder_name);
-            user_choice=input("Some Files are outside the folder "+build_folder_name+". Do you want to continue merge? Press 'no' else any other key to continue")
+            user_choice=input("Some Files are outside the folder "+build_folder_name+". Do you want to continue merge? Press 'no' else any other key to continue: ")
             perform_git_reset_pull_on_user_choice(user_choice)
             user_acceptance_messages.append("User has accepted to continue when found that some files were outside of build folder name")
 			
     '''check if all nothing changed in any pom'''
     if is_pom_changed:
-        user_choice=input("Pom is changed, please check dependency tracking wiki page,press 'yes' to continue else 'no' to abort:")
+        user_choice=input("Pom is changed, please check dependency tracking wiki page,press 'yes' to continue else 'no' to abort: ")
         perform_git_reset_pull_on_user_choice(user_choice)
         user_acceptance_messages.append("User has accepted to continue when found that pom has been changed")
 	
@@ -473,7 +473,7 @@ if build_folder_name!="cobigen-eclipse":
 else:
     os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")	
 
-user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort:")
+user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort: ")
 if user_choice=="no":
 	sys.exit()
 
