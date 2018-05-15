@@ -26,6 +26,20 @@ public class OaspUtil {
     }
 
     /**
+     * Check whether the given 'canonicalType' is declared in the given 'component'
+     *
+     * @param canonicalType
+     *            the type name
+     * @param component
+     *            the component name
+     * @return true iff the canonicalType is inside the given component
+     */
+    public boolean isTypeInComponent(String canonicalType, String component) {
+
+        return canonicalType.matches(String.format("%1$s.[A-Za-z0-9]+(<.*)?", component));
+    }
+
+    /**
      * Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via
      * an object reference or a direct ID getter
      *
@@ -259,7 +273,7 @@ public class OaspUtil {
             } else {
                 suffix = "Id";
             }
-            if (byObjectReference && isEntityInComponent(fieldCType, component)) {
+            if (byObjectReference && isTypeInComponent(fieldCType, component)) {
                 // direct references for Entities in same component, so get id of the object reference
                 suffix = "().getId";
             }
