@@ -73,7 +73,7 @@ public class TextAppenderTest {
         String mergedString =
             appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Lorem Ipsum Dolor Sit Amet", "UTF-8");
         assertThat(mergedString)
-            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "Mergedoverride.txt")));
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedOverride.txt")));
     }
 
     /**
@@ -199,8 +199,8 @@ public class TextAppenderTest {
     @Test
     public void testAnchorMerge_newLines() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", false);
-        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewlineFile.txt"),
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchNewlineFile.txt")), "UTF-8");
+        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewLineFile.txt"),
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchNewLineFile.txt")), "UTF-8");
         assertThat(mergedString).isEqualTo(
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewLineFile.txt")));
     }
