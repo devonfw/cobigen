@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.capgemini.cobigen.textmerger.anchorextension.Anchor;
 import com.capgemini.cobigen.textmerger.anchorextension.MergeStrategy;
 import com.capgemini.cobigen.textmerger.anchorextension.MergeUtil;
-import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -86,8 +85,10 @@ public class MergeUtilTest {
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            assertThat(e).hasMessage(
-                "Error at anchor: // anchor:anotherone::anchorend. Incorrect anchor definition, no proper mergestrategy defined.");
+            assertThat(e).hasMessage("Error at anchor for documentpart: // anchor:anotherone::anchorend."
+                + " Incorrect anchor definition, no proper mergestrategy defined.\nSee "
+                + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#mergestrategies "
+                + "for additional info");
         }
     }
 
@@ -140,7 +141,10 @@ public class MergeUtilTest {
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception e) {
             assertThat(e).hasMessage(
-                "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.");
+                "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
+                    + "See https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#general and "
+                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#error-list "
+                    + "for more details");
         }
     }
 
@@ -204,8 +208,10 @@ public class MergeUtilTest {
     public void testAddingText() {
         String test = "correct ";
         Anchor anchor = new Anchor("// ", "test", testStrat, false, false);
-        Map<Anchor, String> base = ImmutableMap.<Anchor, String> builder().put(anchor, "").build();
-        Map<Anchor, String> patch = ImmutableMap.<Anchor, String> builder().put(anchor, "").build();
+        LinkedHashMap<Anchor, String> base = new LinkedHashMap<>();
+        base.put(anchor, "");
+        LinkedHashMap<Anchor, String> patch = new LinkedHashMap<>();
+        patch.put(anchor, "");
 
         String toAppend = "result";
         test = MergeUtil.addTextAndDeleteCurrentAnchor(test, toAppend, base, patch, anchor);
