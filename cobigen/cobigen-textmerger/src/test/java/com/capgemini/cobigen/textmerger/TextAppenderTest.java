@@ -199,10 +199,10 @@ public class TextAppenderTest {
     @Test
     public void testAnchorMerge_newLines() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", false);
-        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewLineFile.txt"),
+        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewlineFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchNewLineFile.txt")), "UTF-8");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewLineFile.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewlineFile.txt")));
     }
 
     /**
