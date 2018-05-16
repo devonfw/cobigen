@@ -253,11 +253,8 @@ public class OpenAPIInputReaderTest {
         List<ParameterDef> parameters = new LinkedList<>();
         for (ComponentDef cmp : cmps) {
             for (PathDef path : cmp.getPaths()) {
-                // System.out.println("path " + path.getPathURI());
                 for (OperationDef op : path.getOperations()) {
-                    // System.out.println("operation " + op.getDescription());
                     for (ParameterDef param : op.getParameters()) {
-                        // System.out.println("parameter " + param.getName());
                         parameters.add(param);
 
                     }
@@ -265,7 +262,6 @@ public class OpenAPIInputReaderTest {
             }
         }
         return parameters;
-
     }
 
 }

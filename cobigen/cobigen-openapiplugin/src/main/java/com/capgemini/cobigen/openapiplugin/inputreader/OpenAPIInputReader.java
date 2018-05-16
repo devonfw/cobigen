@@ -237,12 +237,8 @@ public class OpenAPIInputReader implements InputReader {
             PropertyDef propModel;
             if (propertySchema.getType().equals(Constants.ARRAY)) {
                 if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)) {
-                    // String targetComponentExtQueryPath =
-                    // Overlay.getReference(propertySchema, "items").getRefString().substring(1) + "/"
-                    // + Constants.COMPONENT_EXT;
                     String targetComponent =
                         propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT).toString();
-                    // JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
                     propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
