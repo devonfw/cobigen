@@ -157,6 +157,16 @@
         label="tomcat version">
       <description>Tomcat version to be installed</description>
     </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        id="python.version"
+        name="python.version"
+        value="3.6.5"
+        defaultValue="3.6.5"
+        storageURI="scope://Installation"
+        label="python version">
+      <description>Python version to be installed</description>
+    </setupTask>
     <description>Configuration of product versions of non-eclipse resources</description>
   </setupTask>
   <setupTask
@@ -238,7 +248,10 @@
           predecessor="rc.win.oasp.scripts rc.oasp"
           sourceURL="https://raw.githubusercontent.com/oasp/oasp4j-ide/master/oasp4j-ide-oomph-setups/resources/help.bat"
           targetURL="${installation.root/help.bat|uri}">
-        <description>Fetches the windows helper script for automatic oasp4j script execution at the end of the installation process</description>
+        <description>
+          Fetches the windows helper script for automatic oasp4j script execution at the end of the
+          installation process
+        </description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
@@ -334,7 +347,7 @@
         <setupTask
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
-            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-amd64.zip"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
           <description>Fetches the python archive</description>
         </setupTask>
@@ -347,7 +360,7 @@
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
             filter=""
-            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-win32.zip"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win32.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
           <description>Fetches the python archive</description>
         </setupTask>
@@ -366,6 +379,14 @@
           sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
           targetURL="${tmp.download.location/maven.tar.gz|uri}">
         <description>Fetches the maven ${maven.version} archive for linux</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.win.python"
+          filter=""
+          sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
+          targetURL="${tmp.download.location/python.zip|uri}">
+        <description>Fetches the python archive</description>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
@@ -388,6 +409,14 @@
           destinationDir="${software.location}"
           priority="100">
         <description>Unzips the maven binaries</description>
+      </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.python"
+          zipFile="${tmp.download.location/python.zip}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>Unzips the python binaries</description>
       </setupTask>
     </setupTask>
     <setupTask
