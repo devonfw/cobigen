@@ -523,14 +523,12 @@ else:
         upload_url=response.upload_url
         uri_template = URITemplate(upload_url)
         if branch_name in ["dev_openapiplugin","dev_xmlplugin","dev_propertyplugin","dev_jsonplugin","dev_tempeng_velocity","dev_textmerger","dev_htmlmerger","dev_tsplugin","dev_jssenchaplugin"]:
-            os.chdir(build_folder_name+"/target")            			
+            os.chdir("/target")            			
         elif branch_name=="dev_javaplugin":
-            os.chdir(build_folder_name+"/cobigen-javaplugin/target")
-        elif branch_name in ["dev_core","dev_mavenplugin"]:
-            os.chdir(build_folder_name)
+            os.chdir("cobigen-javaplugin/target")
         elif branch_name=="dev_eclipseplugin":
             content_type="application/zip"
-            os.chdir(build_folder_name+"/cobigen-eclipse-updatesite/target")
+            os.chdir("cobigen-eclipse-updatesite/target")
         else:
             print_info("New branch is not added in the script, please add it");
             sys.exit()
@@ -539,13 +537,15 @@ else:
             for fname in files:
                 fpath = os.path.join(root, fname);
 				# To prevent uploading of unnecessary zip/jar files.
-                if ("jar" in fname or "zip" in fname) and version in fname:
+                if ("jar" in fname or "zip" in fname) and release_version in fname:
                     print("Uploading file "+fname+"..")
                     asset_url = uri_template.expand(name=fname)
                     r = requests.post(asset_url, auth=(init.git_username,init.git_password) ,headers={'Content-Type':content_type}, files={'file': (fname, open(fpath, 'rb'), 'application/octet-stream')})
     except Exception as e:
         print("[ERROR]"+str(e))
     else:
+        build_folder_path = os.path.abspath(os.path.join(root_path, build_folder_name))
+        os.chdir(build_folder_path)
         print_info("Created a new release")
 
 #############################Step 11.3
