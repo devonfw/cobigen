@@ -523,7 +523,7 @@ else:
         upload_url=response.upload_url
         uri_template = URITemplate(upload_url)
         if branch_name in ["dev_openapiplugin","dev_xmlplugin","dev_propertyplugin","dev_jsonplugin","dev_tempeng_velocity","dev_textmerger","dev_htmlmerger","dev_tsplugin","dev_jssenchaplugin"]:
-            os.chdir("/target")            			
+            os.chdir("target")            			
         elif branch_name=="dev_javaplugin":
             os.chdir("cobigen-javaplugin/target")
         elif branch_name=="dev_eclipseplugin":
