@@ -349,7 +349,7 @@
             id="rc.win.python"
             sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the python archive</description>
+          <description>Fetches the python win 64 archive</description>
         </setupTask>
       </setupTask>
       <setupTask
@@ -362,7 +362,7 @@
             filter=""
             sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win32.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the python archive</description>
+          <description>Fetches the python win 32 archive</description>
         </setupTask>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
@@ -385,8 +385,8 @@
           id="rc.win.python"
           filter=""
           sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
-          targetURL="${tmp.download.location/python.zip|uri}">
-        <description>Fetches the python archive</description>
+          targetURL="${tmp.download.location/python.tar.gz|uri}">
+        <description>Fetches the python linux archive</description>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
@@ -413,10 +413,10 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python"
-          zipFile="${tmp.download.location/python.zip}"
+          zipFile="${tmp.download.location/python.tar.gz}"
           destinationDir="${software.location}"
           priority="100">
-        <description>Unzips the python binaries</description>
+        <description>Unzips the python linux binaries</description>
       </setupTask>
     </setupTask>
     <setupTask
@@ -440,7 +440,7 @@
           zipFile="${tmp.download.location/python.zip}"
           destinationDir="${software.location}"
           priority="100">
-        <description>Unzips the python binaries</description>
+        <description>Unzips the python windows binaries</description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
