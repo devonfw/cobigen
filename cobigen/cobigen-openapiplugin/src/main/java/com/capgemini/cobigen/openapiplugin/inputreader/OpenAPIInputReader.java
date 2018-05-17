@@ -416,8 +416,10 @@ public class OpenAPIInputReader implements InputReader {
      * @param tags
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
+     * @throws Exception
      */
-    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
+    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags)
+        throws Exception {
         ResponseDef response = new ResponseDef();
         for (String resp : responses.keySet()) {
             if (resp.equals("200")) {
@@ -453,6 +455,10 @@ public class OpenAPIInputReader implements InputReader {
                             } else {
                                 response.setIsVoid(true);
                             }
+                        } else {
+                            String refString = schemaReference.getRefString();
+                            throw new Exception("Referenced entity " + refString.substring(refString.lastIndexOf('/'))
+                                + " not found. The reference " + refString + " schould be fixed before generation.");
                         }
                     }
                 } else {
