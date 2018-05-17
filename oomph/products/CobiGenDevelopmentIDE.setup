@@ -454,36 +454,6 @@
         resource="${software.location/}apache-maven-${maven.version}"
         destination="maven"
         priority="100"/>
-    <setupTask
-        xsi:type="fsrename:FSRenameTask"
-        id="rename.python32"
-        predecessor="unzip.python.win"
-        filter=""
-        resource="${software.location/}python-${python.version}-win32"
-        destination="python"
-        priority="100">
-      <description>rename python file for cleaner usage in the software folder</description>
-    </setupTask>
-    <setupTask
-        xsi:type="fsrename:FSRenameTask"
-        id="rename.python64"
-        predecessor="unzip.python.win"
-        filter=""
-        resource="${software.location/}python-${python.version}-win64"
-        destination="python"
-        priority="100">
-      <description>rename python file for cleaner usage in the software folder</description>
-    </setupTask>
-    <setupTask
-        xsi:type="fsrename:FSRenameTask"
-        id="rename.python.linux"
-        predecessor="unzip.python.linux"
-        filter=""
-        resource="${software.location/}python-${python.version}-linux"
-        destination="python"
-        priority="100">
-      <description>rename python file for cleaner usage in the software folder</description>
-    </setupTask>
     <description></description>
   </setupTask>
   <setupTask
