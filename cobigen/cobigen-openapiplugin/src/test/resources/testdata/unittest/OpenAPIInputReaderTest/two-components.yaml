@@ -21,6 +21,10 @@ paths:
       responses:
         '200':
           description: Any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleData'
   /salemanagement/v1/sale/{id}:
     get:
       operationId: findSale
@@ -28,7 +32,7 @@ paths:
         - name: amount
           in: path
           schema:
-            type: integer
+            type: array
             format: int64
             minimum: 10
             maximum: 200
