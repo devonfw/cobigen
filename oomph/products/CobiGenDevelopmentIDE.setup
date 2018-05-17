@@ -157,6 +157,16 @@
         label="tomcat version">
       <description>Tomcat version to be installed</description>
     </setupTask>
+    <setupTask
+        xsi:type="setup:VariableTask"
+        id="python.version"
+        name="python.version"
+        value="3.6.5"
+        defaultValue="3.6.5"
+        storageURI="scope://Installation"
+        label="python version">
+      <description>Python version to be installed</description>
+    </setupTask>
     <description>Configuration of product versions of non-eclipse resources</description>
   </setupTask>
   <setupTask
@@ -238,7 +248,10 @@
           predecessor="rc.win.oasp.scripts rc.oasp"
           sourceURL="https://raw.githubusercontent.com/oasp/oasp4j-ide/master/oasp4j-ide-oomph-setups/resources/help.bat"
           targetURL="${installation.root/help.bat|uri}">
-        <description>Fetches the windows helper script for automatic oasp4j script execution at the end of the installation process</description>
+        <description>
+          Fetches the windows helper script for automatic oasp4j script execution at the end of the
+          installation process
+        </description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
@@ -334,9 +347,9 @@
         <setupTask
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
-            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-amd64.zip"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the python archive</description>
+          <description>Fetches the python win 64 archive</description>
         </setupTask>
       </setupTask>
       <setupTask
@@ -347,9 +360,9 @@
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
             filter=""
-            sourceURL="https://www.python.org/ftp/python/3.6.5/python-3.6.5-embed-win32.zip"
+            sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win32.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
-          <description>Fetches the python archive</description>
+          <description>Fetches the python win 32 archive</description>
         </setupTask>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
@@ -366,6 +379,14 @@
           sourceURL="http://de-mucevolve02/files/oomph/resources/maven/apache-maven-${maven.version}-bin.tar.gz"
           targetURL="${tmp.download.location/maven.tar.gz|uri}">
         <description>Fetches the maven ${maven.version} archive for linux</description>
+      </setupTask>
+      <setupTask
+          xsi:type="setup:ResourceCopyTask"
+          id="rc.win.python"
+          filter=""
+          sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
+          targetURL="${tmp.download.location/python.tar.gz|uri}">
+        <description>Fetches the python linux archive</description>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
@@ -389,6 +410,15 @@
           priority="100">
         <description>Unzips the maven binaries</description>
       </setupTask>
+      <setupTask
+          xsi:type="com.github.maybeec.oomph.task:unzipTask"
+          id="unzip.python.linux"
+          predecessor="rc.win.python"
+          zipFile="${tmp.download.location/python.tar.gz}"
+          destinationDir="${software.location}"
+          priority="100">
+        <description>unzips the python tar ball</description>
+      </setupTask>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
@@ -407,23 +437,53 @@
       </setupTask>
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
-          id="unzip.python"
+          id="unzip.python.win"
+          predecessor="rc.win.python"
           zipFile="${tmp.download.location/python.zip}"
           destinationDir="${software.location}"
           priority="100">
-        <description>Unzips the python binaries</description>
+        <description>Unzips the python windows binaries</description>
       </setupTask>
       <description>Download tasks for external ressources on windows</description>
     </setupTask>
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.maven"
-        excludedTriggers="MANUAL"
         predecessor="unzip.maven.win unzip.maven"
         filter=""
         resource="${software.location/}apache-maven-${maven.version}"
         destination="maven"
         priority="100"/>
+    <setupTask
+        xsi:type="fsrename:FSRenameTask"
+        id="rename.python32"
+        predecessor="unzip.python.win"
+        filter=""
+        resource="${software.location/}python-${python.version}-win32"
+        destination="python"
+        priority="100">
+      <description>rename python file for cleaner usage in the software folder</description>
+    </setupTask>
+    <setupTask
+        xsi:type="fsrename:FSRenameTask"
+        id="rename.python64"
+        predecessor="unzip.python.win"
+        filter=""
+        resource="${software.location/}python-${python.version}-win64"
+        destination="python"
+        priority="100">
+      <description>rename python file for cleaner usage in the software folder</description>
+    </setupTask>
+    <setupTask
+        xsi:type="fsrename:FSRenameTask"
+        id="rename.python.linux"
+        predecessor="unzip.python.linux"
+        filter=""
+        resource="${software.location/}python-${python.version}-linux"
+        destination="python"
+        priority="100">
+      <description>rename python file for cleaner usage in the software folder</description>
+    </setupTask>
     <description></description>
   </setupTask>
   <setupTask
