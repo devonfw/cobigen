@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SampleData'
+                $ref: '#/components/schemas/Table'
   /salemanagement/v1/sale/{id}:
     get:
       operationId: findSale
