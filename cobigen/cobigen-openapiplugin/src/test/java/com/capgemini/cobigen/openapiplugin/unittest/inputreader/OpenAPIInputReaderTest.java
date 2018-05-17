@@ -20,6 +20,7 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
+import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -185,6 +186,25 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("maximum").contains(50, 200);
         assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
 
+    }
+
+    @Test
+    public void testRetrieveResponsesOfPath() throws Exception {
+        List<Object> inputObjects = getInputs("two-components.yaml");
+        for (Object o : inputObjects) {
+            EntityDef eDef = (EntityDef) o;
+            if (eDef.getName().equals("Table")) {
+                assertThat(eDef.getComponent().getPaths()).hasSize(2);
+                for (PathDef pathDef : eDef.getComponent().getPaths()) {
+                    for (OperationDef opDef : pathDef.getOperations()) {
+                        if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
+                            ResponseDef respDef = opDef.getResponse();
+                            assertThat(respDef.getMediaType()).isEqualTo("application/json");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Test(expected = InvalidConfigurationException.class)

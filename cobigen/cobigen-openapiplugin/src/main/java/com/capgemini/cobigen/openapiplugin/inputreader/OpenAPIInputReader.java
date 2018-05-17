@@ -25,7 +25,6 @@ import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
@@ -236,7 +235,9 @@ public class OpenAPIInputReader implements InputReader {
             Schema propertySchema = prop.getValue();
             PropertyDef propModel;
             if (propertySchema.getType().equals(Constants.ARRAY)) {
-                if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)) {
+                if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
+                    && propertySchema.getItemsSchema() != null
+                    && propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT) != null) {
                     String targetComponent =
                         propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT).toString();
                     propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
@@ -251,12 +252,9 @@ public class OpenAPIInputReader implements InputReader {
                 propModel.setIsCollection(true);
             } else {
                 if (propertySchema.getType().equals(Constants.OBJECT)
-                    && Overlay.getJsonReference(propertySchema) != null) {
-                    String targetComponentExtQueryPath =
-                        Overlay.getJsonReference(propertySchema).getRef() + "/" + Constants.COMPONENT_EXT;
-                    List<String> targetComponent =
-                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                    && propertySchema.getExtension(Constants.COMPONENT_EXT) != null) {
+                    String targetComponent = propertySchema.getExtension(Constants.COMPONENT_EXT).toString();
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getType());
@@ -367,16 +365,12 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setDescription(param.getDescription());
             if (schema.getType().equals(Constants.ARRAY)) {
                 parameter.setIsCollection(true);
-                if (Overlay.getReference(schema, "items") != null) {
+                if (schema.getItemsSchema() != null) {
                     parameter.setIsEntity(true);
-                    String[] mp = Overlay.getReference(schema, "items").getFragment().split("/");
-                    parameter.setType(mp[mp.length - 1]);
                 }
             }
             if (Overlay.isReference(param, "schema")) {
-                String[] mp = Overlay.getReference(schema, "schema").getFragment().split("/");
                 parameter.setIsEntity(true);
-                parameter.setType(mp[mp.length - 1]);
             }
             parameter.setType(schema.getType());
             parameter.setFormat(schema.getFormat());
@@ -384,6 +378,7 @@ public class OpenAPIInputReader implements InputReader {
         }
 
         if (requestBody != null) {
+            Schema mediaSchema;
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
                 parameter.setMediaType(media);
@@ -393,12 +388,11 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setName("criteria");
                 }
                 if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
+                    mediaSchema = requestBody.getContentMediaTypes().get(media).getSchema();
                     parameter.setIsEntity(true);
-                    String[] mp = Overlay.getReference(requestBody.getContentMediaTypes().get(media), "schema")
-                        .getFragment().split("/");
-                    parameter.setType(mp[mp.length - 1]);
+                    parameter.setType(mediaSchema.getName());
                     if (!parameter.getIsSearchCriteria()) {
-                        char c[] = mp[mp.length - 1].toCharArray();
+                        char c[] = mediaSchema.getName().toCharArray();
                         c[0] = Character.toLowerCase(c[0]);
                         parameter.setName(new String(c));
                     }
@@ -437,13 +431,11 @@ public class OpenAPIInputReader implements InputReader {
                         Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
                         Schema schema = contentMediaTypes.get(media).getSchema();
                         if (schemaReference != null) {
-                            String[] mp = schemaReference.getFragment().split("/");
-                            response.setType(mp[mp.length - 1]);
+                            response.setType(schema.getName());
                             response.setIsEntity(true);
                         } else if (schema.getType().equals(Constants.ARRAY)) {
-                            if (Overlay.getReference(schema, "items") != null) {
-                                String[] mp = Overlay.getReference(schema, "items").getFragment().split("/");
-                                response.setType(mp[mp.length - 1]);
+                            if (schema.getItemsSchema() != null) {
+                                response.setType(schema.getItemsSchema().getType());
                                 response.setIsEntity(true);
                             } else {
                                 response.setType(schema.getItemsSchema().getType());
