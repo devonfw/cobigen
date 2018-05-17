@@ -438,7 +438,7 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python.win"
-          predecessor="rc.win.python rc.win.python"
+          predecessor="rc.win.python"
           zipFile="${tmp.download.location/python.zip}"
           destinationDir="${software.location}"
           priority="100">
@@ -449,7 +449,6 @@
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.maven"
-        excludedTriggers="MANUAL"
         predecessor="unzip.maven.win unzip.maven"
         filter=""
         resource="${software.location/}apache-maven-${maven.version}"
@@ -458,7 +457,6 @@
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.python32"
-        excludedTriggers="MANUAL"
         predecessor="unzip.python.win"
         filter=""
         resource="${software.location/}python-${python.version}-win32"
@@ -469,7 +467,6 @@
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.python64"
-        excludedTriggers="MANUAL"
         predecessor="unzip.python.win"
         filter=""
         resource="${software.location/}python-${python.version}-win64"
@@ -480,7 +477,6 @@
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.python.linux"
-        excludedTriggers="MANUAL"
         predecessor="unzip.python.linux"
         filter=""
         resource="${software.location/}python-${python.version}-linux"
