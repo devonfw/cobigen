@@ -382,7 +382,7 @@
       </setupTask>
       <setupTask
           xsi:type="setup:ResourceCopyTask"
-          id="rc.win.python"
+          id="rc.linux.python"
           filter=""
           sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
           targetURL="${tmp.download.location/python.tar.gz|uri}">
@@ -413,7 +413,7 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python.linux"
-          predecessor="rc.win.python"
+          predecessor="rc.linux.python"
           zipFile="${tmp.download.location/python.tar.gz}"
           destinationDir="${software.location}"
           priority="100">
