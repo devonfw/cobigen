@@ -438,7 +438,7 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python.win"
-          predecessor="rc.win.python rc.win.python"
+          predecessor="rc.win.python"
           zipFile="${tmp.download.location/python.zip}"
           destinationDir="${software.location}"
           priority="100">
