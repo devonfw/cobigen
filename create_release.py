@@ -161,7 +161,7 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
         name  = pom.find("{http://maven.apache.org/POM/4.0.0}version")
         call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change)
 
-    print_info("Current working directory changed to: "+os.getcwd())
+    print_info("Current working directory changed to: "+os.getcwd());
 
     if bool_dry:
         print_info("dry-run: would add,commit,push pom.xml in git")
@@ -221,16 +221,20 @@ next_version = input("Enter next version number to be set after the release: ")
 while (not (next_version and next_version.strip())):   
    next_version = input("Enter next version number to be set after the release: ")
  
-# Removing cobigen/ from the build folder name for milestone title and tag name"
-if "cobigen/" in build_folder_name:
-    tag_name=build_folder_name.split("/")[1]+"/v"+release_version
-    build_folder_without_cobigen=build_folder_name.split("/")[1]
+# Removing cobigen\ from the build folder name for milestone title and tag name"
+if "cobigen\\" in build_folder_name:
+    tag_name=build_folder_name.split("\\")[1]+"/v"+release_version
+    build_folder_without_cobigen=build_folder_name.split("\\")[1]
 else:
 	tag_name=build_folder_name+"/v"+release_version
 	build_folder_without_cobigen=build_folder_name
 	
 release_version_with_v = "v" + release_version
 
+if branch_name in ("dev_tempeng_freemarker","dev_tempeng_velocity"):
+    tag_name=build_folder_name.split("\\")[2]+"/v"+release_version
+    build_folder_without_cobigen=build_folder_name.split("\\")[2]
+    
 #############################Step 1.1.2  
 ''' Checks if we are at correct path "workspaces/cobigen-master/tools-cobigen'''
 print("Checking current directory path")
@@ -297,6 +301,7 @@ for i in range(len(milestone_json_data)):
      
 if matched_milestone_title != "":          
     split_version_from_v=matched_milestone_title.rindex("-v");
+    
     milestone_version_in_git=milestone_title_in_git[split_version_from_v+2:];
     if milestone_version_in_git!=release_version:
         get_exit_message_milestone()

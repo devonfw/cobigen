@@ -10,19 +10,19 @@ def get_build_folder(branch_name):
     elif (branch_name == 'dev_eclipseplugin'): 
         build_folder_name = 'cobigen-eclipse' 
     elif (branch_name == 'dev_htmlmerger'): 
-        build_folder_name = 'cobigen/cobigen-htmlplugin' 
+        build_folder_name = 'cobigen\cobigen-htmlplugin' 
     elif (branch_name == 'dev_mavenplugin'):
         build_folder_name = 'cobigen-maven' 
     elif (branch_name == 'dev_tempeng_freemarker'):
-        build_folder_name = 'cobigen/cobigen-templateengines/cobigen-tempeng-freemarker' 
+        build_folder_name = 'cobigen\cobigen-templateengines\cobigen-tempeng-freemarker' 
     elif (branch_name == 'dev_tempeng_velocity'):
-        build_folder_name = 'cobigen/cobigen-templateengines/cobigen-tempeng-velocity' 
+        build_folder_name = 'cobigen\cobigen-templateengines\cobigen-tempeng-velocity' 
     elif (branch_name == 'dev_core'):
-        build_folder_name = 'cobigen/cobigen-core-parent' 
+        build_folder_name = 'cobigen\cobigen-core-parent' 
     elif(branch_name == 'dev_javaplugin'):
-        build_folder_name = 'cobigen/cobigen-javaplugin-parent' 
+        build_folder_name = 'cobigen\cobigen-javaplugin-parent' 
     elif (branch_name == 'dev_jssenchaplugin'):
-        build_folder_name = 'cobigen/cobigen-senchaplugin'
+        build_folder_name = 'cobigen\cobigen-senchaplugin'
     elif (branch_name == 'dev_openapiplugin'):
 	    build_folder_name = 'cobigen\cobigen-openapiplugin'
     elif (branch_name == 'dev_tsplugin'):
