@@ -237,10 +237,10 @@ print("Checking current directory path")
 current_directory_path=os.getcwd()
 print("Current working directory is: "+current_directory_path)
 if "Windows" in platform.platform():
-	tools_cobigen_path="workspaces\cobigen-master\tools-cobigen"
+	tools_cobigen_path="workspaces\\cobigen-master\\tools-cobigen"
 else:
 	tools_cobigen_path="workspaces/cobigen-master/tools-cobigen"
-	
+
 if not tools_cobigen_path in current_directory_path:
     print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");
     sys.exit()
