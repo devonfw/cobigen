@@ -1,25 +1,23 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { CoreModule } from '../../core/core.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoName?lower_case}-grid.component';
+import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?cap_first}.service';
 
 describe('${variables.etoName?cap_first}GridComponent', () => {
-  let component: ${variables.etoName?cap_first}GridComponent;
-  let fixture: ComponentFixture<${variables.etoName?cap_first}GridComponent>;
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ${variables.etoName?cap_first}GridComponent ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule, CoreModule, TranslateModule.forRoot()],
+      declarations: [ ${variables.etoName?cap_first}GridComponent ],
+      providers: [${variables.etoName?cap_first}Service],
+    }).compileComponents();
   }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(${variables.etoName?cap_first}GridComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('should create the app', async(() => {
+    const fixture: ComponentFixture<
+      ${variables.etoName?cap_first}GridComponent
+    > = TestBed.createComponent(${variables.etoName?cap_first}GridComponent);
+    const app: any = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
+  }));
 });
