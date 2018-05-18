@@ -496,7 +496,7 @@ else:
 release_milestone = rep.get_milestone(milestone_number)
 
 if bool_dry:
-    print_info("dry-run: would close the milestone:", release_milestone.title)
+    print_info("dry-run: would close the milestone:"+ release_milestone.title)
 else:
     if (release_milestone.state == "closed"):
         print_info("Milestone >>", release_milestone.title, "<< is already closed, please check.")
@@ -572,7 +572,7 @@ else:
 #############################Step 12
 '''Merge master to development branch'''
 if bool_dry:
-    print_info("dry-run: would merge from master to ", branch_name)
+    print_info("dry-run: would merge from master to "+ branch_name)
 else:
     try:
         head = rep.get_branch("master")
@@ -604,7 +604,7 @@ else:
     closing_comment = "Automatically processed."
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    print_info("Closed issue >>", release_issue.title, "<<")
+    print_info("Closed issue >>"+ release_issue.title+ "<<")
 	
 print("Script has been executed successfully, below are the points that user accepted during script execution: ")
 
