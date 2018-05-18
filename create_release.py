@@ -61,7 +61,12 @@ for o in sys.argv:
 init()
 
 # Variables Initialization
-repo = Repo(".")
+try:
+    repo = Repo(".")
+except git.InvalidGitRepositoryError:
+    print("[ERROR] Path is not a git repository.Please go to valid git repository")
+    sys.exit()
+
 git_cmd = git.cmd.Git(".")
 if bool_test:
     git_url="@api.github.com/repos/TODO/TODO"
@@ -121,7 +126,7 @@ def remove_snapshot_in_version(name,pom,version_to_change):
         pom.write("pom.xml")
 
 def get_exit_message_milestone():
-    print("[ERROR]Please check if you passed the correct version to be released or check whether you missed \
+    print("[ERROR] Please check if you passed the correct version to be released or check whether you missed \
 	to create a milestone for the release and create one before running the script.");
     sys.exit()
 
@@ -170,13 +175,18 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
 	    print(repo.git.status())
 	    perform_commit_with_issue_number(commit_message)
 
-#This Method is responsible for Checking branches in repository with branch entered by user
+#This Method is responsible for checking branches in repository with branch entered by user
 def check_branch_validity(branch_name):
     if git_cmd.execute("git ls-remote --heads origin "+branch_name+" | wc -l") == "":
 	    is_branch_valid=False
     else:
 	    is_branch_valid=True
     return is_branch_valid
+
+#This part checks if environment variables is set or not.
+if not ("ICSD_FILESERVER_USER" and "ICSD_FILESERVER_PASSWD") in os.environ:
+    print("[ERROR] Please use CobiGen IDE initialized console and set the variables in the variables-customized.bat ")
+    sys.exit()
 
 ############################Step 1.1.1  
 # Enter Branch Name-mandatory
@@ -221,10 +231,10 @@ next_version = input("Enter next version number to be set after the release: ")
 while (not (next_version and next_version.strip())):   
    next_version = input("Enter next version number to be set after the release: ")
  
-# Removing cobigen\ from the build folder name for milestone title and tag name"
-if "cobigen\\" in build_folder_name:
-    tag_name=build_folder_name.split("\\")[1]+"/v"+release_version
-    build_folder_without_cobigen=build_folder_name.split("\\")[1]
+# Removing cobigen from the build folder name for milestone title and tag name"
+if ("cobigen\\" or "cobigen/") in build_folder_name:
+    tag_name=build_folder_name.split(os.sep)[1]+"/v"+release_version
+    build_folder_without_cobigen=build_folder_name.split(os.sep)[1];
 else:
 	tag_name=build_folder_name+"/v"+release_version
 	build_folder_without_cobigen=build_folder_name
@@ -232,18 +242,15 @@ else:
 release_version_with_v = "v" + release_version
 
 if branch_name in ("dev_tempeng_freemarker","dev_tempeng_velocity"):
-    tag_name=build_folder_name.split("\\")[2]+"/v"+release_version
-    build_folder_without_cobigen=build_folder_name.split("\\")[2]
+    tag_name=build_folder_name.split(os.sep)[2]+"/v"+release_version
+    build_folder_without_cobigen=build_folder_name.split(os.sep)[2]
     
 #############################Step 1.1.2  
 ''' Checks if we are at correct path "workspaces/cobigen-master/tools-cobigen'''
 print("Checking current directory path")
 current_directory_path=os.getcwd()
 print("Current working directory is: "+current_directory_path)
-if "Windows" in platform.platform():
-	tools_cobigen_path="workspaces\\cobigen-master\\tools-cobigen"
-else:
-	tools_cobigen_path="workspaces/cobigen-master/tools-cobigen"
+tools_cobigen_path=os.path.join('workspaces','cobigen-master','tools-cobigen')
 
 if not tools_cobigen_path in current_directory_path:
     print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");
@@ -260,9 +267,10 @@ if repo.is_dirty():
     user_choice=input("Your working directory is not clean. Please clean it,\
     press 'yes' if it is done and you want to continue else any key to exit: ").lower()
     if not user_choice =="yes":
-        user_acceptance_messages.append("User cleaned working directory and allowed script to run further.")
         print("[ERROR]EXIT MESSAGE: working copy is not clean");
         sys.exit()
+    else:
+	    user_acceptance_messages.append("User cleaned working directory and allowed script to run further.")
     
 #############################Step 0      
 print_info("Check branch build not failing in production line "+pl_url+" :")
@@ -399,8 +407,7 @@ if maven_process.returncode == 1:
     else: 
         print_info("Executing git reset --hard HEAD~2.."+git_cmd.execute("git reset --hard HEAD~2"));
         print_info("Executing git pull.."+repo.git.pull());	
-    sys.exit();
-   
+    sys.exit();   
 	
 ############################Step 5
 '''Update the wiki submodule and commit the latest version to target the updated release version of the wiki'''
@@ -471,12 +478,20 @@ else:
 ############################Step 9
 '''deploy''' 
 if build_folder_name!="cobigen-eclipse":
-	os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
-	& mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true & echo 2) *****************\
-	Executing maven install***************** & mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true & echo 3)\
-	*****************Executing maven deploy***************** & mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable\"")	
+    if "Windows" in platform.platform():
+	    os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
+	    & mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true & echo 2) *****************\
+	    Executing maven install***************** & mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true & echo 3)\
+	    *****************Executing maven deploy***************** & mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable\"")
+    else:
+        os.system("gnome-terminal -e 'bash -c \"mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true; exec bash\" ' ")
+        os.system("gnome-terminal -e 'bash -c \"mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true; exec bash\"'")
+        os.system("gnome-terminal -e 'bash -c \"mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable; exec bash\"'")  
 else:
-    os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")	
+    if "Windows" in platform.platform():
+        os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")
+    else:
+	    os.system("gnome-terminal -e 'bash -c \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable; exec bash\" ' ")
 
 user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort: ")
 if user_choice=="no":
@@ -610,4 +625,4 @@ print("Script has been executed successfully, below are the points that user acc
 
 '''The decisions taken by the developer and the context of the decisions throughout the script'''
 for message in user_acceptance_messages:
-    print_info(">>"+message)
+    print(">>"+message)
