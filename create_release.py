@@ -241,7 +241,7 @@ if "Windows" in platform.platform():
 else:
 	tools_cobigen_path="workspaces/cobigen-master/tools-cobigen"
 	
-if not current_directory_path in tools_cobigen_path:
+if not tools_cobigen_path in current_directory_path:
     print("EXIT MESSAGE: Please go to correct directory i.e 'workspaces/cobigen-master/tools-cobigen'");
     sys.exit()
 
