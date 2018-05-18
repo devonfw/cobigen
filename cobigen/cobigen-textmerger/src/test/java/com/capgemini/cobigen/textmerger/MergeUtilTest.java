@@ -63,7 +63,6 @@ public class MergeUtilTest {
         try {
             result = MergeUtil.splitByAnchors(testString, testStrat);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             fail("Expected no Exception, got the following Exception instead: " + e.getMessage());
         }
         assertThat(result).isEqualTo(toBe);
