@@ -14,6 +14,7 @@
       <button mat-button flex class="push-right-sm" [disabled]="!selectedRow" [matTooltip]="'buttons.deleteItem' | translate" (click)="openConfirm()">
         <mat-icon>delete</mat-icon>
       </button>
+
       <form (ngSubmit)="get${variables.etoName?cap_first}()" #filterForm="ngForm">
         <td-expansion-panel label="Filters">
           <div layout="row" class="pad-left-md pad-right-md" style="align-items:center; border-bottom: 1px solid lightgrey" flex>
@@ -33,7 +34,7 @@
             </div>
           </div>
           <div class="align-right">
-            <button mat-button type="button" (click)="clearFilters(filterForm)" class="text-upper property-text-bold">Clear filters</button>
+            <button mat-button type="button" (click)="searchReset(filterForm)" class="text-upper property-text-bold">Clear filters</button>
             <button mat-raised-button type="submit" color="accent" class="text-upper property-text-bold">Apply filters</button>
           </div>
         </td-expansion-panel>
