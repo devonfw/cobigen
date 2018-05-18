@@ -21,7 +21,7 @@ public class MergeUtil {
      * Regular expression matching what correct anchors should look like.
      */
     public static final String correctAnchorRegex =
-        "(\\r\\n|\\r|\\n)(.*)anchor:([^:]+):(newline_)?([^:]+)(_newline)?:anchorend\\s*(\\r\\n|\\r|\\n)";
+        "(.*)anchor:([^:]+):(newline_)?([^:]+)(_newline)?:anchorend\\s*(\\r\\n|\\r|\\n)";
 
     /**
      * Regular expression matching what correct anchors should look like after invoking trim() on them.
@@ -32,8 +32,7 @@ public class MergeUtil {
      * Regular expression matching all anchors, correct and wrong, to properly throw exceptions to show users
      * what is wrong.
      */
-    private static final String anchorRegex =
-        "(\\r\\n|\\r|\\n)(.*)anchor:([^:]*)(:([^:]*))?:anchorend\\s*(\\r\\n|\\r|\\n)";
+    private static final String anchorRegex = "(.*)anchor:([^:]*)(:([^:]*))?:anchorend\\s*(\\r\\n|\\r|\\n)";
 
     /**
      * Regular expression matching all anchors, correct and wrong, after invoking trim() on them.
@@ -68,8 +67,7 @@ public class MergeUtil {
                     + "for more details");
         }
 
-        toSplit =
-            System.lineSeparator() + toSplit + System.lineSeparator() + "anchor:::anchorend" + System.lineSeparator();
+        toSplit = toSplit + System.lineSeparator() + "anchor:::anchorend" + System.lineSeparator();
         Anchor anchor;
         int anchorCount = 0;
         Pattern regex = Pattern.compile(anchorRegex);
@@ -83,16 +81,21 @@ public class MergeUtil {
         for (int i = 1; i < anchorCount; i++) {
             if (m.find()) {
                 tmp.find();
-                if (m.group(5) == null || m.group(5).equals("")) {
-                    anchor = new Anchor(m.group(2), m.group(3), defaultMergeStrategy, false, false);
+                System.out.println(m.group());
+                System.out.println(m.group(1));
+                System.out.println(m.group(2));
+                System.out.println(m.group(3));
+                System.out.println(m.group(4));
+                if (m.group(4) == null || m.group(4).equals("")) {
+                    anchor = new Anchor(m.group(1), m.group(2), defaultMergeStrategy, false, false);
                 } else {
-                    MergeStrategy strat = getMergeStrategyOfName(m.group(5));
-                    if (m.group(5).contains("newline_")) {
-                        anchor = new Anchor(m.group(2), m.group(3), strat, true, true);
-                    } else if (m.group(5).contains("_newline")) {
-                        anchor = new Anchor(m.group(2), m.group(3), strat, true, false);
+                    MergeStrategy strat = getMergeStrategyOfName(m.group(4));
+                    if (m.group(4).contains("newline_")) {
+                        anchor = new Anchor(m.group(1), m.group(2), strat, true, true);
+                    } else if (m.group(4).contains("_newline")) {
+                        anchor = new Anchor(m.group(1), m.group(2), strat, true, false);
                     } else {
-                        anchor = new Anchor(m.group(2), m.group(3), strat, false, false);
+                        anchor = new Anchor(m.group(1), m.group(2), strat, false, false);
                     }
                 }
                 String value = StringUtils.substring(toSplit, m.end(), tmp.start());
