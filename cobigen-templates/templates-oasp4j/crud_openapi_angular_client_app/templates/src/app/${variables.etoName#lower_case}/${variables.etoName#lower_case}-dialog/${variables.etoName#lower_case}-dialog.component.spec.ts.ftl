@@ -4,7 +4,7 @@ import { ${variables.etoName?cap_first}DialogComponent } from './${variables.eto
 
 describe('${variables.etoName?cap_first}DialogComponent', () => {
   let component: ${variables.etoName?cap_first}DialogComponent;
-  let fixture: ComponentFixture<SampleDataDialogComponent>;
+  let fixture: ComponentFixture<${variables.etoName?cap_first}DialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
