@@ -449,6 +449,7 @@
     <setupTask
         xsi:type="fsrename:FSRenameTask"
         id="rename.maven"
+        excludedTriggers="MANUAL"
         predecessor="unzip.maven.win unzip.maven"
         filter=""
         resource="${software.location/}apache-maven-${maven.version}"
