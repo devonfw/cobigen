@@ -1,6 +1,8 @@
 from scripts.settings import init
 import requests
 import json
+import os
+
 
 # This Method will be responsible for getting package folder name based on branch name
 def get_build_folder(branch_name):
@@ -10,31 +12,31 @@ def get_build_folder(branch_name):
     elif (branch_name == 'dev_eclipseplugin'): 
         build_folder_name = 'cobigen-eclipse' 
     elif (branch_name == 'dev_htmlmerger'): 
-        build_folder_name = 'cobigen\cobigen-htmlplugin' 
+        build_folder_name = os.path.join('cobigen','cobigen-htmlplugin') 
     elif (branch_name == 'dev_mavenplugin'):
         build_folder_name = 'cobigen-maven' 
     elif (branch_name == 'dev_tempeng_freemarker'):
-        build_folder_name = 'cobigen\cobigen-templateengines\cobigen-tempeng-freemarker' 
+        build_folder_name = os.path.join('cobigen','cobigen-templateengines','cobigen-tempeng-freemarker')
     elif (branch_name == 'dev_tempeng_velocity'):
-        build_folder_name = 'cobigen\cobigen-templateengines\cobigen-tempeng-velocity' 
+        build_folder_name = os.path.join('cobigen','cobigen-templateengines','cobigen-tempeng-velocity')
     elif (branch_name == 'dev_core'):
-        build_folder_name = 'cobigen\cobigen-core-parent' 
+        build_folder_name = os.path.join('cobigen','cobigen-core-parent')
     elif(branch_name == 'dev_javaplugin'):
-        build_folder_name = 'cobigen\cobigen-javaplugin-parent' 
+        build_folder_name = os.path.join('cobigen','cobigen-javaplugin-parent')
     elif (branch_name == 'dev_jssenchaplugin'):
-        build_folder_name = 'cobigen\cobigen-senchaplugin'
+        build_folder_name = os.path.join('cobigen','cobigen-senchaplugin')
     elif (branch_name == 'dev_openapiplugin'):
-	    build_folder_name = 'cobigen\cobigen-openapiplugin'
+	    build_folder_name = os.path.join('cobigen','cobigen-openapiplugin')
     elif (branch_name == 'dev_tsplugin'):
-	    build_folder_name = 'cobigen\cobigen-tsplugin'
+	    build_folder_name = os.path.join('cobigen','cobigen-tsplugin')
     elif (branch_name == 'dev_textmerger'):
-	    build_folder_name = 'cobigen\cobigen-textmerger'
+	    build_folder_name = os.path.join('cobigen','cobigen-textmerger')
     elif (branch_name == 'dev_propertyplugin'):
-	    build_folder_name = 'cobigen\cobigen-propertyplugin'
+	    build_folder_name = os.path.join('cobigen','cobigen-propertyplugin')
     elif (branch_name == 'dev_jsonplugin'):
-	    build_folder_name = 'cobigen\cobigen-jsonplugin'
+	    build_folder_name = os.path.join('cobigen','cobigen-jsonplugin')
     elif (branch_name == 'dev_xmlplugin'):
-	    build_folder_name = 'cobigen\cobigen-xmlplugin'
+	    build_folder_name = os.path.join('cobigen','cobigen-xmlplugin')
     else:
         build_folder_name ='invalid'
     return build_folder_name
