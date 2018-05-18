@@ -102,11 +102,7 @@ public class OpenAPIInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
-            try {
-                inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
-            } catch (Exception e) {
-                throw new InvalidConfigurationException(e.getMessage());
-            }
+            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
         }
         return inputs;
     }
@@ -127,10 +123,8 @@ public class OpenAPIInputReader implements InputReader {
      * @param openApi
      *            the model for an OpenApi3 file
      * @return list of entities
-     * @throws Exception
-     *             when extracting the responses of a path throws an exception
      */
-    private List<EntityDef> extractComponents(OpenApi3 openApi) throws Exception {
+    private List<EntityDef> extractComponents(OpenApi3 openApi) {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
@@ -294,10 +288,8 @@ public class OpenAPIInputReader implements InputReader {
      * @param componentName
      *            the component where the paths belong to
      * @return list of {@link PathDef}'s
-     * @throws Exception
-     *             When extracting the responses throws an exception
      */
-    private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) throws Exception {
+    private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
             if (pathKey.toLowerCase().contains(componentName.toLowerCase())) {
@@ -424,10 +416,8 @@ public class OpenAPIInputReader implements InputReader {
      * @param tags
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
-     * @throws Exception
      */
-    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags)
-        throws Exception {
+    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
         ResponseDef response = new ResponseDef();
         for (String resp : responses.keySet()) {
             if (resp.equals("200")) {
