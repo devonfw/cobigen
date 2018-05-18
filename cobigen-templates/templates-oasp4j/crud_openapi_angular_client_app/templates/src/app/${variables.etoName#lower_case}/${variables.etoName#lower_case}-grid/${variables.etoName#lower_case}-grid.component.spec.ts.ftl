@@ -4,7 +4,7 @@ import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoNa
 
 describe('${variables.etoName?cap_first}GridComponent', () => {
   let component: ${variables.etoName?cap_first}GridComponent;
-  let fixture: ComponentFixture<SampleDataGridComponent>;
+  let fixture: ComponentFixture<${variables.etoName?cap_first}GridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
