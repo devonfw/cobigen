@@ -102,7 +102,11 @@ public class OpenAPIInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
-            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
+            try {
+                inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
+            } catch (Exception e) {
+                throw new InvalidConfigurationException(e.getMessage());
+            }
         }
         return inputs;
     }
@@ -123,8 +127,10 @@ public class OpenAPIInputReader implements InputReader {
      * @param openApi
      *            the model for an OpenApi3 file
      * @return list of entities
+     * @throws Exception
+     *             when extracting the responses of a path throws an exception
      */
-    private List<EntityDef> extractComponents(OpenApi3 openApi) {
+    private List<EntityDef> extractComponents(OpenApi3 openApi) throws Exception {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
@@ -288,8 +294,10 @@ public class OpenAPIInputReader implements InputReader {
      * @param componentName
      *            the component where the paths belong to
      * @return list of {@link PathDef}'s
+     * @throws Exception
+     *             When extracting the responses throws an exception
      */
-    private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
+    private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) throws Exception {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
             if (pathKey.toLowerCase().contains(componentName.toLowerCase())) {
@@ -457,8 +465,9 @@ public class OpenAPIInputReader implements InputReader {
                             }
                         } else {
                             String refString = schemaReference.getRefString();
-                            throw new Exception("Referenced entity " + refString.substring(refString.lastIndexOf('/'))
-                                + " not found. The reference " + refString + " schould be fixed before generation.");
+                            throw new InvalidConfigurationException("Referenced entity "
+                                + refString.substring(refString.lastIndexOf('/')) + " not found. The reference "
+                                + refString + " schould be fixed before generation.");
                         }
                     }
                 } else {
