@@ -31,8 +31,8 @@
   "CLOSE": "CERRAR",
   "ERROR": "ERROR",
   "${variables.component?lower_case}": {
-    "title": "SampleData_ES_Tabla",
-    "subtitle": "SampleData_ES_Descripción",
+    "title": "${variables.etoName?cap_first}Data_ES_Tabla",
+    "subtitle": "${variables.etoName?cap_first}Data_ES_Descripción",
     "addtitle": "Añadir nueva fila",
     "editTitle": "Editar fila existente",
     "searchTip": "Panel de búsqueda",

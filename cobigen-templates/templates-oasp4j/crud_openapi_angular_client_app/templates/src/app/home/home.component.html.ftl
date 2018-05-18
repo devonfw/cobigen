@@ -1,5 +1,5 @@
 <td-layout-nav>
-  <app-header (toggle)="onToggle($event)" [sideNavOpened]="sideNavOpened" td-toolbar-content flex></app-header>
+  <public-header (toggle)="onToggle($event)" [sideNavOpened]="sideNavOpened" td-toolbar-content flex></public-header>
   <td-layout-manage-list
     [opened]="(media.registerQuery('gt-sm') | async) || sideNavOpened"
     [mode]="(media.registerQuery('gt-sm') | async) ? 'side' : 'over'"
