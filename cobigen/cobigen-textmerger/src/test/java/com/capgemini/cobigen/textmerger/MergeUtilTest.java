@@ -36,7 +36,7 @@ public class MergeUtilTest {
             put(new Anchor("// ", "test211", testStrat, false, false), "line7");
             put(new Anchor("// ", "test2111", testStrat, false, false), "line8");
             put(new Anchor("// ", "test21111", testStrat, false, false), "line9");
-            put(new Anchor("// ", "test2221", testStrat, false, false), "line10 anchor:::anchorend");
+            put(new Anchor("// ", "test2221", testStrat, false, false), "line10");
             put(new Anchor("// ", "test2213123", testStrat, false, false), "Lorem ipsum dolor sit amet");
         }
     };
@@ -47,22 +47,23 @@ public class MergeUtilTest {
      */
     @Test
     public void testProperMappingOfAnchorsAndText() {
-        String testString = "// anchor:test:append:anchorend" + System.lineSeparator() + " line1 "
-            + System.lineSeparator() + "// anchor:test2:append:anchorend" + System.lineSeparator() + " line2 "
-            + System.lineSeparator() + "// anchor:test22:append:anchorend" + System.lineSeparator() + " line3 "
-            + System.lineSeparator() + "// anchor:test24:append:anchorend" + System.lineSeparator() + " line4 "
-            + System.lineSeparator() + "// anchor:test21:append:anchorend" + System.lineSeparator() + " line5 "
-            + System.lineSeparator() + "// anchor:test25:append:anchorend" + System.lineSeparator() + " line6 "
-            + System.lineSeparator() + "// anchor:test211:append:anchorend" + System.lineSeparator() + " line7 "
-            + System.lineSeparator() + "// anchor:test2111:append:anchorend" + System.lineSeparator() + " line8 "
-            + System.lineSeparator() + "// anchor:test21111:append:anchorend" + System.lineSeparator() + " line9 "
-            + System.lineSeparator() + "// anchor:test2221:append:anchorend" + System.lineSeparator()
-            + " line10 anchor:::anchorend " + System.lineSeparator() + "// anchor:test2213123:append:anchorend"
-            + System.lineSeparator() + " Lorem ipsum dolor sit amet";
+        String testString =
+            "// anchor:test:append:anchorend" + System.lineSeparator() + " line1 " + System.lineSeparator()
+                + "// anchor:test2:append:anchorend" + System.lineSeparator() + " line2 " + System.lineSeparator()
+                + "// anchor:test22:append:anchorend" + System.lineSeparator() + " line3 " + System.lineSeparator()
+                + "// anchor:test24:append:anchorend" + System.lineSeparator() + " line4 " + System.lineSeparator()
+                + "// anchor:test21:append:anchorend" + System.lineSeparator() + " line5 " + System.lineSeparator()
+                + "// anchor:test25:append:anchorend" + System.lineSeparator() + " line6 " + System.lineSeparator()
+                + "// anchor:test211:append:anchorend" + System.lineSeparator() + " line7 " + System.lineSeparator()
+                + "// anchor:test2111:append:anchorend" + System.lineSeparator() + " line8 " + System.lineSeparator()
+                + "// anchor:test21111:append:anchorend" + System.lineSeparator() + " line9 " + System.lineSeparator()
+                + "// anchor:test2221:append:anchorend" + System.lineSeparator() + " line10 " + System.lineSeparator()
+                + "// anchor:test2213123:append:anchorend" + System.lineSeparator() + " Lorem ipsum dolor sit amet";
         Map<Anchor, String> result = new LinkedHashMap<>();
         try {
             result = MergeUtil.splitByAnchors(testString, testStrat);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             fail("Expected no Exception, got the following Exception instead: " + e.getMessage());
         }
         assertThat(result).isEqualTo(toBe);
@@ -84,7 +85,6 @@ public class MergeUtilTest {
 
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             assertThat(e).hasMessage("Error at anchor for documentpart: // anchor:anotherone::anchorend."
                 + " Incorrect anchor definition, no proper mergestrategy defined.\nSee "
                 + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#mergestrategies "
@@ -125,7 +125,7 @@ public class MergeUtilTest {
      * the start.
      */
     @Test
-    public void testOnlyThrowsExceptionWhenNoAnchorAsFirstLine() {
+    public void throwsExceptionWhenNoAnchorAsFirstLine() {
         String test = "// anchor:test:append:anchorend" + System.lineSeparator() + "test" + System.lineSeparator()
             + "// anchor:test2:append:anchorend" + System.lineSeparator() + "test2";
         String test2 =
