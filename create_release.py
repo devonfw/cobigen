@@ -11,12 +11,14 @@ from git import Repo
 from lxml import etree
 from pathlib import Path 
 from github import Github
+from shutil import move
 from scripts.settings import init
 from uritemplate import URITemplate, expand
 from scripts.github_issue_creation import make_github_issue
 from scripts.git_authentication import authenticate_git_user
 from scripts.branchname_validation import get_build_folder
 from scripts.branchname_validation import get_cobigenwiki_title_name
+
 
 # get command line arguments and initialise global booleans
 # --dry-run -> do not change anything in git but print the steps
@@ -208,6 +210,8 @@ if build_folder_name=="invalid":
 	sys.exit();
 else:
 	print_info("Branch is valid.")
+	
+build_folder_path = os.path.abspath(os.path.join(root_path, build_folder_name))
 
 # Enter Release Number-optional 
 release_issue_number = input("Enter release issue number\
@@ -273,8 +277,8 @@ if repo.is_dirty():
 	    user_acceptance_messages.append("User cleaned working directory and allowed script to run further.")
     
 #############################Step 0      
-print_info("Check branch build not failing in production line "+pl_url+" :")
-value=input("Press yes/no: ").lower()
+print_info("Check branch build not failing in production line "+pl_url+" ")
+value=input("Press 'yes' if you have checked that build is not failing else 'no': ").lower()
 while (value !="yes" and value!="no"):   
     value=input("Press yes/no: ").lower()
 if input == "no":
@@ -398,10 +402,12 @@ else:
 (git reset --hard HEAD~2 && git pull) '''
 print_info("Testing maven integeration..")
 print_info("If maven clean integration-test fails,git reset --hard will be executed to revoke last commits and operation will be revoked")
-maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log", shell=True,stdout = subprocess.PIPE)
+maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log ", shell=True,stdout = subprocess.PIPE)
+
 stdout, stderr = maven_process.communicate()
 if maven_process.returncode == 1:
     print_info("Maven clean integeration fails, please see create_release.py.log for logs located at current directory ");
+    move(build_folder_path+"\\create_release.py.log", root_path+"\\create_release.py.log")
     if bool_dry:
         print_info("dry-run: would perform git reset and pull")
     else: 
@@ -412,7 +418,7 @@ if maven_process.returncode == 1:
 ############################Step 5
 '''Update the wiki submodule and commit the latest version to target the updated release version of the wiki'''
 filepath = os.path.abspath(os.path.join(root_path, "cobigen-documentation", "tools-cobigen.wiki"))
-print_info("Executing git pull origin master.."+git_cmd.execute("git pull origin master"));
+print_info("Executing git pull before updating wiki.."+git_cmd.execute("git pull origin "+branch_name));
 os.chdir(filepath)
 print_info("Changing the "+wiki_version_overview_page+" file, updating the version number")
 title=get_cobigenwiki_title_name(branch_name)
@@ -430,7 +436,8 @@ else:
 
 #############################Step 6
 '''Merge development branch into master'''
-print_info("Executing git pull..."+repo.git.pull());
+os.chdir(build_folder_path)
+print_info("Executing git pull before merging development branch to master.."+git_cmd.execute("git pull origin "+branch_name));
 if bool_dry:
     print("dry-run: would perform git merge")
 else:
@@ -563,8 +570,7 @@ else:
                     r = requests.post(asset_url, auth=(init.git_username,init.git_password) ,headers={'Content-Type':content_type}, files={'file': (fname, open(fpath, 'rb'), 'application/octet-stream')})
     except Exception as e:
         print("[ERROR]"+str(e))
-    else:
-        build_folder_path = os.path.abspath(os.path.join(root_path, build_folder_name))
+    else:        
         os.chdir(build_folder_path)
         print_info("Created a new release")
 
