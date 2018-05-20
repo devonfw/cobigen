@@ -112,7 +112,7 @@ def perform_commit_with_issue_number(commit_message):
 def perform_git_reset_pull_on_user_choice(user_choice):
 	if user_choice=="no":
          perform_git_reset();
-         print_info("Executing git pull.."+repo.git.pull());
+         print_info("Executing git pull.."+git_cmd.execute("git pull origin "+branch_name));
 		 
 # This method is responsible for changing version number in pom.xml to new release version with SNAPSHOT	
 def add_snapshot_in_version(name,pom,version_to_change):
@@ -354,7 +354,7 @@ else:
 os.chdir(build_folder_name)
 print_info("Current working directory changed to: "+os.getcwd())
 print_info("Performing git checkout.."+repo.git.checkout())
-print_info("Performing git pull.."+repo.git.pull())
+print_info("Executing git pull.."+git_cmd.execute("git pull origin "+branch_name));
   
 #############################Step 3.4 
 '''Set the SNAPSHOT version'''
@@ -407,12 +407,12 @@ maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-b
 stdout, stderr = maven_process.communicate()
 if maven_process.returncode == 1:
     print_info("Maven clean integeration fails, please see create_release.py.log for logs located at current directory ");
-    move(build_folder_path+"\\create_release.py.log", root_path+"\\create_release.py.log")
+    move(build_folder_path+os.sep+"create_release.py.log", root_path+os.sep+"create_release.py.log")
     if bool_dry:
         print_info("dry-run: would perform git reset and pull")
     else: 
         print_info("Executing git reset --hard HEAD~2.."+git_cmd.execute("git reset --hard HEAD~2"));
-        print_info("Executing git pull.."+repo.git.pull());	
+        print_info("Executing git pull as build failed.."+git_cmd.execute("git pull origin "+branch_name));
     sys.exit();   
 	
 ############################Step 5
