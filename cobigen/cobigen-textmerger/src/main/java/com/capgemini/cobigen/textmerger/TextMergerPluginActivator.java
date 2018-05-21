@@ -18,6 +18,7 @@ public class TextMergerPluginActivator implements GeneratorPluginActivator {
         List<Merger> merger = Lists.newLinkedList();
         merger.add(new TextAppender("textmerge_append", false));
         merger.add(new TextAppender("textmerge_appendWithNewLine", true));
+        merger.add(new TextAppender("textmerge_override", false));
         return merger;
     }
 

@@ -1,0 +1,4 @@
+// anchor:part1:append:anchorend
+line1
+// anchor:part2:append:anchorend
+line2

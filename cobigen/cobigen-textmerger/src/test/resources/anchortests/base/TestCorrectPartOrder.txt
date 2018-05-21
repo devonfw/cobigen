@@ -1,0 +1,10 @@
+// anchor:part1:nomerge:anchorend
+line1
+// anchor:part2:nomerge:anchorend
+line2
+// anchor:part3:nomerge:anchorend
+line3
+// anchor:part6:nomerge:anchorend
+line4
+// anchor:part9:nomerge:anchorend
+line7
