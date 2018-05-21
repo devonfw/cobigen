@@ -1,0 +1,8 @@
+// anchor:header:append:anchorend
+This should be at the start
+// anchor:notheader:nomerge:anchorend
+line1
+// anchor:notfooter:nomerge:anchorend
+line2
+// anchor:footer:append:anchorend
+This should be at the bottom

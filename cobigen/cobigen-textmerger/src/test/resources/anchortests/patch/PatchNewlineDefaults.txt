@@ -1,0 +1,4 @@
+// anchor:part1:newline_override:anchorend
+line4
+// anchor:part2:nomerge_newline:anchorend
+line5
