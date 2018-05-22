@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.openapiplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -204,6 +205,15 @@ public class OpenAPIInputReaderTest {
                     }
                 }
             }
+        }
+    }
+
+    @Test
+    public void testCyclicalDependencyNoStackOverflow() throws Exception {
+        try {
+            List<Object> inputObjects = getInputs("CyclicalDependency.yaml");
+        } catch (StackOverflowError e) {
+            fail("Expected no Stackoverflow, instead got " + e.getMessage());
         }
     }
 
