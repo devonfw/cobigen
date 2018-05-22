@@ -2,6 +2,8 @@ package utils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import constants.pojo.Field;
 
@@ -332,6 +334,38 @@ public class OaspUtil {
         }
 
         return resultName + suffix;
+
+    }
+
+    /**
+     * Returns the interface type of the list or set from a field. For example, if we have a List
+     * &lt;SampleEntity&gt; it will return "Sample"
+     *
+     * @param field
+     *            the field
+     * @return fieldType interface type of the list
+     */
+    public String getListType(Map<String, Object> field) {
+
+        String fieldType = (String) field.get(Field.TYPE.toString());
+        String fieldCType = (String) field.get(Field.CANONICAL_TYPE.toString());
+
+        if (fieldType.contains("Entity")) {
+            if (fieldCType.startsWith("java.util.List") || fieldCType.startsWith("java.util.Set")) {
+
+                fieldType = fieldType.replace("Entity", "");
+                // Regex: Extracts the list type 'List<type>' => type
+                String regex = "(?<=\\<).+?(?=\\>)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher regexMatcher = pattern.matcher(fieldType);
+
+                if (regexMatcher.find()) {
+                    fieldType = regexMatcher.group(0);
+                }
+            }
+        }
+
+        return fieldType;
 
     }
 
