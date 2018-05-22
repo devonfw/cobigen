@@ -22,37 +22,6 @@ paths:
       responses:
         '200':
           description: Any
-  /datamanagement/v1/moreData/{id}:
-    get:
-      operationId: findMoreData
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 10
-            maximum: 200
-      responses:
-        '200':
-          description: Any
-  /datamanagement/v1/someData/:
-    post:
-      responses:
-        '200':
-          description: Any
-      requestBody:
-        $ref: '#/components/requestBodies/SomeData'
-      tags:
-       - searchCriteria
-  /datamanagement/v1/moreData/validateMoreData:
-    post:
-      responses:
-       '200':
-          description: Any
-      requestBody:
-        $ref: '#/components/requestBodies/MoreData'
 components:
     schemas:
         SomeData:
@@ -69,25 +38,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/FurtherData'
-        MoreData:
-          x-component: DataManagement
-          description: Entity definiton of Moredata
-          type: object
-          properties:
-            anyNumber:
-              type: number
-              format: int64
-              maximum: 100
-              minimum: 0
-            someData:
-              $ref: '#/components/schemas/SomeData'
-            allSomeData:
-              type: array
-              description: 'All SomeData'
-              items:
-                $ref: '#/components/schemas/SomeData'
-          required:
-            - saleExample
         FurtherData:
           x-component: AnotherComponent
           type: object
@@ -100,16 +50,3 @@ components:
               type: array
               items:
                 type: string
-    requestBodies:
-        SomeData:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SomeData'
-          required: true
-        MoreData:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MoreData'
-          required: true
