@@ -6,10 +6,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
 import { LayoutModule } from './layout/layout.module';
 import { HomeModule } from './home/home.module';
-import { ${variables.etoName?cap_first}Module } from './${variables.etoName?lower_case}/${variables.etoName?lower_case}.module';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
+import { ${variables.etoName?cap_first}Module } from './${variables.etoName?lower_case}/${variables.etoName?lower_case}.module';
 
 @NgModule({
   declarations: [
@@ -23,9 +23,9 @@ import { LoginComponent } from './login/login.component';
     AppRoutingModule,
     CoreModule,
     HomeModule,
-    ${variables.etoName?cap_first}Module
+    ${variables.etoName?cap_first}Module,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

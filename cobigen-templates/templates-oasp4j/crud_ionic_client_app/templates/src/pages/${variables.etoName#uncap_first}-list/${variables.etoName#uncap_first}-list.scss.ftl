@@ -3,6 +3,35 @@
 
 // Put style rules here that you want to apply to ${variables.etoName}.
 
+.header-attributes{
+    background-color: #ddd;
+    padding-left:  7%;
+    padding-right: 9%;
+}
+
+.header-span{
+    background-color: #ddd;
+}
+
+.header-grid {
+    background-color: #dddddd; 
+}
+
+.crop{
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;   
+}
+
+.scroll-content {
+    padding-left: 7%!important;
+    padding-right: 9%!important;
+}
+
+.item-inner{
+    padding-right: 0%!important;
+}
+
 .selected {
     background: color($colors, light, base);
     color : color($colors, dark, base);

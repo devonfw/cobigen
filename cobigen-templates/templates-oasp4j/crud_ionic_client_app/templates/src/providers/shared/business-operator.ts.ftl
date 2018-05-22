@@ -15,18 +15,32 @@ export class BusinessOperatorProvider {
 
   constructor() { }
 
-  login() {
-    return this.restPath + 'login';
-  }
-  logout() {
-    return this.restPath + 'logout';
-  }
-  getCsrf() {
-    return this.restPath + 'security/v1/csrftoken';
-  }
+    /**
+    * @returns The url to the login service.
+    */
+    login() {
+        return this.restPath + 'login';
+    }
+    
+    /**
+    * @returns The url to the logout service.
+    */
+    logout() {
+        return this.restPath + 'logout';
+    }
 
-  ${variables.etoName}Service(){
-    return this.restPath + '${variables.component}/v1/${variables.etoName?uncap_first}/';
-  }
+    /**
+    * @returns The url to the csrf token service.
+    */
+    getCsrf() {
+        return this.restPath + 'security/v1/csrftoken';
+    }
+
+    /**
+    * @returns The url to the ${variables.etoName?uncap_first} management service.
+    */
+    ${variables.etoName}Service(){
+        return this.restPath + '${variables.component}/v1/${variables.etoName?uncap_first}/';
+    }
 
 }
