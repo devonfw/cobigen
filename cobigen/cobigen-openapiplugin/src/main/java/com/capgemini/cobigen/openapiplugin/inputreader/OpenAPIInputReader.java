@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.NotYetSupportedException;
@@ -369,8 +370,13 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setIsEntity(true);
                 }
             }
-            if (Overlay.isReference(param, "schema")) {
-                parameter.setIsEntity(true);
+            try {
+                if (Overlay.isReference(param, "schema")) {
+                    parameter.setIsEntity(true);
+                }
+            } catch (NullPointerException e) {
+                throw new CobiGenRuntimeException("Error at parameter " + param.getName()
+                    + ". Invalid OpenAPI file, path parameters need to have a schema defined.");
             }
             parameter.setType(schema.getType());
             parameter.setFormat(schema.getFormat());
