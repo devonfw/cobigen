@@ -10,3 +10,7 @@ line4
 line5
 // anchor:part6:appendbefore_newline:anchorend
 line6
+// anchor:part7:newline:anchorend
+line7
+// anchor:part8:newline:anchorend
+line8

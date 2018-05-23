@@ -81,11 +81,6 @@ public class MergeUtil {
         for (int i = 1; i < anchorCount; i++) {
             if (m.find()) {
                 tmp.find();
-                System.out.println(m.group());
-                System.out.println(m.group(1));
-                System.out.println(m.group(2));
-                System.out.println(m.group(3));
-                System.out.println(m.group(4));
                 if (m.group(4) == null || m.group(4).equals("")) {
                     anchor = new Anchor(m.group(1), m.group(2), defaultMergeStrategy, false, false);
                 } else {
