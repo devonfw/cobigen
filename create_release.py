@@ -541,25 +541,26 @@ add_remove_snapshot_version_in_pom(False,commit_message,release_version)
 ############################Step 9
 '''deploy''' 
 print("****Script will deploy based on branch****")
-if build_folder_name!="cobigen-eclipse":
-    if "Windows" in platform.platform():
-	    os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
-	    & mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true & echo 2) *****************\
-	    Executing maven install***************** & mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true & echo 3)\
-	    *****************Executing maven deploy***************** & mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable\"")
+if not (bool_dry or bool_test):
+    if build_folder_name!="cobigen-eclipse":
+        if "Windows" in platform.platform():
+	        os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
+	        & mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true & echo 2) *****************\
+	        Executing maven install***************** & mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true & echo 3)\
+	        *****************Executing maven deploy***************** & mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable\"")
+        else:
+            os.system("gnome-terminal -e 'bash -c \"mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true; exec bash\" ' ")
+            os.system("gnome-terminal -e 'bash -c \"mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true; exec bash\"'")
+            os.system("gnome-terminal -e 'bash -c \"mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable; exec bash\"'")  
     else:
-        os.system("gnome-terminal -e 'bash -c \"mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true; exec bash\" ' ")
-        os.system("gnome-terminal -e 'bash -c \"mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true; exec bash\"'")
-        os.system("gnome-terminal -e 'bash -c \"mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable; exec bash\"'")  
-else:
-    if "Windows" in platform.platform():
-        os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")
-    else:
-	    os.system("gnome-terminal -e 'bash -c \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable; exec bash\" ' ")
+        if "Windows" in platform.platform():
+            os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")
+        else:
+	        os.system("gnome-terminal -e 'bash -c \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable; exec bash\" ' ")
 
-user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort: ")
-if user_choice=="no":
-	sys.exit()
+    user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort: ")
+    if user_choice=="no":
+	    sys.exit()
 
 ############################Step 10
 '''Create Tag'''
