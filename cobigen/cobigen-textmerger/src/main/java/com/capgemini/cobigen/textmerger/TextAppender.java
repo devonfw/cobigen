@@ -150,7 +150,7 @@ public class TextAppender implements Merger {
                                         throw new Exception("Error at anchor: " + tmpAnchor.getAnchor()
                                             + " Invalid merge strategy, newline is not compatible here.");
                                     }
-                                } else if (tmpAnchor.getNewlineName().matches(".*(_newline)")) {
+                                } else if (tmpAnchor.getNewlineName().matches(".*(newline)")) {
                                     switch (tmpAnchor.getNewlineName().toLowerCase()) {
                                     case "appendbefore_newline":
                                         toAppend += System.lineSeparator();
@@ -167,6 +167,13 @@ public class TextAppender implements Merger {
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case "append_newline":
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend += System.lineSeparator();
+                                        mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
+                                            splitPatch, splitBase, tmpAnchor);
+                                        break;
+                                    case "newline":
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
                                         toAppend += System.lineSeparator();
@@ -210,6 +217,11 @@ public class TextAppender implements Merger {
                                     case ERROR:
                                         throw new Exception("Error at anchor: " + tmpAnchor.getAnchor()
                                             + " Invalid merge strategy, merge strategy does not exist.");
+                                    default:
+                                        throw new Exception("Implementation error, please create a new issue at "
+                                            + "https://github.com/devonfw/tools-cobigen/issues "
+                                            + "and provide your document and the faulty anchor "
+                                            + tmpAnchor.getAnchor());
                                     }
                                 }
 
