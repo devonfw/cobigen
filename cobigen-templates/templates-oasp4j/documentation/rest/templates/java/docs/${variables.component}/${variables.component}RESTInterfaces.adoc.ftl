@@ -40,7 +40,7 @@ Component Data <#-- Table definitions in multiple rows to avoid long lines -->
       </#list>
     </#if>
     |===
-    <#else> == ${annotation} 
+    <#else>
   </#if>
 </#macro>
 
