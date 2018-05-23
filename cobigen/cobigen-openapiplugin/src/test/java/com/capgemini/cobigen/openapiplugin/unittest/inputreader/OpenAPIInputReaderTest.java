@@ -209,7 +209,9 @@ public class OpenAPIInputReaderTest {
         }
     }
 
-    @Ignore("Not possible to properly test, see input file for example of the error to test(SomeData items schema is a reference to FurtherData, FurtherData parent is SomeData)")
+    @Ignore("Not possible to properly test, see input file for example of the error to test "
+        + "(SomeData items schema is a reference to FurtherData, FurtherData parent is SomeData). "
+        + "See https://github.com/devonfw/tools-cobigen/issues/578 for more detail.")
     @Test
     public void testCyclicalDependencyNoStackOverflow() throws Exception {
         try {
