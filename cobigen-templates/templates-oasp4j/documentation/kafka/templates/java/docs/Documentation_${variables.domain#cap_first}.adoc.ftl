@@ -1,4 +1,4 @@
-// anchor:header::anchorend
+// anchor:header:append:anchorend
 :toc:
 [top]
 = Documentation ${variables.domain}
@@ -13,6 +13,6 @@ including information about its components and their openAPI definitions.
 <#include "*/$\{variables.component}/$\{variables.component}To.adoc.ftl">
 
 
-// anchor:footer::anchorend
+// anchor:footer:append:anchorend
 
 <<top,back to top>>
