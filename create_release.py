@@ -71,7 +71,15 @@ except git.InvalidGitRepositoryError:
 
 git_cmd = git.cmd.Git(".")
 if bool_test:
-    git_url="@api.github.com/repos/TODO/TODO"
+    org_name = input("Enter organisation name of repo: ")
+    #Checking if nothing is entered then ask user to enter again   
+    while (not org_name.strip()):
+        org_name = input("Enter Organisation name of Repo: ")
+    repo_name = input("Enter name of repo: ")
+    #Checking if nothing is entered then ask user to enter again   
+    while (not repo_name.strip()):
+        repo_name = input("Enter name of Repo:  ")
+    git_url="@api.github.com/repos/"+org_name+"/"+repo_name+""
 else:
     git_url="@api.github.com/repos/devonfw/tools-cobigen"
 pl_url="https://devon.s2-eu.capgemini.com/"
@@ -91,7 +99,7 @@ g = Github(init.git_username, init.git_password)
 user = g.get_user()
 
 if bool_test:
-    rep = user.get_repo("TODO")
+    rep = user.get_repo(repo_name)
 else:
     org = g.get_organization("devonfw")
     rep = org.get_repo("tools-cobigen")
@@ -100,22 +108,24 @@ else:
 def perform_git_pull(message):
     try:
         print_info(message +"..");
-        origin.pull()
+        origin.pull(allow_unrelated_histories=True)
     except git.GitCommandError as e:
         print("[EXCEPTION] Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
 
 # Method performing git actions
 def perform_git_reset():
-	print_info("Executing git reset --hard HEAD.."+repo.git.reset('--hard'))
+    print_info("Executing git reset --hard HEAD..")
+    repo.git.reset('--hard')
 
 def perform_commit_with_issue_number(commit_message):
     try:
-        print_info("Executing git commit.."+repo.git.commit(message=commit_message))
-        print_info("Executing git push.."+repo.git.push())
+        print_info("Executing git commit..")
+        repo.git.commit(message=commit_message)
+        print_info("Executing git push..")
+        repo.git.push()
     except Exception as e:
 	    if "no changes added to commit" in str(e):
-	        print_info("No File is changed, Nothing to commit..")
-		
+	        print_info("No File is changed, Nothing to commit..")	
 
 def perform_git_reset_pull_on_user_choice(user_choice):
 	if user_choice=="no":
@@ -200,9 +210,10 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
     if bool_dry:
         print_info("dry-run: would add,commit,push pom.xml in git")
     else:   
-	    print_info("Executing git add.."+repo.git.add(["pom.xml"]))
-	    print(repo.git.status())
-	    perform_commit_with_issue_number(commit_message)
+        print_info("Executing git add..")
+        repo.git.add(["pom.xml"])
+        print(repo.git.status())
+        perform_commit_with_issue_number(commit_message)
 
 #This Method is responsible for checking branches in repository with branch entered by user
 def check_branch_validity(branch_name):
@@ -219,15 +230,12 @@ if not ("ICSD_FILESERVER_USER" and "ICSD_FILESERVER_PASSWD") in os.environ:
 
 ############################Step 1.1.1  
 # Enter Branch Name-mandatory
-if bool_test:
-    branch_name="TODO"
-else:
-    branch_name = input("Enter branch name: ")  
+branch_name = input("Enter branch name: ")  
 
-    #Checking if nothing is entered then ask user to enter again   
-    while (branch_name.strip() and not check_branch_validity(branch_name)):
-        print_info("You have entered branch which doesn't exists, Please enter valid branch name.");
-        branch_name = input("Enter branch name: ")   
+#Checking if nothing is entered then ask user to enter again   
+while (branch_name.strip() and not check_branch_validity(branch_name)):
+    print_info("You have entered branch which doesn't exists, Please enter valid branch name.");
+    branch_name = input("Enter branch name: ")   
 
 build_folder_name=get_build_folder(branch_name)
 
@@ -278,7 +286,7 @@ if branch_name in ("dev_tempeng_freemarker","dev_tempeng_velocity"):
     
 #############################Step 1.1.2  
 ''' Checks if we are at correct path "workspaces/cobigen-master/tools-cobigen'''
-print("**Script will check if we are at correct path workspaces/cobigen-master/tools-cobigen**")
+print("****Script will check if we are at correct path workspaces/cobigen-master/tools-cobigen****")
 print("Checking current directory path")
 current_directory_path=os.getcwd()
 print("Current working directory is: "+current_directory_path)
@@ -289,14 +297,14 @@ if not tools_cobigen_path in current_directory_path:
     sys.exit()
 
 #############################Step 1.1.3	
-print("**Script will check if remote 'origin' is 'devonfw/tools-cobigen'**")
+print("****Script will check if remote 'origin' is 'devonfw/tools-cobigen'****")
 remote_origin=git_cmd.execute("git remote -v")
 if "devonfw/tools-cobigen" not in remote_origin:
     print("EXIT MESSAGE: Remote origin is not 'devonfw/tools-cobigen', Please go to correct directory");
     sys.exit()
 
 #############################Step 1.1.4
-print("**Script will check if working copy is not clean**")
+print("****Script will check if working copy is not clean****")
 if repo.is_dirty():
     user_choice=input("Your working directory is not clean. Please clean it, press 'yes' if it is done and you want to continue else any key to exit: ").lower()
     if not user_choice =="yes":
@@ -327,7 +335,7 @@ input("Press any key if done: ")
   
 #############################Step 2.1   
 '''Search for the Milestone to be released (based on #3) -> abort if not found'''
-print("**Script will search for the milestone to be released (based on version number(#3)) and abort if not found**")
+print("****Script will search for the milestone to be released (based on version number(#3)) and abort if not found****")
 url="https://"+init.git_username+":"+init.git_password+git_url+"/milestones"
 response_object= requests.get(url)
 milestone_json_data = json.loads(response_object.text)
@@ -349,10 +357,10 @@ if matched_milestone_title != "":
         get_exit_message_milestone()
 else:
     get_exit_message_milestone()
-      
+print_info("Milestone with title "+matched_milestone_title+" found")      
 #############################Step 2.2
 '''Search for the Release issue to be used (based on #2) -> if not found, create one:'''
-print("**Script will search for the release issue to be used (based on #2) -> if not found, it will create new issue**")
+print("****Script will search for the release issue to be used (based on #2) -> if not found, it will create new issue****")
 def create_github_issue():
     issue_text="This issue has been automatically created. It serves as a container for \
 	all release related commits";
@@ -361,7 +369,8 @@ def create_github_issue():
         release_issue_number="999"
     else: 
         release_issue_number=make_github_issue("Release "+build_folder_without_cobigen+"-"+release_version_with_v,git_url,\
-        milestone_number,issue_text,[build_folder_without_cobigen]);	
+        milestone_number,issue_text,[build_folder_without_cobigen]);
+        print_info("Issue #"+release_issue_number+" created")		
     return release_issue_number
     
  # Search for the Release issue to be used , if not found, create one:
@@ -382,10 +391,10 @@ else:
 #############################Step 3.1/3.2/3.3
 '''Update Versions'''
 '''navigate to correct module folder depending on #1'''
-print("**Script will update versions by navigating to correct module folder depending on #1**")
+print("****Script will update versions by navigating to correct module folder depending on #1****")
 os.chdir(build_folder_name)
 print_info("Current working directory changed to: "+os.getcwd())
-if bool_dry:
+if bool_dry or bool_test:
     try:
         print_info("Executing git Add and commit.."+repo.git.add(u=True)+repo.git.commit(message="Temporary commit files while dry run"))
         print_info("Executing git merge --abort.."+git_cmd.execute("git submodule update")+git_cmd.execute("git clean -f -d"));        
@@ -405,7 +414,7 @@ add_remove_snapshot_version_in_pom(True,commit_message,release_version)
 #############################Step 3.5
 '''Check relevant poms based on #1 for dependencies!\
  (not pom version itself) declaring SNAPSHOT versions'''
-print("**Script will check relevant poms based on #1 for dependencies declaring SNAPSHOT versions**")
+print("****Script will check relevant poms based on #1 for dependencies declaring SNAPSHOT versions****")
 print_info("Removing ''SNAPSHOT'' from dependencies in Pom.xml and committing it")
 
 if bool_dry:
@@ -431,7 +440,8 @@ else:
                                 continue
                         except:
                             continue
-    print_info("Executing git add.."+repo.git.add(["pom.xml"]))
+    print_info("Executing git add..")
+    repo.git.add(["pom.xml"])
     print(repo.git.status())
     commit_message="#"+str(release_issue_number)+" Removing SNAPSHOT suffix from dependencies"
     perform_commit_with_issue_number(commit_message)
@@ -440,7 +450,7 @@ else:
 ############################Step 4 
 '''mvn clean integration-test -> check if everything is # fine, otherwise abort 
 (git reset --hard HEAD~2 && git pull) '''
-print("**Script will perform 'mvn clean integration-test' and checks if everything is fine, otherwise it aborts**")
+print("****Script will perform 'mvn clean integration-test' and checks if everything is fine, otherwise it aborts****")
 print_info("Testing maven integeration..")
 print_info("If maven clean integration-test fails,git reset --hard will be executed to revoke last commits and operation will be revoked")
 maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log ", shell=True,stdout = subprocess.PIPE)
@@ -451,14 +461,15 @@ if maven_process.returncode == 1:
     if bool_dry:
         print_info("dry-run: would perform git reset and pull")
     else: 
-        print_info("Executing git reset --hard HEAD~2.."+repo.head.reset('HEAD~2', index=True, working_tree=True));
-        perform_git_pull("Executing git pull as build failed")        
+        print_info("Executing git reset --hard HEAD~2..")
+        repo.head.reset('HEAD~2', index=True, working_tree=True);
+        perform_git_pull("Executing git pull as build failed")
     sys.exit();
 	
 move(build_folder_path+os.sep+"create_release.py.log", root_path+os.sep+"create_release.py.log")	
 ############################Step 5
 '''Update the wiki submodule and commit the latest version to target the updated release version of the wiki'''
-print("**Script will update the wiki submodule and commit the latest version to target the updated release version of the wiki**")
+print("****Script will update the wiki submodule and commit the latest version to target the updated release version of the wiki****")
 filepath = os.path.abspath(os.path.join(root_path, "cobigen-documentation", "tools-cobigen.wiki"))
 perform_git_pull("Executing git pull before updating wiki")
 os.chdir(filepath)
@@ -473,12 +484,13 @@ with fileinput.FileInput(wiki_version_overview_page, inplace=True) as file:
 if bool_dry:
     print_info("dry-run: would perform git add, commit and push of wiki page")
 else:
-    print_info("Executing git add.."+repo.git.add([wiki_version_overview_page]))
-    print_info("Executing git commit of tools-cobigen.wiki.."+perform_commit_with_issue_number("#"+release_issue_number+" update wiki docs"))   
-
+    print_info("Executing git add..")
+    repo.git.add([wiki_version_overview_page])
+    print_info("Executing git commit of tools-cobigen.wiki..")
+    perform_commit_with_issue_number("#"+release_issue_number+" update wiki docs")
 #############################Step 6
 '''Merge development branch into master'''
-print("**Script will merge development branch into master**")
+print("****Script will merge development branch into master****")
 os.chdir(build_folder_path)
 repo.git.checkout("master")
 if bool_dry:
@@ -486,16 +498,18 @@ if bool_dry:
 else:
     repo.git.checkout("master")
     try:
-	    perform_git_pull("Executing git pull before merging development branch to master")
-	    print_info("Executing git merge..."+repo.git.merge(branch_name));
+        perform_git_pull("Executing git pull before merging development branch to master")
+        print_info("Executing git merge...")
+        git_cmd.execute("git merge --allow-unrelated-histories "+branch_name);
     except:
-	    print_info("Exception occured..")
-	    print_info("Executing git merge --abort.."+git_cmd.execute("git merge --abort"));
-	    perform_git_reset();
+        print_info("Exception occured..")
+        print_info("Executing git merge --abort..")
+        git_cmd.execute("git merge --abort");
+        perform_git_reset();
 	
 #############################Step 7
 '''validation of merge commit'''
-print("**Script will check validation of merge commit**")
+print("****Script will check validation of merge commit****")
 print("Please check all the changed file paths which is to be released")
 list_of_changed_files=str(git_cmd.execute("git diff --name-only")).strip().split("\\n+")
 is_pom_changed=False
@@ -526,7 +540,7 @@ add_remove_snapshot_version_in_pom(False,commit_message,release_version)
 
 ############################Step 9
 '''deploy''' 
-print("**Script will deploy based on branch**")
+print("****Script will deploy based on branch****")
 if build_folder_name!="cobigen-eclipse":
     if "Windows" in platform.platform():
 	    os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
@@ -554,11 +568,12 @@ if bool_dry:
     print("dry-run:would create a new tag")
 else:
     new_tag=repo.create_tag(tag_name)
-    print_info("Pushing git tags.."+origin.push(new_tag))
+    print_info("Pushing git tags..")
+    origin.push(new_tag)
 
 #############################Step 11.1
 '''Process GitHub Milestone and Create Release'''
-print("**Script will process GitHub milestone and create release**")
+print("****Script will process GitHub milestone and create release****")
 release_milestone = rep.get_milestone(milestone_number)
 
 if bool_dry:
@@ -568,11 +583,11 @@ else:
         print_info("Milestone >>", release_milestone.title, "<< is already closed, please check.")
     else:
         release_milestone.edit(release_milestone.title, "closed", release_milestone.description)
-        print_info("New status of Milestone >>", release_milestone.title, "<< is:", release_milestone.state )
+        print_info("New status of Milestone >>" +release_milestone.title+ "<< is:"+ release_milestone.state )
 
 #############################Step 11.2
 '''create a new release'''
-print("**Script will create a new release**")
+print("****Script will create a new release****")
 if bool_dry:
     print_info("dry-run: would create a new release")
 else:
@@ -622,7 +637,7 @@ else:
 #############################Step 11.3
 '''create a new milestone based on the name of\
  the previous closed milestone with the new version #4'''
-print("**Script will create a new milestone based on the name of the previous closed milestone with the new version #4**")
+print("****Script will create a new milestone based on the name of the previous closed milestone with the new version #4****")
 if bool_dry:
     print_info("dry-run: would create a new milestone")
 else:
@@ -638,7 +653,7 @@ else:
 
 #############################Step 12
 '''Merge master to development branch'''
-print("**Script will Merge master to development branch**")
+print("****Script will Merge master to development branch****")
 if bool_dry:
     print_info("dry-run: would merge from master to "+ branch_name)
 else:
@@ -656,7 +671,7 @@ else:
 
 #############################Step 13
 '''set next release version'''
-print("**Script will set next release version in pom**")
+print("****Script will set next release version in pom****")
 if bool_dry:
     print_info("dry-run: would set next version")
 commit_message="setting snapshot version for next release"
@@ -664,7 +679,7 @@ add_remove_snapshot_version_in_pom(True,commit_message,next_version)
 
 #############################Step 14
 '''Close issue number'''
-print("**Script will close github issue**")
+print("****Script will close github issue****")
 release_issue = rep.get_issue(int(release_issue_number))
 if bool_dry:
     print_info("dry-run: would close the release issue")
