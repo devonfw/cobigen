@@ -209,18 +209,6 @@ public class OpenAPIInputReaderTest {
         }
     }
 
-    @Ignore("Not possible to properly test, see input file for example of the error to test "
-        + "(SomeData items schema is a reference to FurtherData, FurtherData parent is SomeData). "
-        + "See https://github.com/devonfw/tools-cobigen/issues/578 for more detail.")
-    @Test
-    public void testCyclicalDependencyNoStackOverflow() throws Exception {
-        try {
-            List<Object> inputObjects = getInputs("CyclicalDependency.yaml");
-        } catch (StackOverflowError e) {
-            fail("Expected no Stackoverflow, instead got " + e.getMessage());
-        }
-    }
-
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidPath() throws Exception {
         List<Object> inputObjects = getInputs("invalidPath.yaml");
@@ -269,6 +257,17 @@ public class OpenAPIInputReaderTest {
             }
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
+    }
+
+    /**
+     * Not possible to properly test, see input file for example of the error to test (SomeData items schema
+     * is a reference to FurtherData, parent of FurtherData is SomeData). See
+     * https://github.com/devonfw/tools-cobigen/issues/578 for more detail.
+     */
+    @Test
+    public void testReadDoesNotResultInStackOverFlow() {
+        OpenAPIInputReader inputReader = new OpenAPIInputReader();
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, "CyclicalDependency.yaml"), TestConstants.UTF_8);
     }
 
     private List<Object> getInputs(String testInputFilename) throws Exception {
