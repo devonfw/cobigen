@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.domain#cap_first}KafkaDocHeader.adoc" mergeStrategy="textmerge_append"/>
+    <templateExtension ref="Documentation_${variables.domain#cap_first}.adoc" mergeStrategy="textmerge_append"/>
   </templates>
 
   <templateScans>
@@ -11,8 +11,8 @@
   </templateScans>
 
   <increments>
-    <increment name="Kafka_Docs" description="Kafka_Interfaces_Documentation">
-      <templateRef ref="${variables.domain#cap_first}KafkaDocHeader.adoc"/>
+    <increment name="Kafka_Docs" description="Documentation">
+      <templateRef ref="Documentation_${variables.domain#cap_first}.adoc"/>
     </increment>
   </increments>
 </templatesConfiguration>
