@@ -99,7 +99,8 @@ else:
 # Method performing git pull
 def perform_git_pull(message):
     try:
-        print_info(message +".."+ origin.pull());
+        print_info(message +"..");
+        origin.pull()
     except git.GitCommandError as e:
         print("[EXCEPTION] Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
 
@@ -277,6 +278,7 @@ if branch_name in ("dev_tempeng_freemarker","dev_tempeng_velocity"):
     
 #############################Step 1.1.2  
 ''' Checks if we are at correct path "workspaces/cobigen-master/tools-cobigen'''
+print("**Script will check if we are at correct path workspaces/cobigen-master/tools-cobigen**")
 print("Checking current directory path")
 current_directory_path=os.getcwd()
 print("Current working directory is: "+current_directory_path)
@@ -287,12 +289,14 @@ if not tools_cobigen_path in current_directory_path:
     sys.exit()
 
 #############################Step 1.1.3	
+print("**Script will check if remote 'origin' is 'devonfw/tools-cobigen'**")
 remote_origin=git_cmd.execute("git remote -v")
 if "devonfw/tools-cobigen" not in remote_origin:
     print("EXIT MESSAGE: Remote origin is not 'devonfw/tools-cobigen', Please go to correct directory");
     sys.exit()
 
 #############################Step 1.1.4
+print("**Script will check if working copy is not clean**")
 if repo.is_dirty():
     user_choice=input("Your working directory is not clean. Please clean it, press 'yes' if it is done and you want to continue else any key to exit: ").lower()
     if not user_choice =="yes":
@@ -323,6 +327,7 @@ input("Press any key if done: ")
   
 #############################Step 2.1   
 '''Search for the Milestone to be released (based on #3) -> abort if not found'''
+print("**Script will search for the milestone to be released (based on version number(#3)) and abort if not found**")
 url="https://"+init.git_username+":"+init.git_password+git_url+"/milestones"
 response_object= requests.get(url)
 milestone_json_data = json.loads(response_object.text)
@@ -347,6 +352,7 @@ else:
       
 #############################Step 2.2
 '''Search for the Release issue to be used (based on #2) -> if not found, create one:'''
+print("**Script will search for the release issue to be used (based on #2) -> if not found, it will create new issue**")
 def create_github_issue():
     issue_text="This issue has been automatically created. It serves as a container for \
 	all release related commits";
@@ -376,11 +382,20 @@ else:
 #############################Step 3.1/3.2/3.3
 '''Update Versions'''
 '''navigate to correct module folder depending on #1'''
+print("**Script will update versions by navigating to correct module folder depending on #1**")
 os.chdir(build_folder_name)
 print_info("Current working directory changed to: "+os.getcwd())
+if bool_dry:
+    try:
+        print_info("Executing git Add and commit.."+repo.git.add(u=True)+repo.git.commit(message="Temporary commit files while dry run"))
+        print_info("Executing git merge --abort.."+git_cmd.execute("git submodule update")+git_cmd.execute("git clean -f -d"));        
+    except git.GitCommandError as e:
+        print("[EXCEPTION] Exception occurred when executing git command 'git submodule update' and 'git clean -f -d' ")
+
 print_info("Performing git checkout.."+repo.git.checkout(branch_name))
 perform_git_pull("Executing git pull")
-
+changed_branch = repo.active_branch
+print(changed_branch.name)
 #############################Step 3.4 
 '''Set the SNAPSHOT version'''
 print_info("Set snapshot version of target release")
@@ -390,7 +405,7 @@ add_remove_snapshot_version_in_pom(True,commit_message,release_version)
 #############################Step 3.5
 '''Check relevant poms based on #1 for dependencies!\
  (not pom version itself) declaring SNAPSHOT versions'''
-
+print("**Script will check relevant poms based on #1 for dependencies declaring SNAPSHOT versions**")
 print_info("Removing ''SNAPSHOT'' from dependencies in Pom.xml and committing it")
 
 if bool_dry:
@@ -425,6 +440,7 @@ else:
 ############################Step 4 
 '''mvn clean integration-test -> check if everything is # fine, otherwise abort 
 (git reset --hard HEAD~2 && git pull) '''
+print("**Script will perform 'mvn clean integration-test' and checks if everything is fine, otherwise it aborts**")
 print_info("Testing maven integeration..")
 print_info("If maven clean integration-test fails,git reset --hard will be executed to revoke last commits and operation will be revoked")
 maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log ", shell=True,stdout = subprocess.PIPE)
@@ -442,6 +458,7 @@ if maven_process.returncode == 1:
 move(build_folder_path+os.sep+"create_release.py.log", root_path+os.sep+"create_release.py.log")	
 ############################Step 5
 '''Update the wiki submodule and commit the latest version to target the updated release version of the wiki'''
+print("**Script will update the wiki submodule and commit the latest version to target the updated release version of the wiki**")
 filepath = os.path.abspath(os.path.join(root_path, "cobigen-documentation", "tools-cobigen.wiki"))
 perform_git_pull("Executing git pull before updating wiki")
 os.chdir(filepath)
@@ -461,8 +478,9 @@ else:
 
 #############################Step 6
 '''Merge development branch into master'''
+print("**Script will merge development branch into master**")
 os.chdir(build_folder_path)
-
+repo.git.checkout("master")
 if bool_dry:
     print("dry-run: would perform git merge")
 else:
@@ -477,6 +495,7 @@ else:
 	
 #############################Step 7
 '''validation of merge commit'''
+print("**Script will check validation of merge commit**")
 print("Please check all the changed file paths which is to be released")
 list_of_changed_files=str(git_cmd.execute("git diff --name-only")).strip().split("\\n+")
 is_pom_changed=False
@@ -501,13 +520,13 @@ else:
 #############################Step 8
 '''Set the Release version (without snapshot) and commit using "<#2>:\
  set release version" message'''
-
 print("Setting the release version "+release_version+" in the pom.xml and committing it.")
 commit_message="#"+str(release_issue_number)+" Removing snapshot from version"
 add_remove_snapshot_version_in_pom(False,commit_message,release_version)
 
 ############################Step 9
 '''deploy''' 
+print("**Script will deploy based on branch**")
 if build_folder_name!="cobigen-eclipse":
     if "Windows" in platform.platform():
 	    os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
@@ -539,6 +558,7 @@ else:
 
 #############################Step 11.1
 '''Process GitHub Milestone and Create Release'''
+print("**Script will process GitHub milestone and create release**")
 release_milestone = rep.get_milestone(milestone_number)
 
 if bool_dry:
@@ -552,6 +572,7 @@ else:
 
 #############################Step 11.2
 '''create a new release'''
+print("**Script will create a new release**")
 if bool_dry:
     print_info("dry-run: would create a new release")
 else:
@@ -601,6 +622,7 @@ else:
 #############################Step 11.3
 '''create a new milestone based on the name of\
  the previous closed milestone with the new version #4'''
+print("**Script will create a new milestone based on the name of the previous closed milestone with the new version #4**")
 if bool_dry:
     print_info("dry-run: would create a new milestone")
 else:
@@ -616,6 +638,7 @@ else:
 
 #############################Step 12
 '''Merge master to development branch'''
+print("**Script will Merge master to development branch**")
 if bool_dry:
     print_info("dry-run: would merge from master to "+ branch_name)
 else:
@@ -633,12 +656,15 @@ else:
 
 #############################Step 13
 '''set next release version'''
-print_info("dry-run: would set next version")
+print("**Script will set next release version in pom**")
+if bool_dry:
+    print_info("dry-run: would set next version")
 commit_message="setting snapshot version for next release"
 add_remove_snapshot_version_in_pom(True,commit_message,next_version)
 
 #############################Step 14
 '''Close issue number'''
+print("**Script will close github issue**")
 release_issue = rep.get_issue(int(release_issue_number))
 if bool_dry:
     print_info("dry-run: would close the release issue")
