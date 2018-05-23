@@ -275,7 +275,7 @@ public class OpenAPIInputReaderTest {
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
     }
-
+  
     @Test
     public void testHeaderData() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
@@ -293,7 +293,7 @@ public class OpenAPIInputReaderTest {
 
         assertThat(h.getEntities()).hasSize(2);
     }
-
+  
     /**
      * Not possible to properly test, see input file for example of the error to test (SomeData items schema
      * is a reference to FurtherData, parent of FurtherData is SomeData). See
