@@ -1,6 +1,7 @@
 package com.capgemini.cobigen.openapiplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -20,6 +22,7 @@ import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
+import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -187,6 +190,25 @@ public class OpenAPIInputReaderTest {
 
     }
 
+    @Test
+    public void testRetrieveResponsesOfPath() throws Exception {
+        List<Object> inputObjects = getInputs("two-components.yaml");
+        for (Object o : inputObjects) {
+            EntityDef eDef = (EntityDef) o;
+            if (eDef.getName().equals("Table")) {
+                assertThat(eDef.getComponent().getPaths()).hasSize(2);
+                for (PathDef pathDef : eDef.getComponent().getPaths()) {
+                    for (OperationDef opDef : pathDef.getOperations()) {
+                        if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
+                            ResponseDef respDef = opDef.getResponse();
+                            assertThat(respDef.getMediaType()).isEqualTo("application/json");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidPath() throws Exception {
         List<Object> inputObjects = getInputs("invalidPath.yaml");
@@ -237,6 +259,17 @@ public class OpenAPIInputReaderTest {
         assertThat(found).as("SampleData component schema not found!").isTrue();
     }
 
+    /**
+     * Not possible to properly test, see input file for example of the error to test (SomeData items schema
+     * is a reference to FurtherData, parent of FurtherData is SomeData). See
+     * https://github.com/devonfw/tools-cobigen/issues/578 for more detail.
+     */
+    @Test
+    public void testReadDoesNotResultInStackOverFlow() {
+        OpenAPIInputReader inputReader = new OpenAPIInputReader();
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, "CyclicalDependency.yaml"), TestConstants.UTF_8);
+    }
+
     private List<Object> getInputs(String testInputFilename) throws Exception {
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
         Object inputObject = inputReader.read(Paths.get(testdataRoot, testInputFilename), TestConstants.UTF_8);
@@ -262,7 +295,6 @@ public class OpenAPIInputReaderTest {
             }
         }
         return parameters;
-
     }
 
 }

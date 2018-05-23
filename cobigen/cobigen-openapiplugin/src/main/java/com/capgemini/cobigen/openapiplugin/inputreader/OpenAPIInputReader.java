@@ -2,7 +2,6 @@ package com.capgemini.cobigen.openapiplugin.inputreader;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
 import com.capgemini.cobigen.api.exception.InputReaderException;
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
 import com.capgemini.cobigen.api.exception.NotYetSupportedException;
@@ -26,9 +26,10 @@ import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
 import com.capgemini.cobigen.openapiplugin.util.constants.Constants;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
+import com.reprezen.jsonoverlay.JsonOverlay;
+import com.reprezen.jsonoverlay.Overlay;
+import com.reprezen.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
-import com.reprezen.kaizen.oasparser.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
@@ -125,7 +126,7 @@ public class OpenAPIInputReader implements InputReader {
      * @return list of entities
      */
     private List<EntityDef> extractComponents(OpenApi3 openApi) {
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(openApi.toJson().toString());
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
@@ -155,7 +156,7 @@ public class OpenAPIInputReader implements InputReader {
             }
 
             // Sets a Map containing all the extensions of the info part of the OpenAPI file
-            if (openApi.getInfo().isPresent()) {
+            if (Overlay.isPresent((JsonOverlay<?>) openApi.getInfo())) {
                 entityDef.setUserPropertiesMap(openApi.getInfo().getExtensions());
             }
             // Traverse the extensions of the entity for setting those attributes to the Map
@@ -164,7 +165,6 @@ public class OpenAPIInputReader implements InputReader {
                 String keyMap = it.next();
                 entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
-
             componentDef.setPaths(extractPaths(openApi.getPaths(),
                 openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
             entityDef.setComponent(componentDef);
@@ -188,13 +188,12 @@ public class OpenAPIInputReader implements InputReader {
     private PropertyDef extractReferenceProperty(OpenApi3 openApi, Schema componentSchema,
         Entry<String, ? extends Schema> property, String targetComponent) {
         Schema propertySchema = property.getValue();
-        if (propertySchema.getJsonReference().sameFile(openApi.getJsonReference())) {
-            String refTypeName;
-            if (propertySchema.isItemsSchemaReference()) {
-                refTypeName =
-                    Paths.get(propertySchema.getItemsSchemaReference().getRefString()).getFileName().toString();
+        if (Overlay.getJsonReference(propertySchema).sameFile(Overlay.getJsonReference(openApi))) {
+            String refTypeName = componentSchema.getName();
+            if (propertySchema.getType().equals(Constants.ARRAY)) {
+                refTypeName = propertySchema.getItemsSchema().getName();
             } else {
-                refTypeName = Paths.get(propertySchema.getJsonReference().getRef()).getFileName().toString();
+                refTypeName = propertySchema.getName();
             }
             String thisComponent = componentSchema.getExtension(Constants.COMPONENT_EXT).toString();
 
@@ -238,13 +237,11 @@ public class OpenAPIInputReader implements InputReader {
             PropertyDef propModel;
             if (propertySchema.getType().equals(Constants.ARRAY)) {
                 if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
-                    && propertySchema.isItemsSchemaReference()) {
-                    String targetComponentExtQueryPath =
-                        propertySchema.getItemsSchemaReference().getRefString().substring(1) + "/"
-                            + Constants.COMPONENT_EXT;
-                    List<String> targetComponent =
-                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                    && propertySchema.getItemsSchema() != null
+                    && propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT) != null) {
+                    String targetComponent =
+                        propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT).toString();
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getItemsSchema().getType());
@@ -255,12 +252,10 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 propModel.setIsCollection(true);
             } else {
-                if (propertySchema.getType().equals(Constants.OBJECT) && propertySchema.getJsonReference() != null) {
-                    String targetComponentExtQueryPath =
-                        propertySchema.getJsonReference().getRef() + "/" + Constants.COMPONENT_EXT;
-                    List<String> targetComponent =
-                        JsonPath.read(jsonDocument, targetComponentExtQueryPath.replace("/", "."));
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent.get(0));
+                if (propertySchema.getType().equals(Constants.OBJECT)
+                    && propertySchema.getExtension(Constants.COMPONENT_EXT) != null) {
+                    String targetComponent = propertySchema.getExtension(Constants.COMPONENT_EXT).toString();
+                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getType());
@@ -298,14 +293,14 @@ public class OpenAPIInputReader implements InputReader {
     private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
         List<PathDef> pathDefs = new LinkedList<>();
         for (String pathKey : paths.keySet()) {
-            if (pathKey.contains(componentName)) {
+            if (pathKey.toLowerCase().contains(componentName.toLowerCase())) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
                 for (int i = 3; i < mp.length; i++) {
                     pathUri = pathUri.concat(mp[i] + "/");
                 }
                 PathDef path = new PathDef(pathUri, mp[2]);
-                if (pathKey.contains(mp[1])) {
+                if (pathKey.toLowerCase().contains(mp[1].toLowerCase())) {
                     for (String opKey : paths.get(pathKey).getOperations().keySet()) {
                         OperationDef operation = new OperationDef(opKey);
                         operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
@@ -371,16 +366,17 @@ public class OpenAPIInputReader implements InputReader {
             parameter.setDescription(param.getDescription());
             if (schema.getType().equals(Constants.ARRAY)) {
                 parameter.setIsCollection(true);
-                if (schema.getItemsSchemaReference() != null) {
+                if (schema.getItemsSchema() != null) {
                     parameter.setIsEntity(true);
-                    String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
-                    parameter.setType(mp[mp.length - 1]);
                 }
             }
-            if (param.getSchemaReference() != null) {
-                String[] mp = param.getSchemaReference().getFragment().split("/");
-                parameter.setIsEntity(true);
-                parameter.setType(mp[mp.length - 1]);
+            try {
+                if (Overlay.isReference(param, "schema")) {
+                    parameter.setIsEntity(true);
+                }
+            } catch (NullPointerException e) {
+                throw new CobiGenRuntimeException("Error at parameter " + param.getName()
+                    + ". Invalid OpenAPI file, path parameters need to have a schema defined.");
             }
             parameter.setType(schema.getType());
             parameter.setFormat(schema.getFormat());
@@ -388,6 +384,7 @@ public class OpenAPIInputReader implements InputReader {
         }
 
         if (requestBody != null) {
+            Schema mediaSchema;
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
                 parameter.setMediaType(media);
@@ -396,13 +393,12 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setIsSearchCriteria(true);
                     parameter.setName("criteria");
                 }
-                if (requestBody.getContentMediaTypes().get(media).getSchemaReference() != null) {
+                if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
+                    mediaSchema = requestBody.getContentMediaTypes().get(media).getSchema();
                     parameter.setIsEntity(true);
-                    String[] mp =
-                        requestBody.getContentMediaTypes().get(media).getSchemaReference().getFragment().split("/");
-                    parameter.setType(mp[mp.length - 1]);
+                    parameter.setType(mediaSchema.getName());
                     if (!parameter.getIsSearchCriteria()) {
-                        char c[] = mp[mp.length - 1].toCharArray();
+                        char c[] = mediaSchema.getName().toCharArray();
                         c[0] = Character.toLowerCase(c[0]);
                         parameter.setName(new String(c));
                     }
@@ -438,31 +434,36 @@ public class OpenAPIInputReader implements InputReader {
                     }
                     for (String media : contentMediaTypes.keySet()) {
                         response.setMediaType(media);
-                        Reference schemaReference = contentMediaTypes.get(media).getSchemaReference();
+                        Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
                         Schema schema = contentMediaTypes.get(media).getSchema();
-                        if (schemaReference != null) {
-                            String[] mp = schemaReference.getFragment().split("/");
-                            response.setType(mp[mp.length - 1]);
-                            response.setIsEntity(true);
-                        } else if (schema.getType().equals(Constants.ARRAY)) {
-                            if (schema.getItemsSchemaReference() != null) {
-                                String[] mp = schema.getItemsSchemaReference().getFragment().split("/");
-                                response.setType(mp[mp.length - 1]);
+                        if (schema != null) {
+                            if (schemaReference != null) {
+                                response.setType(schema.getName());
                                 response.setIsEntity(true);
-                            } else {
-                                response.setType(schema.getItemsSchema().getType());
-                            }
-                            if (tags.contains(Constants.PAGINATED)) {
-                                response.setIsPaginated(true);
-                            } else {
-                                response.setIsArray(true);
-                            }
+                            } else if (schema.getType().equals(Constants.ARRAY)) {
+                                if (schema.getItemsSchema() != null) {
+                                    response.setType(schema.getItemsSchema().getType());
+                                    response.setIsEntity(true);
+                                } else {
+                                    response.setType(schema.getItemsSchema().getType());
+                                }
+                                if (tags.contains(Constants.PAGINATED)) {
+                                    response.setIsPaginated(true);
+                                } else {
+                                    response.setIsArray(true);
+                                }
 
-                        } else if (schema.getType() != null) {
-                            response.setType(schema.getType());
-                            response.setFormat(schema.getFormat());
+                            } else if (schema.getType() != null) {
+                                response.setType(schema.getType());
+                                response.setFormat(schema.getFormat());
+                            } else {
+                                response.setIsVoid(true);
+                            }
                         } else {
-                            response.setIsVoid(true);
+                            String refString = schemaReference.getRefString();
+                            throw new InvalidConfigurationException("Referenced entity "
+                                + refString.substring(refString.lastIndexOf('/')) + " not found. The reference "
+                                + refString + " schould be fixed before generation.");
                         }
                     }
                 } else {
@@ -474,6 +475,7 @@ public class OpenAPIInputReader implements InputReader {
             }
         }
         return response;
+
     }
 
     @Override
