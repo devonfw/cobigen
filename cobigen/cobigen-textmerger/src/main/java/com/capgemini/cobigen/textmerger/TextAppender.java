@@ -133,12 +133,6 @@ public class TextAppender implements Merger {
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case "newline_appendafter":
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend += System.lineSeparator();
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
-                                        mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
-                                            splitPatch, splitBase, tmpAnchor);
-                                        break;
                                     case "newline_append":
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
                                         toAppend += System.lineSeparator();
@@ -159,21 +153,9 @@ public class TextAppender implements Merger {
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
-                                    case "appendafter_newline":
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
-                                        toAppend += System.lineSeparator();
-                                        mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
-                                            splitPatch, splitBase, tmpAnchor);
-                                        break;
-                                    case "append_newline":
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
-                                        toAppend += System.lineSeparator();
-                                        mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
-                                            splitPatch, splitBase, tmpAnchor);
-                                        break;
                                     case "newline":
+                                    case "appendafter_newline":
+                                    case "append_newline":
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
                                         toAppend += System.lineSeparator();
@@ -193,11 +175,6 @@ public class TextAppender implements Merger {
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case APPENDAFTER:
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
-                                        mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
-                                            splitPatch, splitBase, tmpAnchor);
-                                        break;
                                     case APPEND:
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
                                         toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
