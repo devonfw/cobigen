@@ -94,9 +94,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
     <#list pojo.fields as field>
       <#if field.type?ends_with("Entity")>
-    cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "")}Eto.class));
+    cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
       <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListType(field)}Eto.class));
+    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
       </#if>
     </#list>
  
@@ -113,9 +113,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
       <#list pojo.fields as field>
         <#if field.type?ends_with("Entity")>
-      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "")}Eto.class));
+      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
         <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListType(field)}Eto.class));
+      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
         </#if>
       </#list>
       ctos.add(cto);
@@ -125,6 +125,6 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     PaginatedListTo<${variables.entityName}Cto> pagListTo = new PaginatedListTo(ctos, pagResultTo);
     return pagListTo;
   }
-	
+
 
 }
