@@ -1,7 +1,6 @@
 package com.capgemini.cobigen.openapiplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
@@ -18,11 +16,14 @@ import com.capgemini.cobigen.api.extension.InputReader;
 import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
 import com.capgemini.cobigen.openapiplugin.model.EntityDef;
+import com.capgemini.cobigen.openapiplugin.model.HeaderDef;
+import com.capgemini.cobigen.openapiplugin.model.InfoDef;
 import com.capgemini.cobigen.openapiplugin.model.OperationDef;
 import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
 import com.capgemini.cobigen.openapiplugin.model.PathDef;
 import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
 import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
+import com.capgemini.cobigen.openapiplugin.model.ServerDef;
 import com.capgemini.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -40,9 +41,11 @@ public class OpenAPIInputReaderTest {
     public void testRetrieveAllInputs() throws Exception {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
 
-        assertThat(inputObjects).hasSize(2);
-        assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale");
+        List<EntityDef> entities = h.getEntities();
+        assertThat(entities).hasSize(2);
+        assertThat(entities).extracting("name").containsExactly("Table", "Sale");
     }
 
     /**
@@ -56,8 +59,9 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("paths-resolution.yaml");
 
         assertThat(inputObjects).isNotNull();
-        List<EntityDef> collect = inputObjects.stream().map(e -> (EntityDef) e).filter(e -> e.getName().equals("Table"))
-            .collect(Collectors.toList());
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        List<EntityDef> collect =
+            h.getEntities().stream().map(e -> e).filter(e -> e.getName().equals("Table")).collect(Collectors.toList());
         assertThat(collect).hasSize(1);
         assertThat(collect.get(0).getComponent().getPaths()).hasSize(2).flatExtracting(e -> e.getOperations())
             .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null);
@@ -68,8 +72,10 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
 
-        assertThat(inputObjects).hasSize(2);
-        assertThat(inputObjects).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        List<EntityDef> entities = h.getEntities();
+        assertThat(entities).hasSize(2);
+        assertThat(entities).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
     }
 
     @Test
@@ -77,7 +83,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         assertThat(properties).hasSize(2);
@@ -89,7 +96,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         List<String> types = new LinkedList<>();
@@ -109,7 +117,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         List<Map<String, Object>> constraints = new LinkedList<>();
@@ -129,7 +138,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             cmps.add(((EntityDef) o).getComponent());
         }
         assertThat(cmps).extracting("paths").hasSize(2);
@@ -148,7 +158,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             cmps.add(((EntityDef) o).getComponent());
         }
 
@@ -193,7 +204,9 @@ public class OpenAPIInputReaderTest {
     @Test
     public void testRetrieveResponsesOfPath() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
-        for (Object o : inputObjects) {
+        boolean found = false;
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             EntityDef eDef = (EntityDef) o;
             if (eDef.getName().equals("Table")) {
                 assertThat(eDef.getComponent().getPaths()).hasSize(2);
@@ -202,21 +215,13 @@ public class OpenAPIInputReaderTest {
                         if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
                             ResponseDef respDef = opDef.getResponse();
                             assertThat(respDef.getMediaType()).isEqualTo("application/json");
+                            found = true;
                         }
                     }
                 }
             }
         }
-    }
-
-    @Ignore("Not possible to properly test, see input file for example of the error to test(SomeData items schema is a reference to FurtherData, FurtherData parent is SomeData)")
-    @Test
-    public void testCyclicalDependencyNoStackOverflow() throws Exception {
-        try {
-            List<Object> inputObjects = getInputs("CyclicalDependency.yaml");
-        } catch (StackOverflowError e) {
-            fail("Expected no Stackoverflow, instead got " + e.getMessage());
-        }
+        assertThat(found).as("findTable path operation not found!").isTrue();
     }
 
     @Test(expected = InvalidConfigurationException.class)
@@ -233,7 +238,8 @@ public class OpenAPIInputReaderTest {
     public void testPropertyRefOneToOne() throws Exception {
         List<Object> inputObjects = getInputs("property-ref-one-to-one.yaml");
         boolean found = false;
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             EntityDef entityDef = (EntityDef) o;
             if (entityDef.getName().equals("SampleData")) {
                 assertThat(entityDef.getProperties()).hasSize(1);
@@ -254,7 +260,8 @@ public class OpenAPIInputReaderTest {
     public void testPropertyRefManyToOne() throws Exception {
         List<Object> inputObjects = getInputs("property-ref-many-to-one.yaml");
         boolean found = false;
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             EntityDef entityDef = (EntityDef) o;
             if (entityDef.getName().equals("SampleData")) {
                 assertThat(entityDef.getProperties()).hasSize(1);
@@ -269,6 +276,35 @@ public class OpenAPIInputReaderTest {
         assertThat(found).as("SampleData component schema not found!").isTrue();
     }
 
+    @Test
+    public void testHeaderData() throws Exception {
+        List<Object> inputObjects = getInputs("two-components.yaml");
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+
+        InfoDef info = h.getInfo();
+        assertThat(info.getDescription()).isEqualTo("Example of a API definition");
+        assertThat(info.getTitle()).isEqualTo("Devon Example");
+
+        List<ServerDef> servers = h.getServers();
+        assertThat(servers).hasSize(1);
+        ServerDef server = servers.get(0);
+        assertThat(server.getDescription()).isEqualTo("Just some data");
+        assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
+
+        assertThat(h.getEntities()).hasSize(2);
+    }
+
+    /**
+     * Not possible to properly test, see input file for example of the error to test (SomeData items schema
+     * is a reference to FurtherData, parent of FurtherData is SomeData). See
+     * https://github.com/devonfw/tools-cobigen/issues/578 for more detail.
+     */
+    @Test
+    public void testReadDoesNotResultInStackOverFlow() {
+        OpenAPIInputReader inputReader = new OpenAPIInputReader();
+        Object inputObject = inputReader.read(Paths.get(testdataRoot, "CyclicalDependency.yaml"), TestConstants.UTF_8);
+    }
+
     private List<Object> getInputs(String testInputFilename) throws Exception {
         OpenAPIInputReader inputReader = new OpenAPIInputReader();
         Object inputObject = inputReader.read(Paths.get(testdataRoot, testInputFilename), TestConstants.UTF_8);
@@ -278,7 +314,8 @@ public class OpenAPIInputReaderTest {
     private List<ParameterDef> getParametersOfOperations(String testInputFilename) throws Exception {
         List<Object> inputObjects = getInputs(testInputFilename);
         List<ComponentDef> cmps = new LinkedList<>();
-        for (Object o : inputObjects) {
+        HeaderDef h = (HeaderDef) inputObjects.get(0);
+        for (Object o : h.getEntities()) {
             cmps.add(((EntityDef) o).getComponent());
         }
 
