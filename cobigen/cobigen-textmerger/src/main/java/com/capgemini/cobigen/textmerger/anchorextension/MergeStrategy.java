@@ -25,6 +25,10 @@ public enum MergeStrategy {
      */
     APPEND("append", true),
     /**
+     * Signals that a newline should be appended after the patch
+     */
+    NEWLINE("newline", false),
+    /**
      * Mergestrategy that will be defaulted to if there is no valid one given.
      */
     ERROR("", false);

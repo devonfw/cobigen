@@ -22,3 +22,10 @@ line5.5
 line6.5
 
 line6
+// anchor:part7:newline:anchorend
+line7
+line7.5
+
+// anchor:part8:newline:anchorend
+line8
+line8.5

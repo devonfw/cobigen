@@ -192,7 +192,7 @@ public class TextAppenderTest {
 
     /**
      * Tests if using the mergestrategy "newline_x/x_newline" puts the newline in the correct position for
-     * applicable strategies
+     * applicable strategies, but deletes newlines at start and end of file
      * @throws Exception
      *             if errors occur while merging
      */
