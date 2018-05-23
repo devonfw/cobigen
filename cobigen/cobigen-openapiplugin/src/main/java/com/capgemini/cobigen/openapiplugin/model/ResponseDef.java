@@ -20,6 +20,8 @@ public class ResponseDef {
 
     private String mediaType;
 
+    private String description;
+
     public ResponseDef() {
         isArray = false;
         isPaginated = false;
@@ -81,5 +83,13 @@ public class ResponseDef {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
