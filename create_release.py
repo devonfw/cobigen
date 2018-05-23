@@ -11,12 +11,14 @@ from git import Repo
 from lxml import etree
 from pathlib import Path 
 from github import Github
+from shutil import move
 from scripts.settings import init
 from uritemplate import URITemplate, expand
 from scripts.github_issue_creation import make_github_issue
 from scripts.git_authentication import authenticate_git_user
 from scripts.branchname_validation import get_build_folder
 from scripts.branchname_validation import get_cobigenwiki_title_name
+
 
 # get command line arguments and initialise global booleans
 # --dry-run -> do not change anything in git but print the steps
@@ -77,6 +79,7 @@ wiki_name="tools-cobigen.wiki"
 wiki_version_overview_page="CobiGen.asciidoc"
 user_acceptance_messages=[]
 root_path = os.path.dirname(os.path.realpath(__file__))
+origin = repo.remotes.origin
 
 # Authentication of user and creation of session
 while authenticate_git_user(bool_test) =="Invalid details":
@@ -93,10 +96,16 @@ else:
     org = g.get_organization("devonfw")
     rep = org.get_repo("tools-cobigen")
 
-	
-# Methods performing git actions
+# Method performing git pull
+def perform_git_pull(message):
+    try:
+        print_info(message +".."+ origin.pull());
+    except git.GitCommandError as e:
+        print("[EXCEPTION] Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
+
+# Method performing git actions
 def perform_git_reset():
-	print_info("Executing git reset --hard HEAD.."+git_cmd.execute("git reset --hard HEAD"))
+	print_info("Executing git reset --hard HEAD.."+repo.git.reset('--hard'))
 
 def perform_commit_with_issue_number(commit_message):
     try:
@@ -110,35 +119,41 @@ def perform_commit_with_issue_number(commit_message):
 def perform_git_reset_pull_on_user_choice(user_choice):
 	if user_choice=="no":
          perform_git_reset();
-         print_info("Executing git pull.."+repo.git.pull());
+         perform_git_pull("Executing git pull")
 		 
 # This method is responsible for changing version number in pom.xml to new release version with SNAPSHOT	
-def add_snapshot_in_version(name,pom,version_to_change):
+def add_snapshot_in_version(name,pom,version_to_change,file_path):
     if not name.text== version_to_change+"-SNAPSHOT":
         new_version=version_to_change+"-SNAPSHOT";
         name.text=str(new_version);
-        pom.write("pom.xml")
+        if branch_name=="dev_eclipseplugin":
+            pom.write(file_path)
+        else:
+            pom.write("pom.xml")
 
-def remove_snapshot_in_version(name,pom,version_to_change):
+def remove_snapshot_in_version(name,pom,version_to_change,file_path):
     if name.text== version_to_change+"-SNAPSHOT":
-        new_version=version_to_change;
-        name.text=str(new_version);
-        pom.write("pom.xml")
+        new_version=version_to_change
+        name.text=str(new_version)
+        if branch_name=="dev_eclipseplugin":
+            pom.write(file_path)
+        else:
+            pom.write("pom.xml")
 
 def get_exit_message_milestone():
     print("[ERROR] Please check if you passed the correct version to be released or check whether you missed \
 	to create a milestone for the release and create one before running the script.");
     sys.exit()
 
-def call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change):
+def call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change,file_path):
     if bool_add_snapshot:
-        add_snapshot_in_version(name,pom,version_to_change)
+        add_snapshot_in_version(name,pom,version_to_change,file_path)
     else:
-	    remove_snapshot_in_version(name,pom,version_to_change)
+	    remove_snapshot_in_version(name,pom,version_to_change,file_path)
 
 # This method is responsible for adding SNAPSHOT version if not already added
 def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_to_change):
-    print("Checking out branch for adding SNAPSHOT version: "+branch_name+".")
+    print_info("Checking out branch for adding SNAPSHOT version: "+branch_name+".")
     #repo.git.checkout(branch_name)
     repo.git.__init__()
     pom = etree.parse("pom.xml")
@@ -148,7 +163,7 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
         for mapping in pom.findall("//{http://maven.apache.org/POM/4.0.0}properties"):                           
             name  = mapping.find("{http://maven.apache.org/POM/4.0.0}cobigen.maven.version")
             try:
-                call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change)
+                call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change,None)
             except:
 	            continue
 			
@@ -157,14 +172,27 @@ def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_
         for mapping in pom.findall("//{http://maven.apache.org/POM/4.0.0}properties"):                           
             name  = mapping.find("{http://maven.apache.org/POM/4.0.0}cobigencore.version")
             try:
-                call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change)
+                call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change,None)
             except:
 	            continue
-			
-    # For dev_htmlmerger , dev_eclipseplugin, dev_eclipseplugin, dev_eclipseplugin, dev_jssenchaplugin branch
-    else:    	
+    # For dev_eclipseplugin branch
+    elif branch_name == "dev_eclipseplugin":
+        
+        for dname, dirs, files in os.walk("."):
+            for fname in files:
+                fpath = os.path.join(dname, fname);
+                if "pom.xml" in fname and "."+os.sep+"cobigen" in fpath:
+                    with open(fpath) as file:                        
+                        pom = etree.parse(file)
+                        name  = pom.find("{http://maven.apache.org/POM/4.0.0}version")
+                        call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change,fpath)
+                else:
+                    continue						
+                            
+    # For dev_htmlmerger, dev_jssenchaplugin branch
+    else :    	
         name  = pom.find("{http://maven.apache.org/POM/4.0.0}version")
-        call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change)
+        call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change,None)
 
     print_info("Current working directory changed to: "+os.getcwd());
 
@@ -208,6 +236,8 @@ if build_folder_name=="invalid":
 	sys.exit();
 else:
 	print_info("Branch is valid.")
+	
+build_folder_path = os.path.abspath(os.path.join(root_path, build_folder_name))
 
 # Enter Release Number-optional 
 release_issue_number = input("Enter release issue number\
@@ -264,8 +294,7 @@ if "devonfw/tools-cobigen" not in remote_origin:
 
 #############################Step 1.1.4
 if repo.is_dirty():
-    user_choice=input("Your working directory is not clean. Please clean it,\
-    press 'yes' if it is done and you want to continue else any key to exit: ").lower()
+    user_choice=input("Your working directory is not clean. Please clean it, press 'yes' if it is done and you want to continue else any key to exit: ").lower()
     if not user_choice =="yes":
         print("[ERROR]EXIT MESSAGE: working copy is not clean");
         sys.exit()
@@ -273,8 +302,8 @@ if repo.is_dirty():
 	    user_acceptance_messages.append("User cleaned working directory and allowed script to run further.")
     
 #############################Step 0      
-print_info("Check branch build not failing in production line "+pl_url+" :")
-value=input("Press yes/no: ").lower()
+print_info("Check branch build not failing in production line "+pl_url+" ")
+value=input("Press 'yes' if you have checked that build is not failing else 'no': ").lower()
 while (value !="yes" and value!="no"):   
     value=input("Press yes/no: ").lower()
 if input == "no":
@@ -311,7 +340,7 @@ if matched_milestone_title != "":
     split_version_from_v=matched_milestone_title.rindex("-v");
     
     milestone_version_in_git=milestone_title_in_git[split_version_from_v+2:];
-    if milestone_version_in_git!=release_version:
+    if milestone_version_in_git.strip()!=release_version.strip():
         get_exit_message_milestone()
 else:
     get_exit_message_milestone()
@@ -349,9 +378,9 @@ else:
 '''navigate to correct module folder depending on #1'''
 os.chdir(build_folder_name)
 print_info("Current working directory changed to: "+os.getcwd())
-print_info("Performing git checkout.."+repo.git.checkout())
-print_info("Performing git pull.."+repo.git.pull())
-  
+print_info("Performing git checkout.."+repo.git.checkout(branch_name))
+perform_git_pull("Executing git pull")
+
 #############################Step 3.4 
 '''Set the SNAPSHOT version'''
 print_info("Set snapshot version of target release")
@@ -398,21 +427,23 @@ else:
 (git reset --hard HEAD~2 && git pull) '''
 print_info("Testing maven integeration..")
 print_info("If maven clean integration-test fails,git reset --hard will be executed to revoke last commits and operation will be revoked")
-maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log", shell=True,stdout = subprocess.PIPE)
+maven_process= subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log ", shell=True,stdout = subprocess.PIPE)
+
 stdout, stderr = maven_process.communicate()
 if maven_process.returncode == 1:
-    print_info("Maven clean integeration fails, please see create_release.py.log for logs located at current directory ");
+    print_info("Maven clean integeration fails, please see create_release.py.log for logs located at current directory ");    
     if bool_dry:
         print_info("dry-run: would perform git reset and pull")
     else: 
-        print_info("Executing git reset --hard HEAD~2.."+git_cmd.execute("git reset --hard HEAD~2"));
-        print_info("Executing git pull.."+repo.git.pull());	
-    sys.exit();   
+        print_info("Executing git reset --hard HEAD~2.."+repo.head.reset('HEAD~2', index=True, working_tree=True));
+        perform_git_pull("Executing git pull as build failed")        
+    sys.exit();
 	
+move(build_folder_path+os.sep+"create_release.py.log", root_path+os.sep+"create_release.py.log")	
 ############################Step 5
 '''Update the wiki submodule and commit the latest version to target the updated release version of the wiki'''
 filepath = os.path.abspath(os.path.join(root_path, "cobigen-documentation", "tools-cobigen.wiki"))
-print_info("Executing git pull origin master.."+git_cmd.execute("git pull origin master"));
+perform_git_pull("Executing git pull before updating wiki")
 os.chdir(filepath)
 print_info("Changing the "+wiki_version_overview_page+" file, updating the version number")
 title=get_cobigenwiki_title_name(branch_name)
@@ -430,13 +461,15 @@ else:
 
 #############################Step 6
 '''Merge development branch into master'''
-print_info("Executing git pull..."+repo.git.pull());
+os.chdir(build_folder_path)
+
 if bool_dry:
     print("dry-run: would perform git merge")
 else:
     repo.git.checkout("master")
     try:
-	    print_info("Executing git merge..."+repo.git.merge());
+	    perform_git_pull("Executing git pull before merging development branch to master")
+	    print_info("Executing git merge..."+repo.git.merge(branch_name));
     except:
 	    print_info("Exception occured..")
 	    print_info("Executing git merge --abort.."+git_cmd.execute("git merge --abort"));
@@ -468,12 +501,10 @@ else:
 #############################Step 8
 '''Set the Release version (without snapshot) and commit using "<#2>:\
  set release version" message'''
-if bool_dry:
-    print("dry-run: would set the new release version in pom")
-else:
-    print("Setting the release version "+release_version+" in the pom.xml and committing it.")
-    commit_message="#"+str(release_issue_number)+" Removing snapshot from version"
-    add_remove_snapshot_version_in_pom(False,commit_message,release_version)
+
+print("Setting the release version "+release_version+" in the pom.xml and committing it.")
+commit_message="#"+str(release_issue_number)+" Removing snapshot from version"
+add_remove_snapshot_version_in_pom(False,commit_message,release_version)
 
 ############################Step 9
 '''deploy''' 
@@ -503,8 +534,8 @@ print_info("Creating Tag: "+tag_name)
 if bool_dry:
     print("dry-run:would create a new tag")
 else:
-    repo.create_tag(tag_name)
-    print_info("Pushing git tags.."+git_cmd.execute("git push --tags"))
+    new_tag=repo.create_tag(tag_name)
+    print_info("Pushing git tags.."+origin.push(new_tag))
 
 #############################Step 11.1
 '''Process GitHub Milestone and Create Release'''
@@ -563,8 +594,7 @@ else:
                     r = requests.post(asset_url, auth=(init.git_username,init.git_password) ,headers={'Content-Type':content_type}, files={'file': (fname, open(fpath, 'rb'), 'application/octet-stream')})
     except Exception as e:
         print("[ERROR]"+str(e))
-    else:
-        build_folder_path = os.path.abspath(os.path.join(root_path, build_folder_name))
+    else:        
         os.chdir(build_folder_path)
         print_info("Created a new release")
 
@@ -603,11 +633,9 @@ else:
 
 #############################Step 13
 '''set next release version'''
-if bool_dry:
-    print_info("dry-run: would set next version")
-else:
-    commit_message="setting snapshot version for next release"
-    add_remove_snapshot_version_in_pom(True,commit_message,next_version)
+print_info("dry-run: would set next version")
+commit_message="setting snapshot version for next release"
+add_remove_snapshot_version_in_pom(True,commit_message,next_version)
 
 #############################Step 14
 '''Close issue number'''
