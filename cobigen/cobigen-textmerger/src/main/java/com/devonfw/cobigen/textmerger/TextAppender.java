@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.textmerger.anchorextension.Anchor;
-import com.capgemini.cobigen.textmerger.anchorextension.MergeStrategy;
-import com.capgemini.cobigen.textmerger.anchorextension.MergeUtil;
+import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
+import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
+import com.devonfw.cobigen.textmerger.anchorextension.MergeUtil;
 
 /**
  * The {@link TextAppender} allows appending the patch to the base file
