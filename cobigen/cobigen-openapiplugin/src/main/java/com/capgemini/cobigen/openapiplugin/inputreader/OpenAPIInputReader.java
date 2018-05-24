@@ -108,7 +108,7 @@ public class OpenAPIInputReader implements InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
         if (input instanceof OpenAPIFile) {
-            inputs.add(extractComponents(((OpenAPIFile) input).getAST()));
+            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
         }
         return inputs;
     }
@@ -130,7 +130,7 @@ public class OpenAPIInputReader implements InputReader {
      *            the model for an OpenApi3 file
      * @return list of entities
      */
-    private HeaderDef extractComponents(OpenApi3 openApi) {
+    private List<EntityDef> extractComponents(OpenApi3 openApi) {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         HeaderDef header = new HeaderDef();
         header.setServers(extractServers(openApi));
@@ -176,11 +176,10 @@ public class OpenAPIInputReader implements InputReader {
             componentDef.setPaths(extractPaths(openApi.getPaths(),
                 openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
             entityDef.setComponent(componentDef);
+            entityDef.setHeader(header);
             objects.add(entityDef);
         }
-        header.setEntities(objects);
-        return header;
-
+        return objects;
     }
 
     /**

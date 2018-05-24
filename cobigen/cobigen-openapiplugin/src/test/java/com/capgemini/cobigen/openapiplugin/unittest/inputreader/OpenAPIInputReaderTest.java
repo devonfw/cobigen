@@ -41,11 +41,9 @@ public class OpenAPIInputReaderTest {
     public void testRetrieveAllInputs() throws Exception {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
 
-        List<EntityDef> entities = h.getEntities();
-        assertThat(entities).hasSize(2);
-        assertThat(entities).extracting("name").containsExactly("Table", "Sale");
+        assertThat(inputObjects).hasSize(2);
+        assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale");
     }
 
     /**
@@ -59,9 +57,8 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("paths-resolution.yaml");
 
         assertThat(inputObjects).isNotNull();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        List<EntityDef> collect =
-            h.getEntities().stream().map(e -> e).filter(e -> e.getName().equals("Table")).collect(Collectors.toList());
+        List<EntityDef> collect = inputObjects.stream().map(e -> (EntityDef) e).filter(e -> e.getName().equals("Table"))
+            .collect(Collectors.toList());
         assertThat(collect).hasSize(1);
         assertThat(collect.get(0).getComponent().getPaths()).hasSize(2).flatExtracting(e -> e.getOperations())
             .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null);
@@ -72,10 +69,27 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
 
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        List<EntityDef> entities = h.getEntities();
-        assertThat(entities).hasSize(2);
-        assertThat(entities).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+        assertThat(inputObjects).hasSize(2);
+        assertThat(inputObjects).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+    }
+
+    @Test
+    public void testRetreiveHeaderInfo() throws Exception {
+        List<Object> inputObjects = getInputs("two-components.yaml");
+        for (Object o : inputObjects) {
+            EntityDef entityDef = (EntityDef) o;
+            HeaderDef header = entityDef.getHeader();
+
+            InfoDef info = header.getInfo();
+            assertThat(info.getDescription()).isEqualTo("Example of a API definition");
+            assertThat(info.getTitle()).isEqualTo("Devon Example");
+
+            List<ServerDef> servers = header.getServers();
+            assertThat(servers).hasSize(1);
+            ServerDef server = servers.get(0);
+            assertThat(server.getDescription()).isEqualTo("Just some data");
+            assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
+        }
     }
 
     @Test
@@ -83,8 +97,7 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         assertThat(properties).hasSize(2);
@@ -96,8 +109,7 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         List<String> types = new LinkedList<>();
@@ -117,8 +129,7 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             properties.addAll(((EntityDef) o).getProperties());
         }
         List<Map<String, Object>> constraints = new LinkedList<>();
@@ -138,8 +149,7 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
         }
         assertThat(cmps).extracting("paths").hasSize(2);
@@ -158,8 +168,8 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        System.out.println(inputObjects);
+        for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
         }
 
@@ -205,8 +215,7 @@ public class OpenAPIInputReaderTest {
     public void testRetrieveResponsesOfPath() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
         boolean found = false;
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             EntityDef eDef = (EntityDef) o;
             if (eDef.getName().equals("Table")) {
                 assertThat(eDef.getComponent().getPaths()).hasSize(2);
@@ -221,7 +230,7 @@ public class OpenAPIInputReaderTest {
                 }
             }
         }
-        assertThat(found).as("findTable path operation not found!").isTrue();
+        assertThat(found).as("Response for operation of id findTable not found!").isTrue();
     }
 
     @Test(expected = InvalidConfigurationException.class)
@@ -238,8 +247,7 @@ public class OpenAPIInputReaderTest {
     public void testPropertyRefOneToOne() throws Exception {
         List<Object> inputObjects = getInputs("property-ref-one-to-one.yaml");
         boolean found = false;
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             EntityDef entityDef = (EntityDef) o;
             if (entityDef.getName().equals("SampleData")) {
                 assertThat(entityDef.getProperties()).hasSize(1);
@@ -260,8 +268,7 @@ public class OpenAPIInputReaderTest {
     public void testPropertyRefManyToOne() throws Exception {
         List<Object> inputObjects = getInputs("property-ref-many-to-one.yaml");
         boolean found = false;
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             EntityDef entityDef = (EntityDef) o;
             if (entityDef.getName().equals("SampleData")) {
                 assertThat(entityDef.getProperties()).hasSize(1);
@@ -274,24 +281,6 @@ public class OpenAPIInputReaderTest {
             }
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
-    }
-
-    @Test
-    public void testHeaderData() throws Exception {
-        List<Object> inputObjects = getInputs("two-components.yaml");
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-
-        InfoDef info = h.getInfo();
-        assertThat(info.getDescription()).isEqualTo("Example of a API definition");
-        assertThat(info.getTitle()).isEqualTo("Devon Example");
-
-        List<ServerDef> servers = h.getServers();
-        assertThat(servers).hasSize(1);
-        ServerDef server = servers.get(0);
-        assertThat(server.getDescription()).isEqualTo("Just some data");
-        assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
-
-        assertThat(h.getEntities()).hasSize(2);
     }
 
     /**
@@ -314,8 +303,7 @@ public class OpenAPIInputReaderTest {
     private List<ParameterDef> getParametersOfOperations(String testInputFilename) throws Exception {
         List<Object> inputObjects = getInputs(testInputFilename);
         List<ComponentDef> cmps = new LinkedList<>();
-        HeaderDef h = (HeaderDef) inputObjects.get(0);
-        for (Object o : h.getEntities()) {
+        for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
         }
 
