@@ -230,7 +230,7 @@ public class OpenAPIInputReaderTest {
                 }
             }
         }
-        assertThat(found).as("Response for operation of id findTable not found!").isTrue();
+        assertThat(found).as("findTable path operation not found!").isTrue();
     }
 
     @Test(expected = InvalidConfigurationException.class)
