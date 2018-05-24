@@ -8,19 +8,9 @@ import java.util.List;
  */
 @SuppressWarnings("javadoc")
 public class HeaderDef {
-    List<EntityDef> entities;
-
     List<ServerDef> servers;
 
     InfoDef info;
-
-    public List<EntityDef> getEntities() {
-        return entities;
-    }
-
-    public void setEntities(List<EntityDef> entities) {
-        this.entities = entities;
-    }
 
     public List<ServerDef> getServers() {
         return servers;
@@ -39,7 +29,11 @@ public class HeaderDef {
     }
 
     public HeaderDef() {
-        entities = new LinkedList<>();
         servers = new LinkedList<>();
+    }
+
+    @Override
+    public String toString() {
+        return info.getTitle() + "  " + info.getDescription();
     }
 }
