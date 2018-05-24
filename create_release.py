@@ -169,8 +169,6 @@ def call_add_remove_snapshot_method(name,pom,bool_add_snapshot,version_to_change
 
 # This method is responsible for adding SNAPSHOT version if not already added
 def add_remove_snapshot_version_in_pom(bool_add_snapshot,commit_message,version_to_change):
-    #print_info("Checking out branch for adding SNAPSHOT version: "+branch_name+".")
-    #repo.git.checkout(branch_name)
     repo.git.__init__()
     pom = etree.parse("pom.xml")
 
@@ -525,7 +523,6 @@ else:
 print("****Script will check validation of merge commit****")
 print("Please check all the changed file paths which is to be released")
 list_of_changed_files=str(git_cmd.execute("git diff --name-only")).strip().split("\\n+")
-#print("Following files are changed:"+git_cmd.execute("git diff --name-only"))
 is_pom_changed=False
 if bool_dry:
     print("dry-run: would check if anything outside build folder is changed.If yes, user is asked to continue or not")
@@ -534,7 +531,7 @@ else:
         if "pom.xml" in file_name:
             is_pom_changed=True;
         if not file_name.startswith(build_folder_name):
-            #print(file_name +" does not starts with "+build_folder_name);
+            
             user_choice=input("Some Files are outside the folder "+build_folder_name+". Do you want to continue merge? Press 'no' else any other key to continue: ")
             perform_git_reset_pull_on_user_choice(user_choice)
             user_acceptance_messages.append("User has accepted to continue when found that some files were outside of build folder name")
