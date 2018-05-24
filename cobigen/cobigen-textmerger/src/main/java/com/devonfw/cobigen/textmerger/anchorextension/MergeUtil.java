@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger.anchorextension;
+package com.devonfw.cobigen.textmerger.anchorextension;
 
 import java.util.ArrayList;
 import java.util.HashSet;

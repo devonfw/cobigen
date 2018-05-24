@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -10,9 +10,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.textmerger.anchorextension.Anchor;
-import com.capgemini.cobigen.textmerger.anchorextension.MergeStrategy;
-import com.capgemini.cobigen.textmerger.anchorextension.MergeUtil;
+import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
+import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
+import com.devonfw.cobigen.textmerger.anchorextension.MergeUtil;
 
 /**
  *
