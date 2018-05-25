@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.htmlplugin.merger.constants;
+package com.devonfw.cobigen.htmlplugin.merger.constants;
 
 import org.jsoup.nodes.Element;
 
