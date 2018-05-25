@@ -18,7 +18,7 @@ def ask_user_and_fill_config(config: Config):
     config.git_password_or_token = ""
     
     config.git_repo = ""
-    repo_pattern = re.compile('[a-zA-Z]/[a-zA-Z]')
+    repo_pattern = re.compile('[a-zA-Z]+/[a-zA-Z]+')
     while(not repo_pattern.match(config.git_repo)):
         config.git_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
     config.git_repo_name = config.git_repo.split(sep='/')[1]
