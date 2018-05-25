@@ -3,7 +3,7 @@ step_counter = 0
 
 # This Method will be responsible for getting package folder name based on branch name
 def prompt_enter_value(prompt_subject):
-    prompt = "> Please Enter " + prompt_subject + ": "
+    prompt = "> Please enter " + prompt_subject + ": "
     value = input(prompt)
     #Checking if nothing is entered then ask user to enter again   
     while (not value.strip()):

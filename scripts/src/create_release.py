@@ -253,7 +253,7 @@ else:
             print_info("New status of Milestone >>" +release_milestone.title+ "<< is: "+ release_milestone.state)
 
 #############################
-print_step("Create new GitHub elease...")
+print_step("Create new GitHub release...")
 #############################
 if config.dry_run:
     print_info_dry("Would create a new GitHub release")
@@ -301,7 +301,10 @@ else:
 #############################
 print_step("Set next release version...")
 #############################
-maven.add_remove_snapshot_version_in_pom(True,"setting snapshot version for next release")
+maven.add_remove_snapshot_version_in_pom(True, config.next_version)
+git_repo.repo.git.add(["**/pom.xml"])
+git_repo.commit("Set next development version")
+git_repo.push()
 
 #############################
 print_step("Close GitHub release issue...")

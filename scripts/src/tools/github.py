@@ -67,9 +67,14 @@ class GitHub:
             sys.exit()
     
     def __request_milestone_list(self):
+        # caching!
+        if self.milestone_json_data:
+            return self.milestone_json_data
+        
         response_object= requests.get(self.config.github_milestones_url())
         milestone_json_data = json.loads(response_object.text)
         if response_object.status_code == 200:
+            self.milestone_json_data = milestone_json_data
             return milestone_json_data
         else:
             print_error('Could not retrieve data from "'+self.config.github_milestones_url()+". Got "+response_object.status_code);
@@ -151,6 +156,6 @@ class GitHub:
                         if r.status_code in [201,200]:
                             print_info("Uploaded!")
                         else:
-                            print_error("Upload failed :/ Status Code: "+r.status_code)
+                            print_error("Upload failed! Status Code: "+r.status_code)
         except Exception as e:
             print_error(str(e))
