@@ -6,7 +6,7 @@
   <name>CobiGen - Velocity Template Engine</name>
 
   <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
@@ -18,7 +18,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
+      <groupId>com.devonfw</groupId>
       <artifactId>cobigen-core-api</artifactId>
       <version>4.1.0</version>
     </dependency>
@@ -30,19 +30,19 @@
     </dependency>
 
     <dependency>
-      <groupId>com.capgemini</groupId>
+      <groupId>com.devonfw</groupId>
       <artifactId>cobigen-core-test</artifactId>
       <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
+      <groupId>com.devonfw</groupId>
       <artifactId>cobigen-core</artifactId>
       <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
+      <groupId>com.devonfw</groupId>
       <artifactId>cobigen-javaplugin</artifactId>
       <version>1.6.0</version>
       <scope>test</scope>
