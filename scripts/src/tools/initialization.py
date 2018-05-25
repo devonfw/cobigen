@@ -34,7 +34,7 @@ def ask_user_and_fill_config(config: Config):
     config.tag_name = __get_tag_name(config)
     config.target_folder = __get_target_folder(config)
 
-    config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one. Otherwise leave it empty to create an issue automatically")
+    config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
 
     config.release_version = ""
     version_pattern = re.compile('[0-9]\.[0-9]\.[0-9]')
