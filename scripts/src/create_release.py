@@ -11,7 +11,7 @@ from tools.github import GitHub
 from tools.git_repo import GitRepo
 from tools.validation import exit_if_not_executed_in_ide_environment, exit_if_origin_is_not_correct,\
     exit_if_working_copy_is_not_clean, check_running_in_bash
-from tools.user_interface import print_step, print_error, prompt_yesno_question, print_info, print_info_dry
+from tools.user_interface import print_step, print_error, prompt_yesno_question, print_info, print_info_dry, print_debug
 from tools.maven import Maven
 from pprint import pprint
 from tools.initialization import init_git_dependent_config, init_non_git_config
@@ -34,6 +34,12 @@ exit_if_not_executed_in_ide_environment()
 config = Config()
 init_non_git_config(config)
 
+if(config.debug):
+    print_debug("Current config:")
+    pprint(vars(config))
+    if not prompt_yesno_question("Changes will be pushed now. Continue?"):
+        sys.exit()
+
 git_repo = GitRepo(config)
 github = GitHub(config, git_repo)
 init_git_dependent_config(config, github)
@@ -41,6 +47,7 @@ init_git_dependent_config(config, github)
 exit_if_origin_is_not_correct(config)
 
 if(config.debug):
+    print_debug("Current config:")
     pprint(vars(config))
     if not prompt_yesno_question("Changes will be pushed now. Continue?"):
         sys.exit()

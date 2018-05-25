@@ -17,6 +17,9 @@ def prompt_yesno_question(question: str) -> bool:
         value = input(prompt)
     return value == 'yes'
 
+def print_debug(print_message):
+    print("[DEBUG] "+print_message)
+
 def print_info(print_message):
     print("[INFO] "+print_message)
 
