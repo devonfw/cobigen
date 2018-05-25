@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.propertyplugin;
+package com.devonfw.cobigen.propertyplugin;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -17,8 +17,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
