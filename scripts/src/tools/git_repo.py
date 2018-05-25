@@ -11,7 +11,7 @@ import git
 class GitRepo:
 
     def __init__(self, config: Config):
-        self.config = config
+        self.config: Config = config
         self.authenticate_git_user()
         self.init_git_repo()
 
@@ -29,7 +29,7 @@ class GitRepo:
             self.config.git_password_or_token = getpass.getpass("Please enter your password or token: ")
 
             session = requests.Session()
-            response_object = session.get(self.config.github_api_root_url)
+            response_object = session.get(self.config.github_api_root_url())
             if (response_object.status_code in [201,200]):
                 print_info("Authenticated.")
                 authenticated = True
