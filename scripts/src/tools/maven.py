@@ -13,7 +13,7 @@ class Maven:
 
     def __init__(self, config: Config, github: GitHub):
         self.config = config
-        self.github = github
+        self.github_repo = github
         self.mavenNS = "{http://maven.apache.org/POM/4.0.0}"
         
            
@@ -97,7 +97,7 @@ class Maven:
                                     pom.write(fpath)
                                     if artifactId =="cobigen-core":
                                         core_version_in_eclipse_pom=name.text
-                                        cobigen_core_milestone = self.github.find_cobigen_core_milestone(core_version_in_eclipse_pom)
+                                        cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)
                                         if cobigen_core_milestone["state"] != "closed":
                                             print_info("Core version " + core_version_in_eclipse_pom + " is not yet released. This should be released before releasing cobigen-eclipse");
                                             sys.exit()

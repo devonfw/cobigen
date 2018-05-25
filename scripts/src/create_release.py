@@ -41,7 +41,7 @@ if(config.debug):
         sys.exit()
 
 git_repo = GitRepo(config)
-github = GitHub(config, git_repo)
+github = GitHub(config)
 init_git_dependent_config(config, github)
 
 exit_if_origin_is_not_correct(config)
@@ -242,7 +242,7 @@ print_step("Close GitHub Milestone...")
 if config.dry_run:
     print_info_dry("Would close GitHub milestone with no "+milestone_number)
 else:
-    release_milestone = git_repo.repo.get_milestone(milestone_number)
+    release_milestone = github.repo.get_milestone(milestone_number)
     
     if config.dry_run:
         print_info_dry("Would close the milestone: " + release_milestone.title)
@@ -307,7 +307,7 @@ print_step("Close GitHub release issue...")
 if config.dry_run:
     print_info_dry("Would close GitHub release issue with no #"+ config.github_issue_no)
 else:
-    release_issue = git_repo.repo.get_issue(int(config.github_issue_no))
+    release_issue = github.repo.get_issue(int(config.github_issue_no))
     #will never find closed issues
     closing_comment = "Automatically processed.\n\nThe decisions taken by the developer and the context of the decisions throughout the script:\n\n"
     for message in report_messages:

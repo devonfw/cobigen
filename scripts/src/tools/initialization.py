@@ -15,12 +15,12 @@ def init_non_git_config(config: Config):
     config.debug = False
     config.test_run = False
     
-    config.git_repo = ""
+    config.github_repo = ""
     repo_pattern = re.compile('[a-zA-Z]+/[a-zA-Z]+')
-    while(not repo_pattern.match(config.git_repo)):
-        config.git_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
-    config.git_repo_name = config.git_repo.split(sep='/')[1]
-    config.git_repo_org = config.git_repo.split(sep='/')[0]
+    while(not repo_pattern.match(config.github_repo)):
+        config.github_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
+    config.git_repo_name = config.github_repo.split(sep='/')[1]
+    config.git_repo_org = config.github_repo.split(sep='/')[0]
 
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
     

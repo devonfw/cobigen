@@ -11,7 +11,7 @@ class Config():
         self.git_username: str
         self.git_password_or_token: str
         
-        self.git_repo: str
+        self.github_repo: str
         self.git_repo_name: str
         self.git_repo_org: str
                 
@@ -31,10 +31,10 @@ class Config():
         self.wiki_submodule_path: str
              
     def github_api_root_url(self) -> str:
-        return 'https://' + self.git_username + ':' + self.git_password_or_token + '@api.github.com'
+        return 'https://' + self.git_username + ':' + self.git_password_or_token + '@api.github_repo.com'
 
     def github_api_url(self) -> str:
-        return self.github_api_root_url() + '/repos/' + self.git_repo
+        return self.github_api_root_url() + '/repos/' + self.github_repo
     
     def github_issues_url(self) -> str:
         return self.github_api_url() + '/issues'
@@ -46,7 +46,7 @@ class Config():
         return self.github_api_url() + "/milestones"
     
     def github_closed_milestone_url(self, milestone_number):
-        return "https://github.com/" + self.git_repo + "/milestone/" + str(milestone_number)+"?closed=1"
+        return "https://github_repo.com/" + self.github_repo + "/milestone/" + str(milestone_number)+"?closed=1"
 
     
         
