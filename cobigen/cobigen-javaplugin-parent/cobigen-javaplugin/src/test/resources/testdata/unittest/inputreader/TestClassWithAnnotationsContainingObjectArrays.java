@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
 import org.junit.experimental.categories.Category;
 

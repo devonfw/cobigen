@@ -1,4 +1,4 @@
-package com.capgemini;
+package com.devonfw;
 
 @SuppressWarnings("unchecked")
 public final class FooBar {

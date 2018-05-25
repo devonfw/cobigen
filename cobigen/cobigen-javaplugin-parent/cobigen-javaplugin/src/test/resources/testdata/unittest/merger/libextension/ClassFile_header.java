@@ -1,5 +1,5 @@
 /* HEADER */
-package com.capgemini;
+package com.devonfw;
 
 public abstract class Clazz {
 

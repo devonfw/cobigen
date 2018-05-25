@@ -1,11 +1,11 @@
-package com.capgemini.cobigen.javaplugin.unittest.matcher.resolver;
+package com.devonfw.cobigen.javaplugin.unittest.matcher.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.capgemini.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
+import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
+import com.devonfw.cobigen.javaplugin.matcher.resolver.TriggerExpressionResolver;
 
 /**
  * The class <code>TriggerExpressionResolverTest</code> contains tests for the class

@@ -1,9 +1,9 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader;
 
-import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getField;
-import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getJavaDocModel;
-import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getMethod;
-import static com.capgemini.cobigen.javaplugin.model.JavaModelUtil.getRoot;
+import static com.devonfw.cobigen.javaplugin.model.JavaModelUtil.getField;
+import static com.devonfw.cobigen.javaplugin.model.JavaModelUtil.getJavaDocModel;
+import static com.devonfw.cobigen.javaplugin.model.JavaModelUtil.getMethod;
+import static com.devonfw.cobigen.javaplugin.model.JavaModelUtil.getRoot;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -16,12 +16,12 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
-import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
-import com.capgemini.cobigen.javaplugin.model.ModelConstant;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
+import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
+import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.base.Charsets;
 
 /**
@@ -82,16 +82,16 @@ public class ParsedJavaModelBuilderTest {
         // interface1
         assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
         assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
         assertThat(interfaces.get(0).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
 
         // interface2
         assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
         assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
         assertThat(interfaces.get(1).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
@@ -144,9 +144,9 @@ public class ParsedJavaModelBuilderTest {
 
         Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
@@ -168,7 +168,7 @@ public class ParsedJavaModelBuilderTest {
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         assertThat(customTypeField.get(ModelConstant.TYPE)).isEqualTo("AnyOtherType");
         assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo(
-            "com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
+            "com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
     }
 
     /**

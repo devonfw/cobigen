@@ -1,10 +1,10 @@
-package com.capgemini.cobigen.javaplugin.unittest.util;
+package com.devonfw.cobigen.javaplugin.unittest.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 
 /**
  * This class contains testcases for {@link JavaParserUtil}
@@ -13,7 +13,7 @@ public class JavaParserUtilTest {
 
     /**
      * Test method for
-     * {@link com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
+     * {@link com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
      */
     @Test
     public void testResolveToSimpleType() {

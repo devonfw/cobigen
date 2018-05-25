@@ -1,4 +1,4 @@
-package com.capgemini;
+package com.devonfw;
 
 /**
  * JavaDoc enthält ä
