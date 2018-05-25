@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity.constant;
+package com.devonfw.cobigen.tempeng.velocity.constant;
 
 /**
  * Constants extracted from the Velocity pom by velocity-plugin.
