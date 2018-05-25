@@ -21,15 +21,6 @@ def init_non_git_config(config: Config):
         config.git_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
     config.git_repo_name = config.git_repo.split(sep='/')[1]
     config.git_repo_org = config.git_repo.split(sep='/')[0]
-    
-    config.release_version = ""
-    version_pattern = re.compile('[0-9]\.[0-9]\.[0-9]')
-    while(not version_pattern.match(config.release_version)):
-        config.release_version = prompt_enter_value("release version number without 'v' in front")
-        
-    config.next_version = ""
-    while(not version_pattern.match(config.next_version)):
-        config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
 
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
     
@@ -41,6 +32,15 @@ def init_git_dependent_config(config: Config, github: GitHub):
         config.branch_to_be_released = prompt_enter_value("the name of the branch to be released")
         if(is_valid_branch(config)):
             break
+
+    config.release_version = ""
+    version_pattern = re.compile('[0-9]\.[0-9]\.[0-9]')
+    while(not version_pattern.match(config.release_version)):
+        config.release_version = prompt_enter_value("release version number without 'v' in front")
+        
+    config.next_version = ""
+    while(not version_pattern.match(config.next_version)):
+        config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
     
     config.build_folder = __get_build_folder(config)
     config.cobigenwiki_title_name = __get_cobigenwiki_title_name(config)
