@@ -29,10 +29,10 @@ def ask_user_and_fill_config(config: Config):
         if(is_valid_branch(config)):
             break
         
-    config.build_folder = config.__get_build_folder(config)
-    config.cobigenwiki_title_name = config.__get_cobigenwiki_title_name(config)
-    config.tag_name = config.__get_tag_name(config)
-    config.target_folder = config.__get_target_folder(config)
+    config.build_folder = __get_build_folder(config)
+    config.cobigenwiki_title_name = __get_cobigenwiki_title_name(config)
+    config.tag_name = __get_tag_name(config)
+    config.target_folder = __get_target_folder(config)
 
     config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one. Otherwise leave it empty to create an issue automatically")
 
