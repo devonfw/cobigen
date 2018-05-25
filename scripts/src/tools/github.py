@@ -1,161 +1,164 @@
-import requests
 from tools.config import Config
 import sys
 import os
 from tools.user_interface import prompt_yesno_question, print_error, print_info_dry, print_info, print_debug
-import json
-from uritemplate.template import URITemplate
-from github.GithubException import UnknownObjectException
+from github.GithubException import UnknownObjectException, GithubException
 from github.MainClass import Github
+from github.Issue import Issue
+from github.PaginatedList import PaginatedList
+from github.Milestone import Milestone
+from github.GitRelease import GitRelease
 
 class GitHub:
     
     def __init__(self, config: Config):
-        self.config = config
-        self.session = requests.Session()
-        self.session.auth = (self.config.git_username, self.config.git_password_or_token)
+        self.__config = config
         
-        self.github_repo = Github(self.config.git_username, self.config.git_password_or_token)
+        self.__github = Github(self.__config.git_username, self.__config.git_password_or_token)
         try:
-            org = self.github_repo.get_organization(self.config.git_repo_org)
-            if self.config.debug:
+            org = self.__github.get_organization(self.__config.git_repo_org)
+            if self.__config.debug:
                 print_debug("Organization found.")
         except UnknownObjectException:
-            if self.config.debug:
-                print_debug("Organization not found. Try interpreting " + self.config.git_repo_org + " as user...")
-            org = self.github_repo.get_user(self.config.git_repo_org)
-            if self.config.debug:
+            if self.__config.debug:
+                print_debug("Organization not found. Try interpreting " + self.__config.git_repo_org + " as user...")
+            org = self.__github.get_user(self.__config.git_repo_org)
+            if self.__config.debug:
                 print_debug("User found.")
             
-        self.repo = org.get_repo(self.config.git_repo_name)
+        self.__repo = org.get_repo(self.__config.git_repo_name)
         
-    def exists_issue(self, issue_number):
+    def find_issue(self, issue_number:int) -> Issue:
         '''Search for the Release issue to be used, if not found, exit'''
-        response_object= requests.get(self.config.github_issue_url(issue_number))
-        issue_json_data = json.loads(response_object.text)
-        if issue_json_data["message"] == "Not Found":
-            print_error("Issue with number " + issue_number + " not found. Aborting...");
-            return False
-        else:
+        if self.cache.issues[issue_number]:
+            return self.cache.issues[issue_number]
+            
+        try:
+            self.cache.issues[issue_number]: Issue = self.__repo.get_issue(issue_number)
+            print_info("Issue with number " + str(issue_number) + " found.");
+            return self.cache.issues[issue_number]
+        except UnknownObjectException:
+            print_error("Issue with number " + str(issue_number) + " not found.");
+            return None
+        
+    def exists_issue(self, issue_number:int) -> bool:
+        '''Search for the Release issue to be used, if not found, exit'''
+        if self.find_issue(issue_number):
             print_info("Issue with number " + issue_number + " found.");
             return True
+        else:
+            print_error("Issue with number " + issue_number + " not found.");
+            return False
         
-    def create_issue(self, version_decl, milestone=None, body=None, labels=None):
-        '''Function creates an issue in git hub with version_decl,milestone,body,labels passed'''
-        
-        issue = {'version_decl': version_decl,
-             'milestone': milestone,
-             'body': body,             
-             'labels': labels}
-        
-        if self.config.dry_run:
-            print_info_dry('Skipping creation of issue:' + os.linesep + str(issue))
+    def create_issue(self, title, milestone=None, body=None, labels=None) -> int:
+        '''Function creates an issue in git hub with title,milestone,body,labels passed'''
+        if self.__config.dry_run:
+            print_info_dry('Skipping creation of issue with title ' + str(title))
             return
-        if self.config.debug and not prompt_yesno_question('Would now create GitHub issue as follows:' + os.linesep + str(issue) + os.linesep + "Continue?"):
+        if self.__config.debug and not prompt_yesno_question('Would now create GitHub issue with title="' + str(title) + '", milestone='+str(milestone)+'. Continue?'):
             sys.exit()
             
-        print_info('Create GitHub issue with version_decl "' + version_decl + '"...')
+        print_info('Create GitHub issue with title "' + title + '"...')
         
-        response_object = self.session.post(self.config.github_issues_url(), json=issue)
-        data = response_object.json()
-        self.config.github_issue_no = data["number"]
-        if response_object.status_code == 201:
-            print_info('Successfully created issue #' + self.config.github_issue_no)
-            return str(self.config.github_issue_no)
-        else:
-            print_error('Could not create new issue')
-            sys.exit()
+        try:
+            issue: Issue = self.__repo.create_issue(title=title, body=body, milestone=milestone, labels=labels)
+            self.__config.github_issue_no = issue.number
+            self.cache.issues[issue.number] = issue
+            return self.__config.github_issue_no
+        except GithubException as e:
+            print(str(e))
+            return None
     
-    def __request_milestone_list(self):
+    def __request_milestone_list(self) -> PaginatedList[Milestone]:
         # caching!
-        if self.milestone_json_data:
-            return self.milestone_json_data
+        if self.cache.milestones:
+            return self.cache.milestones
         
-        response_object= requests.get(self.config.github_milestones_url())
-        milestone_json_data = json.loads(response_object.text)
-        if response_object.status_code == 200:
-            self.milestone_json_data = milestone_json_data
-            return milestone_json_data
-        else:
-            print_error('Could not retrieve data from "'+self.config.github_milestones_url()+". Got "+response_object.status_code);
+        try:
+            milestones: PaginatedList[Milestone] = self.__repo.get_milestones(state=all)
+            self.cache.milestones = milestones
+            return milestones
+        except GithubException as e:
+            print_error('Could not retrieve milestones');
+            print(str(e))
             sys.exit()
             
     
-    def find_milestone(self) -> int:
-        milestone_json_data = self.__request_milestone_list()
+    def find_release_milestone(self) -> Milestone:
+        milestones: PaginatedList[Milestone] = self.__request_milestone_list()
         
-        # Fetching Versions from Milestones and keeping it in a list
-        milestone_number = ""
-        for i in range(len(milestone_json_data)):
-            milestone_title_in_git = milestone_json_data[i]["version_decl"];
-            if self.config.expected_milestone_name in milestone_title_in_git:
-                milestone_number = milestone_json_data[i]["number"];
-                break
-             
-        if milestone_number:
-            print_info("Milestone with version_decl " + self.config.expected_milestone_name + " found")          
-            return milestone_number 
-        else:
-            print_error("Milestone with version_decl " + self.config.expected_milestone_name + " not found! Aborting...")
-            sys.exit()
+        for milestone in milestones:
+            milestone_title_in_git = milestone.title;
+            if self.__config.expected_milestone_name in milestone_title_in_git:
+                return milestone
+        return None
     
-    def find_cobigen_core_milestone(self, version:str, milestone_json_data=None):
-        if not milestone_json_data:
-            milestone_json_data = self.__request_milestone_list()
+    def find_cobigen_core_milestone(self, version:str) -> Milestone:
+        milestones: PaginatedList[Milestone] = self.__request_milestone_list()
         
-        for i in range(len(milestone_json_data)):
-            if "cobigen-core/v"+version == milestone_json_data[i]["version_decl"]:
-                return milestone_json_data[i]
+        for milestone in milestones:
+            if "cobigen-core/v"+version == milestone.title:
+                return milestone
         
         print_error("Could not find milestone for cobigen-core v"+version+". This must be an script error, please check.")
         sys.exit()
-        
     
-    def create_release(self, closed_milestone_number, core_version_in_eclipse_pom):
-        if self.config.dry_run:
+    def create_next_release_milestone(self) -> Milestone:
+        if self.__config.dry_run:
+            print_info_dry("Would create a new milestone")
+            return None
+        
+        new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version) 
+        try:
+            milestone: Milestone = self.__repo.create_milestone(new_mile_title, "open")
+            print_info("New milestone created!")
+            return  milestone
+        except GithubException as e:
+            print_info("Could not create milestone!")
+            print(str(e))
+            return None
+    
+    def create_release(self, closed_milestone: Milestone, core_version_in_eclipse_pom) -> GitRelease:
+        if self.__config.dry_run:
             print_info_dry("Would create a new GitHub release")
             return
         
-        milestone_json_data = self.__request_milestone_list()
-        
-        url_milestone = self.config.github_closed_milestone_url(closed_milestone_number)
-        release_title = self.config.cobigenwiki_title_name
+        url_milestone = self.__config.github_closed_milestone_url(closed_milestone.number)
+        release_title = self.__config.cobigenwiki_title_name
         release_text = "[ChangeLog](" + url_milestone + ")"
-        if "eclipse" in self.config.branch_to_be_released:
-            cobigen_core_milestone = self.find_cobigen_core_milestone(core_version_in_eclipse_pom, milestone_json_data)
-            if cobigen_core_milestone["state"] == "closed":
-                core_url_milestone = self.config.github_closed_milestone_url(str(cobigen_core_milestone["number"]))
+        if "eclipse" in self.__config.branch_to_be_released:
+            cobigen_core_milestone: Milestone = self.find_cobigen_core_milestone(core_version_in_eclipse_pom)
+            if cobigen_core_milestone.state == "closed":
+                core_url_milestone = self.__config.github_closed_milestone_url(str(cobigen_core_milestone.number))
                 release_text = release_text + "\n also includes \n"+ "[ChangeLog CobiGen Core](" + core_url_milestone + ")"
             else:
                 print_info("Core version " + core_version_in_eclipse_pom + " is not yet released. This should be released before releasing cobigen-eclipse");
                 sys.exit()
             
         try:
-            response = self.github_repo.repo.create_git_release(self.config.tag_name, release_title, release_text, draft=False, prerelease=False, target_commitish="master");
-            if response.status_code != 201:
-                print_error("An error occurred during upload. Status Code "+response.status_code)
-                sys.exit()
-                
-            upload_url=response.upload_url
-            uri_template = URITemplate(upload_url)
+            release: GitRelease = self.__repo.create_git_release(self.__config.tag_name, release_title, release_text, draft=False, prerelease=False, target_commitish="master");
             
             content_type="application/java-archive"
-            if self.config.branch_to_be_released == "dev_eclipseplugin":
+            if self.__config.branch_to_be_released == "dev_eclipseplugin":
                 content_type="application/zip"
-            os.chdir(self.config.target_folder)
+            os.chdir(self.__config.target_folder)
             
             for root, dirs, files in os.walk("."):
                 dirs[:] = [d for d in dirs if d not in [".settings","src",]]
                 for fname in files:
                     fpath = os.path.join(root, fname);
                     # To prevent uploading of unnecessary zip/jar files.
-                    if ("jar" in fname or "zip" in fname) and self.config.release_version in fname:
+                    if ("jar" in fname or "zip" in fname) and self.__config.release_version in fname:
                         print_info("Uploading file "+fname+"...")
-                        asset_url = uri_template.expand(name=fname)
-                        r = requests.post(asset_url, auth=(self.config.git_username,self.config.git_password_or_token) ,headers={'Content-Type':content_type}, files={'file': (fname, open(fpath, 'rb'), 'application/octet-stream')})
-                        if r.status_code in [201,200]:
-                            print_info("Uploaded!")
-                        else:
-                            print_error("Upload failed! Status Code: "+r.status_code)
-        except Exception as e:
-            print_error(str(e))
+                        try:
+                            asset: GitReleaseAsset = release.upload_asset(fpath, content_type)
+                            print_info("Uploaded "+asset.size+"kb!")
+                        except GithubException as e:
+                            print_error("Upload failed!")
+                            if self.__config.debug:
+                                print(str(e))
+            return release
+        except GithubException as e:
+            print_error("Could not create release.")
+            print(str(e))
+            sys.exit()

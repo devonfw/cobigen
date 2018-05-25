@@ -19,8 +19,8 @@ def init_non_git_config(config: Config):
     repo_pattern = re.compile('[a-zA-Z]+/[a-zA-Z]+')
     while(not repo_pattern.match(config.github_repo)):
         config.github_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
-    config.git_repo_name = config.github_repo.split(sep='/')[1]
-    config.git_repo_org = config.github_repo.split(sep='/')[0]
+    config.git_repo_name = __config.github_repo.split(sep='/')[1]
+    config.git_repo_org = __config.github_repo.split(sep='/')[0]
 
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
     
@@ -79,7 +79,7 @@ def __get_build_folder(config: Config):
     
     val = build_folder.get(config.branch_to_be_released, "")
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_build_folder in scripts/**/config.py');
+        print_error('Branch name unknown to script. Please edit function get_build_folder in scripts/**/__config.py');
         sys.exit()
     return val
     
@@ -105,7 +105,7 @@ def __get_cobigenwiki_title_name(config):
     
     val = wiki_description_name.get(config.branch_to_be_released, "")
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_cobigenwiki_title_name in scripts/**/config.py');
+        print_error('Branch name unknown to script. Please edit function get_cobigenwiki_title_name in scripts/**/__config.py');
         sys.exit()
     return val
     
@@ -131,7 +131,7 @@ def __get_tag_name(config):
        
     val = tag_name.get(config.branch_to_be_released, "")     
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/config.py');
+        print_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py');
         sys.exit()
     return val
 

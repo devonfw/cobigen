@@ -45,7 +45,7 @@ class Config():
     def github_milestones_url(self) -> str:
         return self.github_api_url() + "/milestones"
     
-    def github_closed_milestone_url(self, milestone_number):
+    def github_closed_milestone_url(self, milestone_number: int):
         return "https://github_repo.com/" + self.github_repo + "/milestone/" + str(milestone_number)+"?closed=1"
 
     

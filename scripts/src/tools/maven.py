@@ -12,7 +12,7 @@ class Maven:
     '''
 
     def __init__(self, config: Config, github: GitHub):
-        self.config = config
+        self.__config = config
         self.github_repo = github
         self.mavenNS = "{http://maven.apache.org/POM/4.0.0}"
         
@@ -41,25 +41,25 @@ class Maven:
             
     # This method is responsible for adding SNAPSHOT version if not already added
     def add_remove_snapshot_version_in_pom(self, bool_add_snapshot, version_to_change: str):
-        user_interface.print_info("Checking out branch for adding SNAPSHOT version: " + self.config.branch_to_be_released + ".")
+        user_interface.print_info("Checking out branch for adding SNAPSHOT version: " + self.__config.branch_to_be_released + ".")
 
         pom = etree.parse("pom.xml")
         
         # For dev_mavenplugin branch
-        if self.config.branch_to_be_released == "dev_mavenplugin":
+        if self.__config.branch_to_be_released == "dev_mavenplugin":
             for mapping in pom.findall("//" + self.mavenNS + "properties"):                           
                 version_node  = mapping.find(self.mavenNS + "cobigen.maven.version")
                 if(version_node):
                     self.call_add_remove_snapshot_method(version_node,pom,bool_add_snapshot,version_to_change,None)
                 
         # For dev_core branch
-        elif self.config.branch_to_be_released == "dev_core":
+        elif self.__config.branch_to_be_released == "dev_core":
             for mapping in pom.findall("//" + self.mavenNS + "properties"):                           
                 version_node  = mapping.find(self.mavenNS + "cobigencore.version")
                 if(version_node):
                     self.call_add_remove_snapshot_method(version_node,pom,bool_add_snapshot,version_to_change,None)
         # For dev_eclipseplugin branch
-        elif self.config.branch_to_be_released == "dev_eclipseplugin":            
+        elif self.__config.branch_to_be_released == "dev_eclipseplugin":            
             for dname, dirs, files in os.walk("."):
                 for fname in files:
                     fpath = os.path.join(dname, fname);
@@ -80,7 +80,7 @@ class Maven:
         
     def upgrade_snapshot_dependencies(self) -> str:
         print_info('Upgrading all SNAPSHOT dependencies in POM files.')
-        os.chdir(os.path.join(self.config.root_path, self.config.build_folder))
+        os.chdir(os.path.join(self.__config.root_path, self.__config.build_folder))
         for dname, dirs, files in os.walk("."):
             for fname in files:
                 fpath = os.path.join(dname, fname)        
