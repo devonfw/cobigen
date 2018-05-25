@@ -2,18 +2,32 @@ import requests
 from tools.config import Config
 import sys
 import os
-from tools.user_interface import prompt_yesno_question, print_error, print_info_dry, print_info
+from tools.user_interface import prompt_yesno_question, print_error, print_info_dry, print_info, print_debug
 import json
 from uritemplate.template import URITemplate
-from tools.git_repo import GitRepo
+from github.GithubException import UnknownObjectException
+from github.MainClass import Github
 
 class GitHub:
     
-    def __init__(self, config: Config, git_repo: GitRepo):
+    def __init__(self, config: Config):
         self.config = config
-        self.git_repo = git_repo
         self.session = requests.Session()
         self.session.auth = (self.config.git_username, self.config.git_password_or_token)
+        
+        self.github_repo = Github(self.config.git_username, self.config.git_password_or_token)
+        try:
+            org = self.github_repo.get_organization(self.config.git_repo_org)
+            if self.config.debug:
+                print_debug("Organization found.")
+        except UnknownObjectException:
+            if self.config.debug:
+                print_debug("Organization not found. Try interpreting " + self.config.git_repo_org + " as user...")
+            org = self.github_repo.get_user(self.config.git_repo_org)
+            if self.config.debug:
+                print_debug("User found.")
+            
+        self.repo = org.get_repo(self.config.git_repo_name)
         
     def find_issue(self, issue_number):
         '''Search for the Release issue to be used, if not found, exit'''
@@ -112,7 +126,7 @@ class GitHub:
                 sys.exit()
             
         try:
-            response = self.git_repo.repo.create_git_release(self.config.tag_name, release_title, release_text, draft=False, prerelease=False, target_commitish="master");
+            response = self.github_repo.repo.create_git_release(self.config.tag_name, release_title, release_text, draft=False, prerelease=False, target_commitish="master");
             if response.status_code != 201:
                 print_error("An error occurred during upload. Status Code "+response.status_code)
                 sys.exit()

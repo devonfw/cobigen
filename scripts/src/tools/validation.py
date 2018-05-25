@@ -23,8 +23,8 @@ def is_valid_branch(config) -> bool:
 
 def exit_if_origin_is_not_correct(config):
     remote_origin=git.cmd.Git(".").execute("git remote -v")
-    if config.git_repo not in remote_origin:
-        print_error("Origin of the current repository is not '" + config.git_repo + "', Please go to correct directory.");
+    if config.github_repo not in remote_origin:
+        print_error("Origin of the current repository is not '" + config.github_repo + "', Please go to correct directory.");
         sys.exit()
         
 def exit_if_working_copy_is_not_clean():

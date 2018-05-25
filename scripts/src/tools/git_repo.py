@@ -5,9 +5,7 @@ from tools.user_interface import prompt_enter_value, print_info, print_error, pr
 from tools.config import Config
 from git.exc import GitCommandError, InvalidGitRepositoryError
 import sys
-from github.MainClass import Github
 import git
-from github.GithubException import UnknownObjectException
 
 
 class GitRepo:
@@ -15,10 +13,10 @@ class GitRepo:
     def __init__(self, config: Config):
         self.config: Config = config
         self.authenticate_git_user()
-        self.init_git_repo()
 
         try:
             self.repo = git.cmd.Git(".")
+            self.origin = self.repo.remotes.origin
         except InvalidGitRepositoryError:
             print_error("Path is not a git repository. Please go to valid git repository!")
             sys.exit()
@@ -38,22 +36,6 @@ class GitRepo:
             else:
                 print_info("Authentication failed.")
                 authenticated = False
-    
-    def init_git_repo(self):
-        g = Github(self.config.git_username, self.config.git_password_or_token)
-        try:
-            org = g.get_organization(self.config.git_repo_org)
-            if self.config.debug:
-                print_debug("Organization found.")
-        except UnknownObjectException:
-            if self.config.debug:
-                print_debug("Organization not found. Try interpreting " + self.config.git_repo_org + " as user...")
-            org = g.get_user(self.config.git_repo_org)
-            if self.config.debug:
-                print_debug("User found.")
-            
-        self.repo = org.get_repo(self.config.git_repo_name)
-        self.origin = self.repo.remotes.origin
     
     def pull(self):
         try:
