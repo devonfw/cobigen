@@ -13,17 +13,12 @@ def exit_if_not_executed_in_ide_environment():
 def is_valid_branch(config) -> bool:
     '''This Method is responsible for checking branches in repository with branch entered by user'''
     
-    if git.cmd.Git(".").execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
+    if not git.cmd.Git(".").execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
         print_info("Branch is not known remotely.")
         is_branch_valid=False
     else:
-        # potentially exit if the scripts are not prepared for a possibly new branch
-        config.get_build_folder()
-        config.get_cobigenwiki_title_name()
-        config.get_tag_name()
         print_info("Branch is valid.")
-        is_branch_valid=True
-        
+        is_branch_valid=True    
     return is_branch_valid
 
 def exit_if_origin_is_not_correct(config):
