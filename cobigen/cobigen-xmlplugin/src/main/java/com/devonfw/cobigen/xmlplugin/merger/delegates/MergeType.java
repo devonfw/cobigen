@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.merger.delegates;
+package com.devonfw.cobigen.xmlplugin.merger.delegates;
 
 import com.github.maybeec.lexeme.ConflictHandlingType;
 

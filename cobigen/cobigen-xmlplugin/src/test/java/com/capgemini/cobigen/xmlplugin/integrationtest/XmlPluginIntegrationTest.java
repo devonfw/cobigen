@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.xmlplugin.integrationtest;
+package com.devonfw.cobigen.xmlplugin.integrationtest;
 
-import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
@@ -24,12 +24,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 
 import junit.framework.AssertionFailedError;
 

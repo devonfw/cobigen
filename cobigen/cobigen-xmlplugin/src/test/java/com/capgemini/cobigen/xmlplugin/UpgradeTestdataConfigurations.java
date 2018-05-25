@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin;
+package com.devonfw.cobigen.xmlplugin;
 
 import java.io.File;
 import java.util.Arrays;
@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.api.constants.BackupPolicy;
-import com.capgemini.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.capgemini.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
+import com.devonfw.cobigen.api.constants.BackupPolicy;
+import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.google.common.collect.Lists;
 
 /**
