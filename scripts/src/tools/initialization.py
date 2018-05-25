@@ -29,10 +29,10 @@ def ask_user_and_fill_config(config: Config):
         if(is_valid_branch(config)):
             break
         
-    config.build_folder = config.__get_build_folder()
-    config.cobigenwiki_title_name = config.__get_cobigenwiki_title_name()
-    config.tag_name = config.__get_tag_name()
-    config.target_folder = config.__get_target_folder()
+    config.build_folder = config.__get_build_folder(config)
+    config.cobigenwiki_title_name = config.__get_cobigenwiki_title_name(config)
+    config.tag_name = config.__get_tag_name(config)
+    config.target_folder = config.__get_target_folder(config)
 
     config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one. Otherwise leave it empty to create an issue automatically")
 
@@ -45,9 +45,9 @@ def ask_user_and_fill_config(config: Config):
     while(not version_pattern.match(config.next_version)):
         config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
     
-    config.expected_milestone_name = config.config.get_tag_name(config.config.branch_to_be_released)[:-2] + "-v" + config.config.release_version
+    config.expected_milestone_name = config.tag_name[:-2] + "-v" + config.config.release_version
     
-    config.wiki_submodule_path = os.path.abspath(os.path.join(config.config.root_path, "cobigen-documentation", config.git_repo_name() + ".wiki"))
+    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name() + ".wiki"))
     
     __process_params(config)
     
