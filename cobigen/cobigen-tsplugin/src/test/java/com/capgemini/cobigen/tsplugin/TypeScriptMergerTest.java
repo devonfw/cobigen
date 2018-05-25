@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,8 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.tsplugin.merger.TypeScriptMerger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 
 /**
  * Test methods for different TS mergers of the plugin
