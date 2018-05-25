@@ -1,7 +1,7 @@
-package com.capgemini;
+package com.devonfw;
 
-import com.capgemini.conflicting.BaseClassImport;
-import com.capgemini.PatchClassImport;
+import com.devonfw.conflicting.BaseClassImport;
+import com.devonfw.PatchClassImport;
 
 public class FooBar
 {

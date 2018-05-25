@@ -1,4 +1,4 @@
-package com.capgemini;
+package com.devonfw;
 
 import java.util.HashMap;
 

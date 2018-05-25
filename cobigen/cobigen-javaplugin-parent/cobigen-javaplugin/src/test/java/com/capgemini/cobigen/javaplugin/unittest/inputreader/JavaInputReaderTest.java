@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,15 +11,15 @@ import java.util.Map;
 import org.apache.commons.io.Charsets;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
-import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
-import com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
-import com.capgemini.cobigen.javaplugin.model.ModelConstant;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotations;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithRecursiveAnnotations;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.inputreader.to.PackageFolder;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotations;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithAnnotationsContainingObjectArrays;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClassWithRecursiveAnnotations;
+import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
+import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.thoughtworks.qdox.model.JavaClass;
 

@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.javaplugin.integrationtest;
+package com.devonfw.cobigen.javaplugin.integrationtest;
 
-import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -11,12 +11,12 @@ import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
-import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 
 import junit.framework.AssertionFailedError;
 
