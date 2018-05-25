@@ -47,7 +47,7 @@ class GitRepo:
                 print_debug("Organization found.")
         except UnknownObjectException:
             if self.config.debug:
-                print_debug("Organization not found. Try interpreting " + self.config.get_repo_org + "as user...")
+                print_debug("Organization not found. Try interpreting " + self.config.git_repo_org + " as user...")
             org = g.get_user(self.config.git_repo_org)
             if self.config.debug:
                 print_debug("User found.")
