@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger;
+package com.devonfw.cobigen.jsonplugin.merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,11 +8,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.jsonplugin.merger.general.constants.Constants;
-import com.capgemini.cobigen.jsonplugin.merger.generic.GenericJSONMerger;
-import com.capgemini.cobigen.jsonplugin.merger.senchaarchitect.SenchaArchitectMerger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.jsonplugin.merger.general.constants.Constants;
+import com.devonfw.cobigen.jsonplugin.merger.generic.GenericJSONMerger;
+import com.devonfw.cobigen.jsonplugin.merger.senchaarchitect.SenchaArchitectMerger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
