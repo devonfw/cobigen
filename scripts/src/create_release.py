@@ -39,6 +39,8 @@ github = GitHub(config, git_repo)
 ask_user_and_fill_config(config, github)
 exit_if_origin_is_not_correct(config)
 
+git_repo.init_git_repo()
+
 if(config.debug):
     pprint(vars(config))
     if not prompt_yesno_question("Changes will be pushed now. Continue?"):
