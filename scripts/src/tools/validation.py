@@ -34,13 +34,14 @@ def exit_if_origin_is_not_correct(config):
         
 def exit_if_working_copy_is_not_clean():
     repo = git.cmd.Git(".")
-    if repo.execute("git diff --shortstat") != "" or repo.execute("git status --porcelein") != "":
+    if repo.execute("git diff --shortstat") != "" or repo.execute("git status --porcelain") != "":
         print_error("Working copy is not clean");
         sys.exit()
     
 def check_running_in_bash():
     try:
-        subprocess.call("ls")
+        FNULL = open(os.devnull, 'w')
+        subprocess.call("ls", stdout=FNULL)
     except:
         print_error("Please run the script in a linux like environment (e.g. git bash)")
         sys.exit()

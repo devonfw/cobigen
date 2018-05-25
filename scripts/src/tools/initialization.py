@@ -7,7 +7,7 @@ from tools.config import Config
 
 def ask_user_and_fill_config(config: Config):
     config.wiki_version_overview_page = "CobiGen.asciidoc"
-    config.root_path = os.path.join(os.path.realpath(__file__), "../../../")
+    config.root_path = os.path.normpath(os.path.join(os.path.realpath(__file__), ".."+os.sep+".."+os.sep+".."+os.sep+".."+os.sep))
     print_info("Executing release in path " + str(config.root_path))
     
     config.dry_run = False
