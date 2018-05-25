@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-core-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
