@@ -26,25 +26,25 @@
     </dependency>
 
     <dependency>
-      <groupId>com.devonfw</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-core-api</artifactId>
       <version>4.1.0</version>
     </dependency>
 
     <dependency>
-      <groupId>com.devonfw</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-core-test</artifactId>
       <version>4.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.devonfw</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-core</artifactId>
       <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.devonfw</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cobigen-tempeng-freemarker</artifactId>
       <version>1.0.0</version>
       <scope>test</scope>
