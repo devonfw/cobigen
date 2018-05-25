@@ -8,6 +8,7 @@ from github.MainClass import Github
 import git
 
 class GitRepo:
+    
     def __init__(self, config: Config):
         self.config = config
         self.authenticate_git_user()
