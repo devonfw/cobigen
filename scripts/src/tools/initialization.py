@@ -4,8 +4,9 @@ import sys
 from tools.validation import is_valid_branch
 import re
 from tools.config import Config
+from tools.github import GitHub
 
-def ask_user_and_fill_config(config: Config):
+def ask_user_and_fill_config(config: Config, github: GitHub):
     config.wiki_version_overview_page = "CobiGen.asciidoc"
     config.root_path = os.path.normpath(os.path.join(os.path.realpath(__file__), ".."+os.sep+".."+os.sep+".."+os.sep+".."+os.sep))
     print_info("Executing release in path " + str(config.root_path))
@@ -34,7 +35,14 @@ def ask_user_and_fill_config(config: Config):
     config.tag_name = __get_tag_name(config)
     config.target_folder = __get_target_folder(config)
 
-    config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
+    while(True):
+        config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
+        if(config.github_issue_no == 'new'):
+            config.github_issue_no = '' # to be processed as falsely in the script later on (create one automatically)
+            break
+        elif(github.find_issue(config.github_issue_no)):
+            print_info("Issue found remotely!")
+            break
 
     config.release_version = ""
     version_pattern = re.compile('[0-9]\.[0-9]\.[0-9]')
