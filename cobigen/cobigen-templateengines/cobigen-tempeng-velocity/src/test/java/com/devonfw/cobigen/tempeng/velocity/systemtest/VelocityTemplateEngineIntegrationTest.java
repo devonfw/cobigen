@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.tempeng.velocity.systemtest;
+package com.devonfw.cobigen.tempeng.velocity.systemtest;
 
-import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -10,11 +10,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.tempeng.velocity.systemtest.testobjects.Input;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.tempeng.velocity.systemtest.testobjects.Input;
 
 /** Test suite integrating cobigen-core with the velocity template engine. */
 public class VelocityTemplateEngineIntegrationTest {
