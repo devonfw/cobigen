@@ -2,14 +2,14 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-tempeng-freemarker</artifactId>
+  <artifactId>tempeng-freemarker</artifactId>
   <name>CobiGen - FreeMarker Template Engine</name>
   <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>com.devonfw</groupId>
-    <artifactId>cobigen-tempeng-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
@@ -20,13 +20,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.devonfw</groupId>
-      <artifactId>cobigen-core-api</artifactId>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
       <version>4.1.0</version>
     </dependency>
     <dependency>
-      <groupId>com.devonfw</groupId>
-      <artifactId>cobigen-core-test</artifactId>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
       <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
