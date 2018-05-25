@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.freemarker.constant;
+package com.devonfw.cobigen.tempeng.freemarker.constant;
 
 /**
  * Constants extracted from the Freemarker pom by freemarker-plugin.
