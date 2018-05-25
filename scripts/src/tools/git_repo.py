@@ -10,7 +10,7 @@ import git
 class GitRepo:
 
     def __init__(self, config: Config):
-        self.config: Config = config
+        self.__config: Config = config
         self.authenticate_git_user()
 
         try:
@@ -24,11 +24,11 @@ class GitRepo:
     def authenticate_git_user(self):    
         authenticated = False
         while not authenticated:
-            self.config.git_username = prompt_enter_value("your git user name");
-            self.config.git_password_or_token = getpass.getpass("> Please enter your password or token: ")
+            self.__config.git_username = prompt_enter_value("your git user name");
+            self.__config.git_password_or_token = getpass.getpass("> Please enter your password or token: ")
 
             session = requests.Session()
-            response_object = session.get(self.config.github_api_root_url())
+            response_object = session.get(self.__config.github_api_root_url())
             if (response_object.status_code in [201,200]):
                 print_info("Authenticated.")
                 authenticated = True
@@ -64,16 +64,19 @@ class GitRepo:
     def commit(self, commit_message: str):
         try:
             print_info("Committing ...")
-            self.repo.git.commit(message="#" + str(self.config.github_issue_no) + " " + commit_message)
+            self.repo.git.commit(message="#" + str(self.__config.github_issue_no) + " " + commit_message)
             self.push()
         except Exception as e:
             if "no changes added to commit" in str(e):
                 print_info("No File is changed, Nothing to commit..")
     
     def push(self):
-        if(self.config.debug):
-            prompt_yesno_question("Changes will be pushed now. Continue?")
-        if(self.config.dry_run):
+        ''' Boolean return type states, whether to continue process or abort'''
+        if(self.__config.debug):
+            if not prompt_yesno_question("Changes will be pushed now. Continue?"):
+                self.reset()
+                sys.exit()
+        if(self.__config.dry_run):
             print_info_dry('Skipping pushing of changes.')
             return
         

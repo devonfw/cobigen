@@ -3,7 +3,6 @@ import os
 import sys
 import git
 
-import platform
 import fileinput
 import subprocess
 from tools.config import Config
@@ -18,6 +17,7 @@ from tools.initialization import init_git_dependent_config, init_non_git_config
 from git.exc import InvalidGitRepositoryError
 from _winapi import CREATE_NEW_CONSOLE
 from asyncio.subprocess import PIPE
+from lxml.html.builder import BODY
 
 #############################
 print_step("Initialization...")
@@ -74,21 +74,31 @@ else:
 #############################
 print_step("Search for GitHub milestone...")
 #############################   
-milestone_number = github.find_milestone()
-print_info("Found!")
+milestone: Milestone = github.find_release_milestone()
+if milestone:
+    print_info("Milestone '"+milestone.title+"' found!")          
+else:
+    print_error("Milestone not found! Searched for milestone with name '"+config.expected_milestone_name+"'. Aborting...")
+    git_repo.reset()
+    sys.exit()
 
 #############################
 print_step("Find or create the GitHub release issue...")
 #############################
 if not config.github_issue_no:
-    if config.dry_run:
-        print_info_dry("Would now create a new GitHub issue for the release.")
+    issue_text="This issue has been automatically created. It serves as a container for all release related commits";
+    config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone.number)
+    if not config.github_issue_no:
+        print_error("Could not create issue! Aborting...")
+        git_repo.reset()
+        sys.exit()
     else:
-        issue_text="This issue has been automatically created. It serves as a container for all release related commits";
-        config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name)
+        print_info('Successfully created issue #' + config.github_issue_no)
 elif not github.exists_issue(config.github_issue_no):
-    print_error("Issue with number #"+config.github_issue_no+" not found!")
+    print_error("Issue with number #"+config.github_issue_no+" not found! Aborting...")
+    git_repo.reset()
     sys.exit()
+print_info("Issue #" + config.github_issue_n +" found.")
 
 #############################
 print_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
@@ -239,26 +249,21 @@ else:
 print_step("Close GitHub Milestone...")
 #############################
 if config.dry_run:
-    print_info_dry("Would close GitHub milestone with no "+milestone_number)
+    print_info_dry("Would close GitHub milestone with no "+ str(milestone.number))
 else:
-    release_milestone = github.repo.get_milestone(milestone_number)
-    
     if config.dry_run:
-        print_info_dry("Would close the milestone: " + release_milestone.title)
+        print_info_dry("Would close the milestone: " + milestone.title)
     else:
-        if (release_milestone.state == "closed"):
-            print_info("Milestone >>", release_milestone.title, "<< is already closed, please check.")
+        if (milestone.state == "closed"):
+            print_info("Milestone '", milestone.title, "' is already closed, please check.")
         else:
-            release_milestone.edit(release_milestone.title, "closed", release_milestone.description)
-            print_info("New status of Milestone >>" +release_milestone.title+ "<< is: "+ release_milestone.state)
+            milestone.edit(milestone.title, "closed", milestone.description)
+            print_info("New status of Milestone '" +milestone.title+ "' is: "+ milestone.state)
 
 #############################
 print_step("Create new GitHub release...")
 #############################
-if config.dry_run:
-    print_info_dry("Would create a new GitHub release")
-else:
-    github.create_release(release_milestone, core_version_in_eclipse_pom)
+github.create_release(milestone, core_version_in_eclipse_pom)
 
 #############################
 print_step("Create new GitHub milestone...")
@@ -266,16 +271,10 @@ print_step("Create new GitHub milestone...")
 if config.dry_run:
     print_info_dry("Would create a new milestone")
 else:
-    new_mile_title = config.expected_milestone_name.replace(config.release_version, config.next_version)
-    new_mile_description = ""
-    try:
-        config.repo.create_milestone(new_mile_title, "open", new_mile_description)
-    except github.GithubException as e:
-        print_info("Could not create milestone, does it already exists?")
-        if config.debug:
-            print(str(e))
-    else:
-        print_info("New milestone created!")
+    if not github.create_next_release_milestone():
+        print_info("Aborting...")
+        git_repo.reset()
+        sys.exit()
 
 #############################
 print_step("Merge master branch to "+config.branch_to_be_released+"...")
@@ -312,7 +311,7 @@ print_step("Close GitHub release issue...")
 if config.dry_run:
     print_info_dry("Would close GitHub release issue with no #"+ config.github_issue_no)
 else:
-    release_issue = github.repo.get_issue(int(config.github_issue_no))
+    release_issue = github.find_issue(int(config.github_issue_no))
     #will never find closed issues
     closing_comment = "Automatically processed.\n\nThe decisions taken by the developer and the context of the decisions throughout the script:\n\n"
     for message in report_messages:
