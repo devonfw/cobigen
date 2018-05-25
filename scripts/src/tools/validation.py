@@ -13,7 +13,7 @@ def exit_if_not_executed_in_ide_environment():
 def is_valid_branch(config) -> bool:
     '''This Method is responsible for checking branches in repository with branch entered by user'''
     
-    if not git.cmd.Git(".").execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
+    if git.cmd.Git(".").execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
         print_info("Branch is not known remotely.")
         is_branch_valid=False
     else:
