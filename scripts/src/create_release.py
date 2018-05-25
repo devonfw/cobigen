@@ -32,7 +32,8 @@ exit_if_working_copy_is_not_clean()
 exit_if_not_executed_in_ide_environment()
 
 config = Config()
-ask_user_and_fill_config(config)
+github = GitHub(config)
+ask_user_and_fill_config(config, github)
 exit_if_origin_is_not_correct(config)
 
 if(config.debug):
@@ -41,7 +42,6 @@ if(config.debug):
         sys.exit()
 
 git_repo = GitRepo(config)
-github = GitHub(config)
 maven = Maven(config, github)
 
 input("Please close all eclipse instances as of potential race conditions on maven builds causing errors. Press any key if done...")
