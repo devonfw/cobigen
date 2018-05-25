@@ -30,10 +30,8 @@ def init_non_git_config(config: Config):
     config.next_version = ""
     while(not version_pattern.match(config.next_version)):
         config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
-    
-    config.expected_milestone_name = config.tag_name[:-2] + "-v" + config.config.release_version
-    
-    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name() + ".wiki"))
+
+    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
     
     __process_params(config)
 
@@ -48,6 +46,8 @@ def init_git_dependent_config(config: Config, github: GitHub):
     config.cobigenwiki_title_name = __get_cobigenwiki_title_name(config)
     config.tag_name = __get_tag_name(config)
     config.target_folder = __get_target_folder(config)
+    
+    config.expected_milestone_name = config.tag_name[:-2] + "-v" + config.release_version
 
     while(True):
         config.github_issue_no = prompt_enter_value("release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
