@@ -1,13 +1,13 @@
-package com.capgemini.cobigen.tempeng.freemarker;
+package com.devonfw.cobigen.tempeng.freemarker;
 
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Map;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.api.extension.TextTemplate;
-import com.capgemini.cobigen.api.extension.TextTemplateEngine;
-import com.capgemini.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.extension.TextTemplate;
+import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
 
 import freemarker.cache.NullCacheStorage;
 import freemarker.core.Environment;
