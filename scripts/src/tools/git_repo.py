@@ -1,11 +1,13 @@
 import requests
 import getpass
-from tools.user_interface import prompt_enter_value, print_info, print_error, print_info_dry, prompt_yesno_question
+from tools.user_interface import prompt_enter_value, print_info, print_error, print_info_dry, prompt_yesno_question,\
+    print_debug
 from tools.config import Config
 from git.exc import GitCommandError, InvalidGitRepositoryError
 import sys
 from github.MainClass import Github
 import git
+from github.GithubException import UnknownObjectException
 
 
 class GitRepo:
@@ -26,7 +28,7 @@ class GitRepo:
         authenticated = False
         while not authenticated:
             self.config.git_username = prompt_enter_value("your git user name");
-            self.config.git_password_or_token = getpass.getpass("Please enter your password or token: ")
+            self.config.git_password_or_token = getpass.getpass("> Please enter your password or token: ")
 
             session = requests.Session()
             response_object = session.get(self.config.github_api_root_url())
@@ -39,7 +41,17 @@ class GitRepo:
     
     def init_git_repo(self):
         g = Github(self.config.git_username, self.config.git_password_or_token)
-        org = g.get_organization(self.config.git_repo_org)
+        try:
+            org = g.get_organization(self.config.git_repo_org)
+            if self.config.debug:
+                print_debug("Organization found.")
+        except UnknownObjectException:
+            if self.config.debug:
+                print_debug("Organization not found. Try interpreting " + self.git.get_repo_org + "as user...")
+            org = g.get_user(self.config.git_repo_org)
+            if self.config.debug:
+                print_debug("User found.")
+            
         self.repo = org.get_repo(self.config.git_repo_name)
         self.origin = self.repo.remotes.origin
     
