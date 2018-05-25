@@ -16,6 +16,8 @@ from tools.maven import Maven
 from pprint import pprint
 from tools.initialization import init_git_dependent_config, init_non_git_config
 from git.exc import InvalidGitRepositoryError
+from _winapi import CREATE_NEW_CONSOLE
+from asyncio.subprocess import PIPE
 
 #############################
 print_step("Initialization...")
@@ -84,7 +86,7 @@ if not config.github_issue_no:
     else:
         issue_text="This issue has been automatically created. It serves as a container for all release related commits";
         config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name)
-elif not github.find_issue(config.github_issue_no):
+elif not github.exists_issue(config.github_issue_no):
     print_error("Issue with number #"+config.github_issue_no+" not found!")
     sys.exit()
 
@@ -117,9 +119,8 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 print_step("Run integration tests...")
 #############################
-maven_process = subprocess.Popen("mvn clean integration-test -Pp2-build-mars,p2-build-stable --log-file create_release.py.log ", shell=True, stdout = subprocess.PIPE)
-
-(stdout, stderr) = maven_process.communicate()
+maven_process = subprocess.Popen([sys.executable, "-c", "mvn clean integration-test -Pp2-build-mars,p2-build-stable && read -n1 -r -p 'Press any key to continue...' key"], 
+                                 creationflags=CREATE_NEW_CONSOLE, stdin=PIPE, stdout = PIPE, universal_newlines=True, bufsize=1)
 
 while True:
     out = maven_process.stderr.read(1)
@@ -130,7 +131,7 @@ while True:
         sys.stdout.flush()
 
 if maven_process.returncode == 1:
-    print_info("Integration tests failed, please see create_release.py.log for logs located at current directory");    
+    print_error("Integration tests failed, please see create_release.py.log for logs located at current directory.");    
     git_repo.reset()
     sys.exit();
 
@@ -143,7 +144,8 @@ if config.test_run:
         
 if continue_run:    
     os.chdir(config.wiki_submodule_path())
-    git.cmd.Git(".").execute("git pull origin master")
+    git_repo.repo.execute("git pull origin master")
+    
     print_info("Changing the "+config.wiki_version_overview_page+" file, updating the version number...")
     version_decl = config.cobigenwiki_title_name
     new_version_decl = version_decl+" v"+config.release_version
@@ -152,12 +154,12 @@ if continue_run:
             line = re.sub(r''+version_decl+'.+',new_version_decl, line)
             sys.stdout.write(line)
     
-    print_info("Executing git add..")
-    git_repo.git.add([config.wiki_version_overview_page])
-    github.commit("update wiki docs")
+    git_repo.repo.add([config.wiki_version_overview_page])
+    git_repo.commit("update wiki docs")
     git_repo.push()
     
     if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
+        git_repo.reset()
         sys.exit() 
 
 #############################
@@ -175,6 +177,7 @@ except:
     print_error("Exception occured, executing git merge --abort...")
     git_repo.repo.execute("git merge --abort");
     git_repo.reset()
+    sys.exit()
 
 #############################
 print_step("Validate merge commit...")
@@ -189,11 +192,13 @@ for file_name in list_of_changed_files:
         print_info(file_name +" does not starts with "+config.get_build_folder())
         if not prompt_yesno_question("Some Files are outside the folder "+config.get_build_folder()+". Please check for file changes as this should not be the case in a normal scenario! Continue?"):
             git_repo.reset()
+            sys.exit()
         report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
 
 if is_pom_changed:
     if not prompt_yesno_question("POM has been changed, please update dependency tracking wiki page! Continue?"):
         git_repo.reset()
+        sys.exit()
     report_messages.append("User has accepted to continue on found POM changes")
 
 #############################
@@ -208,23 +213,17 @@ if config.dry_run or config.test_run:
     print_info_dry("Would not deploy to maven central & updatesite. Skipping...")
 else:
     if config.get_build_folder() != "cobigen-eclipse":
-        if "Windows" in platform.platform():
-            os.system("start cmd.exe @cmd /k \" echo 1) *****************Executing maven clean package*****************\
-	        & mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true & echo 2) *****************\
-	        Executing maven install***************** & mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true & echo 3)\
-	        *****************Executing maven deploy***************** & mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable\"")
-        else:
-            os.system("gnome-terminal -e 'bash -c \"mvn clean package --update-snapshots bundle:bundle -Pp2-bundle  -Dmaven.test.skip=true; exec bash\" ' ")
-            os.system("gnome-terminal -e 'bash -c \"mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true; exec bash\"'")
-            os.system("gnome-terminal -e 'bash -c \"mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable; exec bash\"'")  
+        print("\n***************** (1) Executing maven clean package *****************\n")
+        git_repo.repo.execute("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
+        print("\n***************** (2) Executing maven install *****************\n")
+        git_repo.repo.execute("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true")
+        print("\n***************** (3) Executing maven deploy *****************\n")
+        git_repo.repo.execute("mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable")
     else:
-        if "Windows" in platform.platform():
-            os.system("start cmd.exe @cmd /k \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable\"")
-        else:
-            os.system("gnome-terminal -e 'bash -c \"mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable; exec bash\" ' ")
+        git_repo.repo.execute("mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable")
 
-    user_choice=input("Please check installation of module from update site,Do you want to continue? Press 'yes' for continue or 'no' for abort: ")
-    if user_choice=="no":
+    if not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
+        git_repo.reset()
         sys.exit()
 
 #############################
@@ -295,6 +294,9 @@ else:
         print_error("Something went wrong, please check if merge conflicts exist and solve them.")
         if config.debug:
             print(ex)
+        if not prompt_yesno_question("If there were conflicts, you solved and committed, would you like to resume the script?"):
+            git_repo.reset()
+            sys.exit()
 
 #############################
 print_step("Set next release version...")
@@ -312,9 +314,8 @@ else:
     closing_comment = "Automatically processed.\n\nThe decisions taken by the developer and the context of the decisions throughout the script:\n\n"
     for message in report_messages:
         closing_comment = closing_comment + "* "+message+"\n"
-    closing_comment = "* "
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    print_info("Closed issue >>"+ release_issue.title+ "<<")
+    print_info("Closed issue #"+ release_issue.number +": "+ release_issue.title)
 
 print_info("Script has been executed successfully!")

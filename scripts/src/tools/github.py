@@ -29,7 +29,7 @@ class GitHub:
             
         self.repo = org.get_repo(self.config.git_repo_name)
         
-    def find_issue(self, issue_number):
+    def exists_issue(self, issue_number):
         '''Search for the Release issue to be used, if not found, exit'''
         response_object= requests.get(self.config.github_issue_url(issue_number))
         issue_json_data = json.loads(response_object.text)

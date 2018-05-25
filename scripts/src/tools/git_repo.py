@@ -1,7 +1,6 @@
 import requests
 import getpass
-from tools.user_interface import prompt_enter_value, print_info, print_error, print_info_dry, prompt_yesno_question,\
-    print_debug
+from tools.user_interface import prompt_enter_value, print_info, print_error, print_info_dry, prompt_yesno_question
 from tools.config import Config
 from git.exc import GitCommandError, InvalidGitRepositoryError
 import sys
