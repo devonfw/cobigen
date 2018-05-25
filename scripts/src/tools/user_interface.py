@@ -13,7 +13,7 @@ def prompt_enter_value(prompt_subject):
 def prompt_yesno_question(question: str) -> bool:
     prompt = "> " + question + " (yes/no): "
     value = input(prompt)
-    while (value.strip() != 'yes' or value.strip != 'no'):
+    while (value.strip() != 'yes' and value.strip() != 'no'):
         value = input(prompt)
     return value == 'yes'
 
