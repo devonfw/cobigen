@@ -54,7 +54,7 @@ def init_git_dependent_config(config: Config, github: GitHub):
         if(config.github_issue_no == 'new'):
             config.github_issue_no = '' # to be processed as falsely in the script later on (create one automatically)
             break
-        elif(github.find_issue(config.github_issue_no)):
+        elif(github.exists_issue(config.github_issue_no)):
             print_info("Issue found remotely!")
             break
     
