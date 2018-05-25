@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity.runtime.resources;
+package com.devonfw.cobigen.tempeng.velocity.runtime.resources;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
