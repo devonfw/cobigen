@@ -12,14 +12,6 @@ class GitRepo:
 
     def __init__(self, config: Config):
         self.config = config
-        self.authenticate_git_user()
-        self.init_git_repo()
-
-        try:
-            self.repo = git.cmd.Git(".")
-        except InvalidGitRepositoryError:
-            print_error("Path is not a git repository. Please go to valid git repository!")
-            sys.exit()
 
     # This script is responsible for the authentication of git user
     def authenticate_git_user(self):    
@@ -29,7 +21,7 @@ class GitRepo:
             self.config.git_password_or_token = getpass.getpass("Please enter your password or token: ")
 
             session = requests.Session()
-            response_object = session.get(self.config.github_api_root_url())
+            response_object = session.get(self.config.github_api_root_url)
             if (response_object.status_code in [201,200]):
                 print_info("Authenticated.")
                 authenticated = True
@@ -38,9 +30,18 @@ class GitRepo:
                 authenticated = False
     
     def init_git_repo(self):
+        self.authenticate_git_user()
+        self.init_git_repo()
+
+        try:
+            self.repo = git.cmd.Git(".")
+        except InvalidGitRepositoryError:
+            print_error("Path is not a git repository. Please go to valid git repository!")
+            sys.exit()
+        
         g = Github(self.config.git_username, self.config.git_password_or_token)
-        org = g.get_organization(self.config.git_repo_org())
-        self.repo = org.get_repo(self.config.git_repo_name())
+        org = g.get_organization(self.config.git_repo_org)
+        self.repo = org.get_repo(self.config.git_repo_name)
         self.origin = self.repo.remotes.origin
     
     def pull(self):
