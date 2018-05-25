@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.inputreader;
+package com.devonfw.cobigen.xmlplugin.inputreader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +25,8 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
-import com.capgemini.cobigen.api.exception.InputReaderException;
-import com.capgemini.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.api.exception.InputReaderException;
+import com.devonfw.cobigen.api.extension.InputReader;
 
 /** {@link InputReader} for XML files. */
 public class XmlInputReader implements InputReader {

@@ -1,10 +1,10 @@
-package com.capgemini.cobigen.xmlplugin.merger.delegates;
+package com.devonfw.cobigen.xmlplugin.merger.delegates;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
 import com.github.maybeec.lexeme.LeXeMerger;
 import com.github.maybeec.lexeme.common.exception.XMLMergeException;
 

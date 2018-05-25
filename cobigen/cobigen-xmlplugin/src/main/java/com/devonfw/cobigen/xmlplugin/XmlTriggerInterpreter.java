@@ -1,10 +1,10 @@
-package com.capgemini.cobigen.xmlplugin;
+package com.devonfw.cobigen.xmlplugin;
 
-import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.api.extension.MatcherInterpreter;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
-import com.capgemini.cobigen.xmlplugin.matcher.XmlMatcher;
+import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.xmlplugin.inputreader.XmlInputReader;
+import com.devonfw.cobigen.xmlplugin.matcher.XmlMatcher;
 
 /**
  * {@link TriggerInterpreter} implementation of a Xml Interpreter

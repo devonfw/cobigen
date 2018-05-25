@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.inputreader;
+package com.devonfw.cobigen.xmlplugin.inputreader;
 
 import java.util.List;
 import java.util.Map;
