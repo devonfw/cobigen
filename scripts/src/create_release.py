@@ -37,7 +37,7 @@ init_non_git_config(config)
 if(config.debug):
     print_debug("Current config:")
     pprint(vars(config))
-    if not prompt_yesno_question("Changes will be pushed now. Continue?"):
+    if not prompt_yesno_question("Continue?"):
         sys.exit()
 
 git_repo = GitRepo(config)
@@ -49,7 +49,7 @@ exit_if_origin_is_not_correct(config)
 if(config.debug):
     print_debug("Current config:")
     pprint(vars(config))
-    if not prompt_yesno_question("Changes will be pushed now. Continue?"):
+    if not prompt_yesno_question("Continue?"):
         sys.exit()
         
 maven = Maven(config, github)
