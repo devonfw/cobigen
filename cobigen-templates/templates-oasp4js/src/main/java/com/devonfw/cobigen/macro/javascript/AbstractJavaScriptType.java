@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 /**
  * Implementation of {@link JavaScriptType} for a complex type (TypeScript, ES2016+, etc.).

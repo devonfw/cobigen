@@ -5,7 +5,7 @@ import java.io.File;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.maven.test.AbstractMavenTest;
+import com.devonfw.cobigen.maven.test.AbstractMavenTest;
 
 /**
  * Smoke tests of all templates.
