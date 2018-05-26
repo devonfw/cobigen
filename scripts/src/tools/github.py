@@ -61,13 +61,13 @@ class GitHub:
     def find_issue(self, issue_number: int) -> Issue:
         '''Search for the Release issue to be used, if not found, exit'''
         # caching!
-        try:
+        if issue_number in self.__cache.issues:
             return self.__cache.issues[issue_number]
-        except AttributeError:
+        else:
             log_debug("Issue not found in cache, retrieving from GitHub...")
 
         try:
-            self.__cache.issues[issue_number] = self.__repo.get_issue(issue_number)
+            self.__cache.issues.update({issue_number: self.__repo.get_issue(issue_number)})
             log_info("Issue with number " + str(issue_number) + " found.")
             return self.__cache.issues[issue_number]
         except UnknownObjectException:
@@ -96,7 +96,7 @@ class GitHub:
         try:
             issue: Issue = self.__repo.create_issue(title=title, body=body, milestone=milestone, labels=labels)
             self.__config.github_issue_no = issue.number
-            self.__cache.issues[issue.number] = issue
+            self.__cache.issues.update({issue.number: issue})
             return self.__config.github_issue_no
         except GithubException as e:
             print(str(e))
