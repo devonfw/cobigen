@@ -11,30 +11,13 @@ class GitRepo:
 
     def __init__(self, config: Config) -> None:
         self.__config: Config = config
-        self.authenticate_git_user()
 
         try:
             self.repo = git.cmd.Git(".")
             self.origin = self.repo.remotes.origin
         except InvalidGitRepositoryError:
-            print_error("Path is not a git repository. Please go to valid git repository!") 
+            print_error("Path is not a git repository. Please go to valid git repository!")
             sys.exit()
-
-    # This script is responsible for the authentication of git user
-    def authenticate_git_user(self):
-        authenticated = False
-        while not authenticated:
-            self.__config.git_username = prompt_enter_value("your git user name")
-            self.__config.git_password_or_token = getpass.getpass("> Please enter your password or token: ")
-
-            session = requests.Session()
-            response_object = session.get(self.__config.github_api_root_url())
-            if (response_object.status_code in [201, 200]):
-                print_info("Authenticated.")
-                authenticated = True
-            else:
-                print_info("Authentication failed.")
-                authenticated = False
 
     def pull(self):
         try:
