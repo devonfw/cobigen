@@ -83,7 +83,7 @@ log_step("Find or create the GitHub release issue...")
 #############################
 if not config.github_issue_no:
     issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
-    config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone.number)
+    config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone)
     if not config.github_issue_no:
         log_error("Could not create issue! Aborting...")
         git_repo.reset()

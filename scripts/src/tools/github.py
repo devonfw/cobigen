@@ -82,7 +82,7 @@ class GitHub:
             log_error("Issue with number " + str(issue_number) + " not found.")
             return False
 
-    def create_issue(self, title, milestone=None, body=None, labels=None) -> int:
+    def create_issue(self, title, milestone: Milestone=None, body=None, labels=None) -> int:
         '''Function creates an issue in git hub with title,milestone,body,labels passed'''
         if self.__config.dry_run:
             log_info_dry('Skipping creation of issue with title ' + str(title))

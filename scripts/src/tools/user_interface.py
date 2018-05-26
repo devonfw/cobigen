@@ -38,6 +38,8 @@ def log_error(print_message):
 def log_step(description):
     global step_counter
     step_counter = step_counter + 1
+    print("")
     print("************************************************")
     print("********** [STEP " + str(step_counter) + "] " + description)
     print("************************************************")
+    print("")
