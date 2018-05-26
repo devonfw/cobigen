@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.htmlplugin.merger;
+package com.devonfw.cobigen.htmlplugin.merger;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,9 +15,9 @@ import org.jsoup.parser.ParseSettings;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.htmlplugin.merger.constants.Constants;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.htmlplugin.merger.constants.Constants;
 
 /**
  * The {@link AngularMerger} merges a patch and the base file of the same HTML file.
