@@ -19,7 +19,7 @@ class Config():
         self.branch_to_be_released: str
 
         self.build_folder: str
-        self.cobigenwiki_title_name: str 
+        self.cobigenwiki_title_name: str
         self.tag_name: str
         self.target_folder: str
 

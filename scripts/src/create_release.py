@@ -94,12 +94,12 @@ if not config.github_issue_no:
         git_repo.reset()
         sys.exit()
     else:
-        print_info('Successfully created issue #' + config.github_issue_no)
+        print_info('Successfully created issue #' + str(config.github_issue_no))
 elif not github.exists_issue(config.github_issue_no):
-    print_error("Issue with number #"+config.github_issue_no + " not found! Aborting...")
+    print_error("Issue with number #" + str(config.github_issue_no) + " not found! Aborting...")
     git_repo.reset()
     sys.exit()
-print_info("Issue #" + config.github_issue_no + " found.")
+print_info("Issue #" + str(config.github_issue_no) + " found.")
 
 #############################
 print_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
@@ -156,7 +156,7 @@ if config.test_run:
         "Would now update wiki submodule. Continue (yes) or skip (no)?")
 
 if continue_run:
-    os.chdir(config.wiki_submodule_path())
+    os.chdir(config.wiki_submodule_path)
     git_repo.repo.execute("git pull origin master")
 
     print_info("Changing the "+config.wiki_version_overview_page + " file, updating the version number...")
@@ -319,7 +319,7 @@ git_repo.push()
 print_step("Close GitHub release issue...")
 #############################
 if config.dry_run:
-    print_info_dry("Would close GitHub release issue with no #" + config.github_issue_no)
+    print_info_dry("Would close GitHub release issue with no #" + str(config.github_issue_no))
 else:
     release_issue = github.find_issue(int(config.github_issue_no))
     # will never find closed issues
