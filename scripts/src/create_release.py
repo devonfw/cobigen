@@ -12,11 +12,11 @@ from tools.github import GitHub
 from tools.git_repo import GitRepo
 from tools.validation import exit_if_not_executed_in_ide_environment, exit_if_origin_is_not_correct,\
     exit_if_working_copy_is_not_clean, check_running_in_bash
-from tools.user_interface import print_step, log_error, prompt_yesno_question, log_info, log_info_dry, log_debug
+from tools.user_interface import log_step, log_error, prompt_yesno_question, log_info, log_info_dry, log_debug
 from tools.maven import Maven
 
 #############################
-print_step("Initialization...")
+log_step("Initialization...")
 #############################
 
 try:
@@ -58,7 +58,7 @@ input("Please close SourceTree for Git performance reasons. Press any key if don
 report_messages = []
 
 #############################
-print_step("Check for working CI build and tests...")
+log_step("Check for working CI build and tests...")
 #############################
 if not prompt_yesno_question("Are the tests on branch " + config.branch_to_be_released + " passing in CI?"):
     log_error("Please correct the build failures before releasing!")
@@ -68,7 +68,7 @@ else:
     log_info("Build is reported to be successful.")
 
 #############################
-print_step("Search for GitHub milestone...")
+log_step("Search for GitHub milestone...")
 #############################
 milestone: Milestone = github.find_release_milestone()
 if milestone:
@@ -79,7 +79,7 @@ else:
     sys.exit()
 
 #############################
-print_step("Find or create the GitHub release issue...")
+log_step("Find or create the GitHub release issue...")
 #############################
 if not config.github_issue_no:
     issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
@@ -97,14 +97,14 @@ elif not github.exists_issue(config.github_issue_no):
 log_info("Issue #" + str(config.github_issue_no) + " found.")
 
 #############################
-print_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
+log_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
 #############################
 git_repo.checkout(config.branch_to_be_released)
 os.chdir(os.path.join(config.root_path, config.build_folder))
 git_repo.update_and_clean()
 
 #############################
-print_step("Set the SNAPSHOT version...")
+log_step("Set the SNAPSHOT version...")
 #############################
 log_info("Set snapshot version of target release")
 maven.add_remove_snapshot_version_in_pom(True, config.release_version)
@@ -116,19 +116,19 @@ if config.debug:
     prompt_yesno_question("POM changes committed. Continue?")
 
 #############################
-print_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
+log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 #############################
 core_version_in_eclipse_pom = maven.upgrade_snapshot_dependencies()
 git_repo.add(["pom.xml"])
 git_repo.commit("upgrade SNAPSHOT dependencies")
 
 #############################
-print_step("Run integration tests...")
+log_step("Run integration tests...")
 #############################
 run_maven_process_and_handle_error("mvn clean integration-test - Pp2-build-mars, p2-build-stable")
 
 #############################
-print_step("Update wiki submodule...")
+log_step("Update wiki submodule...")
 #############################
 continue_run = True
 if config.test_run:
@@ -138,7 +138,7 @@ if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
 
 #############################
-print_step("Merging " + config.branch_to_be_released + " to master...")
+log_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
 if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
     git_repo.reset()
@@ -148,7 +148,7 @@ os.chdir(config.root_path)
 git_repo.merge(config.branch_to_be_released, "master")
 
 #############################
-print_step("Validate merge commit...")
+log_step("Validate merge commit...")
 #############################
 list_of_changed_files = git_repo.get_changed_files_of_last_commit()
 is_pom_changed = False
@@ -170,12 +170,12 @@ if is_pom_changed:
         "User has accepted to continue on found POM changes")
 
 #############################
-print_step("Set release version...")
+log_step("Set release version...")
 #############################
 maven.add_remove_snapshot_version_in_pom(False, "Set release version")
 
 #############################
-print_step("Deploy artifacts to nexus and update sites...")
+log_step("Deploy artifacts to nexus and update sites...")
 #############################
 if config.dry_run or config.test_run:
     log_info_dry(
@@ -193,7 +193,7 @@ else:
         sys.exit()
 
 #############################
-print_step("Create Tag...")
+log_step("Create Tag...")
 #############################
 if config.dry_run:
     log_info_dry("Would create Git tag with name "+config.tag_name)
@@ -202,7 +202,7 @@ else:
     git_repo.push()
 
 #############################
-print_step("Close GitHub Milestone...")
+log_step("Close GitHub Milestone...")
 #############################
 if config.dry_run:
     log_info_dry("Would close GitHub milestone with no " + str(milestone.number))
@@ -212,19 +212,19 @@ else:
     else:
         if (milestone.state == "closed"):
             log_info("Milestone '"+milestone.title +
-                       "' is already closed, please check.")
+                     "' is already closed, please check.")
         else:
             milestone.edit(milestone.title, "closed", milestone.description)
             log_info("New status of Milestone '" +
-                       milestone.title + "' is: " + milestone.state)
+                     milestone.title + "' is: " + milestone.state)
 
 #############################
-print_step("Create new GitHub release...")
+log_step("Create new GitHub release...")
 #############################
 github.create_release(milestone, core_version_in_eclipse_pom)
 
 #############################
-print_step("Create new GitHub milestone...")
+log_step("Create new GitHub milestone...")
 #############################
 if config.dry_run:
     log_info_dry("Would create a new milestone")
@@ -235,12 +235,12 @@ else:
         sys.exit()
 
 #############################
-print_step("Merge master branch to "+config.branch_to_be_released+"...")
+log_step("Merge master branch to "+config.branch_to_be_released+"...")
 ##############################
 git_repo.merge("master", config.branch_to_be_released)
 
 #############################
-print_step("Set next release version...")
+log_step("Set next release version...")
 #############################
 maven.add_remove_snapshot_version_in_pom(True, config.next_version)
 git_repo.add(["**/pom.xml"])
@@ -248,7 +248,7 @@ git_repo.commit("Set next development version")
 git_repo.push()
 
 #############################
-print_step("Close GitHub release issue...")
+log_step("Close GitHub release issue...")
 #############################
 if config.dry_run:
     log_info_dry("Would close GitHub release issue with no #" + str(config.github_issue_no))
