@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.matcher;
+package com.devonfw.cobigen.openapiplugin.matcher;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -8,11 +8,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.MatcherInterpreter;
-import com.capgemini.cobigen.api.to.MatcherTo;
-import com.capgemini.cobigen.api.to.VariableAssignmentTo;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.to.MatcherTo;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 
 /**
  * Matcher for internal OpenAPI model.
@@ -121,7 +121,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
     /**
      * Tries to cast the object "extensionProperties" to a map like the one defined in
-     * {@link com.capgemini.cobigen.openapiplugin.model.EntityDef} . <br>
+     * {@link com.devonfw.cobigen.openapiplugin.model.EntityDef} . <br>
      * <br>
      * Additionally, tries to get a value of that map using the key passed as parameter.
      * @param object

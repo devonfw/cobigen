@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.inputreader;
+package com.devonfw.cobigen.openapiplugin.inputreader;
 
 /**
  * String constants of the java object model for generation. Outcome of the JavaInputReader.

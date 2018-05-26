@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.util.constants;
+package com.devonfw.cobigen.openapiplugin.util.constants;
 
 /**
  * Useful constants
