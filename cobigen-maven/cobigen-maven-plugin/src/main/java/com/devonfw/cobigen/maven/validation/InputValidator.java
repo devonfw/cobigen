@@ -1,12 +1,12 @@
-package com.capgemini.cobigen.maven.validation;
+package com.devonfw.cobigen.maven.validation;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
 
 /**
  * Input validator, which validates the increment and template declarations within the maven plugin

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.maven.utils;
+package com.devonfw.cobigen.maven.utils;
 
 import java.io.File;
 import java.io.IOException;

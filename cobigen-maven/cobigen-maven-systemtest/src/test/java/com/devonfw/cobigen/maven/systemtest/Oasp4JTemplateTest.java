@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.maven.systemtest;
+package com.devonfw.cobigen.maven.systemtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +14,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
-import com.capgemini.cobigen.maven.test.AbstractMavenTest;
+import com.devonfw.cobigen.maven.test.AbstractMavenTest;
 
 /** Test suite for testing the maven plugin with whole released template sets */
 public class Oasp4JTemplateTest extends AbstractMavenTest {
