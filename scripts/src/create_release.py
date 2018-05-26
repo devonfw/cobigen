@@ -321,7 +321,7 @@ print_step("Close GitHub release issue...")
 if config.dry_run:
     print_info_dry("Would close GitHub release issue with no #" + str(config.github_issue_no))
 else:
-    release_issue = github.find_issue(int(config.github_issue_no))
+    release_issue = github.find_issue(config.github_issue_no)
     # will never find closed issues
     closing_comment = "Automatically processed.\n\nThe decisions taken by the developer and the context of the decisions throughout the script:\n\n"
     for message in report_messages:

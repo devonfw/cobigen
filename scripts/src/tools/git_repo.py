@@ -1,10 +1,10 @@
-import requests
-import getpass
-from tools.user_interface import prompt_enter_value, print_info, print_error, print_info_dry, prompt_yesno_question
-from tools.config import Config
-from git.exc import GitCommandError, InvalidGitRepositoryError
 import sys
-import git
+
+from git.exc import GitCommandError, InvalidGitRepositoryError
+from git.repo.base import Repo
+
+from tools.user_interface import print_info, print_error, print_info_dry, prompt_yesno_question
+from tools.config import Config
 
 
 class GitRepo:
@@ -13,7 +13,7 @@ class GitRepo:
         self.__config: Config = config
 
         try:
-            self.repo = git.cmd.Git(".")
+            self.repo = Repo.init(".")
             self.origin = self.repo.remotes.origin
         except InvalidGitRepositoryError:
             print_error("Path is not a git repository. Please go to valid git repository!")
