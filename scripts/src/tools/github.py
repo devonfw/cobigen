@@ -1,25 +1,30 @@
-from tools.config import Config
+
 import sys
 import os
-from tools.user_interface import prompt_yesno_question, print_error, print_info_dry, print_info, print_debug
-from github.GithubException import UnknownObjectException, GithubException
+import getpass
+
+from tools.user_interface import prompt_yesno_question, print_error, print_info_dry, print_info, print_debug,\
+    prompt_enter_value
+from tools.config import Config
+from tools.github_cache import GitHubCache
+
+from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
 from github.MainClass import Github
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from github.Milestone import Milestone
 from github.GitRelease import GitRelease
-from tools.github_cache import GitHubCache
 from github.GitReleaseAsset import GitReleaseAsset
+from github.Repository import Repository
 
 
 class GitHub:
 
     def __init__(self, config: Config) -> None:
-        self.__config = config
+        self.__config: Config = config
 
         self.__cache = GitHubCache()
 
-        self.__github = Github(self.__config.git_username, self.__config.git_password_or_token)
         try:
             org = self.__github.get_organization(self.__config.git_repo_org)
             if self.__config.debug:
@@ -31,7 +36,24 @@ class GitHub:
             if self.__config.debug:
                 print_debug("User found.")
 
-        self.__repo = org.get_repo(self.__config.git_repo_name)
+        self.__repo: Repository = org.get_repo(self.__config.git_repo_name)
+
+    # This script is responsible for the authentication of git user
+    def authenticate_git_user(self):
+        while True:
+            if prompt_yesno_question("Are you using two-factor authentication on GitHub?"):
+                self.__config.git_token = getpass.getpass("> Please enter your token: ")
+            else:
+                self.__config.git_username = prompt_enter_value("your git user name")
+                self.__config.git_password = getpass.getpass("> Please enter your password: ")
+            try:
+                if self.__config.git_token:
+                    self.__github = Github(self.__config.git_token)
+                else:
+                    self.__github = Github(self.__config.git_username, self.__config.git_password)
+                break
+            except BadCredentialsException:
+                continue
 
     def find_issue(self, issue_number: int) -> Issue:
         '''Search for the Release issue to be used, if not found, exit'''
