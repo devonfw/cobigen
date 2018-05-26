@@ -17,7 +17,7 @@ def init_non_git_config(config: Config):
     config.test_run = False
 
     config.github_repo = ""
-    repo_pattern = re.compile('[a-zA-Z]+/[a-zA-Z]+')
+    repo_pattern = re.compile(r'[a-zA-Z]+/[a-zA-Z]+')
     while(not repo_pattern.match(config.github_repo)):
         config.github_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
     config.git_repo_name = config.github_repo.split(sep='/')[1]
@@ -36,7 +36,7 @@ def init_git_dependent_config(config: Config, github: GitHub):
             break
 
     config.release_version = ""
-    version_pattern = re.compile('[0-9]\.[0-9]\.[0-9]')
+    version_pattern = re.compile(r'[0-9]\.[0-9]\.[0-9]')
     while(not version_pattern.match(config.release_version)):
         config.release_version = prompt_enter_value("release version number without 'v' in front")
 
