@@ -60,7 +60,7 @@ class GitHub:
         # caching!
         try:
             return self.__cache.issues[issue_number]
-        except NameError:
+        except AttributeError:
             print_debug("Issue not found in cache, retrieving from GitHub...")
 
         try:
@@ -103,7 +103,7 @@ class GitHub:
         # caching!
         try:
             return self.__cache.milestones
-        except NameError:
+        except AttributeError:
             print_debug("Milestones not found in cache, retrieving from GitHub...")
 
         try:
@@ -131,8 +131,7 @@ class GitHub:
             if "cobigen-core/v"+version == milestone.title:
                 return milestone
 
-        print_error("Could not find milestone for cobigen-core v" +
-                    version+". This must be an script error, please check.")
+        print_error("Could not find milestone for cobigen-core v" + version + ". This must be an script error, please check.")
         sys.exit()
 
     def create_next_release_milestone(self) -> Milestone:
@@ -153,7 +152,7 @@ class GitHub:
     def create_release(self, closed_milestone: Milestone, core_version_in_eclipse_pom: str) -> GitRelease:
         if self.__config.dry_run:
             print_info_dry("Would create a new GitHub release")
-            return
+            return None
 
         url_milestone = self.__config.github_closed_milestone_url(closed_milestone.number)
         release_title = self.__config.cobigenwiki_title_name
