@@ -1,4 +1,4 @@
-package com.devonfwcobigen.propertyplugin;
+package com.devonfw.cobigen.propertyplugin;
 
 import java.io.File;
 import java.io.FileReader;
