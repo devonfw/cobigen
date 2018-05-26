@@ -35,7 +35,7 @@ init_non_git_config(config)
 if(config.debug):
     log_debug("Current config:")
     pprint(vars(config))
-    if not prompt_yesno_question("Continue?"):
+    if not prompt_yesno_question("[DEBUG] Continue?"):
         sys.exit()
 
 git_repo = GitRepo(config)
@@ -47,7 +47,7 @@ exit_if_origin_is_not_correct(config)
 if(config.debug):
     log_debug("Current config:")
     pprint(vars(config))
-    if not prompt_yesno_question("Continue?"):
+    if not prompt_yesno_question("[DEBUG] Continue?"):
         sys.exit()
 
 maven = Maven(config, github)
@@ -113,7 +113,7 @@ git_repo.add(["pom.xml"])
 git_repo.commit("set release snapshot version")
 
 if config.debug:
-    prompt_yesno_question("POM changes committed. Continue?")
+    prompt_yesno_question("[DEBUG] POM changes committed. Continue?")
 
 #############################
 log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
@@ -132,7 +132,7 @@ log_step("Update wiki submodule...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("Would now update wiki submodule. Continue (yes) or skip (no)?")
+    continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")
 
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
@@ -140,7 +140,7 @@ if continue_run:
 #############################
 log_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
-if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
+if config.debug and not prompt_yesno_question("[DEBUG] Wiki docs have been committed. Next would be merging to master. Continue?"):
     git_repo.reset()
     sys.exit()
 
@@ -178,8 +178,7 @@ maven.add_remove_snapshot_version_in_pom(False, "Set release version")
 log_step("Deploy artifacts to nexus and update sites...")
 #############################
 if config.dry_run or config.test_run:
-    log_info_dry(
-        "Would not deploy to maven central & updatesite. Skipping...")
+    log_info_dry("Would now deploy to maven central & updatesite. Skipping...")
 else:
     if config.build_folder != "cobigen-eclipse":
         run_maven_process_and_handle_error("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
@@ -205,18 +204,13 @@ else:
 log_step("Close GitHub Milestone...")
 #############################
 if config.dry_run:
-    log_info_dry("Would close GitHub milestone with no " + str(milestone.number))
+    log_info_dry("Would close the milestone: " + milestone.title)
 else:
-    if config.dry_run:
-        log_info_dry("Would close the milestone: " + milestone.title)
+    if (milestone.state == "closed"):
+        log_info("Milestone '"+milestone.title + "' is already closed, please check.")
     else:
-        if (milestone.state == "closed"):
-            log_info("Milestone '"+milestone.title +
-                     "' is already closed, please check.")
-        else:
-            milestone.edit(milestone.title, "closed", milestone.description)
-            log_info("New status of Milestone '" +
-                     milestone.title + "' is: " + milestone.state)
+        milestone.edit(milestone.title, "closed", milestone.description)
+        log_info("New status of Milestone '" + milestone.title + "' is: " + milestone.state)
 
 #############################
 log_step("Create new GitHub release...")

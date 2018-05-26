@@ -29,8 +29,7 @@ class GitRepo:
             log_info('Pull changes from origin ...')
             self.origin.pull()
         except GitCommandError:
-            log_error(
-                "Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
+            log_error("Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
             sys.exit()
 
     def reset(self):
@@ -60,11 +59,10 @@ class GitRepo:
 
     def push(self):
         ''' Boolean return type states, whether to continue process or abort'''
-        if(self.__config.debug):
-            if not prompt_yesno_question("Changes will be pushed now. Continue?"):
-                self.reset()
-                sys.exit()
-        if(self.__config.dry_run):
+        if self.__config.debug and not prompt_yesno_question("[DEBUG] Changes will be pushed now. Continue?"):
+            self.reset()
+            sys.exit()
+        if self.__config.dry_run:
             log_info_dry('Skipping pushing of changes.')
             return
 
@@ -84,7 +82,7 @@ class GitRepo:
         if self.__config.dry_run:
             log_info_dry("Would merge from "+source+" to " + target)
             return
-        if self.__config.debug and not prompt_yesno_question("Would now merge "+source+" to " + target + ". Continue?"):
+        if self.__config.debug and not prompt_yesno_question("[DEBUG] Would now merge "+source+" to " + target + ". Continue?"):
             self.reset()
             sys.exit()
 

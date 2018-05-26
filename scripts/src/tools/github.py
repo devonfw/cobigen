@@ -16,6 +16,7 @@ from github.Milestone import Milestone
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
 from github.Repository import Repository
+from github.GithubObject import NotSet
 
 
 class GitHub:
@@ -82,12 +83,12 @@ class GitHub:
             log_error("Issue with number " + str(issue_number) + " not found.")
             return False
 
-    def create_issue(self, title, milestone: Milestone=None, body=None, labels=None) -> int:
+    def create_issue(self, title, milestone: Milestone, body, labels=NotSet) -> int:
         '''Function creates an issue in git hub with title,milestone,body,labels passed'''
         if self.__config.dry_run:
             log_info_dry('Skipping creation of issue with title ' + str(title))
             return 0
-        if self.__config.debug and not prompt_yesno_question('Would now create GitHub issue with title="' + str(title) + '", milestone='+str(milestone)+'. Continue?'):
+        if self.__config.debug and not prompt_yesno_question('[DEBUG] Would now create GitHub issue with title="' + str(title) + '", milestone='+str(milestone)+'. Continue?'):
             sys.exit()
 
         log_info('Create GitHub issue with title "' + title + '"...')
