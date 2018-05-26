@@ -1,14 +1,15 @@
 import sys
+import re
+import os
 
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from git.repo.base import Repo
 from typing import List
-
-from tools.user_interface import log_info, log_error, log_info_dry, prompt_yesno_question
-from tools.config import Config
 from fileinput import FileInput
-import re
-import os
+
+from tools.user_interface import prompt_yesno_question
+from tools.config import Config
+from tools.logger import log_debug, log_info, log_error, log_info_dry
 
 
 class GitRepo:
@@ -33,17 +34,20 @@ class GitRepo:
             sys.exit()
 
     def reset(self):
-        if(prompt_yesno_question('Should the repository and file system to be reset automatically before exiting?')):
+        if(prompt_yesno_question('Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
             # arbitrary 20, but extensive enough to reset all hopefully
             log_info("Executing reset (git reset --hard HEAD~20)")
-            self.__repo.git.reset('--hard HEAD~20')
+            self.__repo.git.reset('--hard', 'HEAD~20')
             self.update_and_clean()
 
     def update_and_clean(self):
         log_info("Executing update and cleanup (git pull origin && git submodule update && git clean -fd)")
         self.origin.pull()
-        self.__repo.submodule_update()
+        self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
+        if not self.is_working_copy_clean():
+            log_error("Reset and cleanup did not work out. Aborting...")
+            sys.exit()
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
@@ -51,8 +55,11 @@ class GitRepo:
 
     def commit(self, commit_message: str):
         try:
-            log_info("Committing ...")
-            self.__repo.git.commit(message="#" + str(self.__config.github_issue_no) + " " + commit_message)
+            if self.__list_staged_files() != "":
+                log_info("Committing ...")
+                self.__repo.index.commit("#" + str(self.__config.github_issue_no) + " " + commit_message)
+            else:
+                log_info("Nothing to commit.")
         except Exception as e:
             if "no changes added to commit" in str(e):
                 log_info("No File is changed, Nothing to commit..")
@@ -76,7 +83,7 @@ class GitRepo:
                 raise e
 
     def add(self, files: List[str]) -> None:
-        self.__repo.git.add(files)
+        self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, self.__config.build_folder, i) for i in files])
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
@@ -124,3 +131,20 @@ class GitRepo:
 
     def create_tag_on_last_commit(self) -> None:
         self.__repo.create_tag(self.__config.tag_name)
+
+    def assure_clean_working_copy(self) -> None:
+        if not self.is_working_copy_clean():
+            log_error("Working copy is not clean")
+            if prompt_yesno_question("Should I clean the repo for you? This will delete all untracked files and hardly reset the repository!"):
+                self.reset()
+            else:
+                log_info("Please cleanup your working copy first. Then start the script again.")
+                sys.exit()
+        else:
+            log_info("Working copy clean.")
+
+    def is_working_copy_clean(self) -> bool:
+        return self.__repo.git.execute("git diff --shortstat") == "" and self.__list_staged_files() == "" and self.__repo.git.execute("git log --branches --not --remotes") == ""
+
+    def __list_staged_files(self) -> str:
+        return self.__repo.git.execute("git status --porcelain")

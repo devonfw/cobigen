@@ -2,11 +2,6 @@ import sys
 import os
 import getpass
 
-from tools.user_interface import prompt_yesno_question, log_error, log_info_dry, log_info, log_debug,\
-    prompt_enter_value
-from tools.config import Config
-from tools.github_cache import GitHubCache
-
 from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
 from github.MainClass import Github
 from github.Issue import Issue
@@ -16,6 +11,11 @@ from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
 from github.Repository import Repository
 from github.GithubObject import NotSet
+
+from tools.user_interface import prompt_yesno_question,  prompt_enter_value
+from tools.config import Config
+from tools.github_cache import GitHubCache
+from tools.logger import log_error, log_info, log_info_dry, log_debug
 
 
 class GitHub:
@@ -61,6 +61,7 @@ class GitHub:
         '''Search for the Release issue to be used, if not found, exit'''
         # caching!
         if issue_number in self.__cache.issues:
+            log_info("Issue with number " + str(issue_number) + " found.")
             return self.__cache.issues[issue_number]
         else:
             log_debug("Issue not found in cache, retrieving from GitHub...")
@@ -70,17 +71,7 @@ class GitHub:
             log_info("Issue with number " + str(issue_number) + " found.")
             return self.__cache.issues[issue_number]
         except UnknownObjectException:
-            log_error("Issue with number " + str(issue_number) + " not found.")
             return None
-
-    def exists_issue(self, issue_number: int) -> bool:
-        '''Search for the Release issue to be used, if not found, exit'''
-        if self.find_issue(issue_number):
-            log_info("Issue with number " + str(issue_number) + " found.")
-            return True
-        else:
-            log_error("Issue with number " + str(issue_number) + " not found.")
-            return False
 
     def create_issue(self, title: str, milestone: Milestone, body, labels=NotSet) -> int:
         '''Function creates an issue in git hub with title,milestone,body,labels passed'''
@@ -159,13 +150,14 @@ class GitHub:
         url_milestone = self.__config.github_closed_milestone_url(closed_milestone.number)
         release_title = self.__config.cobigenwiki_title_name
         release_text = "[ChangeLog](" + url_milestone + ")"
-        if "eclipse" in self.__config.branch_to_be_released:
+        if "eclipse" in self.__config.branch_to_be_released and core_version_in_eclipse_pom:
             cobigen_core_milestone: Milestone = self.find_cobigen_core_milestone(core_version_in_eclipse_pom)
             if cobigen_core_milestone.state == "closed":
                 core_url_milestone = self.__config.github_closed_milestone_url(cobigen_core_milestone.number)
                 release_text = release_text + "\n also includes \n" + "[ChangeLog CobiGen Core](" + core_url_milestone + ")"
             else:
-                log_info("Core version " + core_version_in_eclipse_pom + " is not yet released. This should be released before releasing cobigen-eclipse")
+                log_info("Core version " + core_version_in_eclipse_pom +
+                         " is not yet released. This should be released before releasing cobigen-eclipse")
                 sys.exit()
 
         try:

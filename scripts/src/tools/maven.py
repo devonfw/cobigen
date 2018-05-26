@@ -1,13 +1,14 @@
-from tools.config import Config
-from tools import user_interface
-from lxml import etree
 import os
 import sys
-from tools.user_interface import log_info, log_error
-from tools.github import GitHub
 import subprocess
+
 from _winapi import CREATE_NEW_CONSOLE
 from asyncio.subprocess import PIPE
+from lxml import etree
+
+from tools.config import Config
+from tools.github import GitHub
+from tools.logger import log_info
 
 
 class Maven:
@@ -20,30 +21,30 @@ class Maven:
         self.github_repo = github
         self.mavenNS = "{http://maven.apache.org/POM/4.0.0}"
 
-    def add_snapshot_in_version(self, xml_version_node, pom, target_version: str, pom_path):
+    def add_snapshot_in_version(self, xml_version_node, pom, target_version: str, pom_path: str):
         '''This method is responsible for changing version number in pom.xml to next release version with SNAPSHOT'''
-        user_interface.log_info('Set next release version (' + target_version + ') in ' + pom_path)
+        log_info('Set next release version (' + target_version + ') in ' + pom_path)
 
         target_snapshot_version = target_version + "-SNAPSHOT"
         xml_version_node.text = str(target_snapshot_version)
         pom.write(pom_path)
 
-    def remove_snapshot_in_version(self, xml_version_node, pom, release_version: str, pom_path):
+    def remove_snapshot_in_version(self, xml_version_node, pom, release_version: str, pom_path: str):
         '''This method is responsible for changing version number in pom.xml to release version'''
-        user_interface.log_info('Set next release version (' + release_version + ') in ' + pom_path)
+        log_info('Set next release version (' + release_version + ') in ' + pom_path)
 
         xml_version_node.text = str(release_version)
         pom.write(pom_path)
 
-    def call_add_remove_snapshot_method(self, xml_version_node, pom, bool_add_snapshot, version_to_change, file_path):
-        if bool_add_snapshot:
+    def call_add_remove_snapshot_method(self, xml_version_node, pom, add_snapshot: bool, version_to_change: str, file_path: str):
+        if add_snapshot:
             self.add_snapshot_in_version(xml_version_node, pom, version_to_change, file_path)
         else:
             self.remove_snapshot_in_version(xml_version_node, pom, version_to_change, file_path)
 
     # This method is responsible for adding SNAPSHOT version if not already added
-    def add_remove_snapshot_version_in_pom(self, bool_add_snapshot, version_to_change: str):
-        user_interface.log_info("Checking out branch for adding SNAPSHOT version: " + self.__config.branch_to_be_released + ".")
+    def add_remove_snapshot_version_in_pom(self, add_snapshot: bool, version_to_change: str):
+        log_info("Checking out branch for adding SNAPSHOT version: " + self.__config.branch_to_be_released + ".")
 
         pom = etree.parse("pom.xml")
 
@@ -52,14 +53,14 @@ class Maven:
             for mapping in pom.findall("//" + self.mavenNS + "properties"):
                 version_node = mapping.find(self.mavenNS + "cobigen.maven.version")
                 if(version_node):
-                    self.call_add_remove_snapshot_method(version_node, pom, bool_add_snapshot, version_to_change, None)
+                    self.call_add_remove_snapshot_method(version_node, pom, add_snapshot, version_to_change, "pom.xml")
 
         # For dev_core branch
         elif self.__config.branch_to_be_released == "dev_core":
             for mapping in pom.findall("//" + self.mavenNS + "properties"):
                 version_node = mapping.find(self.mavenNS + "cobigencore.version")
                 if(version_node):
-                    self.call_add_remove_snapshot_method(version_node, pom, bool_add_snapshot, version_to_change, None)
+                    self.call_add_remove_snapshot_method(version_node, pom, add_snapshot, version_to_change, "pom.xml")
         # For dev_eclipseplugin branch
         elif self.__config.branch_to_be_released == "dev_eclipseplugin":
             for dname, dirs, files in os.walk("."):
@@ -69,20 +70,21 @@ class Maven:
                         with open(fpath) as file:
                             pom = etree.parse(file)
                             version_node = pom.find(self.mavenNS + "version")
-                            self.call_add_remove_snapshot_method(version_node, pom, bool_add_snapshot, version_to_change, fpath)
+                            self.call_add_remove_snapshot_method(version_node, pom, add_snapshot, version_to_change, fpath)
                     else:
                         continue
 
         # For dev_htmlmerger, dev_jssenchaplugin branch
         else:
             version_node = pom.find(self.mavenNS + "version")
-            self.call_add_remove_snapshot_method(version_node, pom, bool_add_snapshot, version_to_change, None)
+            self.call_add_remove_snapshot_method(version_node, pom, add_snapshot, version_to_change, "pom.xml")
 
-        user_interface.log_info("Current working directory changed to: "+os.getcwd())
+        log_info("Current working directory changed to: "+os.getcwd())
 
     def upgrade_snapshot_dependencies(self) -> str:
         log_info('Upgrading all SNAPSHOT dependencies in POM files.')
         os.chdir(os.path.join(self.__config.root_path, self.__config.build_folder))
+        core_version_in_eclipse_pom = ""
         for dname, dirs, files in os.walk("."):
             for fname in files:
                 fpath = os.path.join(dname, fname)
@@ -102,7 +104,7 @@ class Maven:
                                         cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)
                                         if cobigen_core_milestone["state"] != "closed":
                                             log_info("Core version " + core_version_in_eclipse_pom +
-                                                       " is not yet released. This should be released before releasing cobigen-eclipse")
+                                                     " is not yet released. This should be released before releasing cobigen-eclipse")
                                             sys.exit()
                                 else:
                                     continue

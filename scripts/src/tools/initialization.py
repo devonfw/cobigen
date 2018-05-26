@@ -6,10 +6,11 @@ from git.exc import InvalidGitRepositoryError
 from git.cmd import Git
 
 from tools.validation import is_valid_branch
-from tools.user_interface import prompt_enter_value, log_error, log_info
+from tools.user_interface import prompt_enter_value
 from tools.config import Config
 from tools.github import GitHub
-
+from tools.logger import log_info, log_error
+ 
 
 def init_non_git_config(config: Config):
     config.wiki_version_overview_page = "CobiGen.asciidoc"
@@ -18,8 +19,10 @@ def init_non_git_config(config: Config):
         config.root_path = prompt_enter_value("path of the repository to work on")
         if not os.path.exists(config.root_path):
             log_error("Path does not exist.")
+            continue
         if not os.path.isdir(config.root_path):
             log_error("Path is not a directory.")
+            continue
         if os.path.realpath(__file__).startswith(os.path.abspath(config.root_path)):
             log_error("Please copy and run the create release script in another place outside of the repository and execute again.")
             sys.exit()
@@ -29,7 +32,8 @@ def init_non_git_config(config: Config):
         except InvalidGitRepositoryError:
             log_error("Path is not a git repository.")
 
-    log_info("Executing release in path " + str(config.root_path))
+        log_info("Executing release in path " + str(config.root_path))
+        break
 
     config.dry_run = False
     config.debug = False
@@ -71,13 +75,14 @@ def init_git_dependent_config(config: Config, github: GitHub):
     config.expected_milestone_name = config.tag_name[:-2] + "-v" + config.release_version
 
     while(True):
-        config.github_issue_no = prompt_enter_value(
+        github_issue_no: str = prompt_enter_value(
             "release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
-        if(config.github_issue_no == 'new'):
+        if(github_issue_no == 'new'):
             config.github_issue_no = 0  # to be processed as falsely in the script later on (create one automatically)
             break
-        elif(github.exists_issue(config.github_issue_no)):
+        elif(github.find_issue(int(github_issue_no))):
             log_info("Issue found remotely!")
+            config.github_issue_no = int(github_issue_no)
             break
 
 
@@ -182,18 +187,18 @@ def __process_params(config):
             config.test_run = True
         elif o == "--debug":
             log_info("--debug: The script will require user interactions for each"
-                     "step. It will access git without --dry-run.")
+                            "step. It will access git without --dry-run.")
             config.debug = True
         elif o == "--help":
             log_info("This script helps deploying CobiGen modules.\n"
-                     "[WARNING]: The script will access and change the Github"
-                     " repository.\n Do not use it unless you want to deploy "
-                     "modules.\n Use --dry-run option to test the sript.\n\n"
-                     "Options: \n"
-                     "--dry-run: Instead of accessing Git th script will print each"
-                     "step to the console.\n"
-                     "--debug: Script stops after each automatic step and asks the"
-                     " user to continue.\n"
-                     "--test: Script runs on a different repo for testing purpose. It also uses \npredefined names and variables to shorten up the process.\n"
-                     "--help: Provides a short help about the intention and possible options.")
+                            "[WARNING]: The script will access and change the Github"
+                            " repository.\n Do not use it unless you want to deploy "
+                            "modules.\n Use --dry-run option to test the sript.\n\n"
+                            "Options: \n"
+                            "--dry-run: Instead of accessing Git th script will print each"
+                            "step to the console.\n"
+                            "--debug: Script stops after each automatic step and asks the"
+                            " user to continue.\n"
+                            "--test: Script runs on a different repo for testing purpose. It also uses \npredefined names and variables to shorten up the process.\n"
+                            "--help: Provides a short help about the intention and possible options.")
             sys.exit(0)
