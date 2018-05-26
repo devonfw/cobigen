@@ -1,10 +1,12 @@
-import re
 import os
 import sys
 import git
 
-import fileinput
-import subprocess
+from pprint import pprint
+from tools.initialization import init_git_dependent_config, init_non_git_config
+from git.exc import InvalidGitRepositoryError
+from github.Milestone import Milestone
+
 from tools.config import Config
 from tools.github import GitHub
 from tools.git_repo import GitRepo
@@ -12,13 +14,6 @@ from tools.validation import exit_if_not_executed_in_ide_environment, exit_if_or
     exit_if_working_copy_is_not_clean, check_running_in_bash
 from tools.user_interface import print_step, print_error, prompt_yesno_question, print_info, print_info_dry, print_debug
 from tools.maven import Maven
-from pprint import pprint
-from tools.initialization import init_git_dependent_config, init_non_git_config
-from git.exc import InvalidGitRepositoryError
-from _winapi import CREATE_NEW_CONSOLE
-from asyncio.subprocess import PIPE
-from lxml.html.builder import BODY
-from github.Milestone import Milestone
 
 #############################
 print_step("Initialization...")
@@ -114,7 +109,7 @@ print_step("Set the SNAPSHOT version...")
 print_info("Set snapshot version of target release")
 maven.add_remove_snapshot_version_in_pom(True, config.release_version)
 print_info("Git add and commit...")
-git_repo.repo.git.add(["pom.xml"])
+git_repo.add(["pom.xml"])
 git_repo.commit("set release snapshot version")
 
 if config.debug:
@@ -124,90 +119,48 @@ if config.debug:
 print_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 #############################
 core_version_in_eclipse_pom = maven.upgrade_snapshot_dependencies()
-git_repo.repo.git.add(["pom.xml"])
+git_repo.add(["pom.xml"])
 git_repo.commit("upgrade SNAPSHOT dependencies")
 
 #############################
 print_step("Run integration tests...")
 #############################
-maven_process = subprocess.Popen([sys.executable, "-c", "mvn clean integration-test -Pp2-build-mars,p2-build-stable && read -n1 -r -p 'Press any key to continue...' key"],
-                                 creationflags=CREATE_NEW_CONSOLE, stdin=PIPE, stdout=PIPE, universal_newlines=True, bufsize=1)
-
-while True:
-    out = maven_process.stderr.read(1)
-    if out == '' and maven_process.poll() != None:
-        break
-    if out != '':
-        sys.stdout.write(out)
-        sys.stdout.flush()
-
-if maven_process.returncode == 1:
-    print_error(
-        "Integration tests failed, please see create_release.py.log for logs located at current directory.")
-    git_repo.reset()
-    sys.exit()
+run_maven_process_and_handle_error("mvn clean integration-test - Pp2-build-mars, p2-build-stable")
 
 #############################
 print_step("Update wiki submodule...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question(
-        "Would now update wiki submodule. Continue (yes) or skip (no)?")
+    continue_run = prompt_yesno_question("Would now update wiki submodule. Continue (yes) or skip (no)?")
 
 if continue_run:
-    os.chdir(config.wiki_submodule_path)
-    git_repo.repo.execute("git pull origin master")
-
-    print_info("Changing the "+config.wiki_version_overview_page + " file, updating the version number...")
-    version_decl = config.cobigenwiki_title_name
-    new_version_decl = version_decl+" v"+config.release_version
-    with fileinput.FileInput(config.wiki_version_overview_page, inplace=True) as file:
-        for line in file:
-            line = re.sub(r''+version_decl+'.+', new_version_decl, line)
-            sys.stdout.write(line)
-
-    git_repo.repo.add([config.wiki_version_overview_page])
-    git_repo.commit("update wiki docs")
-    git_repo.push()
-
-    if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
-        git_repo.reset()
-        sys.exit()
+    git_repo.update_submodule(config.wiki_submodule_path)
 
 #############################
 print_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
-os.chdir(config.root_path)
-git_repo.checkout("master")
-
-print_info("Executing git pull before merging development branch to master.")
-git_repo.pull()
-print_info("Merge...")
-try:
-    git_repo.repo.execute("git merge " + config.branch_to_be_released)
-except:
-    print_error("Exception occured, executing git merge --abort...")
-    git_repo.repo.execute("git merge --abort")
+if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
     git_repo.reset()
     sys.exit()
+
+os.chdir(config.root_path)
+git_repo.merge(config.branch_to_be_released, "master")
 
 #############################
 print_step("Validate merge commit...")
 #############################
-print("Please check all the changed file paths which is to be released")
-list_of_changed_files = str(git_repo.repo.execute("git diff --name-only")).strip().split("\n+")
+list_of_changed_files = git_repo.get_changed_files_of_last_commit()
 is_pom_changed = False
 for file_name in list_of_changed_files:
     if "pom.xml" in file_name:
         is_pom_changed = True
     if not file_name.startswith(config.build_folder):
         print_info(file_name + " does not starts with " + config.build_folder)
-        if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for file changes as this should not be the case in a normal scenario! Continue?"):
+        if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for odd file changes as this should not be the case in a normal scenario! Continue?"):
             git_repo.reset()
             sys.exit()
-        report_messages.append(
-            "User has accepted to continue when found that some files were outside of build folder name")
+        report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
 
 if is_pom_changed:
     if not prompt_yesno_question("POM has been changed, please update dependency tracking wiki page! Continue?"):
@@ -229,14 +182,11 @@ if config.dry_run or config.test_run:
         "Would not deploy to maven central & updatesite. Skipping...")
 else:
     if config.build_folder != "cobigen-eclipse":
-        print("\n***************** (1) Executing maven clean package *****************\n")
-        git_repo.repo.execute("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
-        print("\n***************** (2) Executing maven install *****************\n")
-        git_repo.repo.execute("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true")
-        print("\n***************** (3) Executing maven deploy *****************\n")
-        git_repo.repo.execute("mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable")
+        run_maven_process_and_handle_error("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
+        run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true")
+        run_maven_process_and_handle_error("mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable")
     else:
-        git_repo.repo.execute("mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable")
+        run_maven_process_and_handle_error("mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable")
 
     if not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
         git_repo.reset()
@@ -248,7 +198,7 @@ print_step("Create Tag...")
 if config.dry_run:
     print_info_dry("Would create Git tag with name "+config.tag_name)
 else:
-    new_tag = git_repo.repo.create_tag(config.tag_name)
+    git_repo.create_tag_on_last_commit()
     git_repo.push()
 
 #############################
@@ -286,32 +236,14 @@ else:
 
 #############################
 print_step("Merge master branch to "+config.branch_to_be_released+"...")
-#############################
-if config.dry_run:
-    print_info_dry("Would merge from master to " + config.branch_to_be_released)
-else:
-    try:
-        head = git_repo.repo.get_branch("master")
-        base = git_repo.repo.get_branch(config.branch_to_be_released)
-
-        merge_to_devbranch = git_repo.repo.merge(
-            base.name, head.commit.sha, "merge to dev_branch")
-        print_info("Merged master into " + base.name)
-
-    except Exception as ex:
-        print_error(
-            "Something went wrong, please check if merge conflicts exist and solve them.")
-        if config.debug:
-            print(ex)
-        if not prompt_yesno_question("If there were conflicts, you solved and committed, would you like to resume the script?"):
-            git_repo.reset()
-            sys.exit()
+##############################
+git_repo.merge("master", config.branch_to_be_released)
 
 #############################
 print_step("Set next release version...")
 #############################
 maven.add_remove_snapshot_version_in_pom(True, config.next_version)
-git_repo.repo.git.add(["**/pom.xml"])
+git_repo.add(["**/pom.xml"])
 git_repo.commit("Set next development version")
 git_repo.push()
 
@@ -331,3 +263,12 @@ else:
     print_info("Closed issue #" + release_issue.number + ": " + release_issue.title)
 
 print_info("Script has been executed successfully!")
+
+
+def run_maven_process_and_handle_error(command: str):
+    returncode = maven.run_maven_process(command)
+
+    if returncode == 1:
+        print_error("Integration tests failed, please see create_release.py.log for logs located at current directory.")
+        git_repo.reset()
+        sys.exit()

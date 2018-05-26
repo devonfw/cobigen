@@ -3,8 +3,11 @@ from tools import user_interface
 from lxml import etree
 import os
 import sys
-from tools.user_interface import print_info
+from tools.user_interface import print_info, print_error
 from tools.github import GitHub
+import subprocess
+from _winapi import CREATE_NEW_CONSOLE
+from asyncio.subprocess import PIPE
 
 
 class Maven:
@@ -106,3 +109,17 @@ class Maven:
                             except:
                                 continue
         return core_version_in_eclipse_pom
+
+    def run_maven_process(self, command: str) -> int:
+        maven_process = subprocess.Popen([sys.executable, "-c", command + " && read -n1 -r -p 'Press any key to continue...' key"],
+                                         creationflags=CREATE_NEW_CONSOLE, stdin=PIPE, stdout=PIPE, universal_newlines=True, bufsize=1)
+
+        while True:
+            out = maven_process.stderr.read(1)
+            if out == '' and maven_process.poll() != None:
+                break
+            if out != '':
+                sys.stdout.write(out)
+                sys.stdout.flush()
+
+        return maven_process.returncode
