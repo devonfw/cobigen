@@ -1,4 +1,4 @@
-package com.capgemini.cobigen_jsonplugin.unittest.merger;
+package com.devonfw.cobigen_jsonplugin.unittest.merger;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,8 +11,8 @@ import java.io.Reader;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
