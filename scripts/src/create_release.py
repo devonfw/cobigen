@@ -1,5 +1,5 @@
 import re
-import os 
+import os
 import sys
 import git
 
@@ -18,6 +18,7 @@ from git.exc import InvalidGitRepositoryError
 from _winapi import CREATE_NEW_CONSOLE
 from asyncio.subprocess import PIPE
 from lxml.html.builder import BODY
+from github.Milestone import Milestone
 
 #############################
 print_step("Initialization...")
@@ -53,32 +54,32 @@ if(config.debug):
     pprint(vars(config))
     if not prompt_yesno_question("Continue?"):
         sys.exit()
-        
+
 maven = Maven(config, github)
 
 input("Please close all eclipse instances as of potential race conditions on maven builds causing errors. Press any key if done...")
 input("Please close SourceTree for Git performance reasons. Press any key if done...")
 
-report_messages=[]
-    
+report_messages = []
+
 #############################
 print_step("Check for working CI build and tests...")
 #############################
 if not prompt_yesno_question("Are the tests on branch " + config.branch_to_be_released + " passing in CI?"):
-    print_error("Please correct the build failures before releasing!");
-    sys.exit() 
+    print_error("Please correct the build failures before releasing!")
+    sys.exit()
 else:
     report_messages.append("User confirmed that tests are running on CI and the build is not failing.")
     print_info("Build is reported to be successful.")
-  
+
 #############################
 print_step("Search for GitHub milestone...")
-#############################   
+#############################
 milestone: Milestone = github.find_release_milestone()
 if milestone:
-    print_info("Milestone '"+milestone.title+"' found!")          
+    print_info("Milestone '"+milestone.title+"' found!")
 else:
-    print_error("Milestone not found! Searched for milestone with name '"+config.expected_milestone_name+"'. Aborting...")
+    print_error("Milestone not found! Searched for milestone with name '" + config.expected_milestone_name+"'. Aborting...")
     git_repo.reset()
     sys.exit()
 
@@ -86,7 +87,7 @@ else:
 print_step("Find or create the GitHub release issue...")
 #############################
 if not config.github_issue_no:
-    issue_text="This issue has been automatically created. It serves as a container for all release related commits";
+    issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
     config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone.number)
     if not config.github_issue_no:
         print_error("Could not create issue! Aborting...")
@@ -95,17 +96,17 @@ if not config.github_issue_no:
     else:
         print_info('Successfully created issue #' + config.github_issue_no)
 elif not github.exists_issue(config.github_issue_no):
-    print_error("Issue with number #"+config.github_issue_no+" not found! Aborting...")
+    print_error("Issue with number #"+config.github_issue_no + " not found! Aborting...")
     git_repo.reset()
     sys.exit()
-print_info("Issue #" + config.github_issue_n +" found.")
+print_info("Issue #" + config.github_issue_no + " found.")
 
 #############################
 print_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
 #############################
 git_repo.checkout(config.branch_to_be_released)
-os.chdir(os.path.join(config.root_path, config.get_build_folder()))
-git_repo.clean()
+os.chdir(os.path.join(config.root_path, config.build_folder))
+git_repo.update_and_clean()
 
 #############################
 print_step("Set the SNAPSHOT version...")
@@ -129,8 +130,8 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 print_step("Run integration tests...")
 #############################
-maven_process = subprocess.Popen([sys.executable, "-c", "mvn clean integration-test -Pp2-build-mars,p2-build-stable && read -n1 -r -p 'Press any key to continue...' key"], 
-                                 creationflags=CREATE_NEW_CONSOLE, stdin=PIPE, stdout = PIPE, universal_newlines=True, bufsize=1)
+maven_process = subprocess.Popen([sys.executable, "-c", "mvn clean integration-test -Pp2-build-mars,p2-build-stable && read -n1 -r -p 'Press any key to continue...' key"],
+                                 creationflags=CREATE_NEW_CONSOLE, stdin=PIPE, stdout=PIPE, universal_newlines=True, bufsize=1)
 
 while True:
     out = maven_process.stderr.read(1)
@@ -141,36 +142,38 @@ while True:
         sys.stdout.flush()
 
 if maven_process.returncode == 1:
-    print_error("Integration tests failed, please see create_release.py.log for logs located at current directory.");    
+    print_error(
+        "Integration tests failed, please see create_release.py.log for logs located at current directory.")
     git_repo.reset()
-    sys.exit();
+    sys.exit()
 
 #############################
 print_step("Update wiki submodule...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("Would now update wiki submodule. Continue (yes) or skip (no)?")
-        
-if continue_run:    
+    continue_run = prompt_yesno_question(
+        "Would now update wiki submodule. Continue (yes) or skip (no)?")
+
+if continue_run:
     os.chdir(config.wiki_submodule_path())
     git_repo.repo.execute("git pull origin master")
-    
-    print_info("Changing the "+config.wiki_version_overview_page+" file, updating the version number...")
+
+    print_info("Changing the "+config.wiki_version_overview_page + " file, updating the version number...")
     version_decl = config.cobigenwiki_title_name
     new_version_decl = version_decl+" v"+config.release_version
     with fileinput.FileInput(config.wiki_version_overview_page, inplace=True) as file:
-        for line in file:	
-            line = re.sub(r''+version_decl+'.+',new_version_decl, line)
+        for line in file:
+            line = re.sub(r''+version_decl+'.+', new_version_decl, line)
             sys.stdout.write(line)
-    
+
     git_repo.repo.add([config.wiki_version_overview_page])
     git_repo.commit("update wiki docs")
     git_repo.push()
-    
+
     if config.debug and not prompt_yesno_question("Wiki docs have been committed. Next would be merging to master. Continue?"):
         git_repo.reset()
-        sys.exit() 
+        sys.exit()
 
 #############################
 print_step("Merging " + config.branch_to_be_released + " to master...")
@@ -182,10 +185,10 @@ print_info("Executing git pull before merging development branch to master.")
 git_repo.pull()
 print_info("Merge...")
 try:
-    git_repo.repo.execute("git merge " + config.branch_to_be_released);
+    git_repo.repo.execute("git merge " + config.branch_to_be_released)
 except:
     print_error("Exception occured, executing git merge --abort...")
-    git_repo.repo.execute("git merge --abort");
+    git_repo.repo.execute("git merge --abort")
     git_repo.reset()
     sys.exit()
 
@@ -193,36 +196,39 @@ except:
 print_step("Validate merge commit...")
 #############################
 print("Please check all the changed file paths which is to be released")
-list_of_changed_files=str(git_repo.repo.execute("git diff --name-only")).strip().split("\\n+")
-is_pom_changed=False
+list_of_changed_files = str(git_repo.repo.execute("git diff --name-only")).strip().split("\n+")
+is_pom_changed = False
 for file_name in list_of_changed_files:
     if "pom.xml" in file_name:
-        is_pom_changed=True;
-    if not file_name.startswith(config.get_build_folder()):
-        print_info(file_name +" does not starts with "+config.get_build_folder())
-        if not prompt_yesno_question("Some Files are outside the folder "+config.get_build_folder()+". Please check for file changes as this should not be the case in a normal scenario! Continue?"):
+        is_pom_changed = True
+    if not file_name.startswith(config.build_folder):
+        print_info(file_name + " does not starts with " + config.build_folder)
+        if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for file changes as this should not be the case in a normal scenario! Continue?"):
             git_repo.reset()
             sys.exit()
-        report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
+        report_messages.append(
+            "User has accepted to continue when found that some files were outside of build folder name")
 
 if is_pom_changed:
     if not prompt_yesno_question("POM has been changed, please update dependency tracking wiki page! Continue?"):
         git_repo.reset()
         sys.exit()
-    report_messages.append("User has accepted to continue on found POM changes")
+    report_messages.append(
+        "User has accepted to continue on found POM changes")
 
 #############################
 print_step("Set release version...")
 #############################
-maven.add_remove_snapshot_version_in_pom(False,"Set release version")
+maven.add_remove_snapshot_version_in_pom(False, "Set release version")
 
 #############################
 print_step("Deploy artifacts to nexus and update sites...")
 #############################
 if config.dry_run or config.test_run:
-    print_info_dry("Would not deploy to maven central & updatesite. Skipping...")
+    print_info_dry(
+        "Would not deploy to maven central & updatesite. Skipping...")
 else:
-    if config.get_build_folder() != "cobigen-eclipse":
+    if config.build_folder != "cobigen-eclipse":
         print("\n***************** (1) Executing maven clean package *****************\n")
         git_repo.repo.execute("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
         print("\n***************** (2) Executing maven install *****************\n")
@@ -242,23 +248,25 @@ print_step("Create Tag...")
 if config.dry_run:
     print_info_dry("Would create Git tag with name "+config.tag_name)
 else:
-    new_tag=git_repo.repo.create_tag(config.tag_name)
+    new_tag = git_repo.repo.create_tag(config.tag_name)
     git_repo.push()
 
 #############################
 print_step("Close GitHub Milestone...")
 #############################
 if config.dry_run:
-    print_info_dry("Would close GitHub milestone with no "+ str(milestone.number))
+    print_info_dry("Would close GitHub milestone with no " + str(milestone.number))
 else:
     if config.dry_run:
         print_info_dry("Would close the milestone: " + milestone.title)
     else:
         if (milestone.state == "closed"):
-            print_info("Milestone '", milestone.title, "' is already closed, please check.")
+            print_info("Milestone '"+milestone.title +
+                       "' is already closed, please check.")
         else:
             milestone.edit(milestone.title, "closed", milestone.description)
-            print_info("New status of Milestone '" +milestone.title+ "' is: "+ milestone.state)
+            print_info("New status of Milestone '" +
+                       milestone.title + "' is: " + milestone.state)
 
 #############################
 print_step("Create new GitHub release...")
@@ -280,17 +288,19 @@ else:
 print_step("Merge master branch to "+config.branch_to_be_released+"...")
 #############################
 if config.dry_run:
-    print_info_dry("Would merge from master to "+ config.branch_to_be_released)
+    print_info_dry("Would merge from master to " + config.branch_to_be_released)
 else:
     try:
         head = git_repo.repo.get_branch("master")
         base = git_repo.repo.get_branch(config.branch_to_be_released)
 
-        merge_to_devbranch = git_repo.repo.merge(base.name, head.commit.sha, "merge to dev_branch")
+        merge_to_devbranch = git_repo.repo.merge(
+            base.name, head.commit.sha, "merge to dev_branch")
         print_info("Merged master into " + base.name)
 
     except Exception as ex:
-        print_error("Something went wrong, please check if merge conflicts exist and solve them.")
+        print_error(
+            "Something went wrong, please check if merge conflicts exist and solve them.")
         if config.debug:
             print(ex)
         if not prompt_yesno_question("If there were conflicts, you solved and committed, would you like to resume the script?"):
@@ -309,15 +319,15 @@ git_repo.push()
 print_step("Close GitHub release issue...")
 #############################
 if config.dry_run:
-    print_info_dry("Would close GitHub release issue with no #"+ config.github_issue_no)
+    print_info_dry("Would close GitHub release issue with no #" + config.github_issue_no)
 else:
     release_issue = github.find_issue(int(config.github_issue_no))
-    #will never find closed issues
+    # will never find closed issues
     closing_comment = "Automatically processed.\n\nThe decisions taken by the developer and the context of the decisions throughout the script:\n\n"
     for message in report_messages:
         closing_comment = closing_comment + "* "+message+"\n"
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    print_info("Closed issue #"+ release_issue.number +": "+ release_issue.title)
+    print_info("Closed issue #" + release_issue.number + ": " + release_issue.title)
 
 print_info("Script has been executed successfully!")
