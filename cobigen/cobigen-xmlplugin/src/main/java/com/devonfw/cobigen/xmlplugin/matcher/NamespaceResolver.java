@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.matcher;
+package com.devonfw.cobigen.xmlplugin.matcher;
 
 import java.util.Iterator;
 

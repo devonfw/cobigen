@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.unittest.inputreader;
+package com.devonfw.cobigen.xmlplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,8 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.capgemini.cobigen.xmlplugin.inputreader.ModelConstant;
-import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
+import com.devonfw.cobigen.xmlplugin.inputreader.ModelConstant;
+import com.devonfw.cobigen.xmlplugin.inputreader.XmlInputReader;
 
 /**
  * Unit tests for {@link XmlInputReader}

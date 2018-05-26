@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.matcher;
+package com.devonfw.cobigen.xmlplugin.matcher;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +15,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.MatcherInterpreter;
-import com.capgemini.cobigen.api.to.MatcherTo;
-import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.xmlplugin.inputreader.XmlInputReader;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.to.MatcherTo;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
+import com.devonfw.cobigen.xmlplugin.inputreader.XmlInputReader;
 
 /** {@link MatcherInterpreter} for XML matcher configurations. */
 public class XmlMatcher implements MatcherInterpreter {
