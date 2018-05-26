@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger.generic;
+package com.devonfw.cobigen.jsonplugin.merger.generic;
 
 import java.util.Map;
 
