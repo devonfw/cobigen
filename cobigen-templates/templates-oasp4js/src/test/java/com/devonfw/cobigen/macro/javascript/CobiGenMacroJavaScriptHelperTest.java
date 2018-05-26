@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -16,7 +16,12 @@ import net.sf.mmm.util.reflect.impl.SimpleGenericTypeImpl;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.macro.java.JavaBean;
+import com.devonfw.cobigen.macro.java.JavaBean;
+import com.devonfw.cobigen.macro.javascript.CobiGenMacroJavaScriptHelper;
+import com.devonfw.cobigen.macro.javascript.JavaScriptArrayType;
+import com.devonfw.cobigen.macro.javascript.JavaScriptBasicType;
+import com.devonfw.cobigen.macro.javascript.JavaScriptComplexType;
+import com.devonfw.cobigen.macro.javascript.JavaScriptType;
 
 import io.oasp.module.basic.common.api.to.AbstractCto;
 import io.oasp.module.basic.common.api.to.AbstractEto;

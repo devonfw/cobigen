@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 /**
  * This enum contains the primitive types of JSON and JavaScript/TypeScript.
