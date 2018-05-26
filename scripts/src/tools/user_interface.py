@@ -42,4 +42,3 @@ def log_step(description):
     print("************************************************")
     print("********** [STEP " + str(step_counter) + "] " + description)
     print("************************************************")
-    print("")
