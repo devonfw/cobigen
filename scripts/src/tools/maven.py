@@ -3,7 +3,7 @@ from tools import user_interface
 from lxml import etree
 import os
 import sys
-from tools.user_interface import print_info, print_error
+from tools.user_interface import log_info, log_error
 from tools.github import GitHub
 import subprocess
 from _winapi import CREATE_NEW_CONSOLE
@@ -22,7 +22,7 @@ class Maven:
 
     def add_snapshot_in_version(self, xml_version_node, pom, target_version: str, pom_path):
         '''This method is responsible for changing version number in pom.xml to next release version with SNAPSHOT'''
-        user_interface.print_info('Set next release version (' + target_version + ') in ' + pom_path)
+        user_interface.log_info('Set next release version (' + target_version + ') in ' + pom_path)
 
         target_snapshot_version = target_version + "-SNAPSHOT"
         xml_version_node.text = str(target_snapshot_version)
@@ -30,7 +30,7 @@ class Maven:
 
     def remove_snapshot_in_version(self, xml_version_node, pom, release_version: str, pom_path):
         '''This method is responsible for changing version number in pom.xml to release version'''
-        user_interface.print_info('Set next release version (' + release_version + ') in ' + pom_path)
+        user_interface.log_info('Set next release version (' + release_version + ') in ' + pom_path)
 
         xml_version_node.text = str(release_version)
         pom.write(pom_path)
@@ -43,7 +43,7 @@ class Maven:
 
     # This method is responsible for adding SNAPSHOT version if not already added
     def add_remove_snapshot_version_in_pom(self, bool_add_snapshot, version_to_change: str):
-        user_interface.print_info("Checking out branch for adding SNAPSHOT version: " + self.__config.branch_to_be_released + ".")
+        user_interface.log_info("Checking out branch for adding SNAPSHOT version: " + self.__config.branch_to_be_released + ".")
 
         pom = etree.parse("pom.xml")
 
@@ -78,10 +78,10 @@ class Maven:
             version_node = pom.find(self.mavenNS + "version")
             self.call_add_remove_snapshot_method(version_node, pom, bool_add_snapshot, version_to_change, None)
 
-        user_interface.print_info("Current working directory changed to: "+os.getcwd())
+        user_interface.log_info("Current working directory changed to: "+os.getcwd())
 
     def upgrade_snapshot_dependencies(self) -> str:
-        print_info('Upgrading all SNAPSHOT dependencies in POM files.')
+        log_info('Upgrading all SNAPSHOT dependencies in POM files.')
         os.chdir(os.path.join(self.__config.root_path, self.__config.build_folder))
         for dname, dirs, files in os.walk("."):
             for fname in files:
@@ -101,7 +101,7 @@ class Maven:
                                         core_version_in_eclipse_pom = name.text
                                         cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)
                                         if cobigen_core_milestone["state"] != "closed":
-                                            print_info("Core version " + core_version_in_eclipse_pom +
+                                            log_info("Core version " + core_version_in_eclipse_pom +
                                                        " is not yet released. This should be released before releasing cobigen-eclipse")
                                             sys.exit()
                                 else:

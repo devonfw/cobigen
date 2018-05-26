@@ -19,23 +19,25 @@ def prompt_yesno_question(question: str) -> bool:
     return value == 'yes'
 
 
-def print_debug(print_message):
+def log_debug(print_message):
     print("[DEBUG] "+print_message)
 
 
-def print_info(print_message):
+def log_info(print_message):
     print("[INFO] "+print_message)
 
 
-def print_info_dry(print_message):
-    print_info("[DRY] "+print_message)
+def log_info_dry(print_message):
+    log_info("[DRY] "+print_message)
 
 
-def print_error(print_message):
+def log_error(print_message):
     print("[ERROR] "+print_message)
 
 
-def print_step(description):
+def log_step(description):
     global step_counter
     step_counter = step_counter + 1
-    print_info("\n[STEP " + str(step_counter) + "] " + description)
+    print("************************************************")
+    print("********** [STEP " + str(step_counter) + "] " + description)
+    print("************************************************")
