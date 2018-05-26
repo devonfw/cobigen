@@ -1,8 +1,10 @@
 import git
 import os
 import sys
-from tools.user_interface import log_error, log_info
 import subprocess
+
+from tools.config import Config
+from tools.logger import log_error, log_info
 
 
 def exit_if_not_executed_in_ide_environment():
@@ -12,10 +14,10 @@ def exit_if_not_executed_in_ide_environment():
         sys.exit()
 
 
-def is_valid_branch(config) -> bool:
+def is_valid_branch(config: Config) -> bool:
     '''This Method is responsible for checking branches in repository with branch entered by user'''
 
-    if git.cmd.Git(".").execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
+    if git.cmd.Git(config.root_path).execute("git ls-remote --heads origin "+config.branch_to_be_released+" | wc -l") == "":
         log_info("Branch is not known remotely.")
         is_branch_valid = False
     else:
@@ -24,17 +26,10 @@ def is_valid_branch(config) -> bool:
     return is_branch_valid
 
 
-def exit_if_origin_is_not_correct(config):
-    remote_origin = git.cmd.Git(".").execute("git remote -v")
+def exit_if_origin_is_not_correct(config: Config):
+    remote_origin = git.cmd.Git(config.root_path).execute("git remote -v")
     if config.github_repo not in remote_origin:
         log_error("Origin of the current repository is not '" + config.github_repo + "', Please go to correct directory.")
-        sys.exit()
-
-
-def exit_if_working_copy_is_not_clean():
-    repo = git.cmd.Git(".")
-    if repo.execute("git diff --shortstat") != "" or repo.execute("git status --porcelain") != "":
-        log_error("Working copy is not clean")
         sys.exit()
 
 

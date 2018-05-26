@@ -1,5 +1,3 @@
-from github.Issue import Issue
-from typing import List
 from github.PaginatedList import PaginatedList
 
 
