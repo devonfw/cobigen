@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In
-Bundle-SymbolicName: com.capgemini.cobigen.eclipse;singleton:=true
+Bundle-SymbolicName: com.devonfw.cobigen.eclipse;singleton:=true
 Bundle-Version: 3.2.0.qualifier
-Bundle-Activator: com.capgemini.cobigen.eclipse.Activator
+Bundle-Activator: com.devonfw.cobigen.eclipse.Activator
 Bundle-Vendor: Capgemini
 Require-Bundle: org.eclipse.ui;bundle-version="3.104.0",
  org.eclipse.jdt.core;bundle-version="3.8.3",
@@ -38,4 +38,4 @@ Bundle-ClassPath: .,
  lib/cobigen-javaplugin.model-1.0.0.jar,
  lib/cobigen-core-4.2.0.jar,
  lib/cobigen-core-api-4.2.0.jar
-Export-Package: com.capgemini.cobigen.eclipse.common.constants.external
+Export-Package: com.devonfw.cobigen.eclipse.common.constants.external

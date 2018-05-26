@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test;
+package com.devonfw.cobigen.eclipse.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,11 +18,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.capgemini.cobigen.eclipse.test.common.SystemTest;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseUtils;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.test.common.SystemTest;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
  * General Eclipse Plug-in Tests.

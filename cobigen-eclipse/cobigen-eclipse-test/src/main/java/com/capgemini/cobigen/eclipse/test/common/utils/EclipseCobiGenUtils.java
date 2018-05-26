@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common.utils;
+package com.devonfw.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
@@ -12,9 +12,9 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
 
-import com.capgemini.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
+import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
 
 /**
  * Eclipse Utils to work with the CobiGen UI.

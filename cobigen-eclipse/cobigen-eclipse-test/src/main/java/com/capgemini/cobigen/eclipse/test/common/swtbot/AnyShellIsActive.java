@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common.swtbot;
+package com.devonfw.cobigen.eclipse.test.common.swtbot;
 
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;

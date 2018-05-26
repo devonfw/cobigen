@@ -4,23 +4,23 @@
       <extension
          point="org.eclipse.ui.commands">
       <command
-            id="com.capgemini.cobigen.eclipseplugin.generate"
+            id="com.devonfw.cobigen.eclipseplugin.generate"
             name="Generate">
       </command>
       <command
-            id="com.capgemini.cobigen.eclipseplugin.healthy_check"
+            id="com.devonfw.cobigen.eclipseplugin.healthy_check"
             name="Healthy Check">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.GenerateHandler"
-            commandId="com.capgemini.cobigen.eclipseplugin.generate">
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.GenerateHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.generate">
       </handler>
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
-            commandId="com.capgemini.cobigen.eclipseplugin.health_check">
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.health_check">
       </handler>
    </extension>
    <extension
@@ -29,24 +29,24 @@
              allPopups="false"
              locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator1"
+                name="com.devonfw.cobigen.eclipseplugin.separator1"
                 visible="true">
           </separator>
           <menu
                 label="CobiGen">
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.generate"
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
                    label="Generate..."
                    style="push">
              </command>
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
                    label="Health Check..."
                    style="push">
              </command>
           </menu>
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator2"
+                name="com.devonfw.cobigen.eclipseplugin.separator2"
                 visible="true">
           </separator>
        </menuContribution>
@@ -54,24 +54,24 @@
              allPopups="false"
              locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator3"
+                name="com.devonfw.cobigen.eclipseplugin.separator3"
                 visible="true">
           </separator>
           <menu
                 label="CobiGen">
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.generate"
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
                    label="Generate..."
                    style="push">
              </command>
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
                    label="Health Check..."
                    style="push">
              </command>
           </menu>
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator4"
+                name="com.devonfw.cobigen.eclipseplugin.separator4"
                 visible="true">
           </separator>
        </menuContribution>
@@ -79,18 +79,18 @@
              allPopups="false"
              locationURI="popup:org.eclipse.ui.popup.any?after=additions">
           <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator5"
+                name="com.devonfw.cobigen.eclipseplugin.separator5"
                 visible="true">
           </separator>
           <menu
                 label="CobiGen">
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.generate"
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
                    label="Generate..."
                    style="push">
              </command>
              <command
-                   commandId="com.capgemini.cobigen.eclipseplugin.health_check"
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
                    label="Health Check..."
                    style="push">
              </command>
@@ -105,7 +105,7 @@
              </visibleWhen>
            </menu>
             <separator
-                name="com.capgemini.cobigen.eclipseplugin.separator6"
+                name="com.devonfw.cobigen.eclipseplugin.separator6"
                 visible="true">
             </separator>
        </menuContribution>
