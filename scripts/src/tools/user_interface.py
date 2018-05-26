@@ -38,4 +38,4 @@ def print_error(print_message):
 def print_step(description):
     global step_counter
     step_counter = step_counter + 1
-    print_info("[STEP " + str(step_counter) + "] " + description)
+    print_info("\n[STEP " + str(step_counter) + "] " + description)
