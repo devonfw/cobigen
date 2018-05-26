@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common;
+package com.devonfw.cobigen.eclipse.test.common;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
@@ -12,8 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseUtils;
+import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
  * Abstract test implementation providing the commonly used setup and tear down methods as well as JUnit rules

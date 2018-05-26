@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test;
+package com.devonfw.cobigen.eclipse.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,11 +18,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.capgemini.cobigen.eclipse.test.common.SystemTest;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseUtils;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.test.common.SystemTest;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
  * General Eclipse Plug-in Tests.
@@ -85,7 +85,7 @@ public class OpenAPITest extends SystemTest {
 
         try (InputStream in = generationResult.getContents()) {
             assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
-                "package com.capgemini.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                "package com.devonfw.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
                     LINE_SEPARATOR + //
@@ -122,7 +122,7 @@ public class OpenAPITest extends SystemTest {
             .getFile("src/com/capgemini/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
         try (InputStream in = generationResult.getContents()) {
             assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
-                "package com.capgemini.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
                     LINE_SEPARATOR + //
                     "}");

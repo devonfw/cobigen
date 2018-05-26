@@ -3,7 +3,7 @@
   <trigger id="crud_openapi_java_server_app" type="openapi" templateFolder="templates">
     <containerMatcher type="element" value="openAPIFile"/>
     <matcher type="element" value="EntityDef">
-      <variableAssignment type="constant" key="rootPackage" value="com.capgemini.test"/>
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw.test"/>
       <variableAssignment type="property" key="component" value="componentName"/>
       <variableAssignment type="property" key="entityName" value="name"/>
     </matcher>

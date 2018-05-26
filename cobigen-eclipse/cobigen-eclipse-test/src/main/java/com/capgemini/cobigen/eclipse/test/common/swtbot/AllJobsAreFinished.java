@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common.swtbot;
+package com.devonfw.cobigen.eclipse.test.common.swtbot;
 
 import java.util.Calendar;
 

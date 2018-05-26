@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common.utils;
+package com.devonfw.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
@@ -26,8 +26,8 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
-import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 
 /**
  * Eclipse specific operations to make test setup easier.
