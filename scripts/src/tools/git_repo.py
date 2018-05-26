@@ -14,7 +14,7 @@ class GitRepo:
 
         try:
             self.repo = Repo.init(".")
-            self.origin = self.repo.remotes.origin
+            self.origin = self.repo.remote('origin')
         except InvalidGitRepositoryError:
             print_error("Path is not a git repository. Please go to valid git repository!")
             sys.exit()
