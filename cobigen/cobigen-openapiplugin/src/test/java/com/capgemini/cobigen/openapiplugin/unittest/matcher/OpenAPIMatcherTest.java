@@ -1,13 +1,13 @@
-package com.capgemini.cobigen.openapiplugin.unittest.matcher;
+package com.devonfw.cobigen.openapiplugin.unittest.matcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.to.MatcherTo;
-import com.capgemini.cobigen.openapiplugin.matcher.OpenAPIMatcher;
-import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
-import com.capgemini.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.api.to.MatcherTo;
+import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
+import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
+import com.devonfw.cobigen.openapiplugin.model.EntityDef;
 
 /**
  * Test suite for {@link OpenAPIMatcher}
