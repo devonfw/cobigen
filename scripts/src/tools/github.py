@@ -57,8 +57,11 @@ class GitHub:
 
     def find_issue(self, issue_number: int) -> Issue:
         '''Search for the Release issue to be used, if not found, exit'''
-        if self.__cache.issues[issue_number]:
+        # caching!
+        try:
             return self.__cache.issues[issue_number]
+        except NameError:
+            print_debug("Issue not found in cache, retrieving from GitHub...")
 
         try:
             self.__cache.issues[issue_number] = self.__repo.get_issue(issue_number)
@@ -98,8 +101,10 @@ class GitHub:
 
     def __request_milestone_list(self) -> PaginatedList:
         # caching!
-        if self.__cache.milestones:
+        try:
             return self.__cache.milestones
+        except NameError:
+            print_debug("Milestones not found in cache, retrieving from GitHub...")
 
         try:
             milestones: PaginatedList = self.__repo.get_milestones(state=all)
