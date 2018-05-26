@@ -21,13 +21,13 @@ from github.Repository import Repository
 class GitHub:
 
     def __init__(self, config: Config) -> None:
-        self.__config: Config = config 
-
+        self.__config: Config = config
         self.__cache = GitHubCache()
 
+        self.__authenticate_git_user()
         try:
             org = self.__github.get_organization(self.__config.git_repo_org)
-            if self.__config.debug: 
+            if self.__config.debug:
                 print_debug("Organization found.")
         except UnknownObjectException:
             if self.__config.debug:
@@ -39,11 +39,11 @@ class GitHub:
         self.__repo: Repository = org.get_repo(self.__config.git_repo_name)
 
     # This script is responsible for the authentication of git user
-    def authenticate_git_user(self):
+    def __authenticate_git_user(self):
         while True:
             if prompt_yesno_question("Are you using two-factor authentication on GitHub?"):
                 self.__config.git_token = getpass.getpass("> Please enter your token: ")
-            else: 
+            else:
                 self.__config.git_username = prompt_enter_value("your git user name")
                 self.__config.git_password = getpass.getpass("> Please enter your password: ")
             try:
