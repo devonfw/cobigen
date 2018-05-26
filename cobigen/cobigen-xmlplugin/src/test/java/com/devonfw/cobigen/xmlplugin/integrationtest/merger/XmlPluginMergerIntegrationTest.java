@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.xmlplugin.integrationtest.merger;
+package com.devonfw.cobigen.xmlplugin.integrationtest.merger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,9 +19,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.xmlplugin.merger.delegates.MergeType;
-import com.capgemini.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.xmlplugin.merger.delegates.MergeType;
+import com.devonfw.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
 
 /**
  * Tests if the used XML patchPreferingMerger behaves as desired.
