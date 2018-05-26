@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.capgemini.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.textmerger.TextAppender;
 
 /**
  *
