@@ -1,4 +1,3 @@
-from github.Milestone import Milestone
 from github.Issue import Issue
 from typing import List
 from github.PaginatedList import PaginatedList
