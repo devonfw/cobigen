@@ -1,4 +1,4 @@
-from tools.user_interface import prompt_enter_value, print_error, print_info
+from tools.user_interface import prompt_enter_value, log_error, log_info
 import os
 import sys
 from tools.validation import is_valid_branch
@@ -10,7 +10,7 @@ from tools.github import GitHub
 def init_non_git_config(config: Config):
     config.wiki_version_overview_page = "CobiGen.asciidoc"
     config.root_path = os.path.normpath(os.path.join(os.path.realpath(__file__), ".."+os.sep+".."+os.sep+".."+os.sep+".."+os.sep))
-    print_info("Executing release in path " + str(config.root_path))
+    log_info("Executing release in path " + str(config.root_path))
 
     config.dry_run = False
     config.debug = False
@@ -58,7 +58,7 @@ def init_git_dependent_config(config: Config, github: GitHub):
             config.github_issue_no = 0  # to be processed as falsely in the script later on (create one automatically)
             break
         elif(github.exists_issue(config.github_issue_no)):
-            print_info("Issue found remotely!")
+            log_info("Issue found remotely!")
             break
 
 
@@ -83,7 +83,7 @@ def __get_build_folder(config: Config):
 
     val = build_folder.get(config.branch_to_be_released, "")
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_build_folder in scripts/**/__config.py')
+        log_error('Branch name unknown to script. Please edit function get_build_folder in scripts/**/__config.py')
         sys.exit()
     return val
 
@@ -110,7 +110,7 @@ def __get_cobigenwiki_title_name(config):
 
     val = wiki_description_name.get(config.branch_to_be_released, "")
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_cobigenwiki_title_name in scripts/**/__config.py')
+        log_error('Branch name unknown to script. Please edit function get_cobigenwiki_title_name in scripts/**/__config.py')
         sys.exit()
     return val
 
@@ -137,7 +137,7 @@ def __get_tag_name(config):
 
     val = tag_name.get(config.branch_to_be_released, "")
     if not val:
-        print_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py')
+        log_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py')
         sys.exit()
     return val
 
@@ -154,19 +154,19 @@ def __get_target_folder(config):
 def __process_params(config):
     for o in sys.argv:
         if not o:
-            print_info("For further informations run >py create_release.py --help<")
+            log_info("For further informations run >py create_release.py --help<")
         elif o == "--dry-run":
             config.dry_run = True
-            print_info("--dry-run: No changes will be made on the Git repo.")
+            log_info("--dry-run: No changes will be made on the Git repo.")
         elif o == "--test":
-            print_info("--test: Script runs on a different repo for testing purpose. Does not require any user interaction to speed up.")
+            log_info("--test: Script runs on a different repo for testing purpose. Does not require any user interaction to speed up.")
             config.test_run = True
         elif o == "--debug":
-            print_info("--debug: The script will require user interactions for each"
+            log_info("--debug: The script will require user interactions for each"
                        "step. It will access git without --dry-run.")
             config.debug = True
         elif o == "--help":
-            print_info("This script helps deploying CobiGen modules.\n"
+            log_info("This script helps deploying CobiGen modules.\n"
                        "[WARNING]: The script will access and change the Github"
                        " repository.\n Do not use it unless you want to deploy "
                        "modules.\n Use --dry-run option to test the sript.\n\n"
