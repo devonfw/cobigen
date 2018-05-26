@@ -13,7 +13,8 @@ class GitRepo:
         self.__config: Config = config
 
         try:
-            self.repo = Repo.init(".")
+            self.repo = Repo(".")
+            assert not self.repo.bare
             self.origin = self.repo.remote('origin')
         except InvalidGitRepositoryError:
             print_error("Path is not a git repository. Please go to valid git repository!")
