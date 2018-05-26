@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.maven;
+package com.devonfw.cobigen.maven;
 
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.isDirectory;
@@ -51,15 +51,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.api.exception.InputReaderException;
-import com.capgemini.cobigen.api.to.GenerableArtifact;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.IncrementTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.maven.validation.InputPreProcessor;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InputReaderException;
+import com.devonfw.cobigen.api.to.GenerableArtifact;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

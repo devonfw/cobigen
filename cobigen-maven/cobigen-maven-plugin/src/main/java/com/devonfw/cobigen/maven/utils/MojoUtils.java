@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.maven.utils;
+package com.devonfw.cobigen.maven.utils;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.capgemini.cobigen.maven.GenerateMojo;
+import com.devonfw.cobigen.maven.GenerateMojo;
 
 /**
  * A class to provide some helper methods to the {@link GenerateMojo}
