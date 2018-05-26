@@ -1,10 +1,8 @@
 import os
 import sys
-import git
 
 from pprint import pprint
 from tools.initialization import init_git_dependent_config, init_non_git_config
-from git.exc import InvalidGitRepositoryError
 from github.Milestone import Milestone
 
 from tools.config import Config
@@ -18,12 +16,6 @@ from tools.maven import Maven
 #############################
 log_step("Initialization...")
 #############################
-
-try:
-    git.cmd.Git(".")
-except InvalidGitRepositoryError:
-    log_error("Path is not a git repository. Please go to valid git repository!")
-    sys.exit()
 
 check_running_in_bash()
 exit_if_working_copy_is_not_clean()

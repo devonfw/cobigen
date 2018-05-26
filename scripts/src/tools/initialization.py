@@ -1,15 +1,34 @@
-from tools.user_interface import prompt_enter_value, log_error, log_info
 import os
 import sys
-from tools.validation import is_valid_branch
 import re
+
+from git.exc import InvalidGitRepositoryError
+from git.cmd import Git
+
+from tools.validation import is_valid_branch
+from tools.user_interface import prompt_enter_value, log_error, log_info
 from tools.config import Config
 from tools.github import GitHub
 
 
 def init_non_git_config(config: Config):
     config.wiki_version_overview_page = "CobiGen.asciidoc"
-    config.root_path = os.path.normpath(os.path.join(os.path.realpath(__file__), ".."+os.sep+".."+os.sep+".."+os.sep+".."+os.sep))
+
+    while True:
+        config.root_path = prompt_enter_value("path of the repository to work on")
+        if not os.path.exists(config.root_path):
+            log_error("Path does not exist.")
+        if not os.path.isdir(config.root_path):
+            log_error("Path is not a directory.")
+        if os.path.realpath(__file__).startswith(os.path.abspath(config.root_path)):
+            log_error("Please copy and run the create release script in another place outside of the repository and execute again.")
+            sys.exit()
+
+        try:
+            Git(config.root_path)
+        except InvalidGitRepositoryError:
+            log_error("Path is not a git repository.")
+
     log_info("Executing release in path " + str(config.root_path))
 
     config.dry_run = False
@@ -163,18 +182,18 @@ def __process_params(config):
             config.test_run = True
         elif o == "--debug":
             log_info("--debug: The script will require user interactions for each"
-                       "step. It will access git without --dry-run.")
+                     "step. It will access git without --dry-run.")
             config.debug = True
         elif o == "--help":
             log_info("This script helps deploying CobiGen modules.\n"
-                       "[WARNING]: The script will access and change the Github"
-                       " repository.\n Do not use it unless you want to deploy "
-                       "modules.\n Use --dry-run option to test the sript.\n\n"
-                       "Options: \n"
-                       "--dry-run: Instead of accessing Git th script will print each"
-                       "step to the console.\n"
-                       "--debug: Script stops after each automatic step and asks the"
-                       " user to continue.\n"
-                       "--test: Script runs on a different repo for testing purpose. It also uses \npredefined names and variables to shorten up the process.\n"
-                       "--help: Provides a short help about the intention and possible options.")
+                     "[WARNING]: The script will access and change the Github"
+                     " repository.\n Do not use it unless you want to deploy "
+                     "modules.\n Use --dry-run option to test the sript.\n\n"
+                     "Options: \n"
+                     "--dry-run: Instead of accessing Git th script will print each"
+                     "step to the console.\n"
+                     "--debug: Script stops after each automatic step and asks the"
+                     " user to continue.\n"
+                     "--test: Script runs on a different repo for testing purpose. It also uses \npredefined names and variables to shorten up the process.\n"
+                     "--help: Provides a short help about the intention and possible options.")
             sys.exit(0)
