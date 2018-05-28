@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.freemarker.unittest;
+package com.devonfw.cobigen.tempeng.freemarker.unittest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.extension.TextTemplate;
-import com.capgemini.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
+import com.devonfw.cobigen.api.extension.TextTemplate;
+import com.devonfw.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 
 /** Test suite for {@link FreeMarkerTemplateEngine} */
 public class FreeMarkerTemplateEngineTest {

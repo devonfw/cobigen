@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.freemarker;
+package com.devonfw.cobigen.tempeng.freemarker;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,8 +11,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
 
 import freemarker.cache.TemplateLoader;
 
