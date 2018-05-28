@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger.anchorextension;
+package com.devonfw.cobigen.textmerger.anchorextension;
 
 /**
  *

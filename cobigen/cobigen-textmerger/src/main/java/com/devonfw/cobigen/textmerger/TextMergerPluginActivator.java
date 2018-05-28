@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import java.util.List;
 
