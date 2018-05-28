@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.xmlplugin.integrationtest;
+package com.devonfw.cobigen.xmlplugin.integrationtest;
 
-import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -12,10 +12,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 
 /**
  * Test suite for integrating XPath typed matchers and variable assignments
