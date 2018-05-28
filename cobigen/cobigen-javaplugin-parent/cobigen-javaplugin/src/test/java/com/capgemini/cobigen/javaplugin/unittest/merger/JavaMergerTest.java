@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.javaplugin.unittest.merger;
+package com.devonfw.cobigen.javaplugin.unittest.merger;
 
-import static com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil.getFirstJavaClass;
+import static com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil.getFirstJavaClass;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -14,9 +14,9 @@ import java.util.LinkedList;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.javaplugin.merger.JavaMerger;
-import com.capgemini.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.javaplugin.merger.JavaMerger;
+import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -50,10 +50,10 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_import.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, false);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).hasSize(2);
-        assertThat(mergedSource.getImports()).contains("com.capgemini.BaseClassImport");
-        assertThat(mergedSource.getImports()).contains("com.capgemini.PatchClassImport");
+        assertThat(mergedSource.getImports()).contains("com.devonfw.BaseClassImport");
+        assertThat(mergedSource.getImports()).contains("com.devonfw.PatchClassImport");
     }
 
     /**
@@ -68,11 +68,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_field.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, false);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getFields()).hasSize(3);
 
@@ -93,11 +93,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_method.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, false);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getConstructors()).hasSize(2);
         assertThat(clsFooBar.getMethods()).hasSize(2);
@@ -123,11 +123,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_innerClass.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, false);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getNestedClasses()).hasSize(3);
 
@@ -167,10 +167,10 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_import.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, true);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).hasSize(2);
-        assertThat(mergedSource.getImports()).contains("com.capgemini.conflicting.BaseClassImport");
-        assertThat(mergedSource.getImports()).contains("com.capgemini.PatchClassImport");
+        assertThat(mergedSource.getImports()).contains("com.devonfw.conflicting.BaseClassImport");
+        assertThat(mergedSource.getImports()).contains("com.devonfw.PatchClassImport");
     }
 
     /**
@@ -185,11 +185,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_field.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, true);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getFields()).hasSize(3);
 
@@ -210,11 +210,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_method.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, true);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getConstructors()).hasSize(2);
         assertThat(clsFooBar.getMethods()).hasSize(2);
@@ -240,11 +240,11 @@ public class JavaMergerTest {
         File patchFile = new File(testFileRootPath + "PatchFile_innerClass.java");
         JavaSource mergedSource = getMergedSource(baseFile, patchFile, true);
 
-        assertThat(mergedSource.getPackageName()).isEqualTo("com.capgemini");
+        assertThat(mergedSource.getPackageName()).isEqualTo("com.devonfw");
         assertThat(mergedSource.getImports()).isEmpty();
         assertThat(mergedSource.getClasses()).hasSize(1);
 
-        JavaClass clsFooBar = mergedSource.getClassByName("com.capgemini.FooBar");
+        JavaClass clsFooBar = mergedSource.getClassByName("com.devonfw.FooBar");
         assertThat(clsFooBar).isNotNull();
         assertThat(clsFooBar.getNestedClasses()).hasSize(3);
 

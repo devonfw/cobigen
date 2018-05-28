@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.merger.libextension;
+package com.devonfw.cobigen.javaplugin.unittest.merger.libextension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.JavaParserUtil;
-import com.capgemini.cobigen.javaplugin.merger.libextension.CustomModelWriter;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.merger.libextension.CustomModelWriter;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 

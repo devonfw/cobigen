@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.AnyOtherType;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType;
 
 public class Pojo {
 

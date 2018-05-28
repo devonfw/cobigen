@@ -1,8 +1,8 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.subpackage;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.subpackage;
 
 import java.util.List;
 
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 
 /**
  *

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.matcher.resolver;
+package com.devonfw.cobigen.javaplugin.unittest.matcher.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,8 +9,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.to.VariableAssignmentTo;
-import com.capgemini.cobigen.javaplugin.matcher.JavaMatcher;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
+import com.devonfw.cobigen.javaplugin.matcher.JavaMatcher;
 
 /**
  * Test suite for {@link JavaMatcher}.
@@ -33,7 +33,7 @@ public class JavaMatcherTests {
 
     /**
      * Test method for
-     * {@link com.capgemini.cobigen.javaplugin.matcher.JavaMatcher#getResolvedVariables(com.capgemini.cobigen.javaplugin.matcher.JavaMatcher.MatcherType, java.lang.String, java.lang.String, java.util.List)}
+     * {@link com.devonfw.cobigen.javaplugin.matcher.JavaMatcher#getResolvedVariables(com.devonfw.cobigen.javaplugin.matcher.JavaMatcher.MatcherType, java.lang.String, java.lang.String, java.util.List)}
      * . Tests if the algorithm handles empty variables correctly
      */
     @SuppressWarnings("javadoc")
@@ -60,7 +60,7 @@ public class JavaMatcherTests {
 
     /**
      * Test method for
-     * {@link com.capgemini.cobigen.javaplugin.matcher.JavaMatcher#getResolvedVariables(com.capgemini.cobigen.javaplugin.matcher.JavaMatcher.MatcherType, java.lang.String, java.lang.String, java.util.List)}
+     * {@link com.devonfw.cobigen.javaplugin.matcher.JavaMatcher#getResolvedVariables(com.devonfw.cobigen.javaplugin.matcher.JavaMatcher.MatcherType, java.lang.String, java.lang.String, java.util.List)}
      * . tests if the algorithm handles non empty variables correctly (control-test to
      * {@link #resolveEmptyRegexVariable()})
      */
