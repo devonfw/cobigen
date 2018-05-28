@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>4.2.1</version>
+      <version>4.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.reprezen.kaizen</groupId>
@@ -38,13 +38,13 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>4.2.1</version>
+      <version>4.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>4.2.1</version>
+      <version>4.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
