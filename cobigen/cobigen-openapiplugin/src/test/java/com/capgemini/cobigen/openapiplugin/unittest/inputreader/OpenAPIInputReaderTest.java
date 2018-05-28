@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.unittest.inputreader;
+package com.devonfw.cobigen.openapiplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.InvalidConfigurationException;
-import com.capgemini.cobigen.api.extension.InputReader;
-import com.capgemini.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
-import com.capgemini.cobigen.openapiplugin.model.ComponentDef;
-import com.capgemini.cobigen.openapiplugin.model.EntityDef;
-import com.capgemini.cobigen.openapiplugin.model.OperationDef;
-import com.capgemini.cobigen.openapiplugin.model.ParameterDef;
-import com.capgemini.cobigen.openapiplugin.model.PathDef;
-import com.capgemini.cobigen.openapiplugin.model.PropertyDef;
-import com.capgemini.cobigen.openapiplugin.model.ResponseDef;
-import com.capgemini.cobigen.openapiplugin.util.TestConstants;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
+import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
+import com.devonfw.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.openapiplugin.model.OperationDef;
+import com.devonfw.cobigen.openapiplugin.model.ParameterDef;
+import com.devonfw.cobigen.openapiplugin.model.PathDef;
+import com.devonfw.cobigen.openapiplugin.model.PropertyDef;
+import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
+import com.devonfw.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
 public class OpenAPIInputReaderTest {
