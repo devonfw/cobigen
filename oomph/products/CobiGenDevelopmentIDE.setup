@@ -347,6 +347,7 @@
         <setupTask
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
+            excludedTriggers="STARTUP MANUAL"
             sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win64.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
           <description>Fetches the python win 64 archive</description>
@@ -359,6 +360,7 @@
         <setupTask
             xsi:type="setup:ResourceCopyTask"
             id="rc.win.python"
+            excludedTriggers="STARTUP MANUAL"
             filter=""
             sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-win32.zip"
             targetURL="${tmp.download.location/python.zip|uri}">
@@ -383,6 +385,7 @@
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           id="rc.linux.python"
+          excludedTriggers="STARTUP MANUAL"
           filter=""
           sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
           targetURL="${tmp.download.location/python.tar.gz|uri}">
@@ -413,7 +416,9 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python.linux"
+          excludedTriggers="STARTUP MANUAL"
           predecessor="rc.linux.python"
+          filter=""
           zipFile="${tmp.download.location/python.tar.gz}"
           destinationDir="${software.location}"
           priority="100">
@@ -438,6 +443,7 @@
       <setupTask
           xsi:type="com.github.maybeec.oomph.task:unzipTask"
           id="unzip.python.win"
+          excludedTriggers="STARTUP MANUAL"
           predecessor="rc.win.python"
           zipFile="${tmp.download.location/python.zip}"
           destinationDir="${software.location}"
