@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

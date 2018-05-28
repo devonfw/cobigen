@@ -1,4 +1,4 @@
-package com.capgemini;
+package com.devonfw;
 
 public abstract class Clazz<T extends Object, Z extends Clazz> extends Map<String, T> {
 

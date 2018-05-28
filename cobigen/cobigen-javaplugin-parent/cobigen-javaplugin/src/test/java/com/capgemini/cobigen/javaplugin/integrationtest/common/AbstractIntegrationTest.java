@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.integrationtest.common;
+package com.devonfw.cobigen.javaplugin.integrationtest.common;
 
 import java.io.File;
 

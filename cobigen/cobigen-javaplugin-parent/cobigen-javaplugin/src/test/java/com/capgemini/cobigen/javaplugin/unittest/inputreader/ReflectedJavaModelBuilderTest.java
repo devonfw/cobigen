@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.javaplugin.unittest.inputreader;
+package com.devonfw.cobigen.javaplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.javaplugin.inputreader.JavaInputReader;
-import com.capgemini.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
-import com.capgemini.cobigen.javaplugin.model.JavaModelUtil;
-import com.capgemini.cobigen.javaplugin.model.ModelConstant;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
-import com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
+import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
+import com.devonfw.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
+import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
+import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}
@@ -71,16 +71,16 @@ public class ReflectedJavaModelBuilderTest {
         // interface1
         assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
         assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
         assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
 
         // interface2
         assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
         assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
         assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
@@ -93,9 +93,9 @@ public class ReflectedJavaModelBuilderTest {
 
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME)).isEqualTo("AbstractTestClass");
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
         assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.capgemini.cobigen.javaplugin.unittest.inputreader.testdata");
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
