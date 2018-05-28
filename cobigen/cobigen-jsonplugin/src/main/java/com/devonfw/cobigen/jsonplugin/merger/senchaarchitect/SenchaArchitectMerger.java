@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger.senchaarchitect;
+package com.devonfw.cobigen.jsonplugin.merger.senchaarchitect;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.capgemini.cobigen.jsonplugin.merger.senchaarchitect.constants.Constants;
+import com.devonfw.cobigen.jsonplugin.merger.senchaarchitect.constants.Constants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
