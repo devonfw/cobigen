@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity.log;
+package com.devonfw.cobigen.tempeng.velocity.log;
 
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.log.LogChute;
