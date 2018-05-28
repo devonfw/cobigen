@@ -1,11 +1,11 @@
-package com.capgemini.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.tsplugin.merger.TypeScriptMerger;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.google.common.collect.Lists;
 
 /**

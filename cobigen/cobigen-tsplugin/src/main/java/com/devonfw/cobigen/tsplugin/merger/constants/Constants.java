@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.tsplugin.merger.constants;
+package com.devonfw.cobigen.tsplugin.merger.constants;
 
-import com.capgemini.cobigen.tsplugin.merger.TypeScriptMerger;
+import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 
 /** List of constants used on the {@link TypeScriptMerger} */
 public class Constants {
