@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.propertyplugin;
+package com.devonfw.cobigen.propertyplugin;
 
 import java.io.File;
 import java.io.FileReader;
@@ -6,6 +6,8 @@ import java.io.FileReader;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.devonfw.cobigen.propertyplugin.PropertyMerger;
 
 import junit.framework.TestCase;
 
