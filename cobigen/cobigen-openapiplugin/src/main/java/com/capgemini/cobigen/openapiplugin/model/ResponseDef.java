@@ -1,5 +1,7 @@
 package com.capgemini.cobigen.openapiplugin.model;
 
+import java.util.List;
+
 /**
  *
  */
@@ -18,7 +20,7 @@ public class ResponseDef {
 
     private String format;
 
-    private String mediaType;
+    private List<String> mediaTypes;
 
     private String description;
 
@@ -77,19 +79,25 @@ public class ResponseDef {
         this.format = format;
     }
 
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<String> getMediaTypes() {
+        return mediaTypes;
+    }
+
+    public void setMediaTypes(List<String> mediaTypes) {
+        this.mediaTypes = mediaTypes;
+    }
+
+    @Override
+    public String toString() {
+        return format + "  " + description + "  " + mediaTypes;
+
     }
 }

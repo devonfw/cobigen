@@ -168,7 +168,6 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
-        System.out.println(inputObjects);
         for (Object o : inputObjects) {
             cmps.add(((EntityDef) o).getComponent());
         }
@@ -208,7 +207,6 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("minimum").contains(0, 10);
         assertThat(constraints).extracting("maximum").contains(50, 200);
         assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
-
     }
 
     @Test
@@ -222,9 +220,19 @@ public class OpenAPIInputReaderTest {
                 for (PathDef pathDef : eDef.getComponent().getPaths()) {
                     for (OperationDef opDef : pathDef.getOperations()) {
                         if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
-                            ResponseDef respDef = opDef.getResponse();
-                            assertThat(respDef.getMediaType()).isEqualTo("application/json");
                             found = true;
+                            assertThat(opDef.getResponses()).hasSize(2);
+                            for (ResponseDef respDef : opDef.getResponses()) {
+                                if (respDef.getFormat().equals("200")) {
+                                    assertThat(respDef.getMediaTypes()).hasSize(2);
+                                    assertThat(respDef.getMediaTypes()).containsExactly("application/json",
+                                        "text/plain");
+                                } else if (respDef.getFormat().equals("404")) {
+                                    assertThat(respDef.getDescription()).isEqualTo("Not found");
+                                } else {
+                                    found = false;
+                                }
+                            }
                         }
                     }
                 }

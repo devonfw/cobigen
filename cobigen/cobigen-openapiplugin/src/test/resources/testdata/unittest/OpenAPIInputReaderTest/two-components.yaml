@@ -26,6 +26,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Table'
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Not found
   /salemanagement/v1/sale/{id}:
     get:
       operationId: findSale
