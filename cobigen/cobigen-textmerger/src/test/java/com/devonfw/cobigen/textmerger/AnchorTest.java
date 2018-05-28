@@ -1,11 +1,11 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.capgemini.cobigen.textmerger.anchorextension.Anchor;
-import com.capgemini.cobigen.textmerger.anchorextension.MergeStrategy;
+import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
+import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
 
 /**
  *
