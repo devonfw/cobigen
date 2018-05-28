@@ -9,8 +9,8 @@
 
   <!-- General Mapping of JAXB Lists -->
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v2_0.Trigger</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Trigger</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v2_0.Trigger</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Trigger</class-b>
     <field>
       <a is-accessible="true">containerMatcher</a>
       <b is-accessible="true">containerMatcher</b>
@@ -22,8 +22,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v2_0.ContainerMatcher</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.ContainerMatcher</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.ContainerMatcher</class-b>
     <field>
       <a get-method="isRetrieveObjectsRecursively" set-method="setRetrieveObjectsRecursively">retrieveObjectsRecursively</a>
       <b get-method="isRetrieveObjectsRecursively" set-method="setRetrieveObjectsRecursively">retrieveObjectsRecursively</b>
@@ -31,8 +31,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v2_0.Matcher</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Matcher</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v2_0.Matcher</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Matcher</class-b>
     <field>
       <a is-accessible="true">variableAssignment</a>
       <b is-accessible="true">variableAssignment</b>
@@ -42,8 +42,8 @@
   <!-- Mapping due to changes of the XSD -->
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v2_0.ContextConfiguration</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.ContextConfiguration</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration</class-b>
     <field>
       <a is-accessible="true">triggers.trigger</a>
       <b is-accessible="true">trigger</b>
