@@ -14,7 +14,7 @@ public class OperationDef {
 
     private List<ParameterDef> parameters;
 
-    private ResponseDef response;
+    private List<ResponseDef> responses;
 
     private String operationId;
 
@@ -45,12 +45,12 @@ public class OperationDef {
         this.parameters = parameters;
     }
 
-    public ResponseDef getResponse() {
-        return response;
+    public List<ResponseDef> getResponses() {
+        return responses;
     }
 
-    public void setResponse(ResponseDef response) {
-        this.response = response;
+    public void setResponses(List<ResponseDef> responses) {
+        this.responses = responses;
     }
 
     public String getOperationId() {

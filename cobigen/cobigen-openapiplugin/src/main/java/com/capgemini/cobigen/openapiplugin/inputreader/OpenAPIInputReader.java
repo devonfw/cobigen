@@ -344,7 +344,7 @@ public class OpenAPIInputReader implements InputReader {
                         operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
                         operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
                         operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setResponse(extractResponse(paths.get(pathKey).getOperation(opKey).getResponses(),
+                        operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
                             paths.get(pathKey).getOperation(opKey).getTags()));
                         operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
                         if (path.getOperations() == null) {
@@ -461,21 +461,24 @@ public class OpenAPIInputReader implements InputReader {
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
      */
-    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
-        ResponseDef response = new ResponseDef();
+    private List<ResponseDef> extractResponses(Map<String, ? extends Response> responses, Collection<String> tags) {
+        ResponseDef response;
+        List<String> mediaTypes = new LinkedList<>();
+        List<ResponseDef> resps = new LinkedList<>();
         for (String resp : responses.keySet()) {
+            response = new ResponseDef();
             response.setFormat(resp);
             Map<String, MediaType> contentMediaTypes = responses.get(resp).getContentMediaTypes();
+            response.setDescription(responses.get(resp).getDescription());
             if (contentMediaTypes != null) {
                 if (contentMediaTypes.isEmpty()) {
                     response.setIsVoid(true);
                 }
                 for (String media : contentMediaTypes.keySet()) {
-                    response.setMediaType(media);
+                    mediaTypes.add(media);
                     Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
-                        response.setDescription(schema.getDescription());
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
@@ -494,7 +497,6 @@ public class OpenAPIInputReader implements InputReader {
 
                         } else if (schema.getType() != null) {
                             response.setType(schema.getType());
-                            response.setFormat(schema.getFormat());
                         } else {
                             response.setIsVoid(true);
                         }
@@ -508,8 +510,10 @@ public class OpenAPIInputReader implements InputReader {
             } else {
                 response.setIsVoid(true);
             }
+            response.setMediaTypes(mediaTypes);
+            resps.add(response);
         }
-        return response;
+        return resps;
 
     }
 
