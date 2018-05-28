@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.openapiplugin.integrationtest;
+package com.devonfw.cobigen.openapiplugin.integrationtest;
 
-import static com.capgemini.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -11,12 +11,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.api.CobiGen;
-import com.capgemini.cobigen.api.to.GenerationReportTo;
-import com.capgemini.cobigen.api.to.TemplateTo;
-import com.capgemini.cobigen.impl.CobiGenFactory;
-import com.capgemini.cobigen.openapiplugin.model.OpenAPIFile;
-import com.capgemini.cobigen.openapiplugin.util.TestConstants;
+import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.openapiplugin.model.OpenAPIFile;
+import com.devonfw.cobigen.openapiplugin.util.TestConstants;
 
 import junit.framework.AssertionFailedError;
 
