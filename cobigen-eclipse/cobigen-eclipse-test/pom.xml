@@ -108,12 +108,7 @@
                 <type>p2-installable-unit</type>
                 <id>com.capgemini.cobigen-propertyplugin</id>
                 <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.capgemini.cobigen-senchaplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
+              </requirement>              
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>com.capgemini.cobigen-textmerger</id>
