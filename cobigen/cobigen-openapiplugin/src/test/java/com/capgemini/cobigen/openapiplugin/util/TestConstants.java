@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.util;
+package com.devonfw.cobigen.openapiplugin.util;
 
 import java.nio.charset.Charset;
 

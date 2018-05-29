@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.openapiplugin.model;
+package com.devonfw.cobigen.openapiplugin.model;
 
 /**
  * Definition that stores data about a server declaration
