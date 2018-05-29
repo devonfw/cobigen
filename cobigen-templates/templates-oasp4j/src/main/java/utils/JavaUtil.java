@@ -3,6 +3,7 @@ package utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
@@ -245,8 +246,7 @@ public class JavaUtil {
         if (field == null) {
             return false;
         } else {
-            return field.getType().isAssignableFrom(java.util.List.class)
-                || field.getType().isAssignableFrom(java.util.Set.class);
+            return Collection.class.isAssignableFrom(field.getType());
         }
 
     }

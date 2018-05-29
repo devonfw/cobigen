@@ -94,9 +94,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
     <#list pojo.fields as field>
       <#if field.type?ends_with("Entity")>
-    cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
+    cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
       <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
+    cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
       </#if>
     </#list>
  
@@ -113,16 +113,18 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
       <#list pojo.fields as field>
         <#if field.type?ends_with("Entity")>
-      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}, ${field.name?cap_first}Eto.class));
+      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
         <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}s(), ${field.name?cap_first}Eto.class));
+      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
         </#if>
       </#list>
       ctos.add(cto);
       
     }
-    return PaginatedListTo<>(ctos, ${variables.entityName}getPagination());
+    PaginationResultTo pagResultTo = new PaginationResultTo(criteria.getPagination(), (long) ctos.size());
+    PaginatedListTo<${variables.entityName}Cto> pagListTo = new PaginatedListTo(ctos, pagResultTo);
+    return pagListTo;
   }
-	
+
 
 }
