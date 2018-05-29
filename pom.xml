@@ -2,8 +2,8 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
-  <artifactId>cobigen-master-parent</artifactId>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>master-parent</artifactId>
   <version>dev-SNAPSHOT</version>
   <name>CobiGen - Master Parent</name>
   <packaging>pom</packaging>
@@ -45,7 +45,10 @@
   <developers>
     <developer>
       <name>Malte Brunnlieb</name>
-      <email>malte.brunnlieb@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </developer>
+    <developer>
+      <name>Jaime Diaz Gonzalez</name>
       <organization>Capgemini</organization>
     </developer>
   </developers>
@@ -53,47 +56,57 @@
   <contributors>
     <contributor>
       <name>Jörg Hohwille</name>
-      <email>joerg.hohwille@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Fabian Kreis</name>
-      <email>fabian.kreis@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Steffen B. Holzer</name>
-      <email>steffen.holzer@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Jhonatan Ariel Core</name>
-      <email>jhonatan-ariel.core@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Ruben Diaz Martinez</name>
-      <email>ruben.diaz-martinez@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Simon Röger</name>
-      <email>simon.roeger@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Krati Shah</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Christian Richter</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Erik Grüner</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Mike Schumacher</name>
       <organization>Capgemini</organization>
     </contributor>
   </contributors>
 
   <organization>
-    <name>Capgemini</name>
-    <url>http://www.de.capgemini.com/</url>
+    <name>DevonFw</name>
+    <url>http://devonfw.com/</url>
   </organization>
 
   <licenses>
     <license>
-      <name>Capgemini CobiGen License Agreement</name>
-      <url>https://github.com/${github.project}/blob/master/LICENSE.CobiGen</url>
-      <distribution>manual</distribution>
-      <comments>Proprietary license. The complete Capgemini CobiGen License Agreement can be requested from the developers.</comments>
+      <name>Apache Software License</name>
+      <url>http://oasp.github.io/terms-of-use.html</url>
+      <distribution>repo</distribution>
+      <comments/>
     </license>
   </licenses>
 
@@ -312,7 +325,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -327,7 +340,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/experimental/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/experimental/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -385,7 +398,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/ci/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/ci/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -400,7 +413,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/ci/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/ci/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -458,7 +471,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/stable/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/stable/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -473,7 +486,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/stable/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/stable/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -485,15 +498,13 @@
   </profiles>
 
   <distributionManagement>
-    <repository>
-      <id>devon.releases</id>
-      <name>Devon Nexus Releases</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases/</url>
-    </repository>
     <snapshotRepository>
-      <id>devon.snapshots</id>
-      <name>Devon Nexus Snapshots</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
   </distributionManagement>
 </project>
