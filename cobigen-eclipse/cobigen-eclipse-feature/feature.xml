@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.capgemini.cobigen.eclipse.feature"
+      id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
       version="3.2.0.qualifier"
       provider-name="Capgemini">
@@ -28,7 +28,7 @@ To the extent CobiGen contains Capgemini proprietary code, non-transferrable use
    </url>
 
    <plugin
-         id="com.capgemini.cobigen.eclipse"
+         id="com.devonfw.cobigen.eclipse"
          download-size="0"
          install-size="0"
          version="0.0.0"

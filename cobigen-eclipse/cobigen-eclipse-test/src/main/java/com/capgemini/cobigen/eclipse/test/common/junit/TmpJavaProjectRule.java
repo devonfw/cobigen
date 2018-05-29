@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test.common.junit;
+package com.devonfw.cobigen.eclipse.test.common.junit;
 
 import java.io.File;
 import java.util.ArrayList;
