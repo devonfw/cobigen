@@ -1,12 +1,12 @@
-package com.capgemini.cobigen.maven.validation;
+package com.devonfw.cobigen.maven.validation;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import org.apache.maven.plugin.MojoFailureException;
 
-import com.capgemini.cobigen.api.InputInterpreter;
-import com.capgemini.cobigen.api.exception.InputReaderException;
+import com.devonfw.cobigen.api.InputInterpreter;
+import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.google.common.base.Charsets;
 
 /**

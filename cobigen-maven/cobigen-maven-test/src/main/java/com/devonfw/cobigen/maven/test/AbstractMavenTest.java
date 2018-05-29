@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.maven.test;
+package com.devonfw.cobigen.maven.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import com.capgemini.cobigen.maven.config.constant.MavenMetadata;
+import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
 
 /**
  * Abstract implementation of a maven test, running the maven executor and setting the correct local
