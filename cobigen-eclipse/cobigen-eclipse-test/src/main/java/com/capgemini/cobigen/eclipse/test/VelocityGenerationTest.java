@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.eclipse.test;
+package com.devonfw.cobigen.eclipse.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,11 +16,11 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.capgemini.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.capgemini.cobigen.eclipse.test.common.SystemTest;
-import com.capgemini.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
-import com.capgemini.cobigen.eclipse.test.common.utils.EclipseUtils;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.test.common.SystemTest;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /** Test suite testing generation with velocity template engine */
 public class VelocityGenerationTest extends SystemTest {
