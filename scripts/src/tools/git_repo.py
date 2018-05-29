@@ -28,13 +28,13 @@ class GitRepo:
     def pull(self):
         try:
             log_info('Pull changes from origin ...')
-            self.origin.pull()
+            self.__repo.git.execute("git pull origin " + self.__repo.active_branch.name)
         except GitCommandError:
             log_error("Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
             sys.exit()
 
     def reset(self):
-        if(prompt_yesno_question('Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
+        if(self.__config.cleanup_silently or prompt_yesno_question('Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
             # arbitrary 20, but extensive enough to reset all hopefully
             log_info("Executing reset (git reset --hard HEAD~20)")
             self.__repo.git.reset('--hard', 'HEAD~20')
@@ -46,12 +46,14 @@ class GitRepo:
         self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
         if not self.is_working_copy_clean():
-            log_error("Reset and cleanup did not work out. Aborting...")
+            log_error("Reset and cleanup did not work out. Other branches have local commits not yet pushed:")
+            log_info("\n" + self.__list_unpushed_commits())
             sys.exit()
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
         self.__repo.git.checkout(branch_name)
+        self.update_and_clean()
 
     def commit(self, commit_message: str):
         try:
@@ -66,7 +68,7 @@ class GitRepo:
 
     def push(self):
         ''' Boolean return type states, whether to continue process or abort'''
-        if self.__config.debug and not prompt_yesno_question("[DEBUG] Changes will be pushed now. Continue?"):
+        if (self.__config.test_run or self.__config.debug) and not prompt_yesno_question("[DEBUG] Changes will be pushed now. Continue?"):
             self.reset()
             sys.exit()
         if self.__config.dry_run:
@@ -74,8 +76,8 @@ class GitRepo:
             return
 
         try:
-            log_info("Pushing ...")
-            self.origin.push(tags=True)
+            log_info("Pushing to origin/" + self.__repo.active_branch.name + "...")
+            self.__repo.git.execute("git push origin " + self.__repo.active_branch.name + " --tags")
         except Exception as e:
             if "no changes added to commit" in str(e):
                 log_info("No file is changed, nothing to commit.")
@@ -89,18 +91,16 @@ class GitRepo:
         if self.__config.dry_run:
             log_info_dry("Would merge from "+source+" to " + target)
             return
-        if self.__config.debug and not prompt_yesno_question("[DEBUG] Would now merge "+source+" to " + target + ". Continue?"):
-            self.reset()
-            sys.exit()
 
         try:
-            log_info("Checkout "+source)
-            self.__repo.git.checkout(source)
+            self.checkout(target)
             log_info("Executing git pull before merging development branch to master...")
             self.pull()
             log_info("Merging...")
             self.__repo.git.execute("git merge " + self.__config.branch_to_be_released)
-            self.commit("Merged "+source+" to " + target)
+            log_info("Adapting automatically generated merge commit message to include issue no.")
+            automatic_commit_message = self.__repo.git.execute("git log -1 --pretty=%B")
+            self.__repo.git.execute('git commit --amend -m"#'+str(self.__config.github_issue_no)+' '+automatic_commit_message+'"')
         except Exception as ex:
             log_error("Something went wrong, please check if merge conflicts exist and solve them.")
             if self.__config.debug:
@@ -117,34 +117,44 @@ class GitRepo:
         log_info("Changing the "+self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl+" v"+self.__config.release_version
-        with FileInput(self.__config.wiki_version_overview_page, inplace=True) as file:
+        with FileInput(os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page), inplace=True) as file:
             for line in file:
                 line = re.sub(r''+version_decl+'.+', new_version_decl, line)
                 sys.stdout.write(line)
 
-        self.add([self.__config.wiki_version_overview_page])
+        self.add([os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page)])
         self.commit("update wiki docs")
         self.push()
+
+    def exists_tag(self, tag_name) -> bool:
+        return tag_name in self.__repo.tags
 
     def get_changed_files_of_last_commit(self) -> List[str]:
         return str(self.__repo.git.execute("git diff HEAD^ HEAD --name-only")).strip().split("\n+")
 
     def create_tag_on_last_commit(self) -> None:
         self.__repo.create_tag(self.__config.tag_name)
+        log_info("Git tag " + self.__config.tag_name + " created!")
 
     def assure_clean_working_copy(self) -> None:
-        if not self.is_working_copy_clean():
-            log_error("Working copy is not clean")
-            if prompt_yesno_question("Should I clean the repo for you? This will delete all untracked files and hardly reset the repository!"):
+        if not self.is_working_copy_clean(True):
+            log_error("Working copy is not clean!")
+            if self.__config.cleanup_silently or prompt_yesno_question("Should I clean the repo for you? This will delete all untracked files and hardly reset the repository!"):
                 self.reset()
             else:
-                log_info("Please cleanup your working copy first. Then start the script again.")
+                log_info("Please cleanup your working copy first. Then run the script again.")
                 sys.exit()
         else:
             log_info("Working copy clean.")
 
-    def is_working_copy_clean(self) -> bool:
-        return self.__repo.git.execute("git diff --shortstat") == "" and self.__list_staged_files() == "" and self.__repo.git.execute("git log --branches --not --remotes") == ""
+    def is_working_copy_clean(self, check_all_branches=False) -> bool:
+        return self.__repo.git.execute("git diff --shortstat") == "" and self.__list_staged_files() == "" and self.__list_unpushed_commits(check_all_branches) == ""
 
     def __list_staged_files(self) -> str:
         return self.__repo.git.execute("git status --porcelain")
+
+    def __list_unpushed_commits(self, check_all_branches=False) -> str:
+        if check_all_branches:
+            return self.__repo.git.execute("git log --branches --not --remotes")
+        else:
+            return self.__repo.git.execute("git log --not --remotes")
