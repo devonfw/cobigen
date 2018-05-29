@@ -312,7 +312,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -327,7 +327,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/experimental/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/experimental/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -385,7 +385,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/ci/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/ci/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -400,7 +400,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/ci/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/ci/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -458,7 +458,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/stable/${project.artifactId}</url>
+                  <url>${icsd.webserver.url}/${updatesite.path}/stable/cobigen-${project.artifactId}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir}</toDir>
                 </configuration>
@@ -473,7 +473,7 @@
                   <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
                   <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/stable/${project.artifactId}</toDir>
+                  <toDir>${updatesite.path}/stable/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
