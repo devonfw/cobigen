@@ -19,14 +19,7 @@ from tools.logger import log_step, log_debug, log_error, log_info, log_info_dry
 # which is too much for testing purposes only
 logging.getLogger('').setLevel(logging.INFO)
 
-
-def run_maven_process_and_handle_error(command: str):
-    returncode = maven.run_maven_process(command)
-
-    if returncode == 1:
-        log_error("Integration tests failed, please see create_release.py.log for logs located at current directory.")
-        git_repo.reset()
-        sys.exit()
+#####################################################################
 
 
 def __log_step(message: str):
@@ -38,6 +31,7 @@ def __log_step(message: str):
         if git_repo:
             git_repo.reset()
             sys.exit()
+#####################################################################
 
 
 #############################
@@ -54,7 +48,7 @@ git_repo = GitRepo(config)
 git_repo.assure_clean_working_copy()
 
 github = GitHub(config)
-init_git_dependent_config(config, github)
+init_git_dependent_config(config, github, git_repo)
 
 exit_if_origin_is_not_correct(config)
 
@@ -66,10 +60,23 @@ if(config.debug):
 
 maven = Maven(config, github)
 
-input("Please close all eclipse instances as of potential race conditions on maven builds causing errors. Press any key if done...")
-input("Please close SourceTree for Git performance reasons. Press any key if done...")
+input("\nPlease close all eclipse instances as of potential race conditions on maven builds causing errors. Press return if done...")
+input("\nPlease close SourceTree for Git performance reasons. Press return if done...\n")
 
 report_messages = []
+
+#####################################################################
+
+
+def run_maven_process_and_handle_error(command: str, execpath: str=config.build_folder_abs):
+    returncode = maven.run_maven_process(execpath, command)
+
+    if returncode == 1:
+        log_error("Maven execution failed, please see create_release.py.log for logs located at current directory.")
+        git_repo.reset()
+        sys.exit()
+#####################################################################
+
 
 #############################
 __log_step("Check for working CI build and tests...")
@@ -82,61 +89,30 @@ else:
     log_info("Build is reported to be successful.")
 
 #############################
-__log_step("Search for GitHub milestone...")
-#############################
-milestone: Milestone = github.find_release_milestone()
-if milestone:
-    log_info("Milestone '"+milestone.title+"' found!")
-else:
-    log_error("Milestone not found! Searched for milestone with name '" + config.expected_milestone_name+"'. Aborting...")
-    git_repo.reset()
-    sys.exit()
-
-#############################
-__log_step("Find or create the GitHub release issue...")
-#############################
-if not config.github_issue_no:
-    issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
-    config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone)
-    if not config.github_issue_no:
-        log_error("Could not create issue! Aborting...")
-        git_repo.reset()
-        sys.exit()
-    else:
-        log_info('Successfully created issue #' + str(config.github_issue_no))
-elif not github.find_issue(config.github_issue_no):
-    log_error("Issue with number #" + str(config.github_issue_no) + " not found! Aborting...")
-    git_repo.reset()
-    sys.exit()
-log_info("Issue #" + str(config.github_issue_no) + " found.")
-
-#############################
 __log_step("Navigate to branch " + config.branch_to_be_released + " and prepare workspace...")
 #############################
 git_repo.checkout(config.branch_to_be_released)
-os.chdir(os.path.join(config.root_path, config.build_folder))
-git_repo.update_and_clean()
 
 #############################
 __log_step("Set the SNAPSHOT version...")
 #############################
 log_info("Set SNAPSHOT version of target release")
-maven.add_remove_snapshot_version_in_pom(True, config.release_version)
+changed_files = maven.set_version(config.release_version + "-SNAPSHOT")
 log_info("Git add and commit...")
-git_repo.add(["pom.xml"])
+git_repo.add(changed_files)
 git_repo.commit("set release snapshot version")
 
 #############################
 __log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 #############################
-core_version_in_eclipse_pom = maven.upgrade_snapshot_dependencies()
-git_repo.add(["pom.xml"])
+(core_version_in_eclipse_pom, changed_files) = maven.upgrade_snapshot_dependencies()
+git_repo.add(changed_files)
 git_repo.commit("upgrade SNAPSHOT dependencies")
 
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean integration-test - Pp2-build-mars, p2-build-stable")
+run_maven_process_and_handle_error("mvn clean integration-test -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
@@ -148,13 +124,21 @@ if config.test_run:
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
 
+git_repo.push()
+
+#############################
+__log_step("Check for working CI build and tests...")
+#############################
+if not prompt_yesno_question("Wait until the build of the last push ran through. Are the tests on branch " + config.branch_to_be_released + " passing in CI?"):
+    log_error("Please correct the build failures before releasing!")
+    sys.exit()
+else:
+    report_messages.append("User confirmed that tests are running on CI and the build is not failing after pushing release changes to development branch.")
+    log_info("Build is reported to be successful.")
+
 #############################
 __log_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
-if config.debug and not prompt_yesno_question("[DEBUG] Wiki docs have been committed. Next would be merging to master. Continue?"):
-    git_repo.reset()
-    sys.exit()
-
 os.chdir(config.root_path)
 git_repo.merge(config.branch_to_be_released, "master")
 
@@ -166,7 +150,7 @@ is_pom_changed = False
 for file_name in list_of_changed_files:
     if "pom.xml" in file_name:
         is_pom_changed = True
-    if not file_name.startswith(config.build_folder):
+    if not file_name.startswith(config.build_folder.replace(os.sep, '/')):
         log_info(file_name + " does not starts with " + config.build_folder)
         if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for odd file changes as this should not be the case in a normal scenario! Continue?"):
             git_repo.reset()
@@ -177,13 +161,16 @@ if is_pom_changed:
     if not prompt_yesno_question("POM has been changed, please update dependency tracking wiki page! Continue?"):
         git_repo.reset()
         sys.exit()
-    report_messages.append(
-        "User has accepted to continue on found POM changes")
+    report_messages.append("User has accepted to continue on found POM changes")
+
+log_info("Validation finished.")
 
 #############################
 __log_step("Set release version...")
 #############################
-maven.add_remove_snapshot_version_in_pom(False, "Set release version")
+changed_files = maven.set_version(config.release_version)
+git_repo.add(changed_files)
+git_repo.commit("Set release version")
 
 #############################
 __log_step("Deploy artifacts to nexus and update sites...")
@@ -191,12 +178,14 @@ __log_step("Deploy artifacts to nexus and update sites...")
 if config.dry_run or config.test_run:
     log_info_dry("Would now deploy to maven central & updatesite. Skipping...")
 else:
-    if config.build_folder != "cobigen-eclipse":
-        run_maven_process_and_handle_error("mvn clean package --update-snapshots bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
+    if config.branch_to_be_released not in ["dev_eclipseplugin", "dev_mavenplugin", "dev_core"]:
+        run_maven_process_and_handle_error("mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
         run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true")
-        run_maven_process_and_handle_error("mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable")
-    else:
-        run_maven_process_and_handle_error("mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable")
+        run_maven_process_and_handle_error("mvn deploy -Dmaven.test.skip=true -Dp2.upload=stable")
+    elif config.branch_to_be_released == "dev_eclipseplugin":
+        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -Pp2-build-stable,p2-build-mars -Dp2.upload=stable")
+    else:  # core + maven
+        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy")
 
     if not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
         git_repo.reset()
@@ -214,6 +203,7 @@ else:
 #############################
 __log_step("Close GitHub Milestone...")
 #############################
+milestone: Milestone = github.find_release_milestone()
 if config.dry_run:
     log_info_dry("Would close the milestone: " + milestone.title)
 else:
@@ -247,8 +237,8 @@ git_repo.merge("master", config.branch_to_be_released)
 #############################
 __log_step("Set next release version...")
 #############################
-maven.add_remove_snapshot_version_in_pom(True, config.next_version)
-git_repo.add(["**/pom.xml"])
+changed_files = maven.set_version(config.next_version + "-SNAPSHOT")
+git_repo.add(changed_files)
 git_repo.commit("Set next development version")
 git_repo.push()
 

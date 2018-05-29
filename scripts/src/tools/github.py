@@ -25,6 +25,9 @@ class GitHub:
         self.__cache = GitHubCache()
 
         self.__authenticate_git_user()
+        self.__initialize_repository_object()
+
+    def __initialize_repository_object(self):
         try:
             org = self.__github.get_organization(self.__config.git_repo_org)
             if self.__config.debug:
@@ -73,7 +76,7 @@ class GitHub:
         except UnknownObjectException:
             return None
 
-    def create_issue(self, title: str, milestone: Milestone, body, labels=NotSet) -> int:
+    def create_issue(self, title: str, milestone: Milestone, body: str) -> int:
         '''Function creates an issue in git hub with title,milestone,body,labels passed'''
         if self.__config.dry_run:
             log_info_dry('Skipping creation of issue with title ' + str(title))
@@ -84,7 +87,8 @@ class GitHub:
         log_info('Create GitHub issue with title "' + title + '"...')
 
         try:
-            issue: Issue = self.__repo.create_issue(title=title, body=body, milestone=milestone, labels=labels)
+            issue: Issue = self.__repo.create_issue(title=title, body=body, milestone=milestone,
+                                                    labels=[self.__config.issue_label_name, "CI/CD"], assignee=self.__github.get_user().login)
             self.__config.github_issue_no = issue.number
             self.__cache.issues.update({issue.number: issue})
             return self.__config.github_issue_no
@@ -120,21 +124,23 @@ class GitHub:
     def find_cobigen_core_milestone(self, version: str) -> Milestone:
         milestones: PaginatedList = self.__request_milestone_list()
 
+        search_title = self.__config.expected_milestone_name.replace(self.__config.release_version, version)
         for milestone in milestones:
-            if "cobigen-core/v"+version == milestone.title:
+            if milestone.title == search_title:
                 return milestone
 
         log_error("Could not find milestone for cobigen-core v" + version + ". This must be an script error, please check.")
         sys.exit()
 
     def create_next_release_milestone(self) -> Milestone:
+        new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version)
         if self.__config.dry_run:
-            log_info_dry("Would create a new milestone")
+            log_info_dry("Would now create a new milestone with title '"+new_mile_title+"'.")
             return None
 
-        new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version)
+        log_info("Creating milestone '" + new_mile_title + "' for next release...")
         try:
-            milestone: Milestone = self.__repo.create_milestone(new_mile_title, "open")
+            milestone: Milestone = self.__repo.create_milestone(title=new_mile_title, state="open")
             log_info("New milestone created!")
             return milestone
         except GithubException as e:
@@ -165,11 +171,10 @@ class GitHub:
                                                                  release_text, draft=False, prerelease=False, target_commitish="master")
 
             content_type = "application/java-archive"
-            if self.__config.branch_to_be_released == "dev_eclipseplugin":
+            if self.__config.branch_to_be_released == self.__config.branch_eclipseplugin:
                 content_type = "application/zip"
-            os.chdir(self.__config.target_folder)
 
-            for root, dirs, files in os.walk("."):
+            for root, dirs, files in os.walk(os.path.join(self.__config.build_folder_abs, self.__config.build_artifacts_root_search_path)):
                 dirs[:] = [d for d in dirs if d not in [".settings", "src", ]]
                 for fname in files:
                     fpath = os.path.join(root, fname)
@@ -177,8 +182,8 @@ class GitHub:
                     if ("jar" in fname or "zip" in fname) and self.__config.release_version in fname:
                         log_info("Uploading file "+fname+"...")
                         try:
-                            asset: GitReleaseAsset = release.upload_asset(fpath, content_type)
-                            log_info("Uploaded "+asset.size+"kb!")
+                            asset: GitReleaseAsset = release.upload_asset(path=fpath, label=fname, content_type=content_type)
+                            log_info("Uploaded "+str(asset.size)+"kb!")
                         except GithubException as e:
                             log_error("Upload failed!")
                             if self.__config.debug:
@@ -188,3 +193,6 @@ class GitHub:
             log_error("Could not create release.")
             print(str(e))
             sys.exit()
+
+        # workaround as of https://github.com/PyGithub/PyGithub/issues/779
+        self.__initialize_repository_object()

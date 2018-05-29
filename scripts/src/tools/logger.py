@@ -36,6 +36,6 @@ def log_step(description: str) -> None:
     global step_counter
     step_counter = step_counter + 1
     logger.info("")
-    logger.info("************************************************")
+    logger.info("***************************************************************************")
     logger.info("********** [STEP " + str(step_counter) + "] " + description)
-    logger.info("************************************************")
+    logger.info("***************************************************************************")
