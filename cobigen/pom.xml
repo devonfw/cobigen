@@ -7,8 +7,8 @@
   <packaging>pom</packaging>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-master-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
