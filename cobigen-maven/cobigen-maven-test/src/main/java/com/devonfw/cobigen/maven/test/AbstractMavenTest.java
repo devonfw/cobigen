@@ -99,7 +99,14 @@ public class AbstractMavenTest {
     protected void setTestProperties(InvocationRequest request, File templatesProject) {
         Properties mavenProperties = new Properties();
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-        mavenProperties.put("locRep", System.getenv("M2_REPO"));
+
+        String m2Repo = System.getenv("M2_REPO");
+        if (m2Repo != null) {
+            mavenProperties.put("locRep", m2Repo);
+        } else {
+            mavenProperties.put("locRep", System.getProperty("user.home") + "/.m2/settings.xml");
+        }
+
         if (templatesProject != null) {
             mavenProperties.put("templatesProject", templatesProject.getAbsolutePath());
         }
