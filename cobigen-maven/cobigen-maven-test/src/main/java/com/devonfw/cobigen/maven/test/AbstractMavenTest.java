@@ -83,7 +83,7 @@ public class AbstractMavenTest {
         request.setBaseDirectory(testProjectRoot);
         request.setGoals(Collections.singletonList("package"));
         setTestProperties(request, templatesProject);
-        request.getProperties().put("localRep", localRepoPath);
+        request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
         request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
