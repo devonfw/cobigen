@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.java;
+package com.devonfw.cobigen.macro.java;
 
 import net.sf.mmm.util.pojo.descriptor.api.PojoPropertyDescriptor;
 import net.sf.mmm.util.pojo.descriptor.api.accessor.PojoPropertyAccessorNonArg;

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.java;
+package com.devonfw.cobigen.macro.java;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import net.sf.mmm.util.reflect.base.GenericTypeBuilder;
 
 import org.junit.Test;
+
+import com.devonfw.cobigen.macro.java.CobiGenMacroJavaHelper;
+import com.devonfw.cobigen.macro.java.JavaBean;
 
 import io.oasp.module.basic.common.api.to.AbstractEto;
 import io.oasp.module.test.common.base.ModuleTest;

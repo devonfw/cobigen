@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 /**
  * Like {@link JavaScriptComplexType} but corresponding to a Java {@link Enum}.

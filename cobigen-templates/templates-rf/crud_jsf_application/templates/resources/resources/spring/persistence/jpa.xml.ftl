@@ -9,7 +9,7 @@
 
 	<import resource="../common.xml" />
 	<context:component-scan
-		base-package="com.capgemini.gastronomy.restaurant.persistence" />
+		base-package="com.devonfw.gastronomy.restaurant.persistence" />
 	<!-- ======================================================================
 		By this bean an EntityManagerFactory is created. ====================================================================== -->
 	<bean id="entityManagerFactory"

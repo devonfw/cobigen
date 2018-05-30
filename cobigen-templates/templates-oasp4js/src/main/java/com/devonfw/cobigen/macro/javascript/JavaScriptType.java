@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 /**
  * Interface of a type in JSON and JavaScript (or TypeScript).

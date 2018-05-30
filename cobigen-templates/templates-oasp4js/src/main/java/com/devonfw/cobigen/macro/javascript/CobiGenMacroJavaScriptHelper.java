@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.javascript;
+package com.devonfw.cobigen.macro.javascript;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;

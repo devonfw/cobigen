@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.macro.java;
+package com.devonfw.cobigen.macro.java;
 
 import java.util.Collection;
 import java.util.Collections;
