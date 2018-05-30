@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.maven.config.constant;
+package com.devonfw.cobigen.maven.systemtest.config.constant;
 
 /**
  * Constants extracted from the maven pom by templating-maven-plugin.
