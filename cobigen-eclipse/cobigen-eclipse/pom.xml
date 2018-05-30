@@ -21,8 +21,8 @@
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>javaplugin.model</artifactId>
-      <version>1.0.0</version>
+      <artifactId>javaplugin-model</artifactId>
+      <version>1.7.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
