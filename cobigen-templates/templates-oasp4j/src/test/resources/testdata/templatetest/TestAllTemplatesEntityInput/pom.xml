@@ -49,7 +49,7 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.1-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
