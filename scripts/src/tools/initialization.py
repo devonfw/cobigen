@@ -7,7 +7,7 @@ from git.exc import InvalidGitRepositoryError
 from git.cmd import Git
 
 from tools.validation import is_valid_branch
-from tools.user_interface import prompt_enter_value
+from tools.user_interface import prompt_enter_value, prompt_yesno_question
 from tools.config import Config
 from tools.github import GitHub
 from tools.git_repo import GitRepo
@@ -55,6 +55,16 @@ def init_non_git_config(config: Config):
     config.git_repo_org = config.github_repo.split(sep='/')[0]
 
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
+
+    config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
+    if config.oss:
+        config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
+If you are unsure about this, please stop here and clarify, whether
+  * you created a pgp key and
+  * published it!
+gpg.keyname = """)
+        if not prompt_yesno_question("Make sure it is loaded by tools like Kleopatra before continuing! Continue?"):
+            sys.exit()
 
 
 def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo):
