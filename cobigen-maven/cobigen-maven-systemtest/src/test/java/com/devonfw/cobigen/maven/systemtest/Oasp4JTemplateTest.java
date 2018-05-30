@@ -14,6 +14,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
+import com.devonfw.cobigen.maven.systemtest.config.constant.MavenMetadata;
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
 
 /** Test suite for testing the maven plugin with whole released template sets */
@@ -31,7 +32,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     @Test
     public void testEntityInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGeneration/");
-        File testProjectRoot = runMavenInvoker(testProject);
+        File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -52,7 +53,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     public void testEntityInputDataaccessGenerationForTemplateFolder() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder/");
         File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j");
-        File testProjectRoot = runMavenInvoker(testProject, templatesProject);
+        File testProjectRoot = runMavenInvoker(testProject, templatesProject, MavenMetadata.LOCAL_REPO);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -69,7 +70,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     @Test
     public void testPackageInputDataaccessGeneration() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestPackageInputDataaccessGeneration/");
-        File testProjectRoot = runMavenInvoker(testProject);
+        File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
         long numFilesInTarget =
@@ -87,7 +88,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     public void testClassloadingWithTemplateFolderAndTestClasses() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestClassLoadingWithTemplateFolder/");
         File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-classloading-testclasses/");
-        File testProjectRoot = runMavenInvoker(testProject, testTemplatesProject);
+        File testProjectRoot = runMavenInvoker(testProject, testTemplatesProject, MavenMetadata.LOCAL_REPO);
 
         assertThat(testProjectRoot.toPath().resolve("Sample.txt")).hasContent("Test InputEntity asdf");
     }
@@ -101,7 +102,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     public void testNothingGenerated() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestNothingToGenerate/");
         File testTemplatesProject = new File(TEST_RESOURCES_ROOT + "templates-nomatch/");
-        runMavenInvoker(testProject, testTemplatesProject);
+        runMavenInvoker(testProject, testTemplatesProject, MavenMetadata.LOCAL_REPO);
     }
 
     /**
