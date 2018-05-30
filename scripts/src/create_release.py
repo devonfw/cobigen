@@ -175,17 +175,34 @@ git_repo.commit("Set release version")
 #############################
 __log_step("Deploy artifacts to nexus and update sites...")
 #############################
+
+
+def __deploy_m2_as_p2(execpath: str=config.build_folder_abs):
+    run_maven_process_and_handle_error("mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn deploy -Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
+
+
+def __deploy_m2_only(execpath: str=config.build_folder_abs):
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy", execpath=execpath)
+
+
+def __deploy_p2(execpath: str=config.build_folder_abs):
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -Pp2-build-stable,p2-build-mars -Dp2.upload=stable", execpath=execpath)
+
+
 if config.dry_run or config.test_run:
     log_info_dry("Would now deploy to maven central & updatesite. Skipping...")
 else:
-    if config.branch_to_be_released not in ["dev_eclipseplugin", "dev_mavenplugin", "dev_core"]:
-        run_maven_process_and_handle_error("mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true")
-        run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true")
-        run_maven_process_and_handle_error("mvn deploy -Dmaven.test.skip=true -Dp2.upload=stable")
-    elif config.branch_to_be_released == "dev_eclipseplugin":
-        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -Pp2-build-stable,p2-build-mars -Dp2.upload=stable")
+    if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin]:
+        __deploy_m2_as_p2()
+    elif config.branch_to_be_released == config.branch_javaplugin:
+        __deploy_m2_as_p2(os.path.join(config.build_folder_abs, "cobigen-javaplugin"))
+        __deploy_m2_only(os.path.join(config.build_folder_abs, "cobigen-javaplugin-model"))
+    elif config.branch_to_be_released == config.branch_eclipseplugin:
+        __deploy_p2()
     else:  # core + maven
-        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy")
+        __deploy_m2_only()
 
     if not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
         git_repo.reset()
