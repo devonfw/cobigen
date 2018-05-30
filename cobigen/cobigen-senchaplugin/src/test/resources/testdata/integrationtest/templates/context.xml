@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
-    <trigger id="testTemplates" type="java" templateFolder="testTemplates">
-        <matcher type="fqn" value=".*">
-            <variableAssignment type="constant" key="testModel.js" value="testModelValue"/>
-        </matcher>
-    </trigger>
-</contextConfiguration>

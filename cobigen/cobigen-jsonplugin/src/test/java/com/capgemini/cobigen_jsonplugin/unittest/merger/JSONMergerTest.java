@@ -70,50 +70,6 @@ public class JSONMergerTest {
     }
 
     /**
-     * Checks merge for Sencha Architect. The test will cover {@link JsonObject} and {@link JsonArray} inside
-     * one or more {@link JsonObject} merge for NO OVERRIDE cases
-     */
-    @Test
-    public void senchaArchitectMergeTest_NoOverride() {
-
-        // arrange
-        File jsonBaseFile = new File(testFileRootPath + "Base_json");
-
-        // act
-        String mergedContents =
-            new JSONMerger("sencharchmerge", false).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(readJsonFile("Result_json"));
-        JSONObject jsonResult = new JSONObject(tokensResult);
-
-        // assert
-        assertTrue(mergedContents.equals(jsonResult.toString(4)));
-    }
-
-    /**
-     * Checks merge for Sencha Architect. The test will cover {@link JsonObject} and {@link JsonArray} inside
-     * one or more {@link JsonObject} merge for OVERRIDE cases
-     */
-    @Test
-    public void senchaArchitectMergeTest_Override() {
-
-        // arrange
-        File jsonBaseFile = new File(testFileRootPath + "Base_json");
-
-        // act
-        String mergedContents =
-            new JSONMerger("sencharchmerge_override", true).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(readJsonFile("ResultOverride_json"));
-        JSONObject jsonResult = new JSONObject(tokensResult);
-        JSONArray toComp = jsonResult.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
-        JSONTokener tokensJson = new JSONTokener(mergedContents);
-        JSONObject json = new JSONObject(tokensJson);
-        JSONArray toCompRes = json.getJSONObject("descriptor").getJSONObject("app2").getJSONArray("messages");
-
-        // assert
-        assertTrue(toCompRes.toString().equals(toComp.toString()));
-    }
-
-    /**
      * Reads the JSON file given by parameter
      * @param fileName
      *            the file to read
