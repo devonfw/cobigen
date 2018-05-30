@@ -277,6 +277,62 @@
 
   <profiles>
     <profile>
+      <id>oss</id>
+      <build>
+        <plugins>
+          <!-- also generate javadoc JARs -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalDependencies>
+                <additionalDependency>
+                  <groupId>javax.interceptor</groupId>
+                  <artifactId>javax.interceptor-api</artifactId>
+                  <version>1.2</version>
+                </additionalDependency>
+              </additionalDependencies>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Sign artifacts with PGP -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <keyname>${oasp.gpg.keyname}</keyname>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
       <id>p2-upload-experimental</id>
       <activation>
         <property>
@@ -498,13 +554,15 @@
   </profiles>
 
   <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>devon.releases</id>
+      <name>Devon Nexus Releases</name>
+      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases/</url>
     </repository>
+    <snapshotRepository>
+      <id>devon.snapshots</id>
+      <name>Devon Nexus Snapshots</name>
+      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 </project>
