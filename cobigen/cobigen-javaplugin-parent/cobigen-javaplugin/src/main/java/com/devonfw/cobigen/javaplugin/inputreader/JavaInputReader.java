@@ -102,15 +102,6 @@ public class JavaInputReader implements InputReader {
     }
 
     @Override
-    public boolean combinesMultipleInputObjects(Object input) {
-
-        if (input instanceof PackageFolder) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, false);
     }
