@@ -18,7 +18,6 @@
     <module>templates-oasp4j</module>
     <module>templates-oasp4js</module>
     <module>templates-rf</module>
-    <module>templates-sencha</module>
   </modules>
 
   <build>
