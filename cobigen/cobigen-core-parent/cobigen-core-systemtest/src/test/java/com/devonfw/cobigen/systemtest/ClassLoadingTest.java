@@ -23,9 +23,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
-import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
@@ -34,6 +31,9 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
+import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -78,7 +78,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test.java");
-        File generatedFile = new File(generationRootFolder, "com/capgemini/Test.java");
+        File generatedFile = new File(generationRootFolder, "com/devonfw/Test.java");
         assertThat(report).isSuccessful();
         assertThat(generatedFile).exists();
         assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
