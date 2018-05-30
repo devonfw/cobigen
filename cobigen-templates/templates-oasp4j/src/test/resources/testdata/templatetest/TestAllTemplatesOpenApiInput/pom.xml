@@ -34,22 +34,22 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>1.6.1</version>
+            <version>1.7.0-SNAPSHOT</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>htmlplugin</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1-SNAPSHOT</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tsplugin</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0-SNAPSHOT</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
@@ -59,7 +59,7 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
