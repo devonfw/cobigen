@@ -1,4 +1,4 @@
-package com.devonfw.cobigen_jsonplugin.unittest.merger;
+package com.devonfw.cobigen.jsonplugin.unittest.merger;
 
 import static org.junit.Assert.assertTrue;
 
