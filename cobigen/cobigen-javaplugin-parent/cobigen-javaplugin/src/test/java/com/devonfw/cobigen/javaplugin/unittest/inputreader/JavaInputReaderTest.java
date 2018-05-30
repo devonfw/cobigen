@@ -177,16 +177,16 @@ public class JavaInputReaderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
 
         // test local field of method accessible fields
         Map<String, Object> classFieldAccessible = JavaModelUtil.getMethodAccessibleField(model, "customList");
@@ -205,16 +205,16 @@ public class JavaInputReaderTest {
         assertThat(classFieldAccessible.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classFieldAccessible)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classFieldAccessible)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classFieldAccessible)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classFieldAccessible)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
 
         // test inherited field of method accessible fields
         Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
@@ -239,16 +239,16 @@ public class JavaInputReaderTest {
         assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(inheritedField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
 
     }
 

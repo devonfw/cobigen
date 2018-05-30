@@ -283,16 +283,16 @@ public class ParsedJavaModelBuilderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
     /**
@@ -423,16 +423,16 @@ public class ParsedJavaModelBuilderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
 }
