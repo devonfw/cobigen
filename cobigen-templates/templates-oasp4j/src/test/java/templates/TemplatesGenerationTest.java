@@ -6,6 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
+import com.devonfw.cobigen.templates.oasp4j.config.constant.MavenMetadata;
 
 /**
  * Smoke tests of all templates.
@@ -24,7 +25,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_EntityInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEntityInput/");
-        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
     /**
@@ -36,7 +37,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_EtoInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEtoInput/");
-        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
     /**
@@ -49,7 +50,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesOpenApiInput/");
-        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
     /**
@@ -61,7 +62,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_RestServiceInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesRestServiceInput/");
-        runMavenInvoker(testProject, new File("").getAbsoluteFile());
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
 }
