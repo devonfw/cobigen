@@ -171,16 +171,16 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
     }
 
     /**
@@ -213,16 +213,16 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(inheritedField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(inheritedField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeSetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(inheritedField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(inheritedField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperTypeFieldAnnotation");
 
     }
 
@@ -252,16 +252,16 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
     /**
@@ -276,7 +276,7 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(classField).isNotNull();
         @SuppressWarnings("unchecked")
         Map<String, Object> annotation = (Map<String, Object>) JavaModelUtil.getAnnotations(classField)
-            .get("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            .get("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
         assertThat(annotation).isNotNull();
         // currently all values are provided as Strings
         assertThat(annotation.get("b")).isEqualTo("0");
@@ -305,19 +305,19 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeGetterAnnotation");
         // Setter
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeSetterAnnotation");
         // is-method
         assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation");
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeIsAnnotation");
         // attribute
         assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
         @SuppressWarnings("unchecked")
         Map<String, Object> annotation = (Map<String, Object>) JavaModelUtil.getAnnotations(classField)
-            .get("com_capgemini_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
+            .get("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySuperSuperTypeFieldAnnotation");
 
         assertThat(annotation).isNotNull();
         // currently all values are provided as Strings
