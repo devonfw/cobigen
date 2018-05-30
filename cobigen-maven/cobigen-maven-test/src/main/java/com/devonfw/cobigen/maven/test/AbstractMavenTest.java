@@ -18,6 +18,8 @@ import org.codehaus.plexus.util.IOUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
 
@@ -26,6 +28,9 @@ import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
  * repository.
  */
 public class AbstractMavenTest {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMavenTest.class);
 
     /** Temporary folder rule to create new temporary folder and files */
     @Rule
@@ -44,6 +49,7 @@ public class AbstractMavenTest {
         mvnSettingsFile = tmpFolder.newFile();
         Files.write(mvnSettingsFile.toPath(),
             IOUtil.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
+        LOG.info("Temporary settings file created in " + mvnSettingsFile.getAbsolutePath());
     }
 
     /**
@@ -81,6 +87,7 @@ public class AbstractMavenTest {
         request.setShowErrors(true);
         request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
+        request.setUserSettingsFile(mvnSettingsFile);
         request.setMavenOpts("-Xmx4096m");
 
         Invoker invoker = new DefaultInvoker();
