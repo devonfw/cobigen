@@ -14,7 +14,7 @@
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
   </properties>
 
   <modules>
