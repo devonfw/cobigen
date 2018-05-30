@@ -11,7 +11,6 @@ import com.capgemini.cobigen.api.exception.MergeException;
 import com.capgemini.cobigen.api.extension.Merger;
 import com.capgemini.cobigen.jsonplugin.merger.general.constants.Constants;
 import com.capgemini.cobigen.jsonplugin.merger.generic.GenericJSONMerger;
-import com.capgemini.cobigen.jsonplugin.merger.senchaarchitect.SenchaArchitectMerger;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
@@ -86,10 +85,7 @@ public class JSONMerger implements Merger {
         String result = null;
 
         // Override would be defined by patchOverrides at PluginActivator
-        if (type.contains(Constants.SENCHA_ARCHITECT)) {
-            SenchaArchitectMerger senchArchMerger = new SenchaArchitectMerger(objBase, objPatch);
-            result = senchArchMerger.senchArchMerge(patchOverrides);
-        } else if (type.contains(Constants.GENERIC_MERGE)) {
+        if (type.contains(Constants.GENERIC_MERGE)) {
             GenericJSONMerger ng2merge = new GenericJSONMerger(objBase, objPatch);
             result = ng2merge.merge(patchOverrides);
         } else {
