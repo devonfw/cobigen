@@ -123,9 +123,6 @@ node {
 							
 							if (origin_branch != 'dev_core'){
 								def deployRoot = ""
-								if(origin_branch == 'dev_javaplugin'){
-									deployRoot = "cobigen-javaplugin"
-								}
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
 									// manifest extension, osgi bundling, and upload
