@@ -1,4 +1,4 @@
-package com.devonfw.cobigen_htmlplugin.unittest.merger.ng2;
+package com.devonfw.cobigen.htmlplugin.unittest.merger.ng2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
