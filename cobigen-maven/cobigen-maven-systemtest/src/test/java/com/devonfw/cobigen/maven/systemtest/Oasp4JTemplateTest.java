@@ -127,6 +127,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
         request.setShowErrors(true);
         request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
+        request.setUserSettingsFile(mvnSettingsFile);
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
