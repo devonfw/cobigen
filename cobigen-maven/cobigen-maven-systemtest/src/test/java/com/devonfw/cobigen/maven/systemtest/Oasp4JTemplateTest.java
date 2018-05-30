@@ -49,26 +49,6 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
-    public void testEntityInputDataaccessGenerationForTemplates2_0_0() throws Exception {
-        File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplates2-0-0/");
-        File testProjectRoot = runMavenInvoker(testProject);
-
-        assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
-        long numFilesInTarget =
-            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 3 from entity_infrastructure, 4 from daos, 1 input file
-        assertThat(numFilesInTarget).isEqualTo(8);
-    }
-
-    /**
-     * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks
-     * whether the files have been generated. Takes an entity (POJO) as input. <br/>
-     * This is the same test as {@link #testEntityInputDataaccessGeneration()} but using the oasp4j templates
-     * version 2.0.0. Those templates use Java classes that need to be loaded by the maven plugin
-     * @throws Exception
-     *             test fails
-     */
-    @Test
     public void testEntityInputDataaccessGenerationForTemplateFolder() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder/");
         File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j");

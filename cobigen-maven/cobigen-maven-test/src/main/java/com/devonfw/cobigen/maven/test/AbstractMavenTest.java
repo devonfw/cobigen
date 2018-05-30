@@ -50,8 +50,8 @@ public class AbstractMavenTest {
      * @see #runMavenInvoker(File, File)
      */
     @SuppressWarnings("javadoc")
-    protected File runMavenInvoker(File testProject) throws Exception {
-        return runMavenInvoker(testProject, null);
+    protected File runMavenInvoker(File testProject, String localRepoPath) throws Exception {
+        return runMavenInvoker(testProject, null, localRepoPath);
     }
 
     /**
@@ -61,11 +61,13 @@ public class AbstractMavenTest {
      *            the test project to build
      * @param templatesProject
      *            the templates project to be used for generation. May be {@code null}
+     * @param localRepoPath
+     *            local repository path of the current execution
      * @return the temporary copy of the test project, the build was executed in
      * @throws Exception
      *             if anything fails
      */
-    protected File runMavenInvoker(File testProject, File templatesProject) throws Exception {
+    protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath) throws Exception {
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
@@ -75,6 +77,7 @@ public class AbstractMavenTest {
         request.setBaseDirectory(testProjectRoot);
         request.setGoals(Collections.singletonList("package"));
         setTestProperties(request, templatesProject);
+        request.getProperties().put("localRep", localRepoPath);
         request.setShowErrors(true);
         request.setDebug(false);
         request.setGlobalSettingsFile(mvnSettingsFile);
@@ -99,13 +102,6 @@ public class AbstractMavenTest {
     protected void setTestProperties(InvocationRequest request, File templatesProject) {
         Properties mavenProperties = new Properties();
         mavenProperties.put("pluginVersion", MavenMetadata.VERSION);
-
-        String m2Repo = System.getenv("M2_REPO");
-        if (m2Repo != null) {
-            mavenProperties.put("locRep", m2Repo);
-        } else {
-            mavenProperties.put("locRep", System.getProperty("user.home") + "/.m2/settings.xml");
-        }
 
         if (templatesProject != null) {
             mavenProperties.put("templatesProject", templatesProject.getAbsolutePath());
