@@ -15,7 +15,4 @@ public class MavenMetadata {
     
     /** Maven artifact ID */
     public static final String ARTIFACT_ID = "${project.artifactId}";
-    
-    /** Local repository path */
-    public static final String LOCAL_REPO = "${settings.localRepository}";
 }
