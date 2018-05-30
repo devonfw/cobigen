@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
 import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
 import com.devonfw.cobigen.textmerger.anchorextension.MergeUtil;
