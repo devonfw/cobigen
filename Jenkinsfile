@@ -84,8 +84,7 @@ node {
 									if(origin_branch == 'master') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-stable"
 									} else if (origin_branch == 'dev_eclipseplugin') {
-										sh "mvn -s ${MAVEN_SETTINGS} clean test"
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -DskipITs"
+										sh "mvn -s ${MAVEN_SETTINGS} clean package -Pp2-build-mars"
 									} else {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-ci"
 									}
