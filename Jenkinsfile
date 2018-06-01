@@ -83,6 +83,9 @@ node {
 								try {
 									if(origin_branch == 'master') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-stable"
+									} else if (origin_branch == 'dev_eclipseplugin') {
+										sh "mvn -s ${MAVEN_SETTINGS} clean test"
+										sh "mvn -s ${MAVEN_SETTINGS} clean install -DskipITs"
 									} else {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-ci"
 									}
@@ -137,6 +140,7 @@ node {
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
 								sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true -Pp2-build-mars,p2-build-ci -Dp2.upload=ci"
+								sh "mvn -s ${MAVEN_SETTINGS} integration-test"
 							}
 						}
 					}
