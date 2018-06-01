@@ -89,56 +89,7 @@
                 <id>com.devonfw.cobigen.eclipse.feature.feature.group</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.htmlplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.javaplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.jsonplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.propertyplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.textmerger</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tsplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.xmlplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.openapiplugin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tempeng-freemarker</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tempeng-velocity</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
+              
             </extraRequirements>
           </dependency-resolution>
         </configuration>
