@@ -86,57 +86,57 @@
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.eclipse.feature.feature.group</id>
+                <id>com.capgemini.cobigen.eclipse.feature.feature.group</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>com.devonfw.cobigen.htmlplugin</id>
+                <versionRange>1.1.1</versionRange>
+              </requirement>
+              <requirement>
+                <type>p2-installable-unit</type>
+                <id>com.capgemini.cobigen.javaplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.javaplugin</id>
+                <id>com.capgemini.cobigen.jsonplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.jsonplugin</id>
+                <id>com.capgemini.cobigen.propertyplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.propertyplugin</id>
+                <id>com.capgemini.cobigen.textmerger</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.textmerger</id>
+                <id>com.capgemini.cobigen.tsplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tsplugin</id>
+                <id>com.capgemini.cobigen.xmlplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.xmlplugin</id>
+                <id>com.capgemini.cobigen.openapiplugin</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.openapiplugin</id>
+                <id>com.capgemini.cobigen.tempeng-freemarker</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tempeng-freemarker</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>p2-installable-unit</type>
-                <id>com.devonfw.cobigen.tempeng-velocity</id>
+                <id>com.capgemini.cobigen.tempeng-velocity</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
             </extraRequirements>
@@ -169,11 +169,6 @@
       <id>swtbot</id>
       <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
       <layout>p2</layout>
-    </repository>
-	<repository>
-      <id>neon</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/neon</url>
     </repository>
   </repositories>
 
