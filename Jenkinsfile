@@ -74,25 +74,21 @@ node {
 			
 			stage('build & test') {
 				dir(root) {
-					// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
-					wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
-						withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pl-technical-user', usernameVariable: 'DEVON_NEXUS_USER', passwordVariable: 'DEVON_NEXUS_PASSWD']]) {
-						
-							// load jenkins managed global maven settings file
-							configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
-								try {
-									if(origin_branch == 'master') {
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-stable"
-									} else if (origin_branch == 'dev_eclipseplugin') {
-										sh "mvn -s ${MAVEN_SETTINGS} clean package -Pp2-build-mars"
-									} else {
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-ci"
-									}
-								} catch(err) {
-									step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
-									if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
-										throw err
-									}
+					withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pl-technical-user', usernameVariable: 'DEVON_NEXUS_USER', passwordVariable: 'DEVON_NEXUS_PASSWD']]) {
+						// load jenkins managed global maven settings file
+						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+							try {
+								if(origin_branch == 'master') {
+									sh "mvn -s ${MAVEN_SETTINGS} clean install -Pp2-build-mars,p2-build-stable"
+								} else if (origin_branch == 'dev_eclipseplugin') {
+									sh "mvn -s ${MAVEN_SETTINGS} clean package -Pp2-build-mars,p2-build-ci"
+								} else {
+									sh "mvn -s ${MAVEN_SETTINGS} clean install"
+								}
+							} catch(err) {
+								step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
+								if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
+									throw err
 								}
 							}
 						}
@@ -139,13 +135,48 @@ node {
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
 								sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true -Pp2-build-mars,p2-build-ci -Dp2.upload=ci"
-								sh "mvn -s ${MAVEN_SETTINGS} integration-test"
 							}
 						}
 					}
 				}
 			}
+			
+			if(origin_branch == 'dev_eclipseplugin') {
+				stage('integration test') {
+					dir(root) {
+						// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
+						wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
+							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pl-technical-user', usernameVariable: 'DEVON_NEXUS_USER', passwordVariable: 'DEVON_NEXUS_PASSWD']]) {
 
+								// load jenkins managed global maven settings file
+								configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
+									try {
+										sh "mvn -s ${MAVEN_SETTINGS} integration-test -Pp2-build-mars,p2-build-ci"
+									} catch(err) {
+										step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
+										if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
+											throw err
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			if (currentBuild.result == 'UNSTABLE') {
+				setBuildStatus("Complete","FAILURE")
+				notifyFailed()
+				return // do the return outside of stage area to exit the pipeline
+			}
+			
+			stage('process test results') {
+				// added 'allowEmptyResults:true' to prevent failure in case of no tests
+				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+			}
+
+			// triggering of upcoming builds
 			if(origin_branch != 'dev_eclipseplugin' && origin_branch != 'dev_mavenplugin' && origin_branch != 'master'){
 				stage('integration-test') {
 					def repo = sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
