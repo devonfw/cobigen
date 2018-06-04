@@ -108,7 +108,8 @@
         <requirement
             name="com.devonfw.tempeng-velocity"/>
         <requirement
-            name="com.capgemini.cobigen-senchaplugin"/>
+            name="com.capgemini.cobigen-senchaplugin"
+			optional="true"/>
         <requirement
             name="com.devonfw.textmerger"/>
         <requirement
