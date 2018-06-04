@@ -2,8 +2,8 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
-  <artifactId>cobigen-master-parent</artifactId>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>master-parent</artifactId>
   <version>dev-SNAPSHOT</version>
   <name>CobiGen - Master Parent</name>
   <packaging>pom</packaging>
@@ -275,7 +275,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
+                  <toDir>files/cobigen/updatesite/experimental/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -302,7 +302,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
+                  <toDir>files/cobigen/updatesite/ci/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -329,7 +329,7 @@
                   <fromDir>${project.build.directory}/repository</fromDir>
                   <includes>**</includes>
                   <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
+                  <toDir>files/cobigen/updatesite/stable/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
