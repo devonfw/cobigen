@@ -35,13 +35,13 @@
     <increment name="app_angular_oasp4j_component" description="View Component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-dialog.component.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-grid.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-grid.component.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-grid.component.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-grid.component.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.service.specs.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.service.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
       <templateRef ref="home.component.html"/>
       <templateRef ref="app.module.ts"/>

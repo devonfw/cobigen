@@ -15,6 +15,12 @@
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
+    <icsd.server.url>de-mucevolve02.corp.capgemini.com</icsd.server.url>
+    <icsd.webserver.url>http://${icsd.server.url}</icsd.webserver.url>
+    <p2.upload.url>ftp://${icsd.server.url}</p2.upload.url>
+    <p2.repository.build.dir>${project.build.directory}/repository</p2.repository.build.dir>
+    <p2.repository.upload.dir>${project.build.directory}/repository-upload</p2.repository.upload.dir>
+    <updatesite.path>files/cobigen/updatesite</updatesite.path>
   </properties>
 
   <modules>
@@ -39,7 +45,10 @@
   <developers>
     <developer>
       <name>Malte Brunnlieb</name>
-      <email>malte.brunnlieb@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </developer>
+    <developer>
+      <name>Jaime Diaz Gonzalez</name>
       <organization>Capgemini</organization>
     </developer>
   </developers>
@@ -47,47 +56,57 @@
   <contributors>
     <contributor>
       <name>Jörg Hohwille</name>
-      <email>joerg.hohwille@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Fabian Kreis</name>
-      <email>fabian.kreis@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Steffen B. Holzer</name>
-      <email>steffen.holzer@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Jhonatan Ariel Core</name>
-      <email>jhonatan-ariel.core@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Ruben Diaz Martinez</name>
-      <email>ruben.diaz-martinez@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Simon Röger</name>
-      <email>simon.roeger@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Krati Shah</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Christian Richter</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Erik Grüner</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Mike Schumacher</name>
       <organization>Capgemini</organization>
     </contributor>
   </contributors>
 
   <organization>
-    <name>Capgemini</name>
-    <url>http://www.de.capgemini.com/</url>
+    <name>DevonFw</name>
+    <url>http://devonfw.com/</url>
   </organization>
 
   <licenses>
     <license>
-      <name>Capgemini CobiGen License Agreement</name>
-      <url>https://github.com/${github.project}/blob/master/LICENSE.CobiGen</url>
-      <distribution>manual</distribution>
-      <comments>Proprietary license. The complete Capgemini CobiGen License Agreement can be requested from the developers.</comments>
+      <name>Apache Software License</name>
+      <url>http://oasp.github.io/terms-of-use.html</url>
+      <distribution>repo</distribution>
+      <comments/>
     </license>
   </licenses>
 
@@ -259,12 +278,58 @@
   <profiles>
     <profile>
       <id>p2-upload-experimental</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>experimental</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${p2.repository.build.dir}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -272,10 +337,10 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/experimental/${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/experimental/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -286,12 +351,58 @@
     </profile>
     <profile>
       <id>p2-upload-ci</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>ci</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${p2.repository.build.dir}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/ci/${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -299,10 +410,10 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/ci/${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/ci/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -313,12 +424,58 @@
     </profile>
     <profile>
       <id>p2-upload-stable</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>stable</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>${p2.repository.build.dir}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/stable/${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -326,10 +483,10 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/stable/${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/stable/${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -341,15 +498,13 @@
   </profiles>
 
   <distributionManagement>
-    <repository>
-      <id>devon.releases</id>
-      <name>Devon Nexus Releases</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases/</url>
-    </repository>
     <snapshotRepository>
-      <id>devon.snapshots</id>
-      <name>Devon Nexus Snapshots</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
   </distributionManagement>
 </project>

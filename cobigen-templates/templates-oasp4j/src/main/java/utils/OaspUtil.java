@@ -2,6 +2,8 @@ package utils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import constants.pojo.Field;
 
@@ -23,6 +25,20 @@ public class OaspUtil {
     public boolean isEntityInComponent(String canonicalType, String component) {
 
         return canonicalType.matches(String.format(".+%1$s\\.dataaccess\\.api\\.[A-Za-z0-9]+Entity(<.*)?", component));
+    }
+
+    /**
+     * Check whether the given 'canonicalType' is declared in the given 'component'
+     *
+     * @param canonicalType
+     *            the type name
+     * @param component
+     *            the component name
+     * @return true iff the canonicalType is inside the given component
+     */
+    public boolean isTypeInComponent(String canonicalType, String component) {
+
+        return canonicalType.matches(String.format("%1$s.[A-Za-z0-9]+(<.*)?", component));
     }
 
     /**
@@ -259,7 +275,7 @@ public class OaspUtil {
             } else {
                 suffix = "Id";
             }
-            if (byObjectReference && isEntityInComponent(fieldCType, component)) {
+            if (byObjectReference && isTypeInComponent(fieldCType, component)) {
                 // direct references for Entities in same component, so get id of the object reference
                 suffix = "().getId";
             }
@@ -318,6 +334,45 @@ public class OaspUtil {
         }
 
         return resultName + suffix;
+
+    }
+
+    /**
+     * Returns the argument type of the list or set from a field. If the string contains "Entity" it will
+     * remove that part. For example, if we have a List &lt;SampleEntity&gt; it will return "Sample"
+     *
+     * @param field
+     *            the field
+     * @param pojoClass
+     *            the object class of the Entity that contains the field
+     * @return fieldType argument of the list
+     * @throws SecurityException
+     * @throws NoSuchFieldException
+     */
+    public String getListArgumentType(Map<String, Object> field, Class<?> pojoClass)
+        throws NoSuchFieldException, SecurityException {
+
+        JavaUtil javaUtil = new JavaUtil();
+
+        String fieldType = (String) field.get(Field.TYPE.toString());
+        String fieldCType = (String) field.get(Field.CANONICAL_TYPE.toString());
+        String fieldName = (String) field.get(Field.NAME.toString());
+
+        if (fieldType.contains("Entity")) {
+            if (javaUtil.isCollection(pojoClass, fieldName)) {
+
+                fieldType = fieldType.replace("Entity", "");
+                // Regex: Extracts the argument type of the list 'List<type>' => type
+                String regex = "(?<=\\<).+?(?=\\>)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher regexMatcher = pattern.matcher(fieldType);
+
+                if (regexMatcher.find()) {
+                    fieldType = regexMatcher.group(0);
+                }
+            }
+        }
+        return fieldType;
 
     }
 

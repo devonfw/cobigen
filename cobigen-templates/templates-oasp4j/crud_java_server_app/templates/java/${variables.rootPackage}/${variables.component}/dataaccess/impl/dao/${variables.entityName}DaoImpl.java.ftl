@@ -58,10 +58,10 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
     	if (${field.name} != null) {
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
               if(${variables.entityName?lower_case}.get${fieldCapName}() != null) {
-                  query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}Id()).eq(${field.name}));
+                  query.where(Alias.$(${variables.entityName?lower_case}.get${fieldCapName}().getId()).eq(${field.name}));
               }
           <#else>
-              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>).eq(${field.name}));
+              query.where(Alias.$(${variables.entityName?lower_case}.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
           </#if>  
         <#-- sholzer, 29.05.2017, #259: as above -->  
         }
@@ -81,9 +81,9 @@ public class ${variables.entityName}DaoImpl extends ApplicationDaoImpl<${pojo.na
           <#if !JavaUtil.isCollection(classObject, field.name)>
           case "${field.name}":
             if (OrderDirection.ASC.equals(orderEntry.getDirection())) {
-                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}<#if field.type?ends_with("Entity")>Id</#if>()).asc());
+                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}()<#if field.type?ends_with("Entity")>.getId()</#if>).asc());
             } else {
-                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}<#if field.type?ends_with("Entity")>Id</#if>()).desc());
+                query.orderBy(Alias.$(${variables.entityName?lower_case}.get${field.name?cap_first}()<#if field.type?ends_with("Entity")>.getId()</#if>).desc());
             }   
           break;
           </#if>
