@@ -613,12 +613,6 @@
     <setupTask
         xsi:type="setup.p2:P2Task">
       <requirement
-          name="org.eclipse.sdk.ide"
-          versionRange="[4.7.0,4.8.0)"/>
-      <requirement
-          name="org.eclipse.platform"
-          versionRange="[4.7.0,4.8.0)"/>
-      <requirement
           name="org.eclipse.platform.ide"
           versionRange="[4.7.0,4.8.0)"/>
       <requirement
