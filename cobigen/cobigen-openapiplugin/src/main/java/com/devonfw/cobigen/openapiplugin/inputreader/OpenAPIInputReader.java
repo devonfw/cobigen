@@ -467,7 +467,7 @@ public class OpenAPIInputReader implements InputReader {
         List<ResponseDef> resps = new LinkedList<>();
         for (String resp : responses.keySet()) {
             response = new ResponseDef();
-            response.setFormat(resp);
+            response.setCode(resp);
             Map<String, MediaType> contentMediaTypes = responses.get(resp).getContentMediaTypes();
             response.setDescription(responses.get(resp).getDescription());
             if (contentMediaTypes != null) {

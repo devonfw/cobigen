@@ -223,11 +223,11 @@ public class OpenAPIInputReaderTest {
                             found = true;
                             assertThat(opDef.getResponses()).hasSize(2);
                             for (ResponseDef respDef : opDef.getResponses()) {
-                                if (respDef.getFormat().equals("200")) {
+                                if (respDef.getCode().equals("200")) {
                                     assertThat(respDef.getMediaTypes()).hasSize(2);
                                     assertThat(respDef.getMediaTypes()).containsExactly("application/json",
                                         "text/plain");
-                                } else if (respDef.getFormat().equals("404")) {
+                                } else if (respDef.getCode().equals("404")) {
                                     assertThat(respDef.getDescription()).isEqualTo("Not found");
                                 } else {
                                     found = false;
