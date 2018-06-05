@@ -58,12 +58,13 @@ def init_non_git_config(config: Config):
 
     config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
     if config.oss:
-        config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
+        if not config.gpg_keyname:
+            config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
 If you are unsure about this, please stop here and clarify, whether
   * you created a pgp key and
   * published it!
 gpg.keyname = """)
-        if not prompt_yesno_question("Make sure it is loaded by tools like Kleopatra before continuing! Continue?"):
+        if not prompt_yesno_question("Make sure the gpg key '" + config.gpg_keyname + "' is loaded by tools like Kleopatra before continuing! Continue?"):
             sys.exit()
 
 
@@ -208,33 +209,37 @@ def __get_build_artifacts_root_search_path(config: Config):
 
 def __process_params(config: Config):
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hytdr:g:c", ["dry-run", "test", "debug", "local-repo=", "help", "github-repo-id=", "cleanup-silently"])
+        opts, args = getopt.getopt(sys.argv[1:], "cdg:hk:r:ty", ["cleanup-silently", "debug",
+                                                                 "github-repo-id=", "help", "gpg-key=", "local-repo=", "test", "dry-run"])
     except getopt.GetoptError:
         __print_cmd_help()
         sys.exit(2)
 
     for opt, arg in opts:
-        if opt in ("-y", "--dry-run"):
-            config.dry_run = True
-            log_info("[ARGS] --dry-run: No changes will be made on the Git repo.")
-        elif opt in ("-t", "--test"):
-            log_info("[ARGS] --test: Script runs on a different repo for testing purpose. Does not require any user interaction to speed up.")
-            config.test_run = True
+        if opt in ("-c", "--cleanup-silently"):
+            log_info("[ARGS] --cleanup-silently: Will silently reset/clean your working copy automatically. You will not be asked anymore. Use with caution!")
+            config.cleanup_silently = True
         elif opt in ("-d", "--debug"):
             log_info("[ARGS] --debug: The script will require user interactions for each step.")
             config.debug = True
-        elif opt in ("-c", "--cleanup-silently"):
-            log_info("[ARGS] --cleanup-silently: Will silently reset/clean your working copy automatically. You will not be asked anymore. Use with caution!")
-            config.cleanup_silently = True
-        elif opt in ("-r", "--local-repo"):
-            log_info("[ARGS] local repository set to " + arg)
-            config.root_path = arg
         elif opt in ("-g", "--github-repo-id"):
             log_info("[ARGS] GitHub repository to release against is set to " + arg)
             config.github_repo = arg
         elif opt in ("-h", "--help"):
             __print_cmd_help()
             sys.exit(0)
+        elif opt in ("-k", "--gpg-key"):
+            log_info("[ARGS] GPG key for code signing is set to " + arg)
+            config.gpg_keyname = arg
+        elif opt in ("-r", "--local-repo"):
+            log_info("[ARGS] local repository set to " + arg)
+            config.root_path = arg
+        elif opt in ("-t", "--test"):
+            log_info("[ARGS] --test: Script runs on a different repo for testing purpose. Does not require any user interaction to speed up.")
+            config.test_run = True
+        elif opt in ("-y", "--dry-run"):
+            config.dry_run = True
+            log_info("[ARGS] --dry-run: No changes will be made on the Git repo.")
 
 
 def __print_cmd_help():
@@ -244,13 +249,16 @@ This script automates the deployment of CobiGen modules.
 [WARNING]: The script will access and change the Github repository. Do not use it unless you want to deploy modules.
 
 Options:
-  -y / --dry-run:         Will prevent from pushing to the remote repository, changing anything on GitHub
-                          Issues/Milestones etc. 
-  -d / --debug:           Script stops after each automatic step and asks the user to continue.
-  -t / --test:            Script runs on a different repo for testing purpose. It also uses predefined 
-                          names and variables to shorten up the process.
   -c / --cleanup-silently [CAUTION] Will silently reset/clean your working copy automatically. 
                           This will also delete non-tracked files from your local file system!
                           You will not be asked anymore!
+  -d / --debug:           Script stops after each automatic step and asks the user to continue.
+  -g / --github-repo-id   GitHub repository name to be released
   -h / --help:            Provides a short help about the intention and possible options.
+  -k / --gpg-key          GPG key for code signing (for OSS release only)
+  -r / --local-repo       Local repository clone to work on for the release
+  -t / --test:            Script runs on a different repo for testing purpose. It also uses predefined 
+                          names and variables to shorten up the process.
+  -y / --dry-run:         Will prevent from pushing to the remote repository, changing anything on GitHub
+                          Issues/Milestones etc. 
     """)

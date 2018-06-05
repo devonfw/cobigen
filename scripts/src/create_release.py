@@ -202,7 +202,7 @@ def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
 
 
 if config.dry_run or config.test_run:
-    log_info_dry("Would now deploy to maven central & updatesite. Skipping...")
+    log_info_dry("Would now deploy to maven central/OSS & updatesite. Skipping...")
 else:
     if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin]:
         __deploy_m2_as_p2(config.oss)

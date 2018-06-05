@@ -14,21 +14,27 @@ from tools.logger import log_debug, log_info, log_error, log_info_dry
 
 class GitRepo:
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, path: str = None) -> None:
         self.__config: Config = config
 
         try:
-            self.__repo = Repo(config.root_path)
+            if not path:
+                self.__repo = Repo(config.root_path)
+            else:
+                self.__repo = Repo(path)
             assert not self.__repo.bare
             self.origin = self.__repo.remote('origin')
         except InvalidGitRepositoryError:
             log_error("Path is not a git repository. Please go to valid git repository!")
             sys.exit()
 
-    def pull(self):
+    def pull(self, branch_name: str = None):
         try:
             log_info('Pull changes from origin ...')
-            self.__repo.git.execute("git pull origin " + self.__repo.active_branch.name)
+            if not branch_name:
+                self.__repo.git.execute("git pull origin " + self.__repo.active_branch.name)
+            else:
+                self.__repo.git.execute("git pull origin " + branch_name)
         except GitCommandError:
             log_error("Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
             sys.exit()
@@ -76,7 +82,7 @@ class GitRepo:
             return
 
         try:
-            log_info("Pushing to origin/" + self.__repo.active_branch.name + "...")
+            log_info("Pushing to origin/" + self.__repo.active_branch.name + " in " + self.__repo.working_tree_dir + "  ...")
             self.__repo.git.execute("git push origin " + self.__repo.active_branch.name + " --tags")
         except Exception as e:
             if "no changes added to commit" in str(e):
@@ -84,8 +90,11 @@ class GitRepo:
             else:
                 raise e
 
-    def add(self, files: List[str]) -> None:
-        self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, self.__config.build_folder, i) for i in files])
+    def add(self, files: List[str], consider_as_build_folder_path: bool = True) -> None:
+        if consider_as_build_folder_path:
+            self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, self.__config.build_folder, i) for i in files])
+        else:
+            self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, i) for i in files])
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
@@ -111,20 +120,21 @@ class GitRepo:
                 sys.exit()
 
     def update_submodule(self, submodule_path: str) -> None:
-        os.chdir(submodule_path)
-        self.__repo.git.execute("git pull origin master")
+        sm_repo = GitRepo(self.__config, submodule_path)
+        sm_repo.checkout('master')
+        sm_repo.pull()
 
         log_info("Changing the "+self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl+" v"+self.__config.release_version
         with FileInput(os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page), inplace=True) as file:
             for line in file:
-                line = re.sub(r''+version_decl+'.+', new_version_decl, line)
+                line = re.sub(r''+version_decl+'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
-        self.add([os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page)])
-        self.commit("update wiki docs")
-        self.push()
+        sm_repo.add([self.__config.wiki_version_overview_page], False)
+        sm_repo.commit("update wiki docs")
+        sm_repo.push()
 
     def exists_tag(self, tag_name) -> bool:
         return tag_name in self.__repo.tags
