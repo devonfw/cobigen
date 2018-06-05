@@ -18,7 +18,7 @@ public class ResponseDef {
 
     private String type;
 
-    private String format;
+    private String code;
 
     private List<String> mediaTypes;
 
@@ -72,11 +72,11 @@ public class ResponseDef {
     }
 
     public String getFormat() {
-        return format;
+        return code;
     }
 
     public void setFormat(String format) {
-        this.format = format;
+        this.code = format;
     }
 
     public String getDescription() {
@@ -97,7 +97,7 @@ public class ResponseDef {
 
     @Override
     public String toString() {
-        return format + "  " + description + "  " + mediaTypes;
+        return code + "  " + description + "  " + mediaTypes;
 
     }
 }
