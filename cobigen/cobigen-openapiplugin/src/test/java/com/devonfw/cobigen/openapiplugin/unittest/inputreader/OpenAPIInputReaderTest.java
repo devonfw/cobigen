@@ -291,6 +291,27 @@ public class OpenAPIInputReaderTest {
         assertThat(found).as("SampleData component schema not found!").isTrue();
     }
 
+    @Test
+    public void testResponse() throws Exception {
+        List<Object> inputObjects = getInputs("componentResponseType.yaml");
+        boolean found = false;
+        for (Object o : inputObjects) {
+            EntityDef e = (EntityDef) o;
+            ComponentDef c = e.getComponent();
+            for (PathDef p : c.getPaths()) {
+                if (p.getPathURI().equals("/sampledata/customSearch/")) {
+                    for (OperationDef op : p.getOperations()) {
+                        for (ResponseDef r : op.getResponses()) {
+                            assertThat(r.getType()).isEqualTo("SampleData");
+                            found = true;
+                        }
+                    }
+                }
+            }
+        }
+        assertThat(found).isTrue();
+    }
+
     /**
      * Not possible to properly test, see input file for example of the error to test (SomeData items schema
      * is a reference to FurtherData, parent of FurtherData is SomeData). See

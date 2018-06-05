@@ -479,12 +479,13 @@ public class OpenAPIInputReader implements InputReader {
                     Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
+                        // System.out.println(schema);
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
                         } else if (schema.getType().equals(Constants.ARRAY)) {
                             if (schema.getItemsSchema() != null) {
-                                response.setType(schema.getItemsSchema().getType());
+                                response.setType(schema.getItemsSchema().getName());
                                 response.setIsEntity(true);
                             } else {
                                 response.setType(schema.getItemsSchema().getType());
