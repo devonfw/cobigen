@@ -74,7 +74,7 @@ public class OpenAPIInputReaderTest {
     }
 
     @Test
-    public void testRetreiveHeaderInfo() throws Exception {
+    public void testRetrieveHeaderInfo() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
         for (Object o : inputObjects) {
             EntityDef entityDef = (EntityDef) o;
