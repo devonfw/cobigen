@@ -1,18 +1,21 @@
 package utils;
 
-import java.awt.PageAttributes.MediaType;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Collection;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -205,6 +208,31 @@ public class JavaUtil {
     }
 
     /**
+     * Returns a cast statement for a given (java primitive, variable name) pair or nothing if the type isn't
+     * a java primitive
+     *
+     * @param pojoClass
+     *            the class object of the pojo
+     * @param fieldName
+     *            the name of the field to be casted
+     * @return if fieldName points to a primitive field then a casted statement (e.g. for an int field:
+     *         '((Integer)field)') or an empty String otherwise
+     * @throws NoSuchFieldException
+     *             indicating something awefully wrong in the used model
+     * @throws SecurityException
+     *             if the field cannot be accessed.
+     */
+    public String castJavaPrimitives(Class<?> pojoClass, String fieldName)
+        throws NoSuchFieldException, SecurityException {
+
+        if (equalsJavaPrimitive(pojoClass, fieldName)) {
+            return String.format("((%1$s)%2$s)", boxJavaPrimitives(pojoClass, fieldName), fieldName);
+        } else {
+            return "";
+        }
+    }
+
+    /**
      * @param pojoClass
      *            {@link Class}&lt;?> the class object of the pojo
      * @param fieldName
@@ -228,7 +256,45 @@ public class JavaUtil {
         if (field == null) {
             return false;
         } else {
-            return Collection.class.isAssignableFrom(field.getType());
+            return field.getType().isAssignableFrom(java.util.List.class)
+                || field.getType().isAssignableFrom(java.util.Set.class);
+        }
+
+    }
+
+    /**
+     * returns the sencha type associated with a Java primitive or {@link String} or {@link java.util.Date}
+     *
+     * @param simpleType
+     *            :{@link String} the type to be parsed
+     * @return the corresponding sencha type or 'auto' otherwise
+     */
+    public String getSenchaType(String simpleType) {
+
+        switch (simpleType) {
+        case "boolean":
+        case "Boolean":
+            return "boolean";
+        case "short":
+        case "Short":
+        case "int":
+        case "Integer":
+        case "long":
+        case "Long":
+            return "int";
+        case "float":
+        case "Float":
+        case "double":
+        case "Double":
+            return "float";
+        case "char":
+        case "Character":
+        case "String":
+            return "string";
+        case "Date":
+            return "date";
+        default:
+            return "auto";
         }
     }
 
@@ -381,6 +447,10 @@ public class JavaUtil {
      */
     public String getReturnType(Class<?> pojoClass, String name) {
 
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
         String s = "-";
         Method method = findMethod(pojoClass, name);
         if (method != null && !method.getReturnType().equals(Void.TYPE)) {
@@ -391,7 +461,7 @@ public class JavaUtil {
     }
 
     /**
-     * returns the class name of the parameter of a method
+     * returns the class name of the parameters of a method
      *
      * @param pojoClass
      *            {@link Class}&lt;?> the class object of the pojo
@@ -399,24 +469,31 @@ public class JavaUtil {
      *            {@link String} the name of the method
      * @return the class names of the parameters if parameters exist, otherwise "-"
      */
-    public String getParams(Class<?> pojoClass, @PathParam("id") String name) {
+    public String getParams(Class<?> pojoClass, String name) {
 
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
         String s = "";
         String tmp;
         Method method = findMethod(pojoClass, name);
+        StringBuilder sb = new StringBuilder(s);
         if (method != null && method.getParameterCount() > 0) {
             for (Parameter p : method.getParameters()) {
                 tmp = p.getType().toString();
-                s += tmp.substring(tmp.lastIndexOf('.') + 1, tmp.length());
+                sb.append(tmp.substring(tmp.lastIndexOf('.') + 1, tmp.length()) + ", ");
             }
+            sb.replace(sb.lastIndexOf(","), sb.length(), " ");
         } else {
-            s = "-";
+            sb.replace(0, sb.length(), "-");
         }
-        return s;
+        s = sb.toString();
+        return s.trim();
     }
 
     /**
-     * returns the class name of the parameter annotated with {@link javax.ws.rs.PathParam}
+     * returns the name of the first parameter annotated with {@link javax.ws.rs.PathParam}
      *
      * @param pojoClass
      *            {@link Class}&lt;?> the class object of the pojo
@@ -425,8 +502,12 @@ public class JavaUtil {
      * @return the class name of the parameter annotated with {@link javax.ws.rs.PathParam} if one exists,
      *         otherwise "-"
      */
-    public String getPathParamType(Class<?> pojoClass, String name) {
+    public String getPathParam(Class<?> pojoClass, String name) {
 
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
         String s = "-";
         Method method = findMethod(pojoClass, name);
         if (method != null && method.getParameterCount() > 0) {
@@ -450,19 +531,19 @@ public class JavaUtil {
      */
     public String getJavaDocWithoutLink(String doc) {
 
-        Pattern p = Pattern.compile("([^\\{])*(\\{@link ([^\\}]*)\\})+");
+        Pattern p = Pattern.compile("\\{@link ([^\\}]*)\\}");
         Matcher m = p.matcher(doc);
         while (m.find()) {
-            doc = doc.replace(m.group(2), m.group(3));
+            doc = doc.replace(m.group(0), m.group(1));
         }
         return doc;
     }
 
     /**
-     * Takes a String representation of a MediaType and extracts its value
+     * Takes a String representation of a javax.ws.rs.MediaType and extracts its value
      *
      * @param input
-     *            {@link String} the string representation of a MediaType
+     *            {@link String} the string representation of a {@link javax.ws.rs.MediaType}
      * @return {@link String} value of a MediaType
      */
     public String extractMediaType(String input) {
@@ -476,8 +557,39 @@ public class JavaUtil {
         }
     }
 
+    /**
+     * Returns the path root of the REST application the input file belongs to
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @return the path root of the application, starting from http://
+     * @throws IOException
+     *             when there is a problem with the inputReader
+     */
+    public String extractRootPath(Class<?> pojoClass) throws IOException {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String t = "";
+        StringBuilder sb = new StringBuilder("http://localhost:");
+        InputStream in = pojoClass.getClassLoader().getResourceAsStream("application.properties");
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        while ((t = br.readLine()) != null) {
+            if (t.matches("#server\\.port=(\\d{0,5})") || t.matches("#server\\.context-path=([^\\s]*)")) {
+                sb.append(t.substring(t.indexOf('=') + 1));
+            }
+        }
+        return sb.toString();
+    }
+
     private Method findMethod(Class<?> pojoClass, String name) {
 
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
         for (Method m : pojoClass.getMethods()) {
             if (m.getName().equals(name)) {
                 return m;

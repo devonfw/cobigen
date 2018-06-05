@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_append"/>
+    <templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_appendWithNewLine"/>
   </templates>
 
   <templateScans>
@@ -11,7 +11,7 @@
   </templateScans>
 
   <increments>
-    <increment name="Rest_Docs" description="Documentation">
+    <increment name="OpenAPI_Docs" description="Documentation">
       <templateRef ref="Documentation.adoc"/>
     </increment>
   </increments>

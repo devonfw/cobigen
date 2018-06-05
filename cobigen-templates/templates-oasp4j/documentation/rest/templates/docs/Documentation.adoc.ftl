@@ -1,6 +1,6 @@
-// anchor:header:append:anchorend
+// anchor:header::anchorend
 :toc:
-[top]
+[[top]]
 = Documentation ${variables.domain}
 
 ....
@@ -10,9 +10,9 @@ including information about its components and each of the requests for each com
 
 // anchor:components:newline:anchorend
 
-<#include "*/$\{variables.component}/$\{variables.component}RESTInterfaces.adoc.ftl">
+<#include "$\{variables.component}RESTInterfaces.adoc.ftl">
 
 
-// anchor:footer:append:anchorend
+// anchor:footer::anchorend
 
 <<top,back to top>>
