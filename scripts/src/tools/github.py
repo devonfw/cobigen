@@ -46,9 +46,13 @@ class GitHub:
         while True:
             if prompt_yesno_question("Are you using two-factor authentication on GitHub?"):
                 self.__config.git_token = getpass.getpass("> Please enter your token: ")
+                while not self.__config.git_token:
+                    self.__config.git_token = getpass.getpass("> Please enter your token: ")
             else:
                 self.__config.git_username = prompt_enter_value("your git user name")
                 self.__config.git_password = getpass.getpass("> Please enter your password: ")
+                while not self.__config.git_password:
+                    self.__config.git_password = getpass.getpass("> Please enter your password: ")
             try:
                 if self.__config.git_token:
                     self.__github = Github(self.__config.git_token)
