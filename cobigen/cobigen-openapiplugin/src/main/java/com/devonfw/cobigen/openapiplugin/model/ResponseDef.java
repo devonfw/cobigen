@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.openapiplugin.model;
 
+import java.util.List;
+
 /**
  *
  */
@@ -16,9 +18,11 @@ public class ResponseDef {
 
     private String type;
 
-    private String format;
+    private String code;
 
-    private String mediaType;
+    private List<String> mediaTypes;
+
+    private String description;
 
     public ResponseDef() {
         isArray = false;
@@ -68,18 +72,32 @@ public class ResponseDef {
     }
 
     public String getFormat() {
-        return format;
+        return code;
     }
 
     public void setFormat(String format) {
-        this.format = format;
+        this.code = format;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getMediaTypes() {
+        return mediaTypes;
+    }
+
+    public void setMediaTypes(List<String> mediaTypes) {
+        this.mediaTypes = mediaTypes;
+    }
+
+    @Override
+    public String toString() {
+        return code + "  " + description + "  " + mediaTypes;
+
     }
 }
