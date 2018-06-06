@@ -63,7 +63,7 @@ class GitRepo:
 
     def commit(self, commit_message: str):
         try:
-            if self.__list_staged_files() != "":
+            if self.__list_uncommitted_files() != "":
                 log_info("Committing ...")
                 self.__repo.index.commit("#" + str(self.__config.github_issue_no) + " " + commit_message)
             else:
@@ -74,6 +74,10 @@ class GitRepo:
 
     def push(self):
         ''' Boolean return type states, whether to continue process or abort'''
+        if(not self.has_unpushed_commits()):
+            log_info("Nothing to be pushed.")
+            return
+
         if (self.__config.test_run or self.__config.debug) and not prompt_yesno_question("[DEBUG] Changes will be pushed now. Continue?"):
             self.reset()
             sys.exit()
@@ -91,10 +95,13 @@ class GitRepo:
                 raise e
 
     def add(self, files: List[str], consider_as_build_folder_path: bool = True) -> None:
+        files_to_add: List[str]
         if consider_as_build_folder_path:
-            self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, self.__config.build_folder, i) for i in files])
+            files_to_add = [os.path.join(self.__config.build_folder, i) for i in files]
         else:
-            self.__repo.index.add([os.path.join(self.__repo.working_tree_dir, i) for i in files])
+            files_to_add = files
+
+        self.__repo.index.add([i for i in files_to_add if self.__is_tracked_and_dirty(i)])
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
@@ -140,7 +147,7 @@ class GitRepo:
         return tag_name in self.__repo.tags
 
     def get_changed_files_of_last_commit(self) -> List[str]:
-        return str(self.__repo.git.execute("git diff HEAD^ HEAD --name-only")).strip().split("\n+")
+        return str(self.__repo.git.execute("git diff HEAD^ HEAD --name-only")).strip().splitlines()
 
     def create_tag_on_last_commit(self) -> None:
         self.__repo.create_tag(self.__config.tag_name)
@@ -158,13 +165,29 @@ class GitRepo:
             log_info("Working copy clean.")
 
     def is_working_copy_clean(self, check_all_branches=False) -> bool:
-        return self.__repo.git.execute("git diff --shortstat") == "" and self.__list_staged_files() == "" and self.__list_unpushed_commits(check_all_branches) == ""
+        return self.__repo.git.execute("git diff --shortstat") == "" and not self.has_uncommitted_files() and not self.has_unpushed_commits()
 
-    def __list_staged_files(self) -> str:
+    def __list_uncommitted_files(self) -> str:
         return self.__repo.git.execute("git status --porcelain")
+
+    def has_uncommitted_files(self) -> bool:
+        return self.__list_uncommitted_files() != ""
 
     def __list_unpushed_commits(self, check_all_branches=False) -> str:
         if check_all_branches:
             return self.__repo.git.execute("git log --branches --not --remotes")
         else:
             return self.__repo.git.execute("git log --not --remotes")
+
+    def has_unpushed_commits(self, check_all_branches=False) -> bool:
+        return self.__list_unpushed_commits(check_all_branches) != ""
+
+    def __is_tracked_and_dirty(self, path: str) -> bool:
+        changed = [item.a_path for item in self.__repo.index.diff(None)]
+        changedAbs = [os.path.abspath(os.path.join(self.__repo.working_tree_dir, item.a_path)) for item in self.__repo.index.diff(None)]
+        log_debug("Untracked and Dirty files: " + str(changed))
+        if path in changed or path in changedAbs:
+            # modified
+            return True
+        else:
+            return False
