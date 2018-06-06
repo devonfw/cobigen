@@ -104,28 +104,28 @@
             name="org.eclipse.swtbot.feature.group"
             versionRange="2.6.0"/>
         <requirement
-            name="com.devonfw.tempeng-freemarker"/>
+            name="com.devonfw.cobigen.tempeng-freemarker"/>
         <requirement
-            name="com.devonfw.tempeng-velocity"/>
+            name="com.devonfw.cobigen.tempeng-velocity"/>
         <requirement
             name="com.capgemini.cobigen-senchaplugin"
             optional="true"/>
         <requirement
-            name="com.devonfw.textmerger"/>
+            name="com.devonfw.cobigen.textmerger"/>
         <requirement
-            name="com.devonfw.tsplugin"/>
+            name="com.devonfw.cobigen.tsplugin"/>
         <requirement
-            name="com.devonfw.propertyplugin"/>
+            name="com.devonfw.cobigen.propertyplugin"/>
         <requirement
-            name="com.devonfw.javaplugin"/>
+            name="com.devonfw.cobigen.javaplugin"/>
         <requirement
-            name="com.devonfw.htmlplugin"/>
+            name="com.devonfw.cobigen.htmlplugin"/>
         <requirement
-            name="com.devonfw.xmlplugin"/>
+            name="com.devonfw.cobigen.xmlplugin"/>
         <requirement
-            name="com.devonfw.openapiplugin"/>
+            name="com.devonfw.cobigen.openapiplugin"/>
         <requirement
-            name="com.devonfw.jsonplugin"/>
+            name="com.devonfw.cobigen.jsonplugin"/>
         <sourceLocator
             rootFolder="${targlet.source.location}"/>
         <repositoryList
