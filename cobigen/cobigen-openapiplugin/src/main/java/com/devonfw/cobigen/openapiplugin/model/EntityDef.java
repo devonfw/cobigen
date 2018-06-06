@@ -15,10 +15,28 @@ public class EntityDef {
 
     private String componentName;
 
+    private HeaderDef header;
+
+    public HeaderDef getHeader() {
+        return header;
+    }
+
+    public void setHeader(HeaderDef header) {
+        this.header = header;
+    }
+
+    public Map<String, Object> getExtensionProperties() {
+        return extensionProperties;
+    }
+
+    public void setExtensionProperties(Map<String, Object> extensionProperties) {
+        this.extensionProperties = extensionProperties;
+    }
+
     /**
      * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
      */
-    private Map<String, Object> extensionProperties = new HashMap<String, Object>();
+    private Map<String, Object> extensionProperties = new HashMap<>();
 
     private String name;
 
