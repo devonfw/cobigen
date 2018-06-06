@@ -129,7 +129,7 @@ class GitRepo:
         new_version_decl = version_decl+" v"+self.__config.release_version
         with FileInput(os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page), inplace=True) as file:
             for line in file:
-                line = re.sub(r''+version_decl+'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
+                line = re.sub(r''+version_decl+r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
         sm_repo.add([self.__config.wiki_version_overview_page], False)
