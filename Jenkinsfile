@@ -62,6 +62,8 @@ node {
 				root = "cobigen/cobigen-core-parent"
 			} else if (origin_branch == "dev_javaplugin") {
 				root = "cobigen/cobigen-javaplugin-parent"
+			} else if (origin/branch == "dev_openapiplugin") {
+				root = "cobigen/cobigen-openapiplugin-parent"
 			} else if (origin_branch == "dev_jssenchaplugin") {
                 root = "cobigen/cobigen-senchaplugin"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
@@ -125,6 +127,9 @@ node {
 								def deployRoot = ""
 								if(origin_branch == 'dev_javaplugin'){
 									deployRoot = "cobigen-javaplugin"
+								}
+								if(origin_branch == 'dev_openapiplugin'){
+									deployRoot = "cobigen-openapiplugin"
 								}
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
