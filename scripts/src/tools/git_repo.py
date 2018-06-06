@@ -72,7 +72,7 @@ class GitRepo:
             if "no changes added to commit" in str(e):
                 log_info("No File is changed, Nothing to commit..")
 
-    def push(self):
+    def push(self, force:bool = False):
         ''' Boolean return type states, whether to continue process or abort'''
         if(not self.has_unpushed_commits()):
             log_info("Nothing to be pushed.")
