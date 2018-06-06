@@ -29,15 +29,19 @@ class GitRepo:
             sys.exit()
 
     def pull(self, branch_name: str = None):
+        if not branch_name:
+            branch = self.__repo.active_branch.name
+        else:
+            branch = branch_name
         try:
             log_info('Pull changes from origin ...')
-            if not branch_name:
-                self.__repo.git.execute("git pull origin " + self.__repo.active_branch.name)
-            else:
-                self.__repo.git.execute("git pull origin " + branch_name)
+            self.__repo.git.execute("git pull origin " + branch)
         except GitCommandError:
-            log_error("Pull is not possible because you have unmerged files. Fix them up in the work tree, and then try again.")
-            sys.exit()
+            log_error("Pull from origin/" + branch + " on " + self.__repo.working_tree_dir +
+                      " is not possible as you might have uncommitted or untracked files. Fix the working tree, and then try again.")
+            if not prompt_yesno_question("Did you fix the issue manually? Resume script?"):
+                self.reset()
+                sys.exit()
 
     def reset(self):
         if(self.__config.cleanup_silently or prompt_yesno_question('Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
@@ -72,9 +76,9 @@ class GitRepo:
             if "no changes added to commit" in str(e):
                 log_info("No File is changed, Nothing to commit..")
 
-    def push(self, force:bool = False):
+    def push(self, force: bool = False):
         ''' Boolean return type states, whether to continue process or abort'''
-        if(not self.has_unpushed_commits()):
+        if(not force and not self.has_unpushed_commits()):
             log_info("Nothing to be pushed.")
             return
 
@@ -102,6 +106,11 @@ class GitRepo:
             files_to_add = files
 
         self.__repo.index.add([i for i in files_to_add if self.__is_tracked_and_dirty(i)])
+
+    def add_submodule(self, module: str) -> None:
+        submodule = self.__repo.submodule(module)
+        submodule.binsha = submodule.module().head.commit.binsha
+        self.__repo.index.add([submodule])
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
@@ -173,14 +182,11 @@ class GitRepo:
     def has_uncommitted_files(self) -> bool:
         return self.__list_uncommitted_files() != ""
 
-    def __list_unpushed_commits(self, check_all_branches=False) -> str:
-        if check_all_branches:
-            return self.__repo.git.execute("git log --branches --not --remotes")
-        else:
-            return self.__repo.git.execute("git log --not --remotes")
+    def __list_unpushed_commits(self) -> str:
+        return self.__repo.git.execute("git log --branches --not --remotes")
 
-    def has_unpushed_commits(self, check_all_branches=False) -> bool:
-        return self.__list_unpushed_commits(check_all_branches) != ""
+    def has_unpushed_commits(self) -> bool:
+        return self.__list_unpushed_commits() != ""
 
     def __is_tracked_and_dirty(self, path: str) -> bool:
         changed = [item.a_path for item in self.__repo.index.diff(None)]
