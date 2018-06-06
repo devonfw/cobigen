@@ -134,9 +134,14 @@ node {
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
 									// manifest extension, osgi bundling, and upload
-								sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
-								sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
-								sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-build-mars,p2-build-ci -Dmaven.test.skip=true -Dp2.upload=ci"
+									sh "mvn -s ${MAVEN_SETTINGS} package bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
+									sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-build-mars,p2-build-ci -Dmaven.test.skip=true -Dp2.upload=ci"
+								}
+								if(origin_branch == "dev_javaplugin"){
+									dir("cobigen-javaplugin-model"){
+										sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+									}
 								}
 							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
