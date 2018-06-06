@@ -4,6 +4,7 @@
   <artifactId>tempeng-velocity</artifactId>
   <version>1.0.1-SNAPSHOT</version>
   <name>CobiGen - Velocity Template Engine</name>
+  <description>CobiGen - Velocity Template Engine</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
