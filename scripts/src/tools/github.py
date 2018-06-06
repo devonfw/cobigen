@@ -62,7 +62,7 @@ class GitHub:
                 continue
 
     def __login(self):
-        if self.__config.git_token:
+        if hasattr(self.__config, "git_token") and self.__config.git_token:
             self.__github = Github(self.__config.git_token)
         else:
             self.__github = Github(self.__config.git_username, self.__config.git_password)
