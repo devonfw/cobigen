@@ -8,8 +8,8 @@
   <name>CobiGen Openapiplugin Parent</name>
 
   <parent>
-    <groupId>com.devonfw</groupId>
-    <artifactId>parent</artifactId>
+    <groupId>com.capgemini</groupId>
+    <artifactId>cobigen-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
