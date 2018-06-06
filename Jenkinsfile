@@ -62,7 +62,7 @@ node {
 				root = "cobigen/cobigen-core-parent"
 			} else if (origin_branch == "dev_javaplugin") {
 				root = "cobigen/cobigen-javaplugin-parent"
-			} else if (origin/branch == "dev_openapiplugin") {
+			} else if (origin_branch == "dev_openapiplugin") {
 				root = "cobigen/cobigen-openapiplugin-parent"
 			} else if (origin_branch == "dev_jssenchaplugin") {
                 root = "cobigen/cobigen-senchaplugin"
