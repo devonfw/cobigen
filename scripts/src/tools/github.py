@@ -135,9 +135,7 @@ class GitHub:
         for milestone in milestones:
             if milestone.title == search_title:
                 return milestone
-
-        log_error("Could not find milestone for cobigen-core v" + version + ". This must be an script error, please check.")
-        sys.exit()
+        return None
 
     def create_next_release_milestone(self) -> Milestone:
         new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version)
