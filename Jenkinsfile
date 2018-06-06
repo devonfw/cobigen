@@ -138,6 +138,11 @@ node {
 								sh "mvn -s ${MAVEN_SETTINGS} install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
 								sh "mvn -s ${MAVEN_SETTINGS} deploy -Pp2-upload-ci,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
 								}
+								if(origin_branch == "dev_openapiplugin"){
+									dir("cobigen-openapiplugin-model"){
+										sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
+									}
+								}
 							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
