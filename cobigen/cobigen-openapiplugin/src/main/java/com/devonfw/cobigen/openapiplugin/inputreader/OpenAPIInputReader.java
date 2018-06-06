@@ -18,18 +18,22 @@ import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.openapiplugin.model.HeaderDef;
+import com.devonfw.cobigen.openapiplugin.model.InfoDef;
 import com.devonfw.cobigen.openapiplugin.model.OpenAPIFile;
 import com.devonfw.cobigen.openapiplugin.model.OperationDef;
 import com.devonfw.cobigen.openapiplugin.model.ParameterDef;
 import com.devonfw.cobigen.openapiplugin.model.PathDef;
 import com.devonfw.cobigen.openapiplugin.model.PropertyDef;
 import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
+import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
 import com.jayway.jsonpath.Configuration;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
@@ -37,6 +41,7 @@ import com.reprezen.kaizen.oasparser.model3.Path;
 import com.reprezen.kaizen.oasparser.model3.RequestBody;
 import com.reprezen.kaizen.oasparser.model3.Response;
 import com.reprezen.kaizen.oasparser.model3.Schema;
+import com.reprezen.kaizen.oasparser.model3.Server;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read OpenApi3 definition
@@ -127,6 +132,9 @@ public class OpenAPIInputReader implements InputReader {
      */
     private List<EntityDef> extractComponents(OpenApi3 openApi) {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
+        HeaderDef header = new HeaderDef();
+        header.setServers(extractServers(openApi));
+        header.setInfo(extractInfo(openApi));
         List<EntityDef> objects = new LinkedList<>();
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
@@ -168,10 +176,40 @@ public class OpenAPIInputReader implements InputReader {
             componentDef.setPaths(extractPaths(openApi.getPaths(),
                 openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
             entityDef.setComponent(componentDef);
+            entityDef.setHeader(header);
             objects.add(entityDef);
         }
         return objects;
+    }
 
+    /**
+     * @param openApi
+     *            document root
+     * @return an object of {@link InfoDef}
+     */
+    private InfoDef extractInfo(OpenApi3 openApi) {
+        InfoDef info = new InfoDef();
+        Info inf = openApi.getInfo();
+        info.setDescription(inf.getDescription());
+        info.setTitle(inf.getTitle());
+        return info;
+    }
+
+    /**
+     * @param openApi
+     *            document root
+     * @return list of {@link ServerDef}'s
+     */
+    private List<ServerDef> extractServers(OpenApi3 openApi) {
+        List<ServerDef> servers = new LinkedList<>();
+        ServerDef serv;
+        for (Server server : openApi.getServers()) {
+            serv = new ServerDef();
+            serv.setDescription(server.getDescription());
+            serv.setURI(server.getUrl());
+            servers.add(serv);
+        }
+        return servers;
     }
 
     /**
@@ -306,7 +344,7 @@ public class OpenAPIInputReader implements InputReader {
                         operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
                         operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
                         operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setResponse(extractResponse(paths.get(pathKey).getOperation(opKey).getResponses(),
+                        operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
                             paths.get(pathKey).getOperation(opKey).getTags()));
                         operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
                         if (path.getOperations() == null) {
@@ -423,58 +461,60 @@ public class OpenAPIInputReader implements InputReader {
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
      */
-    private ResponseDef extractResponse(Map<String, ? extends Response> responses, Collection<String> tags) {
-        ResponseDef response = new ResponseDef();
+    private List<ResponseDef> extractResponses(Map<String, ? extends Response> responses, Collection<String> tags) {
+        ResponseDef response;
+        List<String> mediaTypes = new LinkedList<>();
+        List<ResponseDef> resps = new LinkedList<>();
         for (String resp : responses.keySet()) {
-            if (resp.equals("200")) {
-                Map<String, MediaType> contentMediaTypes = responses.get(resp).getContentMediaTypes();
-                if (contentMediaTypes != null) {
-                    if (contentMediaTypes.isEmpty()) {
-                        response.setIsVoid(true);
-                    }
-                    for (String media : contentMediaTypes.keySet()) {
-                        response.setMediaType(media);
-                        Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
-                        Schema schema = contentMediaTypes.get(media).getSchema();
-                        if (schema != null) {
-                            if (schemaReference != null) {
-                                response.setType(schema.getName());
-                                response.setIsEntity(true);
-                            } else if (schema.getType().equals(Constants.ARRAY)) {
-                                if (schema.getItemsSchema() != null) {
-                                    response.setType(schema.getItemsSchema().getType());
-                                    response.setIsEntity(true);
-                                } else {
-                                    response.setType(schema.getItemsSchema().getType());
-                                }
-                                if (tags.contains(Constants.PAGINATED)) {
-                                    response.setIsPaginated(true);
-                                } else {
-                                    response.setIsArray(true);
-                                }
-
-                            } else if (schema.getType() != null) {
-                                response.setType(schema.getType());
-                                response.setFormat(schema.getFormat());
-                            } else {
-                                response.setIsVoid(true);
-                            }
-                        } else {
-                            String refString = schemaReference.getRefString();
-                            throw new InvalidConfigurationException("Referenced entity "
-                                + refString.substring(refString.lastIndexOf('/')) + " not found. The reference "
-                                + refString + " schould be fixed before generation.");
-                        }
-                    }
-                } else {
+            response = new ResponseDef();
+            response.setCode(resp);
+            Map<String, MediaType> contentMediaTypes = responses.get(resp).getContentMediaTypes();
+            response.setDescription(responses.get(resp).getDescription());
+            if (contentMediaTypes != null) {
+                if (contentMediaTypes.isEmpty()) {
                     response.setIsVoid(true);
                 }
-                break;
+                for (String media : contentMediaTypes.keySet()) {
+                    mediaTypes.add(media);
+                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
+                    Schema schema = contentMediaTypes.get(media).getSchema();
+                    if (schema != null) {
+                        // System.out.println(schema);
+                        if (schemaReference != null) {
+                            response.setType(schema.getName());
+                            response.setIsEntity(true);
+                        } else if (schema.getType().equals(Constants.ARRAY)) {
+                            if (schema.getItemsSchema() != null) {
+                                response.setType(schema.getItemsSchema().getName());
+                                response.setIsEntity(true);
+                            } else {
+                                response.setType(schema.getItemsSchema().getType());
+                            }
+                            if (tags.contains(Constants.PAGINATED)) {
+                                response.setIsPaginated(true);
+                            } else {
+                                response.setIsArray(true);
+                            }
+
+                        } else if (schema.getType() != null) {
+                            response.setType(schema.getType());
+                        } else {
+                            response.setIsVoid(true);
+                        }
+                    } else {
+                        String refString = schemaReference.getRefString();
+                        throw new InvalidConfigurationException(
+                            "Referenced entity " + refString.substring(refString.lastIndexOf('/'))
+                                + " not found. The reference " + refString + " schould be fixed before generation.");
+                    }
+                }
             } else {
                 response.setIsVoid(true);
             }
+            response.setMediaTypes(mediaTypes);
+            resps.add(response);
         }
-        return response;
+        return resps;
 
     }
 

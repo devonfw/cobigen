@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.openapiplugin.unittest.inputreader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -18,11 +16,14 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.openapiplugin.model.HeaderDef;
+import com.devonfw.cobigen.openapiplugin.model.InfoDef;
 import com.devonfw.cobigen.openapiplugin.model.OperationDef;
 import com.devonfw.cobigen.openapiplugin.model.ParameterDef;
 import com.devonfw.cobigen.openapiplugin.model.PathDef;
 import com.devonfw.cobigen.openapiplugin.model.PropertyDef;
 import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
+import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.TestConstants;
 
 /** Test suite for {@link OpenAPIInputReader}. */
@@ -70,6 +71,25 @@ public class OpenAPIInputReaderTest {
 
         assertThat(inputObjects).hasSize(2);
         assertThat(inputObjects).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+    }
+
+    @Test
+    public void testRetrieveHeaderInfo() throws Exception {
+        List<Object> inputObjects = getInputs("two-components.yaml");
+        for (Object o : inputObjects) {
+            EntityDef entityDef = (EntityDef) o;
+            HeaderDef header = entityDef.getHeader();
+
+            InfoDef info = header.getInfo();
+            assertThat(info.getDescription()).isEqualTo("Example of a API definition");
+            assertThat(info.getTitle()).isEqualTo("Devon Example");
+
+            List<ServerDef> servers = header.getServers();
+            assertThat(servers).hasSize(1);
+            ServerDef server = servers.get(0);
+            assertThat(server.getDescription()).isEqualTo("Just some data");
+            assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
+        }
     }
 
     @Test
@@ -187,12 +207,12 @@ public class OpenAPIInputReaderTest {
         assertThat(constraints).extracting("minimum").contains(0, 10);
         assertThat(constraints).extracting("maximum").contains(50, 200);
         assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
-
     }
 
     @Test
     public void testRetrieveResponsesOfPath() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
+        boolean found = false;
         for (Object o : inputObjects) {
             EntityDef eDef = (EntityDef) o;
             if (eDef.getName().equals("Table")) {
@@ -200,13 +220,25 @@ public class OpenAPIInputReaderTest {
                 for (PathDef pathDef : eDef.getComponent().getPaths()) {
                     for (OperationDef opDef : pathDef.getOperations()) {
                         if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
-                            ResponseDef respDef = opDef.getResponse();
-                            assertThat(respDef.getMediaType()).isEqualTo("application/json");
+                            found = true;
+                            assertThat(opDef.getResponses()).hasSize(2);
+                            for (ResponseDef respDef : opDef.getResponses()) {
+                                if (respDef.getCode().equals("200")) {
+                                    assertThat(respDef.getMediaTypes()).hasSize(2);
+                                    assertThat(respDef.getMediaTypes()).containsExactly("application/json",
+                                        "text/plain");
+                                } else if (respDef.getCode().equals("404")) {
+                                    assertThat(respDef.getDescription()).isEqualTo("Not found");
+                                } else {
+                                    found = false;
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+        assertThat(found).as("findTable path operation not found!").isTrue();
     }
 
     @Test(expected = InvalidConfigurationException.class)
@@ -257,6 +289,27 @@ public class OpenAPIInputReaderTest {
             }
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
+    }
+
+    @Test
+    public void testResponse() throws Exception {
+        List<Object> inputObjects = getInputs("componentResponseType.yaml");
+        boolean found = false;
+        for (Object o : inputObjects) {
+            EntityDef e = (EntityDef) o;
+            ComponentDef c = e.getComponent();
+            for (PathDef p : c.getPaths()) {
+                if (p.getPathURI().equals("/sampledata/customSearch/")) {
+                    for (OperationDef op : p.getOperations()) {
+                        for (ResponseDef r : op.getResponses()) {
+                            assertThat(r.getType()).isEqualTo("SampleData");
+                            found = true;
+                        }
+                    }
+                }
+            }
+        }
+        assertThat(found).isTrue();
     }
 
     /**

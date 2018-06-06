@@ -1,6 +1,7 @@
 openapi: 3.0.0
 servers:
   - url: 'https://localhost:8081/server/services/rest'
+    description: Just some data
 info:
   title: Devon Example
   description: Example of a API definition
@@ -25,6 +26,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Table'
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Not found
   /salemanagement/v1/sale/{id}:
     get:
       operationId: findSale
