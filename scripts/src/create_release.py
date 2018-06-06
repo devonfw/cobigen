@@ -124,7 +124,7 @@ if config.test_run:
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
 
-git_repo.add([config.wiki_submodule_path])
+git_repo.add([config.wiki_submodule_name])
 git_repo.commit("update wiki docs")
 git_repo.push()
 
