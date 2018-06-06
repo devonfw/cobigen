@@ -22,12 +22,12 @@ class GitHub:
 
     def __init__(self, config: Config) -> None:
         self.__config: Config = config
-        self.__cache = GitHubCache()
 
         self.__authenticate_git_user()
         self.__initialize_repository_object()
 
     def __initialize_repository_object(self):
+        self.__cache = GitHubCache()
         try:
             org = self.__github.get_organization(self.__config.git_repo_org)
             if self.__config.debug:
@@ -54,15 +54,18 @@ class GitHub:
                 while not self.__config.git_password:
                     self.__config.git_password = getpass.getpass("> Please enter your password: ")
             try:
-                if self.__config.git_token:
-                    self.__github = Github(self.__config.git_token)
-                else:
-                    self.__github = Github(self.__config.git_username, self.__config.git_password)
+                self.__login()
                 log_info("Authenticated.")
                 break
             except BadCredentialsException:
                 log_info("Authentication error, please try again.")
                 continue
+
+    def __login(self):
+        if self.__config.git_token:
+            self.__github = Github(self.__config.git_token)
+        else:
+            self.__github = Github(self.__config.git_username, self.__config.git_password)
 
     def find_issue(self, issue_number: int) -> Issue:
         '''Search for the Release issue to be used, if not found, exit'''
@@ -158,7 +161,7 @@ class GitHub:
             return None
 
         url_milestone = self.__config.github_closed_milestone_url(closed_milestone.number)
-        release_title = self.__config.cobigenwiki_title_name
+        release_title = self.__config.cobigenwiki_title_name + " v" + self.__config.release_version
         release_text = "[ChangeLog](" + url_milestone + ")"
         if "eclipse" in self.__config.branch_to_be_released and core_version_in_eclipse_pom:
             cobigen_core_milestone: Milestone = self.find_cobigen_core_milestone(core_version_in_eclipse_pom)
@@ -183,7 +186,7 @@ class GitHub:
                 for fname in files:
                     fpath = os.path.join(root, fname)
                     # To prevent uploading of unnecessary zip/jar files.
-                    if ("jar" in fname or "zip" in fname) and self.__config.release_version in fname:
+                    if (fname.endswith("jar") or fname.endswith("zip")) and self.__config.release_version in fname:
                         log_info("Uploading file "+fname+"...")
                         try:
                             asset: GitReleaseAsset = release.upload_asset(path=fpath, label=fname, content_type=content_type)
@@ -199,4 +202,5 @@ class GitHub:
             sys.exit()
 
         # workaround as of https://github.com/PyGithub/PyGithub/issues/779
+        self.__login()
         self.__initialize_repository_object()
