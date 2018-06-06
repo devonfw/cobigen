@@ -132,7 +132,7 @@ def __get_build_folder(config: Config):
         config.branch_javaplugin: os.path.join('cobigen', 'cobigen-javaplugin-parent'),
         'dev_xmlplugin': os.path.join('cobigen', 'cobigen-xmlplugin'),
         'dev_htmlmerger': os.path.join('cobigen', 'cobigen-htmlplugin'),
-        'dev_openapiplugin': os.path.join('cobigen', 'cobigen-openapiplugin'),
+        config.branch_openapiplugin: os.path.join('cobigen', 'cobigen-openapiplugin-parent'),
         'dev_tsplugin': os.path.join('cobigen', 'cobigen-tsplugin'),
         'dev_textmerger': os.path.join('cobigen', 'cobigen-textmerger'),
         'dev_propertyplugin': os.path.join('cobigen', 'cobigen-propertyplugin'),
@@ -156,7 +156,7 @@ def __get_cobigenwiki_title_name(config: Config):
         config.branch_javaplugin: 'Cobigen - Java Plug-in',
         'dev_xmlplugin': 'CobiGen - XML Plug-in',
         'dev_htmlmerger': 'CobiGen - HTML Plug-in',
-        'dev_openapiplugin': 'CobiGen - Open API Plug-in',
+        config.branch_openapiplugin: 'CobiGen - Open API Plug-in',
         'dev_tsplugin': 'CobiGen - TypeScript Plug-in',
         'dev_textmerger': 'CobiGen - Text Merger',
         'dev_propertyplugin': 'CobiGen - Property Plug-in',
@@ -180,7 +180,7 @@ def __get_tag_name(config: Config):
         config.branch_javaplugin: 'cobigen-javaplugin/v',
         'dev_xmlplugin': 'cobigen-xmlplugin/v',
         'dev_htmlmerger': 'cobigen-htmlplugin/v',
-        'dev_openapiplugin': 'cobigen-openapiplugin/v',
+        config.branch_openapiplugin: 'cobigen-openapiplugin/v',
         'dev_tsplugin': 'cobigen-tsplugin/v',
         'dev_textmerger': 'cobigen-textmerger/v',
         'dev_propertyplugin': 'cobigen-propertyplugin/v',
@@ -200,6 +200,7 @@ def __get_build_artifacts_root_search_path(config: Config):
     target_folders = {
         config.branch_core: '',  # search for target folders in every submodule
         config.branch_javaplugin: '',  # search for target folders in every submodule
+        config.branch_openapiplugin: '',  # search for target folders in every submodule
         config.branch_mavenplugin: '',  # search for target folders in every submodule
         config.branch_eclipseplugin: 'cobigen-eclipse-updatesite/target'
     }
