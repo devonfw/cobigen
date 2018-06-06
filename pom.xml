@@ -381,7 +381,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir.url}</url>
+                      <url>file://${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
@@ -454,7 +454,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir.url}</url>
+                      <url>file://${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
@@ -527,7 +527,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir.url}</url>
+                      <url>file://${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
