@@ -25,10 +25,6 @@
     <module>cobigen-templateengines</module>
   </modules>
 
-  <properties>
-    <eclipse.host.version>3.0.0</eclipse.host.version>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -159,6 +155,7 @@
               <execution>
                 <id>default-cli</id>
                 <configuration>
+                  <skip>${skip.deployment}</skip>
                   <artifacts>
                     <artifact>
                       <id>${project.groupId}:${project.artifactId}:${project.version}</id>
