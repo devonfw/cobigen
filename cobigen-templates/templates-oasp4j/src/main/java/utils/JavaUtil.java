@@ -1,9 +1,18 @@
 package utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
+import java.lang.reflect.Parameter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
@@ -24,6 +33,7 @@ public class JavaUtil {
      * The constructor.
      */
     public JavaUtil() {
+
         // Empty for CobiGen to automatically instantiate it
     }
 
@@ -111,7 +121,7 @@ public class JavaUtil {
      *            the name of the field to be checked
      * @return true iff the field is a java primitive
      * @throws NoSuchFieldException
-     *             indicating something awefully wrong in the used model
+     *             indicating something awfully wrong in the used model
      * @throws SecurityException
      *             if the field cannot be accessed.
      */
@@ -246,7 +256,8 @@ public class JavaUtil {
         if (field == null) {
             return false;
         } else {
-            return Collection.class.isAssignableFrom(field.getType());
+            return field.getType().isAssignableFrom(java.util.List.class)
+                || field.getType().isAssignableFrom(java.util.Set.class);
         }
 
     }
@@ -387,5 +398,167 @@ public class JavaUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * returns the class name of the return type of a specific method.
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param name
+     *            {@link String} the name of the method
+     * @return the class name of the return type of the specified method
+     */
+    public String getReturnType(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "-";
+        Method method = findMethod(pojoClass, name);
+        if (method != null && !method.getReturnType().equals(Void.TYPE)) {
+            s = method.getReturnType().toString();
+            s = s.substring(s.lastIndexOf('.') + 1, s.length());
+        }
+        return s;
+    }
+
+    /**
+     * returns the class name of the parameters of a method
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param name
+     *            {@link String} the name of the method
+     * @return the class names of the parameters if parameters exist, otherwise "-"
+     */
+    public String getParams(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "";
+        String tmp;
+        Method method = findMethod(pojoClass, name);
+        StringBuilder sb = new StringBuilder(s);
+        if (method != null && method.getParameterCount() > 0) {
+            for (Parameter p : method.getParameters()) {
+                tmp = p.getType().toString();
+                sb.append(tmp.substring(tmp.lastIndexOf('.') + 1, tmp.length()) + ", ");
+            }
+            sb.replace(sb.lastIndexOf(","), sb.length(), " ");
+        } else {
+            sb.replace(0, sb.length(), "-");
+        }
+        s = sb.toString();
+        return s.trim();
+    }
+
+    /**
+     * returns the name of the first parameter annotated with {@link javax.ws.rs.PathParam}
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param name
+     *            {@link String} the name of the method
+     * @return the class name of the parameter annotated with {@link javax.ws.rs.PathParam} if one exists,
+     *         otherwise "-"
+     */
+    public String getPathParam(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "-";
+        Method method = findMethod(pojoClass, name);
+        if (method != null && method.getParameterCount() > 0) {
+            for (Annotation[] p : method.getParameterAnnotations()) {
+                for (Annotation a : p) {
+                    if (a instanceof PathParam) {
+                        s = ((PathParam) a).value();
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
+    /**
+     * returns the input string, replacing the {\@link } tags with the content of the tags
+     *
+     * @param doc
+     *            {@link String} the javadoc you want to parse
+     * @return javadoc comment without {\@link }
+     */
+    public String getJavaDocWithoutLink(String doc) {
+
+        Pattern p = Pattern.compile("\\{@link ([^\\}]*)\\}");
+        Matcher m = p.matcher(doc);
+        while (m.find()) {
+            doc = doc.replace(m.group(0), m.group(1));
+        }
+        return doc;
+    }
+
+    /**
+     * Takes a String representation of a javax.ws.rs.MediaType and extracts its value
+     *
+     * @param input
+     *            {@link String} the string representation of a {@link javax.ws.rs.MediaType}
+     * @return {@link String} value of a MediaType
+     */
+    public String extractMediaType(String input) {
+
+        if (input.contains("MediaType.APPLICATION_JSON")) {
+            return input.replace("MediaType.APPLICATION_JSON", MediaType.APPLICATION_JSON);
+        } else if (input.contains("MediaType.APPLICATION_XML")) {
+            return input.replace("MediaType.APPLICATION_XML", MediaType.APPLICATION_XML);
+        } else {
+            return input;
+        }
+    }
+
+    /**
+     * Returns the path root of the REST application the input file belongs to
+     *
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @return the path root of the application, starting from http://
+     * @throws IOException
+     *             when there is a problem with the inputReader
+     */
+    public String extractRootPath(Class<?> pojoClass) throws IOException {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String t = "";
+        StringBuilder sb = new StringBuilder("http://localhost:");
+        InputStream in = pojoClass.getClassLoader().getResourceAsStream("application.properties");
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        while ((t = br.readLine()) != null) {
+            if (t.matches("#server\\.port=(\\d{0,5})") || t.matches("#server\\.context-path=([^\\s]*)")) {
+                sb.append(t.substring(t.indexOf('=') + 1));
+            }
+        }
+        return sb.toString();
+    }
+
+    private Method findMethod(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method m : pojoClass.getMethods()) {
+            if (m.getName().equals(name)) {
+                return m;
+            }
+        }
+        return null;
     }
 }
