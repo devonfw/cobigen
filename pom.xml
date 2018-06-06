@@ -198,7 +198,7 @@
               <goal>regex-property</goal>
             </goals>
             <configuration>
-              <value>${project.build.directory}</value>
+              <value>${p2.repository.build.dir}</value>
               <regex>\\</regex>
               <replacement>/</replacement>
               <name>p2.repository.build.dir.url</name>
