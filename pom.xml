@@ -186,6 +186,27 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.12</version>
+        <executions>
+          <execution>
+            <id>fileToUrl</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>regex-property</goal>
+            </goals>
+            <configuration>
+              <value>${project.build.directory}</value>
+              <regex>\\|:</regex>
+              <replacement>/</replacement>
+              <name>p2.repository.build.dir.url</name>
+              <failIfNoMatch>false</failIfNoMatch>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -360,7 +381,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir}</url>
+                      <url>${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
@@ -433,7 +454,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir}</url>
+                      <url>${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
@@ -506,7 +527,7 @@
                 <configuration>
                   <source>
                     <repository>
-                      <url>${p2.repository.build.dir}</url>
+                      <url>${p2.repository.build.dir.url}</url>
                       <layout>p2</layout>
                     </repository>
                   </source>
