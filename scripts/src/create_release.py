@@ -273,7 +273,7 @@ __log_step("Set next release version...")
 changed_files = maven.set_version(config.next_version + "-SNAPSHOT")
 git_repo.add(changed_files)
 git_repo.commit("Set next development version")
-git_repo.push()
+git_repo.push(True)
 
 #############################
 __log_step("Close GitHub release issue...")
