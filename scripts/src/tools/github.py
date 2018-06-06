@@ -182,7 +182,7 @@ class GitHub:
                 content_type = "application/zip"
 
             for root, dirs, files in os.walk(os.path.join(self.__config.build_folder_abs, self.__config.build_artifacts_root_search_path)):
-                dirs[:] = [d for d in dirs if d not in [".settings", "src", ]]
+                dirs[:] = [d for d in dirs if d not in [".settings", "src", "repository", "repository-upload", "classes", "apidocs"]]
                 for fname in files:
                     fpath = os.path.join(root, fname)
                     # To prevent uploading of unnecessary zip/jar files.
