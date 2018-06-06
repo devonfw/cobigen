@@ -5,6 +5,7 @@
   <version>2.0.0-SNAPSHOT</version>
   <name>CobiGen Javaplugin Model</name>
   <packaging>jar</packaging>
+  <description>CobiGen - Java Plug-in Model</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
