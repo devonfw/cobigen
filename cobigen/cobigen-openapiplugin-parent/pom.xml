@@ -17,9 +17,5 @@
     <module>cobigen-openapiplugin</module>
     <module>cobigen-openapiplugin-model</module>
   </modules>
-  
-  <properties>
-    <skip.deployment>false</skip.deployment>
-  </properties>
 
 </project>
