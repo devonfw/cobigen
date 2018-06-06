@@ -30,6 +30,7 @@ class Config():
         self.branch_eclipseplugin: str = "dev_eclipseplugin"
         self.branch_mavenplugin: str = "dev_mavenplugin"
         self.branch_javaplugin: str = "dev_javaplugin"
+        self.branch_openapiplugin: str = "dev_openapiplugin"
 
         self.groupid_cobigen: str = "com.devonfw.cobigen"
         self.artifactid_core: str = "core"
