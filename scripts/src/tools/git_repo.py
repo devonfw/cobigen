@@ -48,7 +48,7 @@ class GitRepo:
 
     def update_and_clean(self):
         log_info("Executing update and cleanup (git pull origin && git submodule update && git clean -fd)")
-        self.origin.pull()
+        self.pull()
         self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
         if not self.is_working_copy_clean():
