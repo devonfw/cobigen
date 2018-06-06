@@ -54,8 +54,8 @@ def init_non_git_config(config: Config):
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
 
-    config.wiki_submodule_name = os.path.join("cobigen-documentation", config.git_repo_name + ".wiki")
-    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, config.wiki_submodule_name))
+    config.wiki_submodule_name = "cobigen-documentation/tools-cobigen.wiki"
+    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
 
     config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
     if config.oss:
@@ -117,12 +117,16 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
             else:
                 log_info('Successfully created issue #' + str(github_issue_no))
             break
-        elif github.find_issue(int(github_issue_no)):
-            config.github_issue_no = int(github_issue_no)
-            log_info("Issue #" + str(config.github_issue_no) + " found remotely!")
-            break
         else:
-            log_error("Issue with number #" + str(config.github_issue_no) + " not found! Typo?")
+            try:
+                if github.find_issue(int(github_issue_no)):
+                    config.github_issue_no = int(github_issue_no)
+                    log_info("Issue #" + str(config.github_issue_no) + " found remotely!")
+                    break
+                else:
+                    log_error("Issue with number #" + str(config.github_issue_no) + " not found! Typo?")
+            except ValueError:
+                log_error("Please enter a number.")
 
 
 def __get_build_folder(config: Config):

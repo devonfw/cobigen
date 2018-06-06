@@ -123,10 +123,9 @@ if config.test_run:
 
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
-
-git_repo.add([config.wiki_submodule_name], False)
-git_repo.commit("update wiki docs")
-git_repo.push()
+    git_repo.add([config.wiki_submodule_name], False)
+    git_repo.commit("update wiki docs")
+    git_repo.push()
 
 #############################
 __log_step("Check for working CI build and tests...")
@@ -150,20 +149,21 @@ __log_step("Validate merge commit...")
 list_of_changed_files = git_repo.get_changed_files_of_last_commit()
 is_pom_changed = False
 for file_name in list_of_changed_files:
-    if "pom.xml" in file_name:
-        is_pom_changed = True
-    if not file_name.startswith(config.build_folder.replace(os.sep, '/')):
+    file_name = file_name.replace('/', os.sep)
+    if not file_name.startswith(config.build_folder) and not file_name == config.wiki_submodule_name.replace('/', os.sep):
         log_info(file_name + " does not starts with " + config.build_folder)
         if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for odd file changes as this should not be the case in a normal scenario! Continue?"):
             git_repo.reset()
             sys.exit()
         report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
+        if file_name.endswith("pom.xml"):
+            is_pom_changed = True
 
 if is_pom_changed:
-    if not prompt_yesno_question("POM has been changed, please update dependency tracking wiki page! Continue?"):
+    if not prompt_yesno_question("Any pom.xml has been changed, please check for new and upgraded dependencies and update dependency tracking wiki page accordingly! Continue?"):
         git_repo.reset()
         sys.exit()
-    report_messages.append("User has accepted to continue on found POM changes")
+    report_messages.append("User has accepted to continue on found pom.xml changes")
 
 log_info("Validation finished.")
 
