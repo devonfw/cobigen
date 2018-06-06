@@ -31,8 +31,8 @@ class Config():
         self.branch_mavenplugin: str = "dev_mavenplugin"
         self.branch_javaplugin: str = "dev_javaplugin"
 
-        self.groupid_cobigen: str = "com.capgemini"
-        self.artifactid_core: str = "cobigen-core"
+        self.groupid_cobigen: str = "com.devonfw.cobigen"
+        self.artifactid_core: str = "core"
 
         self.build_folder: str
         self.build_folder_abs: str

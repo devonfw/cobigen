@@ -115,7 +115,7 @@ class Maven:
                         version_node = mapping.find(self.mavenNS+"version")
                         artifact_id_node = mapping.find(self.mavenNS+"artifactId")
                         group_id_node = mapping.find(self.mavenNS+"groupId")
-                        if group_id_node.text == self.__config.groupid_cobigen and version_node.text.endswith("-SNAPSHOT"):
+                        if (group_id_node.text == self.__config.groupid_cobigen or group_id_node.text == "${project.groupId}") and version_node.text.endswith("-SNAPSHOT"):
                             new_version = version_node.text.split("-")
                             log_info("Upgrading " + group_id_node.text + ":" + artifact_id_node.text + " to release version ("+new_version+") ...")
                             version_node.text = str(new_version[0])
