@@ -123,7 +123,7 @@ if config.test_run:
 
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
-    git_repo.add([config.wiki_submodule_name], False)
+    git_repo.add_submodule(config.wiki_submodule_name)
     git_repo.commit("update wiki docs")
     git_repo.push()
 
@@ -151,8 +151,7 @@ is_pom_changed = False
 for file_name in list_of_changed_files:
     file_name = file_name.replace('/', os.sep)
     if not file_name.startswith(config.build_folder) and not file_name == config.wiki_submodule_name.replace('/', os.sep):
-        log_info(file_name + " does not starts with " + config.build_folder)
-        if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for odd file changes as this should not be the case in a normal scenario! Continue?"):
+        if not prompt_yesno_question("Changed file " + file_name + " is outside the component folder path "+config.build_folder+".\nThis should not be the normal case! Please check these changes are necessary. Continue?"):
             git_repo.reset()
             sys.exit()
         report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
@@ -209,11 +208,11 @@ else:
     if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin, config.branch_openapiplugin]:
         __deploy_m2_as_p2(config.oss)
     elif config.branch_to_be_released == config.branch_javaplugin:
-        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin"))
         __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin-model"))
+        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin"))
     elif config.branch_to_be_released == config.branch_openapiplugin:
-        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin"))
         __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin-model"))
+        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin"))
     elif config.branch_to_be_released == config.branch_eclipseplugin:
         __deploy_p2(config.oss)
     else:  # core + maven
