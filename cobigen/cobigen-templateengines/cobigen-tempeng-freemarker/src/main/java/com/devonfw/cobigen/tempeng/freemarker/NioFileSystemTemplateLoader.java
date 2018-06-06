@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.freemarker;
+package com.devonfw.cobigen.tempeng.freemarker;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +11,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.tempeng.freemarker.constant.FreemarkerMetadata;
 
 import freemarker.cache.TemplateLoader;
 
@@ -33,7 +34,8 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
     @Override
     public Object findTemplateSource(String name) throws IOException {
         if (templatesRoot == null) {
-            throw new CobiGenRuntimeException("No template root has been defined. This is a bug.");
+            throw new CobiGenRuntimeException(
+                "No template root has been defined. This is a bug. (FreeMarker v" + FreemarkerMetadata.VERSION + ")");
         }
         return templatesRoot.resolve(name);
     }
@@ -46,8 +48,8 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
             attrs = Files.readAttributes(templatePath, BasicFileAttributes.class);
             return attrs.lastModifiedTime().toMillis();
         } catch (IOException e) {
-            LOG.warn("An error occured while resolving the last modified file attribute of path '{}'.",
-                templatePath.toAbsolutePath().toString(), e);
+            LOG.warn("An error occured while resolving the last modified file attribute of path '{}'. (FreeMarker v{})",
+                templatePath.toAbsolutePath().toString(), FreemarkerMetadata.VERSION, e);
         }
         return 0;
     }

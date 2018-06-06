@@ -135,7 +135,7 @@
             <configuration>
               <skip>${skip.deployment}</skip>
               <instructions>
-                <Fragment-Host>com.capgemini.cobigen.eclipse;bundle-version=${eclipse.host.version}</Fragment-Host>
+                <Fragment-Host>com.devonfw.cobigen.eclipse</Fragment-Host>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                 <Embed-Dependency>*;scope=!test</Embed-Dependency>
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
