@@ -58,7 +58,7 @@ def init_non_git_config(config: Config):
 
     config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
     if config.oss:
-        if not config.gpg_keyname:
+        if not hasattr(config, "gpg_keyname"):
             config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
 If you are unsure about this, please stop here and clarify, whether
   * you created a pgp key and
