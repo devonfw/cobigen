@@ -1,3 +1,0 @@
-<#list model.component.paths as path>
-${path.version}
-</#list>
