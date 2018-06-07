@@ -80,8 +80,8 @@ public class OpenAPITest extends SystemTest {
         // check assertions
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-        IFile generationResult = proj.getFile(
-            "src/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+        IFile generationResult = proj
+            .getFile("src/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
 
         try (InputStream in = generationResult.getContents()) {
             assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
@@ -118,8 +118,8 @@ public class OpenAPITest extends SystemTest {
                     "}");
         }
 
-        generationResult = proj
-            .getFile("src/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
+        generationResult =
+            proj.getFile("src/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
         try (InputStream in = generationResult.getContents()) {
             assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
