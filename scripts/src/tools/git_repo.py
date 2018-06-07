@@ -96,7 +96,8 @@ class GitRepo:
             if "no changes added to commit" in str(e):
                 log_info("No file is changed, nothing to commit.")
             else:
-                raise e
+                if not prompt_yesno_question("Something went wrong during pushing. Please check if you can perform pushing on your own. Resume the script?"):
+                    self.reset()
 
     def add(self, files: List[str], consider_as_build_folder_path: bool = True) -> None:
         files_to_add: List[str]
@@ -119,13 +120,14 @@ class GitRepo:
 
         try:
             self.checkout(target)
-            log_info("Executing git pull before merging development branch to master...")
+            log_info("Executing git pull...")
             self.pull()
             log_info("Merging...")
             self.__repo.git.execute("git merge " + self.__config.branch_to_be_released)
             log_info("Adapting automatically generated merge commit message to include issue no.")
             automatic_commit_message = self.__repo.git.execute("git log -1 --pretty=%B")
-            self.__repo.git.execute('git commit --amend -m"#'+str(self.__config.github_issue_no)+' '+automatic_commit_message+'"')
+            if "Merge" in automatic_commit_message and str(self.__config.github_issue_no) not in automatic_commit_message:
+                self.__repo.git.execute('git commit --amend -m"#'+str(self.__config.github_issue_no)+' '+automatic_commit_message+'"')
         except Exception as ex:
             log_error("Something went wrong, please check if merge conflicts exist and solve them.")
             if self.__config.debug:
