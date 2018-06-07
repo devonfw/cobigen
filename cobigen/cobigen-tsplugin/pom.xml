@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - TypeScript Plug-in</description>
 
@@ -88,8 +87,7 @@
               <tasks>
                 <echo message="unpack ts-merger.tgz"/>
                 <mkdir dir="${project.build.directory}/download/ts-merger/"/>
-                <untar src="${project.build.directory}/download/ts-merger.tgz" compression="gzip"
-                  dest="${project.build.directory}/download/ts-merger/"/>
+                <untar src="${project.build.directory}/download/ts-merger.tgz" compression="gzip" dest="${project.build.directory}/download/ts-merger/"/>
                 <echo message="copy ts-merger.umd.js"/>
                 <copy file="${project.build.directory}/download/ts-merger/package/dist/ts-merger.umd.js" tofile="${project.build.directory}/generated-sources/js/ts-merger.js"/>
               </tasks>
@@ -105,8 +103,7 @@
               <tasks>
                 <echo message="unpack js-beautify.tgz"/>
                 <mkdir dir="${project.build.directory}/download/js-beautify/"/>
-                <untar src="${project.build.directory}/download/js-beautify.tgz" compression="gzip"
-                  dest="${project.build.directory}/download/js-beautify/"/>
+                <untar src="${project.build.directory}/download/js-beautify.tgz" compression="gzip" dest="${project.build.directory}/download/js-beautify/"/>
                 <echo message="copy js-beautify.js"/>
                 <copy file="${project.build.directory}/download/js-beautify/package/js/lib/beautify.js" tofile="${project.build.directory}/generated-sources/js/beautify.js"/>
               </tasks>
@@ -157,7 +154,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -170,7 +167,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
