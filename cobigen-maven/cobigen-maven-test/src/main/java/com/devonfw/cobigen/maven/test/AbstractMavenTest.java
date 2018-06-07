@@ -53,9 +53,16 @@ public class AbstractMavenTest {
     }
 
     /**
-     * @see #runMavenInvoker(File, File)
+     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * local repository of the executing maven process is used.
+     * @param testProject
+     *            the test project to build
+     * @param localRepoPath
+     *            local repository path of the current execution
+     * @return the temporary copy of the test project, the build was executed in
+     * @throws Exception
+     *             if anything fails
      */
-    @SuppressWarnings("javadoc")
     protected File runMavenInvoker(File testProject, String localRepoPath) throws Exception {
         return runMavenInvoker(testProject, null, localRepoPath);
     }
