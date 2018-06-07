@@ -1,4 +1,4 @@
-package com.capgemini.cobigen_jsonplugin.unittest.merger;
+package com.devonfw.cobigen.jsonplugin.unittest.merger;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,15 +9,13 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.junit.Test;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Test methods for different JSON mergers of the plugin
@@ -41,11 +39,11 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("jsonmerge", true).merge(jsonBaseFile, readJsonFile("en_patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(mergedContents);
-        JSONObject jsonResult = new JSONObject(tokensResult);
+
+        JsonObject jsonResult = new JsonParser().parse(mergedContents).getAsJsonObject();
 
         // assert
-        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 1);
+        assertTrue(jsonResult.getAsJsonObject("datagrid").getAsJsonObject("columns").size() == 1);
         assertTrue(jsonResult.has("newdatagrid"));
     }
 
@@ -61,11 +59,10 @@ public class JSONMergerTest {
         // act
         String mergedContents =
             new JSONMerger("jsonmerge", false).merge(jsonBaseFile, readJsonFile("en_patch_json"), "UTF-8");
-        JSONTokener tokensResult = new JSONTokener(mergedContents);
-        JSONObject jsonResult = new JSONObject(tokensResult);
+        JsonObject jsonResult = new JsonParser().parse(mergedContents).getAsJsonObject();
 
         // assert
-        assertTrue(jsonResult.getJSONObject("datagrid").getJSONObject("columns").length() == 5);
+        assertTrue(jsonResult.getAsJsonObject("datagrid").getAsJsonObject("columns").size() == 5);
         assertTrue(jsonResult.has("newdatagrid"));
     }
 
