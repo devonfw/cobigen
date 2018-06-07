@@ -33,7 +33,7 @@ public final class MapUtils {
     }
 
     /**
-     * Recursive add for a {@link Set} value within a {@link Map} * @param <K> the key type of the map
+     * Recursive add for a {@link Set} value within a {@link Map}
      * @param <K>
      *            the key type of the map
      * @param <V>
