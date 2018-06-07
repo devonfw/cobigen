@@ -289,6 +289,6 @@ else:
         closing_comment = closing_comment + "* "+message+"\n"
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    log_info("Closed issue #" + release_issue.number + ": " + release_issue.title)
+    log_info("Closed issue #" + str(release_issue.number) + ": " + release_issue.title)
 
 log_info("Congratz! A new release! Script executed successfully!")
