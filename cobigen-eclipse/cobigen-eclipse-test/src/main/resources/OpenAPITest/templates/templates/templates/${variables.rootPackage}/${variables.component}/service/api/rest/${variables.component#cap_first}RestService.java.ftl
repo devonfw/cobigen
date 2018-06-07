@@ -15,15 +15,15 @@ public interface ${variables.component?cap_first}RestService {
   @DELETE
   			</#if>
   @Path("${path.pathURI}")
-  			<#assign returnType = OaspUtil.returnType(operation.response)>
   <#list operation.parameters as parameter>
     <#if parameter.mediaType??>
  @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
   	</#if>
   </#list>
-  <#if operation.response.mediaType??>
-  @Produces(MediaType.${OaspUtil.getSpringMediaType(operation.response.mediaType)})
+  <#if OaspUtil.hasMediaTypeInResponse(operations)>
+  @Produces(${OaspUtil.getDistinctMediaTypes(operation)})
   </#if>
+  <#assign returnType = OaspUtil.assignReturnType(operation)>
   public ${returnType?replace("Entity", "Eto")} ${operation.operationId}(
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
