@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger.generic;
+package com.devonfw.cobigen.jsonplugin.merger.generic;
 
 import java.util.Map;
 
@@ -40,9 +40,9 @@ public class GenericJSONMerger {
      *            states if the merge must override the base or not
      * @return the JSON resulting from the merge
      */
-    public String merge(boolean patchOverrides) {
+    public JsonObject merge(boolean patchOverrides) {
         extendJsonObject(base, patch, patchOverrides);
-        return base.toString();
+        return base;
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.jsonplugin.merger.general.constants;
+package com.devonfw.cobigen.jsonplugin.merger.general.constants;
 
 /**
  *

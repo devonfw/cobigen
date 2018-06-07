@@ -1,11 +1,11 @@
-package com.capgemini.cobigen.jsonplugin;
+package com.devonfw.cobigen.jsonplugin;
 
 import java.util.List;
 
-import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
-import com.capgemini.cobigen.jsonplugin.merger.JSONMerger;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.jsonplugin.merger.JSONMerger;
 import com.google.common.collect.Lists;
 
 /**
