@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity;
+package com.devonfw.cobigen.tempeng.velocity;
 
 import java.io.Writer;
 import java.nio.file.Path;
@@ -13,12 +13,13 @@ import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.LoggerFactory;
 
-import com.capgemini.cobigen.api.exception.CobiGenRuntimeException;
-import com.capgemini.cobigen.api.extension.TextTemplate;
-import com.capgemini.cobigen.api.extension.TextTemplateEngine;
-import com.capgemini.cobigen.tempeng.velocity.log.LogChuteDelegate;
-import com.capgemini.cobigen.tempeng.velocity.runtime.resources.NullResourceCache;
-import com.capgemini.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.extension.TextTemplate;
+import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.tempeng.velocity.constant.VelocityMetadata;
+import com.devonfw.cobigen.tempeng.velocity.runtime.resources.NullResourceCache;
+import com.devonfw.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
+import com.devonfw.cobigen.tempeng.velocity.log.LogChuteDelegate;
 
 /** Template engine for Apache Velocity */
 public class VelocityTemplateEngine implements TextTemplateEngine {
@@ -79,19 +80,23 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
             vmTemplate =
                 executeInThisClassloader(template.getRelativeTemplatePath(), (path) -> engine.getTemplate(path));
         } catch (Throwable e) {
-            throw new CobiGenRuntimeException("An error occured while retrieving the Velocity template "
-                + template.getAbsoluteTemplatePath() + " from the Velocity configuration.", e);
+            throw new CobiGenRuntimeException(
+                "An error occured while retrieving the Velocity template " + template.getAbsoluteTemplatePath()
+                    + " from the Velocity configuration. (Velocity v" + VelocityMetadata.VERSION + ")",
+                e);
         }
 
         if (vmTemplate != null) {
             try {
                 vmTemplate.merge(context, out);
             } catch (VelocityException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template "
-                    + template.getAbsoluteTemplatePath() + "\n" + e.getMessage(), e);
-            } catch (Throwable e) {
                 throw new CobiGenRuntimeException(
-                    "An unkonwn error occurred while generating the template " + template.getAbsoluteTemplatePath(), e);
+                    "An error occurred while generating the template." + template.getAbsoluteTemplatePath()
+                        + "(Velocity v" + VelocityMetadata.VERSION + ")" + "\n" + e.getMessage(),
+                    e);
+            } catch (Throwable e) {
+                throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template."
+                    + template.getAbsoluteTemplatePath() + "(Velocity v" + VelocityMetadata.VERSION + ")", e);
             }
         }
     }

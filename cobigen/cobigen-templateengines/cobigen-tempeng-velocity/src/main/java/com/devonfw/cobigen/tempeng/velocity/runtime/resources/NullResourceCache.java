@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity.runtime.resources;
+package com.devonfw.cobigen.tempeng.velocity.runtime.resources;
 
 import java.util.Iterator;
 
