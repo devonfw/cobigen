@@ -112,7 +112,7 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean integration-test -U -Pp2-build-mars,p2-build-stable")
+run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
