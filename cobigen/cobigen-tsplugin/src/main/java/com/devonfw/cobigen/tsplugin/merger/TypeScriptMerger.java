@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tsplugin.merger;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,9 +19,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import com.capgemini.cobigen.api.exception.MergeException;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.tsplugin.merger.constants.Constants;
+import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tsplugin.merger;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
