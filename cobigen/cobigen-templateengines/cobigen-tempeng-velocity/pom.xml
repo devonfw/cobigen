@@ -1,26 +1,25 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-tempeng-velocity</artifactId>
-  <version>1.0.0</version>
+  <artifactId>tempeng-velocity</artifactId>
+  <version>2.0.0-SNAPSHOT</version>
   <name>CobiGen - Velocity Template Engine</name>
+  <description>CobiGen - Velocity Template Engine</description>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-tempeng-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
   <properties>
     <skip.deployment>false</skip.deployment>
-    <java.version>1.8</java.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-api</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>5.0.0</version>
     </dependency>
 
     <dependency>
@@ -30,22 +29,42 @@
     </dependency>
 
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-test</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core</artifactId>
+      <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-javaplugin</artifactId>
-      <version>1.6.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>javaplugin</artifactId>
+      <version>2.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <!-- Inject Velocity Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
 </project>

@@ -1,4 +1,4 @@
-package com.capgemini.cobigen.tempeng.velocity.systemtest.testobjects;
+package com.devonfw.cobigen.tempeng.velocity.systemtest.testobjects;
 
 public class Input {
 
