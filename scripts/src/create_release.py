@@ -265,10 +265,12 @@ else:
 __log_step("Merge master branch to "+config.branch_to_be_released+"...")
 ##############################
 git_repo.merge("master", config.branch_to_be_released)
+git_repo.push(True)
 
 #############################
 __log_step("Set next release version...")
 #############################
+git_repo.checkout(config.branch_to_be_released)
 changed_files = maven.set_version(config.next_version + "-SNAPSHOT")
 git_repo.add(changed_files)
 git_repo.commit("Set next development version")
