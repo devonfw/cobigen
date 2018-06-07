@@ -1,12 +1,7 @@
 package utils;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-
-import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
 
 import constants.pojo.Field;
 
@@ -535,65 +530,6 @@ public class OaspUtil {
         default:
             return "";
         }
-    }
-
-    public String assignReturnType(Map<String, Object> operation) {
-        List<ResponseDef> differentTypes = new LinkedList<>();
-        List<ResponseDef> responses = (List<ResponseDef>) operation.get("responses");
-        for (ResponseDef response : responses) {
-            for (String mt : response.getMediaTypes()) {
-                if (!differentTypes.contains(mt)) {
-                    differentTypes.add(response);
-                }
-            }
-        }
-        if (differentTypes.size() >= 2) {
-            return "Object";
-        } else if (differentTypes.size() == 1) {
-            Map<String, Object> resp = new HashMap<>();
-            ResponseDef respDef = differentTypes.get(0);
-            resp.put("code", respDef.getCode());
-            resp.put("description", respDef.getDescription());
-            resp.put("format", respDef.getFormat());
-            resp.put("isArray", respDef.getIsArray());
-            resp.put("isEntity", respDef.getIsEntity());
-            resp.put("isPaginated", respDef.getIsPaginated());
-            resp.put("isVoid", respDef.getIsVoid());
-            resp.put("mediaTypes", respDef.getMediaTypes());
-            resp.put("type", respDef.getType());
-            return returnType(resp);
-        } else {
-            return "void";
-        }
-    }
-
-    public boolean hasMediaTypeInResponse(Map<String, Object> operation) {
-        boolean result = false;
-        List<ResponseDef> responses = new LinkedList<>();
-        for (ResponseDef response : responses) {
-            if (response.getMediaTypes().size() >= 1) {
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    public String getDistinctMediaTypes(Map<String, Object> operation) {
-        String result = "";
-        boolean moreThanOne = false;
-        List<ResponseDef> responses = new LinkedList<>();
-        for (ResponseDef response : responses) {
-            if (moreThanOne) {
-                result += ",";
-            }
-            for (String mt : response.getMediaTypes()) {
-                if (!result.contains(mt)) {
-                    result += "MediaType." + mt;
-                }
-            }
-            moreThanOne = true;
-        }
-        return result;
     }
 
 }

@@ -20,10 +20,10 @@ public interface ${variables.component?cap_first}RestService {
  @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
   	</#if>
   </#list>
-  <#if OaspUtil.hasMediaTypeInResponse(operations)>
-  @Produces(${OaspUtil.getDistinctMediaTypes(operation)})
+  <#if hasMediaTypeInResponses(operation)>
+  @Produces(${getDistinctMediaTypes(operation)})
   </#if>
-  <#assign returnType = OaspUtil.assignReturnType(operation)>
+  <#assign returnType = assignReturnType(operation)>
   public ${returnType?replace("Entity", "Eto")} ${operation.operationId}(
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
@@ -32,3 +32,49 @@ public interface ${variables.component?cap_first}RestService {
   	</#list>
  </#list>
 }
+
+<#function assignReturnType operation>
+  <#assign result=[]>
+  <#assign differentMediaTypes="">
+  <#list operation.responses as response>
+    <#list response.mediaTypes as mt>
+      <#if !(differentMediaTypes?contains(mt))>
+        <#assign result=result+[response]>
+      </#if>
+    </#list>
+  </#list>
+  <#if result?size gte 2>
+    <#return "Object">
+  <#else>
+    <#if result?size lt 1>
+      <#return "void">
+    <#else>
+      <#return OaspUtil.returnType(result?first)>
+    </#if>
+  </#if>
+</#function>
+
+<#function getDistinctMediaTypes operation>
+  <#assign result=" ">
+  <#assign amountOfTypes=0>
+  <#list operation.responses as response>
+    <#list response.mediaTypes as mt>
+      <#if !(result?contains(mt))>
+        <#if !(result==" ")>
+          <#assign result=result+",">
+        </#if>
+        <#assign result=result?trim+"MediaType."+OaspUtil.getSpringMediaType(mt)>
+      </#if>
+    </#list>
+    </#list>
+  <#return result>
+</#function>
+
+<#function hasMediaTypeInResponses operation>
+  <#list operation.responses as response>
+    <#if response.mediaTypes?size gt 0>
+      <#return true>
+    </#if>
+  </#list>
+  <#return false>
+</#function>
