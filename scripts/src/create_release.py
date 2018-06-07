@@ -73,8 +73,11 @@ def run_maven_process_and_handle_error(command: str, execpath: str=config.build_
 
     if returncode == 1:
         log_error("Maven execution failed, please see create_release.py.log for logs located at current directory.")
-        git_repo.reset()
-        sys.exit()
+        if prompt_yesno_question("Maven execution failed. Script is not able to recover from it by its own.\nCan you fix the problem right now? If so, would you like to retry the last maven execution and resume the script?"):
+          run_maven_process_and_handle_error(command, execpath)
+        else: 
+          git_repo.reset()
+          sys.exit()
 #####################################################################
 
 
