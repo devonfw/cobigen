@@ -67,6 +67,8 @@ node {
 				root = "cobigen/cobigen-core-parent"
 			} else if (origin_branch == "dev_javaplugin") {
 				root = "cobigen/cobigen-javaplugin-parent"
+			} else if (origin_branch == "dev_openapiplugin") {
+				root = "cobigen/cobigen-openapiplugin-parent"
 			} else if (origin_branch == "dev_jssenchaplugin") {
 				root = "cobigen/cobigen-senchaplugin"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
@@ -131,6 +133,9 @@ node {
 								if(origin_branch == 'dev_javaplugin'){
 									deployRoot = "cobigen-javaplugin"
 								}
+								if(origin_branch == 'dev_openapiplugin'){
+									deployRoot = "cobigen-openapiplugin"
+								}
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
 									// manifest extension, osgi bundling, and upload
@@ -141,6 +146,11 @@ node {
 								if(origin_branch == "dev_javaplugin"){
 									dir("cobigen-javaplugin-model"){
 										sh "mvn -s ${MAVEN_SETTINGS} deploy -U -Dmaven.test.skip=true"
+									}
+								}
+								if(origin_branch == "dev_openapiplugin"){
+									dir("cobigen-openapiplugin-model"){
+										sh "mvn -s ${MAVEN_SETTINGS} deploy -Dmaven.test.skip=true"
 									}
 								}
 							}
