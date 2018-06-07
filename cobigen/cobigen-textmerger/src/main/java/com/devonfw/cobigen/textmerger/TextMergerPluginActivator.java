@@ -1,10 +1,10 @@
-package com.capgemini.cobigen.textmerger;
+package com.devonfw.cobigen.textmerger;
 
 import java.util.List;
 
-import com.capgemini.cobigen.api.extension.GeneratorPluginActivator;
-import com.capgemini.cobigen.api.extension.Merger;
-import com.capgemini.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.google.common.collect.Lists;
 
 /**
@@ -18,6 +18,7 @@ public class TextMergerPluginActivator implements GeneratorPluginActivator {
         List<Merger> merger = Lists.newLinkedList();
         merger.add(new TextAppender("textmerge_append", false));
         merger.add(new TextAppender("textmerge_appendWithNewLine", true));
+        merger.add(new TextAppender("textmerge_override", false));
         return merger;
     }
 
