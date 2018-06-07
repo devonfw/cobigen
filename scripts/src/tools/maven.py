@@ -35,19 +35,19 @@ class Maven:
         # For dev_eclipseplugin branch
         if self.__config.branch_to_be_released == self.__config.branch_eclipseplugin:
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse", "META-INF", "MANIFEST.MF"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test", "META-INF", "MANIFEST.MF"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature", "feature.xml"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-updatesite"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-updatesite", "pom.xml"))
         else:
             toplevel_pom_path = os.path.join(self.__config.build_folder_abs, "pom.xml")

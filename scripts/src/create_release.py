@@ -112,7 +112,7 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean integration-test -Pp2-build-mars,p2-build-stable")
+run_maven_process_and_handle_error("mvn clean integration-test -U -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
@@ -182,23 +182,23 @@ def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
-    run_maven_process_and_handle_error("mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn deploy "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
+    run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
-    run_maven_process_and_handle_error("mvn clean "+activation_str+"-Dmaven.test.skip=true deploy", execpath=execpath)
+    run_maven_process_and_handle_error("mvn clean "+activation_str+"-Dmaven.test.skip=true deploy -U", execpath=execpath)
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = ",oss -Dgpg.keyname="+config.gpg_keyname
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -Pp2-build-stable,p2-build-mars" +
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars" +
                                        activation_str+" -Dp2.upload=stable", execpath=execpath)
 
 
