@@ -1,4 +1,4 @@
-package com.capgemini.cobigen_htmlplugin.unittest.merger.ng2;
+package com.devonfw.cobigen.htmlplugin.unittest.merger.ng2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,8 +13,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import com.capgemini.cobigen.htmlplugin.merger.AngularMerger;
-import com.capgemini.cobigen.htmlplugin.merger.constants.Constants;
+import com.devonfw.cobigen.htmlplugin.merger.AngularMerger;
+import com.devonfw.cobigen.htmlplugin.merger.constants.Constants;
 
 /** Test suite for {@link AngularMerger} regarding NG2 templates */
 public class HTMLNG2MergerTest {
