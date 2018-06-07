@@ -105,7 +105,7 @@ public class EclipseUtils {
         bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
-        configurationProject.contextMenu("Maven").menu("Update Project...").click();
+        configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
