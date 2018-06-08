@@ -1,0 +1,6 @@
+// anchor:header:append:anchorend
+line1
+// anchor:part:append:anchorend
+line2
+// anchor:footer:append:anchorend
+line3

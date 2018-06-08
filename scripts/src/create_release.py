@@ -73,8 +73,11 @@ def run_maven_process_and_handle_error(command: str, execpath: str=config.build_
 
     if returncode == 1:
         log_error("Maven execution failed, please see create_release.py.log for logs located at current directory.")
-        git_repo.reset()
-        sys.exit()
+        if prompt_yesno_question("Maven execution failed. Script is not able to recover from it by its own.\nCan you fix the problem right now? If so, would you like to retry the last maven execution and resume the script?"):
+            run_maven_process_and_handle_error(command, execpath)
+        else:
+            git_repo.reset()
+            sys.exit()
 #####################################################################
 
 
@@ -112,7 +115,7 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean integration-test -U -Pp2-build-mars,p2-build-stable")
+run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
@@ -188,10 +191,8 @@ def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
-    activation_str = ""
-    if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
-    run_maven_process_and_handle_error("mvn clean "+activation_str+"-Dmaven.test.skip=true deploy -U", execpath=execpath)
+    # no oss activation as this will cause the build to fail
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U", execpath=execpath)
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
@@ -289,6 +290,6 @@ else:
         closing_comment = closing_comment + "* "+message+"\n"
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    log_info("Closed issue #" + release_issue.number + ": " + release_issue.title)
+    log_info("Closed issue #" + str(release_issue.number) + ": " + release_issue.title)
 
 log_info("Congratz! A new release! Script executed successfully!")

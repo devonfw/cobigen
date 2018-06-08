@@ -21,7 +21,7 @@
     <module>cobigen-jsonplugin</module>
     <module>cobigen-htmlplugin</module>
     <module>cobigen-tsplugin</module>
-    <module>cobigen-openapiplugin</module>
+    <module>cobigen-openapiplugin-parent</module>
     <module>cobigen-templateengines</module>
   </modules>
 
