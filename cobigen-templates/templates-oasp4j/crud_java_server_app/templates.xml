@@ -29,6 +29,8 @@
     <templateExtension ref="${variables.entityName}EntityRegistrationBean.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}Repo.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}RepoCustom.java" mergeStrategy="javamerge"/>
+	    
+    <templateExtension ref="AbstractComponentFacade.java" mergeStrategy="javamerge_override"/>
   </templates>
 
   <templateScans>
