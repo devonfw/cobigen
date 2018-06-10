@@ -9,7 +9,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -63,10 +66,11 @@ public class OpenAPITest extends SystemTest {
     public void testBasicOpenAPIGeneration() throws Exception {
 
         // copy sample project to external location and import it into the workspace
-        File tmpFolder = tmpFolderRule.newFolder();
         String testProjName = "ExtTestProj";
-        FileUtils.copyDirectory(new File(resourcesRootPath + "input/" + testProjName), tmpFolder);
-        EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), true);
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjName);
+        FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
+            project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         EclipseUtils.updateMavenProject(bot, testProjName);
 
         // expand the new file in the package explorer
@@ -125,6 +129,7 @@ public class OpenAPITest extends SystemTest {
         try (InputStream in = generationResult.getContents()) {
             assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                    "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
                     LINE_SEPARATOR + //
                     "}");
