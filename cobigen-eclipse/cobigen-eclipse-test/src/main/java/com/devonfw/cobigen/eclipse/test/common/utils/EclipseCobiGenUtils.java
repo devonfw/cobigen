@@ -62,13 +62,24 @@ public class EclipseCobiGenUtils {
      *            the {@link SWTWorkbenchBot} of the test
      */
     public static void confirmSuccessfullGeneration(SWTWorkbenchBot bot) {
+        confirmSuccessfullGeneration(bot, DEFAULT_TIMEOUT);
+    }
+
+    /**
+     * Confirm successful generation dialog as well as organize import dialog if necessary.
+     * @param bot
+     *            the {@link SWTWorkbenchBot} of the test
+     * @param timeout
+     *            the bot should wait while discovering dialogs
+     */
+    public static void confirmSuccessfullGeneration(SWTWorkbenchBot bot, int timeout) {
         try {
-            bot.waitUntil(shellIsActive("Organize Imports"), DEFAULT_TIMEOUT);
+            bot.waitUntil(shellIsActive("Organize Imports"), timeout);
             bot.shell("Organize Imports").bot().button(IDialogConstants.OK_LABEL).click();
         } catch (TimeoutException e) {
             // dialog just optional
         }
-        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED), DEFAULT_TIMEOUT);
+        bot.waitUntil(shellIsActive(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED), timeout);
         bot.shell(CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED).bot().button(IDialogConstants.OK_LABEL).click();
     }
 }
