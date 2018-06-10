@@ -67,6 +67,7 @@ public class OpenAPITest extends SystemTest {
         String testProjName = "ExtTestProj";
         FileUtils.copyDirectory(new File(resourcesRootPath + "input/" + testProjName), tmpFolder);
         EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), true);
+        EclipseUtils.updateMavenProject(bot, testProjName);
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
