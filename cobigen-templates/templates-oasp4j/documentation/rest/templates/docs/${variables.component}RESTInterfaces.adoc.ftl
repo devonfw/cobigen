@@ -20,7 +20,7 @@ Component Data
 
   <#if JavaUtil.hasMethodWithAnnotation(classObject,annotation)>
 
-    === ${type} Requests
+    === ${type?lower_case} Requests
 
     [options="header"]
     |===
