@@ -10,7 +10,7 @@ including information about its components and their openAPI definitions.
 
 // anchor:components:newline:anchorend
 
-<#include "*$\{variables.component}To.adoc.ftl">
+<#include "*/$\{variables.component}To.adoc.ftl">
 
 
 // anchor:footer::anchorend

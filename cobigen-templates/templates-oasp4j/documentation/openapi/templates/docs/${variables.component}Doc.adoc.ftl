@@ -13,8 +13,8 @@ Component Data
 [options="header"]
 |===
 |Name |Description
-|${model.componentName?cap_first}
-|${model.description}
+|<#if model.componentName??>${model.componentName?cap_first}<#else>-</#if>
+|<#if model.description??>${model.description}<#else>-</#if>
 |===
 
 <#macro request type>
@@ -51,7 +51,7 @@ Component Data
       |Response type |Description
       <#list resps as resp>
         | <@mediaTypes resp.mediaTypes/>
-        | ${resp.description}
+        | <#if resp.description>${resp.description}<#else>-</#if>
       </#list>
       |===
     </#if>
