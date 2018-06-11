@@ -370,5 +370,6 @@ public class JavaUtilTest {
     @Test(expected = IOException.class)
     public void hasRootPathTest() throws IOException {
         assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
+        assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
     }
 }
