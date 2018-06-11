@@ -2,7 +2,6 @@ package templates;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
@@ -46,7 +45,6 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
-    @Ignore("not yet possible as of maven issue")
     public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesOpenApiInput/");
