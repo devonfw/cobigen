@@ -1,3 +1,4 @@
+<#include "/functions.ftl">
 package ${variables.rootPackage}.${variables.component?lower_case}.service.api.rest;
 
 import javax.validation.Valid;
@@ -80,14 +81,14 @@ public interface ${variables.component?cap_first}RestService {
   @DELETE
   			</#if>
   @Path("${path.pathURI}")
-  			<#assign returnType = OpenApiUtil.printJavaServiceResponseReturnType(operation.response)>
+  			<#assign returnType = getReturnType(operation,true)>
   <#list operation.parameters as parameter>
     <#if parameter.mediaType??>
  @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
   	</#if>
   </#list>
-  <#if operation.response.mediaType??>
-  @Produces(MediaType.${OaspUtil.getSpringMediaType(operation.response.mediaType)})
+  <#if hasMediaTypeInResponses(operation)>
+  @Produces(${getDistinctMediaTypes(operation)})
   </#if>
   public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     <#list operation.parameters as parameter>

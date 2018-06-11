@@ -55,7 +55,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>attach-p2-metadata</id>
+            <id>p2-metadata</id>
             <phase>package</phase>
             <goals>
               <goal>p2-metadata</goal>
