@@ -1,9 +1,19 @@
 package com.devonfw.cobigen.templates.oasp4j.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
@@ -340,7 +350,7 @@ public class JavaUtil {
      * @param pojoClass
      *            {@link Class} the class object of the pojo
      * @param name
-     *            {@link String} the name of the field
+     *            {@link String} the name of the method
      * @param annotation
      *            {@link String} the name of the annotation
      * @return true if the field has the annotation, false if not
@@ -387,5 +397,128 @@ public class JavaUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * returns the class name of the return type of a specific method.
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param name
+     *            {@link String} the name of the method
+     * @return the class name of the return type of the specified method
+     */
+    public String getReturnType(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "-";
+        Method method = findMethod(pojoClass, name);
+        if (method != null && !method.getReturnType().equals(Void.TYPE)) {
+            s = method.getReturnType().toString();
+            s = s.substring(s.lastIndexOf('.') + 1, s.length());
+        }
+        return s;
+    }
+
+    public String getParams(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "";
+        String tmp;
+        Method method = findMethod(pojoClass, name);
+        StringBuilder sb = new StringBuilder(s);
+        if (method != null && method.getParameterCount() > 0) {
+            for (Parameter p : method.getParameters()) {
+                tmp = p.getType().toString();
+                sb.append(tmp.substring(tmp.lastIndexOf('.') + 1, tmp.length()) + ", ");
+            }
+            sb.replace(sb.lastIndexOf(","), sb.length(), " ");
+        } else {
+            sb.replace(0, sb.length(), "-");
+        }
+        s = sb.toString();
+        return s.trim();
+    }
+
+    public String getPathParam(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String s = "-";
+        Method method = findMethod(pojoClass, name);
+        if (method != null && method.getParameterCount() > 0) {
+            for (Annotation[] p : method.getParameterAnnotations()) {
+                for (Annotation a : p) {
+                    if (a instanceof PathParam) {
+                        s = ((PathParam) a).value();
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
+    public String getJavaDocWithoutLink(String doc) {
+
+        Pattern p = Pattern.compile("\\{@link ([^\\}]*)\\}");
+        Matcher m = p.matcher(doc);
+        while (m.find()) {
+            doc = doc.replace(m.group(0), m.group(1));
+        }
+        return doc;
+    }
+
+    public String extractMediaType(String input) {
+
+        if (input.contains("MediaType.APPLICATION_JSON")) {
+            input = input.replace("MediaType.APPLICATION_JSON", MediaType.APPLICATION_JSON);
+        }
+        if (input.contains("MediaType.APPLICATION_XML")) {
+            input = input.replace("MediaType.APPLICATION_XML", MediaType.APPLICATION_XML);
+        }
+        return input;
+    }
+
+    public String extractRootPath(Class<?> pojoClass) throws IOException {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        String t = "";
+        StringBuilder sb = new StringBuilder("http://localhost:");
+        InputStream in = pojoClass.getClassLoader().getResourceAsStream("application.properties");
+        if (in != null) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((t = br.readLine()) != null) {
+                if (t.matches("#server\\.port=(\\d{0,5})") || t.matches("#server\\.context-path=([^\\s]*)")) {
+                    sb.append(t.substring(t.indexOf('=') + 1));
+                }
+            }
+            return sb.toString();
+        } else {
+            throw new IOException("application.properties file not found!");
+        }
+    }
+
+    private Method findMethod(Class<?> pojoClass, String name) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method m : pojoClass.getMethods()) {
+            if (m.getName().equals(name)) {
+                return m;
+            }
+        }
+        return null;
     }
 }

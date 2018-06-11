@@ -45,7 +45,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
      *             test fails
      */
     @Test
-	public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
+    public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesOpenApiInput/");
         runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
@@ -60,6 +60,18 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     public void testAllTemplatesGeneration_RestServiceInput() throws Exception {
 
         File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesRestServiceInput/");
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
+    }
+
+    /**
+     * Test successful generation of all templates based on a To
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testAllTemplatesGeneration_ToInput() throws Exception {
+
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesToInput/");
         runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
