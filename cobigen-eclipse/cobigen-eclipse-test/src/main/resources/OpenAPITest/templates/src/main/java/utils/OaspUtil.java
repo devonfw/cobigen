@@ -3,7 +3,7 @@ package utils;
 import java.util.Collection;
 import java.util.Map;
 
-import constants.pojo.Field;
+import constants.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates
