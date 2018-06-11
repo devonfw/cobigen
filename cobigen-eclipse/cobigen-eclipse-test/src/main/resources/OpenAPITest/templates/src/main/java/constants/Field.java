@@ -1,4 +1,4 @@
-package constants.pojo;
+package constants;
 
 /**
  * Contains the used keys for the pojo field Map&lt;String, Object>
