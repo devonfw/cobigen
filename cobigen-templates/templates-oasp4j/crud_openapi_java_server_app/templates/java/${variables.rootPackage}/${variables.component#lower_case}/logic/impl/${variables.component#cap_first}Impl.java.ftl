@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devonfw.demo.general.logic.base.AbstractComponentFacade;
+import ${variables.rootPackage}.general.logic.base.AbstractComponentFacade;
 import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.dao.${variables.entityName}Dao;
 import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.${variables.component?cap_first};
