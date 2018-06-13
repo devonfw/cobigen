@@ -153,15 +153,15 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                 }
             }
         } catch (CoreException e) {
+            LOG.error("Eclipse internal Exception", e);
             PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
                 + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.", e);
-            LOG.error("Eclipse internal Exception", e);
         } catch (CobiGenRuntimeException e) {
-            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
             LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
+            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
         } catch (Throwable e) {
-            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
+            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
         } finally {
             LOG.info("Finished processing generation.");
             monitor.done();

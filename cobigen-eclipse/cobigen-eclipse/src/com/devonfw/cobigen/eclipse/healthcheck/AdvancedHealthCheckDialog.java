@@ -186,8 +186,8 @@ public class AdvancedHealthCheckDialog extends Dialog {
         } catch (CoreException e) {
             String s = "An eclipse internal exception occurred while retrieving the configuration folder resource.";
             s = MessageUtil.enrichMsgIfMultiError(s, report);
-            PlatformUIUtil.openErrorDialog(s, e);
             LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.", e);
+            PlatformUIUtil.openErrorDialog(s, e);
         }
         ResourcesPluginUtil.refreshConfigurationProject();
         Activator.getDefault().startConfigurationProjectListener();
