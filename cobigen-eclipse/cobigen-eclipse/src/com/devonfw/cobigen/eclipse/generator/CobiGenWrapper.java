@@ -168,6 +168,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
+            LOG.debug("Generting files...");
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
@@ -190,6 +191,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
+                LOG.debug("Generating with single non container input ...");
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
