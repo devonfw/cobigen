@@ -108,7 +108,8 @@ public class EclipseUtils {
         configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
-        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).build(IncrementalProjectBuilder.CLEAN_BUILD,
+            new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     }
 
