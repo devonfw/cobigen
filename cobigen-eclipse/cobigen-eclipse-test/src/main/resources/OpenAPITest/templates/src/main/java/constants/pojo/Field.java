@@ -1,4 +1,4 @@
-package constants;
+package constants.pojo;
 
 /**
  * Contains the used keys for the pojo field Map&lt;String, Object>
@@ -31,7 +31,6 @@ public enum Field {
     /**
      * key value
      */
-    @SuppressWarnings("unused")
     private String value;
 
     /**

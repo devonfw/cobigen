@@ -3,7 +3,7 @@ package utils;
 import java.util.Collection;
 import java.util.Map;
 
-import constants.Field;
+//import constants.pojo.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates
@@ -241,14 +241,14 @@ public class OaspUtil {
     public String resolveIdVariableNameOrSetterGetterSuffix(Map<String, Object> field, boolean byObjectReference,
         boolean capitalize, String component) {
 
-        String fieldName = (String) field.get(Field.NAME.toString());
+        String fieldName = "";// (String) field.get(Field.NAME.toString());
         if (capitalize) {
             fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
         }
         String suffix = "";
 
-        String fieldType = (String) field.get(Field.TYPE.toString());
-        String fieldCType = (String) field.get(Field.CANONICAL_TYPE.toString());
+        String fieldType = "";// (String) field.get(Field.TYPE.toString());
+        String fieldCType = "";// (String) field.get(Field.CANONICAL_TYPE.toString());
         if (fieldType.contains("Entity")) {
             if (fieldCType.startsWith("java.util.List") || fieldCType.startsWith("java.util.Set")) {
                 suffix = "Ids";
@@ -293,13 +293,13 @@ public class OaspUtil {
         boolean byObjectReference, boolean capitalize, String component)
         throws NoSuchFieldException, SecurityException {
 
-        String resultName = (String) fieldMap.get(Field.NAME.toString());
+        String resultName = "";// (String) fieldMap.get(Field.NAME.toString());
         if (capitalize) {
             resultName = resultName.substring(0, 1).toUpperCase() + resultName.substring(1);
         }
         String suffix = "";
-        String fieldType = (String) fieldMap.get(Field.TYPE.toString());
-        String fieldName = (String) fieldMap.get(Field.NAME.toString());
+        String fieldType = "";// (String) fieldMap.get(Field.TYPE.toString());
+        String fieldName = "";// (String) fieldMap.get(Field.NAME.toString());
         if (fieldType.contains("Entity")) {
             if (Collection.class.isAssignableFrom(pojoClass.getDeclaredField(fieldName).getType())) {
                 suffix = "Ids";
@@ -332,7 +332,7 @@ public class OaspUtil {
      */
     public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
-        String fieldType = (String) field.get(Field.TYPE.toString());
+        String fieldType = "";// (String) field.get(Field.TYPE.toString());
         if (fieldType.contains("Entity")) {
             fieldType = fieldType.replaceAll("[^<>]+Entity", "Long");
         }
