@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -369,6 +371,11 @@ public class JavaUtilTest {
      */
     @Test(expected = IOException.class)
     public void hasRootPathTest() throws IOException {
+        // assume
+        try (InputStream stream = clazz.getClassLoader().getResourceAsStream("application.properties")) {
+            Assume.assumeTrue("application.properties exists in classpath: "
+                + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
+        }
         assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
         assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
     }
