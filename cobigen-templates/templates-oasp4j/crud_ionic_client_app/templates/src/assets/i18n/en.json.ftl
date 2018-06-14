@@ -19,10 +19,10 @@
     "subtitle":"Wrong User and/or password",
     "dismiss":"Close"
   },
-  "${variables.component}": {
+  "${variables.component?uncap_first}": {
     "title": "${variables.component} Title",
     "description": "This is the basic template for ionic",
-    "${variables.etoName}": {
+    "${variables.etoName?uncap_first}": {
      
     <#list pojo.fields as field>
     "${field.name}":"${field.name}_EN",
