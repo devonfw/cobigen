@@ -29,7 +29,7 @@ public class ${variables.className}Eto extends <#if variables.className?contains
 
   <#-- Generates all the connnected classes -->
   <#-- For generating the variables and methods of all the connected classes to this class -->
-    <#-- ${OaspUtil.generateConnectorsVariablesMethodsText((variables.className+"test"))} -->
+    <#-- ${OaspUtil.generateConnectorsVariablesMethodsText()} -->
 
   <#-- Generates all the getters and setters of each attribute defined for the class on the UML -->
   <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion/>

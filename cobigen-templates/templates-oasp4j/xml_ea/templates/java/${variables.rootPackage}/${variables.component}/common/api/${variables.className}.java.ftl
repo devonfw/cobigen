@@ -29,42 +29,31 @@ public interface ${name} extends ApplicationEntity {
         <#assign targetName = connector["target/model/@name"]> 
         <#assign sourceName = connector["source/model/@name"]> 
         <#-- I am source -->
-        <#if (connector["source/model/@type"] == "Class")>
+        <#if (connector["source/model/@type"] == "Class") || (connector["source/model/@type"]=="Class")>
             <#-- If I am the source connector, check target's multiplicity -->
             <#if ((sourceName) == '${variables.className}')>
-                <#if (connector["target/type/@multiplicity"] )?is_string>
-                    <#if (connector["target/type/@multiplicity"] == "1")>
-    <#-- I want one (multiplicity == 1) -->
-
-    public ${targetName?cap_first} get${targetName?cap_first}();
-
-    public void set${targetName?cap_first}(${targetName?cap_first} ${targetName?uncap_first});
-                    <#elseif (connector["target/type/@multiplicity"] == "*")>
-    public List<${targetName?cap_first}> get${targetName?uncap_first}s();
-    
-    public void set${targetName?uncap_first}s(List<${targetName?cap_first}>);
-                    </#if>
-                </#if>
+              <#assign className=targetName>
+              <#assign multiplicity=connector["target/type/@multiplicity"]>
+            <#elseif ((targetName) == '${variables.className}')>
+              <#assign className=sourceName>
+              <#assign multiplicity=connector["source/type/@multiplicity"]>
+            <#else>
+              <#assign className="failure">
             </#if>
-        </#if>
-        <#-- I am target -->
-        <#if (connector["target/model/@type"] == "Class")>
-            <#-- If I am the target connector, check sources' multiplicity -->
-            <#if ((targetName) == '${variables.className}')>
-                <#if (connector["source/type/@multiplicity"] )?is_string>
-                    <#if (connector["source/type/@multiplicity"] == "1")>
-    <#-- I want one (multiplicity == 1) -->
-    public ${sourceName?cap_first} get${sourceName?cap_first}();
+            <#if !(className=="failure")>
+              <#if multiplicity?is_string>
+                <#if (multiplicity == "1")>
+    public ${className?cap_first} get${className?cap_first}();
 
-    public void set${sourceName?cap_first}(${sourceName?cap_first} ${sourceName?uncap_first});
-                    <#elseif (connector["target/type/@multiplicity"] == "*")>
-    public List<${sourceName?cap_first}> get${sourceName?uncap_first}s();
+    public void set${className?cap_first}(${className?cap_first} ${className?uncap_first});
+                <#elseif (multiplicity == "*")>
+    public List<${className?cap_first}> get${className?uncap_first}s();
     
-    public void set${sourceName?uncap_first}s(List<${sourceName?cap_first}>);
-                    </#if>
+    public void set${className?cap_first}s(List<${className?cap_first}> ${className?uncap_first});
                 </#if>
+              </#if>
             </#if>
-        </#if>
+          </#if>
     </#list>
 
 }
