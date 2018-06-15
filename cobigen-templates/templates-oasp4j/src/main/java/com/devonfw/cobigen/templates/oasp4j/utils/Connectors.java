@@ -21,9 +21,14 @@ public class Connectors {
     /**
      * @return
      */
-    public String generateText() {
+    public String generateText(String test) {
         String content = "";
+        int i = 0;
         for (Connector connector : connectors) {
+            if (test.contains("test")) {
+                System.out.println(i + " " + connector.getClassName() + " " + connector.getMultiplicity());
+            }
+            i++;
             String connectedClassName = connector.getClassName();
             String multiplicity = connector.getMultiplicity();
             if (multiplicity.equals("1")) {

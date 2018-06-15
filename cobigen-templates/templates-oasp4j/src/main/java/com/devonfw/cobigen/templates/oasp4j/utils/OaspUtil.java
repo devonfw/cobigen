@@ -455,10 +455,11 @@ public class OaspUtil {
      * class
      * @return String: Contains all the generated text
      */
-    public String generateConnectorsVariablesMethodsText() {
+    public String generateConnectorsVariablesMethodsText(String test) {
         String textContent = "";
+        System.out.println(test);
 
-        textContent = connectors.generateText();
+        textContent = connectors.generateText(test);
         connectors = new Connectors();
 
         return textContent;
@@ -683,5 +684,9 @@ public class OaspUtil {
         default:
             return "";
         }
+    }
+
+    public void print(String s) {
+        System.out.println(s);
     }
 }
