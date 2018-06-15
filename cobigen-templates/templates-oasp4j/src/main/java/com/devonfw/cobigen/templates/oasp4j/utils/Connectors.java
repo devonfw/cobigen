@@ -1,4 +1,4 @@
-package utils;
+package com.devonfw.cobigen.templates.oasp4j.utils;
 
 import java.util.ArrayList;
 import java.util.List;

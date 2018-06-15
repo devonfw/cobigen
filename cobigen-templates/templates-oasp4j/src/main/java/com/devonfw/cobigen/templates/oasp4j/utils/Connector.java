@@ -1,4 +1,4 @@
-package utils;
+package com.devonfw.cobigen.templates.oasp4j.utils;
 
 /**
  * Connector is one association between classes in a class diagram. This class is used for storing that data,

@@ -1,18 +1,19 @@
-
 package com.devonfw.cobigen.templates.oasp4j.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.xerces.dom.DeferredElementNSImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.templates.oasp4j.constants.Field;
-import constants.pojo.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates
@@ -601,8 +602,8 @@ public class OaspUtil {
         }
         return targetClassName;
     }
-	
-	/**
+
+    /**
      * Checks whether the operation with the given ID corresponds to any standard CRUD method name.
      * @param operationId
      *            operation ID interpreted as method name
