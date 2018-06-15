@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.xerces.dom.DeferredElementNSImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.devonfw.cobigen.templates.oasp4j.constants.Field;
+import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
 
 /**
  * A class for shared oasp4j specific functions in the templates
@@ -483,6 +483,7 @@ public class OaspUtil {
      */
     public void resolveConnectorsContent(Object source, Object target, String className) {
         String textContent = "";
+        source.getClass().getClassLoader();
         DeferredElementNSImpl sourceNode = (DeferredElementNSImpl) source;
         DeferredElementNSImpl targetNode = (DeferredElementNSImpl) target;
 
