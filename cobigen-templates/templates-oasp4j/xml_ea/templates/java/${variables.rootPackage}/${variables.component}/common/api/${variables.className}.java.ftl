@@ -39,6 +39,10 @@ public interface ${name} extends ApplicationEntity {
     public ${targetName?cap_first} get${targetName?cap_first}();
 
     public void set${targetName?cap_first}(${targetName?cap_first} ${targetName?uncap_first});
+                    <#elseif (connector["target/type/@multiplicity"] == "*")>
+    public List<${targetName?cap_first}> get${targetName?uncap_first}s();
+    
+    public void set${targetName?uncap_first}s(List<${${targetName?cap_first}>);
                     </#if>
                 </#if>
             </#if>
@@ -53,6 +57,10 @@ public interface ${name} extends ApplicationEntity {
     public ${sourceName?cap_first} get${sourceName?cap_first}();
 
     public void set${sourceName?cap_first}(${sourceName?cap_first} ${sourceName?uncap_first});
+                    <#elseif (connector["target/type/@multiplicity"] == "*")>
+    public List<${sourceName?cap_first}> get${sourceName?uncap_first}s();
+    
+    public void set${sourceName?uncap_first}s(List<${${sourceName?cap_first}>);
                     </#if>
                 </#if>
             </#if>
