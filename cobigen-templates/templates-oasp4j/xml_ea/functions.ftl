@@ -35,27 +35,6 @@
     </#if>
 </#function>
 
-<#function getConnectorType connectors sourceClassName>
-  <#assign result = []>
-  <#if connectors?has_content>
-    <#list connectors as connector>
-      <#assign targetName = connector["target/model/@name"]> 
-      <#if (connector["source/model/@type"] == "Class")>
-        <#if (connector["source/model/@name"] == sourceClassName)>
-          <#if (connector["target/type/@multiplicity"] )?is_string>
-            <#if (connector["target/type/@multiplicity"] == "1")>
-             <#assign result=result+["${targetName?cap_first}"]>
-            <#elseif (connector["target/type/@multiplicity"] == "*")>
-              <#assign result=result+["List<${targetName?cap_first}>"]>
-            </#if>
-          </#if>
-        </#if>
-      </#if>
-    </#list>
-  </#if>
-  <#return result>
-</#function>
-
 <#function getConnectorName connector isType=false>
   <#assign targetName = connector["target/model/@name"]> 
   <#assign sourceName = connector["source/model/@name"]>
@@ -148,11 +127,11 @@
   private ${typeVar} ${field["@name"]};
 </#if>
 </#list>
-<#if connectors?has_content>
+<#-- --><#if connectors?has_content>
+  <#assign existing=[]>
   <#list connectors as connector>
     <#if getConnectorName(connector,true)??>
-      <#assign existing=[]>
-      <#if existing?seq_contains("${getConnectorName(connector,false)}")>
+      <#if !existing?seq_contains("${getConnectorName(connector,false)}")>
     private ${getConnectorName(connector, true)} ${getConnectorName(connector, false)};
         <#assign existing=existing+["${getConnectorName(connector,false)}"]>
       </#if>
@@ -212,20 +191,20 @@
 </#if>
 </#list>
 <#if connectors?has_content>
+  <#assign existing=[]>
   <#list connectors as connector>
     <#if getConnectorName(connector,true)??>
-      <#assign existing=[]>
-      <#if existing?seq_contains("${getConnectorName(connector,false)}")>
-    public ${getConnectorName(connector,true)} get${getConnectorName(connector,false)}(){
+      <#if !existing?seq_contains("${getConnectorName(connector,false)}")>
+    public ${getConnectorName(connector,true)} get${getConnectorName(connector,true)}(){
         return ${getConnectorName(connector,false)};
     }
     
     public void set${getConnectorName(connector, true)}(${getConnectorName(connector,true)} ${getConnectorName(connector,false)}){
-        this.${getConnectorName(connector,false)}=${getConnectorName(connector,false)}
+        this.${getConnectorName(connector,false)}=${getConnectorName(connector,false)};
     }
         <#assign existing=existing+["${getConnectorName(connector,false)}"]>
       </#if>
     </#if>
-  </#list>
+  </#list> <#-- -->
 </#if>
 </#macro>
