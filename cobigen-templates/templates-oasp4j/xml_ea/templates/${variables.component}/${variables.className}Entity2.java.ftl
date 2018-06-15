@@ -8,4 +8,4 @@
     <#assign target = connector["target"]> 
     ${OaspUtil.resolveConnectorsContent(source, target, name)}
 </#list>
-    ${OaspUtil.generateConnectorsVariablesMethodsText("")}
+    ${OaspUtil.generateConnectorsVariablesMethodsText()}

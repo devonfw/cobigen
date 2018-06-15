@@ -4,14 +4,6 @@ package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import io.oasp.module.jpa.common.api.to.SearchCriteriaTo;
 
-<#-- Class connections/associations -->
-<#list connectors as connector>
-    <#assign source = connector["source"]>
-    <#assign target = connector["target"]> 
-    <#-- We store the information of the connectors of this class to a variable -->
-    ${OaspUtil.resolveConnectorsContent(source, target, name)}
-</#list>
-
 /**
  * This is the {@link SearchCriteriaTo search criteria} {@link net.sf.mmm.util.transferobject.api.TransferObject TO}
  * used to find {@link ${variables.rootPackage}.${variables.component}.common.api.${variables.className}}s.
@@ -32,7 +24,7 @@ public class ${variables.className}SearchCriteriaTo extends SearchCriteriaTo {
     super();
   }
   
-  <#-- ${OaspUtil.generateConnectorsVariablesMethodsText("")} -->
+  <#-- ${OaspUtil.generateConnectorsVariablesMethodsText()} -->
 
   <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=false  implementsInterface=false isSearchCriteria=true/>
 
