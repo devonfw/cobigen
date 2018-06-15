@@ -6,7 +6,7 @@
   <version>2.4.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>CobiGen OASP4J Templates</name>
-  <description >CobiGen OASP4J Templates</description>
+  <description>CobiGen OASP4J Templates</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>

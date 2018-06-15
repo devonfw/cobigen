@@ -23,36 +23,48 @@ import java.util.Set;
  */
 public class ${variables.className}Eto extends <#if variables.className?contains("Entity")>${variables.className?replace("Entity","Eto")}<#else>AbstractEto</#if> implements ${variables.className} {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
   <#-- Generates all the attributes defined for the class on the UML -->
-	<@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion/>
+  <@generateFieldDeclarations_withRespectTo_entityObjectToIdReferenceConversion/>
 
   <#-- Generates all the connnected classes -->
   <#-- For generating the variables and methods of all the connected classes to this class -->
     ${OaspUtil.generateConnectorsVariablesMethodsText()}
 
   <#-- Generates all the getters and setters of each attribute defined for the class on the UML -->
-	<@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion/>
+  <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion/>
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
         <#if elemDoc["self::node()/ownedAttribute"]?has_content>
-        	<#list elemDoc["self::node()/ownedAttribute"] as field>
+          <#list elemDoc["self::node()/ownedAttribute"] as field>
             <#assign fieldType=field["type/@xmi:idref"]?replace("EAJava_","")>
-        		<#if JavaUtil.equalsJavaPrimitive(classObject,field["@name"])>
-					result = prime * result + ${JavaUtil.castJavaPrimitives(classObject,field["@name"])}.hashCode();
-				<#elseif fieldType?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
-          <#if !fieldType?starts_with("List<") && !fieldType?starts_with("Set<")>
-  					<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
-  					result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
-  				</#if>
-    		<#else>
-					result = prime * result + ((this.${field["@name"]} == null) ? 0 : this.${field["@name"]}.hashCode());
-        		</#if>
-        	</#list>
+            <#if JavaUtil.equalsJavaPrimitive(classObject,field["@name"])>
+          result = prime * result + ${JavaUtil.castJavaPrimitives(classObject,field["@name"])}.hashCode();
+            <#elseif fieldType?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
+              <#if !fieldType?starts_with("List<") && !fieldType?starts_with("Set<")>
+                <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+            result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
+              </#if>
+            <#else>
+          result = prime * result + ((this.${field["@name"]} == null) ? 0 : this.${field["@name"]}.hashCode());
+            </#if>
+          </#list>
+          <#assign connectorTypeList=getConnectorTypes(Connectors,"${variables.className}")>
+          <#if connectorTypeList?has_content>
+            <#list connectorTypeList as type>
+              <#-- 
+              <#if type isn't list>
+                result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
+              <#else>
+                result = prime * result + ((this.${type} == null) ? 0 : this.${type}.hashCode());
+              </#if>
+              -->
+            </#list>
+          </#if>
         <#else>
         result = prime * result;
         </#if>
@@ -75,28 +87,28 @@ public class ${variables.className}Eto extends <#if variables.className?contains
     ${variables.className}Eto other = (${variables.className}Eto) obj;
     <#list elemDoc["self::node()/ownedAttribute"] as field>
     <#if JavaUtil.equalsJavaPrimitive(classObject,field["@name"])>
-		if(this.${field["@name"]} != other.${field["@name"]}) {
-			return false;
-		}
+    if(this.${field["@name"]} != other.${field["@name"]}) {
+      return false;
+    }
     <#elseif fieldType?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
       <#if !fieldType?starts_with("List<") && !fieldType?starts_with("Set<")>
-    		<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
-    		if (this.${idVar} == null) {
-    		  if (other.${idVar} != null) {
-    			return false;
-    		  }
-    		} else if(!this.${idVar}.equals(other.${idVar})){
-    		  return false;
-    		}
+        <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+        if (this.${idVar} == null) {
+          if (other.${idVar} != null) {
+          return false;
+          }
+        } else if(!this.${idVar}.equals(other.${idVar})){
+          return false;
+        }
     </#if>
-	<#else>
-		if (this.${field["@name"]} == null) {
-		  if (other.${field["@name"]} != null) {
-			return false;
-		  }
-		} else if(!this.${field["@name"]}.equals(other.${field["@name"]})){
-		  return false;
-		}
+  <#else>
+    if (this.${field["@name"]} == null) {
+      if (other.${field["@name"]} != null) {
+      return false;
+      }
+    } else if(!this.${field["@name"]}.equals(other.${field["@name"]})){
+      return false;
+    }
     </#if>
     </#list>
     return true;
