@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="${variables.className}Entity.java" mergeStrategy="javamerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+  <increment name="xml_uml_entity" description="Entity infrastructure">
+      <templateRef ref="${variables.className}Entity.java"/>
+      <templateRef ref="${variables.className}.java"/>
+      <templateRef ref="ApplicationEntity.java"/>
+      <templateRef ref="ApplicationPersistenceEntity.java"/>
+    </increment>
+    <increment name="xml_uml_dao" description="CRUD DAO">
+      <templateRef ref="${variables.className}Dao.java"/>
+      <templateRef ref="${variables.className}DaoImpl.java"/>
+      <templateRef ref="ApplicationDao.java"/>
+      <templateRef ref="ApplicationDaoImpl.java"/>
+    </increment>
+    <increment name="xml_uml_nested_rest" description="CRUD Nested REST service">
+      <templateRef ref="${variables.component#cap_first}RestService.java"/>
+      <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
+    </increment>
+    <increment name="xml_uml_nested_soap_service" description="CRUD Nested SOAP services">
+      <templateRef ref="WebApplicationContextLocator.java"/>
+      <templateRef ref="${variables.component#cap_first}SoapService.java"/>
+      <templateRef ref="${variables.component#cap_first}SoapServiceImpl.java"/>
+    </increment>
+    <increment name="xml_uml_rest_service_impl" description="CRUD REST services">
+      <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
+      <templateRef ref="${variables.component#cap_first}RestService.java"/>
+    </increment>
+    <increment name="xml_uml_soap_service_impl" description="CRUD SOAP services">
+      <templateRef ref="${variables.component#cap_first}SoapService.java"/>
+      <templateRef ref="${variables.component#cap_first}SoapServiceImpl.java"/>
+      <templateRef ref="ServiceConfig.java"/>
+    </increment>
+    <increment name="xml_uml_repository" description="CRUD SpringData">
+      <templateRef ref="${variables.className}RepoImpl.java"/>
+      <templateRef ref="${variables.className}EntityRegistrationBean.java"/>
+      <templateRef ref="${variables.className}Repo.java"/>
+      <templateRef ref="${variables.className}RepoCustom.java"/>
+    </increment>
+    <increment name="xml_uml_SDlogic_impl" description="CRUD SpringData logic (all in one)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="AbstractGenericEntityUtils.java"/>
+      <templateRef ref="${variables.component#cap_first}RepoImpl.java"/>
+    </increment>
+    <increment name="xml_uml_logic_impl" description="CRUD logic (all in one)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="AbstractGenericEntityUtils.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+    </increment>
+    <increment name="xml_uml_logic_impl_use_cases" description="CRUD logic (with use cases)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractUc.java"/>
+      <templateRef ref="UcFind${variables.className}.java"/>
+      <templateRef ref="UcManage${variables.className}.java"/>
+      <templateRef ref="UcFind${variables.className}Impl.java"/>
+      <templateRef ref="UcManage${variables.className}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+      <templateRef ref="Abstract${variables.className}Uc.java"/>
+    </increment>
+    <increment name="xml_uml_nested_tos" description="Nested TO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractEto.java"/>
+      <templateRef ref="PaginatedListToWrapper.java"/>
+      <templateRef ref="${variables.className}Eto.java"/>
+      <templateRef ref="${variables.className}Cto.java"/>
+      <templateRef ref="${variables.className}SearchCriteriaTo.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+    </increment>
+    <increment name="xml_uml_tos" description="TO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractEto.java"/>
+      <templateRef ref="PaginatedListToWrapper.java"/>
+      <templateRef ref="${variables.className}Eto.java"/>
+      <templateRef ref="${variables.className}Cto.java"/>
+      <templateRef ref="${variables.className}SearchCriteriaTo.java"/>
+    </increment>
+    
+    <!-- FOR TESTING: DELETE WHEN DEVELOPMENT IS FINISHED -->
+    <increment name="xml_uml_ea" description="XML UML EA">
+      <templateRef ref="${variables.className}Entity2.java"/>
+    </increment>
+    <!-- END -->
+    
+  </increments>
+</templatesConfiguration>
