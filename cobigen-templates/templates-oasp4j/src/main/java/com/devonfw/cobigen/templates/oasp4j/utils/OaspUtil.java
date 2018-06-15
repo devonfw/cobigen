@@ -1,17 +1,26 @@
+
 package com.devonfw.cobigen.templates.oasp4j.utils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import org.w3c.dom.Attr;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.templates.oasp4j.constants.Field;
+import constants.pojo.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates
  *
  */
 public class OaspUtil {
+
+    private Connectors connectors = new Connectors();
 
     /**
      * Check whether the given 'canonicalType' is an OASP Entity, which is declared in the given 'component'
@@ -56,7 +65,53 @@ public class OaspUtil {
      */
     public String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
+        // If field comes from an UML file
+        if (field.getClass().toGenericString().contains("freemarker.ext.beans.HashAdapter")) {
+            DeferredElementNSImpl umlNode = (DeferredElementNSImpl) field;
+            return resolveIdGetter(umlNode, byObjectReference, component);
+        }
         return "get" + resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true, component) + "()";
+    }
+
+    /**
+     * Determines the ID getter for a given 'field' dependent on whether the getter should access the ID via
+     * an object reference or a direct ID getter </br>
+     * </br>
+     * This method is used when the field parameter comes from an UML file. The name and type of the
+     * attributes must be pre-processed for later inserting them inside the HashMap.
+     *
+     * @param field
+     *            the field
+     * @param byObjectReference
+     *            boolean
+     * @param component
+     *            the OASP4j component name
+     * @return 'get' + {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, boolean, boolean, String)} +
+     *         '()' with capitalize=true
+     */
+    public String resolveIdGetter(DeferredElementNSImpl field, boolean byObjectReference, String component) {
+        HashMap nodeHash = new HashMap<>();
+
+        // Putting the name of the attribute to the hash
+        nodeHash.put(Field.NAME.toString(), field.getAttribute("name"));
+
+        // Putting the type of the attribute to the hash
+        NodeList childs = field.getChildNodes();
+        for (int i = 0; i < childs.getLength(); i++) {
+            // Retrieve "type" tag
+            if (childs.item(i).getNodeName().equals("type")) {
+                NamedNodeMap attrs = childs.item(i).getAttributes();
+                for (int j = 0; j < attrs.getLength(); j++) {
+                    Attr attribute = (Attr) attrs.item(j);
+                    // Try to find the attribute that contains the type
+                    if (attribute.getName().equals("xmi:idref")) {
+                        nodeHash.put(Field.TYPE.toString(), attribute.getName().replace("EAJava_", ""));
+                    }
+                }
+            }
+        }
+        return "get" + resolveIdVariableNameOrSetterGetterSuffix(nodeHash, byObjectReference, true, component) + "()";
+
     }
 
     /**
@@ -395,6 +450,159 @@ public class OaspUtil {
     }
 
     /**
+     * For generating the variables and methods (Getters and Setters) of all the connected classes to this
+     * class
+     * @return String: Contains all the generated text
+     */
+    public String generateConnectorsVariablesMethodsText() {
+        String textContent = "";
+
+        textContent = connectors.generateText();
+        connectors = new Connectors();
+
+        return textContent;
+    }
+
+    /**
+     * Gets all the class names that are connected to this class
+     * @return ArrayList<String>: Contains every class name connected to this class
+     */
+    public ArrayList<String> getConnectedClasses() {
+        ArrayList<String> connectedClasses = new ArrayList<String>();
+
+        connectedClasses = connectors.getConnectedClasses();
+        return connectedClasses;
+    }
+
+    /**
+     * Stores connector's source and target in HashMaps for further generation
+     * @param source
+     * @param target
+     * @param className
+     */
+    public void resolveConnectorsContent(Object source, Object target, String className) {
+        String textContent = "";
+        DeferredElementNSImpl sourceNode = (DeferredElementNSImpl) source;
+        DeferredElementNSImpl targetNode = (DeferredElementNSImpl) target;
+
+        HashMap sourceHash = new HashMap<>();
+        NodeList childs = sourceNode.getChildNodes();
+        for (int i = 0; i < childs.getLength(); i++) {
+            sourceHash.put(childs.item(i).getNodeName(), childs.item(i));
+        }
+
+        HashMap targetHash = new HashMap<>();
+        childs = targetNode.getChildNodes();
+        for (int i = 0; i < childs.getLength(); i++) {
+            targetHash.put(childs.item(i).getNodeName(), childs.item(i));
+        }
+
+        textContent = setConnectorsContent(sourceHash, targetHash, className);
+    }
+
+    /**
+     * Sets to the Connectors class the information retrieved from source and target tags. Only sets the
+     * classes that are connected to our class
+     * @param sourceHash
+     * @param targetHash
+     * @param className
+     * @return
+     */
+    public String setConnectorsContent(HashMap sourceHash, HashMap targetHash, String className) {
+        String textContent = "";
+        // Get source's model attributes
+        if (sourceHash.containsKey("model")) {
+            Node node = (Node) sourceHash.get("model");
+            NamedNodeMap attrs = node.getAttributes();
+            for (int j = 0; j < attrs.getLength(); j++) {
+                Attr attribute = (Attr) attrs.item(j);
+                // This is for every type of connector
+                // Get name attribute and check if it is className
+                if (attribute.getName().equals("name")) {
+                    if (attribute.getValue().equals(className)) {
+                        connectors.addConnector(getConnector(targetHash));
+                    }
+                }
+            }
+        }
+
+        // Get target's model attributes
+        if (targetHash.containsKey("model")) {
+            Node node = (Node) targetHash.get("model");
+            NamedNodeMap attrs = node.getAttributes();
+            for (int j = 0; j < attrs.getLength(); j++) {
+                Attr attribute = (Attr) attrs.item(j);
+                // This is for every type of connector
+                // Get name attribute and check if it is className
+                if (attribute.getName().equals("name")) {
+                    if (attribute.getValue().equals(className)) {
+                        connectors.addConnector(getConnector(sourceHash));
+                    }
+                }
+            }
+        }
+
+        return textContent;
+    }
+
+    /**
+     * Creates a Connector. The connector class is contains the information retrieved to the classes that are
+     * connected to our class
+     * @param targetHash
+     * @return
+     */
+    private Connector getConnector(HashMap nodeHash) {
+        String connectedClassName = "ErrorClassName";
+        String multiplicity = "1";
+        String content = "";
+
+        // Get model attributes
+        if (nodeHash.containsKey("model")) {
+            Node node = (Node) nodeHash.get("model");
+            NamedNodeMap attrs = node.getAttributes();
+            for (int j = 0; j < attrs.getLength(); j++) {
+                Attr attribute = (Attr) attrs.item(j);
+                // This is for every type of connector
+                // Get name attribute and check if it is className
+                if (attribute.getName().equals("name")) {
+                    connectedClassName = attribute.getValue();
+                }
+            }
+        }
+
+        // Get model attributes
+        if (nodeHash.containsKey("type")) {
+            Node node = (Node) nodeHash.get("type");
+            NamedNodeMap attrs = node.getAttributes();
+            for (int j = 0; j < attrs.getLength(); j++) {
+                Attr attribute = (Attr) attrs.item(j);
+                // This is for every type of connector
+                // Get name attribute and check if it is className
+                if (attribute.getName().equals("multiplicity")) {
+                    multiplicity = attribute.getValue();
+                }
+            }
+        }
+
+        Connector connector = new Connector(connectedClassName, multiplicity);
+
+        return connector;
+    }
+
+    /**
+     * If the string last character is an 's', then it gets removed
+     * @param targetClassName
+     * @return
+     */
+    public String removePlural(String targetClassName) {
+        // Remove last 's' for Many multiplicity
+        if (targetClassName.charAt(targetClassName.length() - 1) == 's') {
+            targetClassName = targetClassName.substring(0, targetClassName.length() - 1);
+        }
+        return targetClassName;
+    }
+	
+	/**
      * Checks whether the operation with the given ID corresponds to any standard CRUD method name.
      * @param operationId
      *            operation ID interpreted as method name
@@ -474,5 +682,4 @@ public class OaspUtil {
             return "";
         }
     }
-
 }
