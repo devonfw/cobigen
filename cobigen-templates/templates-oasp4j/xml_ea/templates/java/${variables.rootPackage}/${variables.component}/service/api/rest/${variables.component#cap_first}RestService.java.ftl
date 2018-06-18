@@ -65,7 +65,25 @@ public interface ${variables.component?cap_first}RestService {
   @Path("/${variables.className?lower_case}/search")
   @POST
   public PaginatedListTo<${variables.className}Eto> find${variables.className}sByPost(${variables.className}SearchCriteriaTo searchCriteriaTo);
+  /**
+  * Delegates to {@link ${variables.component?cap_first}#find${variables.className}Cto}.
+  *
+  * @param id the ID of the {@link ${variables.className}Cto}
+  * @return the {@link ${variables.className}Cto}
+  */
+  @GET
+  @Path("/${variables.className?lower_case}/cto/{id}/")
+  public ${variables.className}Cto get${variables.className}Cto(@PathParam("id") long id);
 
+  /**
+   * Delegates to {@link ${variables.component?cap_first}#find${variables.className}Ctos}.
+   *
+   * @param searchCriteriaTo the pagination and search criteria to be used for finding ${variables.className?lower_case}s.
+   * @return the {@link PaginatedListTo list} of matching {@link ${variables.className}Cto}s.
+   */
+  @Path("/${variables.className?lower_case}/cto/search")
+  @POST
+  public PaginatedListTo<${variables.className}Cto> find${variables.className}CtosByPost(${variables.className}SearchCriteriaTo searchCriteriaTo);
 }
 
 </#compress>

@@ -64,7 +64,11 @@ import javax.persistence.Table;
     <#-- Class attributes -->
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
-    ${attribute["@visibility"]} ${attribute["type/@xmi:idref"]?replace("EAJava_","")} ${attribute["@name"]};
+            <#if (attribute["type/@xmi:idref"]) == "EAJava_int">
+    ${attribute["@visibility"]} Integer ${attribute["@name"]};
+            <#else>
+    ${attribute["@visibility"]} ${attribute["type/@xmi:idref"]?replace("EAJava_","")?capitalize} ${attribute["@name"]};
+            </#if>
         </#if>
     </#list>
 
@@ -84,7 +88,7 @@ import javax.persistence.Table;
             <#if (attribute["type/@xmi:idref"]) == "EAJava_int">
     public void set${attribute["@name"]?cap_first}(Integer ${attribute["@name"]}){
             <#else>    
-    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize}){
+    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize} ${attribute["@name"]}){
             </#if>
         this.${attribute["@name"]} = ${attribute["@name"]};
     }

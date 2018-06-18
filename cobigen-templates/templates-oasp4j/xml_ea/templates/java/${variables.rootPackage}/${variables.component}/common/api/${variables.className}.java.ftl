@@ -5,6 +5,7 @@
 package ${variables.rootPackage}.${variables.component}.common.api;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
+import java.util.List;
 
 public interface ${name} extends ApplicationEntity {
 
@@ -19,7 +20,7 @@ public interface ${name} extends ApplicationEntity {
             <#if (attribute["type/@xmi:idref"]) == "EAJava_int">
     public void set${attribute["@name"]?cap_first}(Integer ${attribute["@name"]});
             <#else>    
-    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize});
+    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize} ${attribute["@name"]});
             </#if>
         </#if>
     </#list>
@@ -40,9 +41,9 @@ public interface ${name} extends ApplicationEntity {
 
     public void set${targetName?cap_first}(${targetName?cap_first} ${targetName?uncap_first});
                     <#elseif (connector["target/type/@multiplicity"] == "*")>
-    public List<${targetName?cap_first}> get${targetName?uncap_first}s();
+    public List<${targetName?cap_first}> get${OaspUtil.removePlural(targetName?cap_first)}s();
     
-    public void set${targetName?uncap_first}s(List<${${targetName?cap_first}>);
+    public void set${OaspUtil.removePlural(targetName?cap_first)}s(List<${targetName?cap_first}> ${targetName?uncap_first});
                     </#if>
                 </#if>
             </#if>
@@ -58,9 +59,9 @@ public interface ${name} extends ApplicationEntity {
 
     public void set${sourceName?cap_first}(${sourceName?cap_first} ${sourceName?uncap_first});
                     <#elseif (connector["target/type/@multiplicity"] == "*")>
-    public List<${sourceName?cap_first}> get${sourceName?uncap_first}s();
+    public List<${sourceName?cap_first}> get${OaspUtil.removePlural(sourceName?cap_first)}s();
     
-    public void set${sourceName?uncap_first}s(List<${${sourceName?cap_first}>);
+    public void set${OaspUtil.removePlural(sourceName?cap_first)}s(List<${sourceName?cap_first}> ${sourceName?uncap_first});
                     </#if>
                 </#if>
             </#if>

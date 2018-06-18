@@ -35,7 +35,7 @@
     </#if>
 </#function>
 
-<#function getConnectorType connectors sourceClassName>
+<#function getConnectorTypes connectors sourceClassName>
   <#assign result = []>
   <#if connectors?has_content>
     <#list connectors as connector>
