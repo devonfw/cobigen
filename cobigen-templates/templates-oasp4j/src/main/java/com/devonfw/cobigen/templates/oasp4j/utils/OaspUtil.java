@@ -14,6 +14,7 @@ import org.w3c.dom.NodeList;
 
 import com.devonfw.cobigen.templates.oasp4j.constants.Field;
 import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
+//import org.apache.xerces.dom.DeferredElementNSImpl;
 
 /**
  * A class for shared oasp4j specific functions in the templates
@@ -91,6 +92,7 @@ public class OaspUtil {
      *         '()' with capitalize=true
      */
     public String resolveIdGetter(DeferredElementNSImpl field, boolean byObjectReference, String component) {
+
         HashMap nodeHash = new HashMap<>();
 
         // Putting the name of the attribute to the hash
@@ -466,9 +468,11 @@ public class OaspUtil {
 
     /**
      * Gets all the class names that are connected to this class
+     *
      * @return ArrayList<String>: Contains every class name connected to this class
      */
     public ArrayList<String> getConnectedClasses() {
+
         ArrayList<String> connectedClasses = new ArrayList<String>();
 
         connectedClasses = connectors.getConnectedClasses();
@@ -477,11 +481,13 @@ public class OaspUtil {
 
     /**
      * Stores connector's source and target in HashMaps for further generation
+     *
      * @param source
      * @param target
      * @param className
      */
     public void resolveConnectorsContent(Object source, Object target, String className) {
+
         String textContent = "";
         source.getClass().getClassLoader();
         DeferredElementNSImpl sourceNode = (DeferredElementNSImpl) source;
@@ -505,12 +511,14 @@ public class OaspUtil {
     /**
      * Sets to the Connectors class the information retrieved from source and target tags. Only sets the
      * classes that are connected to our class
+     *
      * @param sourceHash
      * @param targetHash
      * @param className
      * @return
      */
     public String setConnectorsContent(HashMap sourceHash, HashMap targetHash, String className) {
+
         String textContent = "";
         // Get source's model attributes
         if (sourceHash.containsKey("model")) {
@@ -570,21 +578,6 @@ public class OaspUtil {
                 }
             }
         }
-
-        // Get model attributes
-        if (nodeHash.containsKey("type")) {
-            Node node = (Node) nodeHash.get("type");
-            NamedNodeMap attrs = node.getAttributes();
-            for (int j = 0; j < attrs.getLength(); j++) {
-                Attr attribute = (Attr) attrs.item(j);
-                // This is for every type of connector
-                // Get name attribute and check if it is className
-                if (attribute.getName().equals("multiplicity")) {
-                    multiplicity = attribute.getValue();
-                }
-            }
-        }
-
         Connector connector = new Connector(connectedClassName, multiplicity);
 
         return connector;
@@ -592,10 +585,12 @@ public class OaspUtil {
 
     /**
      * If the string last character is an 's', then it gets removed
+     *
      * @param targetClassName
      * @return
      */
     public String removePlural(String targetClassName) {
+
         // Remove last 's' for Many multiplicity
         if (targetClassName.charAt(targetClassName.length() - 1) == 's') {
             targetClassName = targetClassName.substring(0, targetClassName.length() - 1);
@@ -605,6 +600,7 @@ public class OaspUtil {
 
     /**
      * Checks whether the operation with the given ID corresponds to any standard CRUD method name.
+     *
      * @param operationId
      *            operation ID interpreted as method name
      * @param entityName
@@ -631,11 +627,13 @@ public class OaspUtil {
 
     /**
      * Converts the given media type to the spring Java enum value
+     *
      * @param mediaType
      *            to be converted
      * @return the spring enum value representing the given media type
      */
     public String getSpringMediaType(String mediaType) {
+
         switch (mediaType) {
         case "application/xml":
             return "APPLICATION_XML_VALUE";
@@ -657,6 +655,7 @@ public class OaspUtil {
     }
 
     public String getRelationShipAnnotation(Map<String, Object> rs, String entityName) {
+
         char c[] = ((String) rs.get("entity")).toCharArray();
         c[0] = Character.toLowerCase(c[0]);
         String ent = new String(c);
