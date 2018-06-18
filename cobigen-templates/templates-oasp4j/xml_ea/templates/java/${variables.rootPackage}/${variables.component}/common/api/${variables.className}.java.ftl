@@ -12,6 +12,7 @@
 package ${variables.rootPackage}.${variables.component}.common.api;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
+import java.util.List;
 
 public interface ${name} extends ApplicationEntity {
 
