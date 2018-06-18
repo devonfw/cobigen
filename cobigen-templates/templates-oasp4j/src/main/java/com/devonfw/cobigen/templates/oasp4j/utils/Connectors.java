@@ -21,17 +21,18 @@ public class Connectors {
     /**
      * @return
      */
-    public String generateText() {
+    public String generateText(boolean isImpl) {
         String content = "";
-        for (Connector connector : connectors) {
-            String connectedClassName = connector.getClassName();
-            String multiplicity = connector.getMultiplicity();
-            if (multiplicity.equals("1")) {
-                content =
-                    content + "\n\n\tprivate " + connectedClassName + " " + connectedClassName.toLowerCase() + ";";
-            } else if (multiplicity.equals("*")) {
-                content = content + "\n\n\tprivate List<" + connectedClassName + "> "
-                    + removePlural(connectedClassName.toLowerCase()) + "s;";
+        if (isImpl) {
+            for (Connector connector : connectors) {
+                String connectedClassName = connector.getClassName();
+                String multiplicity = connector.getMultiplicity();
+                if (multiplicity.equals("1")) {
+                    content += "\n\n\tprivate " + connectedClassName + " " + connectedClassName.toLowerCase() + ";";
+                } else if (multiplicity.equals("*")) {
+                    content += "\n\n\tprivate List<" + connectedClassName + "> "
+                        + removePlural(connectedClassName.toLowerCase()) + "s;";
+                }
             }
         }
 
@@ -39,19 +40,53 @@ public class Connectors {
             String connectedClassName = connector.getClassName();
             String multiplicity = connector.getMultiplicity();
             if (multiplicity.equals("1")) {
-                content = content + "\n\n\t@Override" + "\n\tpublic " + connectedClassName + " get" + connectedClassName
-                    + "(){" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}"
-                    + "\n\n\t@Override" + "\n\tpublic void set" + connectedClassName + "(" + connectedClassName + " "
-                    + connectedClassName.toLowerCase() + "){" + "\n\t\tthis." + connectedClassName.toLowerCase() + " = "
-                    + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                content += "\n\n\t";
+                if (isImpl) {
+                    content += "@Override";
+                }
+                content += "\n\tpublic " + connectedClassName + " get" + connectedClassName + "()";
+                if (isImpl) {
+                    content = content + "{" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                } else {
+                    content = content + ";";
+                }
+                content += "\n\n\t";
+                if (isImpl) {
+                    content += "@Override";
+                }
+                content += "\n\tpublic void set" + connectedClassName + "(" + connectedClassName + " "
+                    + connectedClassName.toLowerCase() + ")";
+                if (isImpl) {
+                    content += "{" + "\n\t\tthis." + connectedClassName.toLowerCase() + " = "
+                        + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                } else {
+                    content += ";";
+                }
+
             } else if (multiplicity.equals("*")) {
-                content =
-                    content + "\n\n\tpublic List<" + connectedClassName + "> get" + removePlural(connectedClassName)
-                        + "s(){" + "\n\t\treturn this." + removePlural(connectedClassName.toLowerCase()) + "s;"
-                        + "\n\t}" + "\n\n\tpublic void set" + removePlural(connectedClassName) + "s(List<"
-                        + connectedClassName + "> " + removePlural(connectedClassName.toLowerCase()) + "s){"
-                        + "\n\t\tthis." + removePlural(connectedClassName.toLowerCase()) + "s = "
+                content += "\n\n\t";
+                if (isImpl) {
+                    content += "@Override";
+                }
+                content += "\n\tpublic List<" + connectedClassName + "> get" + removePlural(connectedClassName) + "s()";
+                if (isImpl) {
+                    content +=
+                        "{" + "\n\t\treturn this." + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
+                } else {
+                    content += ";";
+                }
+                content += "\n\n\t";
+                if (isImpl) {
+                    content += "@Override";
+                }
+                content += "\n\tpublic void set" + removePlural(connectedClassName) + "s(List<" + connectedClassName
+                    + "> " + removePlural(connectedClassName.toLowerCase()) + "s)";
+                if (isImpl) {
+                    content += "{" + "\n\t\tthis." + removePlural(connectedClassName.toLowerCase()) + "s = "
                         + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
+                } else {
+                    content += ";";
+                }
             }
         }
         return content;

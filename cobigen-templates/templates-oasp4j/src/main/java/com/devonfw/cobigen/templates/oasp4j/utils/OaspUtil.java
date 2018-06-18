@@ -455,10 +455,10 @@ public class OaspUtil {
      * class
      * @return String: Contains all the generated text
      */
-    public String generateConnectorsVariablesMethodsText() {
+    public String generateConnectorsVariablesMethodsText(boolean isImpl) {
         String textContent = "";
 
-        textContent = connectors.generateText();
+        textContent = connectors.generateText(isImpl);
         connectors = new Connectors();
 
         return textContent;
@@ -556,7 +556,7 @@ public class OaspUtil {
     private Connector getConnector(HashMap nodeHash) {
         String connectedClassName = "ErrorClassName";
         String multiplicity = "1";
-        String content = "";
+        String className = "ErrorClassName";
 
         // Get model attributes
         if (nodeHash.containsKey("model")) {
@@ -586,7 +586,10 @@ public class OaspUtil {
             }
         }
 
-        Connector connector = new Connector(connectedClassName, multiplicity);
+        Connector connector = new Connector(className, connectedClassName, multiplicity);
+        System.out.println("-------------");
+        System.out.println(connector.getTarget());
+        System.out.println("-------------");
 
         return connector;
     }
@@ -683,9 +686,5 @@ public class OaspUtil {
         default:
             return "";
         }
-    }
-
-    public void print(String s) {
-        System.out.println(s);
     }
 }
