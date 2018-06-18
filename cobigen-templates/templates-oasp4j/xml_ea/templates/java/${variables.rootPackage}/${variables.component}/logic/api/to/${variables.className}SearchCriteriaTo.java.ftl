@@ -23,6 +23,8 @@ public class ${variables.className}SearchCriteriaTo extends SearchCriteriaTo {
 
     super();
   }
+  
+  <#-- ${OaspUtil.generateConnectorsVariablesMethodsText()} -->
 
   <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion implementsInterface=false  implementsInterface=false isSearchCriteria=true/>
 

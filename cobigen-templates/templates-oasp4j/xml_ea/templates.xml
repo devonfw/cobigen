@@ -71,7 +71,7 @@
       <templateRef ref="${variables.component#cap_first}.java"/>
       <templateRef ref="Abstract${variables.className}Uc.java"/>
     </increment>
-    <increment name="xml_uml_nested_tos" description="Nested TO's">
+    <increment name="xml_uml_nested_tos" description="Nested TOs">
       <templateRef ref="AbstractCto.java"/>
       <templateRef ref="AbstractEto.java"/>
       <templateRef ref="PaginatedListToWrapper.java"/>
@@ -81,7 +81,7 @@
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
     </increment>
-    <increment name="xml_uml_tos" description="TO's">
+    <increment name="xml_uml_tos" description="TOs">
       <templateRef ref="AbstractCto.java"/>
       <templateRef ref="AbstractEto.java"/>
       <templateRef ref="PaginatedListToWrapper.java"/>

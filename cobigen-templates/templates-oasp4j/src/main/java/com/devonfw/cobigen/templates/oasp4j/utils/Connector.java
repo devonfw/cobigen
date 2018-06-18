@@ -11,11 +11,15 @@ public class Connector {
     private String multiplicity;
 
     /**
-     * @param className
+     * @param source
+     *            The source of the connector
+     * @param target
+     *            The target of the connector
      * @param multiplicity
+     *            The multiplicity of the target of this connector
      */
-    public Connector(String className, String multiplicity) {
-        this.className = className;
+    public Connector(String source, String multiplicity) {
+        className = source;
         this.multiplicity = multiplicity;
     }
 
@@ -24,7 +28,7 @@ public class Connector {
     }
 
     public void setClassName(String className) {
-        this.className = className;
+        className = className;
     }
 
     public String getMultiplicity() {

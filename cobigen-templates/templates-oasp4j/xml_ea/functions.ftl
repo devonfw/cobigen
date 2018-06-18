@@ -35,68 +35,37 @@
     </#if>
 </#function>
 
-<#function getConnectorTypes connectors sourceClassName>
-  <#assign result = []>
-  <#if connectors?has_content>
-    <#list connectors as connector>
-      <#assign targetName = connector["target/model/@name"]> 
-      <#if (connector["source/model/@type"] == "Class")>
-        <#if (connector["source/model/@name"] == sourceClassName)>
-          <#if (connector["target/type/@multiplicity"] )?is_string>
-            <#if (connector["target/type/@multiplicity"] == "1")>
-             <#assign result=result+["${targetName?cap_first}"]>
-            <#elseif (connector["target/type/@multiplicity"] == "*")>
-              <#assign result=result+["List<${targetName?cap_first}>"]>
+<#function getConnectorName connector isType=false>
+  <#assign targetName = connector["target/model/@name"]> 
+  <#assign sourceName = connector["source/model/@name"]>
+  <#if (connector["source/model/@type"] == "Class") || (connector["source/model/@type"]=="Class")>
+    <#if ((sourceName) == '${variables.className}')>
+      <#assign className=targetName>
+      <#assign multiplicity=connector["target/type/@multiplicity"]>
+    <#elseif ((targetName) == '${variables.className}')>
+      <#assign className=sourceName>
+      <#assign multiplicity=connector["source/type/@multiplicity"]>
+    <#else>
+      <#assign className="failure">
+    </#if>
+      <#if !(className=="failure")>
+       <#if multiplicity?is_string>
+         <#if (multiplicity == "1")>
+           <#if isType>
+              <#return "${className?cap_first}">
+           <#else>
+              <#return "${className?uncap_first}">
+            </#if>
+          <#elseif (multiplicity == "*")>
+            <#if isType>
+              <#return "List<${className?cap_first}>">
+            <#else>
+              <#return "${className?uncap_first}s">
             </#if>
           </#if>
         </#if>
       </#if>
-    </#list>
-  </#if>
-  <#return result>
-</#function>
-
-<#function getConnectorName connector isType=false>
-  <#assign targetName = connector["target/model/@name"]> 
-  <#assign sourceName = connector["source/model/@name"]>
-  <#if (connector["source/model/@type"] == "Class")>
-    <#if ((sourceName) == '${variables.className}')>
-      <#if (connector["target/type/@multiplicity"] )?is_string>
-        <#if (connector["target/type/@multiplicity"] == "1")>
-          <#if isType>
-            <#return "${targetName?cap_first}">
-          <#else>
-            <#return "${targetName?uncap_first}">
-          </#if>
-        <#elseif (connector["target/type/@multiplicity"] == "*")>
-          <#if isType>
-            <#return "List<${targetName?cap_first}>">
-          <#else>
-            <#return "${targetName?uncap_first}s">
-          </#if>
-        </#if>
-      </#if>
     </#if>
-  </#if>
-  <#if (connector["target/model/@type"] == "Class")>
-    <#if ((targetName) == '${variables.className}')>
-      <#if (connector["source/type/@multiplicity"] )?is_string>
-        <#if (connector["source/type/@multiplicity"] == "1")>
-          <#if isType>
-            <#return "${sourceName?cap_first}">
-          <#else>
-            <#return "${sourceName?uncap_first}">
-          </#if>
-        <#elseif (connector["target/type/@multiplicity"] == "*")>
-          <#if isType>
-            <#return "List<${sourceName?cap_first}>">
-          <#else>
-            <#return "${sourceName?uncap_first}s">
-          </#if>
-        </#if>
-      </#if>
-    </#if>
-  </#if>
 </#function>
 
 <#-- -------------------- -->
@@ -149,10 +118,10 @@
 </#if>
 </#list>
 <#if connectors?has_content>
+  <#assign existing=[]>
   <#list connectors as connector>
     <#if getConnectorName(connector,true)??>
-      <#assign existing=[]>
-      <#if existing?seq_contains("${getConnectorName(connector,false)}")>
+      <#if !existing?seq_contains("${getConnectorName(connector,false)}")>
     private ${getConnectorName(connector, true)} ${getConnectorName(connector, false)};
         <#assign existing=existing+["${getConnectorName(connector,false)}"]>
       </#if>
@@ -212,16 +181,18 @@
 </#if>
 </#list>
 <#if connectors?has_content>
+  <#assign existing=[]>
   <#list connectors as connector>
     <#if getConnectorName(connector,true)??>
-      <#assign existing=[]>
-      <#if existing?seq_contains("${getConnectorName(connector,false)}")>
-    public ${getConnectorName(connector,true)} get${getConnectorName(connector,false)}(){
+      <#if !existing?seq_contains("${getConnectorName(connector,false)}")>
+    <#if implementsInterface>@Override</#if>
+    public ${getConnectorName(connector,true)} get${getConnectorName(connector,false)?cap_first}(){
         return ${getConnectorName(connector,false)};
     }
     
-    public void set${getConnectorName(connector, true)}(${getConnectorName(connector,true)} ${getConnectorName(connector,false)}){
-        this.${getConnectorName(connector,false)}=${getConnectorName(connector,false)}
+    <#if implementsInterface>@Override</#if>
+    public void set${getConnectorName(connector, false)?cap_first}(${getConnectorName(connector,true)} ${getConnectorName(connector,false)}){
+        this.${getConnectorName(connector,false)}=${getConnectorName(connector,false)};
     }
         <#assign existing=existing+["${getConnectorName(connector,false)}"]>
       </#if>

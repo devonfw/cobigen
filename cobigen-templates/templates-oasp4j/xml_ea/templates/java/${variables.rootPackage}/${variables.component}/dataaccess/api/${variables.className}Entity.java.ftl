@@ -1,19 +1,18 @@
 <#ftl ns_prefixes={"xmi":"http://schema.omg.org/spec/XMI/2.1"}>
+<#include '/functions.ftl'>
 <#compress>
 <#assign name = elemDoc["self::node()/@name"]>
-<#assign connectors = doc["xmi:XMI/xmi:Extension/connectors/connector"]>
+
+<#list connectors as connector>
+    <#assign source = connector["source"]>
+    <#assign target = connector["target"]> 
+    ${OaspUtil.resolveConnectorsContent(source, target, name)}
+</#list>
+
 package ${variables.rootPackage}.${variables.component}.dataaccess.api;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.className};
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
-
-<#-- Class connections/associations -->
-<#list connectors as connector>
-    <#assign source = connector["source"]>
-    <#assign target = connector["target"]> 
-    <#-- We store the information of the connectors of this class to a variable -->
-    ${OaspUtil.resolveConnectorsContent(source, target, name)}
-</#list>
 
 <#-- For generating the needed imports from each connected class -->
 <#list OaspUtil.getConnectedClasses() as connectedClass>
@@ -73,7 +72,7 @@ import javax.persistence.Table;
     </#list>
 
     <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${OaspUtil.generateConnectorsVariablesMethodsText()}
+    ${OaspUtil.generateConnectorsVariablesMethodsText(true,false)}
     
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
