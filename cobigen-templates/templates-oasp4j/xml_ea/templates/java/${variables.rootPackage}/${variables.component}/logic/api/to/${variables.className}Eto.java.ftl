@@ -1,7 +1,6 @@
 <#ftl ns_prefixes={"xmi":"http://schema.omg.org/spec/XMI/2.1"}>
 <#include '/functions.ftl'>
 <#assign name = elemDoc["self::node()/@name"]>
-<#assign connectors = doc["xmi:XMI/xmi:Extension/connectors/connector"]>
 package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import ${variables.rootPackage}.general.common.api.to.AbstractEto;
@@ -30,7 +29,7 @@ public class ${variables.className}Eto extends <#if variables.className?contains
 
   <#-- Generates all the connnected classes -->
   <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${OaspUtil.generateConnectorsVariablesMethodsText()}
+    <#-- ${OaspUtil.generateConnectorsVariablesMethodsText()} -->
 
   <#-- Generates all the getters and setters of each attribute defined for the class on the UML -->
   <@generateSetterAndGetter_withRespectTo_entityObjectToIdReferenceConversion/>
@@ -53,18 +52,6 @@ public class ${variables.className}Eto extends <#if variables.className?contains
           result = prime * result + ((this.${field["@name"]} == null) ? 0 : this.${field["@name"]}.hashCode());
             </#if>
           </#list>
-          <#assign connectorTypeList=getConnectorTypes(connectors,"${variables.className}")>
-          <#if connectorTypeList?has_content>
-            <#list connectorTypeList as type>
-              <#-- 
-              <#if type isn't list>
-                result = prime * result + ((this.${idVar} == null) ? 0 : this.${idVar}.hashCode());
-              <#else>
-                result = prime * result + ((this.${type} == null) ? 0 : this.${type}.hashCode());
-              </#if>
-              -->
-            </#list>
-          </#if>
         <#else>
         result = prime * result;
         </#if>
