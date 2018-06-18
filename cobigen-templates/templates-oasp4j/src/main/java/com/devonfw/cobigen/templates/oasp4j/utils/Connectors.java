@@ -21,7 +21,7 @@ public class Connectors {
     /**
      * @return
      */
-    public String generateText(boolean isImpl) {
+    public String generateText(boolean isImpl, boolean isOverride) {
         String content = "";
         if (isImpl) {
             for (Connector connector : connectors) {
@@ -41,7 +41,7 @@ public class Connectors {
             String multiplicity = connector.getMultiplicity();
             if (multiplicity.equals("1")) {
                 content += "\n\n\t";
-                if (isImpl) {
+                if (isOverride) {
                     content += "@Override";
                 }
                 content += "\n\tpublic " + connectedClassName + " get" + connectedClassName + "()";
@@ -51,7 +51,7 @@ public class Connectors {
                     content = content + ";";
                 }
                 content += "\n\n\t";
-                if (isImpl) {
+                if (isOverride) {
                     content += "@Override";
                 }
                 content += "\n\tpublic void set" + connectedClassName + "(" + connectedClassName + " "
@@ -65,7 +65,7 @@ public class Connectors {
 
             } else if (multiplicity.equals("*")) {
                 content += "\n\n\t";
-                if (isImpl) {
+                if (isOverride) {
                     content += "@Override";
                 }
                 content += "\n\tpublic List<" + connectedClassName + "> get" + removePlural(connectedClassName) + "s()";
@@ -76,7 +76,7 @@ public class Connectors {
                     content += ";";
                 }
                 content += "\n\n\t";
-                if (isImpl) {
+                if (isOverride) {
                     content += "@Override";
                 }
                 content += "\n\tpublic void set" + removePlural(connectedClassName) + "s(List<" + connectedClassName
