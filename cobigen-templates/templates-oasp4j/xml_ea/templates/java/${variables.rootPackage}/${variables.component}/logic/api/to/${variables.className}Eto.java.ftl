@@ -53,7 +53,7 @@ public class ${variables.className}Eto extends <#if variables.className?contains
           result = prime * result + ((this.${field["@name"]} == null) ? 0 : this.${field["@name"]}.hashCode());
             </#if>
           </#list>
-          <#assign connectorTypeList=getConnectorTypes(Connectors,"${variables.className}")>
+          <#assign connectorTypeList=getConnectorTypes(connectors,"${variables.className}")>
           <#if connectorTypeList?has_content>
             <#list connectorTypeList as type>
               <#-- 
