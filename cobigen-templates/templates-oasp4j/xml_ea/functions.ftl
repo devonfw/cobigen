@@ -117,7 +117,7 @@
   private ${typeVar} ${field["@name"]};
 </#if>
 </#list>
-<#-- --><#if connectors?has_content>
+<#if connectors?has_content>
   <#assign existing=[]>
   <#list connectors as connector>
     <#if getConnectorName(connector,true)??>
@@ -197,6 +197,6 @@
         <#assign existing=existing+["${getConnectorName(connector,false)}"]>
       </#if>
     </#if>
-  </#list> <#-- -->
+  </#list>
 </#if>
 </#macro>
