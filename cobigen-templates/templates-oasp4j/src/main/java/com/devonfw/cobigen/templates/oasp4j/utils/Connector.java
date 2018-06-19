@@ -1,63 +1,78 @@
 package com.devonfw.cobigen.templates.oasp4j.utils;
 
 /**
- * Connector is one association between classes in a class diagram. This class is used for storing that data, for later
- * developing templates.
+ * Connector is one association between classes in a class diagram. This class is used for storing that data,
+ * for later developing templates.
  */
 public class Connector {
 
-  private String className;
+    private String counterpartName = "";
 
-  private String multiplicity;
+    private String counterpartMultiplicity = "";
 
-  private String targetOrSource;
+    private String className;
 
-  /**
-   * @param source The source of the connector
-   * @param target The target of the connector
-   * @param multiplicity The multiplicity of the target of this connector
-   */
-  public Connector(String source, String multiplicity, String targetOrSource) {
+    private String multiplicity;
 
-    this.className = source;
-    this.multiplicity = multiplicity;
-    this.targetOrSource = targetOrSource;
-  }
+    final Boolean ISSOURCE;
 
-  public String getClassName() {
+    final Boolean ISTARGET;
 
-    return this.className;
-  }
+    /**
+     * @param className
+     *            The name of the connector
+     * @param multiplicity
+     *            The multiplicity of the target of this connector
+     * @param isSource
+     *            True if the connector is the source, false if it is the target
+     */
+    public Connector(String className, String multiplicity, boolean isSource) {
 
-  public void setClassName(String className) {
+        this.className = className;
+        this.multiplicity = multiplicity;
+        ISSOURCE = isSource;
+        ISTARGET = !isSource;
+    }
 
-    className = className;
-  }
+    public String getClassName() {
 
-  public String getMultiplicity() {
+        return className;
+    }
 
-    return this.multiplicity;
-  }
+    public void setClassName(String className) {
 
-  public void setMultiplicity(String multiplicity) {
+        className = className;
+    }
 
-    this.multiplicity = multiplicity;
-  }
+    public String getMultiplicity() {
 
-  /**
-   * @return targetOrSource
-   */
-  public String getTargetOrSource() {
+        return multiplicity;
+    }
 
-    return this.targetOrSource;
-  }
+    public void setMultiplicity(String multiplicity) {
 
-  /**
-   * @param targetOrSource new value of {@link #gettargetOrSource}.
-   */
-  public void setTargetOrSource(String targetOrSource) {
+        this.multiplicity = multiplicity;
+    }
 
-    this.targetOrSource = targetOrSource;
-  }
+    public String getCounterpartName() {
+        return counterpartName;
+    }
 
+    public void setCounterpartName(String counterpartName) {
+        this.counterpartName = counterpartName;
+    }
+
+    public String getCounterpartMultiplicity() {
+        return counterpartMultiplicity;
+    }
+
+    public void setCounterpartMultiplicity(String counterpartMuliplicity) {
+        counterpartMultiplicity = counterpartMuliplicity;
+    }
+
+    @Override
+    public String toString() {
+        return ISSOURCE + " " + className + " " + multiplicity + " --> " + counterpartName + " "
+            + counterpartMultiplicity + " " + ISTARGET;
+    }
 }
