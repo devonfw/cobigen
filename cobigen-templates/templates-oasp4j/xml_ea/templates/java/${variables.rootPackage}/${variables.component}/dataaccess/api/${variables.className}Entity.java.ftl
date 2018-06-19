@@ -8,6 +8,7 @@
     <#assign target = connector["target"]> 
     ${OaspUtil.resolveConnectorsContent(source, target, name)}
 </#list>
+<#-- ${OaspUtil.resolveConnectorsRelationships()} -->
 
 package ${variables.rootPackage}.${variables.component}.dataaccess.api;
 
@@ -72,7 +73,7 @@ import javax.persistence.Table;
     </#list>
 
     <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${OaspUtil.generateConnectorsVariablesMethodsText(true,false)}
+    ${OaspUtil.generateConnectorsVariablesMethodsText(true,true,variables.className)}
     
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
