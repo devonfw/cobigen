@@ -3,6 +3,8 @@ package com.devonfw.cobigen.templates.oasp4j.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 /**
  * Class that contains every connector found for one class and generates the resultant text for the template.
  */
@@ -21,40 +23,46 @@ public class Connectors {
     /**
      * @return
      */
-    public String generateText(boolean isImpl, boolean isOverride) {
+    public String generateText(boolean isImpl, boolean isOverride, String className) {
         String content = "";
         if (isImpl) {
             for (Connector connector : connectors) {
-                String connectedClassName = connector.getClassName();
-                String multiplicity = connector.getMultiplicity();
+                String connectedClassName = connector.getCounterpartName();
+                String multiplicity = connector.getCounterpartMultiplicity();
                 if (multiplicity.equals("1")) {
-                    content += "\n\n\tprivate " + connectedClassName + " " + connectedClassName.toLowerCase() + ";";
+                    content +=
+                        "\n\n\tprivate " + connectedClassName + "Entity " + connectedClassName.toLowerCase() + ";";
                 } else if (multiplicity.equals("*")) {
-                    content += "\n\n\tprivate List<" + connectedClassName + "> "
+                    content += "\n\n\tprivate List<" + connectedClassName + "Entity> "
                         + removePlural(connectedClassName.toLowerCase()) + "s;";
                 }
             }
         }
 
         for (Connector connector : connectors) {
-            String connectedClassName = connector.getClassName();
-            String multiplicity = connector.getMultiplicity();
+            String connectedClassName = connector.getCounterpartName();
+            String multiplicity = connector.getCounterpartMultiplicity();
             if (multiplicity.equals("1")) {
+
                 content += "\n\n\t";
                 if (isOverride) {
-                    content += "@Override";
+                    content += "@Override\n\t";
                 }
-                content += "\n\tpublic " + connectedClassName + " get" + connectedClassName + "()";
                 if (isImpl) {
-                    content = content + "{" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}";
-                } else {
-                    content = content + ";";
+                    content += getRelationshipAnnotations(connector) + "\n\t";
                 }
+                content += "public " + connectedClassName + "Entity get" + connectedClassName + "()";
+                if (isImpl) {
+                    content += "{" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                } else {
+                    content += ";";
+                }
+
                 content += "\n\n\t";
                 if (isOverride) {
-                    content += "@Override";
+                    content += "@Override\n\t";
                 }
-                content += "\n\tpublic void set" + connectedClassName + "(" + connectedClassName + " "
+                content += "public void set" + connectedClassName + "(" + connectedClassName + "Entity "
                     + connectedClassName.toLowerCase() + ")";
                 if (isImpl) {
                     content += "{" + "\n\t\tthis." + connectedClassName.toLowerCase() + " = "
@@ -64,23 +72,29 @@ public class Connectors {
                 }
 
             } else if (multiplicity.equals("*")) {
+
                 content += "\n\n\t";
                 if (isOverride) {
-                    content += "@Override";
+                    content += "@Override\n\t";
                 }
-                content += "\n\tpublic List<" + connectedClassName + "> get" + removePlural(connectedClassName) + "s()";
+                if (isImpl) {
+                    content += getRelationshipAnnotations(connector) + "\n\t";
+                }
+                content +=
+                    "public List<" + connectedClassName + "Entity> get" + removePlural(connectedClassName) + "s()";
                 if (isImpl) {
                     content +=
                         "{" + "\n\t\treturn this." + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
                 } else {
                     content += ";";
                 }
+
                 content += "\n\n\t";
                 if (isOverride) {
-                    content += "@Override";
+                    content += "@Override\n\t";
                 }
-                content += "\n\tpublic void set" + removePlural(connectedClassName) + "s(List<" + connectedClassName
-                    + "> " + removePlural(connectedClassName.toLowerCase()) + "s)";
+                content += "public void set" + removePlural(connectedClassName) + "s(List<" + connectedClassName
+                    + "Entity> " + removePlural(connectedClassName.toLowerCase()) + "s)";
                 if (isImpl) {
                     content += "{" + "\n\t\tthis." + removePlural(connectedClassName.toLowerCase()) + "s = "
                         + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
@@ -90,6 +104,52 @@ public class Connectors {
             }
         }
         return content;
+    }
+
+    private String getRelationshipAnnotations(Connector source) {
+        String relationship = "";
+        if (source.ISSOURCE) {
+            if (source.getMultiplicity().equals("*")) {
+                if (source.getCounterpartMultiplicity().equals("*")) {
+                    relationship += "@ManyToMany()";
+                    relationship += "\n\t@JoinTable(name = \"" + WordUtils.capitalize(source.getCounterpartName())
+                        + WordUtils.capitalize(source.getClassName()) + "\", joinColumns = @JoinColumn(name = \"id"
+                        + WordUtils.capitalize(source.getClassName())
+                        + "\"), inverseJoinColumns = @JoinColumn(name = \"id"
+                        + WordUtils.capitalize(source.getCounterpartName()) + "\"))";
+                } else if (source.getCounterpartMultiplicity().equals("1")) {
+                    relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
+                        + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+                }
+            } else if (source.getMultiplicity().equals("1")) {
+                if (source.getCounterpartMultiplicity().equals("*")) {
+                    relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
+                        + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+                } else if (source.getCounterpartMultiplicity().equals("1")) {
+                    relationship =
+                        "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getClassName().toLowerCase() + "\")";
+                }
+            }
+        } else if (source.ISTARGET) {
+            if (source.getCounterpartMultiplicity().equals("*")) {
+                if (source.getMultiplicity().equals("*")) {
+                    relationship +=
+                        "@ManyToMany(mappedBy = \"" + removePlural(source.getCounterpartName()).toLowerCase() + "s\")";
+                } else if (source.getMultiplicity().equals("1")) {
+                    relationship = "@OneToMany(fetch = FetchType.LAZY, mappedBy = \""
+                        + source.getCounterpartName().toLowerCase() + "\")";
+                }
+            } else if (source.getCounterpartMultiplicity().equals("1")) {
+                if (source.getMultiplicity().equals("*")) {
+                    relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
+                        + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+                } else if (source.getMultiplicity().equals("1")) {
+                    relationship +=
+                        "@OneToOne(mappedBy = \"id" + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+                }
+            }
+        }
+        return relationship;
     }
 
     public ArrayList<String> getConnectedClasses() {
