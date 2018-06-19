@@ -1,3 +1,4 @@
+<#assign allConnectors=doc["xmi:XMI/xmi:Extension/connectors"]>
 <#assign connectors = doc["xmi:XMI/xmi:Extension/connectors/connector"]>
 
 <#-- ---------------------------------------- -->
