@@ -28,7 +28,7 @@ ${OaspUtil.generateConnectorsVariablesMethodsText(false,false,variables.classNam
     <#else>    
     public ${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?cap_first} get${attribute["@name"]?capitalize}();
     
-    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize});
+    public void set${attribute["@name"]?cap_first}(${(attribute["type/@xmi:idref"]?replace("EAJava_",""))?capitalize} ${attribute["@name"]});
     </#if>
   </#if>
 </#list>
