@@ -28,7 +28,7 @@ public class Connectors {
         if (isImpl) {
             for (Connector connector : connectors) {
                 String connectedClassName = connector.getCounterpartName();
-                String multiplicity = connector.getMultiplicity();
+                String multiplicity = connector.getCounterpartMultiplicity();
                 if (multiplicity.equals("1")) {
                     content +=
                         "\n\n\tprivate " + connectedClassName + "Entity " + connectedClassName.toLowerCase() + ";";
@@ -41,7 +41,7 @@ public class Connectors {
 
         for (Connector connector : connectors) {
             String connectedClassName = connector.getCounterpartName();
-            String multiplicity = connector.getMultiplicity();
+            String multiplicity = connector.getCounterpartMultiplicity();
             if (multiplicity.equals("1")) {
 
                 content += "\n\n\t";
@@ -123,7 +123,7 @@ public class Connectors {
                 }
             } else if (source.getMultiplicity().equals("1")) {
                 if (source.getCounterpartMultiplicity().equals("*")) {
-                    relationship = "@OneToMany(fetch = FetchType.LAZY\")\n\t@JoinColumn(name = \"id"
+                    relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
                         + WordUtils.capitalize(source.getCounterpartName()) + "\")";
                 } else if (source.getCounterpartMultiplicity().equals("1")) {
                     relationship =
