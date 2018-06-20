@@ -65,8 +65,10 @@ import javax.persistence.Table;
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
             <#if (attribute["type/@xmi:idref"]) == "EAJava_int">
+    @Column(name ="${attribute["@name"]?upper_case}")
     ${attribute["@visibility"]} Integer ${attribute["@name"]};
             <#else>
+    @Column(name ="${attribute["@name"]?upper_case}")
     ${attribute["@visibility"]} ${attribute["type/@xmi:idref"]?replace("EAJava_","")?capitalize} ${attribute["@name"]};
             </#if>
         </#if>
