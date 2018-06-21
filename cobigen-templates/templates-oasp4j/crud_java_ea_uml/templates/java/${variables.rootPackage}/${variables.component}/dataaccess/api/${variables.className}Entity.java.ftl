@@ -75,7 +75,7 @@ import javax.persistence.Table;
     </#list>
 
     <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${OaspUtil.generateConnectorsVariablesMethodsText(true,true,variables.className)}
+    ${OaspUtil.generateConnectorsVariablesMethodsText(true,false,variables.className)}
     
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>

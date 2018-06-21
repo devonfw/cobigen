@@ -52,8 +52,10 @@ public class Connectors {
         }
         if (isImpl) {
           content += getRelationshipAnnotations(connector) + "\n\t";
+          content += "public " + connectedClassName + "Entity get" + connectedClassName + "()";
+        } else {
+          content += "public Long get" + connectedClassName + "Id()";
         }
-        content += "public " + connectedClassName + "Entity get" + connectedClassName + "()";
         if (isImpl) {
           content += "{" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}";
         } else {
@@ -64,43 +66,59 @@ public class Connectors {
         if (isOverride) {
           content += "@Override\n\t";
         }
-        content += "public void set" + connectedClassName + "(" + connectedClassName + "Entity "
-            + connectedClassName.toLowerCase() + ")";
+        if (isImpl) {
+          content += "public void set" + connectedClassName + "(" + connectedClassName + "Entity "
+              + connectedClassName.toLowerCase() + ")";
+        } else {
+          content += "public void set" + connectedClassName + "Id(Long " + connectedClassName.toLowerCase() + "Id)";
+        }
         if (isImpl) {
           content += "{" + "\n\t\tthis." + connectedClassName.toLowerCase() + " = " + connectedClassName.toLowerCase()
               + ";" + "\n\t}";
         } else {
           content += ";";
         }
+        // Now w generate the get and set IDs methods for the implementation
+        if (isImpl) {
+          // getter
+          content += "\n\n\t";
+          content += "@Override\n\t";
+          content += "public Long get" + connectedClassName + "Id()";
+          content += "{" + "\n\t\tif(this." + connectedClassName.toLowerCase() + " == null){";
+          content += "\n\t\treturn null;\n\t}";
+          content += "\n\t\treturn this." + connectedClassName.toLowerCase() + ".getId();" + "\n\t}";
+          // setter
+          content += "\n\n\t";
+          content += "@Override\n\t";
+          content += "public void set" + connectedClassName + "Id(Long " + connectedClassName.toLowerCase() + "Id)";
+          content += "{" + "\n\t\tif(" + connectedClassName.toLowerCase() + "Id == null){";
+          content += "\n\t\tthis." + connectedClassName.toLowerCase() + " = null;\n\t}";
+          content += "else {\n\t";
+          content += connectedClassName + "Entity " + connectedClassName.toLowerCase() + "Entity = new "
+              + connectedClassName + "Entity();\n\n\t";
+          content += connectedClassName.toLowerCase() + ".setId(" + connectedClassName.toLowerCase() + "Id);\n\n\t";
+          content += "this." + connectedClassName.toLowerCase() + " " + "= " + connectedClassName.toLowerCase()
+              + "Entity;\n\n\t}";
+          content += "\n\n\t}";
+        }
 
-      } else if (multiplicity != null && multiplicity.equals("*")) {
+      } else if (multiplicity != null && multiplicity.equals("*") && isImpl) {
 
         content += "\n\n\t";
         if (isOverride) {
           content += "@Override\n\t";
         }
-        if (isImpl) {
-          content += getRelationshipAnnotations(connector) + "\n\t";
-        }
+        content += getRelationshipAnnotations(connector) + "\n\t";
         content += "public List<" + connectedClassName + "Entity> get" + removePlural(connectedClassName) + "s()";
-        if (isImpl) {
-          content += "{" + "\n\t\treturn this." + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
-        } else {
-          content += ";";
-        }
-
+        content += "{" + "\n\t\treturn this." + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
         content += "\n\n\t";
         if (isOverride) {
           content += "@Override\n\t";
         }
         content += "public void set" + removePlural(connectedClassName) + "s(List<" + connectedClassName + "Entity> "
             + removePlural(connectedClassName.toLowerCase()) + "s)";
-        if (isImpl) {
-          content += "{" + "\n\t\tthis." + removePlural(connectedClassName.toLowerCase()) + "s = "
-              + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
-        } else {
-          content += ";";
-        }
+        content += "{" + "\n\t\tthis." + removePlural(connectedClassName.toLowerCase()) + "s = "
+            + removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
       }
     }
     return content;
@@ -114,19 +132,19 @@ public class Connectors {
         if (source.getCounterpartMultiplicity().equals("*")) {
           relationship += "@ManyToMany()";
           relationship += "\n\t@JoinTable(name = \"" + WordUtils.capitalize(source.getCounterpartName())
-              + WordUtils.capitalize(source.getClassName()) + "\", joinColumns = @JoinColumn(name = \"id"
-              + WordUtils.capitalize(source.getClassName()) + "\"), inverseJoinColumns = @JoinColumn(name = \"id"
-              + WordUtils.capitalize(source.getCounterpartName()) + "\"))";
+              + WordUtils.capitalize(source.getClassName()) + "\", joinColumns = @JoinColumn(name = \""
+              + source.getClassName() + "Id\"), inverseJoinColumns = @JoinColumn(name = \""
+              + source.getCounterpartName() + "Id\"))";
         } else if (source.getCounterpartMultiplicity().equals("1")) {
-          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
-              + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"" + source.getCounterpartName()
+              + "Id\")";
         }
       } else if (source.getMultiplicity().equals("1")) {
         if (source.getCounterpartMultiplicity().equals("*")) {
-          relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
-              + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+          relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \""
+              + WordUtils.capitalize(source.getCounterpartName()) + "id\")";
         } else if (source.getCounterpartMultiplicity().equals("1")) {
-          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"id" + source.getCounterpartName() + "\")";
+          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
         }
       }
     } else if (source.ISTARGET) {
@@ -139,10 +157,10 @@ public class Connectors {
         }
       } else if (source.getCounterpartMultiplicity().equals("1")) {
         if (source.getMultiplicity().equals("*")) {
-          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"id"
-              + WordUtils.capitalize(source.getCounterpartName()) + "\")";
+          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"" + source.getCounterpartName()
+              + "Id\")";
         } else if (source.getMultiplicity().equals("1")) {
-          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"id" + source.getCounterpartName() + "\")";
+          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
         }
       }
     }
