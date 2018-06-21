@@ -44,7 +44,7 @@ public class Connectors {
     for (Connector connector : this.connectors) {
       String connectedClassName = connector.getCounterpartName();
       String multiplicity = connector.getCounterpartMultiplicity();
-      if (multiplicity != null && multiplicity.equals("1")) {
+      if (multiplicity == null || multiplicity.equals("1")) {
 
         content += "\n\n\t";
         if (isOverride) {
@@ -128,7 +128,14 @@ public class Connectors {
 
     String relationship = "";
     if (source.ISSOURCE) {
-      if (source.getMultiplicity().equals("*")) {
+      if (source.getMultiplicity() == null || source.getMultiplicity().equals("1")) {
+        if (source.getCounterpartMultiplicity() == null || source.getCounterpartMultiplicity().equals("1")) {
+          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
+        } else if (source.getCounterpartMultiplicity().equals("*")) {
+          relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \""
+              + WordUtils.capitalize(source.getCounterpartName()) + "id\")";
+        }
+      } else if (source.getMultiplicity().equals("*")) {
         if (source.getCounterpartMultiplicity().equals("*")) {
           relationship += "@ManyToMany()";
           relationship += "\n\t@JoinTable(name = \"" + WordUtils.capitalize(source.getCounterpartName())
@@ -139,28 +146,21 @@ public class Connectors {
           relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"" + source.getCounterpartName()
               + "Id\")";
         }
-      } else if (source.getMultiplicity().equals("1")) {
-        if (source.getCounterpartMultiplicity().equals("*")) {
-          relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \""
-              + WordUtils.capitalize(source.getCounterpartName()) + "id\")";
-        } else if (source.getCounterpartMultiplicity().equals("1")) {
-          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
-        }
       }
     } else if (source.ISTARGET) {
-      if (source.getCounterpartMultiplicity().equals("*")) {
+      if (source.getCounterpartMultiplicity() == null || source.getCounterpartMultiplicity().equals("1")) {
+        if (source.getMultiplicity() == null || source.getMultiplicity().equals("1")) {
+          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
+        } else if (source.getMultiplicity().equals("*")) {
+          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"" + source.getCounterpartName()
+              + "Id\")";
+        }
+      } else if (source.getCounterpartMultiplicity().equals("*")) {
         if (source.getMultiplicity().equals("*")) {
           relationship += "@ManyToMany(mappedBy = \"" + removePlural(source.getClassName()).toLowerCase() + "s\")";
         } else if (source.getMultiplicity().equals("1")) {
           relationship = "@OneToMany(fetch = FetchType.LAZY, mappedBy = \"" + source.getCounterpartName().toLowerCase()
               + "\")";
-        }
-      } else if (source.getCounterpartMultiplicity().equals("1")) {
-        if (source.getMultiplicity().equals("*")) {
-          relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \"" + source.getCounterpartName()
-              + "Id\")";
-        } else if (source.getMultiplicity().equals("1")) {
-          relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
         }
       }
     }
