@@ -406,8 +406,7 @@ public class OaspUtil {
 
   /**
    * Gets all the class names that are connected to this class
-   *
-   * @return ArrayList<>: Contains every class name connected to this class
+   * @return ArrayList: Contains every class name connected to this class
    */
   public ArrayList<String> getConnectedClasses() {
 
