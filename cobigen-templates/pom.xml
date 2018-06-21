@@ -31,13 +31,10 @@
     <resources>
       <resource>
         <directory>${basedir}</directory>
-        <includes>
-          <include>**/*.ftl</include>
-          <include>**/*.xml</include>
-          <include>**/LICENSE.txt</include>
-        </includes>
         <excludes>
           <exclude>/target/**/*</exclude>
+          <exclude>*.classpath</exclude>
+          <exclude>*.project</exclude>
           <exclude>/bin/**/*</exclude>
           <exclude>/src/test/**/*</exclude>
           <exclude>**/MavenMetadata.java</exclude>

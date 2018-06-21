@@ -39,8 +39,8 @@ export class BusinessOperatorProvider {
     /**
     * @returns The url to the ${variables.etoName?uncap_first} management service.
     */
-    ${variables.etoName}Service(){
-        return this.restPath + '${variables.component}/v1/${variables.etoName?uncap_first}/';
+    ${variables.etoName?uncap_first}Service(){
+        return this.restPath + '${variables.component?uncap_first}/v1/${variables.etoName?uncap_first}/';
     }
 
 }
