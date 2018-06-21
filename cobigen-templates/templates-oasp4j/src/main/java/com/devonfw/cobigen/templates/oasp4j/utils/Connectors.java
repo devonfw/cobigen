@@ -12,18 +12,27 @@ public class Connectors {
 
   private List<Connector> connectors;
 
+  /**
+   * The constructor.
+   */
   public Connectors() {
 
     this.connectors = new ArrayList<Connector>();
   }
 
+  /**
+   * @param connector class storing connected information
+   */
   public void addConnector(Connector connector) {
 
     this.connectors.add(connector);
   }
 
   /**
-   * @return
+   * @param isImpl true if we are the Implementation
+   * @param isOverride true if we are Entity
+   * @param className name of the class
+   * @return Generated text
    */
   public String generateText(boolean isImpl, boolean isOverride, String className) {
 
@@ -124,6 +133,11 @@ public class Connectors {
     return content;
   }
 
+  /**
+   * Generates the annotations of all the connected classes
+   *
+   * @return relationship string with all the annotations for the connected classes
+   */
   private String getRelationshipAnnotations(Connector source) {
 
     String relationship = "";
@@ -167,6 +181,11 @@ public class Connectors {
     return relationship;
   }
 
+  /**
+   * Stores all the connected classes
+   *
+   * @return connectedClasses array with connected classes
+   */
   public ArrayList<String> getConnectedClasses() {
 
     ArrayList<String> connectedClasses = new ArrayList<String>();
@@ -182,7 +201,7 @@ public class Connectors {
    * If the string last character is an 's', then it gets removed
    *
    * @param targetClassName
-   * @return
+   * @return the string with plural removed
    */
   private String removePlural(String targetClassName) {
 

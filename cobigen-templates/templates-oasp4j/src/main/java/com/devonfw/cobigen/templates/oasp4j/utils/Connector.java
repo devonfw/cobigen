@@ -1,78 +1,104 @@
 package com.devonfw.cobigen.templates.oasp4j.utils;
 
 /**
- * Connector is one association between classes in a class diagram. This class is used for storing that data,
- * for later developing templates.
+ * Connector is one association between classes in a class diagram. This class is used for storing that data, for later
+ * developing templates.
  */
 public class Connector {
 
-    private String counterpartName = "";
+  private String counterpartName = "";
 
-    private String counterpartMultiplicity = "";
+  private String counterpartMultiplicity = "";
 
-    private String className;
+  private String className;
 
-    private String multiplicity;
+  private String multiplicity;
 
-    final Boolean ISSOURCE;
+  final Boolean ISSOURCE;
 
-    final Boolean ISTARGET;
+  final Boolean ISTARGET;
 
-    /**
-     * @param className
-     *            The name of the connector
-     * @param multiplicity
-     *            The multiplicity of the target of this connector
-     * @param isSource
-     *            True if the connector is the source, false if it is the target
-     */
-    public Connector(String className, String multiplicity, boolean isSource) {
+  /**
+   * @param className The name of the connector
+   * @param multiplicity The multiplicity of the target of this connector
+   * @param isSource True if the connector is the source, false if it is the target
+   */
+  public Connector(String className, String multiplicity, boolean isSource) {
 
-        this.className = className;
-        this.multiplicity = multiplicity;
-        ISSOURCE = isSource;
-        ISTARGET = !isSource;
-    }
+    this.className = className;
+    this.multiplicity = multiplicity;
+    this.ISSOURCE = isSource;
+    this.ISTARGET = !isSource;
+  }
 
-    public String getClassName() {
+  /**
+   * @return className name of the class
+   */
+  public String getClassName() {
 
-        return className;
-    }
+    return this.className;
+  }
 
-    public void setClassName(String className) {
+  /**
+   * @param className name of the class
+   */
+  public void setClassName(String className) {
 
-        className = className;
-    }
+    this.className = className;
+  }
 
-    public String getMultiplicity() {
+  /**
+   * @return multiplicity
+   */
+  public String getMultiplicity() {
 
-        return multiplicity;
-    }
+    return this.multiplicity;
+  }
 
-    public void setMultiplicity(String multiplicity) {
+  /**
+   * @param multiplicity multiplicity of the connection
+   */
+  public void setMultiplicity(String multiplicity) {
 
-        this.multiplicity = multiplicity;
-    }
+    this.multiplicity = multiplicity;
+  }
 
-    public String getCounterpartName() {
-        return counterpartName;
-    }
+  /**
+   * @return counterpartName
+   */
+  public String getCounterpartName() {
 
-    public void setCounterpartName(String counterpartName) {
-        this.counterpartName = counterpartName;
-    }
+    return this.counterpartName;
+  }
 
-    public String getCounterpartMultiplicity() {
-        return counterpartMultiplicity;
-    }
+  /**
+   * @param counterpartName Name of the counter part entity
+   */
+  public void setCounterpartName(String counterpartName) {
 
-    public void setCounterpartMultiplicity(String counterpartMuliplicity) {
-        counterpartMultiplicity = counterpartMuliplicity;
-    }
+    this.counterpartName = counterpartName;
+  }
 
-    @Override
-    public String toString() {
-        return ISSOURCE + " " + className + " " + multiplicity + " --> " + counterpartName + " "
-            + counterpartMultiplicity + " " + ISTARGET;
-    }
+  /**
+   * @return counterpartMultiplicity
+   */
+  public String getCounterpartMultiplicity() {
+
+    return this.counterpartMultiplicity;
+  }
+
+  /**
+   * @param counterpartMuliplicity multiplicity of the counter part entity
+   */
+  public void setCounterpartMultiplicity(String counterpartMuliplicity) {
+
+    this.counterpartMultiplicity = counterpartMuliplicity;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.ISSOURCE + " " + this.className + " " + this.multiplicity + " --> " + this.counterpartName + " "
+        + this.counterpartMultiplicity + " " + this.ISTARGET;
+  }
 }
