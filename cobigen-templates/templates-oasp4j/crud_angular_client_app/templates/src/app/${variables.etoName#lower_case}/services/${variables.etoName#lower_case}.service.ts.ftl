@@ -33,6 +33,7 @@ export class ${variables.etoName?cap_first}Service {
   save${variables.etoName?cap_first}(data: any): Observable<Object> {
     const obj: any = {
       id: data.id,
+      modificationCounter: data.modificationCounter,
     <#list pojo.fields as field>
       ${field.name}: data.${field.name},
     </#list>

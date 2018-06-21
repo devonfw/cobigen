@@ -13,7 +13,7 @@
           <ion-label class="label label-md">
             <ion-grid class="header-grid">
               <ion-row> <#list pojo.fields as field>
-                <ion-col class="crop">{{'${variables.component}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-col></#list>
+                <ion-col class="crop">{{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-col></#list>
               </ion-row>
             </ion-grid>
           </ion-label>
