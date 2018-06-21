@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.devonfw.cobigen.templates.oasp4j.constants.Field;
+import pojo.constants.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates

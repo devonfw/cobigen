@@ -19,6 +19,12 @@ import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Provides type operations, mainly checks and casts for Java Primitives, to be used in the templates
  *
@@ -508,17 +514,73 @@ public class JavaUtil {
         }
     }
 
-    private Method findMethod(Class<?> pojoClass, String name) {
+    private Method findMethod(Class<?> pojoClass, String methodName) {
 
         if (pojoClass == null) {
             throw new IllegalAccessError(
                 "Class object is null. Cannot generate template as it might obviously depend on reflection.");
         }
         for (Method m : pojoClass.getMethods()) {
-            if (m.getName().equals(name)) {
+            if (m.getName().equals(methodName)) {
                 return m;
             }
         }
         return null;
     }
+
+    public String getJSONRequest(Class<?> pojoClass, String methodName) {
+        Class<?>[] params = findMethod(pojoClass, methodName).getParameterTypes();
+        String result = "";
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+        for (Class<?> param : params) {
+            if (!param.isPrimitive()) {
+                try {
+                    Object obj = param.newInstance();
+                    result += mapper.writeValueAsString(obj);
+                } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
+                    throw new CobiGenRuntimeException(e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Create a request in JSON format, iterating through non-primitive types to get their data as well
+     * @param pojoClass
+     * @param methodName
+     *            The name of the operation to get the response of
+     * @return A JSON representation of the response object
+     */
+    public String getJSONResponse(Class<?> pojoClass, String methodName) {
+        Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
+        if (!responseType.isPrimitive() || !responseType.equals(Void.TYPE)) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+            try {
+                Object obj = responseType.newInstance();
+                return mapper.writeValueAsString(obj);
+            } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
+                throw new CobiGenRuntimeException(e.getMessage());
+            }
+        }
+        return "-";
+    }
+
+    // public String getXMLRequest(Class<?> pojoClass, String methodName) {
+    // String result = "-";
+    // String response = getReturnType(pojoClass, methodName);
+    //
+    // return result;
+    // }
+    //
+    // public String getXMLResponse(Class<?> pojoClass, String methodName) {
+    // String result = "-";
+    // String params = getParams(pojoClass, methodName);
+    //
+    // return result;
+    // }
+
 }
