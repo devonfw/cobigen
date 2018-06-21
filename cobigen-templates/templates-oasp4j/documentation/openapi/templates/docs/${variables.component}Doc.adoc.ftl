@@ -48,7 +48,7 @@ Component Data
       [[${op.operationId}-ResponseList]]
       [options="header"]
       |===
-      |Response type |Description
+      |Response type |Description |Example
       <#list resps as resp>
         | <@mediaTypes resp.mediaTypes/>
         | <#if resp.description>${resp.description}<#else>-</#if>

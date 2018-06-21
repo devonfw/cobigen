@@ -12,7 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestClass;
-import com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil;
+import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestTwoClass;
+
+import utils.JavaUtil;
 
 /**
  * Test class for {@link JavaUtil}
@@ -21,10 +23,13 @@ public class JavaUtilTest {
 
     private static Class<?> clazz;
 
+    private static Class<?> clazzTwo;
+
     @BeforeClass
     public static void beforeAll() {
 
         clazz = new TestClass().getClass();
+        clazzTwo = new TestTwoClass().getClass();
     }
 
     /**
@@ -187,8 +192,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns
-     * the object wrapper for a java primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the object wrapper for a java
+     * primitive
      */
     @Test
     public void testBoxJavaPrimitive() throws Exception {
@@ -197,8 +202,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)}
-     * returns the object wrapper for a java primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the object wrapper for a java
+     * primitive
      */
     @Test
     public void testPojoBoxJavaPrimitive() throws Exception {
@@ -207,8 +212,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns
-     * the input String for a primitive array
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a primitive
+     * array
      */
     @Test
     public void testBoxJavaPrimitiveWPrimitiveArray() throws Exception {
@@ -217,8 +222,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)}
-     * returns the input String for a primitive array
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the input String for a
+     * primitive array
      */
     @Test
     public void testPojoBoxJavaPrimitiveWPrimitiveArray() throws Exception {
@@ -227,8 +232,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns
-     * the input String for a non primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a non primitive
      */
     @Test
     public void testBoxJavaPrimitiveWOPrimitive() throws Exception {
@@ -237,8 +241,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)}
-     * returns the simple type name for a non primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the simple type name for a non
+     * primitive
      */
     @Test
     public void testPojoBoxJavaPrimitiveWOPrimitive() throws Exception {
@@ -247,8 +251,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String, String)}
-     * casts the var name if it is primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(String, String)} casts the var name if it is primitive
      */
     @Test
     public void testCastJavaPrimitiveStatement() throws Exception {
@@ -257,8 +260,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)}
-     * casts the var name if it is primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} casts the var name if it is primitive
      */
     @Test
     public void testPojoCastJavaPrimitiveStatement() throws Exception {
@@ -267,8 +269,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String, String)}
-     * doesn't cast the var name if it isn't a primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(String, String)} doesn't cast the var name if it isn't
+     * a primitive
      */
     @Test
     public void testCastJavaPrimitiveStatementWOCast() throws Exception {
@@ -277,8 +279,8 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)}
-     * doesn't cast the var name if it isn't a primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} doesn't cast the var name if it isn't a
+     * primitive
      */
     @Test
     public void testPojoCastJavaPrimitiveStatementWOCast() throws Exception {
@@ -378,5 +380,19 @@ public class JavaUtilTest {
         }
         assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
         assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
+    }
+
+    @Test
+    public void getResponseTest() {
+        assertEquals("{\"someInt\":0,\"someString\":null,\"someClass\":null}",
+            new JavaUtil().getJSONResponse(clazzTwo, "bodyFormatTest"));
+        // assertEquals(new JavaUtil().getXMLResponse(clazzTwo, "bodyFormatTest"), "");
+    }
+
+    @Test
+    public void getRequestTest() {
+        assertEquals("{\"someInt\":0,\"someString\":null,\"someClass\":null}",
+            new JavaUtil().getJSONRequest(clazzTwo, "bodyFormatTest"));
+        // assertEquals(new JavaUtil().getXMLRequest(clazzTwo, "bodyFormatTest"), "");
     }
 }
