@@ -80,17 +80,6 @@
         <variableAssignment type="xpath" key="className" value="self::node()/@name"/>
       </matcher>
     </trigger>
-    <!-- Currently not available
-    <trigger id="crud_angular_xml_client_app" type="xml" templateFolder="crud_angular_xml_client_app">
-      <containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']"/>
-      <matcher type="xpath" value="self::node()[@xmi:type='uml:Class']/ancestor::uml:Model">
-        <variableAssignment type="xpath" key="rootPackage" value="self::node()/ancestor::packagedElement/packagedElement/@name"/>
-        <variableAssignment type="xpath" key="component" value="self::node()/ancestor::packagedElement/packagedElement/packagedElement/@name"/>
-        <variableAssignment type="xpath" key="etoName" value="self::node()/@name"/>
-        <variableAssignment type="xpath" key="domain" value="self::node()/@name"/> 
-      </matcher>
-    </trigger>
-     -->
     <trigger id="crud_openapi_java_server_app" type="openapi" templateFolder="crud_openapi_java_server_app">
       <containerMatcher type="element" value="openAPIFile"/>
       <matcher type="element" value="EntityDef">
