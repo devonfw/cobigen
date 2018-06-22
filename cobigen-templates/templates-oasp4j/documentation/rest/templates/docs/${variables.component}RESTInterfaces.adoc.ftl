@@ -8,7 +8,6 @@ ${JavaUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??
 
 <#if pojo.annotations.javax_ws_rs_Consumes??>
   <#assign inputType=pojo.annotations.javax_ws_rs_Consumes.value>
-  ${inputType}
   <#if inputType?contains("JSON")>
     <#assign inputType="JSON">
     <#elseif inputType?contains("XML")>

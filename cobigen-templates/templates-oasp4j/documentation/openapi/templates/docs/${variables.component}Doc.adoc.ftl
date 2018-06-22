@@ -24,7 +24,7 @@ Component Data
 
     [options="header"]
     |===
-    |Service Path |Description |Response Type |Request Type |Path Parameter
+    |Service Path |Description |Response Type |Response Example |Request Type |Request Example |Path Parameter
       <#list getPathsOfType(type) as path>
         <#list path.operations as op>
           <#assign respList=false>
