@@ -1,18 +1,18 @@
-// anchor:header::anchorend
+// anchor:header:append:anchorend
+
 :toc:
 [[top]]
-= Documentation ${variables.domain}
+= Documentation
 
 ....
-This document contains information about the ${variables.domain} application, 
-including information about its components and each of the requests for each component.
+This document contains information about the operations of the ${variables.domain} application.
 ....
 
-// anchor:components:newline:anchorend
+// anchor:components:append:anchorend
 
 <#include "$\{variables.component}RESTInterfaces.adoc.ftl">
 
 
-// anchor:footer::anchorend
+// anchor:footer:append:anchorend
 
 <<top,back to top>>

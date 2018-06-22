@@ -1,4 +1,5 @@
-== ApiModelProperties of ${variables.toName?cap_first}
+//anchor:${variables.component}kafka:override:anchorend
+== Properties of ${variables.toName?cap_first}
 
 Component Data
 [options="header"]

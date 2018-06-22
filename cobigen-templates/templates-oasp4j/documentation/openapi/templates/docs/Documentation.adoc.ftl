@@ -5,15 +5,14 @@
 = Documentation 
 
 ....
-This document contains information about the OpenAPI specifications of __Currently no way to access info/title__.
+This document contains information about the operations of the ${model.header.info.title} application.
 ....
 
-// anchor:componentlisting:append:anchorend
+// anchor:components:append:anchorend
 
 <#include "*/$\{variables.component}Doc.adoc.ftl">
 
-// anchor:footer:append:anchorend
 
-Copyright by somebody
+// anchor:footer:append:anchorend
 
 <<top,back to top>>
