@@ -514,7 +514,6 @@ public class OpenAPIInputReader implements InputReader {
                 response.setIsVoid(true);
             }
             response.setMediaTypes(mediaTypes);
-            // System.out.println(response);
             resps.add(response);
         }
         return resps;
