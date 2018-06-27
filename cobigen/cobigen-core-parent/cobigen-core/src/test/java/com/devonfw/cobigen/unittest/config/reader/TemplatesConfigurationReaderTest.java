@@ -335,6 +335,32 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
+     * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
+     */
+    @Test
+    public void testIncrementRefOutsideCurrentFile() {
+
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_incrementref_outside_folder").toPath());
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+
+        // validation
+
+        assertThat(templates).containsOnlyKeys("templateDecl");
+        assertThat(increments).containsOnlyKeys("1");
+        assertThat(increments.values()).hasSize(1);
+        assertThat(increments.get("1").getTemplates()).extracting("name").containsOnly("templateDecl");
+
+    }
+
+    /**
      * Test for <a href="https://github.com/devonfw/tools-cobigen/issues/167">Issue 167</a>. Tests if the
      * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
      * the exception
