@@ -8,7 +8,24 @@
   ${server.URI}
 </#list>
 ....
-
+<#-- <#list model.component.paths as path>
+  ${OpenApiUtil.print(("Path at: "+path.pathURI))}
+  <#list path.operations as op>
+    ${OpenApiUtil.print(("  Has operation: "+op.operationId))}
+    <#list op.parameters as param>
+      <#if param.mediaType??><#assign mediaType=param.mediaType><#else><#assign mediaType="void"></#if>
+      <#if param.type??><#assign type=param.type><#else><#assign type="no type"></#if>
+      ${OpenApiUtil.print(("    Has parameter: "+param.inQuery?string("?","")+param.inPath?string("{","")+type+param.inPath?string("}","")+param.inHeader?string(" in header","")))}
+    </#list>
+    <#list op.responses as resp>
+      <#if resp.code??><#assign code=resp.code><#else><#assign code="no code"></#if>
+      <#if resp.type??><#assign type=resp.type><#else><#assign type="no type"></#if>
+      <#if resp.mediaType??><#assign mediaType=resp.mediaType><#else><#assign mediaType="no mediaType"></#if>
+      <#if resp.description??><#assign description=resp.description><#else><#assign description="no description"></#if>
+      ${OpenApiUtil.print(("    Has response: "+code+", "+type+", "+mediaType+", "+description+", which is "+resp.isEntity?string("an Entity","")+resp.isArray?string("an Array","")+resp.isPaginated?string("paginated","")+resp.isVoid?string("void","")))}
+    </#list>
+  </#list>
+</#list> -->
 Component Data
 [options="header"]
 |===
@@ -24,44 +41,32 @@ Component Data
 
     [options="header"]
     |===
-    |Service Path |Description |Response Type |Response Example |Request Type |Request Example |Path Parameter
+    |Service Path |Description |Response Type | Response Example | Request Type | Request Example |Path Parameter
       <#list getPathsOfType(type) as path>
         <#list path.operations as op>
-          <#assign respList=false>
-          <#if op.type=type>
-            |<#if path.pathURI??>${getServer()}${path.pathURI}<#else>-</#if>
-            |<#if op.description??>${op.description}<#else>-</#if>
-            |<#if op.responses??><#if op.responses?size gt 1><<${op.operationId}-ResponseList,Response Type List>><#assign respList=true><#assign resps=op.responses><#assign operation=op><#else><@mediaTypes op.responses/></#if><#else>-</#if>
-            |<#if op.parameters??><#list op.parameters as param>${getParameter(param,"query")} </#list><#else>-</#if>
-            |<#if op.parameters??><#list op.parameters as param>${getParameter(param,"path")}; </#list><#else>-</#if>
+          <#if (op.parameters?size gt 0)>
+            <#if op.type=type>
+              |<#if path.pathURI??>${getServer()}${path.pathURI}<#else>-</#if>
+              |<#if op.description??>${op.description}<#else>-</#if>
+              |<#if op.responses??><#list op.responses as resp><#if resp.type??>${resp.type} <#else>void </#if></#list><#else>-</#if>
+              |<#if op.responses??><#if op.responses?size gt 0><#list op.responses as response>${OpenApiUtil.getJSONResponse(response)}</#list><#else>-</#if><#else>-</#if>
+              |<#if op.parameters??><#list op.parameters as param>${OaspUtil.print("testParam ${param.type}")}${OpenApiUtil.getParameter(param)} </#list><#else>-</#if>
+              |<#if op.parameters??><#if op.parameters?size gt 0>{<#assign moreThanOne=false><#list op.parameters as param><#if moreThanOne>,</#if>${OpenApiUtil.getJSONRequest(param)}<#assign moreThanOne=true></#list>}<#else>-</#if><#else>-</#if>
+              |<#assign nrPathParam=0><#if op.parameters??><#list op.parameters as param><#if param.inPath><#assign nrPathParam=nrPathParam+1></#if></#list>${OpenApiUtil.getPathParams(op.parameters,nrPathParam)}<#else>-</#if>
+            </#if>
+          <#else>
+            |-|-|-|-|-|-|-
           </#if>
         </#list>
       </#list>
     |===
-    
-    <#assign respListExists=true>    
-    <#if respList>
-      <#if respListExists>
-        === Response types listings
-      </#if>
-      ==== Response types of ${operation.operationId}
-      [[${op.operationId}-ResponseList]]
-      [options="header"]
-      |===
-      |Response type |Description |Example
-      <#list resps as resp>
-        | <@mediaTypes resp.mediaTypes/>
-        | <#if resp.description>${resp.description}<#else>-</#if>
-      </#list>
-      |===
-    </#if>
     <#else>
   </#if>
 </#compress>
 </#macro>
 
-<#macro mediaTypes mediaTypes>
-  <#if mediaTypes??><#list mediaTypes as mediaType>${mediaType}</#list><#else>void</#if>
+<#macro mediaTypes resp>
+    <#if response.mediaTypes??><#if response.mediaTypes?size gt 0><#list response.mediaTypes as mediaType>${mediaType}</#list><#else>void</#if><#else>void</#if>
 </#macro>
 
 <@request "get"/>

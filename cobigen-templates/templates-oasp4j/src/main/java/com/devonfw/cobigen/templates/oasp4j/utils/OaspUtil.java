@@ -758,4 +758,45 @@ public class OaspUtil {
             return "";
         }
     }
+
+    public void print(String s) {
+        System.out.println(s);
+    }
+
+    public String getParameter(Map<String, Object> param, String where) {
+
+        switch (where.toLowerCase()) {
+        case "query":
+            if ((boolean) param.get("inQuery")) {
+                return (String) param.get("mediaType");
+            }
+            //$FALL-THROUGH$
+        case "header":
+            if ((boolean) param.get("inHeader")) {
+                return (String) param.get("mediaType");
+            }
+            //$FALL-THROUGH$
+        case "path":
+            if ((boolean) param.get("inPath")) {
+                return (String) param.get("mediaType");
+            }
+            //$FALL-THROUGH$
+        default:
+            return "void";
+        }
+    }
+
+    public String getJSONResponse(Map<String, Object> param) {
+        String result = "";
+        System.out.println("'tis be a test");
+        System.out.println(param.get("mediaType"));
+        return result;
+    }
+
+    public String getJSONRequest(Map<String, Object> param) {
+        String result = "";
+        System.out.println("'tis be 'nother test");
+        System.out.println(param.get("mediaType"));
+        return result;
+    }
 }

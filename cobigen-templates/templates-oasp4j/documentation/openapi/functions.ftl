@@ -1,4 +1,3 @@
-
 <#function getServer>
   <#list model.header.servers as server>
     <#return server.URI>
@@ -12,8 +11,8 @@
         <#assign type=param.mediaType>
       <#else><#assign type="-">
       </#if>
+    <#else><#assign type="-">
     </#if>
-  <#else><#assign type="-">
   </#if>
 
   <#if where="query">
@@ -22,8 +21,8 @@
         <#assign type=param.mediaType>
       <#else><#assign type="-">
       </#if>
+    <#else><#assign type="-">
     </#if>
-  <#else><#assign type="-">
   </#if>
   
   <#if where="path">
@@ -32,8 +31,8 @@
         <#assign type=param.mediaType>
       <#else><#assign type="-">
       </#if>
+    <#else><#assign type="-">
     </#if>
-  <#else><#assign type="-">
   </#if>
   
   <#return type>
