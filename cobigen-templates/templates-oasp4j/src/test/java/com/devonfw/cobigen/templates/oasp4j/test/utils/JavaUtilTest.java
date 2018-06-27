@@ -13,8 +13,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestClass;
 import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestTwoClass;
-
-import utils.JavaUtil;
+import com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil;
 
 /**
  * Test class for {@link JavaUtil}

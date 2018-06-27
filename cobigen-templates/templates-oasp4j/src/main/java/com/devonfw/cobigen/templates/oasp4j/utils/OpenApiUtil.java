@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -171,7 +172,7 @@ public class OpenApiUtil {
                 return "List<" + typeConverted + ">";
             }
         } else if (isEntity) {
-            return (String) parameter.get("type") + "Entity";
+            return (String) parameter.get("type");
         }
         return typeConverted;
     }
@@ -200,5 +201,45 @@ public class OpenApiUtil {
         } else {
             return operationId;
         }
+    }
+
+    public String getParameter(Map<String, Object> param) {
+        String result = "";
+        if (param.get("type") == null || param.get("type").equals("void")) {
+            return "void";
+        } else {
+            return (String) param.get("type");
+        }
+    }
+
+    public String getJSONRequest(Map<String, Object> param) {
+        String result = "";
+        String name = (String) param.get("name");
+        String type = (String) param.get("type");
+        result += "\"" + name + "\":" + type + "\"";
+        return result;
+    }
+
+    public String getJSONResponse(Map<String, Object> response) {
+        String result = "";
+
+        return result;
+    }
+
+    public void print(String s) {
+        System.out.println(s);
+    }
+
+    public String getPathParams(List<Map<String, Object>> parameters, int nrPathParam) {
+        if (nrPathParam == 1) {
+            return "Yes";
+        } else if (nrPathParam >= 2) {
+            String pathParams = "";
+            for (Map<String, Object> param : parameters) {
+                pathParams += (String) param.get("type") + System.lineSeparator();
+            }
+            return pathParams;
+        }
+        return "-";
     }
 }
