@@ -38,7 +38,18 @@ paths:
         - name: amount
           in: path
           schema:
-            type: array
+            $ref: '#/components/schemas/Table'
+      responses:
+        '200':
+          description: Any
+  /salemanagement/v1/sale/{bla}:
+    get:
+      operationId: findSale
+      parameters:
+        - name: bla
+          in: path
+          schema:
+            type: integer
             format: int64
             minimum: 10
             maximum: 200
