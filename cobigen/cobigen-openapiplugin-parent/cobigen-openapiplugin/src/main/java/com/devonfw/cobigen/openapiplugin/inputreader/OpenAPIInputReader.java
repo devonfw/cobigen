@@ -410,7 +410,7 @@ public class OpenAPIInputReader implements InputReader {
                 }
             }
             try {
-                if (Overlay.isReference(param, "schema")) {
+                if (Overlay.isReference(param, Constants.SCHEMA)) {
                     parameter.setIsEntity(true);
                     parameter.setType(schema.getName());
                 } else {
@@ -479,7 +479,7 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
+                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
                         if (schemaReference != null) {
