@@ -41,7 +41,7 @@ Component Data
 
     [options="header"]
     |===
-    |Service Path |Description |Response Type | Response Example | Request Type | Request Example |Path Parameter
+    |Service Path |Description |Response Type | Response Example | Request Parameter Types | Request Example |Path Parameter
     <#if pojo.methods?has_content>
      <#list pojo.methods as method>
         <#if JavaUtil.hasAnnotation(classObject,method.name,annotation)>
