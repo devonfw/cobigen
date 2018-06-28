@@ -16,7 +16,7 @@ install: true
 addons:
   apt:
     packages:
-      -metaCity
+      - metaCity
 
 jobs:
   include:
