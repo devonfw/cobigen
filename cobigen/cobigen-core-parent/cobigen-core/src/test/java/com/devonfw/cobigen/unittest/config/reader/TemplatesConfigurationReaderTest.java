@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateExtension;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -339,6 +341,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
      */
     @Test
     public void testIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
 
         // given
         TemplatesConfigurationReader target =

@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -474,8 +475,46 @@ public class TemplatesConfigurationReader {
             Increment parentPkg = increments.get(current.getName());
             Increment childPkg = increments.get(ref.getRef());
             if (childPkg == null) {
-                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No increment found for ref='" + ref.getRef() + "'!");
+                // We have not found the increment inside our templates.xml file, now let's see if this
+                // incrementRef contains "::". That would mean we have to search on another folder.
+                if (ref.getRef().contains("::")) {
+                    // Let's split the string and get its content
+                    String[] splitted = ref.getRef().split("\\::");
+                    if (splitted.length != 2) {
+                        throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                            "Invalid external ref for ref='" + ref.getRef()
+                                + "', it should be 'nameOfFolder::nameOfIncrement'!");
+                    }
+                    String triggerToSearch = splitted[0];
+                    String incrementToSearch = splitted[1];
+
+                    // We read the context.xml file for searching our trigger
+                    String pathToContext = rootTemplateFolder.getPath().normalize().getParent().toString();
+                    ContextConfigurationReader contextConfigurationReader =
+                        new ContextConfigurationReader(Paths.get(new File(pathToContext).toURI()));
+                    Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
+                    Trigger trig = triggers.get(triggerToSearch);
+                    if (trig == null) {
+                        throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                            "Invalid external ref for ref='" + ref.getRef() + "', no trigger '" + triggerToSearch
+                                + "' was found on your context.xml!");
+                    }
+                    // Now that we are sure the trigger exists, let's get its templates
+                    TemplatesConfigurationReader externalTarget = new TemplatesConfigurationReader(
+                        new File(pathToContext + "\\" + trig.getTemplateFolder()).toPath());
+                    Map<String, Template> externalTemplates = externalTarget.loadTemplates(trig);
+                    Map<String, Increment> externalIncrements = externalTarget.loadIncrements(externalTemplates, trig);
+
+                    // Now we get the needed increment from the external templates folder
+                    Increment extIncrement = externalIncrements.get(incrementToSearch);
+                    for (Template template : extIncrement.getTemplates()) {
+                        rootIncrement.addTemplate(template);
+                    }
+
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "No increment found for ref='" + ref.getRef() + "'!");
+                }
             }
             parentPkg.addIncrementDependency(childPkg);
 
