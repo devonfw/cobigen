@@ -378,9 +378,9 @@ public class OpenAPIInputReader implements InputReader {
     private List<ParameterDef> extractParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
         RequestBody requestBody) {
         List<ParameterDef> parametersList = new LinkedList<>();
-        ParameterDef parameter = new ParameterDef();
+        ParameterDef parameter;
         for (Parameter param : parameters) {
-
+            parameter = new ParameterDef();
             switch (param.getIn()) {
             case "path":
                 parameter.setInPath(true);
