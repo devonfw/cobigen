@@ -41,18 +41,19 @@ Component Data
 
     [options="header"]
     |===
-    |Service Path |Description |Response Type | Response Example | Request Type | Request Example |Path Parameter
+    |Service Path |Description |Response Type | Response Example | Request Parameter Types | Request Example |Path Parameter
       <#list getPathsOfType(type) as path>
         <#list path.operations as op>
           <#if (op.parameters?size gt 0)>
+            <#assign responseType="">
             <#if op.type=type>
               |<#if path.pathURI??>${getServer()}${path.pathURI}<#else>-</#if>
               |<#if op.description??>${op.description}<#else>-</#if>
-              |<#if op.responses??><#list op.responses as resp><#if resp.type??>${resp.type} <#else>void </#if></#list><#else>-</#if>
-              |<#if op.responses??><#if op.responses?size gt 0><#list op.responses as response>${OpenApiUtil.getJSONResponse(response)}</#list><#else>-</#if><#else>-</#if>
-              |<#if op.parameters??><#list op.parameters as param>${OaspUtil.print("testParam ${param.type}")}${OpenApiUtil.getParameter(param)} </#list><#else>-</#if>
-              |<#if op.parameters??><#if op.parameters?size gt 0>{<#assign moreThanOne=false><#list op.parameters as param><#if moreThanOne>,</#if>${OpenApiUtil.getJSONRequest(param)}<#assign moreThanOne=true></#list>}<#else>-</#if><#else>-</#if>
-              |<#assign nrPathParam=0><#if op.parameters??><#list op.parameters as param><#if param.inPath><#assign nrPathParam=nrPathParam+1></#if></#list>${OpenApiUtil.getPathParams(op.parameters,nrPathParam)}<#else>-</#if>
+              |<#if op.responses??><#list op.responses as resp><#if resp.type??>${resp.type} <#else>void<#assign responseType="void"> </#if></#list><#else>-</#if>
+              |<#if op.responses??><#if op.responses?size gt 0><#if (responseType!="void")>{<#list op.responses as response><#if response.type??></#if>${OpenApiUtil.getJSONResponse(response)}</#list>}<#else>-</#if><#else>-</#if><#else>-</#if>
+              |<#if op.parameters??><#list op.parameters as param>${OpenApiUtil.getParameter(param)} </#list><#else>-</#if>
+              |<#if op.parameters??><#if op.parameters?size gt 0>{<#assign moreThanOne=false><#list op.parameters as param><#if moreThanOne>,</#if>${OpenApiUtil.getJSONRequest(param)}<#assign moreThanOne=true></#list>}<#else>void</#if><#else>void</#if>
+              |<#assign nrPathParam=0><#if op.parameters??><#if op.parameters?size==1>Yes<#else><#list op.parameters as param><#if param.inPath>${param.name}</#if></#list></#if><#else>-</#if>
             </#if>
           <#else>
             |-|-|-|-|-|-|-

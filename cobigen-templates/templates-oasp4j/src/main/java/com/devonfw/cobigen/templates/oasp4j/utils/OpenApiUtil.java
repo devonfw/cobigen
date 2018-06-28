@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -216,30 +215,27 @@ public class OpenApiUtil {
         String result = "";
         String name = (String) param.get("name");
         String type = (String) param.get("type");
-        result += "\"" + name + "\":" + type + "\"";
+        result += "\"" + name + "\":\"" + type + "\"";
         return result;
     }
 
     public String getJSONResponse(Map<String, Object> response) {
         String result = "";
-
+        String name = (String) response.get("type");
+        String type = (String) response.get("");
+        result += "\"" + name + "\":" + type + "\"";
         return result;
     }
 
-    public void print(String s) {
-        System.out.println(s);
+    public String getJSONResponse(Map<String, Object> response, Map<String, Object> entity) {
+        String result = "";
+        String name = (String) response.get("type");
+        String type = (String) entity.get("");
+        result += "\"" + name + "\":[{\"" + type + "\"}]";
+        return result;
     }
 
-    public String getPathParams(List<Map<String, Object>> parameters, int nrPathParam) {
-        if (nrPathParam == 1) {
-            return "Yes";
-        } else if (nrPathParam >= 2) {
-            String pathParams = "";
-            for (Map<String, Object> param : parameters) {
-                pathParams += (String) param.get("type") + System.lineSeparator();
-            }
-            return pathParams;
-        }
-        return "-";
+    public void print(Object s) {
+        System.out.println(s);
     }
 }
