@@ -1,4 +1,4 @@
-package constants.pojo;
+package com.devonfw.cobigen.templates.eclipse.test.constants;
 
 /**
  * Contains the used keys for the pojo field Map&lt;String, Object>
