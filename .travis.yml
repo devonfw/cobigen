@@ -20,7 +20,7 @@ addons:
 
 jobs:
   include:
-    - stage: init
+    - stage: install & test
       script: 
         - if [[ ("$TRAVIS_BRANCH" == "gh-pages") || ("$TRAVIS_BRANCH" == "dev_oomph_setup") ]]; then 
             travis_terminate 1;
@@ -43,16 +43,11 @@ jobs:
             build_root="cobigen/cobigen-";
             build_root+=${TRAVIS_BRANCH//dev_/};
           fi
-    - stage: start screen
-      if: branch IN (master,dev_eclipseplugin)
-      script: 
         - sh -e /etc/init.d/xvfb start
         - metaCity --sm-disable --replace 2> metacity.err &
-    - stage: install & test
-      script: 
         - if [ "$TRAVIS_BRANCH" == "master" ]; then 
             mvn clean install -U -Pp2-build-mars,p2-build-stable;
-          elif [ "$TRAVIS_BRANCH" == "master" ]; then 
+          elif [ "$TRAVIS_BRANCH" == "dev_eclipseplugin" ]; then 
             mvn clean install -U -Pp2-build-mars,p2-build-ci;
           else
             mvn clean install -U;
