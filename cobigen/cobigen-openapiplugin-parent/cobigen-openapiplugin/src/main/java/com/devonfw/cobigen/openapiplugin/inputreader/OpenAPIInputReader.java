@@ -392,6 +392,7 @@ public class OpenAPIInputReader implements InputReader {
                 parameter.setInHeader(true);
                 break;
             }
+
             parameter.setName(param.getName());
             Schema schema = param.getSchema();
             Map<String, Object> constraints = extractConstraints(schema);
@@ -409,15 +410,17 @@ public class OpenAPIInputReader implements InputReader {
                 }
             }
             try {
-                if (Overlay.isReference(param, "schema")) {
+                if (Overlay.isReference(param, Constants.SCHEMA)) {
                     parameter.setIsEntity(true);
+                    parameter.setType(schema.getName());
+                } else {
+                    parameter.setType(schema.getType());
+                    parameter.setFormat(schema.getFormat());
                 }
             } catch (NullPointerException e) {
                 throw new CobiGenRuntimeException("Error at parameter " + param.getName()
                     + ". Invalid OpenAPI file, path parameters need to have a schema defined.");
             }
-            parameter.setType(schema.getType());
-            parameter.setFormat(schema.getFormat());
             parametersList.add(parameter);
         }
 
@@ -476,10 +479,9 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
+                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
-                        // System.out.println(schema);
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);

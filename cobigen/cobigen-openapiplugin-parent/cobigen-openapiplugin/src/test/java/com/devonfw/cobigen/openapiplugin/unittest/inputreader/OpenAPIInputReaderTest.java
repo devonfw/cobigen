@@ -159,8 +159,8 @@ public class OpenAPIInputReaderTest {
                 pathURIs.add(path.getPathURI());
             }
         }
-        assertThat(pathURIs).hasSize(4);
-        assertThat(pathURIs).containsExactly("/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/");
+        assertThat(pathURIs).hasSize(5);
+        assertThat(pathURIs).containsExactly("/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/{bla}/", "/sale/");
     }
 
     @Test
@@ -180,16 +180,16 @@ public class OpenAPIInputReaderTest {
                 }
             }
         }
-        assertThat(operations).extracting("type").hasSize(4);
-        assertThat(operations).extracting("type").containsExactly("get", "post", "get", "post");
+        assertThat(operations).extracting("type").hasSize(5);
+        assertThat(operations).extracting("type").containsExactly("get", "post", "get", "get", "post");
     }
 
     @Test
     public void testRetrieveParametersOfOperation() throws Exception {
 
         List<ParameterDef> parameters = getParametersOfOperations("two-components.yaml");
-        assertThat(parameters).extracting("name").hasSize(4);
-        assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "criteria");
+        assertThat(parameters).extracting("name").hasSize(5);
+        assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "bla", "criteria");
 
     }
 
@@ -201,12 +201,12 @@ public class OpenAPIInputReaderTest {
         for (ParameterDef param : parameters) {
             constraints.add(param.getConstraints());
         }
-        assertThat(constraints).extracting("minimum").hasSize(4);
-        assertThat(constraints).extracting("maximum").hasSize(4);
-        assertThat(constraints).extracting("notNull").hasSize(4);
+        assertThat(constraints).extracting("minimum").hasSize(5);
+        assertThat(constraints).extracting("maximum").hasSize(5);
+        assertThat(constraints).extracting("notNull").hasSize(5);
         assertThat(constraints).extracting("minimum").contains(0, 10);
         assertThat(constraints).extracting("maximum").contains(50, 200);
-        assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
+        assertThat(constraints).extracting("notNull").containsExactly(true, true, false, false, true);
     }
 
     @Test
