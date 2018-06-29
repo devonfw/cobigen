@@ -1,9 +1,9 @@
-package utils;
+package com.devonfw.cobigen.templates.eclipse.test.utils;
 
 import java.util.Collection;
 import java.util.Map;
 
-import constants.pojo.Field;
+import com.devonfw.cobigen.templates.eclipse.test.constants.Field;
 
 /**
  * A class for shared oasp4j specific functions in the templates
