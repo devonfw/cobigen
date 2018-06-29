@@ -485,21 +485,6 @@ public class OpenAPIInputReader implements InputReader {
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
-                            EntityDef eDef = new EntityDef();
-                            List<PropertyDef> propDefs = new LinkedList<>();
-                            int i = 0;
-                            for (Schema propertySchema : schema.getProperties().values()) {
-                                i++;
-                                PropertyDef prop = new PropertyDef();
-                                prop.setDescription(propertySchema.getDescription());
-                                prop.setFormat(propertySchema.getFormat());
-                                prop.setName(propertySchema.getName());
-                                prop.setType(propertySchema.getType());
-                                propDefs.add(prop);
-                            }
-                            eDef.setName(schema.getName());
-                            eDef.setProperties(propDefs);
-                            response.setEntityRef(eDef);
                         } else if (schema.getType().equals(Constants.ARRAY)) {
                             if (schema.getItemsSchema() != null) {
                                 response.setType(schema.getItemsSchema().getName());
