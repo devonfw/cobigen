@@ -443,6 +443,40 @@ public class TemplatesConfigurationReader {
     }
 
     /**
+     * Loads all increments of the static configuration into the local representation.
+     *
+     * @return the mapping of increment names to the corresponding {@link Increment}
+     * @param templates
+     *            {@link Map} of all templates (see
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
+     * @param trigger
+     *            {@link Trigger} for which the templates should be loaded
+     * @throws InvalidConfigurationException
+     *             if there is an invalid ref attribute
+     */
+    public Map<String, Increment> loadSpecificIncrement(Map<String, Template> templates, Trigger trigger,
+        String incrementName, Increment rootIncrement) throws InvalidConfigurationException {
+
+        Map<String, Increment> increments = new HashMap<>();
+        Increments incrementsNode = configNode.getIncrements();
+        if (incrementsNode != null) {
+            // We only add the specific increment we want
+            com.devonfw.cobigen.impl.config.entity.io.Increment source =
+                incrementsNode.getSpecificIncrement(incrementName);
+            if (!increments.containsKey(source.getName())) {
+                increments.put(source.getName(), new Increment(source.getName(), source.getDescription(), trigger));
+            } else {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "Duplicate increment found with name='" + source.getName() + "'.");
+            }
+            // Collect templates for our specific increment
+            Increment target = increments.get(source.getName());
+            addAllTemplatesRecursively(target, source, templates, increments);
+        }
+        return increments;
+    }
+
+    /**
      * Adds all templates defined within the increment and sub increments recursively.
      *
      * @param rootIncrement
@@ -503,23 +537,31 @@ public class TemplatesConfigurationReader {
                     TemplatesConfigurationReader externalTarget = new TemplatesConfigurationReader(
                         new File(pathToContext + "\\" + trig.getTemplateFolder()).toPath());
                     Map<String, Template> externalTemplates = externalTarget.loadTemplates(trig);
-                    Map<String, Increment> externalIncrements = externalTarget.loadIncrements(externalTemplates, trig);
+                    Map<String, Increment> externalIncrements =
+                        externalTarget.loadSpecificIncrement(externalTemplates, trig, incrementToSearch, rootIncrement);
 
                     // Now we get the needed increment from the external templates folder
-                    Increment extIncrement = externalIncrements.get(incrementToSearch);
-                    for (Template template : extIncrement.getTemplates()) {
+                    childPkg = externalIncrements.get(incrementToSearch);
+                    for (Template template : childPkg.getTemplates()) {
                         rootIncrement.addTemplate(template);
                     }
 
+                    parentPkg.addIncrementDependency(childPkg);
+
+                    com.devonfw.cobigen.impl.config.entity.io.Increment pkg =
+                        externalTarget.getIncrementDeclaration(ref);
+                    // Maybe there are more increments to check, so we should force the next iteration
+                    continue;
                 } else {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "No increment found for ref='" + ref.getRef() + "'!");
                 }
-            }
-            parentPkg.addIncrementDependency(childPkg);
+            } else {
+                parentPkg.addIncrementDependency(childPkg);
 
-            com.devonfw.cobigen.impl.config.entity.io.Increment pkg = getIncrementDeclaration(ref);
-            addAllTemplatesRecursively(rootIncrement, pkg, templates, increments);
+                com.devonfw.cobigen.impl.config.entity.io.Increment pkg = getIncrementDeclaration(ref);
+                addAllTemplatesRecursively(rootIncrement, pkg, templates, increments);
+            }
         }
 
         for (TemplateScanRef ref : current.getTemplateScanRef()) {
@@ -557,10 +599,22 @@ public class TemplatesConfigurationReader {
         Iterator<com.devonfw.cobigen.impl.config.entity.io.Increment> allNamedIncrementsIt =
             xPathContext.iterate("//increment[@name]");
 
+        String incrementToSearch = source.getRef();
+        // Check whether we have an external incrementRef
+        if (incrementToSearch.contains("::")) {
+            String[] splitted = source.getRef().split("\\::");
+            if (splitted.length != 2) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "Invalid external ref for ref='" + source.getRef()
+                        + "', it should be 'nameOfFolder::nameOfIncrement'!");
+            }
+            incrementToSearch = splitted[1];
+        }
+
         com.devonfw.cobigen.impl.config.entity.io.Increment result = null;
         while (allNamedIncrementsIt.hasNext()) {
             com.devonfw.cobigen.impl.config.entity.io.Increment currentIncrement = allNamedIncrementsIt.next();
-            if (source.getRef().equals(currentIncrement.getName())) {
+            if (incrementToSearch.equals(currentIncrement.getName())) {
                 if (result == null) {
                     result = currentIncrement;
                 } else {
