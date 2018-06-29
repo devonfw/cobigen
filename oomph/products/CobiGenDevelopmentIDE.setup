@@ -72,11 +72,9 @@
     <requirement
         name="org.sonatype.tycho.m2e.feature.feature.group"/>
     <requirement
-        name="org.python.pydev.feature.feature.group"
-        versionRange="[6.3.0,6.4.0)"/>
+        name="org.python.pydev.feature.feature.group"/>
     <requirement
-        name="org.python.pydev.feature.source.feature.group"
-        versionRange="[6.3.0,6.4.0)"/>
+        name="org.python.pydev.feature.source.feature.group"/>
     <requirement
         name="org.jboss.ide.eclipse.freemarker.feature.feature.group"
         versionRange="[1.5.0,1.6.0)"/>
@@ -607,7 +605,7 @@
     </setupTask>
     <description></description>
   </setupTask>
-<version name="Rolling Release"
+  <version name="Rolling Release"
       label="Rolling Release"
       requiredJavaVersion="1.8">
     <setupTask
@@ -615,6 +613,9 @@
       <requirement
           name="org.eclipse.sdk.ide"
           versionRange="[4.7.0,4.8.0)"/>
+      <requirement
+          name="org.eclipse.sdk.feature.group"
+          versionRange="[4.0.0,5.0.0)"/>
       <requirement
           name="org.eclipse.platform.ide"
           versionRange="[4.7.0,4.8.0)"/>
