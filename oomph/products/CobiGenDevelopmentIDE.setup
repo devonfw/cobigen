@@ -611,32 +611,21 @@
     <setupTask
         xsi:type="setup.p2:P2Task">
       <requirement
-          name="org.eclipse.sdk.ide"
-          versionRange="[4.7.0,4.8.0)"/>
+          name="org.eclipse.sdk.feature.group"/>
       <requirement
-          name="org.eclipse.sdk.feature.group"
-          versionRange="[4.0.0,5.0.0)"/>
+          name="org.eclipse.jdt.feature.group"/>
       <requirement
-          name="org.eclipse.platform.ide"
-          versionRange="[4.7.0,4.8.0)"/>
+          name="org.eclipse.epp.mpc.feature.group"/>
       <requirement
-          name="org.eclipse.platform.sdk"
-          versionRange="[4.7.0,4.8.0)"/>
+          name="org.eclipse.sdk.ide"/>
       <requirement
-          name="org.eclipse.pde.feature.group"
-          versionRange="[3.13.0,3.14.0)"/>
+          name="org.eclipse.platform.sdk"/>
       <requirement
-          name="org.eclipse.pde.source.feature.group"
-          versionRange="[3.13.0,3.14.0)"/>
+          name="org.eclipse.platform.ide"/>
       <requirement
-          name="org.eclipse.jdt.feature.group"
-          versionRange="[3.13.0,3.14.0)"/>
+          name="org.eclipse.pde.source.feature.group"/>
       <requirement
-          name="org.eclipse.jdt.source.feature.group"
-          versionRange="[3.13.0,3.14.0)"/>
-      <requirement
-          name="org.eclipse.epp.mpc.feature.group"
-          versionRange="[1.6.0,1.7.0)"/>
+          name="org.eclipse.pde.feature.group"/>
       <repository
           url="http://download.eclipse.org/releases/oxygen"/>
       <repository
