@@ -14,6 +14,8 @@ public class ParameterDef extends PropertyDef {
 
     private boolean inHeader;
 
+    private boolean inBody;
+
     private String mediaType;
 
     public ParameterDef() {
@@ -63,5 +65,13 @@ public class ParameterDef extends PropertyDef {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public boolean isInBody() {
+        return inBody;
+    }
+
+    public void setInBody(boolean inBody) {
+        this.inBody = inBody;
     }
 }
