@@ -67,7 +67,7 @@ public class ParameterDef extends PropertyDef {
         this.mediaType = mediaType;
     }
 
-    public boolean isBody() {
+    public boolean getIsBody() {
         return isBody;
     }
 
