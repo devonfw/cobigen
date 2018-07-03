@@ -381,7 +381,7 @@ public class OpenAPIInputReader implements InputReader {
         ParameterDef parameter;
         for (Parameter param : parameters) {
             parameter = new ParameterDef();
-            parameter.setInBody(false);
+            parameter.setIsBody(false);
             switch (param.getIn()) {
             case "path":
                 parameter.setInPath(true);
@@ -429,7 +429,7 @@ public class OpenAPIInputReader implements InputReader {
             Schema mediaSchema;
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
-                parameter.setInBody(true);
+                parameter.setIsBody(true);
                 parameter.setMediaType(media);
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
