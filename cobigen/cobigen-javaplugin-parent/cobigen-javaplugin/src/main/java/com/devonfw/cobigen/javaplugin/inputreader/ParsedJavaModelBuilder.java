@@ -58,7 +58,7 @@ public class ParsedJavaModelBuilder {
         }
         pojoModel.put(ModelConstant.CANONICAL_NAME, javaClass.getCanonicalName());
 
-        Map<String, String> javaDoc = extractJavaDoc(javaClass);
+        Map<String, Object> javaDoc = extractJavaDoc(javaClass);
         if (javaDoc != null) {
             pojoModel.put(ModelConstant.JAVADOC, javaDoc);
         }
@@ -122,7 +122,7 @@ public class ParsedJavaModelBuilder {
             Map<String, Object> methodAttributes = new HashMap<>();
             methodAttributes.put(ModelConstant.NAME, method.getName());
             if (method.getComment() != null) {
-                Map<String, String> javaDoc = extractJavaDoc(method);
+                Map<String, Object> javaDoc = extractJavaDoc(method);
                 if (javaDoc != null) {
                     methodAttributes.put(ModelConstant.JAVADOC, javaDoc);
                 }
@@ -174,7 +174,7 @@ public class ParsedJavaModelBuilder {
         fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
 
         if (annotatedElement != null) {
-            Map<String, String> javaDoc = extractJavaDoc(annotatedElement);
+            Map<String, Object> javaDoc = extractJavaDoc(annotatedElement);
             if (javaDoc != null) {
                 fieldValues.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -205,7 +205,7 @@ public class ParsedJavaModelBuilder {
                 superclassModel.put(ModelConstant.PACKAGE, "");
             }
 
-            Map<String, String> javaDoc = extractJavaDoc(superclass);
+            Map<String, Object> javaDoc = extractJavaDoc(superclass);
             if (javaDoc != null) {
                 superclassModel.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -236,7 +236,7 @@ public class ParsedJavaModelBuilder {
                 interfaceModel.put(ModelConstant.PACKAGE, "");
             }
 
-            Map<String, String> javaDoc = extractJavaDoc(c);
+            Map<String, Object> javaDoc = extractJavaDoc(c);
             if (javaDoc != null) {
                 interfaceModel.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -360,16 +360,28 @@ public class ParsedJavaModelBuilder {
      * @return the mapping of javaDoc elements to its values or <code>null</code> if the element does not
      *         declare javaDoc
      */
-    private Map<String, String> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
+    private Map<String, Object> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
         if (annotatedElement.getComment() == null) {
             return null;
         }
-        Map<String, String> javaDocModel = Maps.newHashMap();
+        Map<String, Object> javaDocModel = Maps.newHashMap();
         javaDocModel.put(ModelConstant.COMMENT, annotatedElement.getComment());
+        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> thrown = Maps.newHashMap();
         for (DocletTag tag : annotatedElement.getTags()) {
-            // currently conflicting tag names like @param or @throws are simply not in scope.
-            // what we want to get is a simple way of addressing custom docletTags and its values
-            javaDocModel.put(tag.getName(), tag.getValue());
+            String value = tag.getValue();
+            String name = tag.getName();
+            if (name.equals("param")) {
+                params.put(StringUtils.substringBefore(value, " ").trim(),
+                    StringUtils.substringAfter(value, " ").trim());
+                javaDocModel.put("params", params);
+            } else if (tag.getName().equals("throws")) {
+                thrown.put(StringUtils.substringBefore(value, " ").trim(),
+                    StringUtils.substringAfter(value, " ").trim());
+                javaDocModel.put("throws", thrown);
+            } else {
+                javaDocModel.put(name, value);
+            }
         }
         return javaDocModel;
     }
