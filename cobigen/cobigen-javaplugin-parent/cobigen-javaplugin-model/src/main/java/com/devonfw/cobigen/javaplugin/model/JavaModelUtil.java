@@ -217,11 +217,11 @@ public class JavaModelUtil {
      * @return the JavaDoc model or <code>null</code> if not available.
      * @author mbrunnli (30.01.2015)
      */
-    public static Map<String, String> getJavaDocModel(Map<String, Object> documentedElementModel) {
+    public static Map<String, Object> getJavaDocModel(Map<String, Object> documentedElementModel) {
         Object o = documentedElementModel.get(ModelConstant.JAVADOC);
         if (o != null) {
             @SuppressWarnings("unchecked")
-            Map<String, String> javaDocModel = (Map<String, String>) o;
+            Map<String, Object> javaDocModel = (Map<String, Object>) o;
             return javaDocModel;
         } else {
             return null;
