@@ -19,9 +19,9 @@ import org.junit.Test;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.to.PackageFolder;
-import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
+import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.google.common.base.Charsets;
 
 /**
@@ -81,17 +81,17 @@ public class ParsedJavaModelBuilderTest {
 
         // interface1
         assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
-        assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
-        assertThat(interfaces.get(0).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+        assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+        assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
 
         // interface2
         assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
-        assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
-        assertThat(interfaces.get(1).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+        assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+        assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
@@ -143,10 +143,10 @@ public class ParsedJavaModelBuilderTest {
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
         Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
-        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
     }
 
     /**
@@ -167,8 +167,8 @@ public class ParsedJavaModelBuilderTest {
 
         // "List<String>" is not possible to retrieve using reflection due to type erasure
         assertThat(customTypeField.get(ModelConstant.TYPE)).isEqualTo("AnyOtherType");
-        assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo(
-            "com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
+        assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE))
+            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
     }
 
     /**
@@ -236,7 +236,7 @@ public class ParsedJavaModelBuilderTest {
         Map<String, Object> model =
             javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
 
-        Map<String, String> javaDocModel = getJavaDocModel(getRoot(model));
+        Map<String, Object> javaDocModel = getJavaDocModel(getRoot(model));
         assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Class Doc.");
         assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
@@ -250,9 +250,20 @@ public class ParsedJavaModelBuilderTest {
 
         javaDocModel = getJavaDocModel(getMethod(model, "setField"));
         assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Sets the field 'field'.");
-        assertThat(javaDocModel.get("param")).isEqualTo(
-            "field" + System.getProperty("line.separator") + "           new value of field");
+        Map<String, Object> params = (Map<String, Object>) javaDocModel.get("params");
+        assertThat(params.keySet()).hasSize(2);
+        assertThat(params.keySet()).containsExactly("number", "field");
+        assertThat(params.get("field")).isEqualTo("new value of field");
+        assertThat(params.get("number")).isEqualTo("just some number");
         assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
+
+        javaDocModel = getJavaDocModel(getMethod(model, "doSomething"));
+        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Does something");
+        Map<String, Object> thrown = (Map<String, Object>) javaDocModel.get("throws");
+        assertThat(thrown.keySet()).containsExactly("CobigenRuntimeException", "IOException");
+        assertThat(thrown.get("IOException")).isEqualTo("If it would throw one");
+        assertThat(thrown.get("CobigenRuntimeException")).isEqualTo("During generation");
+        assertThat(javaDocModel.get("author")).isEqualTo("mischuma (04.07.2018)");
     }
 
     /**
@@ -282,17 +293,17 @@ public class ParsedJavaModelBuilderTest {
         // test annotations for attribute, getter, setter, is-method
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
     /**
@@ -422,17 +433,17 @@ public class ParsedJavaModelBuilderTest {
         // test annotations for attribute, getter, setter, is-method
         assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
         // getter
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
         // Setter
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
         // is-method
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
         // attribute
-        assertThat(JavaModelUtil.getAnnotations(classField)).containsKey(
-            "com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        assertThat(JavaModelUtil.getAnnotations(classField))
+            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
     }
 
 }
