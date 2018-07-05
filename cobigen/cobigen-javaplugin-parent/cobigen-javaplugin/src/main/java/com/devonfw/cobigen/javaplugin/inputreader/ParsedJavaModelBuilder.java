@@ -21,6 +21,7 @@ import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaType;
 
 /** The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser */
@@ -369,20 +370,32 @@ public class ParsedJavaModelBuilder {
         Map<String, String> params = Maps.newHashMap();
         Map<String, String> thrown = Maps.newHashMap();
         for (DocletTag tag : annotatedElement.getTags()) {
-            String value = tag.getValue();
-            String name = tag.getName();
-            if (name.equals("param")) {
-                params.put(StringUtils.substringBefore(value, " ").trim(),
-                    StringUtils.substringAfter(value, " ").trim());
-                javaDocModel.put("params", params);
-            } else if (tag.getName().equals("throws")) {
-                thrown.put(StringUtils.substringBefore(value, " ").trim(),
-                    StringUtils.substringAfter(value, " ").trim());
-                javaDocModel.put("throws", thrown);
+            String tagValue = tag.getValue();
+            String tagName = tag.getName();
+            if (annotatedElement instanceof JavaMethod) {
+                String name = StringUtils.substringBefore(tagValue, " ").trim();
+                String value = StringUtils.substringAfter(tagValue, " ").trim();
+                if (tagName.equals("param")) {
+                    JavaMethod jm = (JavaMethod) annotatedElement;
+                    int i = 0;
+                    for (JavaParameter jp : jm.getParameters()) {
+                        if (name.equals(jp.getName())) {
+                            params.put(name, value);
+                            params.put("arg" + i, value);
+                        }
+                        i++;
+                    }
+                } else if (tagName.equals("throws")) {
+                    thrown.put(name, value);
+                } else {
+                    javaDocModel.put(tagName, tagValue);
+                }
             } else {
-                javaDocModel.put(name, value);
+                javaDocModel.put(tagName, tagValue);
             }
         }
+        javaDocModel.put("params", params);
+        javaDocModel.put("throws", thrown);
         return javaDocModel;
     }
 
