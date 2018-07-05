@@ -346,7 +346,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_incrementref_outside_folder").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_external_incrementref").toPath());
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -356,11 +356,36 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         Map<String, Increment> increments = target.loadIncrements(templates, trigger);
 
         // validation
-        increments.get("1");
-        assertThat(increments).containsOnlyKeys("1");
-        assertThat(increments.values()).hasSize(1);
-        assertThat(increments.get("1").getTemplates()).extracting("name").containsOnly("templateDecl");
+        assertThat(increments).containsOnlyKeys("3", "4", "5");
+        assertThat(increments.values()).hasSize(3);
+        assertThat(increments.get("3").getTemplates()).extracting("name").containsOnly("templateDecl");
+        assertThat(increments.get("4").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
+            "scanned", "scanned2");
+        assertThat(increments.get("5").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
+            "scanned", "prefix_scanned2");
 
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(
+            new File(testFileRootPath + "faulty_invalid_external_incrementref").toPath());
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
     }
 
     /**
