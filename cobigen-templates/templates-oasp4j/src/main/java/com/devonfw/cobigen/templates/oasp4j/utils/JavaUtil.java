@@ -20,7 +20,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -461,7 +460,7 @@ public class JavaUtil {
         return s;
     }
 
-    public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc) {
+    public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc) throws Exception {
 
         String result = "";
         Method m = findMethod(pojoClass, methodName);
@@ -514,7 +513,7 @@ public class JavaUtil {
                             }
                         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                             | SecurityException e) {
-                            throw new CobiGenRuntimeException(e.getMessage());
+                            throw new Exception(e.getMessage());
                         }
                     }
                 }
@@ -594,8 +593,9 @@ public class JavaUtil {
      * @param methodName
      *            The name of the operation to get the response of
      * @return A JSON representation of the response object
+     * @throws Exception
      */
-    public String getJSONResponseBody(Class<?> pojoClass, String methodName) {
+    public String getJSONResponseBody(Class<?> pojoClass, String methodName) throws Exception {
         Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
         if (hasBody(pojoClass, methodName, true)) {
             ObjectMapper mapper = new ObjectMapper();
@@ -606,7 +606,7 @@ public class JavaUtil {
                 return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
                     + "....";
             } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new CobiGenRuntimeException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
         return "-";
@@ -619,8 +619,9 @@ public class JavaUtil {
      * @param methodName
      *            The name of the operation to get the request of
      * @return A JSON representation of the request object
+     * @throws Exception
      */
-    public String getJSONRequestBody(Class<?> pojoClass, String methodName) {
+    public String getJSONRequestBody(Class<?> pojoClass, String methodName) throws Exception {
         Method m = findMethod(pojoClass, methodName);
         if (hasBody(pojoClass, methodName, false)) {
             Parameter param = m.getParameters()[0];
@@ -633,7 +634,7 @@ public class JavaUtil {
                 return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
                     + "....";
             } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new CobiGenRuntimeException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
         return "-";
