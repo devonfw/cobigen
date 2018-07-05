@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Collection;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Provides type operations, mainly checks and casts for Java Primitives, to be used in the templates
@@ -302,8 +304,8 @@ public class JavaUtil {
             return "Field";
         }
     }
-	
-	    /**
+
+    /**
      * Returns the angular Type to a given java type
      *
      * @param simpleType
@@ -312,25 +314,25 @@ public class JavaUtil {
      */
     public String getSimpleType(String simpleType) {
         switch (simpleType) {
-          case "EAJava_int":
-          case "byte":
-          case "short":
-          case "int":
-          case "Integer":
-          case "long":
-          case "Long":
-          case "float":
-          case "Double":
-          case "double":
-              return "number";
-          case "boolean":
-          case "Boolean":
-              return "Boolean";
-          case "char":
-          case "String":
-              return "String";
-          default:
-              return "any";
+        case "EAJava_int":
+        case "byte":
+        case "short":
+        case "int":
+        case "Integer":
+        case "long":
+        case "Long":
+        case "float":
+        case "Double":
+        case "double":
+            return "number";
+        case "boolean":
+        case "Boolean":
+            return "Boolean";
+        case "char":
+        case "String":
+            return "String";
+        default:
+            return "any";
         }
     }
 
@@ -459,55 +461,81 @@ public class JavaUtil {
         return s;
     }
 
-    public String getParams(Class<?> pojoClass, String name) {
+    public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc) {
 
-        if (pojoClass == null) {
-            throw new IllegalAccessError(
-                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        String result = "";
+        Method m = findMethod(pojoClass, methodName);
+        if (m.getParameterCount() < 1) {
+            return "!-!-!-!-";
         }
-        String s = "";
-        String tmp;
-        Method method = findMethod(pojoClass, name);
-        StringBuilder sb = new StringBuilder(s);
-        if (method != null && method.getParameterCount() > 0) {
-            for (Parameter p : method.getParameters()) {
-                tmp = p.getType().toString();
-                sb.append(tmp.substring(tmp.lastIndexOf('.') + 1, tmp.length()) + ", ");
+        if (m.getParameterCount() == 1) {
+            if (!m.getParameters()[0].getType().isPrimitive()) {
+                return "!-!-!-!-";
             }
-            sb.replace(sb.lastIndexOf(","), sb.length(), " ");
-        } else {
-            sb.replace(0, sb.length(), "-");
         }
-        s = sb.toString();
-        return s.trim();
-    }
+        for (Parameter param : m.getParameters()) {
+            // Add the name of the parameter as path or query parameter
+            boolean isPath = param.isAnnotationPresent(javax.ws.rs.PathParam.class);
+            boolean isQuery = param.isAnnotationPresent(javax.ws.rs.QueryParam.class);
+            if (isPath || isQuery) {
+                result += "!";
+                if (isPath) {
+                    result +=
+                        "{" + param.getAnnotation(javax.ws.rs.PathParam.class).value() + "}" + System.lineSeparator();
+                } else if (isQuery) {
+                    result += "?" + param.getAnnotation(javax.ws.rs.QueryParam.class).value() + System.lineSeparator();
+                }
 
-    public String getPathParam(Class<?> pojoClass, String name) {
+                // Add the type
+                String type = param.getType().getSimpleName();
+                result += "!" + type + System.lineSeparator();
 
-        if (pojoClass == null) {
-            throw new IllegalAccessError(
-                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
-        }
-        String s = "-";
-        Method method = findMethod(pojoClass, name);
-        if (method != null && method.getParameterCount() > 0) {
-            for (Annotation[] p : method.getParameterAnnotations()) {
-                for (Annotation a : p) {
-                    if (a instanceof PathParam) {
-                        s = ((PathParam) a).value();
+                // Add the constraints
+                result += "!";
+                int counter = 0;
+                for (Annotation anno : param.getAnnotations()) {
+                    String annoName = anno.annotationType().getName();
+                    Pattern p = Pattern.compile("javax\\.validation\\.constraints\\.([^\\.]*)");
+                    Matcher match = p.matcher(annoName);
+                    if (match.find()) {
+                        counter++;
+                        String shortName = annoName.substring(annoName.lastIndexOf('.') + 1);
+                        Object value;
+                        Method method;
+                        try {
+                            method = anno.getClass().getMethod("value");
+                            value = method.invoke(anno);
+                            result += shortName + " = " + value + " +" + System.lineSeparator();
+                        } catch (NoSuchMethodException e) {
+                            if (shortName.equals("NotNull")) {
+                                result += "[red]#__Required__# +" + System.lineSeparator();
+                            } else {
+                                result += shortName + " +" + System.lineSeparator();
+                            }
+                        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                            | SecurityException e) {
+                            throw new CobiGenRuntimeException(e.getMessage());
+                        }
                     }
                 }
+                if (counter == 0) {
+                    result += "-" + System.lineSeparator();
+                }
+
+                // Add Javadoc
+                Map<String, String> params = (Map<String, String>) javaDoc.get("params");
+                result += "!" + getJavaDocWithoutLink(params.get(param.getName())) + " +" + System.lineSeparator();
             }
         }
-        return s;
+        return result;
     }
 
     public String getJavaDocWithoutLink(String doc) {
 
-        Pattern p = Pattern.compile("\\{@link ([^\\}]*)\\}");
+        Pattern p = Pattern.compile("(\\{@link ([^\\}]*)\\})");
         Matcher m = p.matcher(doc);
         while (m.find()) {
-            doc = doc.replace(m.group(0), m.group(1));
+            doc = doc.replace(m.group(1), m.group(2));
         }
         return doc;
     }
@@ -559,40 +587,24 @@ public class JavaUtil {
         return null;
     }
 
-    public String getJSONRequest(Class<?> pojoClass, String methodName) {
-        Class<?>[] params = findMethod(pojoClass, methodName).getParameterTypes();
-        String result = "";
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        for (Class<?> param : params) {
-            if (!param.isPrimitive()) {
-                try {
-                    Object obj = param.newInstance();
-                    result += mapper.writeValueAsString(obj);
-                } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                    throw new CobiGenRuntimeException(e.getMessage());
-                }
-            }
-        }
-        return result;
-    }
-
     /**
-     * Create a request in JSON format, iterating through non-primitive types to get their data as well
+     * Create a response in JSON format, iterating through non-primitive types to get their data as well
      * @param pojoClass
+     *            The input class
      * @param methodName
      *            The name of the operation to get the response of
      * @return A JSON representation of the response object
      */
-    public String getJSONResponse(Class<?> pojoClass, String methodName) {
+    public String getJSONResponseBody(Class<?> pojoClass, String methodName) {
         Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
-        if (!responseType.isPrimitive() || !responseType.equals(Void.TYPE)) {
+        if (hasBody(pojoClass, methodName, true)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
                 Object obj = responseType.newInstance();
-                return mapper.writeValueAsString(obj);
+                return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
+                    + "....";
             } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
                 throw new CobiGenRuntimeException(e.getMessage());
             }
@@ -600,18 +612,68 @@ public class JavaUtil {
         return "-";
     }
 
-    // public String getXMLRequest(Class<?> pojoClass, String methodName) {
-    // String result = "-";
-    // String response = getReturnType(pojoClass, methodName);
-    //
-    // return result;
-    // }
-    //
-    // public String getXMLResponse(Class<?> pojoClass, String methodName) {
-    // String result = "-";
-    // String params = getParams(pojoClass, methodName);
-    //
-    // return result;
-    // }
+    /**
+     * Create a request in JSON format, iterating through non-primitive types to get their data as well
+     * @param pojoClass
+     *            The input class
+     * @param methodName
+     *            The name of the operation to get the request of
+     * @return A JSON representation of the request object
+     */
+    public String getJSONRequestBody(Class<?> pojoClass, String methodName) {
+        Method m = findMethod(pojoClass, methodName);
+        if (hasBody(pojoClass, methodName, false)) {
+            Parameter param = m.getParameters()[0];
+            Class<?> requestType = param.getType();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            try {
+                Object obj = requestType.newInstance();
+                return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
+                    + "....";
+            } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
+                throw new CobiGenRuntimeException(e.getMessage());
+            }
+        }
+        return "-";
+    }
+
+    public boolean hasBody(Class<?> pojoClass, String methodName, boolean isResponse) {
+        Method m = findMethod(pojoClass, methodName);
+        if (isResponse) {
+            Class<?> returnType = m.getReturnType();
+            if (!returnType.isPrimitive() && !returnType.equals(Void.TYPE)) {
+                return true;
+            }
+        } else {
+            if (m.getParameterCount() == 1) {
+                Parameter param = m.getParameters()[0];
+                Class<?> requestType = param.getType();
+                if (!requestType.isPrimitive() && !requestType.equals(Void.TYPE)
+                    && !param.isAnnotationPresent(javax.ws.rs.PathParam.class)
+                    && !param.isAnnotationPresent(javax.ws.rs.QueryParam.class)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String getRequestType(Map<String, Object> annotations) throws Exception {
+        if (annotations.containsKey("javax_ws_rs_POST")) {
+            return "POST";
+        } else if (annotations.containsKey("javax_ws_rs_PUT")) {
+            return "PUT";
+        } else if (annotations.containsKey("javax_ws_rs_GET")) {
+            return "GET";
+        } else if (annotations.containsKey("javax_ws_rs_DELETE")) {
+            return "DELETE";
+        } else if (annotations.containsKey("javax_ws_rs_PATCH")) {
+            return "PATCH";
+        } else {
+            return "-";
+        }
+    }
 
 }

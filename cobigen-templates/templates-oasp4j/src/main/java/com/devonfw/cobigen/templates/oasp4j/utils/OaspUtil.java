@@ -759,44 +759,36 @@ public class OaspUtil {
         }
     }
 
-    public void print(String s) {
-        System.out.println(s);
-    }
-
-    public String getParameter(Map<String, Object> param, String where) {
-
-        switch (where.toLowerCase()) {
-        case "query":
-            if ((boolean) param.get("inQuery")) {
-                return (String) param.get("mediaType");
+    public void print(Object s) {
+        if (s instanceof Collection<?>) {
+            Collection<?> c = (Collection<?>) s;
+            for (Object o : c) {
+                System.out.println(o);
             }
-            //$FALL-THROUGH$
-        case "header":
-            if ((boolean) param.get("inHeader")) {
-                return (String) param.get("mediaType");
+        } else if (s instanceof Map<?, ?>) {
+            Map<?, ?> m = (Map<?, ?>) s;
+            for (Object key : m.keySet()) {
+                System.out.println(key + "  " + m.get(key));
             }
-            //$FALL-THROUGH$
-        case "path":
-            if ((boolean) param.get("inPath")) {
-                return (String) param.get("mediaType");
-            }
-            //$FALL-THROUGH$
-        default:
-            return "void";
+        } else {
+            System.out.println(s);
         }
     }
 
-    public String getJSONResponse(Map<String, Object> param) {
-        String result = "";
-        System.out.println("'tis be a test");
-        System.out.println(param.get("mediaType"));
-        return result;
-    }
-
-    public String getJSONRequest(Map<String, Object> param) {
-        String result = "";
-        System.out.println("'tis be 'nother test");
-        System.out.println(param.get("mediaType"));
-        return result;
+    public String getTypeWithAsciidocColour(String type) {
+        switch (type.toLowerCase()) {
+        case "get":
+            return "[aqua]#" + type.toUpperCase() + "#";
+        case "post":
+            return "[lime]#" + type.toUpperCase() + "#";
+        case "delete":
+            return "[red]#" + type.toUpperCase() + "#";
+        case "put":
+            return "[yellow]#" + type.toUpperCase() + "#";
+        case "patch":
+            return "[fuchsia]#" + type.toUpperCase() + "#";
+        default:
+            return "";
+        }
     }
 }
