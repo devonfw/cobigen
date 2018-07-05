@@ -24,7 +24,7 @@ Component Data
 
   <#compress>
     <#list path.operations as op>
-      .${op.operationId}
+      <#if op.operationId??>.${op.operationId}</#if>
       [cols='1s,3m']
       |===
       |<#if op.type??>${OaspUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}${path.pathURI}
@@ -57,7 +57,7 @@ Component Data
           <#assign nothingIn=true>
           <#list op.parameters as param>
             <#assign moreThanOne=false>
-            <#if param.isBody>
+            <#if param.isBody?? && param.isBody>
               "${param.name}":"${param.type}"<#if moreThanOne>,</#if>
               <#assign moreThanOne=true>
               <#assign nothingIn=false>
