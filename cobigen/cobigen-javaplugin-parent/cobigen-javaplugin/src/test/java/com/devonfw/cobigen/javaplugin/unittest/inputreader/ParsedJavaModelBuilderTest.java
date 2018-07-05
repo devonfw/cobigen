@@ -251,8 +251,8 @@ public class ParsedJavaModelBuilderTest {
         javaDocModel = getJavaDocModel(getMethod(model, "setField"));
         assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Sets the field 'field'.");
         Map<String, Object> params = (Map<String, Object>) javaDocModel.get("params");
-        assertThat(params.keySet()).hasSize(2);
-        assertThat(params.keySet()).containsExactly("number", "field");
+        assertThat(params.keySet()).hasSize(4);
+        assertThat(params.keySet()).containsExactly("number", "field", "arg1", "arg0");
         assertThat(params.get("field")).isEqualTo("new value of field");
         assertThat(params.get("number")).isEqualTo("just some number");
         assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
