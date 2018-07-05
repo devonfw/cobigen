@@ -326,25 +326,6 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if parameters of a method are properly retrieved
-     */
-    @Test
-    public void testgetParams() {
-        assertEquals(new JavaUtil().getParams(clazz, "methodWithReturnType"), "String, int");
-        assertEquals(new JavaUtil().getParams(clazz, "methodWithVoidReturnType"), "boolean");
-        assertEquals(new JavaUtil().getParams(clazz, "noParameters"), "-");
-    }
-
-    /**
-     * tests if path parameters of a method are properly retrieved
-     */
-    @Test
-    public void testGetPathParam() {
-        assertEquals(new JavaUtil().getPathParam(clazz, "methodWithReturnType"), "id");
-        assertEquals(new JavaUtil().getPathParam(clazz, "methodWithVoidReturnType"), "-");
-    }
-
-    /**
      * tests if {\@link} tags are properly stripped
      */
     @Test
@@ -379,19 +360,5 @@ public class JavaUtilTest {
         }
         assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
         assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
-    }
-
-    @Test
-    public void getResponseTest() {
-        assertEquals("{\"someInt\":0,\"someString\":null,\"someClass\":null}",
-            new JavaUtil().getJSONResponse(clazzTwo, "bodyFormatTest"));
-        // assertEquals(new JavaUtil().getXMLResponse(clazzTwo, "bodyFormatTest"), "");
-    }
-
-    @Test
-    public void getRequestTest() {
-        assertEquals("{\"someInt\":0,\"someString\":null,\"someClass\":null}",
-            new JavaUtil().getJSONRequest(clazzTwo, "bodyFormatTest"));
-        // assertEquals(new JavaUtil().getXMLRequest(clazzTwo, "bodyFormatTest"), "");
     }
 }

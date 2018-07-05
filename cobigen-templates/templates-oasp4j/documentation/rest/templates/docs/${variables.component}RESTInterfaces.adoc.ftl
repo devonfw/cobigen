@@ -31,43 +31,46 @@ Component Data
 |<#if pojo.javaDoc??>${JavaUtil.getJavaDocWithoutLink(pojo.javaDoc.comment)}<#else>-</#if>
 |===
 
-<#macro request type>
-<#compress>
-  <#assign annotation="javax.ws.rs.${type}">
 
-  <#if JavaUtil.hasMethodWithAnnotation(classObject,annotation)>
-
-    === ${type?lower_case} Requests
-
-    [options="header"]
-    |===
-    |Service Path |Description |Response Type | Response Example | Request Parameter Types | Request Example |Path Parameter
-    <#if pojo.methods?has_content>
-     <#list pojo.methods as method>
-        <#if JavaUtil.hasAnnotation(classObject,method.name,annotation)>
-          |${JavaUtil.extractRootPath(classObject)}<#if method.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}<#else>-</#if>
-          |<#if method.javaDoc??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
-          |${JavaUtil.getReturnType(classObject,method.name)}
-          |<#if outputType??><#if (outputType=="JSON")>${JavaUtil.getJSONResponse(classObject,method.name)}<#elseif (outputType=="XML")>${JavaUtil.getXMLFormat(classObject,method.name)}<#else>-</#if><#else>-</#if>
-          |${JavaUtil.getParams(classObject,method.name)}
-          |<#if inputType??><#if (inputType=="JSON")>${JavaUtil.getJSONRequest(classObject,method.name)}<#elseif (inputType=="XML")>${JavaUtil.getXMLRequest(classObject,method.name)}<#else>-</#if><#else>-</#if>
-          |<#if method.javaDoc??><#if method.javaDoc.param?contains(JavaUtil.getPathParam(classObject,method.name))>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.param)}<#else>-</#if><#else>-</#if>
-        </#if>
-      </#list>
-    </#if>
-    |===
-    <#else>
+<#list pojo.methods as method>
+  <#assign type=JavaUtil.getRequestType(method.annotations)>
+  <#if !(type=='-')>
+  
+  
+    <#compress>
+      .${method.name}
+      [cols='1s,6m']
+      |===
+      |${OaspUtil.getTypeWithAsciidocColour(type)} |${JavaUtil.extractRootPath(classObject)}service/rest/${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
+      |Description |<#if method.javaDoc??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
+    
+      .2+<|Request 
+      a|
+      [options='header',cols='1,1,1,5']
+        !===
+        !Parameter !Type !Constraints !Param Description
+        ${JavaUtil.getParams(classObject,method.name,method.javaDoc)}
+        !===
+        a|**Body** +
+      </#compress>
+      
+${JavaUtil.getJSONRequestBody(classObject,method.name)}
+      <#compress>
+    
+      |Response  a|
+        [options='header',cols='1,4,7']
+        !===
+        !Code !Description !Body
+        
+        !<#if JavaUtil.hasBody(classObject,method.name,true)>200<#else>-</#if>
+        !<#if method.javaDoc??><#if method.javaDoc.return??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.return)}<#else>-</#if><#else>-</#if>
+        a!
+      </#compress>
+      
+${JavaUtil.getJSONResponseBody(classObject,method.name)}
+      <#compress>
+        !===
+      |===
+    </#compress>
   </#if>
-</#compress>  
-</#macro>
-
-
-<@request "GET"/>
-
-<@request "PUT"/>
-
-<@request "POST"/>
-
-<@request "PATCH"/>
-
-<@request "DELETE"/>
+</#list>

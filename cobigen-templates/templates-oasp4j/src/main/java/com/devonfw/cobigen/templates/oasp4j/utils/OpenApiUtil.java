@@ -202,40 +202,44 @@ public class OpenApiUtil {
         }
     }
 
-    public String getParameter(Map<String, Object> param) {
+    public String getParam(Map<String, Object> param) {
         String result = "";
-        if (param.get("type") == null || param.get("type").equals("void")) {
-            return "void";
-        } else {
-            return (String) param.get("type");
-        }
-    }
-
-    public String getJSONRequest(Map<String, Object> param) {
-        String result = "";
-        String name = (String) param.get("name");
         String type = (String) param.get("type");
-        result += "\"" + name + "\":\"" + type + "\"";
+        if (type == null || type.equals("void")) {
+            result = "void";
+        } else {
+            if ((boolean) param.get("inPath")) {
+                result += "{" + type + "}";
+            } else if ((boolean) param.get("inQuery")) {
+                result += "?" + type;
+            }
+        }
         return result;
     }
 
-    public String getJSONResponse(Map<String, Object> response) {
+    public String getConstraintList(Map<String, Object> param) {
         String result = "";
-        String name = (String) response.get("type");
-        String type = (String) response.get("");
-        result += "\"" + name + "\":" + type + "\"";
+        boolean moreThanOne = false;
+        Map<String, Object> constraints = (Map<String, Object>) param.get("constraints");
+        boolean required = false;
+        if (constraints != null) {
+            if (constraints.containsKey("notNull")) {
+                required = (boolean) constraints.get("notNull");
+            }
+            if (required) {
+                result += "[red]#Required#";
+                moreThanOne = true;
+            }
+            for (String key : constraints.keySet()) {
+                if (moreThanOne) {
+                    result += " +" + System.lineSeparator();
+                }
+                if (!key.equals("required")) {
+                    result += key + " = " + constraints.get(key);
+                    moreThanOne = true;
+                }
+            }
+        }
         return result;
-    }
-
-    public String getJSONResponse(Map<String, Object> response, Map<String, Object> entity) {
-        String result = "";
-        String name = (String) response.get("type");
-        String type = (String) entity.get("");
-        result += "\"" + name + "\":[{\"" + type + "\"}]";
-        return result;
-    }
-
-    public void print(Object s) {
-        System.out.println(s);
     }
 }
