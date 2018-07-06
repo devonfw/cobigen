@@ -49,20 +49,15 @@
     <requirement
         name="org.eclipse.oomph.setup.ui.ide.feature.group"/>
     <requirement
-        name="org.eclipse.swtbot.feature.group"
-        versionRange="[2.7.0,2.8.0)"/>
+        name="org.eclipse.swtbot.feature.group"/>
     <requirement
-        name="org.eclipse.swtbot.eclipse.feature.group"
-        versionRange="[2.7.0,2.8.0)"/>
+        name="org.eclipse.swtbot.eclipse.feature.group"/>
     <requirement
-        name="org.eclipse.swtbot.eclipse.test.junit.feature.group"
-        versionRange="[2.7.0,2.8.0)"/>
+        name="org.eclipse.swtbot.eclipse.test.junit.feature.group"/>
     <requirement
-        name="org.eclipse.swtbot.ide.feature.group"
-        versionRange="[2.7.0,2.8.0)"/>
+        name="org.eclipse.swtbot.ide.feature.group"/>
     <requirement
-        name="org.eclipse.swtbot.generator.feature.feature.group"
-        versionRange="[2.7.0,2.8.0)"/>
+        name="org.eclipse.swtbot.generator.feature.feature.group"/>
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
