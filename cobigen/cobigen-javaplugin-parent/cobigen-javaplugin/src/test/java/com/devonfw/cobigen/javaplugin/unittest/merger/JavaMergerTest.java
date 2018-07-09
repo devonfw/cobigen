@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import com.devonfw.cobigen.javaplugin.merger.JavaMerger;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
+import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
@@ -415,11 +417,46 @@ public class JavaMergerTest {
         JavaSource mergedSource = getMergedSource(base, patch, true);
         assertThat(mergedSource.getClasses().isEmpty()).isFalse();
         JavaClass mergedClass = mergedSource.getClasses().get(0);
-        // System.out.print(mergedSource.toString());
         assertThat(mergedClass.getFields()).as("Too much fields").hasSize(1);
         assertThat(mergedClass.getMethods().size()).as("Too much methods:\n" + mergedClass.getMethods().toString())
             .isEqualTo(1);
 
+    }
+
+    @Test
+    public void testMergeAnnotations() throws MergeException, IOException {
+        File base = new File(testFileRootPath + "BaseFile_annotations.java");
+        File patch = new File(testFileRootPath + "PatchFile_annotations.java");
+
+        JavaSource mergedSource = getMergedSource(base, patch, true);
+        assertThat(mergedSource.getClasses().isEmpty()).isFalse();
+        JavaClass mergedClass = mergedSource.getClasses().get(0);
+        assertThat(mergedClass.getAnnotations()).as("Too many annotations for class").hasSize(2);
+
+        List<String> annotationNames = new LinkedList<>();
+        List<String> annotationValues = new LinkedList<>();
+        for (JavaAnnotation annotation : mergedClass.getAnnotations()) {
+            annotationNames.add(annotation.getType().getName());
+            annotationValues.add(annotation.getProperty("value").toString());
+        }
+        assertThat(annotationNames).containsExactly("Produces", "Consumes");
+        assertThat(annotationValues).containsExactly("application/xml", "application/json");
+
+        for (JavaMethod method : mergedClass.getMethods()) {
+            assertThat(method.getAnnotations()).as("Too many annotations for method " + method.getName()).hasSize(1);
+            if (method.getName().equals("test")) {
+                assertThat(method.getAnnotations().get(0).getType().getName()).isEqualTo("GET");
+
+                List<JavaAnnotation> annos = method.getParameterByName("test").getAnnotations();
+
+                assertThat(annos).as("Too many annotations for parameter").hasSize(2);
+                for (JavaAnnotation annotation : annos) {
+                    if (annotation.getType().getName().equals("max")) {
+                        assertThat(annotation.getProperty("value")).isEqualTo("100");
+                    }
+                }
+            }
+        }
     }
 
     /**

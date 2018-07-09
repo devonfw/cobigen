@@ -11,6 +11,7 @@ import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
@@ -283,6 +284,27 @@ public class JavaMerger implements Merger {
                 } // else do not override
             }
         }
+    }
+
+    private void mergeMethodAnnotations(JavaMethod baseMethod, JavaMethod patchMethod) {
+
+        for (JavaAnnotation patchAnnotation : patchMethod.getAnnotations()) {
+            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseMethod, patchAnnotation);
+        }
+    }
+
+    /**
+     * @param baseMethod
+     * @param patchAnnotation
+     * @return
+     */
+    private JavaAnnotation getCorrespondingAnnotation(JavaMethod baseMethod, JavaAnnotation patchAnnotation) {
+        for (JavaAnnotation baseAnnotation : baseMethod.getAnnotations()) {
+            if (baseAnnotation.equals(patchAnnotation)) {
+                return baseAnnotation;
+            }
+        }
+        return null;
     }
 
 }
