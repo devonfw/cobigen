@@ -143,7 +143,6 @@ public class JavaMerger implements Merger {
         } else {
             List<JavaClass> baseClassInterfaces = baseClass.getImplementedInterfaces();
             for (JavaClass pClass : patchClass.getImplementedInterfaces()) {
-                // TODO funktioniert noch nicht, da super klassen nicht im QDox Modell sind
                 if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) {
                     baseClassInterfaces.add(pClass);
                 }
@@ -271,6 +270,7 @@ public class JavaMerger implements Merger {
             if (baseConstructor == null) {
                 baseClass.addConstructor(patchConstructor);
             } else {
+                mergeAnnotations(baseConstructor, patchConstructor);
                 if (patchOverrides) {
                     baseClass.replace(baseConstructor, patchConstructor);
                 } // else do not override
@@ -291,32 +291,43 @@ public class JavaMerger implements Merger {
     }
 
     /**
-     * @param baseMember
-     * @param patchMember
+     * Merges all annotations of the given {@link JavaAnnotatedElement}s
+     *
+     * @param baseAnnotatedElement
+     *            {@link JavaAnnotatedElement}
+     * @param patchAnnotatedElement
+     *            {@link JavaAnnotatedElement}
      */
-    private void mergeAnnotations(JavaAnnotatedElement baseMember, JavaAnnotatedElement patchMember) {
+    private void mergeAnnotations(JavaAnnotatedElement baseAnnotatedElement,
+        JavaAnnotatedElement patchAnnotatedElement) {
 
-        for (JavaAnnotation patchAnnotation : patchMember.getAnnotations()) {
-            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseMember, patchAnnotation);
+        for (JavaAnnotation patchAnnotation : patchAnnotatedElement.getAnnotations()) {
+            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseAnnotatedElement, patchAnnotation);
             if (baseAnnotation == null) {
-                baseMember.getAnnotations().add(patchAnnotation);
+                baseAnnotatedElement.getAnnotations().add(patchAnnotation);
             } else {
                 if (patchOverrides) {
-                    baseMember.getAnnotations().remove(baseAnnotation);
-                    baseMember.getAnnotations().add(patchAnnotation);
+                    baseAnnotatedElement.getAnnotations().remove(baseAnnotation);
+                    baseAnnotatedElement.getAnnotations().add(patchAnnotation);
                 }
             }
         }
     }
 
     /**
-     * @param baseMethod
+     * Searches the given {@link JavaAnnotatedElement} for the given {@link JavaAnnotation}'s type
+     *
+     * @param baseAnnotatedElement
+     *            {@link JavaAnnotatedElement}
      * @param patchAnnotation
-     * @return
+     *            {@link JavaAnnotation}
+     * @return The annotation of the same type as the given {@link JavaAnnotation} in the
+     *         {@link JavaAnnotatedElement}. Null if there is no such {@link JavaAnnotation}
      */
-    private JavaAnnotation getCorrespondingAnnotation(JavaAnnotatedElement baseMember, JavaAnnotation patchAnnotation) {
-        baseMember.getAnnotations();
-        for (JavaAnnotation baseAnnotation : baseMember.getAnnotations()) {
+    private JavaAnnotation getCorrespondingAnnotation(JavaAnnotatedElement baseAnnotatedElement,
+        JavaAnnotation patchAnnotation) {
+
+        for (JavaAnnotation baseAnnotation : baseAnnotatedElement.getAnnotations()) {
             if (baseAnnotation.getType().equals(patchAnnotation.getType())) {
                 return baseAnnotation;
             }

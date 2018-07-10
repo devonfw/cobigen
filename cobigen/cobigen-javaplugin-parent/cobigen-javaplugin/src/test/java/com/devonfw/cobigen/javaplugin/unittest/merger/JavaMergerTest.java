@@ -20,6 +20,7 @@ import com.devonfw.cobigen.javaplugin.merger.JavaMerger;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
+import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
@@ -404,9 +405,9 @@ public class JavaMergerTest {
      * Tests the behavior if one file imports a type while the other uses an explicit type. Corresponds to <a
      * href=https://github.com/devonfw/tools-cobigen/issues/108>#108</a>
      * @throws IOException
-     *             shouldn't happen
+     *             test fails
      * @throws MergeException
-     *             shoudln't happen either
+     *             test fails
      */
     @Test
     public void testMergeExpizitAndImplizitParameterTypes() throws IOException, MergeException {
@@ -423,6 +424,15 @@ public class JavaMergerTest {
 
     }
 
+    /**
+     * Tests the behavior if different {@link JavaAnnotatedElement}s merge their annotations properly.
+     * Corresponds to <a href=https://github.com/devonfw/tools-cobigen/issues/430>#430</a>
+     *
+     * @throws MergeException
+     *             test fails
+     * @throws IOException
+     *             test fails
+     */
     @Test
     public void testMergeAnnotations() throws MergeException, IOException {
         File base = new File(testFileRootPath + "BaseFile_annotations.java");
