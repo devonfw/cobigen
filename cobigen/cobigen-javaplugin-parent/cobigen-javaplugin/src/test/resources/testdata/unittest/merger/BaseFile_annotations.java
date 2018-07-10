@@ -5,7 +5,7 @@ package com.devonfw;
 public class test{
     
     @GET
-    public void test(@max(200) String test){
+    public void test(@max(200) int test){
         
     }
     

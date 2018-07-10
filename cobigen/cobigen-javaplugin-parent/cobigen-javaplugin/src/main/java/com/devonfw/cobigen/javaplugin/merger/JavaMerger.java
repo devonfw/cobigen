@@ -11,6 +11,7 @@ import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
@@ -115,6 +116,7 @@ public class JavaMerger implements Merger {
     private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
         mergeImports(baseClass, patchClass);
+        mergeAnnotations(baseClass, patchClass);
         mergeFields(baseClass, patchClass);
         mergeInnerClasses(baseClass, patchClass);
         mergeMethods(baseClass, patchClass);
@@ -242,6 +244,7 @@ public class JavaMerger implements Merger {
                 baseClass.addField(patchField);
             } else {
                 if (patchOverrides) {
+                    mergeAnnotations(baseField, patchField);
                     baseClass.replace(baseField, patchField);
                 } // else do not override
             }
@@ -279,6 +282,7 @@ public class JavaMerger implements Merger {
             if (baseMethod == null) {
                 baseClass.addMethod(patchMethod);
             } else {
+                mergeAnnotations(baseMethod, patchMethod);
                 if (patchOverrides) {
                     baseClass.replace(baseMethod, patchMethod);
                 } // else do not override
@@ -286,10 +290,22 @@ public class JavaMerger implements Merger {
         }
     }
 
-    private void mergeMethodAnnotations(JavaMethod baseMethod, JavaMethod patchMethod) {
+    /**
+     * @param baseMember
+     * @param patchMember
+     */
+    private void mergeAnnotations(JavaAnnotatedElement baseMember, JavaAnnotatedElement patchMember) {
 
-        for (JavaAnnotation patchAnnotation : patchMethod.getAnnotations()) {
-            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseMethod, patchAnnotation);
+        for (JavaAnnotation patchAnnotation : patchMember.getAnnotations()) {
+            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseMember, patchAnnotation);
+            if (baseAnnotation == null) {
+                baseMember.getAnnotations().add(patchAnnotation);
+            } else {
+                if (patchOverrides) {
+                    baseMember.getAnnotations().remove(baseAnnotation);
+                    baseMember.getAnnotations().add(patchAnnotation);
+                }
+            }
         }
     }
 
@@ -298,9 +314,10 @@ public class JavaMerger implements Merger {
      * @param patchAnnotation
      * @return
      */
-    private JavaAnnotation getCorrespondingAnnotation(JavaMethod baseMethod, JavaAnnotation patchAnnotation) {
-        for (JavaAnnotation baseAnnotation : baseMethod.getAnnotations()) {
-            if (baseAnnotation.equals(patchAnnotation)) {
+    private JavaAnnotation getCorrespondingAnnotation(JavaAnnotatedElement baseMember, JavaAnnotation patchAnnotation) {
+        baseMember.getAnnotations();
+        for (JavaAnnotation baseAnnotation : baseMember.getAnnotations()) {
+            if (baseAnnotation.getType().equals(patchAnnotation.getType())) {
                 return baseAnnotation;
             }
         }

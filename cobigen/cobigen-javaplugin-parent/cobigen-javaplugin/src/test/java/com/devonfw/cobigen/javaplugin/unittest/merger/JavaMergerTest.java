@@ -440,7 +440,7 @@ public class JavaMergerTest {
             annotationValues.add(annotation.getProperty("value").toString());
         }
         assertThat(annotationNames).containsExactly("Produces", "Consumes");
-        assertThat(annotationValues).containsExactly("application/xml", "application/json");
+        assertThat(annotationValues).containsExactly("\"application/xml\"", "\"application/json\"");
 
         for (JavaMethod method : mergedClass.getMethods()) {
             assertThat(method.getAnnotations()).as("Too many annotations for method " + method.getName()).hasSize(1);
@@ -452,7 +452,7 @@ public class JavaMergerTest {
                 assertThat(annos).as("Too many annotations for parameter").hasSize(2);
                 for (JavaAnnotation annotation : annos) {
                     if (annotation.getType().getName().equals("max")) {
-                        assertThat(annotation.getProperty("value")).isEqualTo("100");
+                        assertThat(Integer.parseInt(annotation.getProperty("value").toString())).isEqualTo(100);
                     }
                 }
             }
