@@ -31,6 +31,8 @@ public class TemplatesConfiguration {
     /** All available increments */
     private Map<String, Increment> increments;
 
+    // referenced Configs
+
     /** {@link Trigger}, all templates of this configuration depend on */
     private Trigger trigger;
 
@@ -115,4 +117,13 @@ public class TemplatesConfiguration {
     public String getTemplateEngine() {
         return templateEngine;
     }
+
+    /**
+     * Returns a map containing all the increments
+     * @return Map containing increments
+     */
+    public Map<String, Increment> getIncrements() {
+        return increments;
+    }
+
 }

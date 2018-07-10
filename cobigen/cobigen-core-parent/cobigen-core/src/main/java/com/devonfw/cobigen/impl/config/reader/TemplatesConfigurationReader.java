@@ -464,7 +464,7 @@ public class TemplatesConfigurationReader {
         if (incrementsNode != null) {
             // We only add the specific increment we want
             com.devonfw.cobigen.impl.config.entity.io.Increment source =
-                incrementsNode.getSpecificIncrement(incrementName);
+                getSpecificIncrement(incrementsNode.getIncrement(), incrementName);
             if (source == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                     "No increment found with name='" + incrementName + "' on the external templates.xml folder.");
@@ -519,7 +519,7 @@ public class TemplatesConfigurationReader {
                 com.devonfw.cobigen.impl.config.entity.io.Increment source = null;
                 if (incrementsNode != null) {
                     // We only add the specific increment we want
-                    source = incrementsNode.getSpecificIncrement(ref.getRef());
+                    source = getSpecificIncrement(incrementsNode.getIncrement(), ref.getRef());
                     if (source != null) {
                         addAllTemplatesRecursively(rootIncrement, source, templates, increments);
                     }
@@ -530,6 +530,9 @@ public class TemplatesConfigurationReader {
                         String[] splitted = splitExternalIncrementRef(ref);
                         String triggerToSearch = splitted[0];
                         String incrementToSearch = splitted[1];
+
+                        // config holder -> please give me the config for triggerToSearch
+                        // local map triggerId -> config
 
                         String pathToContext = rootTemplateFolder.getPath().normalize().getParent().toString();
                         // We read the context.xml file for searching our trigger
@@ -542,6 +545,11 @@ public class TemplatesConfigurationReader {
                         Map<String, Increment> externalIncrements =
                             externalTarget.loadSpecificIncrement(externalTemplates, trig, incrementToSearch);
 
+                        // We save the external increments on our increments map
+                        increments.putAll(externalIncrements);
+                        // We save the external templates on our templates map
+                        templates.putAll(externalTemplates);
+
                         // Now we get the needed increment from the external templates folder
                         childPkg = externalIncrements.get(incrementToSearch);
                         for (Template template : childPkg.getTemplates()) {
@@ -552,6 +560,7 @@ public class TemplatesConfigurationReader {
 
                         com.devonfw.cobigen.impl.config.entity.io.Increment pkg =
                             externalTarget.getIncrementDeclaration(ref);
+
                     } else {
                         throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                             "No increment found for ref='" + ref.getRef() + "'!");
@@ -675,6 +684,24 @@ public class TemplatesConfigurationReader {
                 + ref.getRef() + "', no trigger '" + triggerToSearch + "' was found on your context.xml!");
         }
         return trig;
+    }
+
+    /**
+     * Tries to find an increment on a list of increments and return it
+     * @param increment
+     *            list of increments
+     * @param ref
+     *            name of the increment to get
+     * @return Increment if it was found, null if no increment with that name was found
+     */
+    public com.devonfw.cobigen.impl.config.entity.io.Increment getSpecificIncrement(
+        List<com.devonfw.cobigen.impl.config.entity.io.Increment> increment, String ref) {
+        for (com.devonfw.cobigen.impl.config.entity.io.Increment inc : increment) {
+            if (inc.getName().equals(ref)) {
+                return inc;
+            }
+        }
+        return null;
     }
 
 }
