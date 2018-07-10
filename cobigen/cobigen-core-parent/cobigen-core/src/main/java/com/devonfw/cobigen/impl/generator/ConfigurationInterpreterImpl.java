@@ -84,10 +84,21 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+            // We need this logic for external Increment refs. Each increment contains a different trigger
+            // that we need.
+            /*
+             * for (Map.Entry<String, Increment> increment :
+             * templatesConfiguration.getIncrements().entrySet()) { for (Template template :
+             * increment.getValue().getTemplates()) { templates.add(new TemplateTo(template.getName(),
+             * template.getMergeStrategy(), increment.getValue().getTrigger().getId())); } }
+             */
+
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
                     templatesConfiguration.getTrigger().getId()));
             }
+
+            // iterate through config refrences, ask for all templates
         }
         LOG.debug("{} matching templates found.", templates.size());
         return templates;

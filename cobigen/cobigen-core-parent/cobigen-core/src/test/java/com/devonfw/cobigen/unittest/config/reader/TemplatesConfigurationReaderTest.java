@@ -356,8 +356,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         Map<String, Increment> increments = target.loadIncrements(templates, trigger);
 
         // validation
-        assertThat(increments).containsOnlyKeys("3", "4", "5");
-        assertThat(increments.values()).hasSize(3);
+        assertThat(increments).containsOnlyKeys("3", "4", "5", "0", "1", "2");
+        assertThat(increments.values()).hasSize(6);
         assertThat(increments.get("3").getTemplates()).extracting("name").containsOnly("templateDecl");
         assertThat(increments.get("4").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
             "scanned", "scanned2");
