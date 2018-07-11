@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
@@ -345,25 +348,34 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
 
         // given
-        TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_external_incrementref").toPath());
-
-        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath + "valid_external_incrementref").toURI()));
 
         // when
-        Map<String, Template> templates = target.loadTemplates(trigger);
-        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+        configurationHolder.readTemplatesConfiguration(trigger);
+
+        // We get the super map containing TemplatesConfigurations depending on the templates folder
+        Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurationsSuperMap =
+            configurationHolder.getTemplatesConfigurations();
+
+        // We get the map containing all the TemplatesConfiguration for our current templates folder
+        Path templateFolderCurrent = Paths.get(trigger.getTemplateFolder());
+        Map<String, TemplatesConfiguration> templatesConfigurationsCurrent =
+            templatesConfigurationsSuperMap.get(templateFolderCurrent);
+        // We get the map containing all the TemplatesConfiguration for the external templates folder
+        Path templateFolderExternal = Paths.get("valid_increment_composition");
+        Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
+            templatesConfigurationsSuperMap.get(templateFolderExternal);
 
         // validation
-        assertThat(increments).containsOnlyKeys("3", "4", "5", "0", "1", "2");
-        assertThat(increments.values()).hasSize(6);
-        assertThat(increments.get("3").getTemplates()).extracting("name").containsOnly("templateDecl");
-        assertThat(increments.get("4").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
-            "scanned", "scanned2");
-        assertThat(increments.get("5").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
-            "scanned", "prefix_scanned2");
-
+        assertThat(templatesConfigurationsCurrent).containsOnlyKeys("testingTrigger");
+        assertThat(templatesConfigurationsCurrent.get("testingTrigger").getIncrements()).containsOnlyKeys("3", "4",
+            "5");
+        assertThat(templatesConfigurationsExternal).containsOnlyKeys("valid_increment_composition");
+        assertThat(templatesConfigurationsExternal.get("valid_increment_composition").getIncrements())
+            .containsOnlyKeys("0", "1", "2");
     }
 
     /**
