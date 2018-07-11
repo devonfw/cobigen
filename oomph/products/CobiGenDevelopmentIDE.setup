@@ -711,5 +711,36 @@
     </setupTask>
     <description>Tools-Cobigen Oxygen version</description>
   </version>
+  <version name="Photon"
+      label="Photon">
+    <setupTask
+        xsi:type="setup.p2:P2Task">
+      <requirement
+          name="org.eclipse.sdk.feature.group"/>
+      <requirement
+          name="org.eclipse.jdt.feature.group"/>
+      <requirement
+          name="org.eclipse.epp.mpc.feature.group"/>
+      <requirement
+          name="org.eclipse.sdk.ide"/>
+      <requirement
+          name="org.eclipse.platform.sdk"/>
+      <requirement
+          name="org.eclipse.platform.ide"/>
+      <requirement
+          name="org.eclipse.pde.source.feature.group"/>
+      <requirement
+          name="org.eclipse.pde.feature.group"/>
+      <repository
+          url="http://download.eclipse.org/releases/photon"/>
+      <repository
+          url="http://download.eclipse.org/mylyn/releases/photon"/>
+      <repository
+          url="http://dist.springsource.com/release/TOOLS/update/e4.8/"/>
+      <repository
+          url="http://download.eclipse.org/eclipse/updates/4.7/"/>
+    </setupTask>
+    <description>Cobigen-Development Photon version</description>
+  </version>
   <description>CobiGen Development IDE provides cool stuff.</description>
 </setup:Product>
