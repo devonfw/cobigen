@@ -34,6 +34,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Increment;
@@ -87,6 +88,29 @@ public class TemplatesConfigurationReader {
 
     /** The top-level folder where the templates are located. */
     private TemplateFolder rootTemplateFolder;
+
+    /** The {@link ConfigurationHolder} used for reading templates folder **/
+    private ConfigurationHolder configurationHolder;
+
+    /**
+     * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
+     * configuration file
+     *
+     * @param templatesRoot
+     *            root path for the template configuration and templates
+     * @param configurationHolder
+     *            The {@link ConfigurationHolder} used for reading templates folder
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid against its xsd specification
+     */
+    public TemplatesConfigurationReader(Path templatesRoot, ConfigurationHolder configurationHolder)
+        throws InvalidConfigurationException {
+
+        rootTemplateFolder = TemplateFolder.create(templatesRoot);
+        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        readConfiguration();
+        this.configurationHolder = configurationHolder;
+    }
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -443,7 +467,8 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * Loads an specific increment of the static configuration into the local representation.
+     * Loads an specific increment of the static configuration into the local representation. The return
+     * object must be a map because maybe this increment references other increments
      *
      * @return the mapping of increment names to the corresponding {@link Increment}
      * @param templates
@@ -538,28 +563,29 @@ public class TemplatesConfigurationReader {
                         // We read the context.xml file for searching our trigger
                         Trigger trig = getExternalTrigger(ref, triggerToSearch, pathToContext);
 
-                        // Now that we are sure the trigger exists, let's get its templates
-                        TemplatesConfigurationReader externalTarget = new TemplatesConfigurationReader(
-                            new File(pathToContext + "\\" + trig.getTemplateFolder()).toPath());
-                        Map<String, Template> externalTemplates = externalTarget.loadTemplates(trig);
-                        Map<String, Increment> externalIncrements =
-                            externalTarget.loadSpecificIncrement(externalTemplates, trig, incrementToSearch);
+                        configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
 
-                        // We save the external increments on our increments map
-                        increments.putAll(externalIncrements);
-                        // We save the external templates on our templates map
-                        templates.putAll(externalTemplates);
-
-                        // Now we get the needed increment from the external templates folder
-                        childPkg = externalIncrements.get(incrementToSearch);
-                        for (Template template : childPkg.getTemplates()) {
-                            rootIncrement.addTemplate(template);
-                        }
-
-                        parentPkg.addIncrementDependency(childPkg);
-
-                        com.devonfw.cobigen.impl.config.entity.io.Increment pkg =
-                            externalTarget.getIncrementDeclaration(ref);
+                        /*
+                         * // Now that we are sure the trigger exists, let's get its templates
+                         * TemplatesConfigurationReader externalTarget = new TemplatesConfigurationReader( new
+                         * File(pathToContext + "\\" + trig.getTemplateFolder()).toPath()); Map<String,
+                         * Template> externalTemplates = externalTarget.loadTemplates(trig); Map<String,
+                         * Increment> externalIncrements =
+                         * externalTarget.loadSpecificIncrement(externalTemplates, trig, incrementToSearch);
+                         *
+                         * // We save the external increments on our increments map
+                         * increments.putAll(externalIncrements); // We save the external templates on our
+                         * templates map templates.putAll(externalTemplates);
+                         *
+                         * // Now we get the needed increment from the external templates folder childPkg =
+                         * externalIncrements.get(incrementToSearch); for (Template template :
+                         * childPkg.getTemplates()) { rootIncrement.addTemplate(template); }
+                         *
+                         * parentPkg.addIncrementDependency(childPkg);
+                         *
+                         * com.devonfw.cobigen.impl.config.entity.io.Increment pkg =
+                         * externalTarget.getIncrementDeclaration(ref);
+                         */
 
                     } else {
                         throw new InvalidConfigurationException(configFilePath.toUri().toString(),
@@ -658,7 +684,7 @@ public class TemplatesConfigurationReader {
      * Checks whether this increment ref is an external increment ref
      * @param ref
      *            the increment ref to check
-     * @return
+     * @return true if it is an external IncrementRef
      */
     private boolean isExternalIncrementRef(IncrementRef ref) {
         return ref.getRef().contains("::");

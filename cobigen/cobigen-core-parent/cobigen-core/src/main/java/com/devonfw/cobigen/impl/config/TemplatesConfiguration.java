@@ -31,7 +31,8 @@ public class TemplatesConfiguration {
     /** All available increments */
     private Map<String, Increment> increments;
 
-    // referenced Configs
+    /** List containing all needed {@link TemplatesConfigurationReader} **/
+    private List<TemplatesConfigurationReader> templatesConfigurationReaders;
 
     /** {@link Trigger}, all templates of this configuration depend on */
     private Trigger trigger;
@@ -47,6 +48,7 @@ public class TemplatesConfiguration {
      *            configuration root path
      * @param trigger
      *            {@link Trigger} of this {@link TemplatesConfiguration}
+     *
      * @throws UnknownContextVariableException
      *             if the destination path contains an undefined context variable
      * @throws UnknownExpressionException
@@ -58,6 +60,35 @@ public class TemplatesConfiguration {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
+        templatesFolderName = trigger.getTemplateFolder();
+        templates = reader.loadTemplates(trigger);
+        increments = reader.loadIncrements(templates, trigger);
+        templateEngine = reader.getTemplateEngine();
+        this.trigger = trigger;
+    }
+
+    /**
+     * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
+     * reference
+     *
+     * @param configRoot
+     *            configuration root path
+     * @param trigger
+     *            {@link Trigger} of this {@link TemplatesConfiguration}
+     * @param configurationHolder
+     *            The {@link ConfigurationHolder} used for reading templates folder
+     * @throws UnknownContextVariableException
+     *             if the destination path contains an undefined context variable
+     * @throws UnknownExpressionException
+     *             if there is an unknown variable modifier
+     * @throws InvalidConfigurationException
+     *             if the given templates.xml is not valid
+     */
+    public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder)
+        throws InvalidConfigurationException {
+
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()), configurationHolder);
         templatesFolderName = trigger.getTemplateFolder();
         templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
@@ -124,6 +155,23 @@ public class TemplatesConfiguration {
      */
     public Map<String, Increment> getIncrements() {
         return increments;
+    }
+
+    /**
+     * Returns the list of {@link TemplatesConfigurationReader}
+     * @return List of {@link TemplatesConfigurationReader}
+     */
+    public List<TemplatesConfigurationReader> getTemplatesConfigurationReaders() {
+        return templatesConfigurationReaders;
+    }
+
+    /**
+     * Sets the list of {@link TemplatesConfigurationReader}
+     * @param templatesConfigurationReaders
+     *            List of {@link TemplatesConfigurationReader}
+     */
+    public void setTemplatesConfigurationReaders(List<TemplatesConfigurationReader> templatesConfigurationReaders) {
+        this.templatesConfigurationReaders = templatesConfigurationReaders;
     }
 
 }

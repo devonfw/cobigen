@@ -45,7 +45,30 @@ public class ConfigurationHolder {
         if (!templatesConfigurations.containsKey(templateFolder)) {
             templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
-            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
+            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger, this);
+            templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
+        }
+
+        return templatesConfigurations.get(templateFolder).get(trigger.getId());
+    }
+
+    /**
+     * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache.
+     * @param trigger
+     *            to get matcher declarations from
+     * @return the {@link TemplatesConfiguration}
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid
+     */
+    public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger, String incrementToSearch) {
+
+        Path templateFolder = Paths.get(trigger.getTemplateFolder());
+        if (!templatesConfigurations.containsKey(templateFolder)) {
+            templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
+
+            Path externalIncrementPath = configurationPath.normalize().getParent();
+
+            TemplatesConfiguration config = new TemplatesConfiguration(externalIncrementPath, trigger, this);
             templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
         }
 
@@ -64,4 +87,13 @@ public class ConfigurationHolder {
         }
         return contextConfiguration;
     }
+
+    /**
+     * We use this method just for testing purposes.
+     * @return Map containing all the {@link TemplatesConfiguration}
+     */
+    public Map<Path, Map<String, TemplatesConfiguration>> getTemplatesConfigurations() {
+        return templatesConfigurations;
+    }
+
 }
