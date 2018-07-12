@@ -62,6 +62,8 @@ CobiGen deployment has to be distinguished threefold
 |  `cobigen/cobigen-*/` (except core) | ECLIPSE | ```# Builds the Manifest and bundles the dependencies
 mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield)
+
 mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
 # Uploades the p2 update site to the experimental repository. Do NOT use clean
 mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
@@ -73,3 +75,7 @@ mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
 == Contribute
 
 https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large)
