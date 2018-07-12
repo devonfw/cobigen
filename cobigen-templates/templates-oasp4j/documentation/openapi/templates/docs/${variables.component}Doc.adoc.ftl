@@ -17,20 +17,18 @@ Component Data
 |<#if model.description??>${model.description}<#else>-</#if>
 |===
 
-=== Requests
-
 <#macro request path>
 
 
   <#compress>
     <#list path.operations as op>
       <#if op.operationId??>.${op.operationId}</#if>
-      [cols='1s,3m']
+      [cols='1s,6m']
       |===
-      |<#if op.type??>${OaspUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}${path.pathURI}
+      |<#if op.type??>${OaspUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${model.componentName}/${path.version}${path.pathURI}
       |Description |<#if op.description??>${op.description}<#else>-</#if>
     
-      .2+<|Request 
+      <#if hasRequestBody(op)>.2+<</#if>|Request 
       a|
         [options='header',cols='1,1,3,5']
         !===
@@ -51,7 +49,7 @@ Component Data
           !-!-!-!-
         </#if>
         !===
-        a|**Body**
+        <#if hasRequestBody(op)>a|**Body**
         ....
         {
           <#assign nothingIn=true>
@@ -66,28 +64,42 @@ Component Data
           <#if nothingIn>-</#if>
         }
         ....
-    
-      |Response codes  a|
-        [options='header',cols='1,5,5']
-        !===
-        !Code !Description !Body
+        </#if>
+      <#if op.responses?size gt 0>
+        |Response  a|
+        <#if hasResponseBody(op)>
+          [options='header',cols='1,4,7']
+          !===
+          !Code !Description !Body
         
-        <#list op.responses as resp>
-        !<#if resp.code??>${resp.code}<#else>-</#if>
-        !<#if resp.description??>${resp.description}<#else>-</#if>
-        a!
-        <#if resp.entityRef??>
-          <#assign entity=resp.entityRef>
-          ....
-          {
-            <#list entity.properties as prop>
-              "${prop.name}":"${prop.type}"
-            </#list>
-          }
-          ....
-        <#elseif resp.type??>${resp.type}<#else>-</#if>
-        </#list>
-        !===
+          <#list op.responses as resp>
+            !<#if resp.code??>${resp.code}<#else>-</#if>
+            !<#if resp.description??>${resp.description}<#else>-</#if>
+            a!
+            <#if resp.entityRef??>
+              <#assign entity=resp.entityRef>
+              ....
+              {
+                <#list entity.properties as prop>
+                  "${prop.name}":"${prop.type}"
+                </#list>
+              }
+              ....
+            <#elseif resp.type??>${resp.type}<#else>-</#if>
+          </#list>
+          !===
+        <#else>
+          [options='header',cols='1,4']
+          !===
+          !Code !Description
+        
+          <#list op.responses as resp>
+            !<#if resp.code??>${resp.code}<#else>-</#if>
+            !<#if resp.description??>${resp.description}<#else>-</#if>
+          </#list>
+          !===
+        </#if>
+      </#if>
       |===
     </#list>
   </#compress>
@@ -96,3 +108,21 @@ Component Data
 <#list model.component.paths as path>
   <@request path/>
 </#list>
+
+<#function hasResponseBody operation>
+  <#list operation.responses as resp>
+    <#if resp.entityRef??>
+      <#return true>
+    </#if>
+  </#list>
+  <#return false>
+</#function>
+
+<#function hasRequestBody operation>
+  <#list operation.parameters as param>
+    <#if param.isBody>
+      <#return true>
+    </#if>
+  </#list>
+  <#return false>
+</#function>

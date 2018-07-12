@@ -759,22 +759,13 @@ public class OaspUtil {
         }
     }
 
-    public void print(Object s) {
-        if (s instanceof Collection<?>) {
-            Collection<?> c = (Collection<?>) s;
-            for (Object o : c) {
-                System.out.println(o);
-            }
-        } else if (s instanceof Map<?, ?>) {
-            Map<?, ?> m = (Map<?, ?>) s;
-            for (Object key : m.keySet()) {
-                System.out.println(key + "  " + m.get(key));
-            }
-        } else {
-            System.out.println(s);
-        }
-    }
-
+    /**
+     * Creates asciidoc code for colour coded HTTP request types
+     * @param type
+     *            the HTTP request type to be coloured
+     * @return the asciidoc code for differently coloured request types, aqua for get, lime for post, red for
+     *         delete, yellow for put and fuchsia for patch (HTML colour names)
+     */
     public String getTypeWithAsciidocColour(String type) {
         switch (type.toLowerCase()) {
         case "get":

@@ -460,6 +460,19 @@ public class JavaUtil {
         return s;
     }
 
+    /**
+     * Creates a list of parameters of a specific method as an asciidoc string, including its name, type,
+     * description, constraints
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param methodName
+     *            {@link String} the name of the method to get the parameter info of
+     * @param javaDoc
+     *            the javadoc of the method, taken from the javaplugin model
+     * @return A list of the parameters info in asciidoc code
+     * @throws Exception
+     *             when a problem with reflection occurs
+     */
     public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc) throws Exception {
 
         String result = "";
@@ -506,11 +519,7 @@ public class JavaUtil {
                             value = method.invoke(anno);
                             result += shortName + " = " + value + " +" + System.lineSeparator();
                         } catch (NoSuchMethodException e) {
-                            if (shortName.equals("NotNull")) {
-                                result += "[red]#__Required__# +" + System.lineSeparator();
-                            } else {
-                                result += shortName + " +" + System.lineSeparator();
-                            }
+                            result += shortName + " +" + System.lineSeparator();
                         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                             | SecurityException e) {
                             throw new Exception(e.getMessage());
@@ -529,6 +538,12 @@ public class JavaUtil {
         return result;
     }
 
+    /**
+     * returns the javadoc of an element, stripped of any links to other sources
+     * @param doc
+     *            the javadoc to be changed
+     * @return the input string stripped of all links
+     */
     public String getJavaDocWithoutLink(String doc) {
 
         Pattern p = Pattern.compile("(\\{@link ([^\\}]*)\\})");
@@ -539,6 +554,12 @@ public class JavaUtil {
         return doc;
     }
 
+    /**
+     * Changes the value of an \@consumes or an \@produces annotation to a more readable value
+     * @param input
+     *            the value of an annotation or similar
+     * @return the more readable representation of the media type
+     */
     public String extractMediaType(String input) {
 
         if (input.contains("MediaType.APPLICATION_JSON")) {
@@ -550,6 +571,14 @@ public class JavaUtil {
         return input;
     }
 
+    /**
+     * Checks the class path for an application.properties file and extracts the port and path from it
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @return The root path of the application
+     * @throws IOException
+     *             If no application.properties file could be found
+     */
     public String extractRootPath(Class<?> pojoClass) throws IOException {
 
         if (pojoClass == null) {
@@ -572,6 +601,14 @@ public class JavaUtil {
         }
     }
 
+    /**
+     * Helper method to find a class's specific method
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param methodName
+     *            The name of the method to be found
+     * @return The method object of the method to be found, null if it wasn't found
+     */
     private Method findMethod(Class<?> pojoClass, String methodName) {
 
         if (pojoClass == null) {
@@ -640,6 +677,16 @@ public class JavaUtil {
         return "-";
     }
 
+    /**
+     * Checks if a request/response has a body
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param methodName
+     *            The name of the operation to be checked
+     * @param isResponse
+     *            true if the response of the method should be checked, false if the request shoul be checked
+     * @return true if the response/request has a body, false if not
+     */
     public boolean hasBody(Class<?> pojoClass, String methodName, boolean isResponse) {
         Method m = findMethod(pojoClass, methodName);
         if (isResponse) {
@@ -648,8 +695,17 @@ public class JavaUtil {
                 return true;
             }
         } else {
-            if (m.getParameterCount() == 1) {
-                Parameter param = m.getParameters()[0];
+            int nr = 0;
+            int position = 0;
+            for (Parameter param : m.getParameters()) {
+                if (!param.isAnnotationPresent(javax.ws.rs.PathParam.class)
+                    && !param.isAnnotationPresent(javax.ws.rs.QueryParam.class)) {
+                    nr++;
+                    position = Integer.parseInt(param.getName().replace("arg", ""));
+                }
+            }
+            if (nr == 1) {
+                Parameter param = m.getParameters()[position];
                 Class<?> requestType = param.getType();
                 if (!requestType.isPrimitive() && !requestType.equals(Void.TYPE)
                     && !param.isAnnotationPresent(javax.ws.rs.PathParam.class)
@@ -661,7 +717,13 @@ public class JavaUtil {
         return false;
     }
 
-    public String getRequestType(Map<String, Object> annotations) throws Exception {
+    /**
+     * returns the HTTP request type corresponding to an annotation type
+     * @param annotations
+     *            The annotation to get the type name of
+     * @return the HTTP request type name of the selected annotation
+     */
+    public String getRequestType(Map<String, Object> annotations) {
         if (annotations.containsKey("javax_ws_rs_POST")) {
             return "POST";
         } else if (annotations.containsKey("javax_ws_rs_PUT")) {
