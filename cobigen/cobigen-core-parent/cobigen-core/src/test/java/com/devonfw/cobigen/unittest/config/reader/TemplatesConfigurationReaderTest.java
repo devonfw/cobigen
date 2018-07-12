@@ -348,10 +348,11 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
 
         // given
-        Trigger trigger = new Trigger("testingTrigger", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
-            new LinkedList<ContainerMatcher>());
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
         ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath + "valid_external_incrementref").toURI()));
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
         // when
         configurationHolder.readTemplatesConfiguration(trigger);
@@ -362,10 +363,13 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // We get the map containing all the TemplatesConfiguration for our current templates folder
         Path templateFolderCurrent = Paths.get(trigger.getTemplateFolder());
+
         Map<String, TemplatesConfiguration> templatesConfigurationsCurrent =
             templatesConfigurationsSuperMap.get(templateFolderCurrent);
+
         // We get the map containing all the TemplatesConfiguration for the external templates folder
         Path templateFolderExternal = Paths.get("valid_increment_composition");
+
         Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
             templatesConfigurationsSuperMap.get(templateFolderExternal);
 
@@ -389,15 +393,18 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
 
         // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
         TemplatesConfigurationReader target = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_invalid_external_incrementref").toPath());
+            new File(testFileRootPath + "faulty_invalid_external_incrementref").toPath(), configurationHolder);
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
 
         // when
         Map<String, Template> templates = target.loadTemplates(trigger);
-        Map<String, Increment> increments = target.loadIncrements(templates, trigger);
+        target.loadIncrements(templates, trigger);
     }
 
     /**

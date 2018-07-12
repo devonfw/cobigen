@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.config;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -21,6 +22,16 @@ public class ConfigurationHolder {
 
     /** Root path of the configuration */
     private Path configurationPath;
+
+    /**
+     *
+     */
+    private String externalTriggerId;
+
+    /**
+     * {@link TemplatesConfiguration} to be used for storing the external increments
+     */
+    private TemplatesConfiguration externalTemplatesConfig;
 
     /**
      * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
@@ -53,9 +64,12 @@ public class ConfigurationHolder {
     }
 
     /**
-     * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache.
+     * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache, just storing
+     * the external increment we want.
      * @param trigger
      *            to get matcher declarations from
+     * @param incrementToSearch
+     *            name of the increment to search
      * @return the {@link TemplatesConfiguration}
      * @throws InvalidConfigurationException
      *             if the configuration is not valid
@@ -63,14 +77,21 @@ public class ConfigurationHolder {
     public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger, String incrementToSearch) {
 
         Path templateFolder = Paths.get(trigger.getTemplateFolder());
-        if (!templatesConfigurations.containsKey(templateFolder)) {
-            templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
+        templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
-            Path externalIncrementPath = configurationPath.normalize().getParent();
+        Path externalIncrementPath = configurationPath.normalize();
 
-            TemplatesConfiguration config = new TemplatesConfiguration(externalIncrementPath, trigger, this);
-            templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
+        // As we read one increment each time, we want to properly store everything in the same map so that
+        // they don't get overwritten. Therefore, we first check whether the trigger has been yet loaded or
+        // not
+        if (Objects.equals(externalTriggerId, trigger.getId())) {
+            externalTemplatesConfig.loadSpecificIncrement(incrementToSearch);
+        } else {
+            externalTemplatesConfig =
+                new TemplatesConfiguration(externalIncrementPath, trigger, this, incrementToSearch);
+            externalTriggerId = trigger.getId();
         }
+        templatesConfigurations.get(templateFolder).put(trigger.getId(), externalTemplatesConfig);
 
         return templatesConfigurations.get(templateFolder).get(trigger.getId());
     }
