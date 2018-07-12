@@ -22,9 +22,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
@@ -35,6 +32,9 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
+import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 
 /**
  * Test suite for generation purposes.
@@ -67,6 +67,24 @@ public class GenerationTest extends AbstractApiTest {
 
         assertThat(report).isSuccessful();
         assertThat(target).hasContent("overwritten");
+    }
+
+    /**
+     * Tests whether the generation of external increments works properly.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testGenerationWithExternalIncrements() throws Exception {
+        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+
+        File folder = tmpFolder.newFolder("GenerationTest");
+        File target = new File(folder, "generated.txt");
+        FileUtils.write(target, "base");
+
+        CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGeneration").toURI());
+        List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+        assertThat(templates).hasSize(1);
     }
 
     /**

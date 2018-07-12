@@ -2,8 +2,8 @@ package com.devonfw.cobigen.impl.config;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -24,9 +24,10 @@ public class ConfigurationHolder {
     private Path configurationPath;
 
     /**
-     *
+     * Map of the external triggers to use. We need this variable for properly organizing the different
+     * external templatesConfiguration
      */
-    private String externalTriggerId;
+    private Map<String, Trigger> externalTriggers = new HashMap();
 
     /**
      * {@link TemplatesConfiguration} to be used for storing the external increments
@@ -84,12 +85,12 @@ public class ConfigurationHolder {
         // As we read one increment each time, we want to properly store everything in the same map so that
         // they don't get overwritten. Therefore, we first check whether the trigger has been yet loaded or
         // not
-        if (Objects.equals(externalTriggerId, trigger.getId())) {
+        if (externalTriggers.containsKey(trigger.getId())) {
             externalTemplatesConfig.loadSpecificIncrement(incrementToSearch);
         } else {
             externalTemplatesConfig =
                 new TemplatesConfiguration(externalIncrementPath, trigger, this, incrementToSearch);
-            externalTriggerId = trigger.getId();
+            externalTriggers.put(trigger.getId(), trigger);
         }
         templatesConfigurations.get(templateFolder).put(trigger.getId(), externalTemplatesConfig);
 
@@ -110,11 +111,19 @@ public class ConfigurationHolder {
     }
 
     /**
-     * We use this method just for testing purposes.
+     * We use this method just for retrieving all the {@link TemplatesConfiguration}.
      * @return Map containing all the {@link TemplatesConfiguration}
      */
     public Map<Path, Map<String, TemplatesConfiguration>> getTemplatesConfigurations() {
         return templatesConfigurations;
+    }
+
+    /**
+     * Used for getting the external trigger id
+     * @return the external trigger id
+     */
+    public Map<String, Trigger> getExternalTriggers() {
+        return externalTriggers;
     }
 
 }

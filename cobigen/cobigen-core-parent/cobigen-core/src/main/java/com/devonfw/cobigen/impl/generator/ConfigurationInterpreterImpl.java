@@ -1,8 +1,10 @@
 package com.devonfw.cobigen.impl.generator;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.inject.Inject;
@@ -166,11 +168,32 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
         for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
-            if (templatesConfiguration != null) {
+
+            // If the configurationHolder contains any ExternalTrigger it means that we have to store all
+            // the templatesConfiguration from this trigger
+            if (externalTriggersIsNotEmpty()) {
+                Path templateFolder = Paths.get(trigger.getTemplateFolder());
+
+                Map<String, TemplatesConfiguration> externalTemplatesConfigurations =
+                    configurationHolder.getTemplatesConfigurations().get(templateFolder);
+
+                // We store all the TemplatesConfiguration inside our list
+                for (Map.Entry<String, TemplatesConfiguration> entry : externalTemplatesConfigurations.entrySet()) {
+                    templateConfigurations.add(entry.getValue());
+                }
+
+            } else if (templatesConfiguration != null) {
                 templateConfigurations.add(templatesConfiguration);
             }
         }
         return templateConfigurations;
+    }
+
+    /**
+     * @return true if it the externalTriggers map of the configuration holder is not empty
+     */
+    private boolean externalTriggersIsNotEmpty() {
+        return !configurationHolder.getExternalTriggers().isEmpty();
     }
 
 }
