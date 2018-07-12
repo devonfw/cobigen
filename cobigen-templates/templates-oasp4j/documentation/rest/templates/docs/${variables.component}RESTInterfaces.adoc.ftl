@@ -3,9 +3,10 @@
 
 **Component Service Path:** 
 ....
-${JavaUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??>${variables.domain}/services/rest${pojo.annotations.javax_ws_rs_Path.value}<#else>This REST service has no path</#if>
+${JavaUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??>/${pojo.annotations.javax_ws_rs_Path.value}</#if>
 ....
 
+<#-- Determine body format -->
 <#if pojo.annotations.javax_ws_rs_Consumes??>
   <#assign inputType=pojo.annotations.javax_ws_rs_Consumes.value>
   <#if inputType?contains("JSON")>
@@ -41,22 +42,24 @@ Component Data
       .${method.name}
       [cols='1s,6m']
       |===
-      |${OaspUtil.getTypeWithAsciidocColour(type)} |${JavaUtil.extractRootPath(classObject)}service/rest/${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
+      |${OaspUtil.getTypeWithAsciidocColour(type)} |${JavaUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
       |Description |<#if method.javaDoc??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
     
-      .2+<|Request 
+      <#if JavaUtil.hasBody(classObject,method.name,false)>.2+<</#if>|Request 
       a|
       [options='header',cols='1,1,1,5']
         !===
         !Parameter !Type !Constraints !Param Description
         ${JavaUtil.getParams(classObject,method.name,method.javaDoc)}
         !===
-        a|**Body** +
       </#compress>
+      <#if JavaUtil.hasBody(classObject,method.name,false)>
       
+a|**Body** +
 ${JavaUtil.getJSONRequestBody(classObject,method.name)}
+      </#if>
+      <#if JavaUtil.hasBody(classObject,method.name,true)>
       <#compress>
-    
       |Response  a|
         [options='header',cols='1,4,7']
         !===
@@ -68,7 +71,8 @@ ${JavaUtil.getJSONRequestBody(classObject,method.name)}
       </#compress>
       
 ${JavaUtil.getJSONResponseBody(classObject,method.name)}
-      <#compress>
+      </#if>
+    <#compress>
         !===
       |===
     </#compress>
