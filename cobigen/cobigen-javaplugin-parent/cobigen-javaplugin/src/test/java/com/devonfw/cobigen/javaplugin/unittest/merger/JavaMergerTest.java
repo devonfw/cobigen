@@ -425,8 +425,8 @@ public class JavaMergerTest {
     }
 
     /**
-     * Tests the behavior if different {@link JavaAnnotatedElement}s merge their annotations properly.
-     * Corresponds to <a href=https://github.com/devonfw/tools-cobigen/issues/430>#430</a>
+     * Tests if different {@link JavaAnnotatedElement}s merge their annotations properly. Corresponds to <a
+     * href=https://github.com/devonfw/tools-cobigen/issues/430>#430</a>
      *
      * @throws MergeException
      *             test fails
@@ -467,6 +467,35 @@ public class JavaMergerTest {
                 }
             }
         }
+    }
+
+    /**
+     * Tests if different {@link JavaAnnotatedElement}s merge more complex annotations properly. Corresponds
+     * to <a href=https://github.com/devonfw/tools-cobigen/issues/290>#290</a>
+     *
+     * @throws MergeException
+     *             test fails
+     * @throws IOException
+     *             test fails
+     */
+    @Test
+    public void testMergeComplexAnnotations() throws MergeException, IOException {
+        File base = new File(testFileRootPath + "BaseFile_complexAnnotation.java");
+        File patch = new File(testFileRootPath + "PatchFile_complexAnnotation.java");
+
+        JavaSource mergedSource = getMergedSource(base, patch, true);
+        assertThat(mergedSource.getClasses().isEmpty()).isFalse();
+        JavaClass mergedClass = mergedSource.getClasses().get(0);
+
+        assertThat(mergedClass.getAnnotations()).hasSize(1);
+
+        assertThat(mergedClass.getAnnotations().get(0).getProperty("value").toString())
+            .isEqualTo("{@javax.persistence.NamedEntityGraph(name=\"ttt\","
+                + "attributeNodes=[@javax.persistence.NamedAttributeNode(value=\"ttt\","
+                + "subgraph=\"ttt\")],subgraphs=[@javax.persistence.NamedSubgraph(name=\"ttt\","
+                + "attributeNodes=@javax.persistence.NamedAttributeNode(value=\"zzz\")), "
+                + "@javax.persistence.NamedSubgraph(name=\"zzz\","
+                + "attributeNodes=@javax.persistence.NamedAttributeNode(value=\"aaa\"))])}");
     }
 
     /**
