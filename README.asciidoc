@@ -2,6 +2,8 @@
 
 = CobiGen (Code-based incremental Generator)
 
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield)
+
 == Usage
 
 * https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
@@ -33,8 +35,6 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 | `cobigen-maven` | Contains the maven plug-in implementation.     
 
 | `cobigen-review` | Project to be used for https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin[AgileReview] 
-
-| `cobigen-sample` | Sample code to be used for CobiGen demonstrations 
 
 | `cobigen-templates` | Contains template sets for different architectures 
 
@@ -73,3 +73,6 @@ mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
 == Contribute
 
 https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large)
