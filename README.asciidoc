@@ -2,7 +2,7 @@
 
 = CobiGen (Code-based incremental Generator)
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield)
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
 
 == Usage
 
@@ -75,4 +75,4 @@ mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
 https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
 
 ## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large)
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large"]
