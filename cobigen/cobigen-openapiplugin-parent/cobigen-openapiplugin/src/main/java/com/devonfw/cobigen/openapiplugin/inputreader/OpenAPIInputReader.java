@@ -32,7 +32,8 @@ import com.jayway.jsonpath.Configuration;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
-import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.OpenApiParser;
+import com.reprezen.kaizen.oasparser.OpenApiParser.SwaggerParserException;
 import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
@@ -541,11 +542,15 @@ public class OpenAPIInputReader implements InputReader {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
-        OpenApi3 openApi = new OpenApi3Parser().parse(path.toUri());
-        if (openApi == null) {
-            throw new InputReaderException(path + " is not a valid OpenAPI file");
+        try {
+            OpenApi3 openApi = (OpenApi3) new OpenApiParser().parse(path.toUri());
+            if (openApi == null) {
+                throw new InputReaderException(path + " is not a valid OpenAPI file");
+            }
+            return new OpenAPIFile(path, openApi);
+        } catch (SwaggerParserException e) {
+            // SwaggerParserException indicates a wrong input file.
+            throw new InputReaderException("Reader does not support input type or input is faulty", e);
         }
-        return new OpenAPIFile(path, openApi);
     }
-
 }
