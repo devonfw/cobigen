@@ -21,8 +21,6 @@ import com.google.common.collect.Maps;
 /**
  * The {@link HierarchicalTreeOperator} is a wrapper for all tree related functionality for displaying
  * packages in a hierarchical folded way
- *
- * @author mbrunnli (18.03.2013)
  */
 public class HierarchicalTreeOperator {
 
@@ -61,7 +59,6 @@ public class HierarchicalTreeOperator {
      * @return a list of {@link IPackageFragment} children
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (18.03.2013)
      */
     public static List<Object> getPackageChildren(IPackageFragmentRoot parentElement, List<Object> stubbedResources)
         throws JavaModelException {
@@ -86,7 +83,6 @@ public class HierarchicalTreeOperator {
      * @return a list of {@link IPackageFragment} children
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (18.03.2013)
      */
     public static List<IPackageFragment> getPackageChildren(IPackageFragment parentElement) throws JavaModelException {
 
@@ -103,7 +99,6 @@ public class HierarchicalTreeOperator {
      * @return a list of {@link IPackageFragment} children
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (18.03.2013)
      */
     public static List<IPackageFragment> getPackageChildren(IPackageFragment parentElement,
         List<Object> stubbedResources) throws JavaModelException {
@@ -128,7 +123,6 @@ public class HierarchicalTreeOperator {
      * @throws JavaModelException
      *             if one of the {@link IPackageFragment} children does not exist or if an exception occurs
      *             while accessing its corresponding resource
-     * @author mbrunnli (18.03.2013)
      */
     private static IPackageFragment fold(IPackageFragment frag, List<Object> stubbedResources)
         throws JavaModelException {
@@ -156,7 +150,6 @@ public class HierarchicalTreeOperator {
 
     /**
      * Caches a package fragment into {@link #_cachedPackageFragments}
-     *
      * @param curr
      *            to be cached
      */
@@ -171,7 +164,6 @@ public class HierarchicalTreeOperator {
     /**
      *
      * This method calculates all atomic children from the stubbedResources and returns them
-     *
      * @param parent
      *            to calculate children for
      * @param stubbedResources
@@ -204,9 +196,7 @@ public class HierarchicalTreeOperator {
     }
 
     /**
-     *
      * This method calculates all atomic children from the stubbedResources and returns them
-     *
      * @param parent
      *            to calculate children for
      * @param stubbedResources
@@ -241,13 +231,11 @@ public class HierarchicalTreeOperator {
 
     /**
      * Returns the parent object (either an {@link IPackageFragment} or an {@link IPackageFragmentRoot})
-     *
      * @param fragment
      *            {@link IPackageFragment} for which the parent should be retrieved
      * @return the parent object (either an {@link IPackageFragment} or an {@link IPackageFragmentRoot})
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (18.03.2013)
      */
     private static Object getParent(IPackageFragment fragment) throws JavaModelException {
 
@@ -285,13 +273,11 @@ public class HierarchicalTreeOperator {
 
     /**
      * Returns the child name for the given {@link IPackageFragment}
-     *
      * @param fragment
      *            {@link IPackageFragment}
      * @return the child name in a hierarchical manner
      * @throws JavaModelException
      *             if an internal exception occurs while accessing the eclipse jdt java model
-     * @author mbrunnli (18.03.2013)
      */
     public static String getChildName(IPackageFragment fragment) throws JavaModelException {
 
@@ -318,12 +304,10 @@ public class HierarchicalTreeOperator {
 
     /**
      * Checks whether the given {@link IPackageFragment} is folded
-     *
      * @param parent
      *            {@link IPackageFragment}
      * @return <code>true</code> if the given {@link IPackageFragment} is folded<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (18.03.2013)
      */
     private static boolean isFolded(IPackageFragment parent) {
 
@@ -332,7 +316,6 @@ public class HierarchicalTreeOperator {
 
     /**
      * Returns all {@link IPackageFragment} children of the given {@link IPackageFragmentRoot}
-     *
      * @param parentElement
      *            {@link IPackageFragmentRoot}
      * @param stubbedResources
@@ -341,7 +324,6 @@ public class HierarchicalTreeOperator {
      * @throws JavaModelException
      *             if the parentElement does not exist or if an exception occurs while accessing its
      *             corresponding resource
-     * @author mbrunnli (18.03.2013)
      */
     public static List<IPackageFragment> retrievePackageChildren(IPackageFragmentRoot parentElement,
         List<Object> stubbedResources) throws JavaModelException {
@@ -365,7 +347,6 @@ public class HierarchicalTreeOperator {
 
     /**
      * Returns all {@link IPackageFragment} children of the given {@link IPackageFragment}
-     *
      * @param parentElement
      *            {@link IPackageFragment}
      * @param stubbedResources
@@ -374,7 +355,6 @@ public class HierarchicalTreeOperator {
      * @throws JavaModelException
      *             if the parentElement does not exist or if an exception occurs while accessing its
      *             corresponding resource
-     * @author mbrunnli (18.03.2013)
      */
     private static List<IPackageFragment> retrievePackageChildren(IPackageFragment parentElement,
         List<Object> stubbedResources) throws JavaModelException {
@@ -385,7 +365,6 @@ public class HierarchicalTreeOperator {
     /**
      * Checks whether the the given {@link IPackageFragment} child is an atomic child of the given
      * {@link IPackageFragment} parent. Atomic means only one further defined package beyond the given parent.
-     *
      * @param parent
      *            {@link IPackageFragment}
      * @param child
@@ -394,7 +373,6 @@ public class HierarchicalTreeOperator {
      *            states whether the default package should be considered or not
      * @return <code>true</code> if the child defines exactly one package beyond the given parent package<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (18.03.2013)
      */
     private static boolean isAtomicChild(IPackageFragment parent, IPackageFragment child,
         boolean considerDefaultPackage) {

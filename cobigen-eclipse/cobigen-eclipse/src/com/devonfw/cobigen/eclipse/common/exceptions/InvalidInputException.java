@@ -2,7 +2,6 @@ package com.devonfw.cobigen.eclipse.common.exceptions;
 
 /**
  * Thrown if the input could not be read as expected.
- * @author mbrunnli (Jun 17, 2015)
  */
 public class InvalidInputException extends Exception {
 
@@ -35,9 +34,7 @@ public class InvalidInputException extends Exception {
     }
 
     /**
-     * Returns the field 'hasRootCause'
-     * @return value of hasRootCause
-     * @author mbrunnli (Jun 17, 2015)
+     * @return <code>true</code> if a root cause exists
      */
     public boolean hasRootCause() {
         return hasRootCause;
