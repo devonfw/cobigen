@@ -89,7 +89,6 @@ public class Activator extends AbstractUIPlugin {
 
     /**
      * Stops the ResourceChangeListener
-     * @author mbrunnli (Jun 24, 2015)
      */
     public void stopConfigurationListener() {
         LOG.info("Stop configuration project listener");
@@ -117,8 +116,6 @@ public class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Returns the shared instance
-     *
      * @return the shared instance
      */
     public static Activator getDefault() {

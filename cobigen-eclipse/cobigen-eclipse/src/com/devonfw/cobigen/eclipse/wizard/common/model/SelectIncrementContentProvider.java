@@ -14,14 +14,10 @@ import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 
 /**
  * {@link ITreeContentProvider} for displaying an hierarchical tree of dependent generation packages.
- *
- * @author mbrunnli (26.03.2013)
  */
 public class SelectIncrementContentProvider implements ITreePathContentProvider {
 
-    /**
-     * All current root packages
-     */
+    /** All current root packages */
     private List<ComparableIncrement> rootElements;
 
     @Override
@@ -55,7 +51,6 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      *            element to be checked
      * @return <code>true</code> if the target increment is child any root inrement<br>
      *         <code>false</code> otherwise
-     * @author mbrunnli (26.03.2013)
      */
     private boolean isChildOfAnyIncrement(ComparableIncrement[] rootIncrements, ComparableIncrement target) {
         for (ComparableIncrement pkg : rootIncrements) {
@@ -85,7 +80,6 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      * @param element
      *            for which all children should be determined
      * @return all children for the given element
-     * @author mbrunnli (26.03.2013)
      */
     private Object[] getChildren(Object element) {
         if (element instanceof ComparableIncrement) {
@@ -126,7 +120,6 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      *            {@link Set} of {@link TreePath} all found {@link TreePath}s should be added to
      * @param parentPaths
      *            states whether the {@link TreePath}s of the child or of its parent should be determined
-     * @author mbrunnli (26.03.2013)
      */
     private void addTreePaths(Object element, TreePath treePath, Set<TreePath> out, boolean parentPaths) {
         for (Object child : getChildren(treePath)) {
@@ -142,7 +135,6 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
      * @param element
      *            for which all paths should be determined
      * @return array of {@link TreePath}s ending on the given element
-     * @author mbrunnli (26.03.2013)
      */
     public TreePath[] getAllPaths(Object element) {
         Set<TreePath> paths = new HashSet<>();
@@ -159,9 +151,7 @@ public class SelectIncrementContentProvider implements ITreePathContentProvider 
     }
 
     /**
-     * Returns all root paths
      * @return {@link TreePath}s of all root elements
-     * @author mbrunnli (26.03.2013)
      */
     public TreePath[] getAllRootPaths() {
         Set<TreePath> paths = new HashSet<>();
