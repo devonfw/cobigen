@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.Viewer;
 
 /**
  * Provides the Contents for a {@link Map} such that each element is an map {@link Entry}
- * @author mbrunnli (12.03.2013)
  */
 public class SelectAttributesContentProvider implements IStructuredContentProvider {
 

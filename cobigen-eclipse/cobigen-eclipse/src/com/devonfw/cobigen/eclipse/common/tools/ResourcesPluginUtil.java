@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 
-/**
- *
- */
+/** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
 
     /** Logger instance. */
