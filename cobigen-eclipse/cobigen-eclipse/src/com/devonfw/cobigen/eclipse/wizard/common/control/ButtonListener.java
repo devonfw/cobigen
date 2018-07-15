@@ -9,18 +9,13 @@ import com.devonfw.cobigen.eclipse.wizard.common.SelectFilesPage;
 /**
  * The {@link ButtonListener} provides the logic for buttons to be clicked in the wizard (currently only for
  * the {@link SelectFilesPage})
- * @author mbrunnli (12.03.2013)
  */
 public class ButtonListener implements Listener {
 
-    /**
-     * {@link SelectFilesPage} reference
-     */
+    /** {@link SelectFilesPage} reference */
     private SelectFilesPage page;
 
-    /**
-     * Current state of the resource tree viewer
-     */
+    /** Current state of the resource tree viewer */
     private boolean isCustomizable;
 
     /**
@@ -29,7 +24,6 @@ public class ButtonListener implements Listener {
      *            initial state for the listener (should be consistent to the UI initial state)
      * @param page
      *            {@link SelectFilesPage} reference
-     * @author mbrunnli (12.03.2013)
      */
     public ButtonListener(boolean initiallyCustomizable, SelectFilesPage page) {
         isCustomizable = initiallyCustomizable;

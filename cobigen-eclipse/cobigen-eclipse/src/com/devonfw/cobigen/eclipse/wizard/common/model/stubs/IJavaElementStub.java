@@ -13,42 +13,28 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Stub for the {@link IJavaElement} in order to simulate resources in the generate wizard
- *
- * @author mbrunnli (06.04.2014)
  */
 public class IJavaElementStub implements IParent, IJavaElement {
 
-    /**
-     * Parent element
-     */
+    /** Parent element */
     private IJavaElement parent;
 
-    /**
-     * Children elements
-     */
+    /** Children elements */
     private IJavaElement[] children;
 
-    /**
-     * Path of this element
-     */
+    /** Path of this element */
     private IPath path;
 
-    /**
-     * Name of the element
-     */
+    /** Name of the element */
     private String elementName;
 
-    /**
-     * Element Type. See {@link IJavaElement} static fields
-     */
+    /** Element Type. See {@link IJavaElement} static fields */
     private int elementType;
 
     /**
      * Setzt das Feld 'parent'.
-     *
      * @param parent
      *            Neuer Wert für parent
-     * @author mbrunnli (05.04.2014)
      */
     public void setParent(IJavaElement parent) {
 
@@ -57,10 +43,8 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'children'.
-     *
      * @param children
      *            Neuer Wert für children
-     * @author mbrunnli (05.04.2014)
      */
     public void setChildren(IJavaElement[] children) {
 
@@ -69,10 +53,8 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'path'.
-     *
      * @param path
      *            Neuer Wert für path
-     * @author mbrunnli (05.04.2014)
      */
     public void setPath(IPath path) {
 
@@ -81,10 +63,8 @@ public class IJavaElementStub implements IParent, IJavaElement {
 
     /**
      * Setzt das Feld 'elementName'.
-     *
      * @param elementName
      *            Neuer Wert für elementName
-     * @author mbrunnli (05.04.2014)
      */
     public void setElementName(String elementName) {
 

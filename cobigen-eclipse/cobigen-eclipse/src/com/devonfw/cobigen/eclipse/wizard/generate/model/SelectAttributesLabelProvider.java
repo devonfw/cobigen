@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 /**
  * This {@link LabelProvider} provides the labels for {@link Entry}s such that the key and value will be
  * displayed separated by " :: "
- * @author mbrunnli (12.03.2013)
  */
 public class SelectAttributesLabelProvider extends LabelProvider {
 
