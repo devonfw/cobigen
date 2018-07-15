@@ -76,7 +76,6 @@ public class IJavaElementStub implements IParent, IJavaElement {
      *
      * @param elementType
      *            Neuer Wert für elementType
-     * @author mbrunnli (05.04.2014)
      */
     public void setElementType(int elementType) {
 
