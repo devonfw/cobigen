@@ -33,7 +33,6 @@ public class IResourceStub implements IResource {
      *
      * @param fullPath
      *            Neuer Wert für fullPath
-     * @author mbrunnli (06.04.2014)
      */
     public void setFullPath(IPath fullPath) {
         this.fullPath = fullPath;
