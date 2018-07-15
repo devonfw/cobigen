@@ -37,7 +37,7 @@ public class ResourcesPluginUtil {
      * opened automatically
      * @return the generator configuration {@link IProject}
      * @throws GeneratorProjectNotExistentException
-     *             if no generator configuration project called {@value ResourceConstants#CONFIG_PROJECT_NAME}
+     *             if no generator configuration project called {@link ResourceConstants#CONFIG_PROJECT_NAME}
      *             exists
      * @throws CoreException
      *             if an existing generator configuration project could not be opened
