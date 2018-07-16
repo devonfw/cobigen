@@ -120,7 +120,7 @@ Component Data
 
 <#function hasRequestBody operation>
   <#list operation.parameters as param>
-    <#if param.isBody>
+    <#if param.isBody?? && param.isBody>
       <#return true>
     </#if>
   </#list>
