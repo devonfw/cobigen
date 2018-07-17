@@ -4,10 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestClass;
+import com.devonfw.cobigen.templates.oasp4j.test.utils.resources.TestTwoClass;
 import com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil;
 
 /**
@@ -17,10 +22,13 @@ public class JavaUtilTest {
 
     private static Class<?> clazz;
 
+    private static Class<?> clazzTwo;
+
     @BeforeClass
     public static void beforeAll() {
 
         clazz = new TestClass().getClass();
+        clazzTwo = new TestTwoClass().getClass();
     }
 
     /**
@@ -183,7 +191,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns the object wrapper for a java
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the object wrapper for a java
      * primitive
      */
     @Test
@@ -193,7 +201,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the object wrapper for a java
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the object wrapper for a java
      * primitive
      */
     @Test
@@ -203,7 +211,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a primitive
      * array
      */
     @Test
@@ -213,7 +221,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the input String for a
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the input String for a
      * primitive array
      */
     @Test
@@ -223,7 +231,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a non primitive
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(String)} returns the input String for a non primitive
      */
     @Test
     public void testBoxJavaPrimitiveWOPrimitive() throws Exception {
@@ -232,7 +240,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * Tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the simple type name for a non
+     * Tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} returns the simple type name for a non
      * primitive
      */
     @Test
@@ -242,7 +250,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String, String)} casts the var name if it is primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(String, String)} casts the var name if it is primitive
      */
     @Test
     public void testCastJavaPrimitiveStatement() throws Exception {
@@ -251,7 +259,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)} casts the var name if it is primitive
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} casts the var name if it is primitive
      */
     @Test
     public void testPojoCastJavaPrimitiveStatement() throws Exception {
@@ -260,7 +268,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(String, String)} doesn't cast the var name if it isn't
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(String, String)} doesn't cast the var name if it isn't
      * a primitive
      */
     @Test
@@ -270,7 +278,7 @@ public class JavaUtilTest {
     }
 
     /**
-     * tests if {@link com.devonfw.cobigen.templates.oasp4j.utils.JavaUtil#boxJavaPrimitives(Class,String)} doesn't cast the var name if it isn't a
+     * tests if {@link utils.JavaUtil#boxJavaPrimitives(Class,String)} doesn't cast the var name if it isn't a
      * primitive
      */
     @Test
@@ -288,5 +296,69 @@ public class JavaUtilTest {
         assertTrue(new JavaUtil().isCollection(clazz, "entitys"));
         assertTrue(new JavaUtil().isCollection(clazz, "setEntitys"));
         assertFalse(new JavaUtil().isCollection(clazz, "boxed"));
+    }
+
+    /**
+     * tests if the return type is properly retrieved
+     */
+    @Test
+    public void testGetReturnType() {
+        assertEquals(new JavaUtil().getReturnType(clazz, "methodWithReturnType"), "String");
+        assertEquals(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType"), "-");
+    }
+
+    /**
+     * tests if only methods with annotation return true
+     */
+    @Test
+    public void testHasAnnotation() {
+        assertTrue(new JavaUtil().hasAnnotation(clazz, "methodWithReturnType", "javax.ws.rs.GET"));
+        assertFalse(new JavaUtil().hasAnnotation(clazz, "methodWithVoidReturnType", "javax.ws.rs.GET"));
+    }
+
+    /**
+     * tests if only annotations that exist on a method return true
+     */
+    @Test
+    public void testHasMethodWithAnnotation() {
+        assertTrue(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.GET"));
+        assertFalse(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.PUT"));
+    }
+
+    /**
+     * tests if {\@link} tags are properly stripped
+     */
+    @Test
+    public void testGetJavaDocWithoutLink() {
+        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@link id}"), "id");
+        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@sink id}"), "{@sink id}");
+        assertEquals(new JavaUtil().getJavaDocWithoutLink("id"), "id");
+    }
+
+    /**
+     * tests if MediaType.{mediatype name} is properly replaced with its lower case equivalent
+     */
+    @Test
+    public void testExtractMediaType() {
+        assertEquals(
+            new JavaUtil().extractMediaType("this consumes MediaType.APPLICATION_JSON and MediaType.APPLICATION_XML"),
+            "this consumes application/json and application/xml");
+        assertEquals(new JavaUtil().extractMediaType("this consumes mediatypes json and xml"),
+            "this consumes mediatypes json and xml");
+    }
+
+    /**
+     * tests if a non-existing application.properties file causes getting a rootpath to throw an exception
+     * @throws IOException
+     */
+    @Test(expected = IOException.class)
+    public void hasRootPathTest() throws IOException {
+        // assume
+        try (InputStream stream = clazz.getClassLoader().getResourceAsStream("application.properties")) {
+            Assume.assumeTrue("application.properties exists in classpath: "
+                + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
+        }
+        assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
+        assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
     }
 }
