@@ -9,7 +9,13 @@
     </#list>
   </#list>
   <#if result?size gte 2>
-    <#return "Object">
+    <#list operation.responses as response>
+      <#if response.code=="200">
+        <#return response.type>
+      <#else>
+        <#return "void">
+      </#if>
+    </#list>
   <#else>
     <#if result?size lt 1>
       <#return "void">
@@ -28,11 +34,12 @@
   <#assign amountOfTypes=0>
   <#list operation.responses as response>
     <#list response.mediaTypes as mt>
-      <#if !(result?contains(mt))>
+      <#assign springType = OaspUtil.getSpringMediaType(mt)>
+      <#if !(result?contains(springType))>
         <#if !(result==" ")>
           <#assign result=result+",">
         </#if>
-        <#assign result=result?trim+"MediaType."+OaspUtil.getSpringMediaType(mt)>
+        <#assign result=result?trim+"MediaType."+springType>
       </#if>
     </#list>
     </#list>
