@@ -103,8 +103,6 @@ public class ClassLoadingTest extends AbstractApiTest {
         List<Class<?>> logicClasses = new ArrayList<>();
         logicClasses.add(getJarClass("JarredEnum"));
         logicClasses.add(getJarClass("EnumTestJarredClass"));
-        // logicClasses.add(getJarClass("JarredClass"));
-        // logicClasses.add(getJarClass("OtherJarredClass"));
 
         // Execution
         GenerationReportTo report = target.generate(containerInput, templates.get(1),
