@@ -112,13 +112,13 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			</#if>
   			<#list operation.parameters as parameter>
   				<#if parameter.isSearchCriteria>
-  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, <#else>) {</#if>
+  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   				<#elseif parameter.isEntity>
-  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    	<#else>
-  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		    	</#if>
-  			</#list>
+  			</#list>) {
   		// TODO ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}
   			<#if !hasResponseOfType(responses,"Void")>
   				<#if getReturnType(operation,false) == "boolean">
@@ -131,6 +131,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			</#if>		
   	}	
   		</#if>
+  		
   	</#list>
   </#list>
   
