@@ -43,6 +43,10 @@ public class ContextConfigurationReader {
     /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
 
+    private Path contextFile;
+
+    private String filePath;
+
     /**
      * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
      * context file
@@ -54,9 +58,21 @@ public class ContextConfigurationReader {
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
-        Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        String filePath = contextFile.toAbsolutePath().toString();
+        contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        filePath = contextFile.toAbsolutePath().toString();
 
+        try {
+            readConfiguration();
+        } catch (InvalidConfigurationException e) {
+            configRoot = configRoot.resolve("src/main/templates");
+            contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            filePath = contextFile.toAbsolutePath().toString();
+            readConfiguration();
+        }
+
+    }
+
+    private void readConfiguration() {
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
@@ -115,7 +131,6 @@ public class ContextConfigurationReader {
             throw new InvalidConfigurationException(contextFile.toUri().toString(),
                 "Could not read context configuration file.", e);
         }
-
     }
 
     /**
