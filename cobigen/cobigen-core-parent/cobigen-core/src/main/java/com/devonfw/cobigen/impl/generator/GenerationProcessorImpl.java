@@ -109,7 +109,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
-                logicClassesModel.put(logicClass.getSimpleName(), logicClass.newInstance());
+                if (logicClass.isEnum()) {
+                    logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
+                } else {
+                    logicClassesModel.put(logicClass.getSimpleName(), logicClass.newInstance());
+                }
             } catch (InstantiationException | IllegalAccessException e) {
                 LOG.warn(
                     "The Java class '{}' could not been instantiated for template processing and thus will be missing in the model.",
