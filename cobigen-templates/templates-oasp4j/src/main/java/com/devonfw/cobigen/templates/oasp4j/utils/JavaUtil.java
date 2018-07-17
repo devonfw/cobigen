@@ -591,7 +591,7 @@ public class JavaUtil {
         if (in != null) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             while ((t = br.readLine()) != null) {
-                if (t.matches("#server\\.port=(\\d{0,5})") || t.matches("#server\\.context-path=([^\\s]*)")) {
+                if (t.matches("server\\.port=(\\d{0,5})") || t.matches("server\\.context-path=([^\\s]*)")) {
                     sb.append(t.substring(t.indexOf('=') + 1));
                 }
             }
