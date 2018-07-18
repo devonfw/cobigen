@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -300,65 +296,12 @@ public class JavaUtilTest {
 
     /**
      * tests if the return type is properly retrieved
+     * @throws SecurityException
+     * @throws NoSuchMethodException
      */
     @Test
-    public void testGetReturnType() {
+    public void testGetReturnType() throws NoSuchMethodException, SecurityException {
         assertEquals(new JavaUtil().getReturnType(clazz, "methodWithReturnType"), "String");
         assertEquals(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType"), "-");
-    }
-
-    /**
-     * tests if only methods with annotation return true
-     */
-    @Test
-    public void testHasAnnotation() {
-        assertTrue(new JavaUtil().hasAnnotation(clazz, "methodWithReturnType", "javax.ws.rs.GET"));
-        assertFalse(new JavaUtil().hasAnnotation(clazz, "methodWithVoidReturnType", "javax.ws.rs.GET"));
-    }
-
-    /**
-     * tests if only annotations that exist on a method return true
-     */
-    @Test
-    public void testHasMethodWithAnnotation() {
-        assertTrue(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.GET"));
-        assertFalse(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.PUT"));
-    }
-
-    /**
-     * tests if {\@link} tags are properly stripped
-     */
-    @Test
-    public void testGetJavaDocWithoutLink() {
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@link id}"), "id");
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@sink id}"), "{@sink id}");
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("id"), "id");
-    }
-
-    /**
-     * tests if MediaType.{mediatype name} is properly replaced with its lower case equivalent
-     */
-    @Test
-    public void testExtractMediaType() {
-        assertEquals(
-            new JavaUtil().extractMediaType("this consumes MediaType.APPLICATION_JSON and MediaType.APPLICATION_XML"),
-            "this consumes application/json and application/xml");
-        assertEquals(new JavaUtil().extractMediaType("this consumes mediatypes json and xml"),
-            "this consumes mediatypes json and xml");
-    }
-
-    /**
-     * tests if a non-existing application.properties file causes getting a rootpath to throw an exception
-     * @throws IOException
-     */
-    @Test(expected = IOException.class)
-    public void hasRootPathTest() throws IOException {
-        // assume
-        try (InputStream stream = clazz.getClassLoader().getResourceAsStream("application.properties")) {
-            Assume.assumeTrue("application.properties exists in classpath: "
-                + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
-        }
-        assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
-        assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
     }
 }
