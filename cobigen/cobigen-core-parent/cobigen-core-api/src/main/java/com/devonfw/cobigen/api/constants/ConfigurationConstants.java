@@ -18,4 +18,6 @@ public class ConfigurationConstants {
 
     /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
     public static final String COBIGEN_PROPERTIES = "cobigen.properties";
+
+    public static final String TEMPLATE_RESOURCE_FOLDER = "src/main/templates";
 }
