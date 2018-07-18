@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.templates.oasp4j.utils;
+package com.devonfw.cobigen.templates.oasp4j.utils.uml;
 
 import java.util.ArrayList;
 import java.util.List;
