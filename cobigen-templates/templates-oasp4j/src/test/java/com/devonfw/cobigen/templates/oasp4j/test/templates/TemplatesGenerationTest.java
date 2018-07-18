@@ -75,4 +75,15 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
         runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
     }
 
+    /**
+     * Test successful generation of all templates based on a
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testAllTemplatesGeneration_XML() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesXMLInput/");
+        runMavenInvoker(testProject, new File("").getAbsoluteFile(), MavenMetadata.LOCAL_REPO);
+    }
+
 }
