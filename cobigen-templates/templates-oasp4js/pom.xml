@@ -36,4 +36,12 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/templates</directory>
+      </resource>
+    </resources>
+  </build>
 </project>
