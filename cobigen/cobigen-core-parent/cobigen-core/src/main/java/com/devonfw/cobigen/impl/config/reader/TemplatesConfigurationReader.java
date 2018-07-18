@@ -98,24 +98,9 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        System.out.println(templatesRoot);
         rootTemplateFolder = TemplateFolder.create(templatesRoot);
         configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-        System.out.println(rootTemplateFolder);
-        System.out.println(configFilePath);
-        try {
-            readConfiguration();
-        } catch (InvalidConfigurationException e) {
-            System.out.println("NOT FOUND IN REGULAR STUFF");
-            templatesRoot = templatesRoot.resolve("src/main/templates");
-            try {
-                rootTemplateFolder = TemplateFolder.create(templatesRoot);
-                configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-            } catch (Exception ex) {
-                throw new InvalidConfigurationException(e.getMessage());
-            }
-            readConfiguration();
-        }
+        readConfiguration();
     }
 
     /**

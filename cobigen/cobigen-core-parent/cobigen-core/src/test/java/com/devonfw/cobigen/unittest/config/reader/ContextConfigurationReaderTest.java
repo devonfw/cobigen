@@ -33,6 +33,11 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
         new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
     }
 
+    /**
+     * Tests whether a valid configuration can be read from src/main/templates folder
+     * @throws Exception
+     *             test fails
+     */
     @Test
     public void testContextLoadedFromRootAndSourceFolder() throws Exception {
         CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI());
