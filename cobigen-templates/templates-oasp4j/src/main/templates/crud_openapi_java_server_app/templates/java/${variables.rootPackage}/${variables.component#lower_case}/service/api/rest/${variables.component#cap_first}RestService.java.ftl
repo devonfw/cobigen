@@ -93,7 +93,7 @@ public interface ${variables.component?cap_first}RestService {
   public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
-    	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);
+    	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)?replace("Entity","")}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);
   		</#if>
   	</#list>
  </#list>
