@@ -45,4 +45,12 @@
       <version>2.0.0</version>
     </dependency>
   </dependencies>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/templates</directory>
+      </resource>
+    </resources>
+  </build>
 </project>
