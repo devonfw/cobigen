@@ -54,7 +54,7 @@ def init_non_git_config(config: Config):
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
 
-    config.wiki_submodule_name = "cobigen-documentation/tools-cobigen.wiki"
+    config.wiki_submodule_name = "cobigen-documentation/" + config.git_repo_name + ".wiki"
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
 
     config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
@@ -158,7 +158,7 @@ def __get_cobigenwiki_title_name(config: Config):
         config.branch_core: 'CobiGen',
         config.branch_mavenplugin: 'CobiGen - Maven Build Plug-in',
         config.branch_eclipseplugin: 'CobiGen - Eclipse Plug-in',
-        config.branch_javaplugin: 'Cobigen - Java Plug-in',
+        config.branch_javaplugin: 'CobiGen - Java Plug-in',
         'dev_xmlplugin': 'CobiGen - XML Plug-in',
         'dev_htmlmerger': 'CobiGen - HTML Plug-in',
         config.branch_openapiplugin: 'CobiGen - Open API Plug-in',

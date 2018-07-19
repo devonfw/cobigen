@@ -22,10 +22,10 @@
     "subtitle": "Usuario o contraseña erroneo",
     "dismiss": "cerrar"
   },
-  "${variables.component}": {
+  "${variables.component?uncap_first}": {
     "title": "${variables.component} Título",
     "description": "Esta es la plantilla básica de ionic",
-    "${variables.etoName}": {
+    "${variables.etoName?uncap_first}": {
       <#list pojo.fields as field>
         "${field.name}":"${field.name}_ES",
       </#list>
