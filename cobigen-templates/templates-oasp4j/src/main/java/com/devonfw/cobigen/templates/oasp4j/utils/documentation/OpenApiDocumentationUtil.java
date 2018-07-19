@@ -48,7 +48,7 @@ public class OpenApiDocumentationUtil {
                 nrParam++;
             }
             for (String key : constraints.keySet()) {
-                if (!key.equals("required")) {
+                if (!key.equals("notNull")) {
                     Object val = constraints.get(key);
                     if (val != null) {
                         if (val instanceof Boolean) {
