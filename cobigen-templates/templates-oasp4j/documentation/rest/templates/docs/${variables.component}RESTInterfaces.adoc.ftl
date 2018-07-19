@@ -42,7 +42,7 @@ Component Data
       .${method.name}
       [cols='1s,6m']
       |===
-      |${OaspUtil.getTypeWithAsciidocColour(type)} |${JavaDocumentationUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
+      |${DocumentationUtil.getTypeWithAsciidocColour(type)} |${JavaDocumentationUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
       |Description |<#if method.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
     
       <#if JavaDocumentationUtil.hasBody(classObject,method.name,false)>.2+<</#if>|Request 
