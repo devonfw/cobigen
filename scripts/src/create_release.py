@@ -73,8 +73,11 @@ def run_maven_process_and_handle_error(command: str, execpath: str=config.build_
 
     if returncode == 1:
         log_error("Maven execution failed, please see create_release.py.log for logs located at current directory.")
-        git_repo.reset()
-        sys.exit()
+        if prompt_yesno_question("Maven execution failed. Script is not able to recover from it by its own.\nCan you fix the problem right now? If so, would you like to retry the last maven execution and resume the script?"):
+            run_maven_process_and_handle_error(command, execpath)
+        else:
+            git_repo.reset()
+            sys.exit()
 #####################################################################
 
 
@@ -112,7 +115,7 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean integration-test -Pp2-build-mars,p2-build-stable")
+run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
@@ -123,7 +126,7 @@ if config.test_run:
 
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
-    git_repo.add([config.wiki_submodule_name], False)
+    git_repo.add_submodule(config.wiki_submodule_name)
     git_repo.commit("update wiki docs")
     git_repo.push()
 
@@ -151,8 +154,7 @@ is_pom_changed = False
 for file_name in list_of_changed_files:
     file_name = file_name.replace('/', os.sep)
     if not file_name.startswith(config.build_folder) and not file_name == config.wiki_submodule_name.replace('/', os.sep):
-        log_info(file_name + " does not starts with " + config.build_folder)
-        if not prompt_yesno_question("Some Files are outside the folder "+config.build_folder+". Please check for odd file changes as this should not be the case in a normal scenario! Continue?"):
+        if not prompt_yesno_question("Changed file " + file_name + " is outside the component folder path "+config.build_folder+".\nThis should not be the normal case! Please check these changes are necessary. Continue?"):
             git_repo.reset()
             sys.exit()
         report_messages.append("User has accepted to continue when found that some files were outside of build folder name")
@@ -183,23 +185,21 @@ def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
-    run_maven_process_and_handle_error("mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn deploy "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
+    run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
+    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
-    activation_str = ""
-    if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
-    run_maven_process_and_handle_error("mvn clean "+activation_str+"-Dmaven.test.skip=true deploy", execpath=execpath)
+    # no oss activation as this will cause the build to fail
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U", execpath=execpath)
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = ",oss -Dgpg.keyname="+config.gpg_keyname
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -Pp2-build-stable,p2-build-mars" +
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars" +
                                        activation_str+" -Dp2.upload=stable", execpath=execpath)
 
 
@@ -209,11 +209,11 @@ else:
     if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin, config.branch_openapiplugin]:
         __deploy_m2_as_p2(config.oss)
     elif config.branch_to_be_released == config.branch_javaplugin:
-        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin"))
         __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin-model"))
+        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin"))
     elif config.branch_to_be_released == config.branch_openapiplugin:
-        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin"))
         __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin-model"))
+        __deploy_m2_as_p2(config.oss, os.path.join(config.build_folder_abs, "cobigen-openapiplugin"))
     elif config.branch_to_be_released == config.branch_eclipseplugin:
         __deploy_p2(config.oss)
     else:  # core + maven
@@ -266,14 +266,16 @@ else:
 __log_step("Merge master branch to "+config.branch_to_be_released+"...")
 ##############################
 git_repo.merge("master", config.branch_to_be_released)
+git_repo.push(True)
 
 #############################
 __log_step("Set next release version...")
 #############################
+git_repo.checkout(config.branch_to_be_released)
 changed_files = maven.set_version(config.next_version + "-SNAPSHOT")
 git_repo.add(changed_files)
 git_repo.commit("Set next development version")
-git_repo.push()
+git_repo.push(True)
 
 #############################
 __log_step("Close GitHub release issue...")
@@ -288,6 +290,6 @@ else:
         closing_comment = closing_comment + "* "+message+"\n"
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
-    log_info("Closed issue #" + release_issue.number + ": " + release_issue.title)
+    log_info("Closed issue #" + str(release_issue.number) + ": " + release_issue.title)
 
 log_info("Congratz! A new release! Script executed successfully!")

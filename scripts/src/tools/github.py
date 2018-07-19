@@ -135,9 +135,7 @@ class GitHub:
         for milestone in milestones:
             if milestone.title == search_title:
                 return milestone
-
-        log_error("Could not find milestone for cobigen-core v" + version + ". This must be an script error, please check.")
-        sys.exit()
+        return None
 
     def create_next_release_milestone(self) -> Milestone:
         new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version)
@@ -182,7 +180,7 @@ class GitHub:
                 content_type = "application/zip"
 
             for root, dirs, files in os.walk(os.path.join(self.__config.build_folder_abs, self.__config.build_artifacts_root_search_path)):
-                dirs[:] = [d for d in dirs if d not in [".settings", "src", ]]
+                dirs[:] = [d for d in dirs if d not in [".settings", "src", "repository", "repository-upload", "classes", "apidocs"]]
                 for fname in files:
                     fpath = os.path.join(root, fname)
                     # To prevent uploading of unnecessary zip/jar files.
@@ -195,12 +193,13 @@ class GitHub:
                             log_error("Upload failed!")
                             if self.__config.debug:
                                 print(str(e))
+
+            # workaround as of https://github.com/PyGithub/PyGithub/issues/779
+            self.__login()
+            self.__initialize_repository_object()
+
             return release
         except GithubException as e:
             log_error("Could not create release.")
             print(str(e))
             sys.exit()
-
-        # workaround as of https://github.com/PyGithub/PyGithub/issues/779
-        self.__login()
-        self.__initialize_repository_object()

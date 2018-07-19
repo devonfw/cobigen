@@ -9,7 +9,7 @@ from typing import List, Tuple
 
 from tools.config import Config
 from tools.github import GitHub
-from tools.logger import log_info, log_error
+from tools.logger import log_info, log_error, log_debug
 
 
 class Maven:
@@ -20,7 +20,7 @@ class Maven:
     def __init__(self, config: Config, github: GitHub) -> None:
         self.__config = config
         self.github_repo = github
-        self.mavenNS = "{http://maven.apache.org/POM/4.0.0}"
+        self.mavenNS = {"mvn": "http://maven.apache.org/POM/4.0.0"}
 
     def __run_maven_and_handle_error(self, execpath: str, command: str) -> None:
         returncode = self.run_maven_process(execpath, command)
@@ -35,36 +35,36 @@ class Maven:
         # For dev_eclipseplugin branch
         if self.__config.branch_to_be_released == self.__config.branch_eclipseplugin:
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse", "META-INF", "MANIFEST.MF"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-test", "META-INF", "MANIFEST.MF"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature", "pom.xml"))
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-feature", "feature.xml"))
             self.__run_maven_and_handle_error(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-updatesite"),
-                                              "mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
+                                              "mvn -Dtycho.mode=maven -U org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="+version)
             changed_files.append(os.path.join(self.__config.build_folder_abs, "cobigen-eclipse-updatesite", "pom.xml"))
         else:
             toplevel_pom_path = os.path.join(self.__config.build_folder_abs, "pom.xml")
             # For dev_mavenplugin branch
             if self.__config.branch_to_be_released == self.__config.branch_mavenplugin:
                 pom = etree.parse(toplevel_pom_path)
-                for mapping in pom.findall("//" + self.mavenNS + "properties"):
+                for mapping in pom.findall("//mvn:properties", self.mavenNS):
                     log_info("Processing " + toplevel_pom_path + " ...")
-                    version_node = mapping.find(self.mavenNS + "cobigen.maven.version")
+                    version_node = mapping.find("mvn:cobigen.maven.version", self.mavenNS)
                     if self.__check_and_write_pom(pom, version_node, version, toplevel_pom_path):
                         changed_files.append(toplevel_pom_path)
             # For dev_core branch
             elif self.__config.branch_to_be_released == self.__config.branch_core:
                 pom = etree.parse(toplevel_pom_path)
-                for mapping in pom.findall("//" + self.mavenNS + "properties"):
+                for mapping in pom.findall("//mvn:properties", self.mavenNS):
                     log_info("Processing " + toplevel_pom_path + " ...")
-                    version_node = mapping.find(self.mavenNS + "cobigencore.version")
+                    version_node = mapping.find("mvn:cobigencore.version", self.mavenNS)
                     if self.__check_and_write_pom(pom, version_node, version, toplevel_pom_path):
                         changed_files.append(toplevel_pom_path)
             # others
@@ -76,7 +76,7 @@ class Maven:
                         log_info("Processing " + fpath + " ...")
                         with open(fpath) as file:
                             pom = etree.parse(file)
-                            version_node = pom.find(self.mavenNS + "version")
+                            version_node = pom.find("mvn:version", self.mavenNS)
                             if self.__check_and_write_pom(pom, version_node, version, fpath):
                                 changed_files.append(fpath)
         return changed_files
@@ -98,7 +98,7 @@ class Maven:
         return False
 
     def upgrade_snapshot_dependencies(self) -> Tuple[str, List[str]]:
-        log_info('Upgrading all SNAPSHOT dependencies in POM files in ' + self.__config.build_folder_abs)
+        log_info('Upgrading all SNAPSHOT dependencies in pom.xml files in ' + self.__config.build_folder_abs)
 
         core_version_in_eclipse_pom = ""
         changed_files = list()
@@ -111,13 +111,13 @@ class Maven:
                 log_info("Processing " + fpath + " ...")
                 with open(fpath) as file:
                     pom = etree.parse(file)
-                    for mapping in pom.findall("/"+self.mavenNS+"project/"+self.mavenNS+"dependencies/"+self.mavenNS+"dependency"):
-                        version_node = mapping.find(self.mavenNS+"version")
-                        artifact_id_node = mapping.find(self.mavenNS+"artifactId")
-                        group_id_node = mapping.find(self.mavenNS+"groupId")
-                        if (group_id_node.text == self.__config.groupid_cobigen or group_id_node.text == "${project.groupId}") and version_node.text.endswith("-SNAPSHOT"):
+                    for mapping in pom.findall("/mvn:dependencies/mvn:dependency", self.mavenNS):
+                        version_node = mapping.find("./mvn:version", self.mavenNS)
+                        artifact_id_node = mapping.find("./mvn:artifactId", self.mavenNS)
+                        group_id_node = mapping.find("./mvn:groupId", self.mavenNS)
+                        if (group_id_node.text == self.__config.groupid_cobigen or group_id_node.text == r"${project.groupId}") and version_node.text.endswith("-SNAPSHOT"):
                             new_version = version_node.text.split("-")
-                            log_info("Upgrading " + group_id_node.text + ":" + artifact_id_node.text + " to release version ("+new_version+") ...")
+                            log_info("Upgrading " + group_id_node.text + ":" + artifact_id_node.text + " to release version ("+str(new_version[0])+") ...")
                             version_node.text = str(new_version[0])
                             upgraded_deps.append((artifact_id_node.text, version_node.text, new_version))
                             pom.write(fpath)
@@ -125,9 +125,9 @@ class Maven:
                             if artifact_id_node.text == self.__config.artifactid_core:
                                 core_version_in_eclipse_pom = version_node.text
                                 cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)
-                                if cobigen_core_milestone["state"] != "closed":
+                                if not cobigen_core_milestone or cobigen_core_milestone["state"] != "closed":
                                     log_info("Core version " + core_version_in_eclipse_pom +
-                                             " is not yet released. This should be released before releasing cobigen-eclipse")
+                                             " is not yet released. This should be released before.\nIf the version is not correct, please set the dependency version by hand before running the script.")
                                     sys.exit()
                         else:
                             continue

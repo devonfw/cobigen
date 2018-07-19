@@ -1,3 +1,4 @@
+<#include "/functions.ftl">
 package ${variables.rootPackage}.${variables.component?lower_case}.service.impl.rest;
 
 import javax.inject.Inject;
@@ -48,14 +49,14 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   <#list model.component.paths as path>
 	<#list path.operations as operation>
 	    <#if !OaspUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)> 
-  			<#assign returnType = OpenApiUtil.printJavaServiceResponseReturnType(operation.response)>
+  			<#assign returnType = getReturnType(operation,true)>
   @Override
   public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#list operation.parameters as parameter>
   				<#if parameter.isSearchCriteria>
-  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
+  			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   				<#elseif parameter.isEntity>
-  		  ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
+  		  ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","Eto")} ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    <#else>
   		  ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		   	</#if>
