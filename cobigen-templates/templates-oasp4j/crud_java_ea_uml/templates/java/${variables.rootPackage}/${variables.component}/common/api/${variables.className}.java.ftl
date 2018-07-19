@@ -6,9 +6,8 @@
 <#list connectors as connector>
     <#assign source = connector["source"]>
     <#assign target = connector["target"]> 
-    ${OaspUtil.resolveConnectorsContent(source, target, name)}
+    ${UmlUtil.resolveConnectorsContent(source, target, name)}
 </#list>
-<#-- ${OaspUtil.resolveConnectorsRelationships()} -->
 
 package ${variables.rootPackage}.${variables.component}.common.api;
 
@@ -17,7 +16,7 @@ import java.util.List;
 
 public interface ${name} extends ApplicationEntity {
 
-${OaspUtil.generateConnectorsVariablesMethodsText(false,false,variables.className)}
+${UmlUtil.generateConnectorsVariablesMethodsText(false,false,variables.className)}
 
 <#list elemDoc["./ownedAttribute"] as attribute>
   <#if (attribute["@name"])??>
