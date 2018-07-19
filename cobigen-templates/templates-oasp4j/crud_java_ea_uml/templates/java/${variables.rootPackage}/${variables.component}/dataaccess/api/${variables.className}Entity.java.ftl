@@ -6,9 +6,8 @@
 <#list connectors as connector>
     <#assign source = connector["source"]>
     <#assign target = connector["target"]> 
-    ${OaspUtil.resolveConnectorsContent(source, target, name)}
+    ${UmlUtil.resolveConnectorsContent(source, target, name)}
 </#list>
-<#-- ${OaspUtil.resolveConnectorsRelationships()} -->
 
 package ${variables.rootPackage}.${variables.component}.dataaccess.api;
 
@@ -16,7 +15,7 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.cl
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
 
 <#-- For generating the needed imports from each connected class -->
-<#list OaspUtil.getConnectedClasses() as connectedClass>
+<#list UmlUtil.getConnectedClasses() as connectedClass>
 import ${variables.rootPackage}.${variables.component}.common.api.${connectedClass};
 </#list>
 
@@ -75,7 +74,7 @@ import javax.persistence.Table;
     </#list>
 
     <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${OaspUtil.generateConnectorsVariablesMethodsText(true,false,variables.className)}
+    ${UmlUtil.generateConnectorsVariablesMethodsText(true,false,variables.className)}
     
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>
