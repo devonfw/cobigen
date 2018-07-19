@@ -105,72 +105,18 @@ public class UmlUtil {
         boolean isTarget = false;
         boolean isSource = false;
         String textContent = "";
-        // Get source's model attributes
-        // if (sourceHash.containsKey("model")) {
-        // Node node = (Node) sourceHash.get("model");
-        // NamedNodeMap attrs = node.getAttributes();
-        // for (int j = 0; j < attrs.getLength(); j++) {
-        // Attr attribute = (Attr) attrs.item(j);
-        // // This is for every type of connector
-        // // Get name attribute and check if it is className
-        // if (attribute.getName().equals("name")) {
-        // sourceName = attribute.getValue();
-        // if (attribute.getValue().equals(className)) {
-        // isSource = true;
-        // }
-        // }
-        // }
-        // }
+
         String sourceName = getClassName(sourceHash);
         String sourceMultiplicity = getMultiplicity(sourceHash);
         if (sourceName.equals(className)) {
             isSource = true;
-        } else {
-            isSource = false;
         }
-        // if (sourceHash.containsKey("type")) {
-        // Node node = (Node) sourceHash.get("type");
-        // NamedNodeMap attrs = node.getAttributes();
-        // for (int j = 0; j < attrs.getLength(); j++) {
-        // Attr attribute = (Attr) attrs.item(j);
-        // if (attribute.getName().equals("multiplicity")) {
-        // sourceMultiplicity = attribute.getValue();
-        // }
-        // }
-        // }
-        // Get target's model attributes
+
         String targetName = getClassName(sourceHash);
         String targetMultiplicity = getMultiplicity(sourceHash);
         if (sourceName.equals(className)) {
             isSource = true;
-        } else {
-            isSource = false;
         }
-        // if (targetHash.containsKey("model")) {
-        // Node node = (Node) targetHash.get("model");
-        // NamedNodeMap attrs = node.getAttributes();
-        // for (int j = 0; j < attrs.getLength(); j++) {
-        // Attr attribute = (Attr) attrs.item(j);
-        // // This is for every type of connector
-        // // Get name attribute and check if it is className
-        // if (attribute.getName().equals("name")) {
-        // targetName = attribute.getValue();
-        // if (attribute.getValue().equals(className)) {
-        // isTarget = true;
-        // }
-        // }
-        // }
-        // }
-        // if (targetHash.containsKey("type")) {
-        // Node node = (Node) targetHash.get("type");
-        // NamedNodeMap attrs = node.getAttributes();
-        // for (int j = 0; j < attrs.getLength(); j++) {
-        // Attr attribute = (Attr) attrs.item(j);
-        // if (attribute.getName().equals("multiplicity")) {
-        // targetMultiplicity = attribute.getValue();
-        // }
-        // }
-        // }
 
         if (isSource) {
             sourceConnector = getConnector(sourceHash, true, targetMultiplicity, targetName);
@@ -207,10 +153,10 @@ public class UmlUtil {
     }
 
     /**
-     * Extracts the name of a Connector from a Node
+     * Extracts the multiplicity of a Connector from a Node
      * @param nodeHash
-     *            The node to get the name of
-     * @return The name of the connector
+     *            The node to get the multiplicity of
+     * @return The multiplicity of the connector
      */
     private String getMultiplicity(HashMap<?, ?> nodeHash) {
         if (nodeHash.containsKey("type")) {
@@ -227,10 +173,10 @@ public class UmlUtil {
     }
 
     /**
-     * Extracts the multiplicity of a Connector from a Node
+     * Extracts the name of a Connector from a Node
      * @param nodeHash
-     *            The node to get the multiplicity of
-     * @return The multiplicity of the connector
+     *            The node to get the name of
+     * @return The name of the connector
      */
     private String getClassName(HashMap<?, ?> nodeHash) {
         if (nodeHash.containsKey("model")) {
