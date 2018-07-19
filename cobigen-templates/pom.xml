@@ -30,16 +30,7 @@
   <build>
     <resources>
       <resource>
-        <directory>${basedir}</directory>
         <directory>src/main/templates</directory>
-        <excludes>
-          <exclude>/target/**/*</exclude>
-          <exclude>*.classpath</exclude>
-          <exclude>*.project</exclude>
-          <exclude>/bin/**/*</exclude>
-          <exclude>/src/test/**/*</exclude>
-          <exclude>**/MavenMetadata.java</exclude>
-        </excludes>
       </resource>
     </resources>
     <plugins>
