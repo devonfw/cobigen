@@ -186,7 +186,7 @@ export class ${variables.etoName?cap_first}List {
    */
   public deleteSelected${variables.etoName?cap_first}() { 
     
-    this.deleteTranslations = this.getTranslation('${variables.component}.${variables.etoName?uncap_first}.operations.delete');
+    this.deleteTranslations = this.getTranslation('${variables.component?uncap_first}.${variables.etoName?uncap_first}.operations.delete');
     for (let i in this.deleteButtons){
       this.deleteButtons[i].text=this.deleteTranslations[this.deleteButtonNames[i]];
     }

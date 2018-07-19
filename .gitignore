@@ -16,7 +16,6 @@ cobigen/cobigen-htmlplugin/src/main/resources/lib/
 cobigen/cobigen-jsonplugin/src/main/resources/lib/
 cobigen/cobigen-senchaplugin/src/main/resources/lib/
 cobigen/cobigen-openapiplugin/src/main/resources/lib/
-**/src/main/java-templates/**
 
 #Python
 *.pyc

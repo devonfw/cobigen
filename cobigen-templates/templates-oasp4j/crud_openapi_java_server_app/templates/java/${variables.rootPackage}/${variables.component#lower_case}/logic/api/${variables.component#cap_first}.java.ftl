@@ -1,3 +1,4 @@
+<#include "/functions.ftl">
 package ${variables.rootPackage}.${variables.component?lower_case}.logic.api;
 
 import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}Eto;
@@ -43,32 +44,34 @@ public interface ${variables.component?cap_first} {
   <#list model.component.paths as path>
   	<#list path.operations as operation>
   		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName)>
-	  		<#if operation.response.isPaginated>
-	  			<#if operation.response.isEntity>
-  	PaginatedListTo<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+        <#assign responses=operation.responses>
+  		  <#assign hasEntity=hasResponseOfType(responses, "Entity")>
+	  		<#if hasResponseOfType(responses "Paginated")>
+	  			<#if hasEntity>
+  	PaginatedListTo<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	PaginatedListTo<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
+  	PaginatedListTo<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
-  			<#elseif operation.response.isArray>
-  				<#if operation.response.isEntity>
-  	List<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  			<#elseif hasResponseOfType(responses "Array")>
+  				<#if hasEntity>
+  	List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-    List<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+    List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
-  			<#elseif operation.response.isVoid>
+  			<#elseif hasResponseOfType(responses "Void")>
   	void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#else>
-  				<#if operation.response.isEntity>
-  	${operation.response.type}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  				<#if hasEntity>
+  	${getReturnType(operation,false)}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	${operation.response.type} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  	${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
   			</#if>
   			<#list operation.parameters as parameter>
   					<#if parameter.isSearchCriteria>
-  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
+  			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   					<#elseif parameter.isEntity>
-  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","Eto")} ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    	<#else>
   		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		    	</#if>

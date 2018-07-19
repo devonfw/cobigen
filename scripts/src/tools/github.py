@@ -193,12 +193,13 @@ class GitHub:
                             log_error("Upload failed!")
                             if self.__config.debug:
                                 print(str(e))
+
+            # workaround as of https://github.com/PyGithub/PyGithub/issues/779
+            self.__login()
+            self.__initialize_repository_object()
+
             return release
         except GithubException as e:
             log_error("Could not create release.")
             print(str(e))
             sys.exit()
-
-        # workaround as of https://github.com/PyGithub/PyGithub/issues/779
-        self.__login()
-        self.__initialize_repository_object()
