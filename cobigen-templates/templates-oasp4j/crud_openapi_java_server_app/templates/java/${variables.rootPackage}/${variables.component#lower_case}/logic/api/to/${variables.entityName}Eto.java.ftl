@@ -65,7 +65,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
       final int prime = 31;
       int result = super.hashCode();
       <#list model.properties as property>
-        <#if !property.isCollection>
+        <#if (!property.isCollection) && (property.name != "id")>
         <@definePropertyNameAndType property true/>
         <#if JavaUtil.equalsJavaPrimitive(propType)>
     result = prime * result + (${JavaUtil.castJavaPrimitives(propType,propName)}.hashCode());
@@ -92,7 +92,7 @@ public class ${variables.entityName}Eto extends AbstractEto implements ${variabl
     }
     ${variables.entityName}Eto other = (${variables.entityName}Eto) obj;
     <#list model.properties as property>
-      <#if !property.isCollection>
+      <#if (!property.isCollection) && (property.name != "id")>
       <@definePropertyNameAndType property true/>
         <#if JavaUtil.equalsJavaPrimitive(propType)>
   if(this.${propName} != other.${propName}) {

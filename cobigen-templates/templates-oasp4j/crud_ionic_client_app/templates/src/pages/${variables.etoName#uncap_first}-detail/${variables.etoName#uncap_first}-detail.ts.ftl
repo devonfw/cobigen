@@ -37,7 +37,7 @@ export class ${variables.etoName?cap_first}Detail {
     public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest
   ) {
     
-    this.getTranslation("${variables.component}.${variables.etoName?uncap_first}.operations." + this.params.get('dialog'));
+    this.getTranslation("${variables.component?uncap_first}.${variables.etoName?uncap_first}.operations." + this.params.get('dialog'));
     this.dialogType = this.params.get('dialog');
     this.${variables.etoName?uncap_first}Received = this.params.get('edit');
     if(!this.${variables.etoName?uncap_first}Received) this.${variables.etoName?uncap_first}Received = { <#list pojo.fields as field> ${field.name}:null,</#list>};

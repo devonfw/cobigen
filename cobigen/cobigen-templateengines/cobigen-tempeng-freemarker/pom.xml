@@ -4,6 +4,7 @@
   <name>CobiGen - FreeMarker Template Engine</name>
   <version>2.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
+  <description>CobiGen - FreeMarker Template Engine</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>

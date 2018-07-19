@@ -1,3 +1,4 @@
+<#include "/functions.ftl">
 package ${variables.rootPackage}.${variables.component?lower_case}.logic.impl;
 
 import java.util.Objects;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devonfw.demo.general.logic.base.AbstractComponentFacade;
+import ${variables.rootPackage}.general.logic.base.AbstractComponentFacade;
 import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.dao.${variables.entityName}Dao;
 import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.${variables.component?cap_first};
@@ -86,41 +87,43 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   	<#list path.operations as operation>
   		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
-	  		<#if operation.response.isPaginated>
-	  			<#if operation.response.isEntity>
-  	public PaginatedListTo<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+        <#assign responses=operation.responses>
+        <#assign hasEntity=hasResponseOfType(responses, "Entity")>
+	  		<#if hasResponseOfType(responses "Paginated")>
+	  			<#if hasEntity>
+  	public PaginatedListTo<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public PaginatedListTo<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
+  	public PaginatedListTo<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
-  			<#elseif operation.response.isArray>
-  				<#if operation.response.isEntity>
-  	public List<${operation.response.type}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  			<#elseif hasResponseOfType(responses,"Array")>
+  				<#if hasEntity>
+  	public List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-    public List<${operation.response.type}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+    public List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
-  			<#elseif operation.response.isVoid>
+  			<#elseif hasResponseOfType(responses,"Void")>
   	public void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#else>
-  				<#if operation.response.isEntity>
-  	public ${operation.response.type}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  				<#if hasEntity>
+  	public ${getReturnType(operation,false)}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public ${operation.response.type} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  	public ${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
   			</#if>
   			<#list operation.parameters as parameter>
   				<#if parameter.isSearchCriteria>
-  			${OpenApiUtil.toJavaType(parameter, false)}SearchCriteriaTo criteria<#if parameter?has_next>, <#else>) {</#if>
+  			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   				<#elseif parameter.isEntity>
-  		    ${OpenApiUtil.toJavaType(parameter, false)}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","Eto")} ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    	<#else>
-  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, <#else>) {</#if>
+  		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		    	</#if>
-  			</#list>
+  			</#list>) {
   		// TODO ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}
-  			<#if !operation.response.isVoid>
-  				<#if operation.response.type == "boolean">
+  			<#if !hasResponseOfType(responses,"Void")>
+  				<#if getReturnType(operation,false) == "boolean">
   		return false;
-  				<#elseif operation.response.type == "integer">
+  				<#elseif getReturnType(operation,false) == "integer">
   		return 0;
   				<#else>
   		return null;
@@ -128,6 +131,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			</#if>		
   	}	
   		</#if>
+  		
   	</#list>
   </#list>
   

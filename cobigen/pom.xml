@@ -21,40 +21,12 @@
     <module>cobigen-jsonplugin</module>
     <module>cobigen-htmlplugin</module>
     <module>cobigen-tsplugin</module>
-    <module>cobigen-openapiplugin</module>
+    <module>cobigen-openapiplugin-parent</module>
     <module>cobigen-templateengines</module>
   </modules>
 
-  <properties>
-    <eclipse.host.version>3.0.0</eclipse.host.version>
-  </properties>
-
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -159,6 +131,7 @@
               <execution>
                 <id>default-cli</id>
                 <configuration>
+                  <skip>${skip.deployment}</skip>
                   <artifacts>
                     <artifact>
                       <id>${project.groupId}:${project.artifactId}:${project.version}</id>
