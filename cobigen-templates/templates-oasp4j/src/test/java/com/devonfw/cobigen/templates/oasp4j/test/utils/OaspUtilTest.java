@@ -200,5 +200,4 @@ public class OaspUtilTest {
         assertEquals("deepEntityId",
             new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "nomatch"));
     }
-
 }

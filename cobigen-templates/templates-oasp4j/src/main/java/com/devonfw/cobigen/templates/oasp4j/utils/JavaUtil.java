@@ -353,7 +353,7 @@ public class JavaUtil {
                 "Class object is null. Cannot generate template as it might obviously depend on reflection.");
         }
         String s = "-";
-        Method method = pojoClass.getMethod(methodName);
+        Method method = findMethod(pojoClass, methodName);
         if (method != null && !method.getReturnType().equals(Void.TYPE)) {
             s = method.getReturnType().toString();
             s = s.substring(s.lastIndexOf('.') + 1, s.length());
@@ -381,6 +381,28 @@ public class JavaUtil {
         } else {
             return "-";
         }
+    }
+
+    /**
+     * Helper method to find a class's specific method
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param methodName
+     *            The name of the method to be found
+     * @return The method object of the method to be found, null if it wasn't found
+     */
+    private Method findMethod(Class<?> pojoClass, String methodName) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method m : pojoClass.getMethods()) {
+            if (m.getName().equals(methodName)) {
+                return m;
+            }
+        }
+        return null;
     }
 
 }

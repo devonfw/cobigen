@@ -15,7 +15,7 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.cl
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
 
 <#-- For generating the needed imports from each connected class -->
-<#list UmlUtil.getConnectedClasses() as connectedClass>
+<#list UmlUtil.getConnections() as connectedClass>
 import ${variables.rootPackage}.${variables.component}.common.api.${connectedClass};
 </#list>
 
