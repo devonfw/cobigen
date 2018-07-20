@@ -2,7 +2,6 @@ package com.devonfw.cobigen.templates.oasp4j.utils.uml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
@@ -47,7 +46,7 @@ public class UmlUtil {
      * Gets all the class names that are connected to this class
      * @return ArrayList: Contains every class name connected to this class
      */
-    public ArrayList<String> getConnectedClasses() {
+    public ArrayList<String> getConnections() {
 
         ArrayList<String> connectedClasses = new ArrayList<>();
 
@@ -98,13 +97,12 @@ public class UmlUtil {
      *            name of the class
      * @return string containing the connections to generate
      */
-    public String setConnectorsContent(HashMap<?, ?> sourceHash, HashMap<?, ?> targetHash, String className) {
+    public void setConnectorsContent(HashMap<?, ?> sourceHash, HashMap<?, ?> targetHash, String className) {
 
         Connector sourceConnector = null;
         Connector targetConnector = null;
         boolean isTarget = false;
         boolean isSource = false;
-        String textContent = "";
 
         String sourceName = getClassName(sourceHash);
         String sourceMultiplicity = getMultiplicity(sourceHash);
@@ -112,10 +110,10 @@ public class UmlUtil {
             isSource = true;
         }
 
-        String targetName = getClassName(sourceHash);
-        String targetMultiplicity = getMultiplicity(sourceHash);
+        String targetName = getClassName(targetHash);
+        String targetMultiplicity = getMultiplicity(targetHash);
         if (sourceName.equals(className)) {
-            isSource = true;
+            isTarget = true;
         }
 
         if (isSource) {
@@ -125,7 +123,6 @@ public class UmlUtil {
             targetConnector = getConnector(targetHash, false, sourceMultiplicity, sourceName);
             connectors.addConnector(targetConnector);
         }
-        return textContent;
     }
 
     /**
@@ -190,41 +187,5 @@ public class UmlUtil {
             }
         }
         return "ErrorClassName";
-    }
-
-    /**
-     * @param rs
-     *            Map containing the entity information
-     * @param entityName
-     *            name of the entity
-     * @return string containing annotation
-     */
-    public String getRelationShipAnnotation(Map<String, Object> rs, String entityName) {
-
-        char c[] = ((String) rs.get("entity")).toCharArray();
-        c[0] = Character.toLowerCase(c[0]);
-        String ent = new String(c);
-
-        c = entityName.toCharArray();
-        c[0] = Character.toLowerCase(c[0]);
-        String entName = new String(c);
-        switch ((String) rs.get("type")) {
-        case "manytoone":
-            return "@ManyToOne" + '\n' + "@JoinColumn(name = \"" + ent + "\")";
-        case "onetomany":
-            if ((boolean) rs.get("unidirectional")) {
-                return "@OneToMany" + "\n" + "@JoinColumn(name = \"" + entName + "Id\")";
-            }
-            return "@OneToMany(mappedBy = \"" + entName + "\")";
-
-        case "onetoone":
-            return "@OneToOne" + '\n' + "@JoinColumn(name = \"" + ent + "\")";
-        case "manytomany":
-            return "@ManyToMany" + '\n' + "@JoinTable(name = \"" + entityName + (String) rs.get("entity")
-                + "\", joinColumns = {" + '\n' + "@javax.persistence.JoinColumn(name = \"" + entName
-                + "Id\") }, inverseJoinColumns = @javax.persistence.JoinColumn(name = \"" + ent + "Id\"))";
-        default:
-            return "";
-        }
     }
 }

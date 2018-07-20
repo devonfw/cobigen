@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Method;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -301,6 +303,10 @@ public class JavaUtilTest {
      */
     @Test
     public void testGetReturnType() throws NoSuchMethodException, SecurityException {
+        for (Method m : clazz.getMethods()) {
+
+            System.out.println(m.getName());
+        }
         assertEquals(new JavaUtil().getReturnType(clazz, "methodWithReturnType"), "String");
         assertEquals(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType"), "-");
     }

@@ -36,14 +36,12 @@ public class JavaDocumentationUtil {
      * @return A list of the parameters info in asciidoc code
      * @throws SecurityException
      *             If no method of the given name can be found
-     * @throws NoSuchMethodException
-     *             If no method of the given name can be found
      */
     public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc)
-        throws NoSuchMethodException, SecurityException {
+        throws SecurityException {
 
         String result = "";
-        Method m = pojoClass.getMethod(methodName);
+        Method m = findMethod(pojoClass, methodName);
         if (m.getParameterCount() < 1) {
             return "!-!-!-!-";
         }
@@ -130,12 +128,9 @@ public class JavaDocumentationUtil {
      * @return A JSON representation of the response object
      * @throws SecurityException
      *             If no method of the given name can be found
-     * @throws NoSuchMethodException
-     *             If no method of the given name can be found
      */
-    public String getJSONResponseBody(Class<?> pojoClass, String methodName)
-        throws NoSuchMethodException, SecurityException {
-        Class<?> responseType = pojoClass.getMethod(methodName).getReturnType();
+    public String getJSONResponseBody(Class<?> pojoClass, String methodName) throws SecurityException {
+        Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
         if (hasBody(pojoClass, methodName, true)) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
@@ -160,12 +155,9 @@ public class JavaDocumentationUtil {
      * @return A JSON representation of the request object
      * @throws SecurityException
      *             If no method of the given name can be found
-     * @throws NoSuchMethodException
-     *             If no method of the given name can be found
      */
-    public String getJSONRequestBody(Class<?> pojoClass, String methodName)
-        throws NoSuchMethodException, SecurityException {
-        Method m = pojoClass.getMethod(methodName);
+    public String getJSONRequestBody(Class<?> pojoClass, String methodName) throws SecurityException {
+        Method m = findMethod(pojoClass, methodName);
         if (hasBody(pojoClass, methodName, false)) {
             Parameter param = m.getParameters()[0];
             Class<?> requestType = param.getType();
@@ -195,12 +187,9 @@ public class JavaDocumentationUtil {
      * @return true if the response/request has a body, false if not
      * @throws SecurityException
      *             If no method of the given name can be found
-     * @throws NoSuchMethodException
-     *             If no method of the given name can be found
      */
-    public boolean hasBody(Class<?> pojoClass, String methodName, boolean isResponse)
-        throws NoSuchMethodException, SecurityException {
-        Method m = pojoClass.getMethod(methodName);
+    public boolean hasBody(Class<?> pojoClass, String methodName, boolean isResponse) throws SecurityException {
+        Method m = findMethod(pojoClass, methodName);
         if (isResponse) {
             Class<?> returnType = m.getReturnType();
             if (!returnType.isPrimitive() && !returnType.equals(Void.TYPE)) {
@@ -257,5 +246,27 @@ public class JavaDocumentationUtil {
         } else {
             throw new IOException("application.properties file not found!");
         }
+    }
+
+    /**
+     * Helper method to find a class's specific method
+     * @param pojoClass
+     *            {@link Class}&lt;?> the class object of the pojo
+     * @param methodName
+     *            The name of the method to be found
+     * @return The method object of the method to be found, null if it wasn't found
+     */
+    private Method findMethod(Class<?> pojoClass, String methodName) {
+
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+        for (Method m : pojoClass.getMethods()) {
+            if (m.getName().equals(methodName)) {
+                return m;
+            }
+        }
+        return null;
     }
 }
