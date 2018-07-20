@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface ${name} extends ApplicationEntity {
 
-${UmlUtil.generateConnectorsVariablesMethodsText(false,false,variables.className)}
+${UmlUtil.generateConnectorsVariablesMethodsText(false,false)}
 
 <#list elemDoc["./ownedAttribute"] as attribute>
   <#if (attribute["@name"])??>

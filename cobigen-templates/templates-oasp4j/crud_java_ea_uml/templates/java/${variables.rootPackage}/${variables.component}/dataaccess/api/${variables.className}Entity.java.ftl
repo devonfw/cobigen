@@ -15,8 +15,8 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.cl
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEntity;
 
 <#-- For generating the needed imports from each connected class -->
-<#list UmlUtil.getConnections() as connectedClass>
-import ${variables.rootPackage}.${variables.component}.common.api.${connectedClass};
+<#list UmlUtil.getConnectors() as connectedClass>
+import ${variables.rootPackage}.${variables.component}.common.api.${connectedClass.className};
 </#list>
 
 import javax.persistence.Column;
@@ -74,7 +74,7 @@ import javax.persistence.Table;
     </#list>
 
     <#-- For generating the variables and methods of all the connected classes to this class -->
-    ${UmlUtil.generateConnectorsVariablesMethodsText(true,false,variables.className)}
+    ${UmlUtil.generateConnectorsVariablesMethodsText(true,false)}
     
     <#list elemDoc["self::node()/ownedAttribute"] as attribute>
         <#if (attribute["@name"])??>

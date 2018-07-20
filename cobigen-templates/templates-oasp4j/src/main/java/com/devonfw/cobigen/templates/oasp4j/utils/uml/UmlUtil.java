@@ -2,24 +2,25 @@ package com.devonfw.cobigen.templates.oasp4j.utils.uml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
+import com.devonfw.cobigen.templates.oasp4j.utils.OaspUtil;
 
 /**
  *
  */
-@SuppressWarnings("restriction")
 public class UmlUtil {
 
     /**
-     *
+     * List of connectors
      */
-    private Connectors connectors = new Connectors();
+    private List<Connector> connectors = new ArrayList<>();
 
     /**
      * For generating the variables and methods (Getters and Setters) of all the connected classes to this
@@ -33,25 +34,13 @@ public class UmlUtil {
      *            name of the class
      * @return String: Contains all the generated text
      */
-    public String generateConnectorsVariablesMethodsText(boolean isImpl, boolean isOverride, String className) {
+    public String generateConnectorsVariablesMethodsText(boolean isImpl, boolean isOverride) {
 
-        String textContent = connectors.generateText(isImpl, isOverride, className);
+        String textContent = generateText(isImpl, isOverride);
 
-        connectors = new Connectors();
+        connectors = new ArrayList();
 
         return textContent;
-    }
-
-    /**
-     * Gets all the class names that are connected to this class
-     * @return ArrayList: Contains every class name connected to this class
-     */
-    public ArrayList<String> getConnections() {
-
-        ArrayList<String> connectedClasses = new ArrayList<>();
-
-        connectedClasses = connectors.getConnectedClasses();
-        return connectedClasses;
     }
 
     /**
@@ -66,9 +55,8 @@ public class UmlUtil {
      */
     public void resolveConnectorsContent(Object source, Object target, String className) {
 
-        source.getClass().getClassLoader();
-        DeferredElementNSImpl sourceNode = (DeferredElementNSImpl) source;
-        DeferredElementNSImpl targetNode = (DeferredElementNSImpl) target;
+        Node sourceNode = (Node) source;
+        Node targetNode = (Node) target;
 
         HashMap<String, Node> sourceHash = new HashMap<>();
         NodeList childs = sourceNode.getChildNodes();
@@ -95,7 +83,6 @@ public class UmlUtil {
      *            Target hash
      * @param className
      *            name of the class
-     * @return string containing the connections to generate
      */
     public void setConnectorsContent(HashMap<?, ?> sourceHash, HashMap<?, ?> targetHash, String className) {
 
@@ -118,10 +105,10 @@ public class UmlUtil {
 
         if (isSource) {
             sourceConnector = getConnector(sourceHash, true, targetMultiplicity, targetName);
-            connectors.addConnector(sourceConnector);
+            connectors.add(sourceConnector);
         } else if (isTarget) {
             targetConnector = getConnector(targetHash, false, sourceMultiplicity, sourceName);
-            connectors.addConnector(targetConnector);
+            connectors.add(targetConnector);
         }
     }
 
@@ -188,4 +175,186 @@ public class UmlUtil {
         }
         return "ErrorClassName";
     }
+
+    /**
+     * @param isImpl
+     *            true if this is called from an Implementation template
+     * @param isOverride
+     *            true if this is called from an Entity template
+     * @return Generated text
+     */
+    public String generateText(boolean isImpl, boolean isOverride) {
+
+        String content = "";
+        if (isImpl) {
+            for (Connector connector : connectors) {
+                String connectedClassName = connector.getCounterpartName();
+                String multiplicity = connector.getCounterpartMultiplicity();
+                if (multiplicity == null || multiplicity.equals("1")) {
+                    content +=
+                        "\n\n\tprivate " + connectedClassName + "Entity " + connectedClassName.toLowerCase() + ";";
+                } else if (multiplicity != null && multiplicity.equals("*")) {
+                    content += "\n\n\tprivate List<" + connectedClassName + "Entity> "
+                        + new OaspUtil().removePlural(connectedClassName.toLowerCase()) + "s;";
+                }
+            }
+        }
+
+        for (Connector connector : connectors) {
+            String connectedClassName = connector.getCounterpartName();
+            String multiplicity = connector.getCounterpartMultiplicity();
+            if (multiplicity == null || multiplicity.equals("1")) {
+
+                content += "\n\n\t";
+                if (isOverride) {
+                    content += "@Override\n\t";
+                }
+                if (isImpl) {
+                    content += getRelationshipAnnotations(connector) + "\n\t";
+                    content += "public " + connectedClassName + "Entity get" + connectedClassName + "()";
+                } else {
+                    content += "public Long get" + connectedClassName + "Id()";
+                }
+                if (isImpl) {
+                    content += "{" + "\n\t\treturn this." + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                } else {
+                    content += ";";
+                }
+
+                content += "\n\n\t";
+                if (isOverride) {
+                    content += "@Override\n\t";
+                }
+                if (isImpl) {
+                    content += "public void set" + connectedClassName + "(" + connectedClassName + "Entity "
+                        + connectedClassName.toLowerCase() + ")";
+                } else {
+                    content +=
+                        "public void set" + connectedClassName + "Id(Long " + connectedClassName.toLowerCase() + "Id)";
+                }
+                if (isImpl) {
+                    content += "{" + "\n\t\tthis." + connectedClassName.toLowerCase() + " = "
+                        + connectedClassName.toLowerCase() + ";" + "\n\t}";
+                } else {
+                    content += ";";
+                }
+                // Now w generate the get and set IDs methods for the implementation
+                if (isImpl) {
+                    // getter
+                    content += "\n\n\t";
+                    content += "@Override\n\t";
+                    content += "public Long get" + connectedClassName + "Id()";
+                    content += "{" + "\n\t\tif(this." + connectedClassName.toLowerCase() + " == null){";
+                    content += "\n\t\treturn null;\n\t}";
+                    content += "\n\t\treturn this." + connectedClassName.toLowerCase() + ".getId();" + "\n\t}";
+                    // setter
+                    content += "\n\n\t";
+                    content += "@Override\n\t";
+                    content +=
+                        "public void set" + connectedClassName + "Id(Long " + connectedClassName.toLowerCase() + "Id)";
+                    content += "{" + "\n\t\tif(" + connectedClassName.toLowerCase() + "Id == null){";
+                    content += "\n\t\tthis." + connectedClassName.toLowerCase() + " = null;\n\t}";
+                    content += "else {\n\t";
+                    content += connectedClassName + "Entity " + connectedClassName.toLowerCase() + "Entity = new "
+                        + connectedClassName + "Entity();\n\n\t";
+                    content +=
+                        connectedClassName.toLowerCase() + ".setId(" + connectedClassName.toLowerCase() + "Id);\n\n\t";
+                    content += "this." + connectedClassName.toLowerCase() + " " + "= "
+                        + connectedClassName.toLowerCase() + "Entity;\n\n\t}";
+                    content += "\n\n\t}";
+                }
+
+            } else if (multiplicity != null && multiplicity.equals("*") && isImpl) {
+
+                content += "\n\n\t";
+                if (isOverride) {
+                    content += "@Override\n\t";
+                }
+                content += getRelationshipAnnotations(connector) + "\n\t";
+                content += "public List<" + connectedClassName + "Entity> get"
+                    + new OaspUtil().removePlural(connectedClassName) + "s()";
+                content += "{" + "\n\t\treturn this." + new OaspUtil().removePlural(connectedClassName.toLowerCase())
+                    + "s;" + "\n\t}";
+                content += "\n\n\t";
+                if (isOverride) {
+                    content += "@Override\n\t";
+                }
+                content +=
+                    "public void set" + new OaspUtil().removePlural(connectedClassName) + "s(List<" + connectedClassName
+                        + "Entity> " + new OaspUtil().removePlural(connectedClassName.toLowerCase()) + "s)";
+                content += "{" + "\n\t\tthis." + new OaspUtil().removePlural(connectedClassName.toLowerCase()) + "s = "
+                    + new OaspUtil().removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
+            }
+        }
+        return content;
+    }
+
+    /**
+     * Generates the annotations of all the connected classes
+     * @param source
+     *            The source connector that is used to generate relationship annotations
+     * @return relationship string with all the annotations for the connected classes
+     */
+    private String getRelationshipAnnotations(Connector source) {
+
+        String relationship = "";
+        if (source.ISSOURCE) {
+            if (source.getMultiplicity() == null || source.getMultiplicity().equals("1")) {
+                if (source.getCounterpartMultiplicity() == null || source.getCounterpartMultiplicity().equals("1")) {
+                    relationship = "@OneToOne()" + "\n\t@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
+                } else if (source.getCounterpartMultiplicity().equals("*")) {
+                    relationship = "@OneToMany(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \""
+                        + WordUtils.capitalize(source.getCounterpartName()) + "id\")";
+                }
+            } else if (source.getMultiplicity().equals("*")) {
+                if (source.getCounterpartMultiplicity().equals("*")) {
+                    relationship += "@ManyToMany()";
+                    relationship += "\n\t@JoinTable(name = \"" + WordUtils.capitalize(source.getCounterpartName())
+                        + WordUtils.capitalize(source.getClassName()) + "\", joinColumns = @JoinColumn(name = \""
+                        + source.getClassName() + "Id\"), inverseJoinColumns = @JoinColumn(name = \""
+                        + source.getCounterpartName() + "Id\"))";
+                } else if (source.getCounterpartMultiplicity().equals("1")) {
+                    relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t@JoinColumn(name = \""
+                        + source.getCounterpartName() + "Id\")";
+                }
+            }
+        } else if (source.ISTARGET) {
+            if (source.getCounterpartMultiplicity() == null || source.getCounterpartMultiplicity().equals("1")) {
+                if (source.getMultiplicity() == null || source.getMultiplicity().equals("1")) {
+                    relationship = "@OneToOne()" + "\n\t"//
+                        + "@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
+                } else if (source.getMultiplicity().equals("*")) {
+                    relationship += "@ManyToOne(fetch = FetchType.LAZY)\n\t"//
+                        + "@JoinColumn(name = \"" + source.getCounterpartName() + "Id\")";
+                }
+            } else if (source.getCounterpartMultiplicity().equals("*")) {
+                if (source.getMultiplicity().equals("*")) {
+                    relationship += "@ManyToMany(mappedBy = \""
+                        + new OaspUtil().removePlural(source.getClassName()).toLowerCase() + "s\")";
+                } else if (source.getMultiplicity().equals("1")) {
+                    relationship = "@OneToMany(fetch = FetchType.LAZY, mappedBy = \""
+                        + source.getCounterpartName().toLowerCase() + "\")";
+                }
+            }
+        }
+        return relationship;
+    }
+
+    /**
+     * Returns connectors
+     * @return connectors
+     */
+    public List<Connector> getConnectors() {
+        return connectors;
+    }
+
+    /**
+     * Sets a new connector list
+     * @param connectors
+     *            The new list of connectors
+     */
+    public void setConnectors(List<Connector> connectors) {
+        this.connectors = connectors;
+    }
+
 }
