@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.templates.oasp4j.test.utils.documentation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,9 +30,9 @@ public class JavaDocumentationUtilTest {
      */
     @Test
     public void testGetJavaDocWithoutLink() {
-        assertEquals(new JavaDocumentationUtil().getJavaDocWithoutLink("{@link id}"), "id");
-        assertEquals(new JavaDocumentationUtil().getJavaDocWithoutLink("{@sink id}"), "{@sink id}");
-        assertEquals(new JavaDocumentationUtil().getJavaDocWithoutLink("id"), "id");
+        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@link id}")).isEqualTo("id");
+        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@sink id}")).isEqualTo("{@sink id}");
+        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("id")).isEqualTo("id");
     }
 
     /**
@@ -47,7 +46,7 @@ public class JavaDocumentationUtilTest {
             Assume.assumeTrue("application.properties exists in classpath: "
                 + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
         }
-        assertFalse(new JavaDocumentationUtil().extractRootPath(clazz).equals("This is not a root path!"));
-        assertEquals(new JavaDocumentationUtil().extractRootPath(clazz), "http://localhost:8080/");
+        assertThat(new JavaDocumentationUtil().extractRootPath(clazz).equals("This is not a root path!")).isFalse();
+        assertThat(new JavaDocumentationUtil().extractRootPath(clazz)).isEqualTo("http://localhost:8080/");
     }
 }

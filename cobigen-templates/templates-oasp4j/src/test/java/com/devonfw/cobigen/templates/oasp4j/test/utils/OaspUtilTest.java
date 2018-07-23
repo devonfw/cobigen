@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.templates.oasp4j.test.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +36,8 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "entity");
         field.put(Field.TYPE.toString(), "TestEntity");
-        assertEquals("entityId",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""));
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+            .isEqualTo("entityId");
     }
 
     /**
@@ -66,7 +66,8 @@ public class OaspUtilTest {
         field.put(Field.TYPE.toString(), deepEntity.getTestEntityComponent().getClass().getTypeName());
         component = deepEntity.getClass().getPackage().getName();
 
-        assertEquals("getTestEntityComponent().getId()", new OaspUtil().resolveIdGetter(field, true, component));
+        assertThat(new OaspUtil().resolveIdGetter(field, true, component))
+            .isEqualTo("getTestEntityComponent().getId()");
     }
 
     /**
@@ -87,8 +88,9 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "entity");
         field.put(Field.TYPE.toString(), "TestEntity");
-        assertEquals("EntityId",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, true, ""));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, true, ""))
+            .isEqualTo("EntityId");
     }
 
     /**
@@ -109,8 +111,9 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "object");
         field.put(Field.TYPE.toString(), "String");
-        assertEquals("object",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+            .isEqualTo("object");
     }
 
     /**
@@ -131,8 +134,9 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "entitys");
         field.put(Field.TYPE.toString(), "List<TestEntity>");
-        assertEquals("entityIds",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+            .isEqualTo("entityIds");
     }
 
     /**
@@ -153,8 +157,9 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "deepEntity");
         field.put(Field.TYPE.toString(), "DeepEntity");
-        assertEquals("deepEntity().getId",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "resources"));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "resources"))
+            .isEqualTo("deepEntity().getId");
     }
 
     /**
@@ -175,8 +180,9 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "deepEntity");
         field.put(Field.TYPE.toString(), "DeepEntity");
-        assertEquals("DeepEntity().getId",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, true, "resources"));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, true, "resources"))
+            .isEqualTo("DeepEntity().getId");
     }
 
     /**
@@ -197,7 +203,8 @@ public class OaspUtilTest {
         Map<String, Object> field = new HashMap<>();
         field.put(Field.NAME.toString(), "deepEntity");
         field.put(Field.TYPE.toString(), "DeepEntity");
-        assertEquals("deepEntityId",
-            new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "nomatch"));
+
+        assertThat(new OaspUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "nomatch"))
+            .isEqualTo("deepEntityId");
     }
 }
