@@ -26,6 +26,8 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -64,6 +66,9 @@ import com.google.common.collect.Sets;
  */
 public class TemplatesConfigurationReader {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
+
     /**
      * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
      */
@@ -98,8 +103,17 @@ public class TemplatesConfigurationReader {
      */
     public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
 
-        rootTemplateFolder = TemplateFolder.create(templatesRoot);
+        LOG.info("Template root to be checked: {}", templatesRoot.toAbsolutePath().toString());
         configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        if (!Files.exists(configFilePath)) {
+            templatesRoot = templatesRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
+            configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            if (!Files.exists(configFilePath)) {
+                throw new InvalidConfigurationException(configFilePath, "Could not find templates configuration file.");
+            }
+        }
+        rootTemplateFolder = TemplateFolder.create(templatesRoot);
+        LOG.info("rootTemplateFolder is: {}", rootTemplateFolder);
         readConfiguration();
     }
 

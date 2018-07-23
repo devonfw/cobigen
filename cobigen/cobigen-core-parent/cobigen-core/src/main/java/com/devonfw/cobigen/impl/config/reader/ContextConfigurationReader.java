@@ -19,6 +19,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -40,6 +42,9 @@ import com.google.common.collect.Maps;
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
+
     /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
 
@@ -59,7 +64,7 @@ public class ContextConfigurationReader {
 
         contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         if (!Files.exists(contextFile)) {
-            configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
             contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             if (!Files.exists(contextFile)) {
                 throw new InvalidConfigurationException(contextFile, "Could not find context configuration file.");
