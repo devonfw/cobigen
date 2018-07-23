@@ -87,6 +87,30 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         assertThat(templateFooClass.getMergeStrategy()).isNull();
     }
 
+    @Test
+    public void testTemplatesSourceFolder() {
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_source_folder").toPath());
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+
+        // then
+        assertThat(templates).isNotNull().hasSize(6);
+
+        String templateIdFooClass = "prefix_FooClass.java";
+        Template templateFooClass = templates.get(templateIdFooClass);
+        assertThat(templateFooClass).isNotNull();
+        assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
+        assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
+        assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/FooClass.java");
+        assertThat(templateFooClass.getMergeStrategy()).isNull();
+    }
+
     /**
      * Tests that the template-scan mechanism does not overwrite an explicit template declaration with the
      * defaults
