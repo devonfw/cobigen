@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,11 +33,10 @@ public class JavaDocumentationUtil {
      * @param javaDoc
      *            the javadoc of the method, taken from the javaplugin model
      * @return A list of the parameters info in asciidoc code
-     * @throws SecurityException
-     *             If no method of the given name can be found
+     * @throws Exception
+     *             When errors occur in invoking an annotations method
      */
-    public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc)
-        throws SecurityException {
+    public String getParams(Class<?> pojoClass, String methodName, Map<String, Object> javaDoc) throws Exception {
 
         String result = "";
         Method m = findMethod(pojoClass, methodName);
@@ -87,7 +85,7 @@ public class JavaDocumentationUtil {
                             result += shortName + " +" + System.lineSeparator();
                         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                             | SecurityException e) {
-                            throw new CobiGenRuntimeException(e.getMessage());
+                            throw new Exception(e.getMessage());
                         }
                     }
                 }
@@ -126,10 +124,10 @@ public class JavaDocumentationUtil {
      * @param methodName
      *            The name of the operation to get the response of
      * @return A JSON representation of the response object
-     * @throws SecurityException
-     *             If no method of the given name can be found
+     * @throws Exception
+     *             When Jackson fails
      */
-    public String getJSONResponseBody(Class<?> pojoClass, String methodName) throws SecurityException {
+    public String getJSONResponseBody(Class<?> pojoClass, String methodName) throws Exception {
         Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
         if (hasBody(pojoClass, methodName, true)) {
             ObjectMapper mapper = new ObjectMapper();
@@ -140,7 +138,7 @@ public class JavaDocumentationUtil {
                 return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
                     + "....";
             } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new CobiGenRuntimeException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
         return "-";
@@ -153,10 +151,10 @@ public class JavaDocumentationUtil {
      * @param methodName
      *            The name of the operation to get the request of
      * @return A JSON representation of the request object
-     * @throws SecurityException
-     *             If no method of the given name can be found
+     * @throws Exception
+     *             When Jackson fails
      */
-    public String getJSONRequestBody(Class<?> pojoClass, String methodName) throws SecurityException {
+    public String getJSONRequestBody(Class<?> pojoClass, String methodName) throws Exception {
         Method m = findMethod(pojoClass, methodName);
         if (hasBody(pojoClass, methodName, false)) {
             Parameter param = m.getParameters()[0];
@@ -169,7 +167,7 @@ public class JavaDocumentationUtil {
                 return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
                     + "....";
             } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new CobiGenRuntimeException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
         return "-";
