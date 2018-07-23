@@ -25,7 +25,7 @@ Component Data
       <#if op.operationId??>.${op.operationId}</#if>
       [cols='1s,6m']
       |===
-      |<#if op.type??>${OaspUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${model.componentName}/${path.version}${path.pathURI}
+      |<#if op.type??>${DocumentationUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${model.componentName}/${path.version}${path.pathURI}
       |Description |<#if op.description??>${op.description}<#else>-</#if>
     
       <#if hasRequestBody(op)>.2+<</#if>|Request 
@@ -38,9 +38,9 @@ Component Data
             <#assign nrParam=0>
             <#if param.isBody?? && !param.isBody>
               <#assign nrParam=nrParam+1>
-              !<#if param??>${OpenApiUtil.getParam(param)}<#else>-</#if>
+              !<#if param??>${OpenApiDocumentationUtil.getParam(param)}<#else>-</#if>
               !<#if param.type??>${param.type}<#else>-</#if>
-              !<#if param.constraints??>${OpenApiUtil.getConstraintList(param)}<#else>-</#if>
+              !<#if param.constraints??>${OpenApiDocumentationUtil.getConstraintList(param)}<#else>-</#if>
               !<#if param.description??>${param.description}<#else>-</#if>
             </#if>
             <#if nrParam==0>!-!-!-!-</#if>

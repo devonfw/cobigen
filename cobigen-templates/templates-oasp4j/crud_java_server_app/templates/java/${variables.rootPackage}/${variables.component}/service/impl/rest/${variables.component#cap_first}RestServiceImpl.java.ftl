@@ -24,31 +24,31 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
 
   @Override
   public ${variables.entityName}Eto get${variables.entityName}(long id) {
-    return this.${variables.component}.find${variables.entityName}(id);
+    return this.${variables.component?uncap_first}.find${variables.entityName}(id);
   }
 
   @Override
   public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
-      return this.${variables.component}.save${variables.entityName}(${variables.entityName?lower_case});
+      return this.${variables.component?uncap_first}.save${variables.entityName}(${variables.entityName?lower_case});
   }
 
   @Override
   public void delete${variables.entityName}(long id) {
-    this.${variables.component}.delete${variables.entityName}(id);
+    this.${variables.component?uncap_first}.delete${variables.entityName}(id);
   }
 
   @Override
   public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
-    return this.${variables.component}.find${variables.entityName}Etos(searchCriteriaTo);
+    return this.${variables.component?uncap_first}.find${variables.entityName}Etos(searchCriteriaTo);
   }
   
   @Override
   public ${variables.entityName}Cto get${variables.entityName}Cto(long id) {
-    return this.${variables.component}.find${variables.entityName}Cto(id);
+    return this.${variables.component?uncap_first}.find${variables.entityName}Cto(id);
   }
 
   @Override
   public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
-    return this.${variables.component}.find${variables.entityName}Ctos(searchCriteriaTo);
+    return this.${variables.component?uncap_first}.find${variables.entityName}Ctos(searchCriteriaTo);
   }
 }

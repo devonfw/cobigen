@@ -3,7 +3,7 @@
 
 **Component Service Path:** 
 ....
-${JavaUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??>/${pojo.annotations.javax_ws_rs_Path.value}</#if>
+${JavaDocumentationUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??>/${pojo.annotations.javax_ws_rs_Path.value}</#if>
 ....
 
 <#-- Determine body format -->
@@ -29,12 +29,12 @@ Component Data
 |===
 |Name |Description
 |${variables.component?cap_first}
-|<#if pojo.javaDoc??>${JavaUtil.getJavaDocWithoutLink(pojo.javaDoc.comment)}<#else>-</#if>
+|<#if pojo.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(pojo.javaDoc.comment)}<#else>-</#if>
 |===
 
 
 <#list pojo.methods as method>
-  <#assign type=JavaUtil.getRequestType(method.annotations)>
+  <#assign type=JavaDocumentationUtil.getRequestType(method.annotations)>
   <#if !(type=='-')>
   
   
@@ -42,35 +42,35 @@ Component Data
       .${method.name}
       [cols='1s,6m']
       |===
-      |${OaspUtil.getTypeWithAsciidocColour(type)} |${JavaUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
-      |Description |<#if method.javaDoc??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
+      |${DocumentationUtil.getTypeWithAsciidocColour(type)} |${JavaDocumentationUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
+      |Description |<#if method.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
     
-      <#if JavaUtil.hasBody(classObject,method.name,false)>.2+<</#if>|Request 
+      <#if JavaDocumentationUtil.hasBody(classObject,method.name,false)>.2+<</#if>|Request 
       a|
       [options='header',cols='1,1,1,5']
         !===
         !Parameter !Type !Constraints !Param Description
-        ${JavaUtil.getParams(classObject,method.name,method.javaDoc)}
+        ${JavaDocumentationUtil.getParams(classObject,method.name,method.javaDoc)}
         !===
       </#compress>
-      <#if JavaUtil.hasBody(classObject,method.name,false)>
+      <#if JavaDocumentationUtil.hasBody(classObject,method.name,false)>
       
 a|**Body** +
-${JavaUtil.getJSONRequestBody(classObject,method.name)}
+${JavaDocumentationUtil.getJSONRequestBody(classObject,method.name)}
       </#if>
-      <#if JavaUtil.hasBody(classObject,method.name,true)>
+      <#if JavaDocumentationUtil.hasBody(classObject,method.name,true)>
       <#compress>
       |Response  a|
         [options='header',cols='1,4,7']
         !===
         !Code !Description !Body
         
-        !<#if JavaUtil.hasBody(classObject,method.name,true)>200<#else>-</#if>
-        !<#if method.javaDoc??><#if method.javaDoc.return??>${JavaUtil.getJavaDocWithoutLink(method.javaDoc.return)}<#else>-</#if><#else>-</#if>
+        !<#if JavaDocumentationUtil.hasBody(classObject,method.name,true)>200<#else>-</#if>
+        !<#if method.javaDoc??><#if method.javaDoc.return??>${JavaDocumentationUtil.getJavaDocWithoutLink(method.javaDoc.return)}<#else>-</#if><#else>-</#if>
         a!
       </#compress>
       
-${JavaUtil.getJSONResponseBody(classObject,method.name)}
+${JavaDocumentationUtil.getJSONResponseBody(classObject,method.name)}
       </#if>
     <#compress>
         !===

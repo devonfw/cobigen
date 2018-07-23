@@ -64,7 +64,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     }
 
     /**
-     * Test successful generation of all templates based on a To
+     * Test successful generation of all templates based on a TO
      * @throws Exception
      *             test fails
      */
