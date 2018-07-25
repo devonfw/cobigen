@@ -368,7 +368,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
             templatesConfigurationsSuperMap.get(templateFolderCurrent);
 
         // We get the map containing all the TemplatesConfiguration for the external templates folder
-        Path templateFolderExternal = Paths.get("valid_increment_composition");
+        String externalTriggerFolder =
+            configurationHolder.getExternalTriggers().get("valid_increment_composition").getTemplateFolder();
+        Path templateFolderExternal = Paths.get(externalTriggerFolder);
 
         Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
             templatesConfigurationsSuperMap.get(templateFolderExternal);

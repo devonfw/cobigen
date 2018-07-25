@@ -86,21 +86,11 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
-            // We need this logic for external Increment refs. Each increment contains a different trigger
-            // that we need.
-            /*
-             * for (Map.Entry<String, Increment> increment :
-             * templatesConfiguration.getIncrements().entrySet()) { for (Template template :
-             * increment.getValue().getTemplates()) { templates.add(new TemplateTo(template.getName(),
-             * template.getMergeStrategy(), increment.getValue().getTrigger().getId())); } }
-             */
 
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
                     templatesConfiguration.getTrigger().getId()));
             }
-
-            // iterate through config refrences, ask for all templates
         }
         LOG.debug("{} matching templates found.", templates.size());
         return templates;
@@ -166,27 +156,50 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
+
         for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+            if (templatesConfiguration != null) {
+                // If the configurationHolder contains any ExternalTrigger it means that we have to store all
+                // the templatesConfiguration from this trigger
+                if (externalTriggersIsNotEmpty()) {
+                    for (Map.Entry<String, Trigger> externalTriggerMap : configurationHolder.getExternalTriggers()
+                        .entrySet()) {
 
-            // If the configurationHolder contains any ExternalTrigger it means that we have to store all
-            // the templatesConfiguration from this trigger
-            if (externalTriggersIsNotEmpty()) {
-                Path templateFolder = Paths.get(trigger.getTemplateFolder());
+                        Path templateFolder = Paths.get(externalTriggerMap.getValue().getTemplateFolder());
 
-                Map<String, TemplatesConfiguration> externalTemplatesConfigurations =
-                    configurationHolder.getTemplatesConfigurations().get(templateFolder);
+                        Map<String, TemplatesConfiguration> externalTemplatesConfigurations =
+                            configurationHolder.getTemplatesConfigurations().get(templateFolder);
 
-                // We store all the TemplatesConfiguration inside our list
-                for (Map.Entry<String, TemplatesConfiguration> entry : externalTemplatesConfigurations.entrySet()) {
-                    templateConfigurations.add(entry.getValue());
+                        // We store all the TemplatesConfiguration inside our list
+                        for (Map.Entry<String, TemplatesConfiguration> entry : externalTemplatesConfigurations
+                            .entrySet()) {
+                            if (listNoContains(templateConfigurations, entry.getValue())) {
+                                templateConfigurations.add(entry.getValue());
+                            }
+                        }
+
+                    }
+
                 }
-
-            } else if (templatesConfiguration != null) {
-                templateConfigurations.add(templatesConfiguration);
+                if (listNoContains(templateConfigurations, templatesConfiguration)) {
+                    templateConfigurations.add(templatesConfiguration);
+                }
             }
         }
         return templateConfigurations;
+    }
+
+    /**
+     * Returns true if this list does not contain an object
+     * @param list
+     *            to check
+     * @param entry
+     *            object that should not be on the list
+     * @return true if this list does not contain an object
+     */
+    private boolean listNoContains(List<TemplatesConfiguration> list, Object entry) {
+        return !list.contains(entry);
     }
 
     /**

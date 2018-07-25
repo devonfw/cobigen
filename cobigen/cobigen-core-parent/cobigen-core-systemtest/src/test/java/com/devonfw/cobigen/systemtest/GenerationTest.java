@@ -84,7 +84,7 @@ public class GenerationTest extends AbstractApiTest {
 
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGeneration").toURI());
         List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
-        assertThat(templates).hasSize(1);
+        assertThat(templates).hasSize(5);
     }
 
     /**
