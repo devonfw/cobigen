@@ -131,12 +131,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
+            String triggerId = increment.getTrigger().getId();
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), triggerId));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates,
+                convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
     }

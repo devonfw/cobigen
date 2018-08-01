@@ -563,7 +563,14 @@ public class TemplatesConfigurationReader {
                         // We read the context.xml file for searching our trigger
                         Trigger trig = getExternalTrigger(ref, triggerToSearch, pathToContext);
 
-                        configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
+                        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+                            configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
+
+                        Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
+
+                        childPkg = externalIncrements.get(incrementToSearch);
+
+                        parentPkg.addIncrementDependency(childPkg);
 
                         /*
                          * // Now that we are sure the trigger exists, let's get its templates
