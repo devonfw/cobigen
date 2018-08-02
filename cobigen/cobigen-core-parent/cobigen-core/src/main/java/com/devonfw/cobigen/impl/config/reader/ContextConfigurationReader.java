@@ -51,6 +51,9 @@ public class ContextConfigurationReader {
     /** Path of the context configuration file */
     private Path contextFile;
 
+    /** Root of the context configuration file, used for passing to ContextConfiguration */
+    private Path contextRoot;
+
     /**
      * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
      * context file
@@ -61,7 +64,6 @@ public class ContextConfigurationReader {
      *             if the configuration is not valid against its xsd specification
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
-
         contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         if (!Files.exists(contextFile)) {
             configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
@@ -70,6 +72,7 @@ public class ContextConfigurationReader {
                 throw new InvalidConfigurationException(contextFile, "Could not find context configuration file.");
             }
         }
+        contextRoot = configRoot;
 
         readConfiguration();
 
@@ -205,5 +208,9 @@ public class ContextConfigurationReader {
             variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
         }
         return variableAssignments;
+    }
+
+    public Path getContextRoot() {
+        return contextRoot;
     }
 }

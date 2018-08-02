@@ -97,23 +97,32 @@ public class TemplatesConfigurationReader {
      * configuration file
      *
      * @param templatesRoot
-     *            root path for the template configuration and templates
+     *            root path for the templates
+     * @param templatesName
+     *            name of the folder containing the configuration and templates
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path templatesRoot, String templatesName) throws InvalidConfigurationException {
+        Path templateLocation;
 
-        LOG.info("Template root to be checked: {}", templatesRoot.toAbsolutePath().toString());
-        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        Path rootTemplatePath = templatesRoot.resolve(templatesName);
+        configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+
         if (!Files.exists(configFilePath)) {
-            templatesRoot = templatesRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
-            configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            Path sourceTemplatePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
+            sourceTemplatePath = sourceTemplatePath.resolve(templatesName);
+            configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            templateLocation = sourceTemplatePath;
+
             if (!Files.exists(configFilePath)) {
                 throw new InvalidConfigurationException(configFilePath, "Could not find templates configuration file.");
             }
+        } else {
+            templateLocation = rootTemplatePath;
         }
-        rootTemplateFolder = TemplateFolder.create(templatesRoot);
-        LOG.info("rootTemplateFolder is: {}", rootTemplateFolder);
+        rootTemplateFolder = TemplateFolder.create(templateLocation);
+
         readConfiguration();
     }
 
@@ -283,6 +292,7 @@ public class TemplatesConfigurationReader {
 
         String templatePath = scan.getTemplatePath();
         TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
+
         if ((templateFolder == null) || templateFolder.isFile()) {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(), "The templatePath '"
                 + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
@@ -326,6 +336,7 @@ public class TemplatesConfigurationReader {
         }
 
         for (TemplatePath child : templateFolder.getChildren()) {
+
             if (child.isFolder()) {
                 scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
                     trigger, observedTemplateNames);

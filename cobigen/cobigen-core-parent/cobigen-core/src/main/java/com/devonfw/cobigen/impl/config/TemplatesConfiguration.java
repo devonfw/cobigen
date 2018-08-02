@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
@@ -37,6 +40,9 @@ public class TemplatesConfiguration {
     /** {@link TextTemplateEngine} to be used for the template set covered by this configuration. */
     private String templateEngine;
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfiguration.class);
+
     /**
      * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings
      * reference
@@ -54,9 +60,9 @@ public class TemplatesConfiguration {
      */
     public TemplatesConfiguration(Path configRoot, Trigger trigger) throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
+        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder());
         templatesFolderName = trigger.getTemplateFolder();
+
         templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
         templateEngine = reader.getTemplateEngine();
