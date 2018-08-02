@@ -109,7 +109,7 @@
             name="com.devonfw.cobigen.tempeng-velocity"/>
         <requirement
             name="com.capgemini.cobigen-senchaplugin"
-			optional="true"/>
+            optional="true"/>
         <requirement
             name="com.devonfw.cobigen.textmerger"/>
         <requirement
@@ -955,7 +955,7 @@
               xsi:type="setup:ResourceCreationTask"
               id="workspace.master.maven.init.win"
               excludedTriggers="BOOTSTRAP"
-              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen-eclipse\cobigen-eclipse\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd tools-cobigen\cobigen-eclipse\cobigen-eclipse&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen-eclipse\cobigen-eclipse-test\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd tools-cobigen\cobigen-eclipse\cobigen-eclipse-test&#xA;&#x9;maven initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen\cobigen-tsplugin\target\generated-sources\js\ts-merger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd tools-cobigen\cobigen\cobigen-tsplugin&#xA;&#x9;maven generate-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
+              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen-eclipse\cobigen-eclipse\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd tools-cobigen\cobigen-eclipse\cobigen-eclipse&#xA;&#x9;mvn clean package -Pp2-build-mars&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen-eclipse\cobigen-eclipse-test\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd tools-cobigen\cobigen-eclipse\cobigen-eclipse-test&#xA;&#x9;mvn clean package -Pp2-build-mars,p2-build-stable,p2-build-experimental&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXISTS &quot;tools-cobigen\cobigen\cobigen-tsplugin\target\generated-sources\js\ts-merger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd tools-cobigen\cobigen\cobigen-tsplugin&#xA;&#x9;maven generate-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
               targetURL="${workspace.location/maven-init.cmd|uri}"
               encoding="UTF-8">
             <description>Workspace maven initialization</description>
