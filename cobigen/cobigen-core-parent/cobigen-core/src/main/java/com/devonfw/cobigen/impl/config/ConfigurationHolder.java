@@ -24,8 +24,8 @@ public class ConfigurationHolder {
     private Path configurationPath;
 
     /**
-     * Map of the external triggers to use. We need this variable for properly organizing the different
-     * external templatesConfiguration
+     * Map of the external triggers to use. We need this variable to properly organize the different external
+     * templatesConfiguration
      */
     private Map<String, Trigger> externalTriggers = new HashMap();
 
