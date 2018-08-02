@@ -286,8 +286,19 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
+        // TODO
+        LOG.warn("This is  {}", configurationHolder.readContextConfiguration().getConfigurationPath()
+            .resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER).resolve(trigger.getTemplateFolder()));
+        LOG.warn("{}",
+            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
+
+        // if (inSourceFolder) {
+        templateEngine.setTemplateFolder(configurationHolder.readContextConfiguration().getConfigurationPath()
+            .resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER).resolve(trigger.getTemplateFolder()));
+        // } else {
         templateEngine.setTemplateFolder(
             configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
+        // }
 
         Template templateEty = tConfig.getTemplate(template.getId());
         if (templateEty == null) {
@@ -517,6 +528,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         Map<String, Object> model, String outputCharset) {
 
         try (Writer out = new StringWriter()) {
+
             templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
