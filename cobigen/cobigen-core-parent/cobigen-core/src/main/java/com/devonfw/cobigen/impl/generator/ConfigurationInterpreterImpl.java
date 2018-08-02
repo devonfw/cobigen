@@ -1,8 +1,10 @@
 package com.devonfw.cobigen.impl.generator;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.inject.Inject;
@@ -84,6 +86,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
                     templatesConfiguration.getTrigger().getId()));
@@ -128,12 +131,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
+            String triggerId = increment.getTrigger().getId();
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), triggerId));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates,
+                convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
     }
@@ -153,13 +157,57 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
+
         for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
             if (templatesConfiguration != null) {
-                templateConfigurations.add(templatesConfiguration);
+                // If the configurationHolder contains any ExternalTrigger it means that we have to store all
+                // the templatesConfiguration from this trigger
+                if (externalTriggersIsNotEmpty()) {
+                    for (Map.Entry<String, Trigger> externalTriggerMap : configurationHolder.getExternalTriggers()
+                        .entrySet()) {
+
+                        Path templateFolder = Paths.get(externalTriggerMap.getValue().getTemplateFolder());
+
+                        Map<String, TemplatesConfiguration> externalTemplatesConfigurations =
+                            configurationHolder.getTemplatesConfigurations().get(templateFolder);
+
+                        // We store all the TemplatesConfiguration inside our list
+                        for (Map.Entry<String, TemplatesConfiguration> entry : externalTemplatesConfigurations
+                            .entrySet()) {
+                            if (listNoContains(templateConfigurations, entry.getValue())) {
+                                templateConfigurations.add(entry.getValue());
+                            }
+                        }
+
+                    }
+
+                }
+                if (listNoContains(templateConfigurations, templatesConfiguration)) {
+                    templateConfigurations.add(templatesConfiguration);
+                }
             }
         }
         return templateConfigurations;
+    }
+
+    /**
+     * Returns true if this list does not contain an object
+     * @param list
+     *            to check
+     * @param entry
+     *            object that should not be on the list
+     * @return true if this list does not contain an object
+     */
+    private boolean listNoContains(List<TemplatesConfiguration> list, Object entry) {
+        return !list.contains(entry);
+    }
+
+    /**
+     * @return true if it the externalTriggers map of the configuration holder is not empty
+     */
+    private boolean externalTriggersIsNotEmpty() {
+        return !configurationHolder.getExternalTriggers().isEmpty();
     }
 
 }

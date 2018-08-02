@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
@@ -22,6 +26,7 @@ import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateExtension;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -332,6 +337,89 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
             "scanned", "prefix_scanned2");
 
+    }
+
+    /**
+     * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
+     */
+    @Test
+    public void testIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        // when
+        configurationHolder.readTemplatesConfiguration(trigger);
+
+        // We get the super map containing TemplatesConfigurations depending on the templates folder
+        Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurationsSuperMap =
+            configurationHolder.getTemplatesConfigurations();
+
+        // We get the map containing all the TemplatesConfiguration for our current templates folder
+        Path templateFolderCurrent = Paths.get(trigger.getTemplateFolder());
+
+        Map<String, TemplatesConfiguration> templatesConfigurationsCurrent =
+            templatesConfigurationsSuperMap.get(templateFolderCurrent);
+
+        // We get the map containing all the TemplatesConfiguration for the external templates folder
+        String externalTriggerFolder =
+            configurationHolder.getExternalTriggers().get("valid_increment_composition").getTemplateFolder();
+        Path templateFolderExternal = Paths.get(externalTriggerFolder);
+
+        Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
+            templatesConfigurationsSuperMap.get(templateFolderExternal);
+
+        Map<String, Increment> externalIncrements =
+            templatesConfigurationsCurrent.get("testingTrigger").getIncrements();
+
+        // validation
+        assertThat(templatesConfigurationsCurrent).containsOnlyKeys("testingTrigger");
+        assertThat(externalIncrements).containsOnlyKeys("3", "4", "5");
+
+        // We expect increment 3 to have an external increment 0 containing one template
+        assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
+
+        // We expect increment 4 to have an external increment 2 containing 4 templates (one template comes
+        // from another incrementRef)
+        assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
+
+        // We expect increment 5 to have an external increment 3 containing 4 templates (one template comes
+        // from another incrementRef and one from a templateRef)
+        assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
+        assertThat(templatesConfigurationsExternal).containsOnlyKeys("valid_increment_composition");
+        assertThat(templatesConfigurationsExternal.get("valid_increment_composition").getIncrements())
+            .containsOnlyKeys("0", "1", "2");
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(
+            new File(testFileRootPath + "faulty_invalid_external_incrementref").toPath(), configurationHolder);
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        target.loadIncrements(templates, trigger);
     }
 
     /**
