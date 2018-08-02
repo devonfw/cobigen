@@ -551,26 +551,7 @@ public class TemplatesConfigurationReader {
                     // We have not found the increment inside our templates.xml file, now let's see if this
                     // incrementRef contains "::". That would mean we have to search on another folder.
                     else if (isExternalIncrementRef(ref)) {
-                        // Let's split the string and get its content
-                        String[] splitted = splitExternalIncrementRef(ref);
-                        String triggerToSearch = splitted[0];
-                        String incrementToSearch = splitted[1];
-
-                        // config holder -> please give me the config for triggerToSearch
-                        // local map triggerId -> config
-
-                        String pathToContext = rootTemplateFolder.getPath().normalize().getParent().toString();
-                        // We read the context.xml file for searching our trigger
-                        Trigger trig = getExternalTrigger(ref, triggerToSearch, pathToContext);
-
-                        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
-                            configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
-
-                        Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
-
-                        childPkg = externalIncrements.get(incrementToSearch);
-
-                        parentPkg.addIncrementDependency(childPkg);
+                        loadExternalIncrement(ref, parentPkg);
 
                     } else {
                         throw new InvalidConfigurationException(configFilePath.toUri().toString(),
@@ -597,6 +578,35 @@ public class TemplatesConfigurationReader {
                 rootIncrement.addTemplate(templates.get(scannedTemplateName));
             }
         }
+    }
+
+    /**
+     * Tries to load an external increment. It loads the trigger of the external increment and all its
+     * increments for finding the needed one
+     * @param incrementRef
+     *            incrementRef to load and store on the root increment
+     * @param parentPkg
+     *            root increment where the incrementRef is defined
+     */
+    private void loadExternalIncrement(IncrementRef incrementRef, Increment parentPkg) {
+        Increment childPkg;
+        // Let's split the string and get its content
+        String[] splitted = splitExternalIncrementRef(incrementRef);
+        String triggerToSearch = splitted[0];
+        String incrementToSearch = splitted[1];
+
+        String pathToContext = rootTemplateFolder.getPath().normalize().getParent().toString();
+        // We read the context.xml file for searching our trigger
+        Trigger trig = getExternalTrigger(incrementRef, triggerToSearch, pathToContext);
+
+        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+            configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
+
+        Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
+
+        childPkg = externalIncrements.get(incrementToSearch);
+
+        parentPkg.addIncrementDependency(childPkg);
     }
 
     /**
