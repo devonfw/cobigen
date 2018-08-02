@@ -572,28 +572,6 @@ public class TemplatesConfigurationReader {
 
                         parentPkg.addIncrementDependency(childPkg);
 
-                        /*
-                         * // Now that we are sure the trigger exists, let's get its templates
-                         * TemplatesConfigurationReader externalTarget = new TemplatesConfigurationReader( new
-                         * File(pathToContext + "\\" + trig.getTemplateFolder()).toPath()); Map<String,
-                         * Template> externalTemplates = externalTarget.loadTemplates(trig); Map<String,
-                         * Increment> externalIncrements =
-                         * externalTarget.loadSpecificIncrement(externalTemplates, trig, incrementToSearch);
-                         *
-                         * // We save the external increments on our increments map
-                         * increments.putAll(externalIncrements); // We save the external templates on our
-                         * templates map templates.putAll(externalTemplates);
-                         *
-                         * // Now we get the needed increment from the external templates folder childPkg =
-                         * externalIncrements.get(incrementToSearch); for (Template template :
-                         * childPkg.getTemplates()) { rootIncrement.addTemplate(template); }
-                         *
-                         * parentPkg.addIncrementDependency(childPkg);
-                         *
-                         * com.devonfw.cobigen.impl.config.entity.io.Increment pkg =
-                         * externalTarget.getIncrementDeclaration(ref);
-                         */
-
                     } else {
                         throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                             "No increment found for ref='" + ref.getRef() + "'!");

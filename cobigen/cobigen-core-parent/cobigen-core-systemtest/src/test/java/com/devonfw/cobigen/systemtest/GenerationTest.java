@@ -27,6 +27,7 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
+import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
@@ -76,15 +77,34 @@ public class GenerationTest extends AbstractApiTest {
      */
     @Test
     public void testGenerationWithExternalIncrements() throws Exception {
+        // given
         Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
         File folder = tmpFolder.newFolder("GenerationTest");
         File target = new File(folder, "generated.txt");
         FileUtils.write(target, "base");
 
+        // when
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGeneration").toURI());
         List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+        List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
+        List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
+
+        // assert
+        IncrementTo externalIncrement = null;
+        // we try to get an increment containing external increments
+        for (IncrementTo inc : increments) {
+            if (inc.getId().equals("3")) {
+                externalIncrement = inc;
+            }
+        }
+
         assertThat(templates).hasSize(5);
+        // We expect increment 3 to have an external increment 0 containing one template
+        assertThat(externalIncrement).isNotNull();
+        assertThat(externalIncrement.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
+        // We expect two triggers, the main one and the external one
+        assertThat(triggersIds.size()).isEqualTo(2);
     }
 
     /**

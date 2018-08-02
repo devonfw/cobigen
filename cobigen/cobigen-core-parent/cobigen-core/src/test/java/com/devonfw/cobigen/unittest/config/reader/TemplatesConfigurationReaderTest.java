@@ -375,10 +375,23 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
             templatesConfigurationsSuperMap.get(templateFolderExternal);
 
+        Map<String, Increment> externalIncrements =
+            templatesConfigurationsCurrent.get("testingTrigger").getIncrements();
+
         // validation
         assertThat(templatesConfigurationsCurrent).containsOnlyKeys("testingTrigger");
-        assertThat(templatesConfigurationsCurrent.get("testingTrigger").getIncrements()).containsOnlyKeys("3", "4",
-            "5");
+        assertThat(externalIncrements).containsOnlyKeys("3", "4", "5");
+
+        // We expect increment 3 to have an external increment 0 containing one template
+        assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
+
+        // We expect increment 4 to have an external increment 2 containing 4 templates (one template comes
+        // from another incrementRef)
+        assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
+
+        // We expect increment 5 to have an external increment 3 containing 4 templates (one template comes
+        // from another incrementRef and one from a templateRef)
+        assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
         assertThat(templatesConfigurationsExternal).containsOnlyKeys("valid_increment_composition");
         assertThat(templatesConfigurationsExternal.get("valid_increment_composition").getIncrements())
             .containsOnlyKeys("0", "1", "2");
