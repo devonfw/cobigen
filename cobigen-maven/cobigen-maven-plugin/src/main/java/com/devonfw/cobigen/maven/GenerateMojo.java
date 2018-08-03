@@ -221,7 +221,8 @@ public class GenerateMojo extends AbstractMojo {
                 getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
             }
         }
-        Path rootPath = null;
+
+        Path rootPath;
         URL rootUrl = classRealm.getResource("context.xml");
         if (rootUrl == null) {
             rootUrl = classRealm.getResource("src/main/templates/context.xml");
@@ -231,6 +232,8 @@ public class GenerateMojo extends AbstractMojo {
             } else {
                 rootPath = Paths.get(URI.create(rootUrl.toString())).getParent().getParent().getParent();
             }
+        } else {
+            rootPath = Paths.get(URI.create(rootUrl.toString()));
         }
         getLog().debug("Found context.xml @ " + rootUrl.toString());
         final List<String> foundClasses = new LinkedList<>();
