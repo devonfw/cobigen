@@ -26,8 +26,6 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -65,9 +63,6 @@ import com.google.common.collect.Sets;
  * converts the information to the working entities
  */
 public class TemplatesConfigurationReader {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
     /**
      * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.

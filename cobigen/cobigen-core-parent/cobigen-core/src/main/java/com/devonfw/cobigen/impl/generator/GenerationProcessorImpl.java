@@ -286,19 +286,9 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
-        // TODO
-        LOG.warn("This is  {}", configurationHolder.readContextConfiguration().getConfigurationPath()
-            .resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER).resolve(trigger.getTemplateFolder()));
-        LOG.warn("{}",
-            configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
-        // if (inSourceFolder) {
-        templateEngine.setTemplateFolder(configurationHolder.readContextConfiguration().getConfigurationPath()
-            .resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER).resolve(trigger.getTemplateFolder()));
-        // } else {
         templateEngine.setTemplateFolder(
             configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
-        // }
 
         Template templateEty = tConfig.getTemplate(template.getId());
         if (templateEty == null) {
@@ -320,6 +310,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
             String resolvedTmpDestinationPath =
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
+
             File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
             // remember mapping to later on copy the generated resources to its target destinations
@@ -528,7 +519,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         Map<String, Object> model, String outputCharset) {
 
         try (Writer out = new StringWriter()) {
-
             templateEngine.process(template, model, out, outputCharset);
             FileUtils.writeStringToFile(output, out.toString(), outputCharset);
         } catch (IOException e) {
