@@ -410,6 +410,13 @@
           encoding="UTF-8">
         <description></description>
       </setupTask>
+      <setupTask
+          xsi:type="setup:ResourceCreationTask"
+          id="console.modification"
+          content="del &quot;console.bat&quot;&#xA;echo @echo off >> console.bat&#xA;echo pushd %~dp0 >> console.bat&#xA;echo call scripts\environment-project.bat >> console.bat&#xA;echo popd >> console.bat&#xA;echo start software\cmder\Cmder.exe >> console.bat&#xA;&#xA;DEL &quot;%~f0&quot;"
+          targetURL="${installation.root/console_update.bat}">
+        <description>changing the console.bat from cmd to cmder type</description>
+      </setupTask>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
