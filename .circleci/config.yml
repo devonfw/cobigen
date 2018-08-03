@@ -44,7 +44,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - setup
+      - setup:
           filters:
             branches:
               ignore: gh-pages,dev_oomph_setup
