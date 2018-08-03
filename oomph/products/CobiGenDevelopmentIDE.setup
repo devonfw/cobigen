@@ -320,6 +320,14 @@
       successor="tasks.unzip.external.software"
       name="download tasks of external software">
     <setupTask
+        xsi:type="setup:ResourceCopyTask"
+        id="rc.cmder"
+        excludedTriggers="STARTUP"
+        sourceURL="https://github.com/cmderdev/cmder/releases/download/v1.3.6/cmder.7z"
+        targetURL="${tmp.download.location/cmder.7z|uri}">
+      <description>Downloads the cmder archive</description>
+    </setupTask>
+    <setupTask
         xsi:type="setup:CompoundTask"
         id="tasks.download.external.software.windows"
         filter="(os.name=Windows*)"
@@ -383,14 +391,6 @@
           sourceURL="http://de-mucevolve02/files/oomph/resources/python/python-${python.version}-linux.tar.gz"
           targetURL="${tmp.download.location/python.tar.gz|uri}">
         <description>Fetches the python linux archive</description>
-      </setupTask>
-      <setupTask
-          xsi:type="setup:ResourceCopyTask"
-          id="rc.cmder"
-          excludedTriggers="STARTUP"
-          sourceURL="https://github.com/cmderdev/cmder/releases/download/v1.3.6/cmder.7z"
-          targetURL="${tmp.download.location/cmder.7z|uri}">
-        <description>Downloads the cmder archive</description>
       </setupTask>
     </setupTask>
     <description>downloads external resources</description>
