@@ -88,7 +88,7 @@ public class AbstractMavenTest {
 
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(testProjectRoot);
-        request.setGoals(Collections.singletonList("package"));
+        request.setGoals(Collections.singletonList("package -X"));
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);

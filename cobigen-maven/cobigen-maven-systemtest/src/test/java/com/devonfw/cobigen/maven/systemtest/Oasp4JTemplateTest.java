@@ -80,6 +80,26 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     }
 
     /**
+     * Tries to reproduce issue #715 https://github.com/devonfw/tools-cobigen/issues/715 where a Windows path
+     * exception is thrown when trying to generate from an OpenApi file. For doing so, processes a generation
+     * of oasp4j template increments daos, entity_infrastructure, TOs, Logic and Rest Service and just checks
+     * whether the files have been generated. Takes a yaml file as input.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testWindowsPathGenerationError() throws Exception {
+        File testProject = new File(TEST_RESOURCES_ROOT + "TestWindowsPathGenerationError/");
+        File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
+
+        long numFilesInTarget =
+            Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+        // 4 from from daos + 4 from entity infrastructure + 6 from TOs + 4 from Logic (all in one) + 2 rest
+        // service imp = 18
+        assertThat(numFilesInTarget).isEqualTo(18);
+    }
+
+    /**
      * Test class loading for a configuration folder with java util classes as well as test classes
      * @throws Exception
      *             test fails
