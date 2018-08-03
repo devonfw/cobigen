@@ -133,7 +133,6 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("");
             return;
         }
-
         List<GenerableArtifact> generableArtifacts = collectIncrements(cobiGen, inputs);
         generableArtifacts.addAll(collectTemplates(cobiGen, inputs));
 
@@ -222,19 +221,24 @@ public class GenerateMojo extends AbstractMojo {
                 getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
             }
         }
-
-        URL contextXmlUrl = classRealm.getResource("context.xml");
-        if (contextXmlUrl == null) {
-            getLog().error("No context.xml could be found in the classpath!");
-            return null;
+        Path rootPath = null;
+        URL rootUrl = classRealm.getResource("context.xml");
+        if (rootUrl == null) {
+            rootUrl = classRealm.getResource("src/main/templates/context.xml");
+            if (rootUrl == null) {
+                getLog().error("No context.xml could be found in the classpath!");
+                return null;
+            } else {
+                rootPath = Paths.get(URI.create(rootUrl.toString())).getParent().getParent().getParent();
+            }
         }
-        getLog().debug("Found context.xml @ " + contextXmlUrl.toString());
+        getLog().debug("Found context.xml @ " + rootUrl.toString());
         final List<String> foundClasses = new LinkedList<>();
-        if (contextXmlUrl.toString().startsWith("jar")) {
-            getLog().info("Processing configuration archive " + contextXmlUrl.toString());
+        if (rootUrl.toString().startsWith("jar")) {
+            getLog().info("Processing configuration archive " + rootUrl.toString());
             try {
                 // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextXmlUrl.toString().split("!")[0]);
+                URI jarUri = URI.create(rootUrl.toString().split("!")[0]);
                 FileSystem jarfs = FileSystems.getFileSystem(jarUri);
 
                 // walk the jar file
@@ -272,15 +276,16 @@ public class GenerateMojo extends AbstractMojo {
                 }
             }
         } else {
-            final Path configFolder = Paths.get(URI.create(contextXmlUrl.toString())).getParent();
-            getLog().info("Processing configuration folder " + configFolder.toString());
+            rootPath = rootPath.getParent();
+            getLog().info("Processing configuration folder " + rootPath.toString());
             getLog().debug("Searching for classes ...");
             final List<Path> foundPaths = new LinkedList<>();
             try {
-                Files.walkFileTree(configFolder, new SimpleFileVisitor<Path>() {
-
+                Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        // LOG.warn("####################");
+                        // LOG.warn("{}", file.toString());
                         if (file.toString().endsWith(".class")) {
                             foundPaths.add(file);
                             getLog().debug("    * Found class file " + file.toString());
@@ -295,28 +300,25 @@ public class GenerateMojo extends AbstractMojo {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-            } catch (
-
-            IOException e) {
+            } catch (IOException e) {
                 getLog().error(e);
             }
-
             if (foundPaths.size() > 0) {
 
                 getLog().debug("Cleanup test classes ...");
-                String classOutput = getClassOutputPathFromDotClasspathFile(configFolder);
+                String classOutput = getClassOutputPathFromDotClasspathFile(rootPath);
                 if (classOutput != null) {
                     Path classOutputPath = Paths.get(classOutput);
                     Iterator<Path> it = foundPaths.iterator();
                     while (it.hasNext()) {
                         Path next = it.next();
-                        if (!configFolder.relativize(next).startsWith(classOutputPath)) {
+                        if (!rootPath.relativize(next).startsWith(classOutputPath)) {
                             getLog().debug("    * Removed class file " + next.toString());
                             it.remove();
                         }
                     }
 
-                    Path absoluteClassOutputPath = configFolder.resolve(classOutputPath);
+                    Path absoluteClassOutputPath = rootPath.resolve(classOutputPath);
                     try {
                         URL classOutputUrl = absoluteClassOutputPath.toUri().toURL();
                         pluginDescriptor.getClassRealm().addURL(classOutputUrl);
@@ -327,7 +329,7 @@ public class GenerateMojo extends AbstractMojo {
 
                     for (Path path : foundPaths) {
                         try {
-                            result.add(loadClassByPath(configFolder.relativize(path), classRealm));
+                            result.add(loadClassByPath(rootPath.relativize(path), classRealm));
                         } catch (ClassNotFoundException e) {
                             getLog().error(e);
                         }
