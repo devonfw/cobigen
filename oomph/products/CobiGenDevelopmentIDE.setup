@@ -320,14 +320,6 @@
       successor="tasks.unzip.external.software"
       name="download tasks of external software">
     <setupTask
-        xsi:type="setup:ResourceCopyTask"
-        id="rc.cmder"
-        excludedTriggers="STARTUP"
-        sourceURL="https://github.com/cmderdev/cmder/releases/download/v1.3.6/cmder.zip"
-        targetURL="${tmp.download.location/cmder.zip|uri}">
-      <description>Downloads the cmder archive</description>
-    </setupTask>
-    <setupTask
         xsi:type="setup:CompoundTask"
         id="tasks.download.external.software.windows"
         filter="(os.name=Windows*)"
@@ -400,17 +392,6 @@
       id="tasks.unzip.external.software"
       predecessor="compound.downloads.external.software"
       name="unzip tasks of external software">
-    <setupTask
-        xsi:type="com.github.maybeec.oomph.task:unzipTask"
-        id="unzip.cmder"
-        excludedTriggers="STARTUP"
-        predecessor="rc.cmder"
-        filter=""
-        zipFile="${tmp.download.location/cmder.zip}"
-        destinationDir="${software.location}"
-        priority="100">
-      <description>Unzips the cmder archive into the software folder</description>
-    </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
         id="tasks.unzip.external.software.linux"
