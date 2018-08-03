@@ -10,7 +10,6 @@ image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobi
 | templates-oasp4j | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j]
 | templates-oasp4js | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js]
 | core | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core]
-| core-api | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core-api/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core-api]
 | javaplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin]
 | xmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin]
 | openapiplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin]
