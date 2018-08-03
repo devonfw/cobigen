@@ -622,13 +622,13 @@
       <requirement
           name="org.eclipse.pde.feature.group"/>
       <repository
-          url="http://download.eclipse.org/releases/oxygen"/>
+          url="http://download.eclipse.org/releases/photon"/>
       <repository
-          url="http://download.eclipse.org/mylyn/releases/oxygen"/>
+          url="http://download.eclipse.org/mylyn/releases/photon"/>
       <repository
-          url="http://dist.springsource.com/release/TOOLS/update/e4.7/"/>
+          url="http://dist.springsource.com/release/TOOLS/update/e4.8/"/>
       <repository
-          url="http://download.eclipse.org/eclipse/updates/4.7/"/>
+          url="http://download.eclipse.org/eclipse/updates/4.8/"/>
     </setupTask>
   </version>
   <version name="Neon"
@@ -738,7 +738,7 @@
       <repository
           url="http://dist.springsource.com/release/TOOLS/update/e4.8/"/>
       <repository
-          url="http://download.eclipse.org/eclipse/updates/4.7/"/>
+          url="http://download.eclipse.org/eclipse/updates/4.8/"/>
     </setupTask>
     <description>Cobigen-Development Photon version</description>
   </version>
