@@ -16,24 +16,24 @@ jobs:
     <<: *defaults
     steps:
       - run:
-        name: Determine Build Root
-        command: |
-          if [ "$CIRCLE_BRANCH" == "master" ]; then
-            echo 'export BUILD_ROOT=""' >> $BASH_ENV
-          elif [ "$CIRCLE_BRANCH" == "dev_eclipseplugin" ]; then
-            echo 'export BUILD_ROOT="cobigen-eclipse"' >> $BASH_ENV
-          elif [ "$CIRCLE_BRANCH" == "dev_mavenplugin" ]; then
-            echo 'export BUILD_ROOT="cobigen-maven"' >> $BASH_ENV
-          elif [[ ("$CIRCLE_BRANCH" == "dev_core") || ("$CIRCLE_BRANCH" == "dev_javaplugin") || ("$CIRCLE_BRANCH" == "dev_openapiplugin") ]]; then 
-            echo 'export BUILD_ROOT="${CIRCLE_BRANCH//dev_/}-parent"' >> $BASH_ENV
-          elif [ "$CIRCLE_BRANCH" == "dev_htmlmerger" ]; then 
-            echo 'export BUILD_ROOT="cobigen/cobigen-htmlplugin"' >> $BASH_ENV
-          elif [[ ("$CIRCLE_BRANCH" == "dev_tempeng_freemarker") || ("$CIRCLE_BRANCH" == "dev_tempeng_velocity")]]; then 
-            echo 'export BUILD_ROOT="cobigen/cobigen-templateengines/cobigen-${CIRCLE_BRANCH//dev_/}"' >> $BASH_ENV
-            echo 'export BUILD_ROOT="${BUILD_ROOT//_/-}"' >> $BASH_ENV
-          else
-            echo 'export BUILD_ROOT="cobigen/cobigen-${CIRCLE_BRANCH//dev_/}"' >> $BASH_ENV
-          fi
+          name: Determine Build Root
+          command: |
+            if [ "$CIRCLE_BRANCH" == "master" ]; then
+              echo 'export BUILD_ROOT=""' >> $BASH_ENV
+            elif [ "$CIRCLE_BRANCH" == "dev_eclipseplugin" ]; then
+              echo 'export BUILD_ROOT="cobigen-eclipse"' >> $BASH_ENV
+            elif [ "$CIRCLE_BRANCH" == "dev_mavenplugin" ]; then
+              echo 'export BUILD_ROOT="cobigen-maven"' >> $BASH_ENV
+            elif [[ ("$CIRCLE_BRANCH" == "dev_core") || ("$CIRCLE_BRANCH" == "dev_javaplugin") || ("$CIRCLE_BRANCH" == "dev_openapiplugin") ]]; then 
+              echo 'export BUILD_ROOT="${CIRCLE_BRANCH//dev_/}-parent"' >> $BASH_ENV
+            elif [ "$CIRCLE_BRANCH" == "dev_htmlmerger" ]; then 
+              echo 'export BUILD_ROOT="cobigen/cobigen-htmlplugin"' >> $BASH_ENV
+            elif [[ ("$CIRCLE_BRANCH" == "dev_tempeng_freemarker") || ("$CIRCLE_BRANCH" == "dev_tempeng_velocity")]]; then 
+              echo 'export BUILD_ROOT="cobigen/cobigen-templateengines/cobigen-${CIRCLE_BRANCH//dev_/}"' >> $BASH_ENV
+              echo 'export BUILD_ROOT="${BUILD_ROOT//_/-}"' >> $BASH_ENV
+            else
+              echo 'export BUILD_ROOT="cobigen/cobigen-${CIRCLE_BRANCH//dev_/}"' >> $BASH_ENV
+            fi
   build:
     <<: *defaults
     steps:
