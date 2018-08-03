@@ -388,6 +388,14 @@
     <description>downloads external resources</description>
   </setupTask>
   <setupTask
+      xsi:type="setup:ResourceCopyTask"
+      id="rc.cmder"
+      excludedTriggers="STARTUP"
+      sourceURL="http://de-mucevolve02/files/oomph/resources/cmder/cmder.zip"
+      targetURL="${tmp.download.location/cmder.zip|uri}">
+    <description>Fetches the cmder archive</description>
+  </setupTask>
+  <setupTask
       xsi:type="setup:CompoundTask"
       id="tasks.unzip.external.software"
       predecessor="compound.downloads.external.software"
@@ -457,6 +465,17 @@
     <description></description>
   </setupTask>
   <setupTask
+      xsi:type="com.github.maybeec.oomph.task:unzipTask"
+      id="unzip.cmder"
+      excludedTriggers="STARTUP"
+      predecessor="rc.cmder"
+      filter=""
+      zipFile="${tmp.download.location/cmder.zip}"
+      destinationDir="${software.location}"
+      priority="100">
+    <description>unzips the cmder archive</description>
+  </setupTask>
+  <setupTask
       xsi:type="setup:CompoundTask"
       name="UI Setup">
     <setupTask
@@ -512,7 +531,7 @@
         xsi:type="com.github.maybeec.oomph.task:unzipTask"
         id="unzip.jdk.1.8"
         excludedTriggers="STARTUP MANUAL"
-        predecessor="jdk.win.64 //@setupTasks.11/@setupTasks.1"
+        predecessor="jdk.win.64 //@setupTasks.13/@setupTasks.1"
         zipFile="${tmp.download.location/java18.zip}"
         destinationDir="${software.location/java/}"
         priority="100"/>
@@ -520,7 +539,7 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       id="tasks.finalize.external.resources"
-      predecessor="//@setupTasks.11 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.9 //@setupTasks.10"
+      predecessor="//@setupTasks.13 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.11 //@setupTasks.12"
       name="finalize external resources">
     <setupTask
         xsi:type="setup:CompoundTask"
