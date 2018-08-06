@@ -61,7 +61,7 @@ public class ContextConfigurationReader {
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
         contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         if (!Files.exists(contextFile)) {
-            configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
+            configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
             contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             if (!Files.exists(contextFile)) {
                 throw new InvalidConfigurationException(contextFile, "Could not find context configuration file.");

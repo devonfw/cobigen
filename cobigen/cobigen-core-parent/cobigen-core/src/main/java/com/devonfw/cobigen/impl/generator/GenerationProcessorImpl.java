@@ -130,14 +130,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         // initialize
         this.forceOverride = forceOverride;
         this.input = input;
-        LOG.warn("{}", logicClasses != null);
         if (logicClasses != null) {
-            LOG.warn("{}", logicClasses.isEmpty());
-            for (Class<?> clazz : logicClasses) {
-                LOG.warn("##############################");
-                LOG.warn("{}", clazz.getSimpleName());
-            }
-            LOG.warn("##############################");
             loadLogicClasses(logicClasses);
         }
         this.rawModel = rawModel;
