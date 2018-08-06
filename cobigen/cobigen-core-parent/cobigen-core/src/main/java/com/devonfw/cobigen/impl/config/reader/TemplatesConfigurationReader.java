@@ -91,22 +91,22 @@ public class TemplatesConfigurationReader {
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
      * configuration file
      *
-     * @param templatesRoot
-     *            root path for the templates
-     * @param templatesName
-     *            name of the folder containing the configuration and templates
+     * @param projectRoot
+     *            root path for the templates, has to be an absolute path
+     * @param templateFolder
+     *            name of the folder containing the configuration and templates, has to be a relative path
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path templatesRoot, String templatesName) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder) throws InvalidConfigurationException {
         Path templateLocation;
 
-        Path rootTemplatePath = templatesRoot.resolve(templatesName);
+        Path rootTemplatePath = projectRoot.resolve(templateFolder);
         configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
 
         if (!Files.exists(configFilePath)) {
-            Path sourceTemplatePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATE_SOURCE_FOLDER);
-            sourceTemplatePath = sourceTemplatePath.resolve(templatesName);
+            Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            sourceTemplatePath = sourceTemplatePath.resolve(templateFolder);
             configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
             templateLocation = sourceTemplatePath;
 
