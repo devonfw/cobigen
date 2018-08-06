@@ -207,10 +207,13 @@ public class GenerateMojo extends AbstractMojo {
 
     /**
      * Walks the class path in search of an 'context.xml' resource to identify the enclosing folder or jar
-     * file. That location is then searched for class files and a list with those loaded classes is returned
+     * file. That location is then searched for class files and a list with those loaded classes is returned.
+     * If the sources are not compiled, the templates will not be able to be generated.
      * @return a List of Classes for template generation.
+     * @throws MojoExecutionException
+     *             When no context.xml can be found
      */
-    private List<Class<?>> resolveUtilClasses() {
+    private List<Class<?>> resolveUtilClasses() throws MojoExecutionException {
         final List<Class<?>> result = new LinkedList<>();
         final ClassRealm classRealm = pluginDescriptor.getClassRealm();
         if (configurationFolder != null) {
@@ -222,26 +225,26 @@ public class GenerateMojo extends AbstractMojo {
             }
         }
 
-        Path rootPath;
-        URL rootUrl = classRealm.getResource("context.xml");
-        if (rootUrl == null) {
-            rootUrl = classRealm.getResource("src/main/templates/context.xml");
-            if (rootUrl == null) {
-                getLog().error("No context.xml could be found in the classpath!");
-                return null;
+        Path templateRoot;
+        URL contextConfigurationLocation = classRealm.getResource("context.xml");
+        if (contextConfigurationLocation == null) {
+            contextConfigurationLocation = classRealm.getResource("src/main/templates/context.xml");
+            if (contextConfigurationLocation == null) {
+                throw new MojoExecutionException("No context.xml could be found in the classpath!");
             } else {
-                rootPath = Paths.get(URI.create(rootUrl.toString())).getParent().getParent().getParent();
+                templateRoot =
+                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
             }
         } else {
-            rootPath = Paths.get(URI.create(rootUrl.toString()));
+            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
         }
-        getLog().debug("Found context.xml @ " + rootUrl.toString());
+        getLog().debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
-        if (rootUrl.toString().startsWith("jar")) {
-            getLog().info("Processing configuration archive " + rootUrl.toString());
+        if (contextConfigurationLocation.toString().startsWith("jar")) {
+            getLog().info("Processing configuration archive " + contextConfigurationLocation.toString());
             try {
                 // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(rootUrl.toString().split("!")[0]);
+                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
                 FileSystem jarfs = FileSystems.getFileSystem(jarUri);
 
                 // walk the jar file
@@ -279,16 +282,14 @@ public class GenerateMojo extends AbstractMojo {
                 }
             }
         } else {
-            rootPath = rootPath.getParent();
-            getLog().info("Processing configuration folder " + rootPath.toString());
+            templateRoot = templateRoot.getParent();
+            getLog().info("Processing configuration folder " + templateRoot.toString());
             getLog().debug("Searching for classes ...");
             final List<Path> foundPaths = new LinkedList<>();
             try {
-                Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
+                Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        // LOG.warn("####################");
-                        // LOG.warn("{}", file.toString());
                         if (file.toString().endsWith(".class")) {
                             foundPaths.add(file);
                             getLog().debug("    * Found class file " + file.toString());
@@ -309,19 +310,19 @@ public class GenerateMojo extends AbstractMojo {
             if (foundPaths.size() > 0) {
 
                 getLog().debug("Cleanup test classes ...");
-                String classOutput = getClassOutputPathFromDotClasspathFile(rootPath);
+                String classOutput = getClassOutputPathFromDotClasspathFile(templateRoot);
                 if (classOutput != null) {
                     Path classOutputPath = Paths.get(classOutput);
                     Iterator<Path> it = foundPaths.iterator();
                     while (it.hasNext()) {
                         Path next = it.next();
-                        if (!rootPath.relativize(next).startsWith(classOutputPath)) {
+                        if (!templateRoot.relativize(next).startsWith(classOutputPath)) {
                             getLog().debug("    * Removed class file " + next.toString());
                             it.remove();
                         }
                     }
 
-                    Path absoluteClassOutputPath = rootPath.resolve(classOutputPath);
+                    Path absoluteClassOutputPath = templateRoot.resolve(classOutputPath);
                     try {
                         URL classOutputUrl = absoluteClassOutputPath.toUri().toURL();
                         pluginDescriptor.getClassRealm().addURL(classOutputUrl);
@@ -332,7 +333,7 @@ public class GenerateMojo extends AbstractMojo {
 
                     for (Path path : foundPaths) {
                         try {
-                            result.add(loadClassByPath(rootPath.relativize(path), classRealm));
+                            result.add(loadClassByPath(templateRoot.relativize(path), classRealm));
                         } catch (ClassNotFoundException e) {
                             getLog().error(e);
                         }
