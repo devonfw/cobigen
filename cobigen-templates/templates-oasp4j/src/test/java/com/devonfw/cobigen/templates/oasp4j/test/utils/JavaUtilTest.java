@@ -1,13 +1,9 @@
 package com.devonfw.cobigen.templates.oasp4j.test.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Method;
 
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,7 +33,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveWithPrimitive() {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitive("int"));
+        assertThat(new JavaUtil().equalsJavaPrimitive("int")).isTrue();
     }
 
     /**
@@ -47,7 +43,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveWithPrimitive() throws NoSuchFieldException, SecurityException {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitive(clazz, "primitive"));
+        assertThat(new JavaUtil().equalsJavaPrimitive(clazz, "primitive")).isTrue();
     }
 
     /**
@@ -57,7 +53,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveWithBoxedPrimitive() {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive("Integer"));
+        assertThat(new JavaUtil().equalsJavaPrimitive("Integer")).isFalse();
     }
 
     /**
@@ -67,7 +63,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveWithBoxedPrimitive() throws NoSuchFieldException, SecurityException {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive(clazz, "boxed"));
+        assertThat(new JavaUtil().equalsJavaPrimitive(clazz, "boxed")).isFalse();
     }
 
     /**
@@ -77,7 +73,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveWithPrimitiveArray() {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive("int[]"));
+        assertThat(new JavaUtil().equalsJavaPrimitive("int[]")).isFalse();
     }
 
     /**
@@ -87,7 +83,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveWithPrimitiveArray() throws NoSuchFieldException, SecurityException {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive(clazz, "primitiveArray"));
+        assertThat(new JavaUtil().equalsJavaPrimitive(clazz, "primitiveArray")).isFalse();
     }
 
     /**
@@ -97,7 +93,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveWOPrimitive() {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive("util.JavaUtilTest"));
+        assertThat(new JavaUtil().equalsJavaPrimitive("util.JavaUtilTest")).isFalse();
     }
 
     /**
@@ -107,7 +103,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveWOPrimitive() throws NoSuchFieldException, SecurityException {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive(clazz, "object"));
+        assertThat(new JavaUtil().equalsJavaPrimitive(clazz, "object")).isFalse();
     }
 
     /**
@@ -117,7 +113,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveWOExistingClass() {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive("DefinitelyNotAClass"));
+        assertThat(new JavaUtil().equalsJavaPrimitive("DefinitelyNotAClass")).isFalse();
     }
 
     /**
@@ -127,7 +123,7 @@ public class JavaUtilTest {
     @Test(expected = NoSuchFieldException.class)
     public void testPojoEqualsJavaPrimitiveWOExistingClass() throws NoSuchFieldException, SecurityException {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitive(clazz, "definitelyNotAField"));
+        assertThat(new JavaUtil().equalsJavaPrimitive(clazz, "definitelyNotAField")).isFalse();
     }
 
     /**
@@ -136,7 +132,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveIncludingArrays() {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitiveIncludingArrays("int"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays("int")).isTrue();
     }
 
     /**
@@ -146,7 +142,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveIncludingArrays() throws NoSuchFieldException, SecurityException {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "primitive"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "primitive")).isTrue();
     }
 
     /**
@@ -156,7 +152,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveIncludingArraysWPrimitiveArray() {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitiveIncludingArrays("int[]"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays("int[]")).isTrue();
     }
 
     /**
@@ -167,7 +163,7 @@ public class JavaUtilTest {
     public void testPojoEqualsJavaPrimitiveIncludingArraysWPrimitiveArray()
         throws NoSuchFieldException, SecurityException {
 
-        assertTrue(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "primitiveArray"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "primitiveArray")).isTrue();
     }
 
     /**
@@ -177,7 +173,7 @@ public class JavaUtilTest {
     @Test
     public void testEqualsJavaPrimitiveIncludingArraysWArray() {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitiveIncludingArrays("Integer[]"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays("Integer[]")).isFalse();
     }
 
     /**
@@ -187,7 +183,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoEqualsJavaPrimitiveIncludingArraysWArray() throws NoSuchFieldException, SecurityException {
 
-        assertFalse(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "objectArray"));
+        assertThat(new JavaUtil().equalsJavaPrimitiveIncludingArrays(clazz, "objectArray")).isFalse();
     }
 
     /**
@@ -197,7 +193,7 @@ public class JavaUtilTest {
     @Test
     public void testBoxJavaPrimitive() throws Exception {
 
-        assertEquals("Integer", new JavaUtil().boxJavaPrimitives("int"));
+        assertThat(new JavaUtil().boxJavaPrimitives("int")).isEqualTo("Integer");
     }
 
     /**
@@ -207,7 +203,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoBoxJavaPrimitive() throws Exception {
 
-        assertEquals("Integer", new JavaUtil().boxJavaPrimitives(clazz, "primitive"));
+        assertThat(new JavaUtil().boxJavaPrimitives(clazz, "primitive")).isEqualTo("Integer");
     }
 
     /**
@@ -217,7 +213,7 @@ public class JavaUtilTest {
     @Test
     public void testBoxJavaPrimitiveWPrimitiveArray() throws Exception {
 
-        assertEquals("int[]", new JavaUtil().boxJavaPrimitives("int[]"));
+        assertThat(new JavaUtil().boxJavaPrimitives("int[]")).isEqualTo("int[]");
     }
 
     /**
@@ -227,7 +223,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoBoxJavaPrimitiveWPrimitiveArray() throws Exception {
 
-        assertEquals("int[]", new JavaUtil().boxJavaPrimitives(clazz, "primitiveArray"));
+        assertThat(new JavaUtil().boxJavaPrimitives(clazz, "primitiveArray")).isEqualTo("int[]");
     }
 
     /**
@@ -236,7 +232,7 @@ public class JavaUtilTest {
     @Test
     public void testBoxJavaPrimitiveWOPrimitive() throws Exception {
 
-        assertEquals("Notint", new JavaUtil().boxJavaPrimitives("Notint"));
+        assertThat(new JavaUtil().boxJavaPrimitives("Notint")).isEqualTo("Notint");
     }
 
     /**
@@ -246,7 +242,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoBoxJavaPrimitiveWOPrimitive() throws Exception {
 
-        assertEquals("String", new JavaUtil().boxJavaPrimitives(clazz, "object"));
+        assertThat(new JavaUtil().boxJavaPrimitives(clazz, "object")).isEqualTo("String");
     }
 
     /**
@@ -255,7 +251,7 @@ public class JavaUtilTest {
     @Test
     public void testCastJavaPrimitiveStatement() throws Exception {
 
-        assertEquals("((Integer)var)", new JavaUtil().castJavaPrimitives("int", "var"));
+        assertThat(new JavaUtil().castJavaPrimitives("int", "var")).isEqualTo("((Integer)var)");
     }
 
     /**
@@ -264,7 +260,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoCastJavaPrimitiveStatement() throws Exception {
 
-        assertEquals("((Integer)primitive)", new JavaUtil().castJavaPrimitives(clazz, "primitive"));
+        assertThat(new JavaUtil().castJavaPrimitives(clazz, "primitive")).isEqualTo("((Integer)primitive)");
     }
 
     /**
@@ -274,7 +270,7 @@ public class JavaUtilTest {
     @Test
     public void testCastJavaPrimitiveStatementWOCast() throws Exception {
 
-        assertEquals("", new JavaUtil().castJavaPrimitives("Integer", "var"));
+        assertThat(new JavaUtil().castJavaPrimitives("Integer", "var")).isEqualTo("");
     }
 
     /**
@@ -284,7 +280,7 @@ public class JavaUtilTest {
     @Test
     public void testPojoCastJavaPrimitiveStatementWOCast() throws Exception {
 
-        assertEquals("", new JavaUtil().castJavaPrimitives(clazz, "object"));
+        assertThat(new JavaUtil().castJavaPrimitives(clazz, "object")).isEqualTo("");
     }
 
     /**
@@ -293,72 +289,23 @@ public class JavaUtilTest {
     @Test
     public void testIsCollection() throws NoSuchFieldException, SecurityException {
 
-        assertTrue(new JavaUtil().isCollection(clazz, "entitys"));
-        assertTrue(new JavaUtil().isCollection(clazz, "setEntitys"));
-        assertFalse(new JavaUtil().isCollection(clazz, "boxed"));
+        assertThat(new JavaUtil().isCollection(clazz, "entitys")).isTrue();
+        assertThat(new JavaUtil().isCollection(clazz, "setEntitys")).isTrue();
+        assertThat(new JavaUtil().isCollection(clazz, "boxed")).isFalse();
     }
 
     /**
      * tests if the return type is properly retrieved
+     * @throws SecurityException
+     * @throws NoSuchMethodException
      */
     @Test
-    public void testGetReturnType() {
-        assertEquals(new JavaUtil().getReturnType(clazz, "methodWithReturnType"), "String");
-        assertEquals(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType"), "-");
-    }
+    public void testGetReturnType() throws NoSuchMethodException, SecurityException {
+        for (Method m : clazz.getMethods()) {
 
-    /**
-     * tests if only methods with annotation return true
-     */
-    @Test
-    public void testHasAnnotation() {
-        assertTrue(new JavaUtil().hasAnnotation(clazz, "methodWithReturnType", "javax.ws.rs.GET"));
-        assertFalse(new JavaUtil().hasAnnotation(clazz, "methodWithVoidReturnType", "javax.ws.rs.GET"));
-    }
-
-    /**
-     * tests if only annotations that exist on a method return true
-     */
-    @Test
-    public void testHasMethodWithAnnotation() {
-        assertTrue(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.GET"));
-        assertFalse(new JavaUtil().hasMethodWithAnnotation(clazz, "javax.ws.rs.PUT"));
-    }
-
-    /**
-     * tests if {\@link} tags are properly stripped
-     */
-    @Test
-    public void testGetJavaDocWithoutLink() {
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@link id}"), "id");
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("{@sink id}"), "{@sink id}");
-        assertEquals(new JavaUtil().getJavaDocWithoutLink("id"), "id");
-    }
-
-    /**
-     * tests if MediaType.{mediatype name} is properly replaced with its lower case equivalent
-     */
-    @Test
-    public void testExtractMediaType() {
-        assertEquals(
-            new JavaUtil().extractMediaType("this consumes MediaType.APPLICATION_JSON and MediaType.APPLICATION_XML"),
-            "this consumes application/json and application/xml");
-        assertEquals(new JavaUtil().extractMediaType("this consumes mediatypes json and xml"),
-            "this consumes mediatypes json and xml");
-    }
-
-    /**
-     * tests if a non-existing application.properties file causes getting a rootpath to throw an exception
-     * @throws IOException
-     */
-    @Test(expected = IOException.class)
-    public void hasRootPathTest() throws IOException {
-        // assume
-        try (InputStream stream = clazz.getClassLoader().getResourceAsStream("application.properties")) {
-            Assume.assumeTrue("application.properties exists in classpath: "
-                + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
+            System.out.println(m.getName());
         }
-        assertFalse(new JavaUtil().extractRootPath(clazz).equals("This is not a root path!"));
-        assertEquals(new JavaUtil().extractRootPath(clazz), "http://localhost:8080/");
+        assertThat(new JavaUtil().getReturnType(clazz, "methodWithReturnType")).isEqualTo("String");
+        assertThat(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType")).isEqualTo("-");
     }
 }

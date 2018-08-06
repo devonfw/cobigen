@@ -4,6 +4,25 @@
 
 image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
 
+|===
+| Component | Release
+| maven-plugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin]
+| templates-oasp4j | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j]
+| templates-oasp4js | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js]
+| core | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core]
+| javaplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin]
+| xmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin]
+| openapiplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin]
+| tsplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin]
+| jsonplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin]
+| propertyplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin]
+| htmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin]
+| textmerger | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger]
+| tempeng-velocity | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity]
+| tempeng-freemarker | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker]
+|===
+
+
 == Usage
 
 * https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
