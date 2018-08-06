@@ -54,9 +54,9 @@ public class TemplatesConfiguration {
      */
     public TemplatesConfiguration(Path configRoot, Trigger trigger) throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()));
+        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder());
         templatesFolderName = trigger.getTemplateFolder();
+
         templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
         templateEngine = reader.getTemplateEngine();
