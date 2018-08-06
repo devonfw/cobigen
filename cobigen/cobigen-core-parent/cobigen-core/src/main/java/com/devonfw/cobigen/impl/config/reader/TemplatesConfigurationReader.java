@@ -26,6 +26,8 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -86,6 +88,9 @@ public class TemplatesConfigurationReader {
 
     /** The top-level folder where the templates are located. */
     private TemplateFolder rootTemplateFolder;
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReader.class);
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
@@ -396,6 +401,10 @@ public class TemplatesConfigurationReader {
         String relocate = templateFolder.getVariables().get(PROPERTY_RELOCATE);
         if (relocate != null) {
             if (scanSourcePath != null) {
+                LOG.info("scanSourcePath is {}", scanSourcePath);
+                LOG.warn("scanSourcePath file system is {}", Paths.get(scanSourcePath).getFileSystem());
+                LOG.info("templateFile is {}", templateFile);
+                LOG.warn("templateFile file system is {}", templateFile.getRootRelativePath());
                 Path destinationPath = Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
                 unresolvedDestinationPath =
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
