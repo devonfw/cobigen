@@ -227,7 +227,8 @@ public class GenerateMojo extends AbstractMojo {
 
         Path templateRoot;
         URL contextConfigurationLocation = classRealm.getResource("context.xml");
-        if (contextConfigurationLocation == null) {
+        if (contextConfigurationLocation == null
+            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
             contextConfigurationLocation = classRealm.getResource("src/main/templates/context.xml");
             if (contextConfigurationLocation == null) {
                 throw new MojoExecutionException("No context.xml could be found in the classpath!");
