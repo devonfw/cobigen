@@ -227,7 +227,8 @@ public class GenerateMojo extends AbstractMojo {
 
         Path templateRoot;
         URL contextConfigurationLocation = classRealm.getResource("context.xml");
-        if (contextConfigurationLocation == null) {
+        if (contextConfigurationLocation == null
+            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
             contextConfigurationLocation = classRealm.getResource("src/main/templates/context.xml");
             if (contextConfigurationLocation == null) {
                 throw new MojoExecutionException("No context.xml could be found in the classpath!");
@@ -310,6 +311,7 @@ public class GenerateMojo extends AbstractMojo {
             if (foundPaths.size() > 0) {
 
                 getLog().debug("Cleanup test classes ...");
+                getLog().warn("Root of the template is" + templateRoot);
                 String classOutput = getClassOutputPathFromDotClasspathFile(templateRoot);
                 if (classOutput != null) {
                     Path classOutputPath = Paths.get(classOutput);
