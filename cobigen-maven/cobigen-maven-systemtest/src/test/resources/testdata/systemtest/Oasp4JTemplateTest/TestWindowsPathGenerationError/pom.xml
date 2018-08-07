@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.capgemini</groupId>
+	<artifactId>apigendemo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Api Generation</name>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.devonfw.cobigen</groupId>
+				<artifactId>maven-plugin</artifactId>
+				<version>4.0.0</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<phase>package</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<inputFiles>
+						<inputFile>TeacherEto.java</inputFile>
+					</inputFiles>
+					<increments>
+						<increment>app_ionic_structure</increment>
+					</increments>
+					<failOnNothingGenerated>false</failOnNothingGenerated>
+				</configuration>
+				<dependencies>
+				    <dependency>
+						<groupId>com.devonfw.cobigen</groupId>
+						<artifactId>templates-oasp4j</artifactId>
+						<version>2.4.1</version>
+					</dependency>		
+					<dependency>
+						<groupId>com.devonfw.cobigen</groupId>
+						<artifactId>tempeng-freemarker</artifactId>
+						<version>2.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>com.devonfw.cobigen</groupId>
+						<artifactId>xmlplugin</artifactId>
+						<version>4.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>com.devonfw.cobigen</groupId>
+						<artifactId>openapiplugin</artifactId>
+						<version>2.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>com.devonfw.cobigen</groupId>
+						<artifactId>javaplugin</artifactId>
+						<version>2.0.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
