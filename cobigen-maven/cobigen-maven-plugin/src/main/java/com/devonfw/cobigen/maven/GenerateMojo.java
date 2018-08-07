@@ -311,7 +311,6 @@ public class GenerateMojo extends AbstractMojo {
             if (foundPaths.size() > 0) {
 
                 getLog().debug("Cleanup test classes ...");
-                getLog().warn("Root of the template is" + templateRoot);
                 String classOutput = getClassOutputPathFromDotClasspathFile(templateRoot);
                 if (classOutput != null) {
                     Path classOutputPath = Paths.get(classOutput);
