@@ -30,9 +30,6 @@ public class JavaDocumentationUtil {
     /** Full qualified name of javax Path annotation */
     private final String javaxPath = "javax_ws_rs_Path";
 
-    // /** Logger instance. */
-    // private static final Logger LOG = LoggerFactory.getLogger(JavaDocumentationUtil.class);
-
     /**
      * Creates a list of parameters of a specific method as an asciidoc string, including its name, type,
      * description, constraints
@@ -328,8 +325,7 @@ public class JavaDocumentationUtil {
             }
             return sb.toString();
         } else {
-            return "http://localhost:";
-            // throw new IOException("application.properties file not found!");
+            return "";
         }
     }
 
