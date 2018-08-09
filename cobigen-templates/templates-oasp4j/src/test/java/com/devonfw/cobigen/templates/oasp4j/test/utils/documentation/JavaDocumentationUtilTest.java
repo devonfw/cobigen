@@ -4,6 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.GET;
 
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -40,13 +45,37 @@ public class JavaDocumentationUtilTest {
      * @throws IOException
      */
     @Test(expected = IOException.class)
-    public void hasRootPathTest() throws IOException {
+    public void getPathTest() throws IOException {
         // assume
         try (InputStream stream = clazz.getClassLoader().getResourceAsStream("application.properties")) {
             Assume.assumeTrue("application.properties exists in classpath: "
                 + clazz.getClassLoader().getResource("application.properties").getPath(), stream == null);
         }
-        assertThat(new JavaDocumentationUtil().extractRootPath(clazz).equals("This is not a root path!")).isFalse();
-        assertThat(new JavaDocumentationUtil().extractRootPath(clazz)).isEqualTo("http://localhost:8080/");
+        Map<String, Object> pojo = new HashMap<>();
+
+        assertThat(new JavaDocumentationUtil().getPath(pojo)).isEqualTo("http://localhost:8080/");
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void testGetRequestType() {
+        Map<String, Object> annotationsJavax = new HashMap<>();
+        GET get = new GET() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return null;
+            }
+        };
+        annotationsJavax.put("javax_ws_rs_GET", get);
+        assertThat(new JavaDocumentationUtil().getRequestType(annotationsJavax)).isEqualTo("GET");
+
+        Map<String, Object> annotationsSpring = new HashMap<>();
+        Map<String, Object> annotationValues = new HashMap<>();
+        annotationValues.put("method", "requestmethod.get");
+        annotationsSpring.put("org_springframework_web_bind_annotation_RequestMapping", annotationValues);
+        assertThat(new JavaDocumentationUtil().getRequestType(annotationsSpring)).isEqualTo("GET");
     }
 }
