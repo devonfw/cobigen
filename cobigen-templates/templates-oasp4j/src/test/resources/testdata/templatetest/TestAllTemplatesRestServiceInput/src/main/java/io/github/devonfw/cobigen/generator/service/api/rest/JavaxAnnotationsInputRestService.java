@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/test/v1")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface InputRestService {
+public interface JavaxAnnotationsInputRestService {
 
   /**
    * Delegates to nothing.
