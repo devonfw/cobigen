@@ -170,7 +170,7 @@
       <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
       <layout>p2</layout>
     </repository>
-	<repository>
+    <repository>
       <id>neon</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/releases/neon</url>
