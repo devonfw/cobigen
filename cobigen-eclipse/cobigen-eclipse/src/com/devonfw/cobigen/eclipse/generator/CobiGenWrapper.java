@@ -168,7 +168,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
-            LOG.debug("Generting files...");
+            LOG.debug("Generating files...");
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
@@ -220,6 +220,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if anything during classpath resolving and class loading fails.
      */
     private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
+        LOG.debug("Resolve template util classes...");
         List<Class<?>> classes = Lists.newArrayList();
 
         IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
@@ -232,17 +233,24 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             // as the parent classpath to prevent classpath shading.
             inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
 
-            for (IPackageFragmentRoot roots : configJavaProject.getPackageFragmentRoots()) {
-                for (IJavaElement e : roots.getChildren()) {
-                    if (e instanceof IPackageFragment) {
-                        for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                            IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                            classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+            LOG.debug("Search fragment roots in project {}", configJavaProject.getElementName());
+            for (IPackageFragmentRoot root : configJavaProject.getPackageFragmentRoots()) {
+                if (!root.isExternal()) {
+                    LOG.debug("Search for compilation units in non-external fragment root '{}' ...",
+                        root.getElementName());
+                    for (IJavaElement e : root.getChildren()) {
+                        if (e instanceof IPackageFragment) {
+                            for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
+                                LOG.debug("Found '{}' ...", cu.getElementName());
+                                IType type = EclipseJavaModelUtil.getJavaClassType(cu);
+                                classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+                            }
                         }
                     }
                 }
             }
         }
+        LOG.info("Util classes loaded: '{}' ...", classes);
         return classes;
     }
 
