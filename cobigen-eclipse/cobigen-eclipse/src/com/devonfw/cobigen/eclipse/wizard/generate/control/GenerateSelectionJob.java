@@ -192,6 +192,9 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
      *            {@link CompilationUnit}s to be organized
      */
     private void organizeImports(final ICompilationUnit[] cus) {
+        if (cus.length < 1) {
+            return;
+        }
 
         Display.getDefault().syncExec(new Runnable() {
             @Override
@@ -210,6 +213,9 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
      *            {@link CompilationUnit}s to be formatted
      */
     private void formatSourceCode(final ICompilationUnit[] cus) {
+        if (cus.length < 1) {
+            return;
+        }
 
         Display.getDefault().asyncExec(new Runnable() {
             @Override
@@ -237,7 +243,7 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                 IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
                 if (file != null && file instanceof IFile) {
                     IJavaElement elem = JavaCore.create(file);
-                    if (elem instanceof ICompilationUnit) {
+                    if (elem != null && elem instanceof ICompilationUnit) {
                         cus.add((ICompilationUnit) elem);
                     }
                 }
