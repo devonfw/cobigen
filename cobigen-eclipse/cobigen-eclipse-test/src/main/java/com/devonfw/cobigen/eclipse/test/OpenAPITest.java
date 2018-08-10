@@ -86,11 +86,11 @@ public class OpenAPITest extends SystemTest {
         // check assertions
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-        IFile generationResult = proj
-            .getFile("src/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+        IFile generationResult = proj.getFile(
+            "src/main/java/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
 
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
@@ -124,12 +124,11 @@ public class OpenAPITest extends SystemTest {
                     "}");
         }
 
-        generationResult =
-            proj.getFile("src/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
+        generationResult = proj.getFile(
+            "src/main/java/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
-                    "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
                     LINE_SEPARATOR + //
                     "}");
