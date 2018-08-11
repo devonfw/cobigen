@@ -241,7 +241,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     for (IJavaElement e : root.getChildren()) {
                         if (e instanceof IPackageFragment) {
                             for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                                LOG.debug("Found '{}' ...", cu.getElementName());
+                                LOG.debug("Found '{}' in {} ...", cu.getElementName(), e.getElementName());
                                 IType type = EclipseJavaModelUtil.getJavaClassType(cu);
                                 classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
                             }

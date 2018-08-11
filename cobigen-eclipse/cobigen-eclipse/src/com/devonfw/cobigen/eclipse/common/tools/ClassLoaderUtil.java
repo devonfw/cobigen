@@ -83,8 +83,6 @@ public class ClassLoaderUtil {
                 break;
             }
         }
-        LOG.debug("Project class loader for project '{}' determined with the following URLs: {}",
-            project.getElementName(), urlList);
         return urlList;
     }
 
