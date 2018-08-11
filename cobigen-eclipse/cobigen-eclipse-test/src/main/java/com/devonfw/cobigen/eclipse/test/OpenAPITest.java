@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.HasBeenBuilt;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -72,6 +73,7 @@ public class OpenAPITest extends SystemTest {
             project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         EclipseUtils.updateMavenProject(bot, testProjName);
+        bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
