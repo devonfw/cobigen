@@ -116,15 +116,33 @@ public class TemplatesConfigurationReader {
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
      * configuration file
      *
-     * @param templatesRoot
-     *            root path for the template configuration and templates
+     * @param projectRoot
+     *            root path for the templates, has to be an absolute path
+     * @param templateFolder
+     *            name of the folder containing the configuration and templates, has to be a relative path
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder) throws InvalidConfigurationException {
+        Path templateLocation;
 
-        rootTemplateFolder = TemplateFolder.create(templatesRoot);
-        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        Path rootTemplatePath = projectRoot.resolve(templateFolder);
+        configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+
+        if (!Files.exists(configFilePath)) {
+            Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            sourceTemplatePath = sourceTemplatePath.resolve(templateFolder);
+            configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            templateLocation = sourceTemplatePath;
+
+            if (!Files.exists(configFilePath)) {
+                throw new InvalidConfigurationException(configFilePath, "Could not find templates configuration file.");
+            }
+        } else {
+            templateLocation = rootTemplatePath;
+        }
+        rootTemplateFolder = TemplateFolder.create(templateLocation);
+
         readConfiguration();
     }
 
@@ -294,6 +312,7 @@ public class TemplatesConfigurationReader {
 
         String templatePath = scan.getTemplatePath();
         TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
+
         if ((templateFolder == null) || templateFolder.isFile()) {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(), "The templatePath '"
                 + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
@@ -337,6 +356,7 @@ public class TemplatesConfigurationReader {
         }
 
         for (TemplatePath child : templateFolder.getChildren()) {
+
             if (child.isFolder()) {
                 scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
                     trigger, observedTemplateNames);
@@ -421,7 +441,11 @@ public class TemplatesConfigurationReader {
         String relocate = templateFolder.getVariables().get(PROPERTY_RELOCATE);
         if (relocate != null) {
             if (scanSourcePath != null) {
-                Path destinationPath = Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
+                // The relative template path has to be specifically parsed to string and back to a path so
+                // the templateFile and scanSourcePath are using the same file system. More info can be found
+                // at https://github.com/devonfw/tools-cobigen/issues/715
+                String templateFilePath = templateFile.getRootRelativePath().toString();
+                Path destinationPath = Paths.get(scanSourcePath).relativize(Paths.get(templateFilePath));
                 unresolvedDestinationPath =
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
             }
