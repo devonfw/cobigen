@@ -1,12 +1,15 @@
 package com.devonfw.cobigen.eclipse.generator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -22,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -206,13 +210,19 @@ public class GeneratorWrapperFactory {
      * @throws GeneratorCreationException
      *             if the generator configuration project does not exist
      */
-    private static CobiGen initializeGenerator()
-        throws GeneratorProjectNotExistentException, InvalidConfigurationException, GeneratorCreationException {
+    private static CobiGen initializeGenerator() throws InvalidConfigurationException, GeneratorCreationException {
 
         try {
             ResourcesPluginUtil.refreshConfigurationProject();
             IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            return CobiGenFactory.create(generatorProj.getLocationURI());
+            if (null == generatorProj) {
+                String fileName = ResourcesPluginUtil.downloadJar(false);
+                IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+                File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + "\\" + fileName).toString());
+                return CobiGenFactory.create(file.toURI());
+            } else {
+                return CobiGenFactory.create(generatorProj.getLocationURI());
+            }
         } catch (CoreException e) {
             throw new GeneratorCreationException("An eclipse internal exception occurred", e);
         } catch (IOException e) {
