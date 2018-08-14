@@ -65,7 +65,9 @@ public class TemplatesConfiguration {
 
         TemplatesConfigurationReader reader =
             new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()), configurationHolder);
+
         templatesFolderName = trigger.getTemplateFolder();
+
         templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
         templateEngine = reader.getTemplateEngine();
