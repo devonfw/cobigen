@@ -33,4 +33,12 @@ public class CobiGenDialogConstants {
         /** Dialog title of the generate wizard for batch processing */
         public static final String DIALOG_TITLE_BATCH = "CobiGen (batch mode)";
     }
+
+    /** Dialog constants of the Update Templates */
+    public class UpdateTemplateDialogs {
+
+        /** Dialog title of the Update Templates */
+        public static final String DIALOG_TITLE = "Update Cobigen Templates";
+
+    }
 }
