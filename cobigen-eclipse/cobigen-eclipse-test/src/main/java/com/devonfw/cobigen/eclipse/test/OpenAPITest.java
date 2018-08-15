@@ -74,6 +74,7 @@ public class OpenAPITest extends SystemTest {
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         EclipseUtils.updateMavenProject(bot, testProjName);
         bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+        EclipseUtils.openErrorsTreeInProblemsView(bot);
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
