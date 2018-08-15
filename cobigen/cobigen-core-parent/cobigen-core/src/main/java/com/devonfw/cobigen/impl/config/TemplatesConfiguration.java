@@ -64,7 +64,7 @@ public class TemplatesConfiguration {
         throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()), configurationHolder);
+            new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(), configurationHolder);
 
         templatesFolderName = trigger.getTemplateFolder();
 
@@ -96,8 +96,7 @@ public class TemplatesConfiguration {
     public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder,
         String incrementToSearch) throws InvalidConfigurationException {
 
-        externalReader =
-            new TemplatesConfigurationReader(configRoot.resolve(trigger.getTemplateFolder()), configurationHolder);
+        externalReader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(), configurationHolder);
         templatesFolderName = trigger.getTemplateFolder();
         templates = externalReader.loadTemplates(trigger);
         Map<String, Increment> externalIncrements =

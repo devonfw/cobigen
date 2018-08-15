@@ -435,8 +435,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         ConfigurationHolder configurationHolder =
             new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
-        TemplatesConfigurationReader target = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_invalid_external_incrementref").toPath(), configurationHolder);
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_invalid_external_incrementref", configurationHolder);
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());

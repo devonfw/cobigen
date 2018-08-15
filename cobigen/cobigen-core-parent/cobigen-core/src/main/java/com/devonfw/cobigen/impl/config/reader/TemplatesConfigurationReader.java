@@ -94,22 +94,17 @@ public class TemplatesConfigurationReader {
 
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
-     * configuration file
+     * configuration file without a ConfigurationFolder
      *
-     * @param templatesRoot
-     *            root path for the template configuration and templates
-     * @param configurationHolder
-     *            The {@link ConfigurationHolder} used for reading templates folder
+     * @param projectRoot
+     *            root path for the templates, has to be an absolute path
+     * @param templateFolder
+     *            name of the folder containing the configuration and templates, has to be a relative path
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path templatesRoot, ConfigurationHolder configurationHolder)
-        throws InvalidConfigurationException {
-
-        rootTemplateFolder = TemplateFolder.create(templatesRoot);
-        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-        readConfiguration();
-        this.configurationHolder = configurationHolder;
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder) {
+        this(projectRoot, templateFolder, null);
     }
 
     /**
@@ -120,10 +115,13 @@ public class TemplatesConfigurationReader {
      *            root path for the templates, has to be an absolute path
      * @param templateFolder
      *            name of the folder containing the configuration and templates, has to be a relative path
+     * @param configurationHolder
+     *            The {@link ConfigurationHolder} used for reading templates folder
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path projectRoot, String templateFolder) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder,
+        ConfigurationHolder configurationHolder) throws InvalidConfigurationException {
         Path templateLocation;
 
         Path rootTemplatePath = projectRoot.resolve(templateFolder);
@@ -144,6 +142,7 @@ public class TemplatesConfigurationReader {
         rootTemplateFolder = TemplateFolder.create(templateLocation);
 
         readConfiguration();
+        this.configurationHolder = configurationHolder;
     }
 
     /**
