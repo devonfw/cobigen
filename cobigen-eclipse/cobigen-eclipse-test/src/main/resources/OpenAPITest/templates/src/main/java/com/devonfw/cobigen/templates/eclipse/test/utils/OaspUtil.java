@@ -344,7 +344,7 @@ public class OaspUtil {
         String format = (String) parameter.get("format");
         String type = (String) parameter.get("type");
         boolean isCollection = false;
-        if (parameter.get("isCollection") != null) {
+        if (parameter.containsKey("isCollection")) {
             isCollection = (boolean) parameter.get("isCollection");
         }
 
