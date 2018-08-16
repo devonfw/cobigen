@@ -7,7 +7,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -197,8 +196,7 @@ public class EclipseUtils {
         try {
             SWTBotView viewByTitle = bot.view(withTitle(containsString("Problems")));
             SWTBotTree tree = viewByTitle.bot().tree().select(0);
-            tree.expandNode(Arrays.asList(tree.getAllItems()).stream().map(e -> e.getText())
-                .collect(Collectors.toList()).toArray(new String[0]));
+            Arrays.asList(tree.getAllItems()).stream().forEach(e -> e.expand());
 
             LOG.debug("Log Problems view entries:");
             LOG.debug(">>>>>");
