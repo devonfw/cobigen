@@ -169,6 +169,7 @@ node {
 			stage('process test results') {
 				// added 'allowEmptyResults:true' to prevent failure in case of no tests
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+				archiveArtifacts artifacts: '**/target/screenshots/*.jpeg', allowEmptyArchive: true 
 			}
 
 			// triggering of upcoming builds
