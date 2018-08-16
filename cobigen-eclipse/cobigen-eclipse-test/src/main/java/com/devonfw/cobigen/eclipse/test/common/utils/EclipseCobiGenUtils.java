@@ -6,11 +6,16 @@ import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -20,6 +25,9 @@ import com.devonfw.cobigen.eclipse.test.common.swtbot.AnyShellIsActive;
  * Eclipse Utils to work with the CobiGen UI.
  */
 public class EclipseCobiGenUtils {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(EclipseCobiGenUtils.class);
 
     /** Default timeout for waiting on generation results or build results */
     public static final int DEFAULT_TIMEOUT = 15000;
@@ -54,6 +62,59 @@ public class EclipseCobiGenUtils {
         SWTBotButton finishButton = bot.button(IDialogConstants.FINISH_LABEL);
         bot.waitUntil(widgetIsEnabled(bot.button()));
         finishButton.click();
+    }
+
+    /**
+     * Checks the CobiGen HealthCheck and takes screenshots of it.
+     * @param bot
+     *            to process the health check
+     * @throws Exception
+     *             test fails
+     */
+    public static void runAndCaptureHealthCheck(SWTWorkbenchBot bot) throws Exception {
+
+        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
+
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...")
+            .click();
+        bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE), DEFAULT_TIMEOUT);
+
+        takeScreenshot(bot, "healthCheck");
+        bot.activeShell().bot().button(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE).click();
+        bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE),
+            DEFAULT_TIMEOUT);
+        takeScreenshot(bot, "advancedHealthCheck");
+        bot.activeShell().bot().button("OK");
+        bot.activeShell().bot().button("OK");
+    }
+
+    /**
+     * Takes a screenshot (*.jpeg) of the current screen encoding test method and class and appends the given
+     * identifier to the file name
+     * @param bot
+     *            current {@link SWTBot}
+     * @param identifier
+     *            to appended on the generated screenshots file name
+     */
+    public static void takeScreenshot(SWTBot bot, String identifier) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        StackTraceElement stackTraceElement = null;
+        for (int i = stackTrace.length - 1; i >= 0; i--) {
+            if (stackTrace[i].getMethodName().startsWith("test") && stackTrace[i].getClassName().endsWith("Test")) {
+                stackTraceElement = stackTrace[i];
+                break;
+            }
+        }
+
+        if (stackTraceElement == null) {
+            LOG.warn("No test method in stacktrace found for creating health check screenshots.");
+            return;
+        }
+
+        bot.captureScreenshot("target/screenshots/" + stackTraceElement.getMethodName() + "("
+            + stackTraceElement.getClassName() + ")-" + identifier + ".jpeg");
     }
 
     /**

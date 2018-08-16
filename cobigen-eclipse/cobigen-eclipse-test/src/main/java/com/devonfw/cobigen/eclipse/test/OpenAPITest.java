@@ -74,6 +74,8 @@ public class OpenAPITest extends SystemTest {
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         EclipseUtils.updateMavenProject(bot, testProjName);
         bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+
+        EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
         EclipseUtils.openErrorsTreeInProblemsView(bot);
 
         // expand the new file in the package explorer

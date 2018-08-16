@@ -199,6 +199,16 @@ public class EclipseUtils {
             SWTBotTree tree = viewByTitle.bot().tree().select(0);
             tree.expandNode(Arrays.asList(tree.getAllItems()).stream().map(e -> e.getText())
                 .collect(Collectors.toList()).toArray(new String[0]));
+
+            LOG.debug("Log Problems view entries:");
+            LOG.debug(">>>>>");
+            for (SWTBotTreeItem category : tree.getAllItems()) {
+                LOG.debug("> {}", category.getText());
+                for (SWTBotTreeItem issue : category.getItems()) {
+                    LOG.debug(">> {}", issue.getText());
+                }
+            }
+            LOG.debug("<<<<<");
         } catch (WidgetNotFoundException e) {
             LOG.warn("Could not find Widget during expansion of problem view. This does not harm the test... continue.",
                 e);
