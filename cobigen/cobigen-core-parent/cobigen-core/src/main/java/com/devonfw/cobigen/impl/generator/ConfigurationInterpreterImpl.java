@@ -109,6 +109,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
             return targetRootPath.resolve(resolvedDestinationPath).normalize();
         } catch (UnknownContextVariableException e) {
+            // TODO If it is an external configuration, throw different error
             throw new CobiGenRuntimeException("Could not resolve path '" + templateEty.getUnresolvedTargetPath()
                 + "' for input '" + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
                 + "' and template '" + templateEty.getAbsoluteTemplatePath() + "'. Available variables: "
