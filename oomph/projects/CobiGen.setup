@@ -160,43 +160,46 @@
           xsi:type="predicates:OrPredicate">
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core"/>
+            pattern="core"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-api"/>
+            pattern="core-api"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-test"/>
+            pattern="core-test"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-systemtest"/>
+            pattern="core-systemtest"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-htmlplugin"/>
+            pattern="htmlplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-javaplugin"/>
+            pattern="javaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-javaplugin.model"/>
+            pattern="javaplugin-model"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-jsonplugin"/>
+            pattern="jsonplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-propertyplugin"/>
+            pattern="openapiplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-senchaplugin"/>
+            pattern="propertyplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-textmerger"/>
+            pattern="senchaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-tsplugin"/>
+            pattern="textmerger"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-xmlplugin"/>
+            pattern="tsplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="xmlplugin"/>
       </predicate>
     </workingSet>
     <workingSet
@@ -209,19 +212,19 @@
         name="cobigen-maven-plugin">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-maven-.*"/>
+          pattern="maven-.*"/>
     </workingSet>
     <workingSet
         name="cobigen-templates-parent">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-templates.*"/>
+          pattern="templates.*"/>
     </workingSet>
     <workingSet
         name="cobigen-tempeng-parent">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-tempeng.*"/>
+          pattern="tempeng.*"/>
     </workingSet>
     <workingSet
         name="gh-pages">
@@ -426,6 +429,7 @@
     <setupTask
         xsi:type="setup:ResourceCreationTask"
         id="console.modification"
+        excludedTriggers="STARTUP MANUAL"
         content="del &quot;console.bat&quot;&#xA;echo @echo off >> console.bat&#xA;echo pushd %~dp0 >> console.bat&#xA;echo call scripts\environment-project.bat >> console.bat&#xA;echo popd >> console.bat&#xA;echo start software\cmder\Cmder.exe >> console.bat&#xA;&#xA;DEL &quot;%~f0&quot;"
         targetURL="${installation.root/console_update.bat|uri}"
         encoding="UTF-8">
@@ -434,6 +438,7 @@
     <setupTask
         xsi:type="com.github.maybeec.oomph.task_1:cliTask"
         id="update.console.bat"
+        excludedTriggers="STARTUP MANUAL"
         directory="${installation.root}"
         command="console_update.bat">
       <description>executing the console_update.bat script</description>
