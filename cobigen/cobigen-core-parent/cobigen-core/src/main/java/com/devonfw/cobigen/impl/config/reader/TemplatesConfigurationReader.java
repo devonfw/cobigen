@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -546,12 +547,15 @@ public class TemplatesConfigurationReader {
     private void addAllTemplatesRecursively(Increment rootIncrement,
         com.devonfw.cobigen.impl.config.entity.io.Increment current, Map<String, Template> templates,
         Map<String, Increment> increments) throws InvalidConfigurationException {
-
         for (TemplateRef ref : current.getTemplateRef()) {
             Template temp = templates.get(ref.getRef());
             if (temp == null) {
-                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No template found for ref='" + ref.getRef() + "'!");
+                if (isExternalRef(ref.getRef())) {
+                    rootIncrement.addTemplate(loadExternalTemplate(ref));
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "No template found for ref='" + ref.getRef() + "'!");
+                }
             }
             rootIncrement.addTemplate(temp);
         }
@@ -573,9 +577,8 @@ public class TemplatesConfigurationReader {
                     }
                     // We have not found the increment inside our templates.xml file, now let's see if this
                     // incrementRef contains "::". That would mean we have to search on another folder.
-                    else if (isExternalIncrementRef(ref)) {
-                        loadExternalIncrement(ref, parentPkg);
-
+                    else if (isExternalRef(ref.getRef())) {
+                        parentPkg.addIncrementDependency(loadExternalIncrement(ref));
                     } else {
                         throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                             "No increment found for ref='" + ref.getRef() + "'!");
@@ -593,8 +596,14 @@ public class TemplatesConfigurationReader {
         for (TemplateScanRef ref : current.getTemplateScanRef()) {
             List<String> scannedTemplateNames = templateScanTemplates.get(ref.getRef());
             if (scannedTemplateNames == null) {
-                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No templateScan found for ref='" + ref.getRef() + "'!");
+                if (isExternalRef(ref.getRef())) {
+                    List<String> externalScannedTemplates = loadExternalScan(ref);
+                    templateScanTemplates.put(ref.getRef(), externalScannedTemplates);
+                    scannedTemplateNames = externalScannedTemplates;
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "No templateScan found for ref='" + ref.getRef() + "'!");
+                }
             }
 
             for (String scannedTemplateName : scannedTemplateNames) {
@@ -604,32 +613,69 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * Tries to load an external increment. It loads the trigger of the external increment and all its
-     * increments for finding the needed one
-     * @param incrementRef
-     *            incrementRef to load and store on the root increment
-     * @param parentPkg
-     *            root increment where the incrementRef is defined
+     * @param ref
+     * @return
      */
-    private void loadExternalIncrement(IncrementRef incrementRef, Increment parentPkg) {
-        Increment childPkg;
-        // Let's split the string and get its content
-        String[] splitted = splitExternalIncrementRef(incrementRef);
-        String triggerToSearch = splitted[0];
-        String incrementToSearch = splitted[1];
-
-        String pathToContext = rootTemplateFolder.getPath().normalize().getParent().toString();
-        // We read the context.xml file for searching our trigger
-        Trigger trig = getExternalTrigger(incrementRef, triggerToSearch, pathToContext);
+    private List<String> loadExternalScan(TemplateScanRef ref) {
+        List<String> templateNames = new LinkedList<>();
+        String[] split = splitExternalRef(ref.getRef());
+        String refTrigger = split[0];
+        String refScan = split[1];
 
         com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
-            configurationHolder.readTemplatesConfiguration(trig, incrementToSearch);
+            loadExternalConfig(refTrigger);
+
+        Set<Template> scannedTemplates = externalTemplatesConfiguration.getAllTemplates();
+        for (Template tmplate : scannedTemplates) {
+            templateNames.add(tmplate.getName());
+        }
+
+        return templateNames;
+    }
+
+    /**
+     * @param ref
+     * @return
+     */
+    private Template loadExternalTemplate(TemplateRef ref) {
+        String[] split = splitExternalRef(ref.getRef());
+        String refTrigger = split[0];
+        String refTemplate = split[1];
+
+        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+            loadExternalConfig(refTrigger);
+
+        return externalTemplatesConfiguration.getTemplate(refTemplate);
+    }
+
+    /**
+     * Tries to load an external increment. It loads the trigger of the external increment and all its
+     * increments for finding the needed one
+     * @param ref
+     *            incrementRef to load and store on the root increment
+     * @return The referenced child increment
+     */
+    private Increment loadExternalIncrement(IncrementRef ref) {
+        Increment childPkg;
+        String[] split = splitExternalRef(ref.getRef());
+        String refTrigger = split[0];
+        String refIncrement = split[1];
+
+        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+            loadExternalConfig(refTrigger);
 
         Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
 
-        childPkg = externalIncrements.get(incrementToSearch);
+        childPkg = externalIncrements.get(refIncrement);
 
-        parentPkg.addIncrementDependency(childPkg);
+        return childPkg;
+    }
+
+    private com.devonfw.cobigen.impl.config.TemplatesConfiguration loadExternalConfig(String refTrigger) {
+
+        String contextPath = rootTemplateFolder.getPath().normalize().getParent().toString();
+        Trigger extTrigger = getExternalTrigger(refTrigger, contextPath);
+        return configurationHolder.readTemplatesConfiguration(extTrigger);
     }
 
     /**
@@ -656,8 +702,8 @@ public class TemplatesConfigurationReader {
 
         String incrementToSearch = source.getRef();
         // Check whether we have an external incrementRef
-        if (incrementToSearch.contains("::")) {
-            String[] splitted = splitExternalIncrementRef(source);
+        if (isExternalRef(incrementToSearch)) {
+            String[] splitted = splitExternalRef(source.getRef());
             incrementToSearch = splitted[1];
         }
 
@@ -683,19 +729,19 @@ public class TemplatesConfigurationReader {
     }
 
     /**
-     * External increment ref's syntax is "triggerName::incrementName" . Therefore, this method splits the
-     * increment ref using "::" as delimiter so that we can get both strings separately.
+     * External ref's syntax is "triggerName::incrementName" . Therefore, this method splits the ref using
+     * "::" as the delimiter so that we can get both strings separately.
      * @param ref
      *            the increment ref to split
      * @return an string array that will contain 2 elements
      */
-    private String[] splitExternalIncrementRef(IncrementRef ref) {
-        String[] splitted = ref.getRef().split("\\::");
-        if (splitted.length != 2) {
+    private String[] splitExternalRef(String ref) {
+        String[] split = ref.split(ConfigurationConstants.REFERENCE_DELIMITER);
+        if (split.length != 2) {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                "Invalid external ref for ref='" + ref.getRef() + "', it should be 'nameOfFolder::nameOfIncrement'!");
+                "Invalid external ref for ref='" + ref + "', it should be 'nameOfFolder::nameOfIncrement'!");
         }
-        return splitted;
+        return split;
     }
 
     /**
@@ -704,8 +750,8 @@ public class TemplatesConfigurationReader {
      *            the increment ref to check
      * @return true if it is an external IncrementRef
      */
-    private boolean isExternalIncrementRef(IncrementRef ref) {
-        return ref.getRef().contains("::");
+    private boolean isExternalRef(String ref) {
+        return ref.contains(ConfigurationConstants.REFERENCE_DELIMITER);
     }
 
     /**
@@ -718,14 +764,14 @@ public class TemplatesConfigurationReader {
      *            string containing the path to the context.xml file
      * @return the found external trigger
      */
-    private Trigger getExternalTrigger(IncrementRef ref, String triggerToSearch, String pathToContext) {
+    private Trigger getExternalTrigger(String triggerToSearch, String pathToContext) {
         ContextConfigurationReader contextConfigurationReader =
             new ContextConfigurationReader(Paths.get(new File(pathToContext).toURI()));
         Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
         Trigger trig = triggers.get(triggerToSearch);
         if (trig == null) {
-            throw new InvalidConfigurationException(configFilePath.toUri().toString(), "Invalid external ref for ref='"
-                + ref.getRef() + "', no trigger '" + triggerToSearch + "' was found on your context.xml!");
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "Invalid external ref, no trigger '" + triggerToSearch + "' was found on your context.xml!");
         }
         return trig;
     }

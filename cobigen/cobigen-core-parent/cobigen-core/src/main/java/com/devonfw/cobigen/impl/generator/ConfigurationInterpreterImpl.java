@@ -1,10 +1,8 @@
 package com.devonfw.cobigen.impl.generator;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.inject.Inject;
@@ -109,7 +107,6 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                 new PathExpressionResolver(variables).evaluateExpressions(templateEty.getUnresolvedTargetPath());
             return targetRootPath.resolve(resolvedDestinationPath).normalize();
         } catch (UnknownContextVariableException e) {
-            // TODO If it is an external configuration, throw different error
             throw new CobiGenRuntimeException("Could not resolve path '" + templateEty.getUnresolvedTargetPath()
                 + "' for input '" + (input instanceof Object[] ? Arrays.toString((Object[]) input) : input.toString())
                 + "' and template '" + templateEty.getAbsoluteTemplatePath() + "'. Available variables: "
@@ -162,53 +159,11 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
             if (templatesConfiguration != null) {
-                // If the configurationHolder contains any ExternalTrigger it means that we have to store all
-                // the templatesConfiguration from this trigger
-                if (externalTriggersIsNotEmpty()) {
-                    for (Map.Entry<String, Trigger> externalTriggerMap : configurationHolder.getExternalTriggers()
-                        .entrySet()) {
-
-                        Path templateFolder = Paths.get(externalTriggerMap.getValue().getTemplateFolder());
-
-                        Map<String, TemplatesConfiguration> externalTemplatesConfigurations =
-                            configurationHolder.getTemplatesConfigurations().get(templateFolder);
-
-                        // We store all the TemplatesConfiguration inside our list
-                        for (Map.Entry<String, TemplatesConfiguration> entry : externalTemplatesConfigurations
-                            .entrySet()) {
-                            if (listNoContains(templateConfigurations, entry.getValue())) {
-                                templateConfigurations.add(entry.getValue());
-                            }
-                        }
-
-                    }
-
-                }
-                if (listNoContains(templateConfigurations, templatesConfiguration)) {
+                if (!templateConfigurations.contains(templatesConfiguration)) {
                     templateConfigurations.add(templatesConfiguration);
                 }
             }
         }
         return templateConfigurations;
     }
-
-    /**
-     * Returns true if this list does not contain an object
-     * @param list
-     *            to check
-     * @param entry
-     *            object that should not be on the list
-     * @return true if this list does not contain an object
-     */
-    private boolean listNoContains(List<TemplatesConfiguration> list, Object entry) {
-        return !list.contains(entry);
-    }
-
-    /**
-     * @return true if it the externalTriggers map of the configuration holder is not empty
-     */
-    private boolean externalTriggersIsNotEmpty() {
-        return !configurationHolder.getExternalTriggers().isEmpty();
-    }
-
 }

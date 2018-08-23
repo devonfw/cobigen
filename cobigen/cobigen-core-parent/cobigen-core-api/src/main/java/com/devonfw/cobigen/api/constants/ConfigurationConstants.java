@@ -21,4 +21,7 @@ public class ConfigurationConstants {
 
     /** Resource folder containing templates */
     public static final String TEMPLATE_RESOURCE_FOLDER = "src/main/templates";
+
+    /** Delimiter splitting the template folder and value of references in templates.xml files */
+    public static final String REFERENCE_DELIMITER = "::";
 }

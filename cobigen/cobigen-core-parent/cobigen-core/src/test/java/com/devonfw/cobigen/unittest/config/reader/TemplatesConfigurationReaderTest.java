@@ -7,14 +7,16 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
@@ -42,6 +44,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
      */
     private static String testFileRootPath =
         "src/test/resources/testdata/unittest/config/reader/TemplatesConfigurationReaderTest/";
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesConfigurationReaderTest.class);
 
     /**
      * Tests whether all templates of a template package could be retrieved successfully.
@@ -364,12 +369,61 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
+     * Tests the correct resolution of TemplateRef from outside the current templates file.
+     */
+    @Test
+    public void testTemplateRefOutsideCurrentFile() {
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templateref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Set<Template> externalTemplates = templatesConfiguration.getAllTemplates();
+
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+
+        LinkedList<String> templateNames = new LinkedList<>();
+        for (Template tmplate : externalTemplates) {
+            templateNames.add(tmplate.getName());
+        }
+
+        assertThat(templateNames).containsExactly("templateDecl", "ExplicitlyDefined");
+    }
+
+    /**
+     * Tests the correct resolution of TemplateScanRef from outside the current templates file.
+     */
+    @Test
+    public void testTemplateScanRefOutsideCurrentFile() {
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templatescanref",
+            Charset.forName("UTF-8"), new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Set<Template> externalTemplates = templatesConfiguration.getAllTemplates();
+
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+
+        LinkedList<String> templateNames = new LinkedList<>();
+        for (Template tmplate : externalTemplates) {
+            templateNames.add(tmplate.getName());
+        }
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
+
+        assertThat(templateNames).containsExactly("i dunno what");
+    }
+
+    /**
      * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
      */
     @Test
     public void testIncrementRefOutsideCurrentFile() {
-
-        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
 
         // given
         Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
@@ -378,47 +432,26 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         ConfigurationHolder configurationHolder =
             new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
-        // when
-        configurationHolder.readTemplatesConfiguration(trigger);
-
-        // We get the super map containing TemplatesConfigurations depending on the templates folder
-        Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurationsSuperMap =
-            configurationHolder.getTemplatesConfigurations();
-
-        // We get the map containing all the TemplatesConfiguration for our current templates folder
-        Path templateFolderCurrent = Paths.get(trigger.getTemplateFolder());
-
-        Map<String, TemplatesConfiguration> templatesConfigurationsCurrent =
-            templatesConfigurationsSuperMap.get(templateFolderCurrent);
-
-        // We get the map containing all the TemplatesConfiguration for the external templates folder
-        String externalTriggerFolder =
-            configurationHolder.getExternalTriggers().get("valid_increment_composition").getTemplateFolder();
-        Path templateFolderExternal = Paths.get(externalTriggerFolder);
-
-        Map<String, TemplatesConfiguration> templatesConfigurationsExternal =
-            templatesConfigurationsSuperMap.get(templateFolderExternal);
-
-        Map<String, Increment> externalIncrements =
-            templatesConfigurationsCurrent.get("testingTrigger").getIncrements();
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Map<String, Increment> externalIncrements = templatesConfiguration.getIncrements();
 
         // validation
-        assertThat(templatesConfigurationsCurrent).containsOnlyKeys("testingTrigger");
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
         assertThat(externalIncrements).containsOnlyKeys("3", "4", "5");
 
         // We expect increment 3 to have an external increment 0 containing one template
+        assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getName()).isEqualTo("0");
         assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
 
-        // We expect increment 4 to have an external increment 2 containing 4 templates (one template comes
+        // We expect increment 4 to have an external increment 1 containing 4 templates (one template comes
         // from another incrementRef)
+        assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getName()).isEqualTo("1");
         assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
 
-        // We expect increment 5 to have an external increment 3 containing 4 templates (one template comes
+        // We expect increment 5 to have an external increment 2 containing 4 templates (one template comes
         // from another incrementRef and one from a templateRef)
+        assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getName()).isEqualTo("2");
         assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
-        assertThat(templatesConfigurationsExternal).containsOnlyKeys("valid_increment_composition");
-        assertThat(templatesConfigurationsExternal.get("valid_increment_composition").getIncrements())
-            .containsOnlyKeys("0", "1", "2");
     }
 
     /**
