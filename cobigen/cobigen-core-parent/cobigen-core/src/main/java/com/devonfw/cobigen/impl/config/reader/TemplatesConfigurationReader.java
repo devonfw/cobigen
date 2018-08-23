@@ -614,8 +614,10 @@ public class TemplatesConfigurationReader {
     }
 
     /**
+     * Tries to load an external templateScan, returning all relevant templates.
      * @param ref
-     * @return
+     *            The reference to the templateScan
+     * @return the referenced templateScan/templates
      */
     private List<String> loadExternalScan(TemplateScanRef ref) {
         List<String> templateNames = new LinkedList<>();
@@ -630,13 +632,18 @@ public class TemplatesConfigurationReader {
         // for (Template tmplate : scannedTemplates) {
         // templateNames.add(tmplate.getName());
         // }
+        if (templateNames.isEmpty()) {
+            throw new InvalidConfigurationException("No TemplateScan found for ref=" + ref.getRef());
+        }
 
         return templateNames;
     }
 
     /**
+     * Tries to load an external template, returning the reference template
      * @param ref
-     * @return
+     *            The reference to the template
+     * @return the referenced template
      */
     private Template loadExternalTemplate(TemplateRef ref) {
         String[] split = splitExternalRef(ref.getRef());
@@ -646,7 +653,13 @@ public class TemplatesConfigurationReader {
         com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
             loadExternalConfig(refTrigger);
 
-        return externalTemplatesConfiguration.getTemplate(refTemplate);
+        Template template = externalTemplatesConfiguration.getTemplate(refTemplate);
+
+        if (template == null) {
+            throw new InvalidConfigurationException("No Template found for ref=" + ref.getRef());
+        }
+
+        return template;
     }
 
     /**
@@ -654,7 +667,7 @@ public class TemplatesConfigurationReader {
      * increments for finding the needed one
      * @param ref
      *            incrementRef to load and store on the root increment
-     * @return The referenced child increment
+     * @return the referenced child increment
      */
     private Increment loadExternalIncrement(IncrementRef ref) {
         Increment childPkg;
@@ -668,6 +681,10 @@ public class TemplatesConfigurationReader {
         Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
 
         childPkg = externalIncrements.get(refIncrement);
+
+        if (childPkg == null) {
+            throw new InvalidConfigurationException("No Increment found for ref=" + ref.getRef());
+        }
 
         return childPkg;
     }
