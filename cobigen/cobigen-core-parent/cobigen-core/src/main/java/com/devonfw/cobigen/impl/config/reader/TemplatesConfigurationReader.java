@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -597,46 +596,14 @@ public class TemplatesConfigurationReader {
         for (TemplateScanRef ref : current.getTemplateScanRef()) {
             List<String> scannedTemplateNames = templateScanTemplates.get(ref.getRef());
             if (scannedTemplateNames == null) {
-                if (isExternalRef(ref.getRef())) {
-                    List<String> externalScannedTemplates = loadExternalScan(ref);
-                    templateScanTemplates.put(ref.getRef(), externalScannedTemplates);
-                    scannedTemplateNames = externalScannedTemplates;
-                } else {
-                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                        "No templateScan found for ref='" + ref.getRef() + "'!");
-                }
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "No templateScan found for ref='" + ref.getRef() + "'!");
             } else {
                 for (String scannedTemplateName : scannedTemplateNames) {
                     rootIncrement.addTemplate(templates.get(scannedTemplateName));
                 }
             }
         }
-    }
-
-    /**
-     * Tries to load an external templateScan, returning all relevant templates.
-     * @param ref
-     *            The reference to the templateScan
-     * @return the referenced templateScan/templates
-     */
-    private List<String> loadExternalScan(TemplateScanRef ref) {
-        List<String> templateNames = new LinkedList<>();
-        String[] split = splitExternalRef(ref.getRef());
-        String refTrigger = split[0];
-        String refScan = split[1];
-
-        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
-            loadExternalConfig(refTrigger);
-
-        // Set<Template> scannedTemplates = externalTemplatesConfiguration;
-        // for (Template tmplate : scannedTemplates) {
-        // templateNames.add(tmplate.getName());
-        // }
-        if (templateNames.isEmpty()) {
-            throw new InvalidConfigurationException("No TemplateScan found for ref=" + ref.getRef());
-        }
-
-        return templateNames;
     }
 
     /**
@@ -689,6 +656,12 @@ public class TemplatesConfigurationReader {
         return childPkg;
     }
 
+    /**
+     * Returns the TemplatesConfiguration file corresponding to the given trigger
+     * @param refTrigger
+     *            The trigger by which the TemplatesConfiguration shoul be searched
+     * @return The TemplatesConfiguration corresponding to the trigger
+     */
     private com.devonfw.cobigen.impl.config.TemplatesConfiguration loadExternalConfig(String refTrigger) {
 
         String contextPath = rootTemplateFolder.getPath().normalize().getParent().toString();
@@ -774,8 +747,6 @@ public class TemplatesConfigurationReader {
 
     /**
      * Tries to read the context.xml file for finding and returning an external trigger
-     * @param ref
-     *            the increment ref to handle
      * @param triggerToSearch
      *            string containing the name of the trigger to search
      * @param pathToContext

@@ -396,27 +396,6 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
-     * Tests the correct resolution of TemplateScanRef from outside the current templates file.
-     */
-    @Test
-    public void testTemplateScanRefOutsideCurrentFile() {
-        // given
-        // Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templatescanref",
-        // Charset.forName("UTF-8"), new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
-
-        // ConfigurationHolder configurationHolder =
-        // new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
-
-        // TemplatesConfiguration templatesConfiguration =
-        // configurationHolder.readTemplatesConfiguration(trigger);
-        // Map<String, Increment> increments = templatesConfiguration.getIncrements();
-
-        // Increment incrementThree = increments.get("3");
-        // TODO
-        fail("Not correctly implemented yet");
-    }
-
-    /**
      * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
      */
     @Test
@@ -465,31 +444,6 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
             "faulty_invalid_external_incrementref", configurationHolder);
-
-        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
-            new LinkedList<ContainerMatcher>());
-
-        // when
-        Map<String, Template> templates = target.loadTemplates(trigger);
-        target.loadIncrements(templates, trigger);
-    }
-
-    /**
-     * Tests the correct detection of invalid external increment reference.
-     * @throws InvalidConfigurationException
-     *             expected
-     */
-    @Test(expected = InvalidConfigurationException.class)
-    public void testInvalidTemplateScanRefOutsideCurrentFile() {
-
-        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
-
-        // given
-        ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
-
-        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
-            "faulty_invalid_external_templatescanref", configurationHolder);
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
