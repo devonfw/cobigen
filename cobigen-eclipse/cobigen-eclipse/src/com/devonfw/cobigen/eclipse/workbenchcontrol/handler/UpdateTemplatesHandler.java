@@ -15,7 +15,6 @@ import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 
 /**
  * Handler for the Package-Explorer Event
- * @author krashah (03.07.2018)
  */
 public class UpdateTemplatesHandler extends AbstractHandler {
 
