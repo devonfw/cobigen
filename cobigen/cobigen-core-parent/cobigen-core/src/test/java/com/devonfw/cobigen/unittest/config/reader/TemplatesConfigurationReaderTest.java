@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -381,16 +380,24 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
             new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
         TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
-        Set<Template> externalTemplates = templatesConfiguration.getAllTemplates();
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
 
         assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
 
-        LinkedList<String> templateNames = new LinkedList<>();
-        for (Template tmplate : externalTemplates) {
-            templateNames.add(tmplate.getName());
+        // validation
+        Increment incrementThree = increments.get("3");
+        LinkedList<String> templateNamesThree = new LinkedList<>();
+        for (Template tmplate : incrementThree.getTemplates()) {
+            templateNamesThree.add(tmplate.getName());
         }
+        assertThat(templateNamesThree).containsExactly("templateDecl");
 
-        assertThat(templateNames).containsExactly("templateDecl", "ExplicitlyDefined");
+        Increment incrementFour = increments.get("4");
+        LinkedList<String> templateNamesFour = new LinkedList<>();
+        for (Template tmplate : incrementFour.getTemplates()) {
+            templateNamesFour.add(tmplate.getName());
+        }
+        assertThat(templateNamesFour).containsExactly("ExplicitlyDefined");
     }
 
     /**
@@ -406,17 +413,11 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
             new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
         TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
-        Set<Template> externalTemplates = templatesConfiguration.getAllTemplates();
-
-        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
-
-        LinkedList<String> templateNames = new LinkedList<>();
-        for (Template tmplate : externalTemplates) {
-            templateNames.add(tmplate.getName());
-        }
         Map<String, Increment> increments = templatesConfiguration.getIncrements();
 
-        assertThat(templateNames).containsExactly("i dunno what");
+        Increment incrementThree = increments.get("3");
+
+        fail("Not correctly implemented yet");
     }
 
     /**
@@ -433,25 +434,23 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
             new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
 
         TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
-        Map<String, Increment> externalIncrements = templatesConfiguration.getIncrements();
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
 
         // validation
         assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
-        assertThat(externalIncrements).containsOnlyKeys("3", "4", "5");
+        assertThat(increments).containsOnlyKeys("3", "4", "5");
 
-        // We expect increment 3 to have an external increment 0 containing one template
-        assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getName()).isEqualTo("0");
-        assertThat(externalIncrements.get("3").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
+        Increment incrementThree = increments.get("3").getDependentIncrements().get(0);
+        assertThat(incrementThree.getName()).isEqualTo("0");
+        assertThat(incrementThree.getTemplates().size()).isEqualTo(1);
 
-        // We expect increment 4 to have an external increment 1 containing 4 templates (one template comes
-        // from another incrementRef)
-        assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getName()).isEqualTo("1");
-        assertThat(externalIncrements.get("4").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
+        Increment incrementFour = increments.get("4").getDependentIncrements().get(0);
+        assertThat(incrementFour.getName()).isEqualTo("1");
+        assertThat(incrementFour.getTemplates().size()).isEqualTo(4);
 
-        // We expect increment 5 to have an external increment 2 containing 4 templates (one template comes
-        // from another incrementRef and one from a templateRef)
-        assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getName()).isEqualTo("2");
-        assertThat(externalIncrements.get("5").getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
+        Increment incrementFive = increments.get("5").getDependentIncrements().get(0);
+        assertThat(incrementFive.getName()).isEqualTo("2");
+        assertThat(incrementFive.getTemplates().size()).isEqualTo(4);
     }
 
     /**
