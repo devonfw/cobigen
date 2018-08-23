@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -217,7 +216,7 @@ public class GeneratorWrapperFactory {
             IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
             if (null == generatorProj) {
                 String fileName = ResourcesPluginUtil.downloadJar(false);
-                IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+                IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
                 File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + "\\" + fileName).toString());
                 return CobiGenFactory.create(file.toURI());
             } else {

@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
@@ -37,11 +38,9 @@ import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
-import com.devonfw.cobigen.impl.config.entity.Trigger;
 
 /**
  * Handler for the Package-Explorer Event
- * @author krashah (17.07.2018)
  */
 public class AdaptTemplatesHandler extends AbstractHandler {
 
@@ -53,7 +52,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
     /**
      * Location of workspace root
      */
-    IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+    IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -80,7 +79,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     String fileName = ResourcesPluginUtil.downloadJar(true);
                     processJar(fileName);
                     importProjectIntoWorkspace();
-                    dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information!!", null,
+                    dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                         "Cobigen_Templates folder is imported sucessfully", MessageDialog.INFORMATION,
                         new String[] { "Ok" }, 1);
                     dialog.setBlockOnOpen(true);
@@ -160,15 +159,15 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     Files.createDirectories(saveForFileCreationPath);
                 } else {
                     Files.deleteIfExists(saveForFileCreationPath);
-                    InputStream is = file.getInputStream(entry);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    Files.createFile(saveForFileCreationPath);
-                    FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());
-                    while (bis.available() > 0) {
-                        fileOutput.write(bis.read());
+                    try (InputStream is = file.getInputStream(entry);
+                        BufferedInputStream bis = new BufferedInputStream(is);) {
+                        Files.createFile(saveForFileCreationPath);
+                        FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());
+                        while (bis.available() > 0) {
+                            fileOutput.write(bis.read());
+                        }
+                        fileOutput.close();
                     }
-                    bis.close();
-                    fileOutput.close();
                 }
             }
         } catch (IOException e) {

@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -135,5 +136,13 @@ public class ResourcesPluginUtil {
         }
         conn.disconnect();
         return fileName;
+    }
+
+    /**
+     * @return workspace location
+     */
+    public static IPath getWorkspaceLocation() {
+        IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+        return ws;
     }
 }

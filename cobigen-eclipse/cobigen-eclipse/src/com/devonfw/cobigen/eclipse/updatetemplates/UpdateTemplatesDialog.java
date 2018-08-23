@@ -117,10 +117,8 @@ public class UpdateTemplatesDialog extends Dialog {
                     dialog.setBlockOnOpen(true);
                     dialog.open();
                 } catch (MalformedURLException e1) {
-                    LOG.error("An exception occurred  while downloading Jars from Maven Central", e1);
                     throw new CobiGenRuntimeException("Invalid maven centrol repo url or path doesn't exist " + e1);
                 } catch (IOException e1) {
-                    LOG.error("An exception occurred  while while reading or writing Jar at .metadata folder", e1);
                     throw new CobiGenRuntimeException("Failed while reading or writing Jar at .metadata folder" + e1);
                 }
             }
