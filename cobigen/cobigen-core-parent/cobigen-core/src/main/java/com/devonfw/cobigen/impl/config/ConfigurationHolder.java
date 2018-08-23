@@ -23,11 +23,6 @@ public class ConfigurationHolder {
     private Path configurationPath;
 
     /**
-     * {@link TemplatesConfiguration} to be used for storing the external increments
-     */
-    // private TemplatesConfiguration externalTemplatesConfig;
-
-    /**
      * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
      * @param configurationPath
      *            root path of the configuration
@@ -69,14 +64,4 @@ public class ConfigurationHolder {
         }
         return contextConfiguration;
     }
-
-    /**
-     * We use this method just for retrieving all the {@link TemplatesConfiguration}. Currently only used for
-     * testing purposes.
-     * @return Map containing all the {@link TemplatesConfiguration}
-     */
-    public Map<Path, Map<String, TemplatesConfiguration>> getTemplatesConfigurations() {
-        return templatesConfigurations;
-    }
-
 }
