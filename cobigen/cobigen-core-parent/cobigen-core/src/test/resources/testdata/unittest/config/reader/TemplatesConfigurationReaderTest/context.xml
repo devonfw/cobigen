@@ -12,4 +12,14 @@
       <variableAssignment type="constant" key="className" value="Bill"/>
     </matcher>
   </trigger>
+  <trigger id="valid_relocate_template_vs_scan" type="xml" templateFolder="valid_relocate_template_vs_scan">
+  <matcher type="nodename" value="xmi:XMI">
+      <variableAssignment type="constant" key="className" value="Bill"/>
+    </matcher>
+  </trigger>
+  <trigger id="valid_increment_composition" type="xml" templateFolder="valid_increment_composition">
+    <matcher type="nodename" value="xmi:XMI">
+      <variableAssignment type="constant" key="className" value="Bill"/>
+    </matcher>
+  </trigger>
 </contextConfiguration>
