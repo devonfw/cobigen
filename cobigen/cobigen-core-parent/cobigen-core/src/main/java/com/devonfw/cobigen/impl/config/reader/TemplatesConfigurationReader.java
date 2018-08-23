@@ -556,8 +556,9 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "No template found for ref='" + ref.getRef() + "'!");
                 }
+            } else {
+                rootIncrement.addTemplate(temp);
             }
-            rootIncrement.addTemplate(temp);
         }
 
         for (IncrementRef ref : current.getIncrementRef()) {
@@ -604,10 +605,10 @@ public class TemplatesConfigurationReader {
                     throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                         "No templateScan found for ref='" + ref.getRef() + "'!");
                 }
-            }
-
-            for (String scannedTemplateName : scannedTemplateNames) {
-                rootIncrement.addTemplate(templates.get(scannedTemplateName));
+            } else {
+                for (String scannedTemplateName : scannedTemplateNames) {
+                    rootIncrement.addTemplate(templates.get(scannedTemplateName));
+                }
             }
         }
     }
@@ -625,10 +626,10 @@ public class TemplatesConfigurationReader {
         com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
             loadExternalConfig(refTrigger);
 
-        Set<Template> scannedTemplates = externalTemplatesConfiguration.getAllTemplates();
-        for (Template tmplate : scannedTemplates) {
-            templateNames.add(tmplate.getName());
-        }
+        // Set<Template> scannedTemplates = externalTemplatesConfiguration;
+        // for (Template tmplate : scannedTemplates) {
+        // templateNames.add(tmplate.getName());
+        // }
 
         return templateNames;
     }
