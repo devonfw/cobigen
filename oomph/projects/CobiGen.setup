@@ -160,43 +160,46 @@
           xsi:type="predicates:OrPredicate">
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core"/>
+            pattern="core"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-api"/>
+            pattern="core-api"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-test"/>
+            pattern="core-test"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-core-systemtest"/>
+            pattern="core-systemtest"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-htmlplugin"/>
+            pattern="htmlplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-javaplugin"/>
+            pattern="javaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-javaplugin.model"/>
+            pattern="javaplugin-model"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-jsonplugin"/>
+            pattern="jsonplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-propertyplugin"/>
+            pattern="openapiplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-senchaplugin"/>
+            pattern="propertyplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-textmerger"/>
+            pattern="senchaplugin"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-tsplugin"/>
+            pattern="textmerger"/>
         <operand
             xsi:type="predicates:NamePredicate"
-            pattern="cobigen-xmlplugin"/>
+            pattern="tsplugin"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="xmlplugin"/>
       </predicate>
     </workingSet>
     <workingSet
@@ -209,19 +212,19 @@
         name="cobigen-maven-plugin">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-maven-.*"/>
+          pattern="maven-.*"/>
     </workingSet>
     <workingSet
         name="cobigen-templates-parent">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-templates.*"/>
+          pattern="templates.*"/>
     </workingSet>
     <workingSet
         name="cobigen-tempeng-parent">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="cobigen-tempeng.*"/>
+          pattern="tempeng.*"/>
     </workingSet>
     <workingSet
         name="gh-pages">
@@ -422,6 +425,23 @@
           content="export MAIN_BRANCH=cobigen-master&#xA;export SETTINGS_REL_PATH=${settings.relpath|file}&#xA;export M2_REPO=~/.m2/repository&#xA;export DEVON_NEXUS_USER=${devon.nexus.user}&#xA;export DEVON_NEXUS_PASSWD=${devon.nexus.pw}&#xA;&#xA;export ICSD_FILESERVER_USER=${icsd.fileserver.user}&#xA;export ICSD_FILESERVER_PASSWD=${icsd.fileserver.pw}"
           targetURL="${installation.root/variables-customized|uri}"
           encoding="UTF-8"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:ResourceCreationTask"
+        id="console.modification"
+        excludedTriggers="STARTUP MANUAL"
+        content="del &quot;console.bat&quot;&#xA;echo @echo off >> console.bat&#xA;echo pushd %~dp0 >> console.bat&#xA;echo call scripts\environment-project.bat >> console.bat&#xA;echo popd >> console.bat&#xA;echo start software\cmder\Cmder.exe >> console.bat&#xA;&#xA;DEL &quot;%~f0&quot;"
+        targetURL="${installation.root/console_update.bat|uri}"
+        encoding="UTF-8">
+      <description>changing the console.bat from cmd to cmder type</description>
+    </setupTask>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task_1:cliTask"
+        id="update.console.bat"
+        excludedTriggers="STARTUP MANUAL"
+        directory="${installation.root}"
+        command="console_update.bat">
+      <description>executing the console_update.bat script</description>
     </setupTask>
   </setupTask>
   <stream name="develop">
@@ -645,7 +665,7 @@
               xsi:type="setup:ResourceCreationTask"
               id="workspace.maven.init.win"
               excludedTriggers="BOOTSTRAP"
-              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXIST &quot;dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse&#xA;&#x9;call mvn initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXIST &quot;dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse-test\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse-test&#xA;&#x9;call mvn initialize&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXIST &quot;dev_tsplugin\cobigen\cobigen-tsplugin\target\generated-sources\js\ts-merger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd dev_tsplugin\cobigen\cobigen-tsplugin&#xA;&#x9;call mvn generate-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
+              content="@ECHO OFF&#xA;&#xA;SET WS_LOC=&quot;${workspace.location}&quot;&#xA;&#xA;IF EXIST &quot;dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in...&#xA;&#x9;cd dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse&#xA;&#x9;call mvn clean package -Pp2-build-mars&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXIST &quot;dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse-test\lib&quot; (&#xA;&#x9;ECHO CobiGen Eclipse Plug-in Tests already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO Initialize CobiGen Eclipse Plug-in Tests...&#xA;&#x9;cd dev_eclipseplugin\cobigen-eclipse\cobigen-eclipse-test&#xA;&#x9;call mvn clean package -Pp2-build-mars,p2-build-stable,p2-build-experimental&#xA;&#x9;cd %WS_LOC%&#xA;)&#xA;&#xA;IF EXIST &quot;dev_tsplugin\cobigen\cobigen-tsplugin\target\generated-sources\js\ts-merger.js&quot; (&#xA;&#x9;ECHO CobiGen TypeScript Plug-in already initialized. Skipping...&#xA;) ELSE (&#xA;&#x9;ECHO initialize CobiGen TypeScript Plug-in...&#xA;&#x9;cd dev_tsplugin\cobigen\cobigen-tsplugin&#xA;&#x9;call mvn generate-resources&#xA;&#x9;cd %WS_LOC%&#xA;)"
               targetURL="${workspace.location/maven-init.cmd|uri}"
               encoding="UTF-8">
             <description>Workspace maven initialization</description>
