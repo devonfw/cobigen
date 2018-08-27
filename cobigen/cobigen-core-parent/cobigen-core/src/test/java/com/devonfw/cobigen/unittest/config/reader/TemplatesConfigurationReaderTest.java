@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
@@ -22,6 +25,7 @@ import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateExtension;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -356,6 +360,122 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
             "scanned", "prefix_scanned2");
 
+    }
+
+    /**
+     * Tests the correct resolution of TemplateRef from outside the current templates file.
+     */
+    @Test
+    public void testTemplateRefOutsideCurrentFile() {
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templateref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
+
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+
+        // validation
+        Increment incrementThree = increments.get("3");
+        LinkedList<String> templateNamesThree = new LinkedList<>();
+        for (Template tmplate : incrementThree.getTemplates()) {
+            templateNamesThree.add(tmplate.getName());
+        }
+        assertThat(templateNamesThree).containsExactly("templateDecl");
+
+        Increment incrementFour = increments.get("4");
+        LinkedList<String> templateNamesFour = new LinkedList<>();
+        for (Template tmplate : incrementFour.getTemplates()) {
+            templateNamesFour.add(tmplate.getName());
+        }
+        assertThat(templateNamesFour).containsExactly("ExplicitlyDefined");
+    }
+
+    /**
+     * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
+     */
+    @Test
+    public void testIncrementRefOutsideCurrentFile() {
+
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
+
+        // validation
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+        assertThat(increments).containsOnlyKeys("3", "4", "5");
+
+        Increment incrementThree = increments.get("3").getDependentIncrements().get(0);
+        assertThat(incrementThree.getName()).isEqualTo("0");
+        assertThat(incrementThree.getTemplates().size()).isEqualTo(1);
+
+        Increment incrementFour = increments.get("4").getDependentIncrements().get(0);
+        assertThat(incrementFour.getName()).isEqualTo("1");
+        assertThat(incrementFour.getTemplates().size()).isEqualTo(4);
+
+        Increment incrementFive = increments.get("5").getDependentIncrements().get(0);
+        assertThat(incrementFive.getName()).isEqualTo("2");
+        assertThat(incrementFive.getTemplates().size()).isEqualTo(4);
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_invalid_external_incrementref", configurationHolder);
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        target.loadIncrements(templates, trigger);
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidTemplateRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_invalid_external_templateref", configurationHolder);
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        target.loadIncrements(templates, trigger);
     }
 
     /**
