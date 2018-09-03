@@ -31,15 +31,7 @@ public enum Field {
      */
     private String value;
 
-    public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-	/**
+    /**
      * @param value
      *            of the key
      */
@@ -50,11 +42,6 @@ public enum Field {
     @Override
     public String toString() {
         return value;
-    }
-    
-    public static void main(String arg[]) {
-    	Field.NAME.setValue("hello");
-    	System.out.println("name= "+ Field.NAME.getValue() );
     }
 
 }
