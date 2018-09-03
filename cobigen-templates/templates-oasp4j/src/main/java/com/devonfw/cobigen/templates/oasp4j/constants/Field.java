@@ -5,43 +5,42 @@ package com.devonfw.cobigen.templates.oasp4j.constants;
  */
 public enum Field {
 
-    /**
-     * Name of the field
-     */
-    NAME("name"),
-    /**
-     * Type of the field
-     */
-    TYPE("type"),
-    /**
-     * Canonical Type of the field
-     */
-    CANONICAL_TYPE("canonicalType"),
-    /**
-     * The Javadoc of the field
-     */
-    JAVA_DOC("javaDoc"),
-    /**
-     * Annotations
-     */
-    ANNOTATIONS("annotations");
+	/**
+	 * Name of the field
+	 */
+	NAME("name"),
+	/**
+	 * Type of the field
+	 */
+	TYPE("type"),
+	/**
+	 * Canonical Type of the field
+	 */
+	CANONICAL_TYPE("canonicalType"),
+	/**
+	 * The Javadoc of the field
+	 */
+	JAVA_DOC("javaDoc"),
+	/**
+	 * Annotations
+	 */
+	ANNOTATIONS("annotations");
 
-    /**
-     * key value
-     */
-    private String value;
+	/**
+	 * key value
+	 */
+	private String value;
 
-    /**
-     * @param value
-     *            of the key
-     */
-    Field(String value) {
-        this.value = value;
-    }
+	/**
+	 * @param value of the key
+	 */
+	Field(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public String toString() {
-        return value;
-    }
+	@Override
+	public String toString() {
+		return value;
+	}
 
 }
