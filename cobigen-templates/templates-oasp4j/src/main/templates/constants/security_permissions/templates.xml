@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
     <templates>
-        <template name="permission_constants" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/PermissionConstants.java" templateFile="PermissionConstants.java.ftl"/>
+        <template name="permission_constants" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/PermissionConstants.java" templateFile="PermissionConstants.java.ftl" mergeStrategy="tsmerge"/>
+    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="home.component.html" mergeStrategy="override"/>
     </templates>
     <increments>
-        <increment name="permission_constants" description="Permission Constants">
+        <increment name="permission_constants" description="Permission Constants" >
             <templateRef ref="permission_constants"/>
         </increment>
     </increments>
