@@ -32,7 +32,8 @@ public enum Field {
 	private String value;
 
 	/**
-	 * @param value of the key
+	 * @param value
+	 *             of the key
 	 */
 	Field(String value) {
 		this.value = value;
