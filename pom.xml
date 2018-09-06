@@ -21,6 +21,7 @@
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
     <updatesite.path>files/cobigen/updatesite</updatesite.path>
+    <attach.source.javadoc.build>true</attach.source.javadoc.build>
   </properties>
 
   <modules>
@@ -165,14 +166,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <configuration>
           <flattenMode>${oasp.flatten.mode}</flattenMode>
         </configuration>
         <executions>
           <execution>
             <id>flatten</id>
-            <phase>process-test-resources</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>flatten</goal>
             </goals>
@@ -579,6 +580,42 @@
                   <toDir>${updatesite.path}/stable/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <activation>
+        <property>
+          <name>attach.source.javadoc.build</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
