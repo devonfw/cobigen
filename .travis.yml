@@ -1,0 +1,54 @@
+sudo: required
+dist: xenial
+
+language: java
+
+jdk: oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.m2
+ 
+env: DISPLAY=:99.0
+
+install: true
+
+addons:
+  apt:
+    packages:
+      - metacity
+
+jobs:
+  include:
+    - stage: install & test
+      script: 
+        - if [[ ("$TRAVIS_BRANCH" == "gh-pages") || ("$TRAVIS_BRANCH" == "dev_oomph_setup") ]]; then 
+            travis_terminate 1;
+          elif [ "$TRAVIS_BRANCH" == "master" ]; then 
+            build_root="";
+          elif [ "$TRAVIS_BRANCH" == "dev_eclipseplugin" ]; then 
+            build_root="cobigen-eclipse";
+          elif [ "$TRAVIS_BRANCH" == "dev_mavenplugin" ]; then 
+            build_root="cobigen-maven";
+          elif [[ ("$TRAVIS_BRANCH" == "dev_core") || ("$TRAVIS_BRANCH" == "dev_javaplugin") || ("$TRAVIS_BRANCH" == "dev_openapiplugin") ]]; then 
+            build_root=${TRAVIS_BRANCH//dev_/};
+            build_root+="-parent";
+          elif [ "$TRAVIS_BRANCH" == "dev_htmlmerger" ]; then 
+            build_root="cobigen/cobigen-htmlplugin";
+          elif [[ ("$TRAVIS_BRANCH" == "dev_tempeng_freemarker") || ("$TRAVIS_BRANCH" == "dev_tempeng_velocity")]]; then 
+            build_root="cobigen/cobigen-templateengines/cobigen-";
+            build_root+=${TRAVIS_BRANCH//dev_/};
+            build_root=${build_root//_/-};
+          else
+            build_root="cobigen/cobigen-";
+            build_root+=${TRAVIS_BRANCH//dev_/};
+          fi
+        - sh -e /etc/init.d/xvfb start
+        - metaCity --sm-disable --replace 2> metacity.err &
+        - if [ "$TRAVIS_BRANCH" == "master" ]; then 
+            mvn clean install -U -Pp2-build-mars,p2-build-stable;
+          elif [ "$TRAVIS_BRANCH" == "dev_eclipseplugin" ]; then 
+            mvn clean install -U -Pp2-build-mars,p2-build-ci;
+          else
+            mvn clean install -U;
+          fi

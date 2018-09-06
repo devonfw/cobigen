@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2">
+  <templates>
+    <template id="resources_resources_spring_common" destinationPath="src/main/resources/resources/spring/common.xml" templateFile="resources/resources/spring/common.xml.ftl" />
+    <template id="prefix_Foo2Class.java" templateFile="foo/Foo2Class.java.ftl" destinationPath="src/main/java/foo/Foo2Class${variable}.java" mergeStrategy="javamerge"/>
+
+    <templateExtension idref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+    <templateExtension idref="prefix2_Foo2Class.java" />
+  </templates>
+
+</templatesConfiguration>

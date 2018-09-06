@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-maven-parent</artifactId>
+  <artifactId>maven-parent</artifactId>
   <version>dev-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>CobiGen Maven Plugin - Parent</name>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-master-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
   <properties>
     <maven.version>3.0</maven.version>
-    <cobigen.maven.version>3.1.0</cobigen.maven.version>
+    <cobigen.maven.version>4.0.0</cobigen.maven.version>
   </properties>
 
   <modules>
@@ -23,5 +22,22 @@
     <module>cobigen-maven-systemtest</module>
     <module>cobigen-maven-test</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

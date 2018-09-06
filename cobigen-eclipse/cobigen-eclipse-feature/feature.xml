@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.capgemini.cobigen.eclipse.feature"
+      id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="3.0.1"
-      provider-name="Capgemini">
+      version="4.0.0"
+      provider-name="DevonFw Team">
 
    <description>
-      The CobiGen is an incremental generator which is able to generate at least every text-base contents using templates.
-The CobiGen is also capable of merging Java, XML and Property contents. The only necessary input is a valid compiling Java-Class.
+      The CobiGen is an incremental generator framework based on text template engines like FreeMarker or Velocity.
    </description>
 
    <copyright>
-      Copyright © Capgemini 2013-2016. All rights reserved.
+      Copyright © 2013-2017 Capgemini SE. All rights reserved.
    </copyright>
 
-   <license url="">
-      Capgemini CobiGen License Agreement
-June 20, 2013
+   <license url="https://www.apache.org/licenses/LICENSE-2.0">
+Copyright © 2013-2017 Capgemini SE
 
-The usage of this software is subject to the terms and conditions of the Capgemini CobiGen License Agreement.
-To the extent that CobiGen contains software licensed under open source licenses, the respective license terms apply. The rights for using the open source software are granted directly by the respective owner of those rights as set forth in the corresponding open source license terms.
-To the extent CobiGen contains Capgemini proprietary code, non-transferrable use rights are granted by Capgemini as set forth in the CobiGen License Agreement.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
    </license>
 
    <url>
@@ -29,7 +35,7 @@ To the extent CobiGen contains Capgemini proprietary code, non-transferrable use
    </url>
 
    <plugin
-         id="com.capgemini.cobigen.eclipse"
+         id="com.devonfw.cobigen.eclipse"
          download-size="0"
          install-size="0"
          version="0.0.0"
