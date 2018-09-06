@@ -2,19 +2,20 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-eclipse-parent</artifactId>
+  <artifactId>eclipse-parent</artifactId>
   <name>CobiGen - Eclipse Plug-In - Parent</name>
   <packaging>pom</packaging>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-master-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <tycho.version>0.24.0</tycho.version>
+    <tycho.version>1.2.0</tycho.version>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
+    <attach.source.javadoc.build>false</attach.source.javadoc.build>
   </properties>
 
   <modules>
@@ -55,7 +56,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>attach-p2-metadata</id>
+            <id>p2-metadata</id>
             <phase>package</phase>
             <goals>
               <goal>p2-metadata</goal>
@@ -81,7 +82,7 @@
         <artifactId>target-platform-configuration</artifactId>
         <version>${tycho.version}</version>
         <configuration>
-          <executionEnvironment>JavaSE-1.7</executionEnvironment>
+          <executionEnvironment>JavaSE-1.8</executionEnvironment>
           <environments>
             <environment>
               <os>linux</os>
@@ -129,10 +130,7 @@
 
   <profiles>
     <profile>
-      <id>MarsBuild</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>p2-build-mars</id>
       <repositories>
         <repository>
           <id>eclipse-mars</id>
@@ -142,7 +140,7 @@
       </repositories>
     </profile>
     <profile>
-      <id>NeonBuild</id>
+      <id>p2-build-neon</id>
       <repositories>
         <repository>
           <id>eclipse-neon</id>

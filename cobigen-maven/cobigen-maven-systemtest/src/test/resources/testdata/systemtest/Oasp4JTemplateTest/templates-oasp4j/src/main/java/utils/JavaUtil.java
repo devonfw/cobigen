@@ -193,42 +193,6 @@ public class JavaUtil {
     }
 
     /**
-     * returns the sencha type associated with a Java primitive or {@link String} or {@link java.util.Date}
-     *
-     * @param simpleType
-     *            :{@link String} the type to be parsed
-     * @return the corresponding sencha type or 'auto' otherwise
-     */
-    public String getSenchaType(String simpleType) {
-
-        switch (simpleType) {
-        case "boolean":
-        case "Boolean":
-            return "boolean";
-        case "short":
-        case "Short":
-        case "int":
-        case "Integer":
-        case "long":
-        case "Long":
-            return "int";
-        case "float":
-        case "Float":
-        case "double":
-        case "Double":
-            return "float";
-        case "char":
-        case "Character":
-        case "String":
-            return "string";
-        case "Date":
-            return "date";
-        default:
-            return "auto";
-        }
-    }
-
-    /**
      * Returns the Ext Type to a given java type
      *
      * @param simpleType

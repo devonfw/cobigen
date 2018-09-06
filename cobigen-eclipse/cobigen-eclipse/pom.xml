@@ -2,27 +2,27 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>com.capgemini.cobigen.eclipse</artifactId>
+  <artifactId>com.devonfw.cobigen.eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In</name>
   <packaging>eclipse-plugin</packaging>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-eclipse-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>eclipse-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core</artifactId>
+      <version>5.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-javaplugin.model</artifactId>
-      <version>1.0.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>javaplugin-model</artifactId>
+      <version>2.0.0</version>
     </dependency>
 
     <dependency>
