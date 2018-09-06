@@ -2,14 +2,15 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-maven-plugin</artifactId>
+  <artifactId>maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>${cobigen.maven.version}</version>
   <name>CobiGen Maven Plugin</name>
+  <description>CobiGen - Maven Integration</description>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-maven-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>maven-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
@@ -37,8 +38,13 @@
     <!-- CobiGen dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>4.1.0</version>
+      <artifactId>core</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-api</artifactId>
+      <version>5.0.0</version>
     </dependency>
 
     <!-- dependencies to annotations -->
