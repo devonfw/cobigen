@@ -1,0 +1,1 @@
+Test ${pojo.name} ${(IDGenerator.setModelId("asdf"))!}${IDGenerator.getModelId()}

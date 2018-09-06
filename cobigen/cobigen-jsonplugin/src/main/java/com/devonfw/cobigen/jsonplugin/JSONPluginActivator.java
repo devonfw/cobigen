@@ -16,8 +16,6 @@ public class JSONPluginActivator implements GeneratorPluginActivator {
     @Override
     public List<Merger> bindMerger() {
         List<Merger> merger = Lists.newLinkedList();
-        merger.add(new JSONMerger("sencharchmerge", false));
-        merger.add(new JSONMerger("sencharchmerge_override", true));
         merger.add(new JSONMerger("jsonmerge", false));
         merger.add(new JSONMerger("jsonmerge_override", true));
         return merger;

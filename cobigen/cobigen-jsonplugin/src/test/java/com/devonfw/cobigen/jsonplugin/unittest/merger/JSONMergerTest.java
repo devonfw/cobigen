@@ -67,48 +67,6 @@ public class JSONMergerTest {
     }
 
     /**
-     * Checks merge for Sencha Architect. The test will cover {@link JsonObject} and {@link JsonArray} inside
-     * one or more {@link JsonObject} merge for NO OVERRIDE cases
-     */
-    @Test
-    public void senchaArchitectMergeTest_NoOverride() {
-
-        // arrange
-        File jsonBaseFile = new File(testFileRootPath + "Base_json");
-
-        // act
-        String mergedContents =
-            new JSONMerger("sencharchmerge", false).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JsonObject jsonResult = new JsonParser().parse(readJsonFile("Result_json")).getAsJsonObject();
-
-        assertTrue(jsonResult.equals(new JsonParser().parse(mergedContents).getAsJsonObject()));
-    }
-
-    /**
-     * Checks merge for Sencha Architect. The test will cover {@link JsonObject} and {@link JsonArray} inside
-     * one or more {@link JsonObject} merge for OVERRIDE cases
-     */
-    @Test
-    public void senchaArchitectMergeTest_Override() {
-
-        // arrange
-        File jsonBaseFile = new File(testFileRootPath + "Base_json");
-
-        // act
-        String mergedContents =
-            new JSONMerger("sencharchmerge_override", true).merge(jsonBaseFile, readJsonFile("Patch_json"), "UTF-8");
-        JsonObject jsonResult = new JsonParser().parse(readJsonFile("ResultOverride_json")).getAsJsonObject();
-
-        JsonArray toComp = jsonResult.getAsJsonObject("descriptor").getAsJsonObject("app2").getAsJsonArray("messages");
-        JsonObject json = new JsonParser().parse(mergedContents).getAsJsonObject();
-
-        JsonArray toCompRes = json.getAsJsonObject("descriptor").getAsJsonObject("app2").getAsJsonArray("messages");
-
-        // assert
-        assertTrue(toCompRes.toString().equals(toComp.toString()));
-    }
-
-    /**
      * Reads the JSON file given by parameter
      * @param fileName
      *            the file to read

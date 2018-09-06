@@ -4,77 +4,111 @@
       <extension
          point="org.eclipse.ui.commands">
       <command
-            id="com.capgemini.cobigen.eclipseplugin.generate"
+            id="com.devonfw.cobigen.eclipseplugin.generate"
             name="Generate">
       </command>
       <command
-            id="com.capgemini.cobigen.eclipseplugin.healthy_check"
+            id="com.devonfw.cobigen.eclipseplugin.healthy_check"
             name="Healthy Check">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.GenerateHandler"
-            commandId="com.capgemini.cobigen.eclipseplugin.generate">
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.GenerateHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.generate">
       </handler>
       <handler
-            class="com.capgemini.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
-            commandId="com.capgemini.cobigen.eclipseplugin.health_check">
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.health_check">
       </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            allPopups="false"
-            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
-         <separator
-               name="com.capgemini.cobigen.eclipseplugin.separator1"
-               visible="true">
-         </separator>
-         <menu
-               label="CobiGen">
-            <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.generate"
-                  label="Generate..."
-                  style="push">
-            </command>
-            <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.health_check"
-                  label="Health Check..."
-                  style="push">
-            </command>
-         </menu>
-         <separator
-               name="com.capgemini.cobigen.eclipseplugin.separator2"
-               visible="true">
-         </separator>
-      </menuContribution>
-      <menuContribution
-            allPopups="false"
-            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
-         <separator
-               name="com.capgemini.cobigen.eclipseplugin.separator3"
-               visible="true">
-         </separator>
-         <menu
-               label="CobiGen">
-            <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.generate"
-                  label="Generate..."
-                  style="push">
-            </command>
-            <command
-                  commandId="com.capgemini.cobigen.eclipseplugin.health_check"
-                  label="Health Check..."
-                  style="push">
-            </command>
-         </menu>
-         <separator
-               name="com.capgemini.cobigen.eclipseplugin.separator4"
-               visible="true">
-         </separator>
-      </menuContribution>
+             allPopups="false"
+             locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+          <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator1"
+                visible="true">
+          </separator>
+          <menu
+                label="CobiGen">
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
+                   label="Generate..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
+                   label="Health Check..."
+                   style="push">
+             </command>
+          </menu>
+          <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator2"
+                visible="true">
+          </separator>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+          <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator3"
+                visible="true">
+          </separator>
+          <menu
+                label="CobiGen">
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
+                   label="Generate..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
+                   label="Health Check..."
+                   style="push">
+             </command>
+          </menu>
+          <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator4"
+                visible="true">
+          </separator>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+          <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator5"
+                visible="true">
+          </separator>
+          <menu
+                label="CobiGen">
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.generate"
+                   label="Generate..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.health_check"
+                   label="Health Check..."
+                   style="push">
+             </command>
+             <visibleWhen
+                   checkEnabled="false">
+                   <with variable="selection">
+                      <or>
+                        <instanceof value="org.eclipse.jface.text.ITextSelection"/>
+                        <instanceof value="org.eclipse.wst.sse.ui.StructuredTextEditor$StructuredSelectionProvider$StructuredTextSelection"/>
+                      </or>
+                   </with>
+             </visibleWhen>
+           </menu>
+            <separator
+                name="com.devonfw.cobigen.eclipseplugin.separator6"
+                visible="true">
+            </separator>
+       </menuContribution>
    </extension>
 
 </plugin>
