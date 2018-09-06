@@ -44,6 +44,17 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     }
 
     @Override
+    public ${variables.entityName}Cto find${variables.entityName}Cto(Long id) {
+
+      return this.ucFind${variables.entityName}.find${variables.entityName}Cto(id);
+    }
+
+    @Override
+    public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
+      return this.ucFind${variables.entityName}.find${variables.entityName}Ctos(criteria);
+    }
+
+    @Override
     public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
 
       return this.ucManage${variables.entityName}.save${variables.entityName}(${variables.entityName?lower_case});
