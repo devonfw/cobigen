@@ -3,7 +3,7 @@ bin
 target
 .flattened-pom.xml
 /.project
-
+*.log
 /cobigen-eclipse/.project
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
 cobigen/cobigen-javaplugin/src/main/resources/lib/*
@@ -11,3 +11,14 @@ cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/main/resources/lib/
 cobigen/cobigen-xmlplugin/src/main/resources/lib/
 cobigen/cobigen-tsplugin/src/main/resources/lib/
 cobigen/cobigen-propertyplugin/src/main/resources/lib/
+cobigen/cobigen-textmerger/src/main/resources/lib/
+cobigen/cobigen-htmlplugin/src/main/resources/lib/
+cobigen/cobigen-jsonplugin/src/main/resources/lib/
+cobigen/cobigen-senchaplugin/src/main/resources/lib/
+cobigen/cobigen-openapiplugin/src/main/resources/lib/
+
+#Python
+*.pyc
+.pydevproject
+objectdb
+.mypy_cache
