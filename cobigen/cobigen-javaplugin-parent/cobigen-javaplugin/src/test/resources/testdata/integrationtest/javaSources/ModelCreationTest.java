@@ -1,6 +1,6 @@
-package com.capgemini.cobigen.javaplugin.integrationtest;
+package com.devonfw.cobigen.javaplugin.integrationtest;
 
-import com.capgemini.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
+import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 import javax.ws.rs.Get;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;

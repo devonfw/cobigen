@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+  <templates>
+    <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Dao.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}DaoImpl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+    <increment name="server" description="CRUD OASP4J Server">
+      <incrementRef ref="daos"/>
+      <incrementRef ref="tos"/>
+      <incrementRef ref="logic_impl"/>
+      <incrementRef ref="dataaccess_infrastructure"/>
+      <incrementRef ref="rest_service_impl"/>
+    </increment>
+    <increment name="daos" description="DAO's">
+      <templateRef ref="ApplicationDao.java"/>
+      <templateRef ref="ApplicationDaoImpl.java"/>
+      <templateRef ref="${variables.entityName}Dao.java"/>
+      <templateRef ref="${variables.entityName}DaoImpl.java"/>
+    </increment>
+    <increment name="tos" description="TO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractEto.java"/>
+      <templateRef ref="PaginatedListToWrapper.java"/>
+      <templateRef ref="${variables.entityName}Eto.java"/>
+      <templateRef ref="${variables.entityName}Cto.java"/>
+      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
+    </increment>
+    <increment name="logic_impl" description="logic (all in one)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
+      <templateRef ref="${variables.component#cap_first}Impl.java"/>
+      <templateRef ref="${variables.component#cap_first}.java"/>
+    </increment>
+    <increment name="dataaccess_infrastructure" description="Entity infrastructure">
+      <templateRef ref="ApplicationPersistenceEntity.java"/>
+      <templateRef ref="ApplicationEntity.java"/>
+      <templateRef ref="${variables.entityName}Entity.java"/>
+      <templateRef ref="${variables.entityName}.java"/>
+    </increment>
+    <increment name="rest_service_impl" description="REST services">
+      <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
+      <templateRef ref="${variables.component#cap_first}RestService.java"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
