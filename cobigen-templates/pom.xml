@@ -2,15 +2,13 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-templates-parent</artifactId>
+  <artifactId>templates-parent</artifactId>
   <name>CobiGen Templates - Parent</name>
   <packaging>pom</packaging>
 
-  <!-- parent is just for pom flatten/deployment issues. However, as a project,
-    you might change the project deployment, so you can simply remove the parent inheritance -->
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-master-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
@@ -18,10 +16,23 @@
     <module>templates-oasp4j</module>
     <module>templates-oasp4js</module>
     <module>templates-rf</module>
-    <module>templates-sencha</module>
   </modules>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>maven-test</artifactId>
+      <version>4.0.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/templates</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -31,23 +42,41 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+      <!-- Inject Maven Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-maven-properties-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Workaround as including pom.xml overwrites flattened pom, while exluding pom.xml would not add any pom at all
+        to jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo>Integrate flattened POM manually</echo>
+                <copy file=".flattened-pom.xml" tofile="${project.build.outputDirectory}/pom.xml"/>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-
-    <resources>
-      <resource>
-        <directory>${basedir}</directory>
-        <includes>
-          <include>**/*.ftl</include>
-          <include>**/*.xml</include>
-          <include>**/LICENSE.CobiGen</include>
-        </includes>
-        <excludes>
-          <exclude>pom.xml</exclude>
-          <exclude>target/</exclude>
-          <exclude>bin</exclude>
-        </excludes>
-      </resource>
-    </resources>
   </build>
-
 </project>

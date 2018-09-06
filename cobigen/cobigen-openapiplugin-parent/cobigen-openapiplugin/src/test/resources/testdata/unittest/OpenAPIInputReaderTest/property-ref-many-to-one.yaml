@@ -1,0 +1,37 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/devonfw-server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+paths:
+  /customMethod:
+    get:
+      operationId: customMethod
+      responses:
+        '200':
+          description: Custom Method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleData'
+components:
+  schemas:
+    SampleData:
+      x-component: comp
+      type: object
+      properties:
+        mainData:
+          type: array
+          description: a single ref to MoreData (many-to-one)
+          items:
+            $ref: '#/components/schemas/MoreData'
+    MoreData:
+      x-component: comp
+      type: object
+      properties:
+        master:
+          type: object
+          description: master data ref (many-to-one)
+          $ref: '#/components/schemas/SampleData'
