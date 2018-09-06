@@ -1,32 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-tempeng-freemarker</artifactId>
+  <artifactId>tempeng-freemarker</artifactId>
   <name>CobiGen - FreeMarker Template Engine</name>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
+  <description>CobiGen - FreeMarker Template Engine</description>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-tempeng-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
   <properties>
     <skip.deployment>false</skip.deployment>
+    <freemarker.version>2.3.23</freemarker.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-api</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>5.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-test</artifactId>
-      <version>4.1.0</version>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.23</version>
+      <version>${freemarker.version}</version>
     </dependency>
     <!-- Enables XPath for FreeMarker templates -->
     <dependency>
@@ -42,7 +42,26 @@
       <artifactId>jaxen</artifactId>
       <version>1.1.4</version>
     </dependency>
-	
+
   </dependencies>
+  
+  <build>
+    <plugins>
+      <!-- Inject FreeMarker Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

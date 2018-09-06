@@ -1,0 +1,47 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/devonfw-server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+paths:
+  /sampledatamanagement/v1/sampledata/customSearch/:
+    post:
+      summary: 'Delegates to {@link Moredatamanagement#findMoreDataEtos}.'
+      description: Return SampleData that fits the filter.
+      operationId: findCustomSampleDataEtos
+      responses:
+        '200':
+          description: List of SampleData's.
+          content:
+            image/png:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SampleData'
+      requestBody:
+        $ref: '#/components/requestBodies/SampleData'
+      tags:
+        - searchCriteria
+        - paginated
+components:
+  schemas:
+    SampleData:
+      x-component: sampledatamanagement
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 0
+          description: Name string.
+      required:
+        - name
+  requestBodies:
+    SampleData:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SampleData'
+      required: true
