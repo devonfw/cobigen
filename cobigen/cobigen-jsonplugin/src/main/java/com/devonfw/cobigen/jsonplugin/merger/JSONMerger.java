@@ -12,7 +12,6 @@ import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.jsonplugin.merger.general.constants.Constants;
 import com.devonfw.cobigen.jsonplugin.merger.generic.GenericJSONMerger;
-import com.devonfw.cobigen.jsonplugin.merger.senchaarchitect.SenchaArchitectMerger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -89,10 +88,7 @@ public class JSONMerger implements Merger {
         JsonObject result = null;
 
         // Override would be defined by patchOverrides at PluginActivator
-        if (type.contains(Constants.SENCHA_ARCHITECT)) {
-            SenchaArchitectMerger senchArchMerger = new SenchaArchitectMerger(objBase, objPatch);
-            result = senchArchMerger.senchArchMerge(patchOverrides);
-        } else if (type.contains(Constants.GENERIC_MERGE)) {
+        if (type.contains(Constants.GENERIC_MERGE)) {
             GenericJSONMerger ng2merge = new GenericJSONMerger(objBase, objPatch);
             result = ng2merge.merge(patchOverrides);
         } else {

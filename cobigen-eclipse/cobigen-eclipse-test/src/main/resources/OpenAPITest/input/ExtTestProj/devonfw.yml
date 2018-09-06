@@ -1,0 +1,138 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/devonfw-server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+paths:
+  /sampledatamanagement/v1/sampledata/custom/{id}:
+    get:
+      operationId: customMethod
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: Custom Method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleData'
+    delete:
+      summary: 'Delegates to {@link Sampledatamanagement#deleteSampleData}.'
+      description: Deletes an existent SampleData from his ID.
+      operationId: deleteCustomSampleData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: An SampleDataETO object
+          content:
+             application/json:
+               schema:
+                 type: boolean
+  /sampledatamanagement/v1/sampledata/customSave:
+    post:
+      summary: 'Delegates to {@link Sampledatamanagement#saveSampleData}.'
+      description: Save a SampleData into de DB
+      operationId: saveCustomSampleData
+      responses:
+        '200':
+          description: An SampleDataETO object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SampleData'
+      requestBody:
+        $ref: '#/components/requestBodies/SampleData'
+      tags:
+       - paginated
+  /sampledatamanagement/v1/sampledata/customSearch/:
+    post:
+      summary: 'Delegates to {@link Moredatamanagement#findMoreDataEtos}.'
+      description: Return SampleData that fits the filter.
+      operationId: findCustomSampleDataEtos
+      responses:
+        '200':
+          description: List of SampleData's.
+          content:
+            image/png:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SampleData'
+      requestBody:
+        $ref: '#/components/requestBodies/SampleData'
+      tags:
+        - searchCriteria
+        - paginated
+components:
+  schemas:
+    RestaurantTable:
+      x-component: sampledatamanagement
+      type: object
+      properties:
+        seats:
+          type: integer
+          format: int32
+      x-manytomany: MoreData
+    SampleData:
+      x-component: sampledatamanagement
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 0
+          description: Name string.
+        surname:
+          type: string
+          description: Surname string.
+        age:
+          type: integer
+          format: int32
+          description: Age integer.
+        mail:
+          type: string
+          description: Mail string.
+        collection:
+          type: array
+          items:
+            type: integer
+            format: int64
+      x-onetoone: RestaurantTable
+      x-onetomany: MoreData
+      x-onetomany: RestaurantTable
+      required:
+        - name
+    MoreData:
+      x-component: moredatamanagement
+      type: object
+      properties:
+        example:
+          type: string
+      x-manytoone: SampleData
+      x-manytomany: RestaurantTable
+  requestBodies:
+    SampleData:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SampleData'
+      required: true
