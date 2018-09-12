@@ -23,6 +23,14 @@
 	private ${field.type} ${field.name};
 </#if>
 </#list>
+<#-- Used to generate StringSearchConfigTo for each field -->
+<#if isSearchCriteria>
+	<#list pojo.fields as field>
+		<#if !field.type?contains("Entity") && !field.type?contains("Embeddable")>
+			private StringSearchConfigTo ${field.name}Option;
+		</#if>
+	</#list>
+</#if>
 </#macro>
 
 <#--
@@ -73,4 +81,25 @@
 	}</#if>
 </#if>
 </#list>
+<#if isSearchCriteria>
+	<#list pojo.fields as field>
+		<#if !field.type?contains("Entity") && !field.type?contains("Embeddable")>
+	/**
+	* @return the {@link ${field.type}SearchConfigTo} used to search for {@link #get${field.name?cap_first}()${field.name}}.
+	*/
+	public StringSearchConfigTo get${field.name?cap_first}Option() {
+
+		return this.${field.name}Option;
+	}
+
+	/**
+	* @param ${field.name}Option new value of {@link #get${field.name?cap_first}Option()}.
+	*/
+	public void set${field.name?cap_first}Option(StringSearchConfigTo ${field.name}Option) {
+
+		this.${field.name}Option =${field.name}Option;
+	}
+		</#if>
+	</#list>
+</#if>
 </#macro>
