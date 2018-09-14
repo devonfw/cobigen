@@ -8,7 +8,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.${variables.com
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Objects;
@@ -51,9 +51,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	}
 
 	@Override
-	public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
+	public Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
 		criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
-		PaginatedListTo<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
+		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
 		return mapPaginatedEntityList(${variables.entityName?lower_case}s, ${variables.entityName}Eto.class);
 	}
 
@@ -104,9 +104,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
+  public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
     criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
-    PaginatedListTo<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
+    Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
     List<${variables.entityName}Cto> ctos = new ArrayList<>();
     for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getResult()) {
       ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
@@ -122,7 +122,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       
     }
     PaginationResultTo pagResultTo = new PaginationResultTo(criteria.getPagination(), (long) ctos.size());
-    PaginatedListTo<${variables.entityName}Cto> pagListTo = new PaginatedListTo(ctos, pagResultTo);
+    Page<${variables.entityName}Cto> pagListTo = new Page(ctos, pagResultTo);
     return pagListTo;
   }
 
