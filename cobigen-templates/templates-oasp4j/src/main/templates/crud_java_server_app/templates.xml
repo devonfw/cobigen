@@ -8,11 +8,11 @@
     <templateExtension ref="${variables.component#cap_first}RepoImpl.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>    
     <templateExtension ref="SearchCriteriaTo.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>

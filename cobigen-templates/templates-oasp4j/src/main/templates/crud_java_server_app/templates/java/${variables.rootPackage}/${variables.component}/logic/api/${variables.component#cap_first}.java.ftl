@@ -2,7 +2,7 @@ package ${variables.rootPackage}.${variables.component}.logic.api;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 /**
  * Interface for ${variables.component?cap_first} component.
@@ -23,7 +23,7 @@ public interface ${variables.component?cap_first} {
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo}.
    * @return the {@link List} of matching {@link ${variables.entityName}Eto}s.
    */
-	PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria);
+	Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria);
 	
 	/**
    * Deletes a ${variables.entityName?uncap_first} from the database by its id '${variables.entityName?uncap_first}Id'.
@@ -55,6 +55,6 @@ public interface ${variables.component?cap_first} {
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo}.
    * @return the {@link List} of matching {@link ${variables.entityName}Cto}s.
    */
-  PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria);
+  Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria);
   
 }
