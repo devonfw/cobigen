@@ -30,16 +30,7 @@
       <variableAssignment type="regex" key="component" value="4"/>
       <variableAssignment type="regex" key="entityName" value="5"/>
     </matcher>
-  </trigger>
-  <trigger id="embeddables" type="java" templateFolder="embeddables">
-    <!-- <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api" retrieveObjectsRecursively="false"/> -->
-    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+)Embeddable">
-      <variableAssignment type="regex" key="rootPackage" value="1"/>
-      <variableAssignment type="regex" key="domain" value="3"/>
-      <variableAssignment type="regex" key="component" value="4"/>
-      <variableAssignment type="regex" key="entityName" value="5"/>
-    </matcher>
-  </trigger>
+  </trigger>  
   <trigger id="testdata_builder" type="java" templateFolder="testdata_builder">
     <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
       retrieveObjectsRecursively="false"/>
