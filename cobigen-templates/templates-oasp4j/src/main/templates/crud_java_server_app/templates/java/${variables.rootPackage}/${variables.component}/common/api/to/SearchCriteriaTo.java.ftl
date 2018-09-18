@@ -18,7 +18,7 @@ public abstract class SearchCriteriaTo extends AbstractTo {
    */
   public Pageable getPageable() {
 
-    return this.pageable;
+    return this. pageable;
   }
 
   /**
@@ -28,4 +28,5 @@ public abstract class SearchCriteriaTo extends AbstractTo {
 
     this.pageable = pageable;
   }
+
 }
