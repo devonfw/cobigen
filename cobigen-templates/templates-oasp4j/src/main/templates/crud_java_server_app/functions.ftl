@@ -26,7 +26,7 @@
 <#-- Used to generate StringSearchConfigTo for each field -->
 <#if isSearchCriteria>
 	<#list pojo.fields as field>
-		<#if !field.type?contains("Entity") && !field.type?contains("Embeddable")>
+		<#if !field.type?contains("Embeddable")>
 			private StringSearchConfigTo ${field.name}Option;
 		</#if>
 	</#list>
@@ -41,11 +41,19 @@
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    <#if !JavaUtil.isCollection(classObject, field.name)> <#-- do not generate getters & setters for multiple relation -->
     	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+		/**
+		 * getter for ${field.name}Id attribute
+		 * @return ${field.name}Id
+		 */
     	<#if implementsInterface>@Override</#if>
     	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,"")} <#if isInterface>;<#else>{
     		return ${idVar};
     	}</#if>
-    
+
+		/**
+		 * @param ${field.name}
+		 *            setter for ${field.name} attribute
+		 */
     	<#if implementsInterface>@Override</#if>
     	public void ${OaspUtil.resolveIdSetter(field,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
     		this.${idVar} = ${idVar};
@@ -53,18 +61,32 @@
    </#if>
 <#elseif field.type?contains("Embeddable")>
 	<#if isSearchCriteria>
+	    /**		 
+		 * @return ${field.name}
+		 */
 		public ${field.type?replace("Embeddable","SearchCriteriaTo")} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 			return ${field.name};
 		}</#if>
 
+		/**
+		 * @param ${field.name}
+		 *            setter for ${field.name} attribute
+		 */
 		public void set${field.name?cap_first}(${field.type?replace("Embeddable","SearchCriteriaTo")} ${field.name}) <#if isInterface>;<#else>{
 			this.${field.name} = ${field.name};
 		}</#if>
 	<#else>
+		/**
+		 * @return ${field.name}Id
+		 */
 		public ${field.type?replace("Embeddable","")} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 			return ${field.name};
 		}</#if>
 
+		/**
+		 * @param ${field.name}
+		 *            setter for ${field.name} attribute
+		 */
 		public void set${field.name?cap_first}(${field.type?replace("Embeddable","")} ${field.name}) <#if isInterface>;<#else>{
 			this.${field.name} = ${field.name};
 		}</#if>
@@ -83,9 +105,9 @@
 </#list>
 <#if isSearchCriteria>
 	<#list pojo.fields as field>
-		<#if !field.type?contains("Entity") && !field.type?contains("Embeddable")>
+		<#if !field.type?contains("Embeddable")>
 	/**
-	* @return the {@link ${field.type}SearchConfigTo} used to search for {@link #get${field.name?cap_first}()${field.name}}.
+	* @return the {@link StringSearchConfigTo} used to search for {@link #get${field.name?cap_first}<#if field.type?contains("Entity")>Entity</#if>() ${field.name}}.
 	*/
 	public StringSearchConfigTo get${field.name?cap_first}Option() {
 
