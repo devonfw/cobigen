@@ -467,7 +467,7 @@
   <setupTask
       xsi:type="com.github.maybeec.oomph.task:unzipTask"
       id="unzip.cmder"
-      excludedTriggers="STARTUP"
+      excludedTriggers="STARTUP MANUAL"
       predecessor="rc.cmder"
       filter=""
       zipFile="${tmp.download.location/cmder.zip}"
