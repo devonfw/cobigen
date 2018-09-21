@@ -55,7 +55,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
 	@Override
 	public Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
-		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria, PageRequest.of(0, MAXIMUM_HIT_LIMIT));
+		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria);
 		return mapPaginatedEntityList(${variables.entityName?lower_case}s, ${variables.entityName}Eto.class);
 	}
 
@@ -108,7 +108,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   @Override
   public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
 
-    Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria, PageRequest.of(0, MAXIMUM_HIT_LIMIT));
+    Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria);
     List<${variables.entityName}Cto> ctos = new ArrayList<>();
     for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getContent()) {
       ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
@@ -124,7 +124,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       
     }
     Pageable pagResultTo = PageRequest.of(criteria.getPageable().getPageNumber(), ctos.size());
-    Page<${variables.entityName}Cto> pagListTo = new PageImpl<>(ctos, pagResultTo, MAXIMUM_HIT_LIMIT);
+    Page<${variables.entityName}Cto> pagListTo = new PageImpl<>(ctos, pagResultTo, pagResultTo.getPageSize());
     return pagListTo;
   }
 
