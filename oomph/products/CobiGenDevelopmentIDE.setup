@@ -462,18 +462,18 @@
         resource="${software.location/}apache-maven-${maven.version}"
         destination="maven"
         priority="100"/>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task:unzipTask"
+        id="unzip.cmder"
+        excludedTriggers="STARTUP MANUAL"
+        predecessor="rc.cmder"
+        filter=""
+        zipFile="${tmp.download.location/cmder.zip}"
+        destinationDir="${software.location}"
+        priority="100">
+      <description>unzips the cmder archive</description>
+    </setupTask>
     <description></description>
-  </setupTask>
-  <setupTask
-      xsi:type="com.github.maybeec.oomph.task:unzipTask"
-      id="unzip.cmder"
-      excludedTriggers="STARTUP MANUAL"
-      predecessor="rc.cmder"
-      filter=""
-      zipFile="${tmp.download.location/cmder.zip}"
-      destinationDir="${software.location}"
-      priority="100">
-    <description>unzips the cmder archive</description>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -501,27 +501,27 @@
     <setupTask
         xsi:type="setup:CompoundTask"
         id="jdk.win.64"
-        successor="unzip.jdk.1.8"
+        successor="unzip.jdk"
         filter="(osgi.arch=x86_64)"
         name="x64">
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
-          successor="unzip.jdk.1.8"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-10.0.2_x64.zip"
+          successor="unzip.jdk"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181_x64.zip"
           targetURL="${tmp.download.location/java.zip|uri}">
         <description></description>
       </setupTask>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
-        successor="unzip.jdk.1.8"
+        successor="unzip.jdk"
         filter="(osgi.arch=x86)"
         name="x86">
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
-          successor="unzip.jdk.1.8"
+          successor="unzip.jdk"
           sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181.zip"
           targetURL="${tmp.download.location/java.zip|uri}">
         <description></description>
@@ -529,9 +529,9 @@
     </setupTask>
     <setupTask
         xsi:type="com.github.maybeec.oomph.task:unzipTask"
-        id="unzip.jdk.1.8"
+        id="unzip.jdk"
         excludedTriggers="STARTUP MANUAL"
-        predecessor="jdk.win.64 //@setupTasks.12/@setupTasks.1"
+        predecessor="jdk.win.64 //@setupTasks.11/@setupTasks.1"
         zipFile="${tmp.download.location/java.zip}"
         destinationDir="${software.location/java/}"
         priority="100"/>
@@ -539,7 +539,7 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       id="tasks.finalize.external.resources"
-      predecessor="//@setupTasks.12 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.10 //@setupTasks.11"
+      predecessor="//@setupTasks.11 tasks.unzip.external.resources tasks.unzip.external.software //@setupTasks.9 //@setupTasks.10"
       name="finalize external resources">
     <setupTask
         xsi:type="setup:CompoundTask"
