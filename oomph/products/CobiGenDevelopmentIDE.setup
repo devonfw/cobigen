@@ -508,8 +508,8 @@
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
           successor="unzip.jdk.1.8"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121_x64.zip"
-          targetURL="${tmp.download.location/java18.zip|uri}">
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-10.0.2_x64.zip"
+          targetURL="${tmp.download.location/java.zip|uri}">
         <description></description>
       </setupTask>
     </setupTask>
@@ -522,8 +522,8 @@
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
           successor="unzip.jdk.1.8"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.121.zip"
-          targetURL="${tmp.download.location/java18.zip|uri}">
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181.zip"
+          targetURL="${tmp.download.location/java.zip|uri}">
         <description></description>
       </setupTask>
     </setupTask>
@@ -532,7 +532,7 @@
         id="unzip.jdk.1.8"
         excludedTriggers="STARTUP MANUAL"
         predecessor="jdk.win.64 //@setupTasks.12/@setupTasks.1"
-        zipFile="${tmp.download.location/java18.zip}"
+        zipFile="${tmp.download.location/java.zip}"
         destinationDir="${software.location/java/}"
         priority="100"/>
   </setupTask>
