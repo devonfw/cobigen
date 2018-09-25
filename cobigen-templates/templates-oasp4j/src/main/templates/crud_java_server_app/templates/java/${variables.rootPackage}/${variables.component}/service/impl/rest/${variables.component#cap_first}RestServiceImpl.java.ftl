@@ -6,7 +6,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import ${variables.rootPackage}.${variables.component}.service.api.rest.${variables.component?cap_first}RestService;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,7 +38,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
+  public Page<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
     return this.${variables.component?uncap_first}.find${variables.entityName}Etos(searchCriteriaTo);
   }
   
@@ -48,7 +48,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
+  public Page<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
     return this.${variables.component?uncap_first}.find${variables.entityName}Ctos(searchCriteriaTo);
   }
 }
