@@ -4,7 +4,7 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.en
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -58,11 +58,11 @@ public interface ${variables.component?cap_first}RestService {
    * Delegates to {@link ${variables.component?cap_first}#find${variables.entityName}Etos}.
    *
    * @param searchCriteriaTo the pagination and search criteria to be used for finding ${variables.entityName?lower_case}s.
-   * @return the {@link PaginatedListTo list} of matching {@link ${variables.entityName}Eto}s.
+   * @return the {@link Page list} of matching {@link ${variables.entityName}Eto}s.
    */
   @Path("/${variables.entityName?lower_case}/search")
   @POST
-  public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo);
+  public Page<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo);
     
   
   /**
@@ -79,10 +79,10 @@ public interface ${variables.component?cap_first}RestService {
    * Delegates to {@link ${variables.component?cap_first}#find${variables.entityName}Ctos}.
    *
    * @param searchCriteriaTo the pagination and search criteria to be used for finding ${variables.entityName?lower_case}s.
-   * @return the {@link PaginatedListTo list} of matching {@link ${variables.entityName}Cto}s.
+   * @return the {@link Page list} of matching {@link ${variables.entityName}Cto}s.
    */
   @Path("/${variables.entityName?lower_case}/cto/search")
   @POST
-  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo);
+  public Page<${variables.entityName}Cto> find${variables.entityName}CtosByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo);
 
 }
