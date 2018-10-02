@@ -17,7 +17,7 @@ import ${variables.rootPackage}.general.service.impl.config.WebApplicationContex
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 /**
  * @author riraman
@@ -62,10 +62,10 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
   
   @Override
   public PaginatedListToWrapper<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo){
-    PaginatedListTo<${variables.entityName}Eto> actualResult = this.${variables.component?lower_case}.find${variables.entityName}Etos(searchCriteriaTo);
+    Page<${variables.entityName}Eto> actualResult = this.${variables.component?lower_case}.find${variables.entityName}Etos(searchCriteriaTo);
     PaginatedListToWrapper<${variables.entityName}Eto> wrapper = new PaginatedListToWrapper<>();
-    wrapper.setResult(actualResult.getResult());
-    wrapper.setPagination(actualResult.getPagination());
+    wrapper.setResult(actualResult.getContent());
+    wrapper.setPagination(actualResult.getPageable());
     return wrapper;
   }
   
