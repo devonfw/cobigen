@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import io.oasp.module.jpa.common.api.to.PaginationResultTo;
+import org.springframework.data.domain.Pageable;
 
 /**
  * This class will be used if SOAP service needs to return PaginatedList result.
@@ -16,7 +16,7 @@ import io.oasp.module.jpa.common.api.to.PaginationResultTo;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PaginatedListToWrapper<T> {
 
-  private PaginationResultTo pagination;
+  private Pageable pagination;
 
   @XmlElement
   private List<T> result;
@@ -24,7 +24,7 @@ public class PaginatedListToWrapper<T> {
   /**
    * @return pagination
    */
-  public PaginationResultTo getPagination() {
+  public Pageable getPagination() {
 
     return this.pagination;
   }
@@ -48,7 +48,7 @@ public class PaginatedListToWrapper<T> {
   /**
    * @param pagination new value of {@link #getpagination}.
    */
-  public void setPagination(PaginationResultTo pagination) {
+  public void setPagination(Pageable pagination) {
 
     this.pagination = pagination;
   }

@@ -8,7 +8,10 @@ import ${variables.rootPackage}.${variables.component}.logic.api.${variables.com
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +38,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
   /** @see #get${variables.entityName}Dao() */
   @Inject
-  private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
+  private ${variables.entityName}Repository ${variables.entityName?uncap_first}Dao;
 
   /**
    * The constructor.
@@ -47,13 +50,12 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	@Override
 	public ${variables.entityName}Eto find${variables.entityName}(Long id) {
 		LOG.debug("Get ${variables.entityName} with id {} from database.", id);
-		return getBeanMapper().map(get${variables.entityName}Dao().findOne(id), ${variables.entityName}Eto.class);
+		return getBeanMapper().map(get${variables.entityName}Dao().findById(id), ${variables.entityName}Eto.class);
 	}
 
 	@Override
-	public PaginatedListTo<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
-		criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
-		PaginatedListTo<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
+	public Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
+		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria);
 		return mapPaginatedEntityList(${variables.entityName?lower_case}s, ${variables.entityName}Eto.class);
 	}
 
@@ -79,9 +81,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
 	/**
 	 * Returns the field '${variables.entityName?uncap_first}Dao'.
-	 * @return the {@link ${variables.entityName}Dao} instance.
+	 * @return the {@link ${variables.component?cap_first}Repository instance.
 	 */
-	public ${variables.entityName}Dao get${variables.entityName}Dao() {
+	public ${variables.entityName}Repository get${variables.entityName}Dao() {
 
 		return this.${variables.entityName?uncap_first}Dao;
 	}
@@ -89,7 +91,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	@Override
   public ${variables.entityName}Cto find${variables.entityName}Cto(Long id) {
     LOG.debug("Get ${variables.entityName}Cto with id {} from database.", id);
-    ${variables.entityName}Entity entity = get${variables.entityName}Dao().findOne(id);
+    ${variables.entityName}Entity entity = get${variables.entityName}Dao().find(id);
     ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
     cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
     <#list pojo.fields as field>
@@ -104,11 +106,11 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
-    criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
-    PaginatedListTo<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().find${variables.entityName}s(criteria);
+  public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
+
+    Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria);
     List<${variables.entityName}Cto> ctos = new ArrayList<>();
-    for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getResult()) {
+    for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getContent()) {
       ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
       cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
       <#list pojo.fields as field>
@@ -121,8 +123,8 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
       ctos.add(cto);
       
     }
-    PaginationResultTo pagResultTo = new PaginationResultTo(criteria.getPagination(), (long) ctos.size());
-    PaginatedListTo<${variables.entityName}Cto> pagListTo = new PaginatedListTo(ctos, pagResultTo);
+    Pageable pagResultTo = PageRequest.of(criteria.getPageable().getPageNumber(), ctos.size());
+    Page<${variables.entityName}Cto> pagListTo = new PageImpl<>(ctos, pagResultTo, pagResultTo.getPageSize());
     return pagListTo;
   }
 
