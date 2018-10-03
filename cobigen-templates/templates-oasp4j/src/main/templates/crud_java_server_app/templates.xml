@@ -7,16 +7,23 @@
     <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>    
 
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>    
-    <templateExtension ref="SearchCriteriaTo.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>    
+    <templateExtension ref="AbstractSearchCriteriaTo.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge"/>
 
+    <templateExtension ref="${variables.component#cap_first}RestServiceImplCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/impl/rest/${variables.component#cap_first}RestServiceImpl.java"
+                       mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}RestServiceCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
+                       mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}SoapService.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}SoapServiceImpl.java" mergeStrategy="javamerge"/>
@@ -34,21 +41,22 @@
       <templateRef ref="${variables.entityName}Repository.java"/>
     </increment>
     <increment name="tos" description="TO's">
-      <templateRef ref="AbstractCto.java"/>
       <templateRef ref="AbstractEto.java"/>
-      <templateRef ref="PaginatedListToWrapper.java"/>
+      <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
-      <templateRef ref="${variables.entityName}Cto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
-      <templateRef ref="SearchCriteriaTo.java"/>
     </increment>
-    <increment name="logic_impl" description="CRUD logic (all in one)">
+    <increment name="ctos" description="CTO's">
+      <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="${variables.entityName}Cto.java"/>
+    </increment>
+    <!-- <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
-    </increment>
+    </increment>-->
     <increment name="dataaccess_infrastructure" description="Entity infrastructure">
       <templateRef ref="ApplicationPersistenceEntity.java"/>
       <templateRef ref="ApplicationEntity.java"/>
@@ -59,11 +67,15 @@
       <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
       <templateRef ref="${variables.component#cap_first}RestService.java"/>
     </increment>
-    <increment name="soap_service_impl" description="CRUD SOAP services">
+    <increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
+      <templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
+      <templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
+    </increment>
+    <!-- <increment name="soap_service_impl" description="CRUD SOAP services">
       <templateRef ref="ServiceConfig.java"/> 
       <templateRef ref="WebApplicationContextLocator.java"/>
       <templateRef ref="${variables.component#cap_first}SoapService.java"/>
       <templateRef ref="${variables.component#cap_first}SoapServiceImpl.java"/>
-    </increment>
+    </increment>-->
   </increments>
 </templatesConfiguration>

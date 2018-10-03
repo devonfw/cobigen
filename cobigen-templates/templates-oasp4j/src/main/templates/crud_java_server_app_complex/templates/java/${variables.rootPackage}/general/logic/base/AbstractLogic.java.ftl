@@ -12,37 +12,29 @@ import net.sf.mmm.util.transferobject.api.AbstractTransferObject;
 import net.sf.mmm.util.transferobject.api.TransferObject;
 
 import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 /**
  * Common code utilities for both AbstractUc and AbstractComponentFacade
  *
  */
-public class AbstractGenericEntityUtils extends AbstractBeanMapperSupport {
-  /**
-   * 
-   * The limit for {@link net.sf.mmm.util.search.base.AbstractSearchCriteria#getMaximumHitCount() maximum hit count} for
-   * UI requests.
-   */
-  protected static final int MAXIMUM_HIT_LIMIT = 500;
+public class AbstractLogic extends AbstractBeanMapperSupport {
 
   /**
-   * Maps a {@link PaginatedListTo paginated list} of persistent entities to a {@link PaginatedListTo paginated list} of
+   * Maps a {@link Page paginated list} of persistent entities to a {@link Page paginated list} of
    * transfer objects.
    *
    * @param <T> is the generic type of the {@link AbstractTransferObject transfer object}.
    * @param <E> is the generic type of the {@link PersistenceEntity entity}.
-   * @param paginatedList is the paginated list to map from.
-   * @param klass is the target class to map the paginated entities to.
-   * @return a {@link PaginatedListTo paginated list of entity transfer objects}.
+   * @param page is the paginated list to map from.
+   * @param clazz is the target class to map the paginated entities to.
+   * @return a {@link Page paginated list of entity transfer objects}.
    */
-  protected <T extends TransferObject, E extends PersistenceEntity<?>> PaginatedListTo<T> mapPaginatedEntityList(
-      PaginatedListTo<E> paginatedList, Class<T> klass) {
+  protected <T extends TransferObject, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
+      Page<E> page, Class<T> clazz) {
 
-    List<T> etoList = getBeanMapper().mapList(paginatedList.getResult(), klass);
-    PaginatedListTo<T> result = new PaginatedListTo<>(etoList, paginatedList.getPagination());
-
-    return result;
+    List<T> etoList = getBeanMapper().mapList(page.getContent(), clazz);
+    return new PageImpl<>(etoList, page.getPageable(), page.getTotalElements());
   }
 
   /**

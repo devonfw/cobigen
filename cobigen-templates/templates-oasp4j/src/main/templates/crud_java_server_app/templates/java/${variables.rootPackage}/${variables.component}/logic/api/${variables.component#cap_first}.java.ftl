@@ -15,7 +15,7 @@ public interface ${variables.component?cap_first} {
    * @param id The id 'id' of the ${variables.entityName}.
    * @return The {@link ${variables.entityName}Eto} with id 'id'
    */
-  ${variables.entityName}Eto find${variables.entityName}(Long id);
+  ${variables.entityName}Eto find${variables.entityName}(long id);
   
 	/**
    * Returns a paginated list of ${variables.entityName}s matching the search criteria.
@@ -23,7 +23,7 @@ public interface ${variables.component?cap_first} {
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo}.
    * @return the {@link List} of matching {@link ${variables.entityName}Eto}s.
    */
-	Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria);
+	Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria);
 	
 	/**
    * Deletes a ${variables.entityName?uncap_first} from the database by its id '${variables.entityName?uncap_first}Id'.
@@ -31,7 +31,7 @@ public interface ${variables.component?cap_first} {
    * @param ${variables.entityName?uncap_first}Id Id of the ${variables.entityName?uncap_first} to delete
    * @return boolean <code>true</code> if the ${variables.entityName?uncap_first} can be deleted, <code>false</code> otherwise
    */
-  boolean delete${variables.entityName}(Long ${variables.entityName?uncap_first}Id);
+  boolean delete${variables.entityName}(long ${variables.entityName?uncap_first}Id);
   
 	/**
    * Saves a ${variables.entityName?uncap_first} and store it in the database.
@@ -39,7 +39,7 @@ public interface ${variables.component?cap_first} {
    * @param ${variables.entityName?uncap_first} the {@link ${variables.entityName}Eto} to create.
    * @return the new {@link ${variables.entityName}Eto} that has been saved with ID and version.
    */
-  ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?uncap_first});
+  ${variables.entityName}Eto save${variables.entityName}(${variables.entityName} ${variables.entityName?uncap_first});
   
     /**
    * Returns a composite ${variables.entityName} by its id 'id'.
@@ -47,7 +47,7 @@ public interface ${variables.component?cap_first} {
    * @param id The id 'id' of the ${variables.entityName}.
    * @return The {@link ${variables.entityName}Cto} with id 'id'
    */
-  ${variables.entityName}Cto find${variables.entityName}Cto(Long id);
+  ${variables.entityName}Cto find${variables.entityName}Cto(long id);
   
   /**
    * Returns a paginated list of composite ${variables.entityName}s matching the search criteria.

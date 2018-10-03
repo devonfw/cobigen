@@ -10,6 +10,17 @@
     <templateExtension ref="crud_complex_UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
     <templateExtension ref="crud_complex_UcManage${variables.entityName}.java" mergeStrategy="javamerge"/>
     <templateExtension ref="crud_complex_UcManage${variables.entityName}Impl.java" mergeStrategy="javamerge"/>
+    
+    <templateExtension ref="crud_complex_UcFind${variables.entityName}Ctos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcFind${variables.entityName}.java" 
+                       mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_UcFind${variables.entityName}ImplCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcFind${variables.entityName}Impl.java"
+                       mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_${variables.component#cap_first}ImplCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component#cap_first}Impl.java"
+                       mergeStrategy="javamerge"/>
+    <templateExtension ref="crud_complex_AbstractLogic.java" mergeStrategy="javamerge"/>
   </templates>
 
   <templateScans>
@@ -17,16 +28,22 @@
   </templateScans>
 
   <increments>
-    <increment name="logic_impl_complex" description="CRUD logic (with use cases)">
+    <increment name="logic_impl_complex" description="CRUD UC logic">
       <templateRef ref="crud_complex_AbstractBeanMapperSupport.java"/>
       <templateRef ref="crud_complex_${variables.component#cap_first}.java"/>
       <templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java"/>
       <templateRef ref="crud_complex_AbstractUc.java"/>
+      <templateRef ref="crud_complex_AbstractLogic.java"/>
       <templateRef ref="crud_complex_${variables.component#cap_first}Impl.java"/>
       <templateRef ref="crud_complex_UcFind${variables.entityName}.java"/>
       <templateRef ref="crud_complex_UcManage${variables.entityName}.java"/>
       <templateRef ref="crud_complex_UcFind${variables.entityName}Impl.java"/>
       <templateRef ref="crud_complex_UcManage${variables.entityName}Impl.java"/>
+    </increment>
+    <increment name="logic_complex_ctos" description="CRUD UC logic (CTOs)">
+      <templateRef ref="crud_complex_UcFind${variables.entityName}Ctos.java"/>
+      <templateRef ref="crud_complex_UcFind${variables.entityName}ImplCtos.java"/>
+      <templateRef ref="crud_complex_${variables.component#cap_first}ImplCtos.java"/>
     </increment>
   </increments>
 </templatesConfiguration>

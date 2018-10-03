@@ -13,7 +13,7 @@ public interface UcManage${variables.entityName} {
    * @param ${variables.entityName?uncap_first}Id Id of the ${variables.entityName?uncap_first} to delete
    * @return boolean <code>true</code> if the ${variables.entityName?uncap_first} can be deleted, <code>false</code> otherwise
    */
-  boolean delete${variables.entityName}(Long ${variables.entityName?uncap_first}Id);
+  boolean delete${variables.entityName}(long ${variables.entityName?uncap_first}Id);
 
   /**
    * Saves a ${variables.entityName?uncap_first} and store it in the database.
