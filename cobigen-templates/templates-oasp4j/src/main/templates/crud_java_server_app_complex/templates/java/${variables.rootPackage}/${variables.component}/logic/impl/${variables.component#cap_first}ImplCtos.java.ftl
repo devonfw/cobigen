@@ -22,29 +22,15 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     @Inject
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
-    @Inject
-    private UcManage${variables.entityName} ucManage${variables.entityName};
-
     @Override
-    public ${variables.entityName}Eto find${variables.entityName}(long id) {
-
-      return this.ucFind${variables.entityName}.find${variables.entityName}(id);
+    public ${variables.entityName}Cto find${variables.entityName}Cto(long id) {
+    
+      return ucFind${variables.entityName}.find${variables.entityName}Cto(id);
     }
-
+    
     @Override
-    public Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria) {
-      return this.ucFind${variables.entityName}.find${variables.entityName}s(criteria);
-    }
-
-    @Override
-    public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
-
-      return this.ucManage${variables.entityName}.save${variables.entityName}(${variables.entityName?lower_case});
-    }
-
-    @Override
-    public boolean delete${variables.entityName}(long id) {
-
-      return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
+    public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
+    
+      return ucFind${variables.entityName}.find${variables.entityName}Ctos(criteria);
     }
 }

@@ -1,7 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.base.usecase;
 
 import ${variables.rootPackage}.general.logic.base.AbstractUc;
-import ${variables.rootPackage}.${variables.component}.dataaccess.api.dao.${variables.entityName}Dao;
+import ${variables.rootPackage}.${variables.component}.dataaccess.api.repo.${variables.entityName}Repository;
 
 import javax.inject.Inject;
 
@@ -10,17 +10,17 @@ import javax.inject.Inject;
  */
 public class Abstract${variables.entityName}Uc extends AbstractUc {
 
-	  /** @see #get${variables.entityName}Dao() */
+	  /** @see #get${variables.entityName}Repository() */
 	  @Inject
-    private ${variables.entityName}Dao ${variables.entityName?uncap_first}Dao;
+    private ${variables.entityName}Repository ${variables.entityName?uncap_first}Repository;
 
     /**
-     * Returns the field '${variables.entityName?uncap_first}Dao'.
-     * @return the {@link ${variables.entityName}Dao} instance.
+     * Returns the field '${variables.entityName?uncap_first}Repository'.
+     * @return the {@link ${variables.entityName}Repository} instance.
      */
-    public ${variables.entityName}Dao get${variables.entityName}Dao() {
+    public ${variables.entityName}Repository get${variables.entityName}Repository() {
 
-      return this.${variables.entityName?uncap_first}Dao;
+      return this.${variables.entityName?uncap_first}Repository;
     }
 
 }
