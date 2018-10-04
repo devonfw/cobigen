@@ -10,20 +10,19 @@ import java.util.List;
 public interface UcFind${variables.entityName} {
 
   /**
-   * Returns a ${variables.entityName} by its id 'id'.
+   * Returns a composite ${variables.entityName} by its id 'id'.
    *
    * @param id The id 'id' of the ${variables.entityName}.
-   * @return The {@link ${variables.entityName}Eto} with id 'id'
+   * @return The {@link ${variables.entityName}Cto} with id 'id'
    */
-  ${variables.entityName}Eto find${variables.entityName}(long id);
-
-
+  ${variables.entityName}Cto find${variables.entityName}Cto(long id);
+  
   /**
-   * Returns a paginated list of ${variables.entityName}s matching the search criteria.
+   * Returns a paginated list of composite ${variables.entityName}s matching the search criteria.
    *
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo}.
-   * @return the {@link List} of matching {@link ${variables.entityName}Eto}s.
+   * @return the {@link List} of matching {@link ${variables.entityName}Cto}s.
    */
-  Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria);
+  Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria);
 
 }

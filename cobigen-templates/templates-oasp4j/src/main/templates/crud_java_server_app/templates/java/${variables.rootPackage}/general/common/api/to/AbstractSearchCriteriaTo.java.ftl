@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.common.api.to;
+package ${variables.rootPackage}.general.common.api.to;
 
 import org.springframework.data.domain.Pageable;
 
@@ -7,7 +7,7 @@ import io.oasp.module.basic.common.api.to.AbstractTo;
 /**
  * Abstract {@link AbstractTo TO} for search criteria.
  */
-public abstract class SearchCriteriaTo extends AbstractTo {
+public abstract class AbstractSearchCriteriaTo extends AbstractTo {
 
   private static final long serialVersionUID = 1L;
 

@@ -21,24 +21,14 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
 
   @Inject
   private ${variables.component?cap_first} ${variables.component?lower_case};
-
+  
   @Override
-  public ${variables.entityName}Eto get${variables.entityName}(long id) {
-    return this.${variables.component?uncap_first}.find${variables.entityName}(id);
+  public ${variables.entityName}Cto get${variables.entityName}Cto(long id) {
+    return this.${variables.component?uncap_first}.find${variables.entityName}Cto(id);
   }
 
   @Override
-  public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
-      return this.${variables.component?uncap_first}.save${variables.entityName}(${variables.entityName?lower_case});
-  }
-
-  @Override
-  public void delete${variables.entityName}(long id) {
-    this.${variables.component?uncap_first}.delete${variables.entityName}(id);
-  }
-
-  @Override
-  public Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
-    return this.${variables.component?uncap_first}.find${variables.entityName}s(searchCriteriaTo);
+  public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo searchCriteriaTo) {
+    return this.${variables.component?uncap_first}.find${variables.entityName}Ctos(searchCriteriaTo);
   }
 }
