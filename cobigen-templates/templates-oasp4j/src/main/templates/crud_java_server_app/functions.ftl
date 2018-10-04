@@ -26,7 +26,7 @@
 <#-- Used to generate StringSearchConfigTo for each field -->
 <#if isSearchCriteria>
 	<#list pojo.fields as field>
-		<#if !field.type?contains("Embeddable")>
+		<#if field.type="String">
 			private StringSearchConfigTo ${field.name}Option;
 		</#if>
 	</#list>
@@ -105,7 +105,7 @@
 </#list>
 <#if isSearchCriteria>
 	<#list pojo.fields as field>
-		<#if !field.type?contains("Embeddable")>
+		<#if field.type="String">
 	/**
 	* @return the {@link StringSearchConfigTo} used to search for {@link #get${field.name?cap_first}<#if field.type?contains("Entity")>Entity</#if>() ${field.name}}.
 	*/

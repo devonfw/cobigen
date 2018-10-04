@@ -9,7 +9,6 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -36,32 +35,25 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	/** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(${variables.component?cap_first}Impl.class);
 
-  /** @see #get${variables.entityName}Dao() */
+  /** @see #get${variables.entityName}Repository() */
   @Inject
   private ${variables.entityName}Repository ${variables.entityName?uncap_first}Dao;
-
-  /**
-   * The constructor.
-   */
-  public ${variables.component?cap_first}Impl() {
-      super();
-  }
   
 	@Override
-	public ${variables.entityName}Eto find${variables.entityName}(Long id) {
+	public ${variables.entityName}Eto find${variables.entityName}(long id) {
 		LOG.debug("Get ${variables.entityName} with id {} from database.", id);
 		return getBeanMapper().map(get${variables.entityName}Dao().findById(id), ${variables.entityName}Eto.class);
 	}
 
 	@Override
-	public Page<${variables.entityName}Eto> find${variables.entityName}Etos(${variables.entityName}SearchCriteriaTo criteria) {
-		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Dao().findByCriteria(criteria);
+	public Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria) {
+		Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Repository().findByCriteria(criteria);
 		return mapPaginatedEntityList(${variables.entityName?lower_case}s, ${variables.entityName}Eto.class);
 	}
 
 	@Override
-	public boolean delete${variables.entityName}(Long ${variables.entityName?uncap_first}Id) {
-		${variables.entityName}Entity ${variables.entityName?uncap_first} = get${variables.entityName}Dao().find(${variables.entityName?uncap_first}Id);
+	public boolean delete${variables.entityName}(long ${variables.entityName?uncap_first}Id) {
+		${variables.entityName}Entity ${variables.entityName?uncap_first} = get${variables.entityName}Repository().find(${variables.entityName?uncap_first}Id);
 		get${variables.entityName}Dao().delete(${variables.entityName?uncap_first});
 		LOG.debug("The ${variables.entityName?uncap_first} with id '{}' has been deleted.", ${variables.entityName?uncap_first}Id);
 		return true;
@@ -73,19 +65,19 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 		${variables.entityName}Entity ${variables.entityName?uncap_first}Entity = getBeanMapper().map(${variables.entityName?uncap_first}, ${variables.entityName}Entity.class);
 
 		//initialize, validate ${variables.entityName?uncap_first}Entity here if necessary
-		${variables.entityName}Entity resultEntity = get${variables.entityName}Dao().save(${variables.entityName?uncap_first}Entity);
+		${variables.entityName}Entity resultEntity = get${variables.entityName}Repository().save(${variables.entityName?uncap_first}Entity);
 		LOG.debug("${variables.entityName} with id '{}' has been created.", resultEntity.getId());
 
 		return getBeanMapper().map(resultEntity, ${variables.entityName}Eto.class);
 	}
 
 	/**
-	 * Returns the field '${variables.entityName?uncap_first}Dao'.
+	 * Returns the field '${variables.entityName?uncap_first}repository'.
 	 * @return the {@link ${variables.component?cap_first}Repository instance.
 	 */
-	public ${variables.entityName}Repository get${variables.entityName}Dao() {
+	public ${variables.entityName}Repository get${variables.entityName}Repository() {
 
-		return this.${variables.entityName?uncap_first}Dao;
+		return this.${variables.entityName?uncap_first}Repository;
 	}
 		
 	@Override
