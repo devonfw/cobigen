@@ -3,8 +3,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>    
+    <!-- <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/> -->
+    <!-- <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/> -->    
 
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
@@ -47,8 +47,12 @@
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="ctos" description="CTO's">
+      <templateRef ref="AbstractEto.java"/>
       <templateRef ref="AbstractCto.java"/>
+      <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
+      <templateRef ref="${variables.entityName}Eto.java"/>
+      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <!-- <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
