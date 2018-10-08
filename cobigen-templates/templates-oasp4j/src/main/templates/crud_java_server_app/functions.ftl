@@ -92,11 +92,18 @@
 		}</#if>
 	</#if>
 <#else>
+  /**
+   * @return ${field.name}Id
+   */
   <#if implementsInterface>@Override</#if>
-	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
+	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> <#if field.type=='boolean' || field.type=='Boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
 	}</#if>
 
+  /**
+   * @param ${field.name}
+   *            setter for ${field.name} attribute
+   */
 	<#if implementsInterface>@Override</#if>
 	public void set${field.name?cap_first}(<#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> ${field.name}) <#if isInterface>;<#else>{
 		this.${field.name} = ${field.name};
