@@ -433,7 +433,7 @@ public class OaspUtil {
 
     /**
      * Converts all occurrences of OASP Entities types in the given 'field' simple type (possibly generic) to
-     * Longs
+     * Entities
      *
      * @param field
      *            the field
@@ -443,7 +443,7 @@ public class OaspUtil {
 
         String fieldType = (String) field.get(Field.TYPE.toString());
         if (fieldType.contains("Entity")) {
-            fieldType = fieldType.replaceAll("[^<>]+Entity", "Long");
+            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<" + Field.TYPE + ">");
         }
         return fieldType;
     }
