@@ -59,9 +59,9 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
               }
               
           <#else>
-              ${newFieldType} ${field.name} = criteria.<#if field.type=='boolean' || field.type=='Boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field,false,"")}</#if>;
+              ${newFieldType} ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null) {
-                query.where($(alias.<#if field.type=='boolean' || field.type=='Boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
+                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
               }
               
           </#if> 
@@ -90,9 +90,9 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
           <#if !JavaUtil.isCollection(classObject, field.name)>
           case "${field.name}":
             if (next.isAscending()) {
-                query.orderBy($(alias.<#if field.type=='boolean' || field.type=='Boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).asc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).asc());
             } else {
-                query.orderBy($(alias.<#if field.type=='boolean' || field.type=='Boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).desc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).desc());
             }   
           break;
           </#if>
