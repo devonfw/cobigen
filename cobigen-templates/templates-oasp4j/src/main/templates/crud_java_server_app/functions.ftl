@@ -92,6 +92,9 @@
 		}</#if>
 	</#if>
 <#elseif !isSearchCriteria || !JavaUtil.isCollection(classObject, field.name)>
+  /**
+   * @return ${field.name}Id
+   */
   <#if implementsInterface>@Override</#if>
 	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)} get${field.name?cap_first}() <#else>${field.type} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}()</#if> <#if isInterface>;<#else>{
 		return ${field.name};
