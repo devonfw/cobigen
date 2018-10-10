@@ -61,7 +61,7 @@
       <id>nexus.central</id>
       <mirrorOf>central</mirrorOf>
       <name>central-mirror</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/central</url>
+      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/central/</url>
     </mirror>
     <!--<mirror>
       <id>nexus.eclipse.platform</id>
@@ -96,7 +96,7 @@
         <repository>
           <id>3rd.party</id>
           <name>3rd party</name>
-          <url>${nexusurl}/thirdparty</url>
+          <url>${nexusurl}/thirdparty/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -109,7 +109,7 @@
         <repository>
           <id>oasp.releases</id>
           <name>OASP Releases</name>
-          <url>${nexusurl}/oasp.releases</url>
+          <url>${nexusurl}/oasp.releases/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -122,7 +122,7 @@
         <repository>
           <id>oasp.snapshots</id>
           <name>OASP Snapshots</name>
-          <url>${nexusurl}/oasp.snapshots</url>
+          <url>${nexusurl}/oasp.snapshots/</url>
           <releases>
             <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
@@ -135,7 +135,7 @@
 		<repository>
           <id>devon.releases</id>
           <name>Devon Releases</name>
-          <url>${nexusurl}/releases</url>
+          <url>${nexusurl}/releases/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -148,7 +148,7 @@
         <repository>
           <id>devon.snapshots</id>
           <name>Devon Snapshots</name>
-          <url>${nexusurl}/snapshots</url>
+          <url>${nexusurl}/snapshots/</url>
           <releases>
             <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
