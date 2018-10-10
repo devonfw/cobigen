@@ -64,7 +64,7 @@
 	    /**		 
 		 * @return ${field.name}
 		 */
-		public ${field.type?replace("Embeddable","SearchCriteriaTo")} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
+		public ${field.type?replace("Embeddable","SearchCriteriaTo")} get${field.name?cap_first}() <#if isInterface>;<#else>{
 			return ${field.name};
 		}</#if>
 
@@ -96,7 +96,7 @@
    * @return ${field.name}Id
    */
   <#if implementsInterface>@Override</#if>
-	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> <#if field.type=='boolean' || field.type=='Boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
+	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)} get${field.name?cap_first}() <#else>${field.type} <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}()</#if> <#if isInterface>;<#else>{
 		return ${field.name};
 	}</#if>
 
