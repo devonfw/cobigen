@@ -19,7 +19,7 @@
 	</#if>
 <#elseif isSearchCriteria && JavaUtil.equalsJavaPrimitive(classObject,field.name)>
   private ${JavaUtil.boxJavaPrimitives(classObject,field.name)} ${field.name};
-<#else>
+<#elseif !isSearchCriteria || !JavaUtil.isCollection(classObject, field.name)>
 	private ${field.type} ${field.name};
 </#if>
 </#list>
@@ -91,7 +91,7 @@
 			this.${field.name} = ${field.name};
 		}</#if>
 	</#if>
-<#else>
+<#elseif !isSearchCriteria || !JavaUtil.isCollection(classObject, field.name)>
   <#if implementsInterface>@Override</#if>
 	public <#if isSearchCriteria>${JavaUtil.boxJavaPrimitives(classObject,field.name)}<#else>${field.type}</#if> <#if field.type=='boolean'>is<#else>get</#if>${field.name?cap_first}() <#if isInterface>;<#else>{
 		return ${field.name};
