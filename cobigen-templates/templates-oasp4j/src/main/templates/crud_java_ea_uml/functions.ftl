@@ -104,7 +104,7 @@
 <#assign typeVar = JavaUtil.getExtType(fieldType)>
 <#if typeVar?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
   <#if !JavaUtil.isCollection(classObject, field["@name"])> <#-- do not generate field for multiple relation -->
-     private ${typeVar?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
+     private ${typeVar?replace("[^<>,]+Entity","IdRef<E>","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
   </#if>
 <#elseif typeVar?contains("Embeddable")>
   <#if isSearchCriteria>

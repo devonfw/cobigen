@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.templates.oasp4j.utils;
+package main.java.com.devonfw.cobigen.templates.oasp4j.utils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-import com.devonfw.cobigen.templates.oasp4j.constants.Field;
+import main.java.com.devonfw.cobigen.templates.oasp4j.constants.Field;
 import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
 
 /**
@@ -64,7 +64,7 @@ public class OaspUtil {
     public String resolveIdGetter(Map<String, Object> field, boolean byObjectReference, String component) {
 
         // If field comes from an UML file
-        if (field.getClass().toGenericString().contains("freemarker.ext.beans.HashAdapter")) {
+        if (field.getClass().toString().contains("freemarker.ext.beans.HashAdapter")) {
             DeferredElementNSImpl umlNode = (DeferredElementNSImpl) field;
             return resolveIdGetter(umlNode, byObjectReference, component);
         }
@@ -433,17 +433,17 @@ public class OaspUtil {
 
     /**
      * Converts all occurrences of OASP Entities types in the given 'field' simple type (possibly generic) to
-     * Longs
+     * Entities
      *
      * @param field
      *            the field
-     * @return the field type as String. If field type contains 'Entity' the result is Long
+     * @return the field type as String. If field type contains 'Entity' the result is IdRef<E>
      */
     public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
         String fieldType = (String) field.get(Field.TYPE.toString());
         if (fieldType.contains("Entity")) {
-            fieldType = fieldType.replaceAll("[^<>]+Entity", "Long");
+            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<E>");
         }
         return fieldType;
     }
