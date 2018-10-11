@@ -166,7 +166,7 @@ public class OpenApiUtil {
 
         if (isCollection) {
             if (isEntity) {
-                return "List<" + parameter.get("type") + "Entity>";
+                return "List<" + parameter.get("type") + ">";
             } else {
                 return "List<" + typeConverted + ">";
             }
@@ -195,8 +195,7 @@ public class OpenApiUtil {
             } else {
                 lastSegment = split[split.length - 2];
             }
-            return "/* Generated value! You might want to set the operation name by operationId (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#fixed-fields-8) in the openAPI definition */"
-                + ((String) operation.get("type")) + lastSegment;
+            return ((String) operation.get("type")) + lastSegment;
         } else {
             return operationId;
         }
