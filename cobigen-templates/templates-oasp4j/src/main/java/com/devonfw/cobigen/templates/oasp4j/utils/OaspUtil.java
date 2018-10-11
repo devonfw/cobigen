@@ -443,7 +443,7 @@ public class OaspUtil {
 
         String fieldType = (String) field.get(Field.TYPE.toString());
         if (fieldType.contains("Entity")) {
-            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<" + Field.TYPE + ">");
+            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<" + fieldType + ">");
         }
         return fieldType;
     }
