@@ -437,13 +437,13 @@ public class OaspUtil {
      *
      * @param field
      *            the field
-     * @return the field type as String. If field type contains 'Entity' the result is Long
+     * @return the field type as String. If field type contains 'Entity' the result is Entities
      */
     public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
         String fieldType = (String) field.get(Field.TYPE.toString());
         if (fieldType.contains("Entity")) {
-            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<" + Field.TYPE + ">");
+            fieldType = fieldType.replaceAll("[^<>]+Entity", "IdRef<" + fieldType + ">");
         }
         return fieldType;
     }
