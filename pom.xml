@@ -488,12 +488,12 @@
     <repository>
       <id>devon.releases</id>
       <name>Devon Nexus Releases</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases/</url>
+      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/releases/</url>
     </repository>
     <snapshotRepository>
       <id>devon.snapshots</id>
       <name>Devon Nexus Snapshots</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots/</url>
+      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
