@@ -33,7 +33,7 @@ node {
 				// Tools have to be configured in the global configuration of Jenkins.
 				env.MAVEN_HOME="${tool 'Maven 3.5.4'}"
 				env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
-				env.JAVA_HOME="${tool 'Java8'}"
+				env.JAVA_HOME="${tool 'Java9'}"
 				env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 				// load VNC Server for eclipse tests
 				tool 'VNC Server'
