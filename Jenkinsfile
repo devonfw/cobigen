@@ -83,7 +83,7 @@ node {
 								if(origin_branch == 'master') {
 									// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 									wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
-										export SWT_GTK3=0 // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
+										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-mars,p2-build-stable"
 									}
 								} else if (origin_branch == 'dev_eclipseplugin') {
@@ -170,7 +170,7 @@ node {
 								// load jenkins managed global maven settings file
 								configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 									try {
-										export SWT_GTK3=0 // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
+										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
 										sh "mvn -s ${MAVEN_SETTINGS} integration-test -Pp2-build-mars,p2-build-ci"
 									} catch(err) {
 										step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
