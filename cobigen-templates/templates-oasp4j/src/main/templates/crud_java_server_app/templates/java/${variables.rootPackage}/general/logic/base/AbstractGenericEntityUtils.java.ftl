@@ -21,8 +21,7 @@ import org.springframework.data.domain.Page;
 public class AbstractGenericEntityUtils extends AbstractBeanMapperSupport {
   /**
    * 
-   * The limit for {@link net.sf.mmm.util.search.base.AbstractSearchCriteria#getMaximumHitCount() maximum hit count} for
-   * UI requests.
+   * The limit for maximum hit count for UI requests.
    */
   protected static final int MAXIMUM_HIT_LIMIT = 500;
 
@@ -38,9 +37,11 @@ public class AbstractGenericEntityUtils extends AbstractBeanMapperSupport {
    */
   protected <T extends TransferObject, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
       Page<E> paginatedList, Class<T> klass) {
+      
+    long totalElements = paginatedList.getTotalElements();  
 
     List<T> etoList = getBeanMapper().mapList(paginatedList.getContent(), klass);
-    Page<T> result = new PageImpl<T>(etoList, paginatedList.getPageable(), MAXIMUM_HIT_LIMIT);
+    Page<T> result = new PageImpl<T>(etoList, paginatedList.getPageable(), totalElements);
 
     return result;
   }
