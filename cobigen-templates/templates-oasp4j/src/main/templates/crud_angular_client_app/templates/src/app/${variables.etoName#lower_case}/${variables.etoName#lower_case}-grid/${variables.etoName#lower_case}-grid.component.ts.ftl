@@ -5,6 +5,7 @@ import {
   TdDialogService,
   IPageChangeEvent,
   ITdDataTableSortChangeEvent,
+  TdPagingBarComponent,
 } from '@covalent/core';
 import { MatDialogRef, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -21,6 +22,9 @@ import { Pageable } from '../../core/interfaces/pageable';
   styleUrls: ['./${variables.etoName?lower_case}-grid.component.scss'],
 })
 export class ${variables.etoName?cap_first}GridComponent implements OnInit {
+    @ViewChild('pagingBar')
+    pagingBar: TdPagingBarComponent;
+    
     private pageable: Pageable = {
         pageSize: 8,
         pageNumber: 0,
@@ -230,6 +234,11 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
           );
         }
       });
+  }
+  
+  filter(): void {
+    this.getSampleData();
+    this.pagingBar.firstPage();
   }
 
   searchReset(form: any): void {
