@@ -211,7 +211,7 @@ node {
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
-			return
+			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
