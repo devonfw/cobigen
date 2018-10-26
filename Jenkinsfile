@@ -31,9 +31,9 @@ node {
 				setBuildStatus("In Progress","PENDING")
 			
 				// Tools have to be configured in the global configuration of Jenkins.
-				env.MAVEN_HOME="${tool 'Maven 3.3.9'}"
+				env.MAVEN_HOME="${tool 'Maven 3.5.4'}"
 				env.M2_HOME="${env.MAVEN_HOME}" // for recognition by maven invoker (test utility)
-				env.JAVA_HOME="${tool 'OpenJDK 1.8'}"
+				env.JAVA_HOME="${tool 'Java8'}"
 				env.PATH="${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
 				// load VNC Server for eclipse tests
 				tool 'VNC Server'
@@ -83,6 +83,7 @@ node {
 								if(origin_branch == 'master') {
 									// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 									wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
+										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-mars,p2-build-stable"
 									}
 								} else if (origin_branch == 'dev_eclipseplugin') {
@@ -169,6 +170,7 @@ node {
 								// load jenkins managed global maven settings file
 								configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 									try {
+										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
 										sh "mvn -s ${MAVEN_SETTINGS} integration-test -Pp2-build-mars,p2-build-ci"
 									} catch(err) {
 										step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
@@ -209,7 +211,7 @@ node {
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
-			return
+			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
