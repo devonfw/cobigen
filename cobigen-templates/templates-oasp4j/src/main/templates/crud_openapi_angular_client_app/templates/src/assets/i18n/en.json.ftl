@@ -11,7 +11,7 @@
     "deleteItem": "Delete item"
   },
   "header": {
-    "title": "OASP4JS",
+    "title": "devon4ng",
     "error": "LOGIN ERROR",
     "EN": "English",
     "ES": "Spanish"
