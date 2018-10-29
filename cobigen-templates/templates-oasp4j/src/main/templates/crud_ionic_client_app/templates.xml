@@ -3,17 +3,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#uncap_first}-detail.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#uncap_first}-list.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-detail.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}-list.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#uncap_first}-rest.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#uncap_first}.ts" />
-    <templateExtension ref="${variables.etoName#uncap_first}-search-criteria.ts" />
+    <templateExtension ref="${variables.etoName#lower_case}-rest.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.ts" />
+    <templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts" />
     <templateExtension ref="paginated-list-to.ts" />
     <templateExtension ref="pagination.ts" />
-    <templateExtension ref="${variables.etoName#uncap_first}-detail.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName#uncap_first}-list.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName#lower_case}-detail.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName#lower_case}-list.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge_override"/>
@@ -33,19 +33,19 @@
       <templateRef ref="en.json"/>
     </increment>
     <increment name="ionic_component" description="Ionic List">
-      <templateRef ref="${variables.etoName#uncap_first}.ts"/>
-      <templateRef ref="${variables.etoName#uncap_first}-search-criteria.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-search-criteria.ts"/>
       <templateRef ref="paginated-list-to.ts"/>
       <templateRef ref="app.component.ts"/>
       <templateRef ref="app.module.ts"/>
       <templateRef ref="pagination.ts"/>
-      <templateRef ref="${variables.etoName#uncap_first}-rest.ts"/>
-      <templateRef ref="${variables.etoName#uncap_first}-list.ts"/>
-      <templateRef ref="${variables.etoName#uncap_first}-list.html"/>
-      <templateRef ref="${variables.etoName#uncap_first}-list.scss"/>
-      <templateRef ref="${variables.etoName#uncap_first}-detail.ts"/>
-      <templateRef ref="${variables.etoName#uncap_first}-detail.html"/>
-      <templateRef ref="${variables.etoName#uncap_first}-detail.scss"/>      
+      <templateRef ref="${variables.etoName#lower_case}-rest.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.scss"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>      
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>

@@ -21,8 +21,8 @@
   
     <#list pojo.fields as field>
     <ion-item class="formItem">
-      <ion-label>{{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-label>
-      <ion-input  ${JavaUtil.getAngularType(field.type)} [(ngModel)]="${variables.etoName?uncap_first}Received.${field.name}" name="${field.name}"></ion-input>
+      <ion-label>{{'${variables.component?uncap_first}.${variables.etoName?lower_case}.${field.name}'| translate}}</ion-label>
+      <ion-input  ${JavaUtil.getAngularType(field.type)} [(ngModel)]="${variables.etoName?lower_case}Received.${field.name}" name="${field.name}"></ion-input>
     </ion-item>
     </#list>
      
@@ -33,13 +33,13 @@
 <ion-footer>
   
   <button ion-button class="buttonForm" [hidden]=!filterActive (click)="addOrModify()" full>
-    {{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
+    {{'${variables.component?uncap_first}.${variables.etoName?lower_case}.commonbuttons.send' | translate}}
   </button>
   <button ion-button class="buttonForm" [hidden]=filterActive (click)="search()" full >
-    {{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.commonbuttons.send' | translate}}
+    {{'${variables.component?uncap_first}.${variables.etoName?lower_case}.commonbuttons.send' | translate}}
   </button>
   <button ion-button class="buttonForm" [hidden]=filterActive (click)="clearSearch()" block>
-    {{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.operations.filter.clear' | translate}}
+    {{'${variables.component?uncap_first}.${variables.etoName?lower_case}.operations.filter.clear' | translate}}
   </button>
 
 
