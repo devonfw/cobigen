@@ -1,1 +1,1 @@
-export let url = "http://localhost:8081/"
+export let url = "http://localhost:8081/devon4j-${variables.etoName}-server/"

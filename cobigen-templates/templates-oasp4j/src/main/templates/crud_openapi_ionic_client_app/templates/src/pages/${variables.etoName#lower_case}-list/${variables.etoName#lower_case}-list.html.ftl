@@ -12,7 +12,7 @@
         <div class="input-wrapper">
           <ion-label class="label label-md">
             <ion-grid class="header-grid">
-              <ion-row> <#list pojo.fields as field>
+              <ion-row> <#list model.properties as field>
                 <ion-col class="crop">{{'${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| translate}}</ion-col></#list>
               </ion-row>
             </ion-grid>
@@ -31,7 +31,7 @@
       <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
           <ion-row>
-          <#list pojo.fields as field>
+          <#list model.properties as field>
             <ion-col>{{${variables.etoName?lower_case}.${field.name}}}</ion-col>
           </#list>
           </ion-row>

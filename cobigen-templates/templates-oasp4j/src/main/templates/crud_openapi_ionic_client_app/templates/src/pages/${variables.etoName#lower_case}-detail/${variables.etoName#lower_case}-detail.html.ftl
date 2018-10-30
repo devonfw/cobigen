@@ -19,7 +19,7 @@
   <div align=center style="font-size: 16px" padding >{{translations.message}}</div>
   <form>
   
-    <#list pojo.fields as field>
+    <#list model.properties as field> 
     <ion-item class="formItem">
       <ion-label>{{'${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| translate}}</ion-label>
       <ion-input  ${JavaUtil.getAngularType(field.type)} [(ngModel)]="${variables.etoName?lower_case}Received.${field.name}" name="${field.name}"></ion-input>
