@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.etoName?lower_case}-rest';
 import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?lower_case}';
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?lower_case}-search-criteria';
-import { Pagination } from '../../providers/interfaces/pagination'
+import { Pageable } from '../../providers/interfaces/pageable';
 import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 /**
  * Generated class for the ${variables.etoName?cap_first}Detail component.
@@ -18,8 +18,17 @@ import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 })
 export class ${variables.etoName?cap_first}Detail {
   
-  pagination: Pagination = { size:15, page:1, total:false };
-  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
+  pageable: Pageable = {
+    pageSize: 15,
+    pageNumber: 0,
+    sort: [
+      {
+        property: '${pojo.fields[0].name!}',
+        direction: 'ASC',
+      },
+    ],
+  };
+  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
 
   ${variables.etoName?lower_case}Received : ${variables.etoName?cap_first};
   clean${variables.etoName?cap_first} : ${variables.etoName?cap_first} = { <#list pojo.fields as field> ${field.name}:null,</#list> id:null, modificationCounter:null, revision:null };
@@ -91,7 +100,7 @@ export class ${variables.etoName?cap_first}Detail {
         let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
         dataArray = [this.${variables.etoName?lower_case}SearchCriteria, data];
         this.dismiss(dataArray);
-        this.${variables.etoName?lower_case}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
+        this.${variables.etoName?lower_case}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
       }
     )
   }
@@ -100,7 +109,7 @@ export class ${variables.etoName?cap_first}Detail {
    * Clears all the search filters and returns the first data page. 
    */
   clearSearch(){
-    this.${variables.etoName?lower_case}SearchCriteria.pagination.page = 1;
+    this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = 0;
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {        
         let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];

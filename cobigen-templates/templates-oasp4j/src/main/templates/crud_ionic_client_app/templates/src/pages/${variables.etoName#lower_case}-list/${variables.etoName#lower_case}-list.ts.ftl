@@ -4,7 +4,7 @@ import { AlertController, ModalController, NavController, NavParams, LoadingCont
 import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.etoName?lower_case}-rest';
 import { ${variables.etoName?cap_first}Detail } from '../${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail'
 import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?lower_case}'
-import { Pagination } from '../../providers/interfaces/pagination'
+import { Pageable } from '../../providers/interfaces/pageable'
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?lower_case}-search-criteria';
 import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 
@@ -16,8 +16,17 @@ import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 export class ${variables.etoName?cap_first}List {
   /** Contains the strings for the deletion prompt */
   deleteTranslations: any = {};
-  pagination: Pagination = { size:15, page:1, total:false };
-  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
+    pageable: Pageable = {
+    pageSize: 15,
+    pageNumber: 0,
+    sort: [
+      {
+        property: '${pojo.fields[0].name!}',
+        direction: 'ASC',
+      },
+    ],
+  };
+  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
   ${variables.etoName?lower_case}ListItem : ${variables.etoName?cap_first} = {<#list pojo.fields as field> ${field.name}:null,</#list> };
   deleteButtonNames=["dismiss","confirm"];
   deleteButtons=[
@@ -44,18 +53,17 @@ export class ${variables.etoName?cap_first}List {
       content: 'Please wait...'
     });
     loading.present();
-    this.${variables.etoName?lower_case}SearchCriteria.pagination.page = 1;
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
         
-        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.result);
+        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
         loading.dismiss();
 	}, 
 	(err) => {
         loading.dismiss();
         console.log(err);
-      }
-    )
+      },
+    );
   }
   
   /**
@@ -88,7 +96,7 @@ export class ${variables.etoName?cap_first}List {
     setTimeout(() => {
       this.reload${variables.etoName?cap_first}List();
       refresher.complete();
-    }, 500);
+    }, 300);
   }
   
   /**
@@ -97,17 +105,18 @@ export class ${variables.etoName?cap_first}List {
   private reload${variables.etoName?cap_first}List(){
     
     this.${variables.etoName?lower_case}s = [];
-    this.${variables.etoName?lower_case}SearchCriteria.pagination.page = 1;
+    this.pageable.pageNumber = 0;
+    this.${variables.etoName?lower_case}SearchCriteria.pageable = this.pageable;
     this.deleteModifiedButtonsDisabled = true;
     this.selectedItemIndex = -1;
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {      
-        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.result);      
+        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);      
         this.infiniteScrollEnabled = true;
       }, 
       (err) => {
         console.log(err);
-      }
+      },
     );
   }
   
@@ -148,6 +157,7 @@ export class ${variables.etoName?cap_first}List {
           this.infiniteScrollEnabled = true;
           this.${variables.etoName?lower_case}SearchCriteria = data[0];
           this.${variables.etoName?lower_case}s = data[1].result;          
+          this.reload${variables.etoName?cap_first}List();
       }
     });
   }
@@ -229,19 +239,19 @@ export class ${variables.etoName?cap_first}List {
    */
   public doInfinite(infiniteScroll) {
 
-    if (this.${variables.etoName?lower_case}SearchCriteria.pagination.page <= 0) this.infiniteScrollEnabled = false;
+    if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber <= 0) this.infiniteScrollEnabled = false;
     else {
-      this.${variables.etoName?lower_case}SearchCriteria.pagination.page = this.${variables.etoName?lower_case}SearchCriteria.pagination.page + 1;
+      this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
 
       setTimeout(() => {
         this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
           (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-              if (data.result.length == 0 && this.${variables.etoName?lower_case}SearchCriteria.pagination.page > 1){
-                this.${variables.etoName?lower_case}SearchCriteria.pagination.page = this.${variables.etoName?lower_case}SearchCriteria.pagination.page - 1;
+              if (data.content.length == 0 && this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber > 0){
+                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber - 1;
                 this.infiniteScrollEnabled = false;
               }
               else{
-                this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.result);
+                this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
               }
               infiniteScroll.complete();
             }, 
@@ -249,7 +259,7 @@ export class ${variables.etoName?cap_first}List {
               console.log(err);
             }
         )    
-      }, 500);
+      }, 300);
     }
   }
 
