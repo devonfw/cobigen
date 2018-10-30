@@ -239,7 +239,7 @@ export class ${variables.etoName?cap_first}List {
    */
   public doInfinite(infiniteScroll) {
 
-    if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber <= 0) this.infiniteScrollEnabled = false;
+    if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber < 0) this.infiniteScrollEnabled = false;
     else {
       this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
 
