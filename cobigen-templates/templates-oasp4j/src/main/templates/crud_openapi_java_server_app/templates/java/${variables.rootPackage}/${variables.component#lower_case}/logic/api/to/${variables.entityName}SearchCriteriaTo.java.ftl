@@ -49,4 +49,17 @@ public class ${variables.entityName}SearchCriteriaTo extends AbstractSearchCrite
 	</#if>
 </#list>
 
+<#list model.properties as property>
+        <@definePropertyNameAndType property/>
+        <#if propType = "String"> 
+	public StringSearchConfigTo get${propName?cap_first}Option() {
+		return this.${propName}Option;
+	}
+	
+	public void set${propName?cap_first}Option(StringSearchConfigTo ${propName}Option) {
+		this.${propName}Option = ${propName}Option;
+	}
+	</#if>
+</#list>
+
 }
