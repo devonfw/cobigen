@@ -15,7 +15,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import java.util.Iterator;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
-import ${variables.rootPackage}.${variables.component}.common.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import io.oasp.module.jpa.dataaccess.api.QueryUtil;
 import io.oasp.module.jpa.dataaccess.api.data.DefaultRepository;
 
@@ -89,9 +90,9 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
           <#if !JavaUtil.isCollection(classObject, field.name)>
           case "${field.name}":
             if (next.isAscending()) {
-                query.orderBy($(alias.get${field.name?cap_first}()<#if field.type?ends_with("Entity")>.getId()</#if>).asc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).asc());
             } else {
-                query.orderBy($(alias.get${field.name?cap_first}()<#if field.type?ends_with("Entity")>.getId()</#if>).desc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).desc());
             }   
           break;
           </#if>

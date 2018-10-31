@@ -5,6 +5,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind$
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,7 +33,11 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
     @Override
     public ${variables.entityName}Eto find${variables.entityName}(long id) {
       LOG.debug("Get ${variables.entityName} with id {} from database.", id);
-      return getBeanMapper().map(get${variables.entityName}Repository().findById(id), ${variables.entityName}Eto.class);
+      Optional<${variables.entityName}Entity> foundEntity = get${variables.entityName}Repository().findById(id);
+      if (foundEntity.isPresent())
+        return getBeanMapper().map(foundEntity.get(), ${variables.entityName}Eto.class);
+      else
+        return null;
     }
 
     @Override
