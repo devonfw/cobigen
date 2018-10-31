@@ -31,4 +31,18 @@ public class ${variables.entityName}Cto extends AbstractCto {
 	public void set${variables.entityName}(${variables.entityName}Eto ${variables.entityName?uncap_first}) {
 		this.${variables.entityName?uncap_first} = ${variables.entityName?uncap_first};
 	}
+<#list model.properties as property>
+   <#if property.isEntity && property.sameComponent>
+	<#assign fieldCapName=property.name?cap_first>
+	<#assign newType = property.type?replace("Entity|Embeddable","","r")>
+	
+	public ${newType}Eto <#if property.type='boolean'>is${fieldCapName}<#else>get${fieldCapName}</#if>() {
+		return ${property.name};
+	}
+
+	public void set${fieldCapName}(${newType}Eto ${property.name}) {
+		this.${property.name} = ${property.name};
+	}
+</#if>
+</#list>
 }
