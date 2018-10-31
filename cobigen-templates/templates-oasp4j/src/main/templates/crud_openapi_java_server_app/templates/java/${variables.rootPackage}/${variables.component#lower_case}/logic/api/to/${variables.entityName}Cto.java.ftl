@@ -24,7 +24,7 @@ public class ${variables.entityName}Cto extends AbstractCto {
     </#if>
    </#if>   
 </#list>
-	public ${variables.entityName} get${variables.entityName}() {
+	public ${variables.entityName}Eto get${variables.entityName}() {
 		return ${variables.entityName?uncap_first};
 	}
 
