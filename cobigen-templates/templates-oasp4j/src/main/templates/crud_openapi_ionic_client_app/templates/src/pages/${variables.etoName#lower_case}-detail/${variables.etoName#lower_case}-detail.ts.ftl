@@ -23,7 +23,7 @@ export class ${variables.etoName?cap_first}Detail {
     pageNumber: 0,
     sort: [
       {
-        property: '${pojo.fields[0].name!}',
+        property: '${model.properties[0].name!}',
         direction: 'ASC',
       },
     ],
