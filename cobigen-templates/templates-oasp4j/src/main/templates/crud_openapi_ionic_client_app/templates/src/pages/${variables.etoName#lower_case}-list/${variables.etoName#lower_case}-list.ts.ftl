@@ -240,7 +240,7 @@ export class ${variables.etoName?cap_first}List {
 
     if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber < 0) this.infiniteScrollEnabled = false;
     else {
-      this.${variables.etoName?lower_case}SearchCriteria.pagination.page = this.${variables.etoName?lower_case}SearchCriteria.pagination.page + 1;
+      this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
 
       setTimeout(() => {
         this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
