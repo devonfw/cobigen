@@ -39,14 +39,15 @@ public class ResourcesPluginUtil {
      * If Update Dialog already shown while refreshConfigurationProject, don't show it again in call of
      * getGeneratorConfigurationProject
      */
-    static boolean isUpdateDialogShown = true;
+    static boolean isUpdateDialogShown = true;    
 
     /**
      * Refreshes the configuration project from the file system.
      */
+   
     public static void refreshConfigurationProject() {
         try {
-            isUpdateDialogShown = true;
+           // isUpdateDialogShown = true;
             generatorProj = getGeneratorConfigurationProject();
             if (null != generatorProj && !generatorProj.exists()) {
                 generatorProj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -71,20 +72,18 @@ public class ResourcesPluginUtil {
     public static IProject getGeneratorConfigurationProject()
         throws GeneratorProjectNotExistentException, CoreException {
 
-        generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
-
+        generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);       
         if (!generatorProj.exists()) {
-            int result = 0;
-            if (!isUpdateDialogShown) {
+        	          
                 MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(),
                     "Generator configuration project not found!", null,
                     "Cobigen_templates folder is not imported. Do you want to download latest templates and use it", 0,
                     new String[] { "Update", "Cancel" }, 1);
                 dialog.setBlockOnOpen(true);
-                result = dialog.open();
-            }
-            if (result == 0) {
-                isUpdateDialogShown = false;
+                dialog.open();
+              
+            /*if (result == 0) {
+                //isUpdateDialogShown = false;
                 return null;
 
             } else {
@@ -94,11 +93,11 @@ public class ResourcesPluginUtil {
                         + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
 
                 throw new GeneratorProjectNotExistentException();
-            }
+            }*/
         }
-        if (!generatorProj.isOpen()) {
+        /*if (generatorProj.isOpen()) {
             generatorProj.open(new NullProgressMonitor());
-        }
+        }*/
 
         return generatorProj;
     }
@@ -113,7 +112,7 @@ public class ResourcesPluginUtil {
      *             {@link IOException} occurred
      */
     public static String downloadJar(boolean isDownloadSource) throws MalformedURLException, IOException {
-        String mavenUrl =
+       String mavenUrl =
             "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-oasp4j&v=LATEST";
         if (isDownloadSource) {
             mavenUrl = mavenUrl + "&c=sources";
@@ -123,7 +122,7 @@ public class ResourcesPluginUtil {
         if (!directory.exists()) {
             directory.mkdir();
         }
-        URL url = new URL(mavenUrl);
+       URL url = new URL(mavenUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
@@ -134,7 +133,7 @@ public class ResourcesPluginUtil {
         if (!file.exists()) {
             Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
         }
-        conn.disconnect();
+        conn.disconnect();    	
         return fileName;
     }
 
