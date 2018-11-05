@@ -214,7 +214,7 @@ public class GeneratorWrapperFactory {
         try {
             ResourcesPluginUtil.refreshConfigurationProject();
             IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            if (null == generatorProj) {
+            if (null == generatorProj.getLocationURI()) {
                 String fileName = ResourcesPluginUtil.downloadJar(false);
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
                 File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + "\\" + fileName).toString());

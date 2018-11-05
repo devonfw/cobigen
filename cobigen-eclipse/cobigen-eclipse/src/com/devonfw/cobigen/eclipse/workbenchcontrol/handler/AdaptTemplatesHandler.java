@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -26,6 +27,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -35,12 +37,13 @@ import org.slf4j.MDC;
 
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 
 /**
- * Handler for the Package-Explorer Event
+ * Handler for the Package-Explorer EventfimportProjectIntoWorkspace
  */
 public class AdaptTemplatesHandler extends AbstractHandler {
 
@@ -53,7 +56,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      * Location of workspace root
      */
     IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-
+   
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -69,14 +72,14 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             dialog.open();
         } else {
             MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
-                "Clicking on ok button will override exisitng Cobigen_templates in workspace.", MessageDialog.WARNING,
+                "Clicking on ok button will override existing Cobigen_templates in workspace.", MessageDialog.WARNING,
                 new String[] { "Ok", "Cancel" }, 1);
             dialog.setBlockOnOpen(true);
             int result = dialog.open();
 
             if (result == 0) {
                 try {
-                    String fileName = ResourcesPluginUtil.downloadJar(true);
+                    String fileName = ResourcesPluginUtil.downloadJar(true);               
                     processJar(fileName);
                     importProjectIntoWorkspace();
                     dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
@@ -84,7 +87,8 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                         new String[] { "Ok" }, 1);
                     dialog.setBlockOnOpen(true);
                     dialog.open();
-                } catch (MalformedURLException e) {
+                }
+                catch (MalformedURLException e) {
                     LOG.error("An exception with download url of maven central", e);
                     PlatformUIUtil.openErrorDialog("An exception with download url of maven central", e);
                 } catch (IOException e) {
@@ -109,14 +113,16 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                 ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
             IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(project.getName());
             description.setLocation(
-                new org.eclipse.core.runtime.Path(ws.toPortableString() + ResourceConstants.COBIGEN_TEMPLATES_FOLDER));
+                new org.eclipse.core.runtime.Path(ws.toPortableString() + "/CobiGen_Templates"));
             project.create(description, null);
             project.open(null);
-        } catch (CoreException e) {
-            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                "Some Exception occurred while importing Cobigen_Templates into workspace");
-            LOG.warn("Some Exception occurred while importing Cobigen_Templates into workspace", e);
-        }
+		} catch (CoreException e) {
+			e.printStackTrace();
+		MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+					"Some Exception occurred while importing Cobigen_Templates into workspace");
+			// LOG.warn("Some Exception occurred while importing Cobigen_Templates into
+			// workspace", e);
+		}
     }
 
     /**
@@ -125,34 +131,49 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      * @param fileName
      *            Name of source jar file downloaded
      */
-    private void processJar(String fileName) {
-
-        String jarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + fileName;
-        String pathForCobigenTemplates = ws.toPortableString() + ResourceConstants.COBIGEN_TEMPLATES_FOLDER;
+    private void processJar(String fileName) {       
+        String pathForCobigenTemplates = "";
+		try {
+			pathForCobigenTemplates = ws.toPortableString() + (((ResourcesPluginUtil.getGeneratorConfigurationProject() != null) && (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null) ) ? ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() : StringUtils.EMPTY);
+		} catch (GeneratorProjectNotExistentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 String jarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + fileName;
         FileSystem fileSystem = FileSystems.getDefault();
-        Path cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
-        Path configFolder = fileSystem.getPath(ws.toPortableString() + "/main/CobiGen_Templates/src/main/templates");
+        Path cobigenFolderPath=null;
+        if(fileSystem !=null && fileSystem.getPath(pathForCobigenTemplates) != null)
+        {
+         cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
+        }
+       /* Path configFolder = fileSystem.getPath(ws.toPortableString());
         ContextConfiguration contextConfiguration = new ContextConfiguration(configFolder);
         List<String> templateNames = new ArrayList<>();
-        for (Trigger t : contextConfiguration.getTriggers()) {
+        for (com.devonfw.cobigen.impl.config.entity.Trigger t : contextConfiguration.getTriggers()) {
             templateNames.add(t.getTemplateFolder());
-        }
-
+        }*/
+        List<String> templateNames = new ArrayList<>();
         try (ZipFile file = new ZipFile(jarPath)) {
-            deleteDirectoryStream(configFolder);
+            //deleteDirectoryStream(configFolder);
             Enumeration<? extends ZipEntry> entries = file.entries();
             if (Files.notExists(cobigenFolderPath)) {
                 Files.createDirectory(cobigenFolderPath);
-            }
+            }              
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + entry.getName());
+                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "CobiGen_Templates"
+                        + File.separator + File.separator + entry.getName());
                 if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
                     || entry.getName().contains("context.xml")) {
-                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "src"
-                        + File.separator + "main" + File.separator + "templates" + File.separator + entry.getName());
+                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "CobiGen_Templates"
+                            + File.separator  /*+ "src"
+                        + File.separator + "main" + File.separator + "templates"*/ + File.separator + entry.getName());
                 } else if (entry.getName().contains("com/")) {
-                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "src"
+                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "CobiGen_Templates"
+                             + File.separator + "src"
                         + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
                 }
                 if (entry.isDirectory()) {
@@ -170,10 +191,12 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     }
                 }
             }
-        } catch (IOException e) {
-            LOG.error("An exception occurred  while processing Jar files to create Cobigen_Templates folder", e);
-            PlatformUIUtil.openErrorDialog("An exception occurred  while processing Jar file", e);
-        }
+		} catch (IOException e) {
+
+			 LOG.error("An exception occurred while processing Jar files to create Cobigen_Templates folder", e);
+			// PlatformUIUtil.openErrorDialog("An exception occurred while processing Jar
+			// file", e);
+		}
     }
 
     /**
@@ -185,6 +208,6 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      *             exception will be thrown in case path doesn't exist
      */
     void deleteDirectoryStream(Path path) throws IOException {
-        Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+       // Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
     }
 }
