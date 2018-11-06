@@ -5,7 +5,7 @@ package ${variables.rootPackage}.general.logic.base;
  * {@link javax.inject.Named} and {@link ${variables.rootPackage}.general.logic.api.UseCase}.
  *
  */ 
-public class AbstractUc extends AbstractGenericEntityUtils  {
+public class AbstractUc extends AbstractLogic  {
 
   /**
   * The constructor.
