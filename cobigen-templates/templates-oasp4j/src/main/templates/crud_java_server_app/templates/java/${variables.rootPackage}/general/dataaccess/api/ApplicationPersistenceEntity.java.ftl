@@ -9,13 +9,13 @@ import javax.persistence.Version;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 
-import io.oasp.module.jpa.dataaccess.api.AbstractPersistenceEntity;
+import com.devonfw.module.basic.common.api.entity.PersistenceEntity;
 
 /**
  * Abstract Entity for all Entities with an id and a version field.
  */
 @MappedSuperclass
-public abstract class ApplicationPersistenceEntity implements ApplicationEntity, MutablePersistenceEntity<Long> {
+public abstract class ApplicationPersistenceEntity implements ApplicationEntity, PersistenceEntity<Long> {
 
   private static final long serialVersionUID = 1L;
 
@@ -65,22 +65,6 @@ public abstract class ApplicationPersistenceEntity implements ApplicationEntity,
   public void setModificationCounter(int version) {
 
     this.modificationCounter = version;
-  }
-
-  @Override
-  @Transient
-  public Number getRevision() {
-
-    return this.revision;
-  }
-
-  /**
-   * @param revision the revision to set
-   */
-  @Override
-  public void setRevision(Number revision) {
-
-    this.revision = revision;
   }
 
   @Override
