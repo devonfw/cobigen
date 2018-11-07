@@ -62,8 +62,8 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
         </#list>
         ctos.add(cto);
       }
-      Pageable pagResultTo = PageRequest.of(criteria.getPageable().getPageNumber(), ctos.size());
-      Page<${variables.entityName}Cto> pagListTo = new PageImpl<>(ctos, pagResultTo, pagResultTo.getPageSize());
-      return pagListTo;
+      Pageable pagResultTo = PageRequest.of(criteria.getPageable().getPageNumber(), criteria.getPageable().getPageSize());
+      
+      return new PageImpl<>(ctos, pagResultTo, ${variables.entityName?lower_case}s.getTotalElements());
     }
 }
