@@ -237,7 +237,6 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   }
   
   filter(): void {
-    this.get${variables.etoName?cap_first}();
     this.pagingBar.firstPage();
   }
 
