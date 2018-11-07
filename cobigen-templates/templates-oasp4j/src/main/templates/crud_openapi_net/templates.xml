@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+  
+  <templates>
+    <templateExtension ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs"/>
+    <templateExtension ref="${variables.component#cap_first}Controller.cs"/>
+    <templateExtension ref="I${variables.component#cap_first}Service.cs"/>
+  </templates>
+  
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath=""/>
+  </templateScans>
+  
+  <increments>
+    <increment name="server" description="CRUD devon4net Server">
+      <incrementRef ref="controllers"/>
+      <incrementRef ref="dtos"/>
+      <incrementRef ref="services"/>
+      <incrementRef ref="entities"/>
+    </increment>
+    <increment name="entities" description="Entities">
+        <templateRef ref="${variables.entityName#cap_first}.cs"/>
+    </increment>
+    <increment name="dtos" description="DTO's">
+        <templateRef ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs"/>
+    </increment>
+    <increment name="controllers" description="Controllers">
+        <templateRef ref= "${variables.component#cap_first}Controller.cs"/>
+    </increment>
+    <increment name="services" description="Services">
+        <templateRef ref="I${variables.component#cap_first}Service.cs"/>
+        <templateRef ref="${variables.component#cap_first}Service.cs"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
