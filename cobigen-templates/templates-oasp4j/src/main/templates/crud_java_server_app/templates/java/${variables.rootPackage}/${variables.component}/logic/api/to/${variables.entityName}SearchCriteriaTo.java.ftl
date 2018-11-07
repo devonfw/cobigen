@@ -1,6 +1,7 @@
 <#include '/functions.ftl'>
 package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
+import com.devonfw.module.basic.common.api.query.StringSearchConfigTo;
 import ${variables.rootPackage}.general.common.api.to.AbstractSearchCriteriaTo;
 
 /**
