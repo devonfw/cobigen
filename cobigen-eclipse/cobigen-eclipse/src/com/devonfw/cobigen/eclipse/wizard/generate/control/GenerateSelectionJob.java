@@ -84,8 +84,11 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                     cobigenWrapper.getWorkspaceDependentTemplateDestinationPath(generationReport.getGeneratedFiles());
                 Set<IProject> projects = Sets.newHashSet();
                 for (String filePath : generatedFiles) {
+
                     IProject project =
                         ResourcesPlugin.getWorkspace().getRoot().getProject(PathUtil.getProject(filePath));
+                    project = PathUtil.getRelativeProjectIfNeeded(filePath, project);
+
                     if (project.exists()) {
                         projects.add(project);
                     }
