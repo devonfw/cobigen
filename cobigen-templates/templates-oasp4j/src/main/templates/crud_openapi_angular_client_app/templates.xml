@@ -19,7 +19,7 @@
   </templateScans>
 
   <increments>
-    <increment name="oasp4js-app" description="CRUD OASP4JS Angular App">
+    <increment name="oasp4js-app" description="CRUD devon4ng Angular App">
       <incrementRef ref="app_angular_env"/>
       <incrementRef ref="app_angular_i18n"/>
       <incrementRef ref="app_angular_oasp4j_component"/>

@@ -2,7 +2,7 @@ package ${variables.rootPackage}.general.common.api.to;
 
 import org.springframework.data.domain.Pageable;
 
-import io.oasp.module.basic.common.api.to.AbstractTo;
+import com.devonfw.module.basic.common.api.to.AbstractTo;
 
 /**
  * Abstract {@link AbstractTo TO} for search criteria.

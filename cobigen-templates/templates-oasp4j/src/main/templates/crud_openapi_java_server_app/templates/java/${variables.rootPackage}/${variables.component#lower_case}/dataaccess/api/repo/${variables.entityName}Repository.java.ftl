@@ -69,7 +69,7 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
     </#list>
     addOrderBy(query, alias, criteria.getPageable().getSort());
     
-    return QueryUtil.get().findPaginated(criteria.getPageable(), query, false);
+    return QueryUtil.get().findPaginated(criteria.getPageable(), query, true);
   }
   
   /**

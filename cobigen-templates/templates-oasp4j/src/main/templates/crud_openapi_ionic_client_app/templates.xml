@@ -26,7 +26,7 @@
   </templateScans>
 
   <increments>
-    <increment name="oasp4js-app" description="CRUD OASP4JS Ionic App">
+    <increment name="oasp4js-app" description="CRUD devon4ng Ionic App">
       <incrementRef ref="app_ionic_structure"/>
       <incrementRef ref="ionic_i18n"/>
       <incrementRef ref="ionic_component"/>

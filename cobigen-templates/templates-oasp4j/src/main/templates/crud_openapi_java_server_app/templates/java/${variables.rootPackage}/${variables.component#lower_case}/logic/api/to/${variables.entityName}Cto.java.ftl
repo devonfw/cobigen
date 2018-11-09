@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to;
 
-import ${variables.rootPackage}.general.common.api.to.AbstractCto;
+import com.devonfw.module.basic.common.api.to.AbstractCto;
 import ${variables.rootPackage}.${variables.component?lower_case}.common.api.${variables.entityName};
 
 import java.util.List;
