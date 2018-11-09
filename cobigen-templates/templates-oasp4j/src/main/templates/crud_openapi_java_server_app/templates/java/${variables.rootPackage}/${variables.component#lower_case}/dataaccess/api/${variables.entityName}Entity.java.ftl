@@ -70,12 +70,13 @@ public class ${variables.entityName?cap_first}Entity extends ApplicationPersiste
 	 <@definePropertyNameAndType property true/>
 	 <#if property.isEntity && property.sameComponent>
 	   <#if !property.isCollection>
-  public void set${property.name?cap_first}(${property.type}Entity ${propName}) {
-    this.${property.name} = ${property.name};
-  }
   
   public ${property.type?cap_first}Entity get${property.name?cap_first}() {
     return this.${property.name};
+  }
+  
+  public void set${property.name?cap_first}(${property.type}Entity ${propName}) {
+    this.${property.name} = ${property.name};
   }
     <#else>
   public void set${property.name?cap_first}(List<${property.type}Entity> ${property.name}) {
@@ -87,12 +88,12 @@ public class ${variables.entityName?cap_first}Entity extends ApplicationPersiste
   }
     </#if>
 	 <#else>
-	public void set${propName?cap_first}(${propType} ${propName}) {
-	  this.${propName} = ${propName};
-	}
-	
 	public ${propType} <#if propType == "boolean">is<#else>get</#if>${propName?cap_first}() {
 	  return this.${propName};
+	}
+	
+	public void set${propName?cap_first}(${propType} ${propName}) {
+	  this.${propName} = ${propName};
 	}
 	</#if>
 	</#if>
