@@ -1,18 +1,16 @@
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to;
 
-import io.oasp.module.jpa.common.api.to.SearchCriteriaTo;
+import ${variables.rootPackage}.general.common.api.to.AbstractSearchCriteriaTo;
 import java.util.List;
 import java.util.Set;
 
 import java.math.BigDecimal;
 
 /**
- * This is the {@link SearchCriteriaTo search criteria} {@link net.sf.mmm.util.transferobject.api.TransferObject TO}
- * used to find {@link ${variables.rootPackage}.${variables.component?lower_case}.common.api.${variables.entityName}}s.
- *
+ * {@link SearchCriteriaTo} to find instances of {@link ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}}s.
  */
-public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
+public class ${variables.entityName}SearchCriteriaTo extends AbstractSearchCriteriaTo {
 
   private static final long serialVersionUID = 1L;
   
@@ -20,6 +18,13 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 	<#if property.name != "id" && !property.isCollection>
 	 <@definePropertyNameAndType property/>
 	private ${propType} ${propName};
+	</#if>
+</#list>
+
+<#list model.properties as property>
+        <@definePropertyNameAndType property/>
+        <#if propType = "String"> 
+	private StringSearchConfigTo ${propName}Option;
 	</#if>
 </#list>
 
@@ -40,6 +45,19 @@ public class ${variables.entityName}SearchCriteriaTo extends SearchCriteriaTo {
 	
 	public void set${propName?cap_first}(${propType} ${propName}) {
 		this.${propName} = ${propName};
+	}
+	</#if>
+</#list>
+
+<#list model.properties as property>
+        <@definePropertyNameAndType property/>
+        <#if propType = "String"> 
+	public StringSearchConfigTo get${propName?cap_first}Option() {
+		return this.${propName}Option;
+	}
+	
+	public void set${propName?cap_first}Option(StringSearchConfigTo ${propName}Option) {
+		this.${propName}Option = ${propName}Option;
 	}
 	</#if>
 </#list>
