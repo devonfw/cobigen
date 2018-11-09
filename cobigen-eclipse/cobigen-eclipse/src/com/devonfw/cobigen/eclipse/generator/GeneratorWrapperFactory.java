@@ -217,7 +217,7 @@ public class GeneratorWrapperFactory {
             if (null == generatorProj.getLocationURI()) {
                 String fileName = ResourcesPluginUtil.downloadJar(false);
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-                File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + "\\" + fileName).toString());
+                File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
                 return CobiGenFactory.create(file.toURI());
             } else {
                 return CobiGenFactory.create(generatorProj.getLocationURI());
