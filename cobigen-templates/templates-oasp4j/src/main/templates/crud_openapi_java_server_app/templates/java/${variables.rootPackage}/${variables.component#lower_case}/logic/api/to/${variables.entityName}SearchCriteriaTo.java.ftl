@@ -1,6 +1,7 @@
 <#include '/makros.ftl'>
 package ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to;
 
+import com.devonfw.module.basic.common.api.query.StringSearchConfigTo;
 import ${variables.rootPackage}.general.common.api.to.AbstractSearchCriteriaTo;
 import java.util.List;
 import java.util.Set;

@@ -22,9 +22,10 @@
   </templateScans>
 
   <increments>
-    <increment name="server" description="CRUD OASP4J Server">
+    <increment name="server" description="CRUD devon4j Server">
       <incrementRef ref="daos"/>
       <incrementRef ref="tos"/>
+      <incrementRef ref="ctos"/>
       <incrementRef ref="logic_impl"/>
       <incrementRef ref="dataaccess_infrastructure"/>
       <incrementRef ref="rest_service_impl"/>
@@ -44,11 +45,15 @@
       <templateRef ref="${variables.entityName}DaoImpl.java"/>
     </increment>
     <increment name="tos" description="TO's">
-      <templateRef ref="AbstractCto.java"/>
-      <templateRef ref="AbstractEto.java"/>
       <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
+      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
+
+    </increment>
+    <increment name="ctos" description="CTO's">
+      <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
+      <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="logic_impl" description="logic (all in one)">
