@@ -9,7 +9,7 @@ import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.$
 import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
 import ${variables.rootPackage}.${variables.component?lower_case}.service.api.rest.${variables.component?cap_first}RestService;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 
@@ -41,7 +41,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo) {
+  public Page<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo) {
 
     return this.${variables.component?lower_case}.find${variables.entityName?cap_first}Etos(searchCriteriaTo);
   }
