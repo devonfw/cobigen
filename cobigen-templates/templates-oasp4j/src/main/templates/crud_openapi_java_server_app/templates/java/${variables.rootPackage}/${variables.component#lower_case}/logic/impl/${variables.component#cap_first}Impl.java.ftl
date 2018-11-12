@@ -1,89 +1,55 @@
 <#include "/functions.ftl">
-package ${variables.rootPackage}.${variables.component?lower_case}.logic.impl;
+package ${variables.rootPackage}.${variables.component}.logic.impl;
 
-import java.util.Objects;
+import ${variables.rootPackage}.general.logic.base.AbstractComponentFacade;
+import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
+import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-
-import ${variables.rootPackage}.general.logic.base.AbstractComponentFacade;
-import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component?lower_case}.dataaccess.api.dao.${variables.entityName}Dao;
-import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.${variables.component?cap_first};
-import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName}SearchCriteriaTo;
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
-
-import java.math.BigDecimal;
-
 /**
- * Implementation of component interface of ${variables.component?cap_first}
+ * Implementation of component interface of ${variables.component}
  */
 @Named
-@Transactional
 public class ${variables.component?cap_first}Impl extends AbstractComponentFacade implements ${variables.component?cap_first} {
 
-    /**
-     * Logger instance.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(${variables.component?cap_first}Impl.class);
-
-    /**
-     * @see #get${variables.entityName?cap_first}Dao()
-     */
     @Inject
-    private ${variables.entityName?cap_first}Dao ${variables.entityName?lower_case}Dao;
+    private UcFind${variables.entityName} ucFind${variables.entityName};
 
-    /**
-     * The constructor.
-     */
-    public ${variables.component?cap_first}Impl() {
-      super();
-    }
-  
-	@Override
-	public ${variables.entityName?cap_first}Eto find${variables.entityName?cap_first}(Long id) {
-
-	    LOG.debug("Get ${variables.entityName?cap_first} with id {} from database.", id);
-	    return getBeanMapper().map(get${variables.entityName?cap_first}Dao().findOne(id), ${variables.entityName?cap_first}Eto.class);
-  	}
+    @Inject
+    private UcManage${variables.entityName} ucManage${variables.entityName};
 
     @Override
-    public PaginatedListTo<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}Etos(${variables.entityName?cap_first}SearchCriteriaTo criteria) {
+    public ${variables.entityName}Eto find${variables.entityName}(long id) {
 
-      criteria.limitMaximumPageSize(MAXIMUM_HIT_LIMIT);
-      PaginatedListTo<${variables.entityName?cap_first}Entity> ${variables.entityName?lower_case}s = get${variables.entityName?cap_first}Dao().find${variables.entityName?cap_first}s(criteria);
-      return mapPaginatedEntityList(${variables.entityName?lower_case}s, ${variables.entityName?cap_first}Eto.class);
+      return this.ucFind${variables.entityName}.find${variables.entityName}(id);
     }
 
     @Override
-    public boolean delete${variables.entityName?cap_first}(Long ${variables.entityName?lower_case}Id) {
-
-      ${variables.entityName?cap_first}Entity ${variables.entityName?lower_case} = get${variables.entityName?cap_first}Dao().find(${variables.entityName?lower_case}Id);
-      get${variables.entityName?cap_first}Dao().delete(${variables.entityName?lower_case});
-      LOG.debug("The ${variables.entityName?lower_case} with id '{}' has been deleted.", ${variables.entityName?lower_case}Id);
-      return true;
+    public Page<${variables.entityName}Eto> find${variables.entityName}s(${variables.entityName}SearchCriteriaTo criteria) {
+      return this.ucFind${variables.entityName}.find${variables.entityName}s(criteria);
     }
 
     @Override
-    public ${variables.entityName?cap_first}Eto save${variables.entityName?cap_first}(${variables.entityName?cap_first}Eto ${variables.entityName?lower_case}) {
+    public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}) {
 
-      Objects.requireNonNull(${variables.entityName?lower_case}, "${variables.entityName?lower_case}");
-      ${variables.entityName?cap_first}Entity ${variables.entityName?lower_case}Entity = getBeanMapper().map(${variables.entityName?lower_case}, ${variables.entityName?cap_first}Entity.class);
+      return this.ucManage${variables.entityName}.save${variables.entityName}(${variables.entityName?lower_case});
+    }
 
-      // initialize, validate ${variables.entityName?lower_case}Entity here if necessary
-      ${variables.entityName?cap_first}Entity resultEntity = get${variables.entityName?cap_first}Dao().save(${variables.entityName?lower_case}Entity);
-      LOG.debug("${variables.entityName?cap_first} with id '{}' has been created.", resultEntity.getId());
+    @Override
+    public boolean delete${variables.entityName}(long id) {
 
-      return getBeanMapper().map(resultEntity, ${variables.entityName?cap_first}Eto.class);
+      return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
     }
     
-    <#list model.component.paths as path>
+        <#list model.component.paths as path>
   	<#list path.operations as operation>
   		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
@@ -91,9 +57,9 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
         <#assign hasEntity=hasResponseOfType(responses, "Entity")>
 	  		<#if hasResponseOfType(responses "Paginated")>
 	  			<#if hasEntity>
-  	public PaginatedListTo<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  	public Page<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public PaginatedListTo<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
+  	public Page<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
   			<#elseif hasResponseOfType(responses,"Array")>
   				<#if hasEntity>
@@ -134,13 +100,4 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   		
   	</#list>
   </#list>
-  
-    /**
-    * Returns the field '${variables.entityName?lower_case}Dao'.
-    *
-    * @return the {@link ${variables.entityName?cap_first}Dao} instance.
-    */
-    public ${variables.entityName?cap_first}Dao get${variables.entityName?cap_first}Dao() {
-      return this.${variables.entityName?lower_case}Dao;
-    }
 }
