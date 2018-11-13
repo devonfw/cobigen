@@ -84,7 +84,8 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   		    	<#else>
   		    ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		    	</#if>
-  			</#list>) {
+  			</#list>)
+			<#compress> {
   		// TODO ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}
   			<#if !hasResponseOfType(responses,"Void")>
   				<#if getReturnType(operation,false) == "boolean">
@@ -95,7 +96,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   		return null;
   				</#if>
   			</#if>		
-  	}	
+  	}		</#compress>
   		</#if>
   		
   	</#list>

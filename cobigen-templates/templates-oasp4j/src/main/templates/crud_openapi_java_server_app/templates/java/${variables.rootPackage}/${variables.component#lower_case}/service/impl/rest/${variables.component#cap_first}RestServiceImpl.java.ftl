@@ -12,6 +12,7 @@ import ${variables.rootPackage}.${variables.component?lower_case}.service.api.re
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * The service implementation for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
@@ -43,7 +44,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   @Override
   public Page<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo) {
 
-    return this.${variables.component?lower_case}.find${variables.entityName?cap_first}Etos(searchCriteriaTo);
+    return this.${variables.component?lower_case}.find${variables.entityName?cap_first}s(searchCriteriaTo);
   }
   
   <#list model.component.paths as path>
