@@ -57,15 +57,21 @@ public class OpenApiUtil {
         }
         if ((boolean) response.get("isArray")) {
             if ((boolean) response.get("isEntity")) {
-                return "List<" + returnType + ">";
+            	if(returnType.contains("Entity"))
+            		return "List<" + returnType + ">";
+            	else
+            		return "List<" + returnType + "Entity>";
             } else {
                 return "List<" + returnType + ">";
             }
         } else if ((boolean) response.get("isPaginated")) {
             if ((boolean) response.get("isEntity")) {
-                return "PaginatedListTo<" + returnType + "Eto>";
+            	if(returnType.contains("Entity"))
+            		return "Page<" + returnType + ">";
+            	else
+            		return "Page<" + returnType + "Entity>";
             } else {
-                return "PaginatedListTo<" + returnType + ">";
+                return "Page<" + returnType + ">";
             }
         } else {
             return returnType;
