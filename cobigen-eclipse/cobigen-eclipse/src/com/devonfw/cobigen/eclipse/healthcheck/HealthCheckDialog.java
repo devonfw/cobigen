@@ -77,11 +77,12 @@ public class HealthCheckDialog {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            if(generatorConfProj.getLocationURI()!= null) {
-            if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
-                ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
-                healthyCheckMessage += "OK.";
-            }} else {
+			if (generatorConfProj.getLocationURI() != null) {
+				if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
+						ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
+					healthyCheckMessage += "OK.";
+				}
+			} else {
                 healthyCheckMessage += "INVALID.";
                 healthyCheckWarning = true;
             }
