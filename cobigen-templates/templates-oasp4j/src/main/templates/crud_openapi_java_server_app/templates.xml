@@ -7,7 +7,6 @@
     <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.entityName}Test.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
@@ -36,6 +35,12 @@
     <templateExtension ref="${variables.component#cap_first}Ctos.java" 
                        destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component#cap_first}.java"
                        mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}RestServiceImplCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/impl/rest/${variables.component#cap_first}RestServiceImpl.java"
+                       mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.component#cap_first}RestServiceCtos.java" 
+                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
+                       mergeStrategy="javamerge"/>                       
                        
     <templateExtension ref="AbstractLogic.java" mergeStrategy="javamerge"/>
   </templates>
@@ -53,14 +58,10 @@
       <incrementRef ref="dataaccess_infrastructure"/>
       <incrementRef ref="rest_service_impl"/>
       <incrementRef ref="rest_service_impl_ctos"/>
-      <incrementRef ref="test"/>
       <incrementRef ref="springdata-repository"/>
     </increment>
     <increment name="springdata-repository" description="CRUD SpringData Repository">
       <templateRef ref="${variables.entityName}Repository.java"/>
-    </increment>
-    <increment name="test" description="Test">
-      <templateRef ref="${variables.entityName}Test.java"/>
     </increment>
     <increment name="tos" description="TO's">
       <templateRef ref="AbstractSearchCriteriaTo.java"/>
