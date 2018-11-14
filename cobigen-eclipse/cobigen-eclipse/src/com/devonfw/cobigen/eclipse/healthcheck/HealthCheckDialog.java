@@ -1,9 +1,11 @@
 package com.devonfw.cobigen.eclipse.healthcheck;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -69,15 +71,17 @@ public class HealthCheckDialog {
 
             // refresh and check context configuration
             ResourcesPluginUtil.refreshConfigurationProject();
-            CobiGenFactory.create(generatorConfProj.getLocationURI());
-
+			if (generatorConfProj.getLocationURI() != null) {
+				CobiGenFactory.create(generatorConfProj.getLocationURI());
+			}
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
+            if(generatorConfProj.getLocationURI()!= null) {
             if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
                 ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
                 healthyCheckMessage += "OK.";
-            } else {
+            }} else {
                 healthyCheckMessage += "INVALID.";
                 healthyCheckWarning = true;
             }
