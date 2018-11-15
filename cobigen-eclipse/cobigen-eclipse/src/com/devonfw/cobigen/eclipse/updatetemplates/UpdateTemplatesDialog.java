@@ -9,7 +9,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.logging.Log;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -30,6 +29,7 @@ import org.slf4j.MDC;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.UpdateTemplateDialogs;
+import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 
 /**
@@ -68,7 +68,7 @@ public class UpdateTemplatesDialog extends Dialog {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	throw new Error("Failed to initialize SSLcontex",e);
+            throw new Error("Failed to initialize SSLcontex", e);
         }
 
     }
@@ -114,14 +114,22 @@ public class UpdateTemplatesDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 try {
                     ResourcesPluginUtil.downloadJar(false);
-                    MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information!!",
-                        null, "Downloaded succesfully", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
+                    MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
+                        "Downloaded succesfully!", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
                     dialog.setBlockOnOpen(true);
                     dialog.open();
-                } catch (MalformedURLException e1) {
-                    throw new CobiGenRuntimeException("Invalid maven centrol repo url or path doesn't exist " + e1);
-                } catch (IOException e1) {
-                    throw new CobiGenRuntimeException("Failed while reading or writing Jar at .metadata folder" + e1);
+                } catch (MalformedURLException malformedURLException) {
+                    PlatformUIUtil.openErrorDialog(
+                        "Templates were not downloaded because the maven central repo url or path doesn't exist. \n "
+                            + "Please create a new issue on GitHub https://github.com/devonfw/tools-cobigen/issues",
+                        malformedURLException);
+                    throw new CobiGenRuntimeException(
+                        "Invalid maven central repo url or path doesn't exist " + malformedURLException);
+                } catch (IOException exceptionIO) {
+                    PlatformUIUtil.openErrorDialog("Templates were not downloaded because there is no connection."
+                        + " Are you connected to the Internet? ", exceptionIO);
+                    throw new CobiGenRuntimeException(
+                        "Failed while reading or writing Jar at .metadata folder" + exceptionIO);
                 }
             }
         });

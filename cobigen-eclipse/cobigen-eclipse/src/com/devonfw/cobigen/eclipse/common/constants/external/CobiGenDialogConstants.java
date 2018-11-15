@@ -38,7 +38,7 @@ public class CobiGenDialogConstants {
     public class UpdateTemplateDialogs {
 
         /** Dialog title of the Update Templates */
-        public static final String DIALOG_TITLE = "Update Cobigen Templates";
+        public static final String DIALOG_TITLE = "Update CobiGen Templates";
 
     }
 }

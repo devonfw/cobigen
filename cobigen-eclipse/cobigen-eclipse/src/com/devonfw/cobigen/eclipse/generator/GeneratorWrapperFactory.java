@@ -215,9 +215,16 @@ public class GeneratorWrapperFactory {
             ResourcesPluginUtil.refreshConfigurationProject();
             IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
             if (null == generatorProj.getLocationURI()) {
+                ProgressMonitorDialog progressMonitor =
+                    new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+                progressMonitor.open();
+                progressMonitor.getProgressMonitor().beginTask("downloading templates...", 0);
+
                 String fileName = ResourcesPluginUtil.downloadJar(false);
+                progressMonitor.close();
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-                File file = new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
+                File file =
+                    new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
                 return CobiGenFactory.create(file.toURI());
             } else {
                 return CobiGenFactory.create(generatorProj.getLocationURI());
@@ -225,7 +232,10 @@ public class GeneratorWrapperFactory {
         } catch (CoreException e) {
             throw new GeneratorCreationException("An eclipse internal exception occurred", e);
         } catch (IOException e) {
-            throw new GeneratorCreationException("Configuration source could not be read", e);
+            throw new GeneratorCreationException(
+                "Configuration source could not be read.\nIf you were updating templates, it may mean"
+                    + " that you have no internet connection.",
+                e);
         }
     }
 }
