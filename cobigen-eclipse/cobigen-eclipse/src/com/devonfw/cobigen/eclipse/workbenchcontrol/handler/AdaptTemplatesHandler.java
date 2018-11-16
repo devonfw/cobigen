@@ -27,6 +27,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,10 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      * CobiGen_Templates folder created at main folder using source jar will be imported into workspace
      */
     private void importProjectIntoWorkspace() {
+        ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 
+        progressMonitor.open();
+        progressMonitor.getProgressMonitor().beginTask("Importing templates...", 0);
         try {
             IProject project =
                 ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
@@ -110,7 +114,9 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             description.setLocation(new org.eclipse.core.runtime.Path(ws.toPortableString() + "/CobiGen_Templates"));
             project.create(description, null);
             project.open(null);
+            progressMonitor.close();
         } catch (CoreException e) {
+            progressMonitor.close();
             e.printStackTrace();
             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
                 "Some Exception occurred while importing CobiGen_Templates into workspace");

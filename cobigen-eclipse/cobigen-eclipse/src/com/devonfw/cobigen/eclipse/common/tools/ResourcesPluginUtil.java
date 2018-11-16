@@ -10,6 +10,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -18,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +46,23 @@ public class ResourcesPluginUtil {
     static boolean isUpdateDialogShown = false;
 
     /**
+     * This variable is only used on the case the user doesn't have templates and he does not want either to
+     * download them. Strange case but could happen.
+     */
+    static boolean userWantsToDownloadTemplates = true;
+
+    /**
      * Filters the files on a directory so that we can check whether the templates are already downloaded
      */
     static FilenameFilter fileNameFilter = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
             String lowercaseName = name.toLowerCase();
-            if (lowercaseName.contains(ResourceConstants.JAR_FILE_NAME)) {
+            String regex = ResourceConstants.JAR_FILE_REGEX_NAME;
+
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(lowercaseName);
+            if (m.find()) {
                 return true;
             } else {
                 return false;
@@ -63,6 +76,7 @@ public class ResourcesPluginUtil {
 
     public static void refreshConfigurationProject() {
         try {
+            isUpdateDialogShown = false;
             generatorProj = getGeneratorConfigurationProject();
             if (null != generatorProj && !generatorProj.exists()) {
                 generatorProj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -97,32 +111,41 @@ public class ResourcesPluginUtil {
             if (!isUpdateDialogShown) {
                 if (templatesDirectory.exists()) {
 
-                    // If we find at least one jar, then we do not need to download new templates
-                    if (templatesDirectory.listFiles(fileNameFilter).length > 0) {
-                        return generatorProj;
-                    } else {
+                    // If we don't find at least one jar, then we do need to download new templates
+                    if (templatesDirectory.listFiles(fileNameFilter).length <= 0) {
                         int result = createUpdateTemplatesDialog();
                         isUpdateDialogShown = true;
-                        if (result == 0) {
-
+                        if (result == 1) {
+                            // User does not want to download templates.
+                            userWantsToDownloadTemplates = false;
+                        } else {
+                            userWantsToDownloadTemplates = true;
                         }
                     }
 
                 } else {
                     int result = createUpdateTemplatesDialog();
                     isUpdateDialogShown = true;
-                    if (result == 0) {
-
+                    if (result == 1) {
+                        // User does not want to download templates.
+                        userWantsToDownloadTemplates = false;
+                    } else {
+                        userWantsToDownloadTemplates = true;
                     }
                 }
             }
         }
 
-        return generatorProj;
+        if (userWantsToDownloadTemplates) {
+            return generatorProj;
+        } else {
+            return null;
+        }
     }
 
     /**
-     *
+     * Creates a new dialog so that the user can choose between updating the templates or not
+     * @return the result of this decision, 0 if he wants to update the templates, 1 if he does not
      */
     private static int createUpdateTemplatesDialog() {
         MessageDialog dialog =
@@ -149,23 +172,38 @@ public class ResourcesPluginUtil {
         if (isDownloadSource) {
             mavenUrl = mavenUrl + "&c=sources";
         }
-        File directory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
+
+        String fileName = "";
+
+        File templatesDirectory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
             + ResourceConstants.DOWNLOADED_JAR_FOLDER);
-        if (!directory.exists()) {
-            directory.mkdir();
+        if (!templatesDirectory.exists()) {
+            templatesDirectory.mkdir();
         }
-        URL url = new URL(mavenUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.connect();
-        InputStream inputStream = conn.getInputStream();
-        String fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-        File file = new File(directory.getPath() + File.separator + fileName);
-        Path targetPath = file.toPath();
-        if (!file.exists()) {
-            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+        File[] jarFiles = templatesDirectory.listFiles(fileNameFilter);
+
+        if (jarFiles.length <= 0) {
+            ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+            progressMonitor.open();
+            progressMonitor.getProgressMonitor().beginTask("downloading templates...", 0);
+
+            URL url = new URL(mavenUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+            InputStream inputStream = conn.getInputStream();
+            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+            Path targetPath = file.toPath();
+            if (!file.exists()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            conn.disconnect();
+            progressMonitor.close();
+        } else {
+            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
         }
-        conn.disconnect();
         return fileName;
     }
 

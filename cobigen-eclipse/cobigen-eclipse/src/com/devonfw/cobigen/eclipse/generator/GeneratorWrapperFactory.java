@@ -210,18 +210,18 @@ public class GeneratorWrapperFactory {
      *             if the generator configuration project does not exist
      */
     private static CobiGen initializeGenerator() throws InvalidConfigurationException, GeneratorCreationException {
-
         try {
             ResourcesPluginUtil.refreshConfigurationProject();
             IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            if (null == generatorProj.getLocationURI()) {
-                ProgressMonitorDialog progressMonitor =
-                    new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-                progressMonitor.open();
-                progressMonitor.getProgressMonitor().beginTask("downloading templates...", 0);
 
+            if (generatorProj == null) {
+                throw new GeneratorCreationException(
+                    "Configuration source could not be read.\nIf you were updating templates, it may mean"
+                        + " that you have no internet connection.");
+            }
+
+            if (null == generatorProj.getLocationURI()) {
                 String fileName = ResourcesPluginUtil.downloadJar(false);
-                progressMonitor.close();
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
                 File file =
                     new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
