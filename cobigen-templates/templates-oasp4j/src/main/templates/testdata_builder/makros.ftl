@@ -1,5 +1,4 @@
 <#macro callNotNullPropertyWithDefaultValue attr>
-<#compress>
 <#if attr.canonicalType = "byte" || attr.canonicalType = "java.lang.Byte" >
 	${attr.name}((byte)1);
 <#elseif attr.canonicalType  = "short" || attr.canonicalType = "java.lang.Short" >
@@ -27,7 +26,6 @@
 <#else>
 	//TODO ${attr.name}(...); //set Default ${attr.canonicalType}
 </#if>
-</#compress>
 </#macro>
 
 <#function getPackage fqn>
