@@ -17,9 +17,8 @@ import java.util.Iterator;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
-import io.oasp.module.jpa.dataaccess.api.QueryUtil;
-import io.oasp.module.jpa.dataaccess.api.data.DefaultRepository;
-
+import com.devonfw.module.jpa.dataaccess.api.QueryUtil;
+import com.devonfw.module.jpa.dataaccess.api.data.DefaultRepository;
 
 /**
  * {@link DefaultRepository} for {@link ${variables.entityName}Entity}
