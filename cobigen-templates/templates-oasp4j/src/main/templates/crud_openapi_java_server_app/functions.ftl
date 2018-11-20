@@ -68,23 +68,3 @@
       <#return false>
     </#if>
 </#function>
-
-<#function getReturnEntityType response>
-	<#if response?is_enumerable == true>
-		<#list response as arrayResponse>
-			<#return arrayResponse.type>
-		</#list>
-	<#else>
-		<#if response.code=="200">
-		<#if response.isEntity == true>
-	        <#return response.type>
-	    </#if>
-	    <#else>
-	    	<#if response.isEntity == true>
-	        	<#return response.entityRef.name>
-	        <#else>
-	        	<#return "void">
-	        </#if>
-	    </#if>
-    </#if>
-</#function>
