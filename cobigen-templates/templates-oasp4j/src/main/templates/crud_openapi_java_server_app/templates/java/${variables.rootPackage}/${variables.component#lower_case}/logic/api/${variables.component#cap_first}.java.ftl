@@ -27,8 +27,10 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
   			<#elseif hasResponseOfType(response, "Array")>
   				<#if hasEntity>
   					<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
-  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType)>
   						List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#elseif returnEntityType?lower_case == "string">
+  						List<String> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					<#else>
   						List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					</#if>
@@ -41,8 +43,10 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
 				<#if hasEntity>
   					<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
   					
-  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType)>
   						${returnEntityType} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#elseif returnEntityType?lower_case == "string">
+  						String ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					<#else>
   						${returnEntityType}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					</#if>
