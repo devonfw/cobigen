@@ -65,8 +65,10 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			<#elseif hasResponseOfType(response,"Array")>
   				<#if hasEntity>
   				<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
-  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType)>
   					public List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#elseif returnEntityType?lower_case == "string">
+  					public List<String> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					<#else>
   					public List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					</#if>
@@ -78,8 +80,10 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			<#else>
   				<#if hasEntity>
   				<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
-  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType)>
   						public ${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#elseif returnEntityType?lower_case == "string">
+  						public String ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					<#else>
   						public ${getReturnType(operation,false)}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   					</#if>
