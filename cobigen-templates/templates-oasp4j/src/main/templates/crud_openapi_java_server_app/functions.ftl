@@ -55,8 +55,7 @@
   <#return false>
 </#function>
 
-<#function hasResponseOfType responses type>
-  <#list responses as response>
+<#function hasResponseOfType response type>
     <#if type=="Entity">
       <#return response.isEntity>
     <#elseif type=="Paginated">
@@ -68,5 +67,24 @@
     <#else>
       <#return false>
     </#if>
-  </#list>
+</#function>
+
+<#function getReturnEntityType response>
+	<#if response?is_enumerable == true>
+		<#list response as arrayResponse>
+			<#return arrayResponse.type>
+		</#list>
+	<#else>
+		<#if response.code=="200">
+		<#if response.isEntity == true>
+	        <#return response.type>
+	    </#if>
+	    <#else>
+	    	<#if response.isEntity == true>
+	        	<#return response.entityRef.name>
+	        <#else>
+	        	<#return "void">
+	        </#if>
+	    </#if>
+    </#if>
 </#function>

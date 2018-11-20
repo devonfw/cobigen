@@ -94,8 +94,25 @@ public class JavaUtil {
      */
     public boolean equalsJavaPrimitive(String simpleType) {
 
-        try {
+        try {        	
             return ClassUtils.getClass(simpleType).isPrimitive();
+        } catch (ClassNotFoundException e) {
+            LOG.warn("{}: Could not find {}", e.getMessage(), simpleType);
+            return false;
+        }
+    }
+    
+    /**
+     * Checks if the given type is a Java primitive or wrapper
+     *
+     * @param simpleType
+     *            the type to be checked
+     * @return true iff simpleType is a Java primitive or wrapper
+     */
+    public boolean equalsJavaPrimitiveOrWrapper(String simpleType) {
+
+        try {        	
+            return ClassUtils.isPrimitiveOrWrapper(ClassUtils.getClass(simpleType));
         } catch (ClassNotFoundException e) {
             LOG.warn("{}: Could not find {}", e.getMessage(), simpleType);
             return false;
