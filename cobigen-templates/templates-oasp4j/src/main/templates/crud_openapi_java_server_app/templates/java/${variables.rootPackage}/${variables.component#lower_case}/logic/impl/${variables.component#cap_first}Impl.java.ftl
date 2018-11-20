@@ -54,24 +54,35 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
         <#assign responses=operation.responses>
-        <#assign hasEntity=hasResponseOfType(responses, "Entity")>
-	  		<#if hasResponseOfType(responses "Paginated")>
+        <#list responses as response>
+        <#assign hasEntity=hasResponseOfType(response, "Entity")>
+	  		<#if hasResponseOfType(response "Paginated")>
 	  			<#if hasEntity>
   	public Page<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
   	public Page<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
   				</#if>
-  			<#elseif hasResponseOfType(responses,"Array")>
+  			<#elseif hasResponseOfType(response,"Array")>
   				<#if hasEntity>
-  	public List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  				<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  					public List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#else>
+  					public List<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					</#if>
   				<#else>
     public List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
-  			<#elseif hasResponseOfType(responses,"Void")>
+  			<#elseif hasResponseOfType(response,"Void")>
   	public void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   			<#else>
   				<#if hasEntity>
-  	public ${getReturnType(operation,false)}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  				<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
+  					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType) || returnEntityType?lower_case == "string" >
+  						public ${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					<#else>
+  						public ${getReturnType(operation,false)}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  					</#if>
   				<#else>
   	public ${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
@@ -87,7 +98,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   			</#list>)
 			<#compress> {
   		// TODO ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}
-  			<#if !hasResponseOfType(responses,"Void")>
+  			<#if !hasResponseOfType(response,"Void")>
   				<#if getReturnType(operation,false) == "boolean">
   		return false;
   				<#elseif getReturnType(operation,false) == "integer">
@@ -97,6 +108,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   				</#if>
   			</#if>		
   	}		</#compress>
+  	  		</#list>
   		</#if>
   		
   	</#list>
