@@ -438,9 +438,10 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setName("criteria");
                 }
                 if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
+                    String requestBodyRefType = getRequestBodyRefType(requestBody, media);
                     mediaSchema = requestBody.getContentMediaTypes().get(media).getSchema();
                     parameter.setIsEntity(true);
-                    parameter.setType(mediaSchema.getName());
+                    parameter.setType(requestBodyRefType);
                     if (!parameter.getIsSearchCriteria()) {
                         char c[] = mediaSchema.getName().toCharArray();
                         c[0] = Character.toLowerCase(c[0]);
@@ -456,6 +457,22 @@ public class OpenAPIInputReader implements InputReader {
             }
         }
         return parametersList;
+    }
+
+    /**
+     * Tries to get from a request body its reference to a component
+     *
+     * @param requestBody
+     *            the defined request body on the OpenAPI file which contains the reference of the entity
+     * @param media
+     *            content media type of the request body
+     * @return the referenced component name
+     */
+    private String getRequestBodyRefType(RequestBody requestBody, String media) {
+        String ref =
+            Overlay.getReference(requestBody.getContentMediaTypes().get(media), Constants.SCHEMA).getRefString();
+        String[] splittedRef = ref.split("/");
+        return splittedRef[splittedRef.length - 1];
     }
 
     /**
