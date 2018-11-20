@@ -59,7 +59,9 @@ public class ContextConfigurationReader {
      *             if the configuration is not valid against its xsd specification
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
-        contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+		if (configRoot != null) {
+			contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+		}
         if (!Files.exists(contextFile)) {
             configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
             contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
