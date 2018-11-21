@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.eclipse.generator;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -594,13 +595,25 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param generatedFiles
      *            paths to be calculated workspace dependent
      * @return the workspace relative path as a string or {@code null} if the path is not in the workspace.
+     * @throws IOException
+     *             if the project file could not be read
      */
-    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles) {
+    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles)
+        throws IOException {
         Set<String> workspaceDependentPaths = new HashSet<>();
         for (Path targetAbsolutePath : generatedFiles) {
             Path mostSpecificProject = null;
+
+            String canonicalPathString = targetAbsolutePath.toFile().getCanonicalPath();
+
+            if (canonicalPathString == null || canonicalPathString.isEmpty()) {
+                throw new IOException("The destination project could not be found");
+            }
+
+            Path targetCanonicalPath = Paths.get(canonicalPathString);
+
             for (Path projPath : projectsInWorkspace.keySet()) {
-                if (targetAbsolutePath.startsWith(projPath)) {
+                if (targetCanonicalPath.startsWith(projPath)) {
                     if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
                         mostSpecificProject = projPath;
                     }
@@ -609,11 +622,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             String path;
             if (mostSpecificProject != null) {
-                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
+                Path relProjPath = mostSpecificProject.relativize(targetCanonicalPath);
                 path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
                     .toString().replace("\\", "/");
             } else {
-                path = targetAbsolutePath.toString().replace("\\", "/");
+                path = targetCanonicalPath.toString().replace("\\", "/");
                 workspaceExternalPath.add(path);
             }
             workspaceDependentPaths.add(path);

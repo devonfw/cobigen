@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.eclipse.common.tools;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -8,7 +7,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 
 /**
  * The {@link PathUtil} class provides some common functionality on workspace relative paths
@@ -93,31 +91,4 @@ public class PathUtil {
         return "/" + proj.getName() + "/" + relativeDestinationPath;
     }
 
-    /**
-     * Tries to return the relative project of a template. This is useful when a template is going to be
-     * relocated to a different project from the original one (the one were the input is located). Therefore
-     * the path is relative (i.e. projectname-core/../api/src/main...) and we need to get that relative
-     * project (i.e. projectname-api)
-     *
-     * @param filePath
-     *            the path of the template that maybe needs to be relocated
-     * @param project
-     *            the project containing the class used as input
-     * @return the same project if no relative path was found, and the relative project if a relative path has
-     *         been found
-     */
-    public static IProject getRelativeProjectIfNeeded(String filePath, IProject project) {
-        if (filePath.contains("/../")) {
-            String projectPath = project.getLocation().toFile().getParent().toString();
-            String projectName = projectPath.substring(projectPath.lastIndexOf(File.separator));
-
-            // We want to get the project name after "/../" which is the child project
-            int nextChildProject = filePath.indexOf("/../") + 4;
-            filePath = filePath.substring(nextChildProject, filePath.length());
-            filePath = projectName + "-" + filePath;
-
-            return ResourcesPlugin.getWorkspace().getRoot().getProject(PathUtil.getProject(filePath));
-        }
-        return project;
-    }
 }

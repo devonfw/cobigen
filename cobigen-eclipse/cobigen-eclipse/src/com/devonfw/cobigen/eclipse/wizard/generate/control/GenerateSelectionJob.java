@@ -87,7 +87,6 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
 
                     IProject project =
                         ResourcesPlugin.getWorkspace().getRoot().getProject(PathUtil.getProject(filePath));
-                    project = PathUtil.getRelativeProjectIfNeeded(filePath, project);
 
                     if (project.exists()) {
                         projects.add(project);
