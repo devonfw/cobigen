@@ -1,9 +1,9 @@
-import { Pagination } from "./pagination";
+import { Pageable } from "./pageable";
 
-/** Interface used for searching ${variables.etoName?uncap_first}s by criteria on the server.*/
+/** Interface used for searching ${variables.etoName?lower_case}s by criteria on the server.*/
 export interface ${variables.etoName?cap_first}SearchCriteria {
   <#list pojo.fields as field>
     ${field.name}:${JavaUtil.getAngularType(field.type)},
     </#list>
-    pagination: Pagination,
+    pageable: Pageable,
 }

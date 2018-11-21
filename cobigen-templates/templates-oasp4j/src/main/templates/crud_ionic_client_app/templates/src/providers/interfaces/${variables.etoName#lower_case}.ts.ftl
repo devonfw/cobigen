@@ -1,4 +1,4 @@
-/** The ${variables.etoName?uncap_first} class from the server. */
+/** The ${variables.etoName?lower_case} class from the server. */
 export interface ${variables.etoName?cap_first} {
     id?: number;
     modificationCounter?: number;

@@ -14,9 +14,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HeaderComponent } from '../components/header/header';
 import { HomePage } from '../pages/home/home';
 import { BusinessOperatorProvider } from '../providers/shared/business-operator';
-import { ${variables.etoName?cap_first}Detail } from '../pages/${variables.etoName?uncap_first}-detail/${variables.etoName?uncap_first}-detail';
-import { ${variables.etoName?cap_first}Rest } from '../providers/${variables.etoName?uncap_first}-rest';
-import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?uncap_first}-list/${variables.etoName?uncap_first}-list';
+import { ${variables.etoName?cap_first}Detail } from '../pages/${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail';
+import { ${variables.etoName?cap_first}Rest } from '../providers/${variables.etoName?lower_case}-rest';
+import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list';
 
 export function translateFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
