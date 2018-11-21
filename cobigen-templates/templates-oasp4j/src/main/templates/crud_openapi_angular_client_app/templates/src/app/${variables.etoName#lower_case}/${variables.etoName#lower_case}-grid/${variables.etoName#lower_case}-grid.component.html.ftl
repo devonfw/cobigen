@@ -15,7 +15,7 @@
         <mat-icon>delete</mat-icon>
       </button>
 
-      <form (ngSubmit)="get${variables.etoName?cap_first}()" #filterForm="ngForm">
+      <form (ngSubmit)="filter()" #filterForm="ngForm">
         <td-expansion-panel label="Filters">
           <div layout="row" class="pad-left-md pad-right-md" style="align-items:center; border-bottom: 1px solid lightgrey" flex>
             <div layout-xs="column" class="justify-space-around" style="align-items:center" hide-gt-xs flex>
