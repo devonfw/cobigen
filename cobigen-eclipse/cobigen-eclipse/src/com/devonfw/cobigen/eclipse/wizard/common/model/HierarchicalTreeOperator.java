@@ -299,7 +299,7 @@ public class HierarchicalTreeOperator {
             }
             return fullChildName;
         }
-        return "INVALID2";
+        return "INVALID";
     }
 
     /**
