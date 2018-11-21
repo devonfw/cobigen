@@ -11,6 +11,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
@@ -120,8 +121,6 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             e.printStackTrace();
             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
                 "Some Exception occurred while importing CobiGen_Templates into workspace");
-            // LOG.warn("Some Exception occurred while importing CobiGen_Templates into
-            // workspace", e);
         }
     }
 
@@ -139,11 +138,14 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     && (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null))
                         ? ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() : StringUtils.EMPTY);
         } catch (GeneratorProjectNotExistentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOG.warn("Configuration project not found!", e1);
+            String s = "=> Probably there was an error while downloading the templates. "
+                + "Please try to update them and try again.";
+            PlatformUIUtil.openErrorDialog(s, e1);
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                "Could not refresh the CobiGen configuration project automatically. " + "Please try it again manually");
+            LOG.warn("Configuration project refresh failed", e);
         }
         String jarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + fileName;
         FileSystem fileSystem = FileSystems.getDefault();
@@ -151,15 +153,9 @@ public class AdaptTemplatesHandler extends AbstractHandler {
         if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
             cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
         }
-        /*
-         * Path configFolder = fileSystem.getPath(ws.toPortableString()); ContextConfiguration
-         * contextConfiguration = new ContextConfiguration(configFolder); List<String> templateNames = new
-         * ArrayList<>(); for (com.devonfw.cobigen.impl.config.entity.Trigger t :
-         * contextConfiguration.getTriggers()) { templateNames.add(t.getTemplateFolder()); }
-         */
+
         List<String> templateNames = new ArrayList<>();
         try (ZipFile file = new ZipFile(jarPath)) {
-            // deleteDirectoryStream(configFolder);
             Enumeration<? extends ZipEntry> entries = file.entries();
             if (Files.notExists(cobigenFolderPath)) {
                 Files.createDirectory(cobigenFolderPath);
@@ -171,10 +167,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                 if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
                     || entry.getName().contains("context.xml")) {
                     saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                        + "CobiGen_Templates"
-                        + File.separator /*
-                                          * + "src" + File.separator + "main" + File.separator + "templates"
-                                          */ + File.separator + entry.getName());
+                        + "CobiGen_Templates" + File.separator + File.separator + entry.getName());
                 } else if (entry.getName().contains("com/")) {
                     saveForFileCreationPath = fileSystem
                         .getPath(cobigenFolderPath + File.separator + "CobiGen_Templates" + File.separator + "src"
@@ -198,8 +191,6 @@ public class AdaptTemplatesHandler extends AbstractHandler {
         } catch (IOException e) {
 
             LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-            // PlatformUIUtil.openErrorDialog("An exception occurred while processing Jar
-            // file", e);
         }
     }
 
@@ -212,6 +203,6 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      *             exception will be thrown in case path doesn't exist
      */
     void deleteDirectoryStream(Path path) throws IOException {
-        // Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
     }
 }
