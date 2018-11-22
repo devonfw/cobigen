@@ -91,7 +91,7 @@ public interface ${variables.component?cap_first}RestService {
   <#if hasMediaTypeInResponses(operation)>
   @Produces(${getDistinctMediaTypes(operation)})
   </#if>
-  public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
+  public ${returnType?replace("Entity","")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
     	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)?replace("Entity","")}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);<#rt>
