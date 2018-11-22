@@ -1,15 +1,22 @@
 package com.devonfw.cobigen.eclipse.healthcheck;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.net.URI;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -68,43 +75,99 @@ public class HealthCheckDialog {
         String healthyCheckMessage = "";
         IProject generatorConfProj = null;
 
-        try {
+		try {
 
-            // check configuration project existence
-            generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+			// check configuration project existence
+			generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-            // refresh and check context configuration
-            ResourcesPluginUtil.refreshConfigurationProject();
-			if (generatorConfProj.getLocationURI() != null) {
+			// refresh and check context configuration
+			ResourcesPluginUtil.refreshConfigurationProject();
+			String pathForCobigenTemplates = "";
+
+			IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+			pathForCobigenTemplates = ws.toPortableString();
+
+			if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
 				CobiGenFactory.create(generatorConfProj.getLocationURI());
 			} else {
 				String fileName = ResourcesPluginUtil.downloadJar(false);
-				IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-				File file = new File(
+
+				File jarPath = new File(
 						ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
-				CobiGenFactory.create(file.toURI());
-				boolean fileExists = file.exists();
+				CobiGenFactory.create(jarPath.toURI());
+				boolean fileExists = jarPath.exists();
 				if (!fileExists) {
 					MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
 							"Not Downloaded the CobiGen Template Jar");
 				}
+
+				FileSystem fileSystem = FileSystems.getDefault();
+				Path cobigenFolderPath = null;
+				if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
+					cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
+				}
+
+				List<String> templateNames = new ArrayList<>();
+				try (ZipFile file = new ZipFile(jarPath)) {
+					// deleteDirectoryStream(configFolder);
+					Enumeration<? extends ZipEntry> entries = file.entries();
+					if (Files.notExists(cobigenFolderPath)) {
+						Files.createDirectory(cobigenFolderPath);
+					}
+					while (entries.hasMoreElements()) {
+						ZipEntry entry = entries.nextElement();
+						Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+								+ "CobiGen_Templates" + File.separator + entry.getName());
+						if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
+								|| entry.getName().contains("context.xml")) {
+							saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+									+ "CobiGen_Templates" + File.separator + File.separator + entry.getName());
+						} else if (entry.getName().contains("com/")) {
+							saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+									+ "CobiGen_Templates" + File.separator + "src" + File.separator + "main"
+									+ File.separator + "java" + File.separator + entry.getName());
+						}
+						if (entry.isDirectory()) {
+							Files.createDirectories(saveForFileCreationPath);
+						} else {
+							Files.deleteIfExists(saveForFileCreationPath);
+							try (InputStream is = file.getInputStream(entry);
+									BufferedInputStream bis = new BufferedInputStream(is);) {
+								Files.createFile(saveForFileCreationPath);
+								FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());
+								while (bis.available() > 0) {
+									fileOutput.write(bis.read());
+								}
+								fileOutput.close();
+							}
+						}
+					}
+				} catch (IOException e) {
+
+					LOG.error("An exception occurred while processing Jar files to create Cobigen_Templates folder", e);
+					// PlatformUIUtil.openErrorDialog("An exception occurred while processing Jar
+					// file", e);
+				}
 			}
-			
-            healthyCheckMessage = firstStep + "OK.";
-            healthyCheckMessage += secondStep;
-            boolean healthyCheckWarning = false;
-				if(generatorConfProj.getLocationURI() != null) {
-				if ((generatorConfProj + "/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-						.contains(ConfigurationConstants.CONTEXT_CONFIG_FILENAME) || new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
-				                ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
-					healthyCheckMessage += "OK.";
-				}}
-			 else {
-                healthyCheckMessage += "INVALID.";
-                healthyCheckWarning = true;
-            }
-            openSuccessDialog(healthyCheckMessage, healthyCheckWarning);
-        } catch (GeneratorProjectNotExistentException e) {
+
+			healthyCheckMessage = firstStep;
+			healthyCheckMessage += secondStep;
+			boolean healthyCheckWarning = false;
+			File tempFile = new File(
+					pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+			boolean contextFileExists = tempFile.exists();
+			File newtempFile = new File(
+					pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
+							+ "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+			boolean newcontextFileExists = newtempFile.exists();
+			if (newcontextFileExists || contextFileExists) {
+				healthyCheckMessage += "OK.";
+			} else {
+				healthyCheckMessage += "INVALID.";
+				healthyCheckWarning = true;
+			}
+			openSuccessDialog(healthyCheckMessage, healthyCheckWarning);
+		} catch (GeneratorProjectNotExistentException e) {
             LOG.warn("Configuration project not found!", e);
             healthyCheckMessage = firstStep + "NOT FOUND!\n"
                 + "=> Please import the configuration project into your workspace as stated in the "
@@ -210,27 +273,29 @@ public class HealthCheckDialog {
         dialog.setBlockOnOpen(true);
         String pathForCobigenTemplates = "";
         int result = dialog.open();
-        if (result == 0) {
+		if (result == 0) {
 			try {
-				if (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null) {
-					report = healthCheck.perform(
-							ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
+				IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+				String healthProj = ws.toPortableString() + "/" + ResourceConstants.CONFIG_PROJECT_NAME;
+				File healthcheckFile = new File(healthProj);
+				if (ResourcesPluginUtil.getGeneratorConfigurationProject() != null) {
+					report = healthCheck.perform(healthcheckFile.toPath());
 				}
 				AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(report,
 						healthCheck);
 				advancedHealthCheckDialog.setBlockOnOpen(false);
 				advancedHealthCheckDialog.open();
 			} catch (GeneratorProjectNotExistentException e) {
-                LOG.warn("Configuration project not found!", e);
-                String s = "=> Please import the configuration project into your workspace as stated in the "
-                    + "documentation of CobiGen or in the one of your project.";
-                PlatformUIUtil.openErrorDialog(s, e);
-            } catch (CoreException e) {
-                LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.",
-                    e);
-                String s = "An eclipse internal exception occurred while retrieving the configuration folder resource.";
-                PlatformUIUtil.openErrorDialog(s, e);
-            }
-        }
+				LOG.warn("Configuration project not found!", e);
+				String s = "=> Please import the configuration project into your workspace as stated in the "
+						+ "documentation of CobiGen or in the one of your project.";
+				PlatformUIUtil.openErrorDialog(s, e);
+			} catch (CoreException e) {
+				LOG.error("An eclipse internal exception occurred while retrieving the configuration folder resource.",
+						e);
+				String s = "An eclipse internal exception occurred while retrieving the configuration folder resource.";
+				PlatformUIUtil.openErrorDialog(s, e);
+			}
+		}
     }
 }
