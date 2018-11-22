@@ -177,20 +177,22 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     Files.createDirectories(saveForFileCreationPath);
                 } else {
                     Files.deleteIfExists(saveForFileCreationPath);
+                    Files.createFile(saveForFileCreationPath);
                     try (InputStream is = file.getInputStream(entry);
-                        BufferedInputStream bis = new BufferedInputStream(is);) {
-                        Files.createFile(saveForFileCreationPath);
-                        FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());
+                        BufferedInputStream bis = new BufferedInputStream(is);
+                        FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
+
                         while (bis.available() > 0) {
                             fileOutput.write(bis.read());
                         }
-                        fileOutput.close();
                     }
                 }
             }
         } catch (IOException e) {
 
             LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+            PlatformUIUtil.openErrorDialog(
+                "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
         }
     }
 
