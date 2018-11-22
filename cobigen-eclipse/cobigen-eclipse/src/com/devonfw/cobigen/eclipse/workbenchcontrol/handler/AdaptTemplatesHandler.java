@@ -165,7 +165,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "CobiGen_Templates"
-                        + File.separator + File.separator + entry.getName());
+                        + File.separator + entry.getName());
                 if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
                     || entry.getName().contains("context.xml")) {
                     saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + "CobiGen_Templates"

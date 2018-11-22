@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 
@@ -71,34 +72,20 @@ public class ResourcesPluginUtil {
      */
     public static IProject getGeneratorConfigurationProject()
         throws GeneratorProjectNotExistentException, CoreException {
+    	IPath ws = ResourcesPluginUtil.getWorkspaceLocation();		
+        String generatrProj = ws.toPortableString()+ "/"+ResourceConstants.CONFIG_PROJECT_NAME ;         
+		File confgFile = new File(generatrProj);
+		boolean confgtFileExists = confgFile.exists();		
+		if (!confgtFileExists) {
 
-        generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);       
-        if (!generatorProj.exists()) {
-        	          
-                MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(),
-                    "Generator configuration project not found!", null,
-                    "Cobigen_templates folder is not imported. Do you want to download latest templates and use it", 0,
-                    new String[] { "Update", "Cancel" }, 1);
-                dialog.setBlockOnOpen(true);
-                dialog.open();
-              
-            /*if (result == 0) {
-                //isUpdateDialogShown = false;
-                return null;
-
-            } else {
-                MessageDialog.openError(Display.getDefault().getActiveShell(),
-                    "Generator configuration project not found!",
-                    "The project '" + ResourceConstants.CONFIG_PROJECT_NAME
-                        + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
-
-                throw new GeneratorProjectNotExistentException();
-            }*/
-        }
-        /*if (generatorProj.isOpen()) {
-            generatorProj.open(new NullProgressMonitor());
-        }*/
-
+			MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(),
+					"Generator configuration project not found!", null,
+					"Cobigen_templates folder is not imported. Do you want to download latest templates and use it", 0,
+					new String[] { "Update", "Cancel" }, 1);
+			dialog.setBlockOnOpen(true);
+			dialog.open();
+		}       
+        generatorProj  = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME); 
         return generatorProj;
     }
 
