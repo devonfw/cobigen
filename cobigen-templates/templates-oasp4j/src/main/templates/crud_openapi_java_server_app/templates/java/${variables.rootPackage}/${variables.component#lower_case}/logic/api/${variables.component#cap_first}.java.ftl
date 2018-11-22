@@ -58,7 +58,7 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
   					<#if parameter.isSearchCriteria>
   			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if><#t>
   					<#elseif parameter.isEntity>
-  		    ${OpenApiUtil.toJavaType(parameter, false)?cap_first}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if><#t>
+  		    ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")?cap_first}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if><#t>
   		    	<#else>
   		    ${OpenApiUtil.toJavaType(parameter, true)?cap_first} ${parameter.name}<#if parameter?has_next>, </#if></#if></#list> );<#t>
 
