@@ -70,7 +70,7 @@ public interface ${variables.component?cap_first}RestService {
   public Page<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(@Valid ${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo);
   
 <#list model.component.paths as path>
-	<#list path.operations as operation>
+	<#list path.operations as operation>	
 	    <#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)> 
   			<#if operation.type == "get">
   @GET
@@ -85,17 +85,18 @@ public interface ${variables.component?cap_first}RestService {
   			<#assign returnType = getReturnType(operation,true)>
   <#list operation.parameters as parameter>
     <#if parameter.mediaType??>
- @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
+  @Consumes(MediaType.${OaspUtil.getSpringMediaType(parameter.mediaType)})
   	</#if>
   </#list>
   <#if hasMediaTypeInResponses(operation)>
   @Produces(${getDistinctMediaTypes(operation)})
   </#if>
-  public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
     <#list operation.parameters as parameter>
     	<#if parameter.inPath>
-    	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)?replace("Entity","")}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);
+    	@PathParam("${parameter.name}")</#if>${OpenApiUtil.printJavaConstraints(parameter.constraints)}${OpenApiUtil.toJavaType(parameter, true)?replace("Entity","")}<#if parameter.isSearchCriteria>SearchCriteriaTo<#elseif parameter.isEntity>Eto</#if> ${parameter.name}<#if parameter?has_next>, </#if></#list>);<#rt>
   		</#if>
   	</#list>
  </#list>
+ 
 }

@@ -13,10 +13,10 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
 
   <#list model.component.paths as path>
   	<#list path.operations as operation>
-	        <#compress>
   		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName)>
         <#assign responses=operation.responses>
         <#list responses as response>
+
   		  <#assign hasEntity=hasResponseOfType(response, "Entity")>
 	  		<#if hasResponseOfType(response "Paginated")>
 	  			<#if hasEntity>
@@ -38,32 +38,32 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
     List<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
     			</#if>
   			<#elseif hasResponseOfType(response "Void")>
-  	void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
-  			<#else>
+  	void ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
+  			<#else>  			
 				<#if hasEntity>
   					<#assign returnEntityType = OpenApiUtil.toJavaType(response, true)>
   					
   					<#if JavaUtil.equalsJavaPrimitiveOrWrapper(returnEntityType)>
-  						${returnEntityType} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  						${returnEntityType} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
   					<#elseif returnEntityType?lower_case == "string">
-  						String ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  						String ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
   					<#else>
-  						${returnEntityType}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  						${returnEntityType}Eto ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
   					</#if>
   				<#else>
-  	${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
+  	${getReturnType(operation,false)} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
   				</#if>
   			</#if>
   			<#list operation.parameters as parameter>
-  					<#if parameter.isSearchCriteria>					
-  			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
+  					<#if parameter.isSearchCriteria>
+  			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if><#t>
   					<#elseif parameter.isEntity>
-  		    ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","Eto")?cap_first} ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
+  		    ${OpenApiUtil.toJavaType(parameter, false)?cap_first}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if><#t>
   		    	<#else>
-  		    ${OpenApiUtil.toJavaType(parameter, true)?cap_first} ${parameter.name}<#if parameter?has_next>, </#if></#if></#list> );
+  		    ${OpenApiUtil.toJavaType(parameter, true)?cap_first} ${parameter.name}<#if parameter?has_next>, </#if></#if></#list> );<#t>
+
   		  	</#list>
   		</#if>
-		</#compress>
   	</#list>
   </#list>
   
