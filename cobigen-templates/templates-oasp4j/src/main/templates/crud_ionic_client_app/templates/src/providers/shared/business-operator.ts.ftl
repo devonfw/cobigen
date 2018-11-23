@@ -37,10 +37,10 @@ export class BusinessOperatorProvider {
     }
 
     /**
-    * @returns The url to the ${variables.etoName?uncap_first} management service.
+    * @returns The url to the ${variables.etoName?lower_case} management service.
     */
-    ${variables.etoName?uncap_first}Service(){
-        return this.restPath + '${variables.component?uncap_first}/v1/${variables.etoName?uncap_first}/';
+    ${variables.etoName?lower_case}Service(){
+        return this.restPath + '${variables.component?uncap_first}/v1/${variables.etoName?lower_case}/';
     }
 
 }

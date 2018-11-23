@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  */
 public class JavaDocumentationUtil {
+
+    /** Full qualified name of spring RequestMapping annotation */
+    private final String requestMapping = "org_springframework_web_bind_annotation_RequestMapping";
+
+    /** Full qualified name of javax Path annotation */
+    private final String javaxPath = "javax_ws_rs_Path";
 
     /**
      * Creates a list of parameters of a specific method as an asciidoc string, including its name, type,
@@ -130,16 +137,7 @@ public class JavaDocumentationUtil {
     public String getJSONResponseBody(Class<?> pojoClass, String methodName) throws Exception {
         Class<?> responseType = findMethod(pojoClass, methodName).getReturnType();
         if (hasBody(pojoClass, methodName, true)) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                Object obj = responseType.newInstance();
-                return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
-                    + "....";
-            } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new Exception(e.getMessage());
-            }
+            return getJSON(responseType);
         }
         return "-";
     }
@@ -159,18 +157,29 @@ public class JavaDocumentationUtil {
         if (hasBody(pojoClass, methodName, false)) {
             Parameter param = m.getParameters()[0];
             Class<?> requestType = param.getType();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            try {
-                Object obj = requestType.newInstance();
-                return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator()
-                    + "....";
-            } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
-                throw new Exception(e.getMessage());
-            }
+            return getJSON(requestType);
         }
         return "-";
+    }
+
+    /**
+     * Using Jackson, creates a JSON string for Asciidoc
+     * @param clazz
+     *            The class to create the JSON string of
+     * @return A JSON representation of the given class
+     * @throws Exception
+     *             When Jackson fails
+     */
+    public String getJSON(Class<?> clazz) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            Object obj = clazz.newInstance();
+            return "...." + System.lineSeparator() + mapper.writeValueAsString(obj) + System.lineSeparator() + "....";
+        } catch (InstantiationException | IllegalAccessException | JsonProcessingException e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     /**
@@ -217,22 +226,96 @@ public class JavaDocumentationUtil {
     }
 
     /**
+     * returns the HTTP request type corresponding to an annotation type
+     * @param annotations
+     *            The annotation to get the type name of
+     * @return the HTTP request type name of the selected annotation
+     */
+    public String getRequestType(Map<String, Object> annotations) {
+        String type = "";
+        if (annotations.containsKey(requestMapping)) {
+            Map<String, Object> method = (Map<String, Object>) annotations.get(requestMapping);
+            String rm = (String) method.get("method");
+            type = rm.toLowerCase();
+        }
+        if (annotations.containsKey("javax_ws_rs_GET") || type.equals("requestmethod.get")) {
+            return "GET";
+        } else if (annotations.containsKey("javax_ws_rs_PUT") || type.equals("requestmethod.put")) {
+            return "PUT";
+        } else if (annotations.containsKey("javax_ws_rs_POST") || type.equals("requestmethod.post")) {
+            return "POST";
+        } else if (annotations.containsKey("javax_ws_rs_DELETE") || type.equals("requestmethod.delete")) {
+            return "DELETE";
+        } else if (annotations.containsKey("javax_ws_rs_PATCH") || type.equals("requestmethod.patch")) {
+            return "PATCH";
+        } else {
+            return "-";
+        }
+    }
+
+    /**
+     * Gets the path of an operation
+     * @param pojoAnnotations
+     *            the annotation map of the given pojo
+     * @param method
+     *            The method to get the operation path of
+     * @return The path of an operation
+     * @throws IOException
+     *             If no application_properties file is found
+     */
+    public String getOperationPath(Map<String, Object> pojoAnnotations, Map<String, Object> method) throws IOException {
+        String path = getPath(pojoAnnotations);
+        Map<String, Object> pathAnno = new HashMap<>();
+        if (pojoAnnotations.containsKey(javaxPath)) {
+            pathAnno = (Map<String, Object>) pojoAnnotations.get(javaxPath);
+        } else if (pojoAnnotations.containsKey(requestMapping)) {
+            pathAnno = (Map<String, Object>) pojoAnnotations.get(requestMapping);
+        }
+        if (pathAnno.containsKey("value")) {
+            String toAdd = (String) pathAnno.get("value");
+            if (toAdd.startsWith("/") && path.endsWith("/")) {
+                path += toAdd.substring(1);
+            }
+        }
+        return path;
+    }
+
+    /**
+     * Gets the path of a component
+     * @param pojoAnnotations
+     *            the annotation map of the given pojo
+     * @return The communal path of a component
+     * @throws IOException
+     *             If no application_properties file is found
+     */
+    public String getPath(Map<String, Object> pojoAnnotations) throws IOException {
+        String path = extractRootPath();
+        Map<String, Object> pathAnno = new HashMap<>();
+        if (pojoAnnotations.containsKey(javaxPath)) {
+            pathAnno = (Map<String, Object>) pojoAnnotations.get(javaxPath);
+        } else if (pojoAnnotations.containsKey(requestMapping)) {
+            pathAnno = (Map<String, Object>) pojoAnnotations.get(requestMapping);
+        }
+        if (pathAnno.containsKey("value")) {
+            String toAdd = (String) pathAnno.get("value");
+            if (toAdd.startsWith("/") && path.endsWith(":")) {
+                path += toAdd.substring(1);
+            }
+        }
+        return path;
+    }
+
+    /**
      * Checks the class path for an application.properties file and extracts the port and path from it
-     * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
      * @return The root path of the application
      * @throws IOException
      *             If no application.properties file could be found
      */
-    public String extractRootPath(Class<?> pojoClass) throws IOException {
-
-        if (pojoClass == null) {
-            throw new IllegalAccessError(
-                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
-        }
+    private String extractRootPath() throws IOException {
+        Class<?> clazz = this.getClass();
         String t = "";
         StringBuilder sb = new StringBuilder("http://localhost:");
-        InputStream in = pojoClass.getClassLoader().getResourceAsStream("application.properties");
+        InputStream in = clazz.getClassLoader().getResourceAsStream("application.properties");
         if (in != null) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             while ((t = br.readLine()) != null) {
@@ -242,7 +325,7 @@ public class JavaDocumentationUtil {
             }
             return sb.toString();
         } else {
-            throw new IOException("application.properties file not found!");
+            return "";
         }
     }
 

@@ -3,7 +3,7 @@
 
 **Component Service Path:** 
 ....
-${JavaDocumentationUtil.extractRootPath(classObject)}<#if pojo.annotations.javax_ws_rs_Path??>/${pojo.annotations.javax_ws_rs_Path.value}</#if>
+${JavaDocumentationUtil.getPath(pojo.annotations)}
 ....
 
 <#-- Determine body format -->
@@ -42,7 +42,7 @@ Component Data
       .${method.name}
       [cols='1s,6m']
       |===
-      |${DocumentationUtil.getTypeWithAsciidocColour(type)} |${JavaDocumentationUtil.extractRootPath(classObject)}${pojo.annotations.javax_ws_rs_Path.value}${method.annotations.javax_ws_rs_Path.value}
+      |${DocumentationUtil.getTypeWithAsciidocColour(type)} |${JavaDocumentationUtil.getOperationPath(pojo.annotations,method.annotations)}
       |Description |<#if method.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(method.javaDoc.comment)}<#else>-</#if>
     
       <#if JavaDocumentationUtil.hasBody(classObject,method.name,false)>.2+<</#if>|Request 
@@ -78,3 +78,20 @@ ${JavaDocumentationUtil.getJSONResponseBody(classObject,method.name)}
     </#compress>
   </#if>
 </#list>
+
+<#function getPathEnding method>
+  <#if JavaDocumentationUtil.isNoString(method)>
+    <#if pojo.annotations.javax_ws_rs_Path?? && method.annotations.javax_ws_rs_Path??>
+      <#return (pojo.annotations.javax_ws_rs_Path.value+method.annotations.javax_ws_rs_Path.value)>
+    <#elseif pojo.annotations.org_springframework_web_bind_annotation_RequestMapping?? && method.annotations.org_springframework_web_bind_annotation_RequestMapping??>
+      <#return (pojo.annotations.org_springframework_web_bind_annotation_RequestMapping.path+method.annotations.org_springframework_web_bind_annotation_RequestMapping.path)>
+    </#if>
+  <#else>
+    <#if pojo.annotations.javax_ws_rs_Path??>
+      <#return pojo.annotations.javax_ws_rs_Path.value>
+    <#elseif pojo.annotations.org_springframework_web_bind_annotation_RequestMapping??>
+      <#return pojo.annotations.org_springframework_web_bind_annotation_RequestMapping.path>
+    </#if>
+  </#if>
+  <#return "">
+</#function>
