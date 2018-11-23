@@ -69,14 +69,17 @@ public class HealthCheckDialog {
 
             // refresh and check context configuration
             ResourcesPluginUtil.refreshConfigurationProject();
-            CobiGenFactory.create(generatorConfProj.getLocationURI());
-
+            if (generatorConfProj.getLocationURI() != null) {
+                CobiGenFactory.create(generatorConfProj.getLocationURI());
+            }
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
-                ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
-                healthyCheckMessage += "OK.";
+            if (generatorConfProj.getLocationURI() != null) {
+                if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
+                    ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
+                    healthyCheckMessage += "OK.";
+                }
             } else {
                 healthyCheckMessage += "INVALID.";
                 healthyCheckWarning = true;
