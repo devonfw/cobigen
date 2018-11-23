@@ -3,9 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component#cap_first}.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="${variables.component#cap_first}Impl.java" mergeStrategy="javamerge"/>    
-
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
@@ -41,14 +38,11 @@
       <templateRef ref="${variables.entityName}Repository.java"/>
     </increment>
     <increment name="tos" description="TO's">
-      <templateRef ref="AbstractEto.java"/>
       <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="ctos" description="CTO's">
-      <templateRef ref="AbstractEto.java"/>
-      <templateRef ref="AbstractCto.java"/>
       <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
@@ -57,7 +51,6 @@
     <!-- <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
-      <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}Impl.java"/>
       <templateRef ref="${variables.component#cap_first}.java"/>
     </increment>-->
@@ -70,14 +63,12 @@
     <increment name="rest_service_impl" description="CRUD REST services">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
-      <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
       <templateRef ref="${variables.component#cap_first}RestService.java"/>
     </increment>
     <increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
-      <templateRef ref="AbstractGenericEntityUtils.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
     </increment>

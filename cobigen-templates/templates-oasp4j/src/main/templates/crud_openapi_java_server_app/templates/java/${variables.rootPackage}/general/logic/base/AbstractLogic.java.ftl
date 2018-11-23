@@ -1,29 +1,24 @@
 package ${variables.rootPackage}.general.logic.base;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.mmm.util.entity.api.GenericEntity;
-import net.sf.mmm.util.entity.api.PersistenceEntity;
-import net.sf.mmm.util.transferobject.api.AbstractTransferObject;
-import net.sf.mmm.util.transferobject.api.TransferObject;
-
-import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+
+import com.devonfw.module.basic.common.api.entity.GenericEntity;
+import com.devonfw.module.basic.common.api.entity.PersistenceEntity;
+import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 
 /**
  * Common code utilities for both AbstractUc and AbstractComponentFacade
  *
  */
-public class AbstractGenericEntityUtils extends AbstractBeanMapperSupport {
-  /**
-   * 
-   * The limit for maximum hit count for UI requests.
-   */
-  protected static final int MAXIMUM_HIT_LIMIT = 500;
+public class AbstractLogic extends AbstractBeanMapperSupport {
 
   /**
    * Maps a {@link Page paginated list} of persistent entities to a {@link Page paginated list} of
@@ -31,19 +26,15 @@ public class AbstractGenericEntityUtils extends AbstractBeanMapperSupport {
    *
    * @param <T> is the generic type of the {@link AbstractTransferObject transfer object}.
    * @param <E> is the generic type of the {@link PersistenceEntity entity}.
-   * @param paginatedList is the paginated list to map from.
-   * @param klass is the target class to map the paginated entities to.
+   * @param page is the paginated list to map from.
+   * @param clazz is the target class to map the paginated entities to.
    * @return a {@link Page paginated list of entity transfer objects}.
    */
-  protected <T extends TransferObject, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
-      Page<E> paginatedList, Class<T> klass) {
-      
-    long totalElements = paginatedList.getTotalElements();  
+  protected <T extends Serializable, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
+      Page<E> page, Class<T> clazz) {
 
-    List<T> etoList = getBeanMapper().mapList(paginatedList.getContent(), klass);
-    Page<T> result = new PageImpl<T>(etoList, paginatedList.getPageable(), totalElements);
-
-    return result;
+    List<T> etoList = getBeanMapper().mapList(page.getContent(), clazz);
+    return new PageImpl<>(etoList, page.getPageable(), page.getTotalElements());
   }
 
   /**

@@ -34,11 +34,11 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
       ${variables.entityName}Entity entity = get${variables.entityName}Repository().find(id);
       ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
       cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
-      <#list pojo.fields as field>
-        <#if field.type?ends_with("Entity")>
-      cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
-        <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
+      <#list model.properties as property>
+        <#if property.type?ends_with("Entity")>
+      cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
+        <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
+      cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${OaspUtil.getListArgumentType(property, classObject)}Eto.class));
         </#if>
       </#list>
    
@@ -53,11 +53,11 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
       for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getContent()) {
         ${variables.entityName}Cto cto = new ${variables.entityName}Cto();
         cto.set${variables.entityName?cap_first}(getBeanMapper().map(entity, ${variables.entityName}Eto.class));
-        <#list pojo.fields as field>
-          <#if field.type?ends_with("Entity")>
-        cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
-          <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-        cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${OaspUtil.getListArgumentType(field, classObject)}Eto.class));
+        <#list model.properties as property>
+          <#if property.type?ends_with("Entity")>
+        cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
+          <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
+        cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${OaspUtil.getListArgumentType(property, classObject)}Eto.class));
           </#if>
         </#list>
         ctos.add(cto);
