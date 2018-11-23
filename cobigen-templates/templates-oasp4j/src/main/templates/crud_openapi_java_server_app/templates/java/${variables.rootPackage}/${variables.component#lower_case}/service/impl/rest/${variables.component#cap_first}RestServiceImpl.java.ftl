@@ -9,9 +9,10 @@ import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.$
 import ${variables.rootPackage}.${variables.component?lower_case}.logic.api.to.${variables.entityName?cap_first}SearchCriteriaTo;
 import ${variables.rootPackage}.${variables.component?lower_case}.service.api.rest.${variables.component?cap_first}RestService;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * The service implementation for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
@@ -41,9 +42,9 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   }
 
   @Override
-  public PaginatedListTo<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo) {
+  public Page<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo) {
 
-    return this.${variables.component?lower_case}.find${variables.entityName?cap_first}Etos(searchCriteriaTo);
+    return this.${variables.component?lower_case}.find${variables.entityName?cap_first}s(searchCriteriaTo);
   }
   
   <#list model.component.paths as path>
@@ -56,7 +57,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   				<#if parameter.isSearchCriteria>
   			${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}SearchCriteriaTo criteria<#if parameter?has_next>, </#if>
   				<#elseif parameter.isEntity>
-  		  ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","Eto")} ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
+  		  ${OpenApiUtil.toJavaType(parameter, false)?replace("Entity","")}Eto ${parameter.name?replace("Entity","")}<#if parameter?has_next>, </#if>
   		    <#else>
   		  ${OpenApiUtil.toJavaType(parameter, true)} ${parameter.name}<#if parameter?has_next>, </#if>
   		   	</#if>

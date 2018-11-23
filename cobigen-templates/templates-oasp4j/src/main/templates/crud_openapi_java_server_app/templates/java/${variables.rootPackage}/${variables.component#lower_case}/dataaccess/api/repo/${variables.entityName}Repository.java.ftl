@@ -1,4 +1,4 @@
-<#include '/functions.ftl'>
+<#include '/makros.ftl'>
 package ${variables.rootPackage}.${variables.component}.dataaccess.api.repo;
 
 import static com.querydsl.core.alias.Alias.$;
@@ -35,32 +35,31 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
     ${variables.entityName}Entity alias = newDslAlias();
     JPAQuery<${variables.entityName}Entity> query = newDslQuery(alias);
 
-    <#list pojo.fields as field>
+    <#list model.properties as property>
       <#compress>
-        <#assign newFieldType=JavaUtil.boxJavaPrimitives(classObject,field.name)>
-        <#assign newFieldType=newFieldType?replace("[^<>,]+Entity","Long","r")>
-        <#if newFieldType?ends_with("Embeddable")><#assign newFieldType=newFieldType?replace("Embeddable","SearchCriteriaTo","r")></#if>
-        <#assign newFieldType=newFieldType?replace("[^<>,]+Embeddable","SearchCriteriaTo","r")>
-        <#assign fieldCapName=field.name?cap_first>
+        <@definePropertyNameAndType property true/>
+        <#if property.type?ends_with("Embeddable")><#assign propType=property.type?replace("Embeddable","SearchCriteriaTo","r")></#if>
+        <#assign propType=propType?replace("[^<>,]+Embeddable","SearchCriteriaTo","r")>
+        <#assign fieldCapName=propName?cap_first>
       </#compress>
-        <#if !JavaUtil.isCollection(classObject, field.name)>
+        <#if !property.isCollection>
           <#compress>
-          <#if field.type?ends_with("Entity") && newFieldType=='Long'>
-              ${newFieldType} ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
-              if(${field.name} != null) {
-                  query.where($(alias.get${fieldCapName}().getId()).eq(${field.name}));
+          <#if property.sameComponent && property.isEntity>
+              ${propType?cap_first} ${propName} = criteria.get${fieldCapName}();
+              if(${propName} != null) {
+                  query.where($(alias.get${property.type}().getId()).eq(${propName}));
               }
               
-          <#elseif field.type="String">
-              String ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
-              if (${field.name} != null && !${field.name}.isEmpty()) {
-                QueryUtil.get().whereString(query, $(alias.get${field.name?cap_first}()), ${field.name}, criteria.get${field.name?cap_first}Option());
+          <#elseif propType="String">
+              String ${propName} = criteria.get${fieldCapName}();
+              if (${propName} != null && !${propName}.isEmpty()) {
+                QueryUtil.get().whereString(query, $(alias.get${fieldCapName}()), ${propName}, criteria.get${fieldCapName}Option());
               }
               
           <#else>
-              ${newFieldType} ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
-              if (${field.name} != null) {
-                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
+              ${propType?cap_first} ${propName} = criteria.get${fieldCapName}();
+              if (${propName} != null) {
+                query.where($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${fieldCapName}()</#if>).eq(${propName}));
               }
               
           </#if> 
@@ -85,15 +84,26 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
       while (it.hasNext()) {
         Order next = it.next();
         switch(next.getProperty()) {
-        <#list pojo.fields as field>
-          <#if !JavaUtil.isCollection(classObject, field.name)>
-          case "${field.name}":
+        <#list model.properties as property>
+	  <@definePropertyNameAndType property true/>
+          <#if !property.isCollection>
+	     <#if property.sameComponent && property.isEntity>
+          case "${propName}":
             if (next.isAscending()) {
-                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).asc());
+                query.orderBy($(alias.get${property.name?cap_first}().getId()).asc());
             } else {
-                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).desc());
+                query.orderBy($(alias.get${property.name?cap_first}().getId()).desc());
             }   
           break;
+	     <#else>
+	  case "${propName}":
+            if (next.isAscending()) {
+                query.orderBy($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${propName?cap_first}()</#if>).asc());
+            } else {
+                query.orderBy($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${propName?cap_first}()</#if><#if property.sameComponent && property.isEntity>.getId()</#if>).desc());
+            }   
+          break;
+	      </#if>
           </#if>
         </#list>
           default:

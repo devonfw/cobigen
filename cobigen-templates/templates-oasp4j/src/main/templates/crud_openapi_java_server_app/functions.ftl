@@ -55,8 +55,7 @@
   <#return false>
 </#function>
 
-<#function hasResponseOfType responses type>
-  <#list responses as response>
+<#function hasResponseOfType response type>
     <#if type=="Entity">
       <#return response.isEntity>
     <#elseif type=="Paginated">
@@ -68,5 +67,4 @@
     <#else>
       <#return false>
     </#if>
-  </#list>
 </#function>

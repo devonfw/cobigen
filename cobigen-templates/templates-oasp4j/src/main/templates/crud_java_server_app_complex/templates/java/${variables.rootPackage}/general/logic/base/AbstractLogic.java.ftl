@@ -1,18 +1,18 @@
 package ${variables.rootPackage}.general.logic.base;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.mmm.util.entity.api.GenericEntity;
-import net.sf.mmm.util.entity.api.PersistenceEntity;
-import net.sf.mmm.util.transferobject.api.AbstractTransferObject;
-import net.sf.mmm.util.transferobject.api.TransferObject;
-
-import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+
+import com.devonfw.module.basic.common.api.entity.GenericEntity;
+import com.devonfw.module.basic.common.api.entity.PersistenceEntity;
+import ${variables.rootPackage}.general.common.base.AbstractBeanMapperSupport;
 
 /**
  * Common code utilities for both AbstractUc and AbstractComponentFacade
@@ -30,7 +30,7 @@ public class AbstractLogic extends AbstractBeanMapperSupport {
    * @param clazz is the target class to map the paginated entities to.
    * @return a {@link Page paginated list of entity transfer objects}.
    */
-  protected <T extends TransferObject, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
+  protected <T extends Serializable, E extends PersistenceEntity<?>> Page<T> mapPaginatedEntityList(
       Page<E> page, Class<T> clazz) {
 
     List<T> etoList = getBeanMapper().mapList(page.getContent(), clazz);
