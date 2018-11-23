@@ -130,7 +130,7 @@ public class HealthCheckImpl implements HealthCheck {
 			for (Trigger t : contextConfiguration.getTriggers()) {
 				expectedTemplatesConfigurations.add(t.getTemplateFolder());
 			}
-			 // 2. Determine current state
+			// 2. Determine current state
 			TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
 			pathForCobigenTemplates = Paths.get(configurationPath + File.separator + "src" + File.separator + "main"
 					+ File.separator + "templates");
