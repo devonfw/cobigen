@@ -12,8 +12,8 @@
         <div class="input-wrapper">
           <ion-label class="label label-md">
             <ion-grid class="header-grid">
-              <ion-row> <#list pojo.fields as field>
-                <ion-col class="crop">{{'${variables.component?uncap_first}.${variables.etoName?uncap_first}.${field.name}'| translate}}</ion-col></#list>
+              <ion-row> <#list model.properties as field>
+                <ion-col class="crop">{{'${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| translate}}</ion-col></#list>
               </ion-row>
             </ion-grid>
           </ion-label>
@@ -27,12 +27,12 @@
       <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ion-list>
-    <ion-item-sliding *ngFor="let ${variables.etoName?uncap_first} of ${variables.etoName?uncap_first}s; let i = index">
+    <ion-item-sliding *ngFor="let ${variables.etoName?lower_case} of ${variables.etoName?lower_case}s; let i = index">
       <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
           <ion-row>
-          <#list pojo.fields as field>
-            <ion-col>{{${variables.etoName?uncap_first}.${field.name}}}</ion-col>
+          <#list model.properties as field>
+            <ion-col>{{${variables.etoName?lower_case}.${field.name}}}</ion-col>
           </#list>
           </ion-row>
         </ion-grid>

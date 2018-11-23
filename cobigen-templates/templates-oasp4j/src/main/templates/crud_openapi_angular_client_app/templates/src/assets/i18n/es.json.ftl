@@ -11,7 +11,7 @@
     "deleteItem": "Eliminar fila"
   },
   "header": {
-    "title": "OASP4JS",
+    "title": "devon4ng",
     "error": "Error de acceso",
     "EN": "Inglés",
     "ES": "Español"

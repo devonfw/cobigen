@@ -1,5 +1,4 @@
 <#macro callNotNullPropertyWithDefaultValue attr>
-<#compress>
 <#if attr.canonicalType = "byte" || attr.canonicalType = "java.lang.Byte" >
 	${attr.name}((byte)1);
 <#elseif attr.canonicalType  = "short" || attr.canonicalType = "java.lang.Short" >
@@ -20,14 +19,13 @@
 	${attr.name}("DefaultString");
 <#elseif attr.canonicalType   = "java.lang.Number">
 	${attr.name}(1);
-<#elseif attr.canoncialType?ends_with("[]")>
+<#elseif attr.canonicalType?ends_with("[]")>
   ${attr.name}(new ${attr.type}[0]);
 <#elseif getPackage(attr.canonicalType) = pojo.package>
 	${attr.name}(new ${attr.name?cap_first}Builder().createNew());
 <#else>
 	//TODO ${attr.name}(...); //set Default ${attr.canonicalType}
 </#if>
-</#compress>
 </#macro>
 
 <#function getPackage fqn>

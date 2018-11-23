@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
-import { PageData } from '../../core/interfaces/page-data';
+import { SearchCriteria } from '../../core/interfaces/search-criteria';
+import { Sort } from '../../core/interfaces/sort';
+import { Pageable } from '../../core/interfaces/pageable';
+
 
 @Injectable()
 export class ${variables.etoName?cap_first}Service {
@@ -14,25 +17,25 @@ export class ${variables.etoName?cap_first}Service {
     size: number,
     page: number,
     searchTerms: any,
-    sort: any[],
+    sort: Sort[],
   ): Observable<any> {
-    const pageData: PageData = {
-      pagination: {
-        size: size,
-        page: page,
-        total: 1,
+    const searchCriteria: SearchCriteria = {
+      pageable: {
+        pageSize: size,
+        pageNumber: page,
+        sort: sort,
       },
     <#list model.properties as property>
       ${property.name}: searchTerms.${property.name},
     </#list>
-      sort: sort,
     };
-    return this.http.post<any>(this.urlService + 'search', pageData);
+    return this.http.post<any>(this.urlService + 'search', searchCriteria);
   }
 
   save${variables.etoName?cap_first}(data: any): Observable<Object> {
     const obj: any = {
       id: data.id,
+      modificationCounter: data.modificationCounter,
     <#list model.properties as property>
       ${property.name}: data.${property.name},
     </#list>

@@ -1,24 +1,33 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component, Input} from '@angular/core';
 import { AlertController, ModalController, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.etoName?uncap_first}-rest';
-import { ${variables.etoName?cap_first}Detail } from '../${variables.etoName?uncap_first}-detail/${variables.etoName?uncap_first}-detail'
-import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?uncap_first}'
-import { Pagination } from '../../providers/interfaces/pagination'
-import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?uncap_first}-search-criteria';
+import { ${variables.etoName?cap_first}Rest } from '../../providers/${variables.etoName?lower_case}-rest';
+import { ${variables.etoName?cap_first}Detail } from '../${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail'
+import { ${variables.etoName?cap_first} } from '../../providers/interfaces/${variables.etoName?lower_case}'
+import { Pageable } from '../../providers/interfaces/pageable'
+import { ${variables.etoName?cap_first}SearchCriteria } from '../../providers/interfaces/${variables.etoName?lower_case}-search-criteria';
 import { PaginatedListTo } from '../../providers/interfaces/paginated-list-to';
 
     
 @Component({
-  selector: '${variables.etoName?uncap_first}-list',
-  templateUrl: '${variables.etoName?uncap_first}-list.html',
+  selector: '${variables.etoName?lower_case}-list',
+  templateUrl: '${variables.etoName?lower_case}-list.html',
 })
 export class ${variables.etoName?cap_first}List {
   /** Contains the strings for the deletion prompt */
   deleteTranslations: any = {};
-  pagination: Pagination = { size:15, page:1, total:false };
-  ${variables.etoName?uncap_first}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pagination : this.pagination };
-  ${variables.etoName?uncap_first}ListItem : ${variables.etoName?cap_first} = {<#list pojo.fields as field> ${field.name}:null,</#list> };
+    pageable: Pageable = {
+    pageSize: 15,
+    pageNumber: 0,
+    sort: [
+      {
+        property: '${model.properties[0].name!}',
+        direction: 'ASC',
+      },
+    ],
+  };
+  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list model.properties as field> ${field.name}:null,</#list> pageable : this.pageable };
+  ${variables.etoName?lower_case}ListItem : ${variables.etoName?cap_first} = {<#list model.properties as field> ${field.name}:null,</#list> };
   deleteButtonNames=["dismiss","confirm"];
   deleteButtons=[
                 { text: "", handler: data => {  }},
@@ -27,11 +36,11 @@ export class ${variables.etoName?cap_first}List {
   @Input() deleteModifiedButtonsDisabled: boolean = true;
   @Input() infiniteScrollEnabled = true;
 
-  ${variables.etoName?uncap_first}s: ${variables.etoName?cap_first}[] = []
+  ${variables.etoName?lower_case}s: ${variables.etoName?cap_first}[] = []
   selectedItemIndex: number = -1;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  public ${variables.etoName?uncap_first}Rest: ${variables.etoName?cap_first}Rest, public alertCtrl: AlertController, 
+  public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}Rest, public alertCtrl: AlertController, 
   public translate: TranslateService, public modalCtrl: ModalController, public loadingCtrl: LoadingController
   ) {}
 
@@ -44,18 +53,17 @@ export class ${variables.etoName?cap_first}List {
       content: 'Please wait...'
     });
     loading.present();
-    this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
-    this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
+    this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
         
-        this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);
+        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
         loading.dismiss();
 	}, 
 	(err) => {
         loading.dismiss();
         console.log(err);
-      }
-    )
+      },
+    );
   }
   
   /**
@@ -80,7 +88,7 @@ export class ${variables.etoName?cap_first}List {
   }
 
   /**
-   * Executed after a pull-to-refresh event. It reloads the ${variables.etoName?uncap_first} list.
+   * Executed after a pull-to-refresh event. It reloads the ${variables.etoName?lower_case} list.
    * @param  refresher Pull-to-refresh event.
    */
   public doRefresh(refresher) {  
@@ -88,26 +96,27 @@ export class ${variables.etoName?cap_first}List {
     setTimeout(() => {
       this.reload${variables.etoName?cap_first}List();
       refresher.complete();
-    }, 500);
+    }, 300);
   }
   
   /**
-   * Reloads the ${variables.etoName?uncap_first} list, retrieving the first page.
+   * Reloads the ${variables.etoName?lower_case} list, retrieving the first page.
    */
   private reload${variables.etoName?cap_first}List(){
     
-    this.${variables.etoName?uncap_first}s = [];
-    this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = 1;
+    this.${variables.etoName?lower_case}s = [];
+    this.pageable.pageNumber = 0;
+    this.${variables.etoName?lower_case}SearchCriteria.pageable = this.pageable;
     this.deleteModifiedButtonsDisabled = true;
     this.selectedItemIndex = -1;
-    this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
+    this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {      
-        this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);      
+        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);      
         this.infiniteScrollEnabled = true;
       }, 
       (err) => {
         console.log(err);
-      }
+      },
     );
   }
   
@@ -124,7 +133,7 @@ export class ${variables.etoName?cap_first}List {
   }
   
   /**
-   * Presents the create dialog to the user and creates a new ${variables.etoName?uncap_first} if the data is correctly defined.
+   * Presents the create dialog to the user and creates a new ${variables.etoName?lower_case} if the data is correctly defined.
    */
   public create${variables.etoName?cap_first}() {
 
@@ -134,7 +143,7 @@ export class ${variables.etoName?cap_first}List {
   }
 
   /**
-   * Presents the search dialog to the user and sets to the list all the found ${variables.etoName?uncap_first}s.
+   * Presents the search dialog to the user and sets to the list all the found ${variables.etoName?lower_case}s.
    */
   public search${variables.etoName?cap_first}s() {
   
@@ -146,25 +155,25 @@ export class ${variables.etoName?cap_first}List {
       if (data == null) return;
       else {
           this.infiniteScrollEnabled = true;
-          this.${variables.etoName?uncap_first}SearchCriteria = data[0];
-          this.${variables.etoName?uncap_first}s = data[1].result;          
+          this.${variables.etoName?lower_case}SearchCriteria = data[0];        
+          this.reload${variables.etoName?cap_first}List();
       }
     });
   }
 
   /**
-   * Presents the modify dialog and updates the selected ${variables.etoName?uncap_first}.
+   * Presents the modify dialog and updates the selected ${variables.etoName?lower_case}.
    */
   public updateSelected${variables.etoName?cap_first}() { 
   
     if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
     }
-    let cleanItem = this.${variables.etoName?uncap_first}ListItem;
+    let cleanItem = this.${variables.etoName?lower_case}ListItem;
     for (let i in cleanItem){
-      cleanItem[i] = this.${variables.etoName?uncap_first}s[this.selectedItemIndex][i]; 
+      cleanItem[i] = this.${variables.etoName?lower_case}s[this.selectedItemIndex][i]; 
     }
-    let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "modify", edit:this.${variables.etoName?uncap_first}s[this.selectedItemIndex]});
+    let modal = this.modalCtrl.create(${variables.etoName?cap_first}Detail, { dialog: "modify", edit:this.${variables.etoName?lower_case}s[this.selectedItemIndex]});
     modal.present();
     modal.onDidDismiss(data => {
       if(data == null) this.reload${variables.etoName?cap_first}List();
@@ -175,7 +184,7 @@ export class ${variables.etoName?cap_first}List {
             break;
           }
         }
-        this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1, data);
+        this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1, data);
       } 
     });
       
@@ -186,7 +195,7 @@ export class ${variables.etoName?cap_first}List {
    */
   public deleteSelected${variables.etoName?cap_first}() { 
     
-    this.deleteTranslations = this.getTranslation('${variables.component?uncap_first}.${variables.etoName?uncap_first}.operations.delete');
+    this.deleteTranslations = this.getTranslation('${variables.component?lower_case}.${variables.etoName?lower_case}.operations.delete');
     for (let i in this.deleteButtons){
       this.deleteButtons[i].text=this.deleteTranslations[this.deleteButtonNames[i]];
     }
@@ -209,11 +218,11 @@ export class ${variables.etoName?cap_first}List {
     if (!this.selectedItemIndex && this.selectedItemIndex != 0) {
       return;
     }    
-    let search = this.${variables.etoName?uncap_first}s[this.selectedItemIndex]
+    let search = this.${variables.etoName?lower_case}s[this.selectedItemIndex]
     
-    this.${variables.etoName?uncap_first}Rest.delete(search.id).subscribe(
+    this.${variables.etoName?lower_case}Rest.delete(search.id).subscribe(
       (deleteresponse) => {      
-        this.${variables.etoName?uncap_first}s.splice(this.selectedItemIndex, 1);
+        this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1);
         this.selectedItemIndex = -1;
         this.deleteModifiedButtonsDisabled = true;
       }, 
@@ -229,19 +238,19 @@ export class ${variables.etoName?cap_first}List {
    */
   public doInfinite(infiniteScroll) {
 
-    if (this.${variables.etoName?uncap_first}SearchCriteria.pagination.page <= 0) this.infiniteScrollEnabled = false;
+    if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber < 0) this.infiniteScrollEnabled = false;
     else {
-      this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = this.${variables.etoName?uncap_first}SearchCriteria.pagination.page + 1;
+      this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
 
       setTimeout(() => {
-        this.${variables.etoName?uncap_first}Rest.retrieveData(this.${variables.etoName?uncap_first}SearchCriteria).subscribe(
+        this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
           (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-              if (data.result.length == 0 && this.${variables.etoName?uncap_first}SearchCriteria.pagination.page > 1){
-                this.${variables.etoName?uncap_first}SearchCriteria.pagination.page = this.${variables.etoName?uncap_first}SearchCriteria.pagination.page - 1;
+              if (data.content.length == 0 && this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber > 0){
+                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber - 1;
                 this.infiniteScrollEnabled = false;
               }
               else{
-                this.${variables.etoName?uncap_first}s = this.${variables.etoName?uncap_first}s.concat(data.result);
+                this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
               }
               infiniteScroll.complete();
             }, 
@@ -249,13 +258,13 @@ export class ${variables.etoName?cap_first}List {
               console.log(err);
             }
         )    
-      }, 500);
+      }, 300);
     }
   }
 
   /**
-   * Enables the update and delete buttons for the selected ${variables.etoName?uncap_first}.
-   * @param  index The index of the selected ${variables.etoName?uncap_first} that will be allowed to be updated or deleted.
+   * Enables the update and delete buttons for the selected ${variables.etoName?lower_case}.
+   * @param  index The index of the selected ${variables.etoName?lower_case} that will be allowed to be updated or deleted.
    */
   public enableUpdateDeleteOperations(index: number) {
   

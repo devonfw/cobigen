@@ -4,36 +4,30 @@
 Component Data
 [options="header"]
 |===
-|Name |Description |Consumes |Produces
+|Name |Description |Topic
 |${variables.component?cap_first}
 |<#if pojo.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(pojo.javaDoc.comment)}<#else>No javaDoc available</#if>
-|<#if pojo.javaDoc.topic??>${JavaDocumentationUtil.getJavaDocWithoutLink(pojo.javaDoc.topic)}<#else>No topic defined</#if>
+|<#if pojo.javaDoc??><#if pojo.javaDoc.topic??>${JavaDocumentationUtil.getJavaDocWithoutLink(pojo.javaDoc.topic)}<#else>-</#if><#else>-</#if>
 |===
     
 === Fields
-<#assign declared=false>  
-<#if pojo.fields?has_content>
-  <#list pojo.fields as field>
-    <#if field.javaDoc??>
-      <#compress>
-      <#if !declared>
-        [options="header"]
-        |===
-        |Member name |javaDoc |Value |Required |Example |Datatype |Allows Empty Value
-        <#assign declared=true>
-      </#if>
-      |${field.name}
-      |${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.comment)}
-      |<#if field.javaDoc.value??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.value)}<#else>-</#if>
-      |<#if field.javaDoc.required??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.required)}<#else>-</#if>
-      |<#if field.javaDoc.example??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.example)}<#else>-</#if>
-      |<#if field.javaDoc.datatype??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.datatype)}<#else>-</#if>
-      |<#if field.javaDoc.emptyvalue??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.emptyvalue)}<#else>-</#if>
-      </#compress>
-    </#if>
-  </#list>
-</#if>
-<#if declared>
+
+[cols="1s,5"]
 |===
-<#assign declared=true>
-</#if>
+|Body a|
+<#if pojo.fields?size gt 0>${JavaDocumentationUtil.getJSON(classObject)}<#else>-</#if>
+|Parameter list a|
+[options='header']
+!===
+!Name !Description !Datatype !Required !Example
+<#list pojo.fields as field>
+  <#compress>
+  !<#if field.name??>${field.name}<#else>-</#if>
+  !<#if field.javaDoc??>${JavaDocumentationUtil.getJavaDocWithoutLink(field.javaDoc.comment)}<#else>-</#if>
+  !<#if field.type??>${field.type}<#else>-</#if>
+  !<#if field.javaDoc??><#if field.javaDoc.required??>${field.javaDoc.required}<#else>-</#if><#else>-</#if>
+  !<#if field.javaDoc??><#if field.javaDoc.example??>${field.javaDoc.example}<#else>-</#if><#else>-</#if>
+  </#compress>
+</#list>
+!===
+|===

@@ -6,7 +6,7 @@ import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { LoginPage } from '../pages/login/login';
-import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?uncap_first}-list/${variables.etoName?uncap_first}-list'
+import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list'
 import { TranslateService } from '@ngx-translate/core';
 
 
@@ -25,7 +25,7 @@ export class MyApp {
       
       this.pages = [
         { title: 'Home', component: HomePage},
-        { title :'${variables.etoName?uncap_first}', component: ${variables.etoName?cap_first}List},
+        { title :'${variables.etoName?lower_case}', component: ${variables.etoName?cap_first}List},
       ];
     });
         translate.setDefaultLang('en');

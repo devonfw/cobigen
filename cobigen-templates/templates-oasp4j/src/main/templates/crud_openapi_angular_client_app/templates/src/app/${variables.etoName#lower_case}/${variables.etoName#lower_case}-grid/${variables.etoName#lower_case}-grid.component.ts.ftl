@@ -5,6 +5,7 @@ import {
   TdDialogService,
   IPageChangeEvent,
   ITdDataTableSortChangeEvent,
+  TdPagingBarComponent,
 } from '@covalent/core';
 import { MatDialogRef, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -13,7 +14,7 @@ import { ${variables.etoName?cap_first}Service } from '../services/${variables.e
 import { AuthService } from '../../core/security/auth.service';
 
 import { ${variables.etoName?cap_first}DialogComponent } from '../${variables.etoName?lower_case}-dialog/${variables.etoName?lower_case}-dialog.component';
-import { Pagination } from '../../core/interfaces/pagination';
+import { Pageable } from '../../core/interfaces/pageable';
 
 @Component({
   selector: 'public-${variables.etoName?lower_case}-grid',
@@ -21,11 +22,17 @@ import { Pagination } from '../../core/interfaces/pagination';
   styleUrls: ['./${variables.etoName?lower_case}-grid.component.scss'],
 })
 export class ${variables.etoName?cap_first}GridComponent implements OnInit {
-  private pagination: Pagination = {
-    size: 8,
-    page: 1,
-    total: 1,
-  };
+    @ViewChild('pagingBar')
+    pagingBar: TdPagingBarComponent;
+    
+    private pageable: Pageable = {
+        pageSize: 8,
+        pageNumber: 0,
+        sort: [{
+            property: '${model.properties[0].name!}',
+            direction: 'ASC'
+        }]
+    };
   private sorting: any[] = [];
 
   @ViewChild('dataTable') dataTable: TdDataTableComponent;
@@ -67,15 +74,15 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   get${variables.etoName?cap_first}(): void {
     this.dataGridService
       .get${variables.etoName?cap_first}(
-        this.pageSize,
-        this.pagination.page,
+        this.pageable.pageSize,
+        this.pageable.pageNumber,
         this.searchTerms,
-        this.sorting,
+        this.pageable.sort = this.sorting,
       )
       .subscribe(
         (res: any) => {
-          this.data = res.result;
-          this.totalItems = res.pagination.total;
+          this.data = res.content;
+          this.totalItems = res.totalElements;
           this.dataTable.refresh();
         },
         (error: any) => {
@@ -111,10 +118,10 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   }
 
   page(pagingEvent: IPageChangeEvent): void {
-    this.pagination = {
-      size: pagingEvent.pageSize,
-      page: pagingEvent.page,
-      total: 1,
+    this.pageable = {
+        pageSize: pagingEvent.pageSize,
+        pageNumber: pagingEvent.page - 1,
+        sort: this.pageable.sort,
     };
     this.get${variables.etoName?cap_first}();
   }
@@ -122,7 +129,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   sort(sortEvent: ITdDataTableSortChangeEvent): void {
     this.sorting = [];
     this.sorting.push({
-     name: sortEvent.name.split('.').pop(),
+     property: sortEvent.name.split('.').pop(),
      direction: '' + sortEvent.order,
     });
     this.get${variables.etoName?cap_first}();
@@ -227,6 +234,10 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
           );
         }
       });
+  }
+  
+  filter(): void {
+    this.pagingBar.firstPage();
   }
 
   searchReset(form: any): void {
