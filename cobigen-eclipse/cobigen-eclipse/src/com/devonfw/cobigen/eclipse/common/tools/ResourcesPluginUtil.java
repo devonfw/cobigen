@@ -1,18 +1,28 @@
 package com.devonfw.cobigen.eclipse.common.tools;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -101,7 +111,6 @@ public class ResourcesPluginUtil {
     public static IProject getGeneratorConfigurationProject()
         throws GeneratorProjectNotExistentException, CoreException {
 
-        IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
         File templatesDirectory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
             + ResourceConstants.DOWNLOADED_JAR_FOLDER);
 
@@ -205,6 +214,80 @@ public class ResourcesPluginUtil {
             fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
         }
         return fileName;
+    }
+
+    /**
+     * Process Jar method is responsible for unzip the source Jar and create new CobiGen_Templates folder
+     * structure at /main/CobiGen_Templates location
+     * @param fileName
+     *            Name of source jar file downloaded
+     */
+    public static void processJar(String fileName) {
+        String pathForCobigenTemplates = "";
+        IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+
+        try {
+            pathForCobigenTemplates =
+                ws.toPortableString() + (((ResourcesPluginUtil.getGeneratorConfigurationProject() != null)
+                    && (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null))
+                        ? ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() : StringUtils.EMPTY);
+        } catch (GeneratorProjectNotExistentException e1) {
+            LOG.warn("Configuration project not found!", e1);
+            String s = "=> Probably there was an error while downloading the templates. "
+                + "Please try to update them and try again.";
+            PlatformUIUtil.openErrorDialog(s, e1);
+        } catch (CoreException e) {
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                "Could not refresh the CobiGen configuration project automatically. " + "Please try it again manually");
+            LOG.warn("Configuration project refresh failed", e);
+        }
+        String jarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + fileName;
+        FileSystem fileSystem = FileSystems.getDefault();
+        Path cobigenFolderPath = null;
+        if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
+            cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
+        }
+
+        List<String> templateNames = new ArrayList<>();
+        try (ZipFile file = new ZipFile(jarPath)) {
+            Enumeration<? extends ZipEntry> entries = file.entries();
+            if (Files.notExists(cobigenFolderPath)) {
+                Files.createDirectory(cobigenFolderPath);
+            }
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+                    + "CobiGen_Templates" + File.separator + File.separator + entry.getName());
+                if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
+                    || entry.getName().contains("context.xml")) {
+                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+                        + "CobiGen_Templates" + File.separator + File.separator + entry.getName());
+                } else if (entry.getName().contains("com/")) {
+                    saveForFileCreationPath = fileSystem
+                        .getPath(cobigenFolderPath + File.separator + "CobiGen_Templates" + File.separator + "src"
+                            + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
+                }
+                if (entry.isDirectory()) {
+                    Files.createDirectories(saveForFileCreationPath);
+                } else {
+                    Files.deleteIfExists(saveForFileCreationPath);
+                    Files.createFile(saveForFileCreationPath);
+                    try (InputStream is = file.getInputStream(entry);
+                        BufferedInputStream bis = new BufferedInputStream(is);
+                        FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
+
+                        while (bis.available() > 0) {
+                            fileOutput.write(bis.read());
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+
+            LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+            PlatformUIUtil.openErrorDialog(
+                "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
+        }
     }
 
     /**
