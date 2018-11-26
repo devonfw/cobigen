@@ -69,7 +69,7 @@ public class HealthCheckDialog {
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
             // refresh and check context configuration
-            ResourcesPluginUtil.refreshConfigurationProject();
+           // ResourcesPluginUtil.refreshConfigurationProject();
             String pathForCobigenTemplates = "";
 
             IPath ws = ResourcesPluginUtil.getWorkspaceLocation();

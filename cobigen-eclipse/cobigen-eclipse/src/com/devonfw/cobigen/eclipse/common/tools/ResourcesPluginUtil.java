@@ -113,7 +113,8 @@ public class ResourcesPluginUtil {
 
         File templatesDirectory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
             + ResourceConstants.DOWNLOADED_JAR_FOLDER);
-
+        File templatesDirectoryexist = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
+                +"/"+ ResourceConstants.CONFIG_PROJECT_NAME);
         generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
 
         if (!generatorProj.exists()) {
@@ -122,7 +123,11 @@ public class ResourcesPluginUtil {
 
                     // If we don't find at least one jar, then we do need to download new templates
                     if (templatesDirectory.listFiles(fileNameFilter).length <= 0) {
-                        int result = createUpdateTemplatesDialog();
+                    	int result = 0;
+                    	if(!templatesDirectoryexist.exists())
+                    	{
+                         result = createUpdateTemplatesDialog();
+                    	}
                         isUpdateDialogShown = true;
                         if (result == 1) {
                             // User does not want to download templates.
