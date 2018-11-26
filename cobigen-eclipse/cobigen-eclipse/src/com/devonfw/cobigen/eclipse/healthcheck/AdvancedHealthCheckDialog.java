@@ -73,15 +73,25 @@ public class AdvancedHealthCheckDialog extends Dialog {
      *             if the generator project does not exist
      */
     AdvancedHealthCheckDialog(HealthCheckReport report, HealthCheck healthCheck)
-        throws GeneratorProjectNotExistentException {
-        super(Display.getDefault().getActiveShell());
-        hasConfiguration = report.getHasConfiguration();
-        isAccessible = report.getIsAccessible();
-        upgradeableConfigurations = report.getUpgradeableConfigurations();
-        upToDateConfigurations = report.getUpToDateConfigurations();
-        expectedTemplatesConfigurations = report.getExpectedTemplatesConfigurations();
-        this.healthCheck = healthCheck;
-    }
+			throws GeneratorProjectNotExistentException {
+		super(Display.getDefault().getActiveShell());
+		if (report != null && report.getHasConfiguration() != null) {
+			hasConfiguration = report.getHasConfiguration();
+		}
+		if (report != null && report.getIsAccessible() != null) {
+			isAccessible = report.getIsAccessible();
+		}
+		if (report != null && report.getUpgradeableConfigurations() != null) {
+			upgradeableConfigurations = report.getUpgradeableConfigurations();
+		}
+		if (report != null && report.getUpToDateConfigurations() != null) {
+			upToDateConfigurations = report.getUpToDateConfigurations();
+		}
+		if (report != null && report.getExpectedTemplatesConfigurations() != null) {
+			expectedTemplatesConfigurations = report.getExpectedTemplatesConfigurations();
+		}
+		this.healthCheck = healthCheck;
+	}
 
     @Override
     protected Control createDialogArea(Composite parent) {
@@ -109,46 +119,48 @@ public class AdvancedHealthCheckDialog extends Dialog {
         leftGridData.widthHint = 320;
         GridData rightGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
         rightGridData.widthHint = 80;
-        for (final String key : expectedTemplatesConfigurations) {
-            Label label = new Label(contentParent, SWT.NONE);
-            label.setText(key);
-            label.setLayoutData(leftGridData);
+		if (expectedTemplatesConfigurations != null) {
+			for (final String key : expectedTemplatesConfigurations) {
+				Label label = new Label(contentParent, SWT.NONE);
+				label.setText(key);
+				label.setLayoutData(leftGridData);
 
-            if (upToDateConfigurations.contains(key)) {
-                Label infoLabel = new Label(contentParent, SWT.NONE);
-                infoLabel.setText("Up-to-date");
-                infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
-                infoLabel.setLayoutData(rightGridData);
-            } else if (upgradeableConfigurations.containsKey(key)) {
-                Button upgrade = new Button(contentParent, SWT.PUSH);
-                upgrade.setText("Upgrade");
-                upgrade.setLayoutData(rightGridData);
-                upgrade.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-                        healthCheck.upgradeTemplatesConfiguration(upgradeableConfigurations.get(key),
-                            BackupPolicy.BACKUP_IF_POSSIBLE);
-                        refreshUI();
-                        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-                    }
-                });
-            } else if (!hasConfiguration.contains(key)) {
-                Label infoLabel = new Label(contentParent, SWT.NONE);
-                infoLabel.setText("Not found!");
-                infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
-                infoLabel.setLayoutData(rightGridData);
-            } else if (!isAccessible.contains(key)) {
-                Label infoLabel = new Label(contentParent, SWT.NONE);
-                infoLabel.setText("Not writable!");
-                infoLabel.setLayoutData(rightGridData);
-            } else {
-                Label infoLabel = new Label(contentParent, SWT.NONE);
-                infoLabel.setText("Invalid!");
-                infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
-                infoLabel.setLayoutData(rightGridData);
-            }
-        }
+				if (upToDateConfigurations.contains(key)) {
+					Label infoLabel = new Label(contentParent, SWT.NONE);
+					infoLabel.setText("Up-to-date");
+					infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
+					infoLabel.setLayoutData(rightGridData);
+				} else if (upgradeableConfigurations.containsKey(key)) {
+					Button upgrade = new Button(contentParent, SWT.PUSH);
+					upgrade.setText("Upgrade");
+					upgrade.setLayoutData(rightGridData);
+					upgrade.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+							healthCheck.upgradeTemplatesConfiguration(upgradeableConfigurations.get(key),
+									BackupPolicy.BACKUP_IF_POSSIBLE);
+							refreshUI();
+							MDC.remove(InfrastructureConstants.CORRELATION_ID);
+						}
+					});
+				} else if (!hasConfiguration.contains(key)) {
+					Label infoLabel = new Label(contentParent, SWT.NONE);
+					infoLabel.setText("Not found!");
+					infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
+					infoLabel.setLayoutData(rightGridData);
+				} else if (!isAccessible.contains(key)) {
+					Label infoLabel = new Label(contentParent, SWT.NONE);
+					infoLabel.setText("Not writable!");
+					infoLabel.setLayoutData(rightGridData);
+				} else {
+					Label infoLabel = new Label(contentParent, SWT.NONE);
+					infoLabel.setText("Invalid!");
+					infoLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
+					infoLabel.setLayoutData(rightGridData);
+				}
+			}
+		}
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return contentParent;
@@ -169,14 +181,16 @@ public class AdvancedHealthCheckDialog extends Dialog {
      * Refreshes the UI to show the updated configuration.
      */
     private void refreshUI() {
-        try {
-            report = healthCheck
-                .perform(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
-            AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(report, healthCheck);
-            advancedHealthCheckDialog.setBlockOnOpen(false);
-            close();
-            advancedHealthCheckDialog.open();
-        } catch (GeneratorProjectNotExistentException e) {
+		try {
+			if (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null) {
+				report = healthCheck.perform(
+						ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
+			}
+			AdvancedHealthCheckDialog advancedHealthCheckDialog = new AdvancedHealthCheckDialog(report, healthCheck);
+			advancedHealthCheckDialog.setBlockOnOpen(false);
+			close();
+			advancedHealthCheckDialog.open();
+		} catch (GeneratorProjectNotExistentException e) {
             report.addError(e);
             LOG.warn("Configuration project not found!", e);
             String s = "=> Please import the configuration project into your workspace as stated in the "
