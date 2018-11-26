@@ -65,12 +65,12 @@ public class HealthCheckDialog {
 
         try {
 
-            // check configuration project existence
-            generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-
             // refresh and check context configuration
             ResourcesPluginUtil.refreshConfigurationProject();
             String pathForCobigenTemplates = "";
+
+            // check configuration project existence
+            generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
             IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
             pathForCobigenTemplates = ws.toPortableString();
