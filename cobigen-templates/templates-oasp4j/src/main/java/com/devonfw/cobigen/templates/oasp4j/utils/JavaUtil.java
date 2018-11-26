@@ -94,14 +94,14 @@ public class JavaUtil {
      */
     public boolean equalsJavaPrimitive(String simpleType) {
 
-        try {        	
+        try {
             return ClassUtils.getClass(simpleType).isPrimitive();
         } catch (ClassNotFoundException e) {
             LOG.warn("{}: Could not find {}", e.getMessage(), simpleType);
             return false;
         }
     }
-    
+
     /**
      * Checks if the given type is a Java primitive or wrapper
      *
@@ -111,7 +111,7 @@ public class JavaUtil {
      */
     public boolean equalsJavaPrimitiveOrWrapper(String simpleType) {
 
-        try {        	
+        try {
             return ClassUtils.isPrimitiveOrWrapper(ClassUtils.getClass(simpleType));
         } catch (ClassNotFoundException e) {
             LOG.warn("{}: Could not find {}", e.getMessage(), simpleType);
@@ -422,4 +422,43 @@ public class JavaUtil {
         return null;
     }
 
+    /**
+     * Checks whether the class given by the full qualified name is an enum
+     *
+     * @param className
+     *            full qualified class name
+     * @return <code>true</code> if the class is an enum, <code>false</code> otherwise
+     */
+    public boolean isEnum(String className) {
+
+        try {
+            return ClassUtils.getClass(className).isEnum();
+        } catch (ClassNotFoundException e) {
+            LOG.warn("{}: Could not find {}", e.getMessage(), className);
+            return false;
+        }
+    }
+
+    /**
+     * Returns the first enum value of an enum class
+     *
+     * @param className
+     *            full qualified class name
+     * @return the first enum value name found in order
+     */
+    public String getFirstEnumValue(String className) {
+
+        try {
+            Class<?> enumClass = ClassUtils.getClass(className);
+            Field[] declaredFields = enumClass.getDeclaredFields();
+            if (declaredFields.length > 0) {
+                return declaredFields[0].getName();
+            } else {
+                return null;
+            }
+        } catch (ClassNotFoundException e) {
+            LOG.warn("{}: Could not find {}", e.getMessage(), className);
+            return null;
+        }
+    }
 }
