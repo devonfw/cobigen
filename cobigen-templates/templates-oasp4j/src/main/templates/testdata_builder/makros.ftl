@@ -19,6 +19,10 @@
 	${attr.name}("DefaultString");
 <#elseif attr.canonicalType   = "java.lang.Number">
 	${attr.name}(1);
+<#elseif attr.canonicalType   = "java.util.Currency">
+  ${attr.name}(Currency.getInstance("USD"));
+<#elseif attr.canonicalType   = "java.math.BigDecimal">
+  ${attr.name}(BigDecimal.valueOf(1.0));
 <#elseif attr.canonicalType   = "java.time.LocalTime">
   ${attr.name}(LocalTime.now());
 <#elseif attr.canonicalType   = "java.time.LocalDate">
