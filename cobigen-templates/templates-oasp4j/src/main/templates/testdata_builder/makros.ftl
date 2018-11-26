@@ -20,7 +20,7 @@
 <#elseif attr.canonicalType   = "java.lang.Number">
 	${attr.name}(1);
 <#elseif attr.canonicalType?ends_with("[]")>
-  ${attr.name}(new ${attr.type}[0]);
+  ${attr.name}(new ${attr.type?keep_before_last("[]")}[0]);
 <#elseif getPackage(attr.canonicalType) = pojo.package>
 	${attr.name}(new ${attr.name?cap_first}Builder().createNew());
 <#else>
