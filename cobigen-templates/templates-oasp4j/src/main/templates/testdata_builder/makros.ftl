@@ -19,6 +19,16 @@
 	${attr.name}("DefaultString");
 <#elseif attr.canonicalType   = "java.lang.Number">
 	${attr.name}(1);
+<#elseif attr.canonicalType   = "java.time.LocalTime">
+  ${attr.name}(LocalTime.now());
+<#elseif attr.canonicalType   = "java.time.LocalDate">
+  ${attr.name}(LocalDate.now());
+<#elseif attr.canonicalType   = "java.time.LocalDateTime">
+  ${attr.name}(LocalDateTime.now());
+<#elseif attr.canonicalType   = "java.time.ZonedDateTime">
+  ${attr.name}(ZonedDateTime.now());
+<#elseif JavaUtil.isEnum(attr.canonicalType)>
+  ${attr.name}(${attr.type}.${JavaUtil.getFirstEnumValue(attr.canonicalType)});
 <#elseif attr.canonicalType?ends_with("[]")>
   ${attr.name}(new ${attr.type?keep_before_last("[]")}[0]);
 <#elseif getPackage(attr.canonicalType) = pojo.package>
