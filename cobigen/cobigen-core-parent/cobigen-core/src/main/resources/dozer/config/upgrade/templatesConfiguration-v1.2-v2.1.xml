@@ -10,8 +10,8 @@
   <!-- General Mapping of JAXB Lists -->
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.Templates</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Templates</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.Templates</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Templates</class-b>
     <field>
       <a is-accessible="true">template</a>
       <b is-accessible="true">template</b>
@@ -23,8 +23,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.Increments</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Increments</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.Increments</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Increments</class-b>
     <field>
       <a is-accessible="true">increment</a>
       <b is-accessible="true">increment</b>
@@ -32,8 +32,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.TemplateScans</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplateScans</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.TemplateScans</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplateScans</class-b>
     <field>
       <a is-accessible="true">templateScan</a>
       <b is-accessible="true">templateScan</b>
@@ -41,8 +41,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.Increment</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Increment</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.Increment</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Increment</class-b>
     <field>
       <a is-accessible="true">templateRef</a>
       <b is-accessible="true">templateRef</b>
@@ -61,8 +61,8 @@
   <!-- Mapping due to changes of the XSD -->
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.Template</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.Template</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.Template</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.Template</class-b>
     <field>
       <a>id</a>
       <b>name</b>
@@ -70,8 +70,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.TemplateExtension</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplateExtension</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.TemplateExtension</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplateExtension</class-b>
     <field>
       <a>idref</a>
       <b>ref</b>
@@ -79,8 +79,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.TemplateScan</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplateScan</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.TemplateScan</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplateScan</class-b>
     <field>
       <a>templateIdPrefix</a>
       <b>templateNamePrefix</b>
@@ -88,8 +88,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.TemplateRef</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.TemplateRef</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.TemplateRef</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplateRef</class-b>
     <field>
       <a>idref</a>
       <b>ref</b>
@@ -97,8 +97,8 @@
   </mapping>
 
   <mapping map-null="true">
-    <class-a>com.capgemini.cobigen.impl.config.entity.io.v1_2.IncrementRef</class-a>
-    <class-b>com.capgemini.cobigen.impl.config.entity.io.v2_1.IncrementRef</class-b>
+    <class-a>com.devonfw.cobigen.impl.config.entity.io.v1_2.IncrementRef</class-a>
+    <class-b>com.devonfw.cobigen.impl.config.entity.io.v2_1.IncrementRef</class-b>
     <field>
       <a>idref</a>
       <b>ref</b>
