@@ -13,8 +13,8 @@
   </parent>
 
   <modules>
-    <module>templates-oasp4j</module>
-    <module>templates-oasp4js</module>
+    <module>templates-devon4j</module>
+    <module>templates-devon4ng</module>
     <module>templates-rf</module>
   </modules>
 
