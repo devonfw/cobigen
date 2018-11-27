@@ -84,6 +84,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
         LOG.debug("Matching templates requested.");
         List<TemplateTo> templates = Lists.newLinkedList();
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
+
             for (Template template : templatesConfiguration.getAllTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(),
                     templatesConfiguration.getTrigger().getId()));
@@ -128,12 +129,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
+            String triggerId = increment.getTrigger().getId();
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
-                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), trigger.getId()));
+                templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), triggerId));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), trigger.getId(),
-                templates, convertIncrements(increment.getDependentIncrements(), trigger)));
+            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates,
+                convertIncrements(increment.getDependentIncrements(), trigger)));
         }
         return incrementTos;
     }
@@ -153,13 +155,15 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Retrieve matching template configurations.");
         List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
+
         for (Trigger trigger : triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
             TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
             if (templatesConfiguration != null) {
-                templateConfigurations.add(templatesConfiguration);
+                if (!templateConfigurations.contains(templatesConfiguration)) {
+                    templateConfigurations.add(templatesConfiguration);
+                }
             }
         }
         return templateConfigurations;
     }
-
 }
