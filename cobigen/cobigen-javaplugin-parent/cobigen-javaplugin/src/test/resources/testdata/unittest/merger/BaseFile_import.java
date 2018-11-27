@@ -1,6 +1,6 @@
-package com.capgemini;
+package com.devonfw;
 
-import com.capgemini.BaseClassImport;
+import com.devonfw.BaseClassImport;
 
 public class FooBar
 {

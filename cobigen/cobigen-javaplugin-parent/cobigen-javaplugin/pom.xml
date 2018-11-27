@@ -1,15 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-javaplugin</artifactId>
+  <artifactId>javaplugin</artifactId>
   <name>CobiGen - Java Plug-in</name>
-  <version>1.6.1</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
+  <description>CobiGen - Java Plug-in</description>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-javaplugin-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>javaplugin-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
@@ -20,33 +19,33 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-javaplugin.model</artifactId>
-      <version>1.0.0</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>javaplugin-model</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core-api</artifactId>
-      <version>4.1.0</version>
+      <artifactId>core-api</artifactId>
+      <version>5.0.0</version>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core-test</artifactId>
-      <version>4.0.0</version>
+      <artifactId>core-test</artifactId>
+      <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-core</artifactId>
-      <version>4.1.0</version>
+      <artifactId>core</artifactId>
+      <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cobigen-tempeng-freemarker</artifactId>
-      <version>1.0.0</version>
+      <artifactId>tempeng-freemarker</artifactId>
+      <version>2.0.0</version>
       <scope>test</scope>
     </dependency>
 

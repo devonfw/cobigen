@@ -2,14 +2,15 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-core</artifactId>
+  <artifactId>core</artifactId>
   <name>CobiGen Core</name>
   <version>${cobigencore.version}</version>
   <packaging>jar</packaging>
+  <description>Code-based incremental generator</description>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-core-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>core-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
@@ -19,14 +20,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-api</artifactId>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.capgemini</groupId>
-      <artifactId>cobigen-core-test</artifactId>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -134,7 +135,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <excludePackageNames>com.capgemini.cobigen.impl.config.entity.io</excludePackageNames> <!-- /com/capgemini/cobigen/impl/config/entity/io/**/*.java -->
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames> <!-- /com/capgemini/cobigen/impl/config/entity/io/**/*.java -->
         </configuration>
       </plugin>
 
@@ -150,7 +151,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v1_0</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v1_0</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/v1.0</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema/v1.0</schemaDirectory>
             </configuration>
@@ -161,7 +162,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v1_2</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v1_2</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/v1.2</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema/v1.2</schemaDirectory>
             </configuration>
@@ -172,7 +173,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v2_0</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v2_0</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/v2.0</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema/v2.0</schemaDirectory>
             </configuration>
@@ -183,7 +184,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v2_1</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v2_1</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/v2.1</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
             </configuration>
@@ -194,7 +195,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io.v4_0</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v4_0</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/v4.0</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema/v4.0</schemaDirectory>
             </configuration>
@@ -206,7 +207,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>com.capgemini.cobigen.impl.config.entity.io</generatePackage>
+              <generatePackage>com.devonfw.cobigen.impl.config.entity.io</generatePackage>
               <generateDirectory>${basedir}/src/generated/java/config/current</generateDirectory>
               <schemaDirectory>${basedir}/src/main/resources/schema</schemaDirectory>
               <schemaIncludes>

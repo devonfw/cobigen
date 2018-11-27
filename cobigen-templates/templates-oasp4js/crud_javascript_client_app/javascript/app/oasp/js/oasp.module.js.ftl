@@ -1,1 +1,0 @@
-angular.module('oasp', ['oasp.oaspUi', 'oasp.oaspSecurity', 'oasp.oaspI18n']);
