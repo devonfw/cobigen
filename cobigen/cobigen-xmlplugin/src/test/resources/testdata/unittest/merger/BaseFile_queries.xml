@@ -19,7 +19,7 @@
     	<![CDATA[SELECT t FROM Table t]]>
 	</query>
 	<query name="get.free.tables">
-    	<![CDATA[SELECT t FROM Table t WHERE t.state IN (com.capgemini.gastronomy.restaurant.common.datatype.TableState.FREE) ]]>
+    	<![CDATA[SELECT t FROM Table t WHERE t.state IN (com.devonfw.gastronomy.restaurant.common.datatype.TableState.FREE) ]]>
 	</query>
 	<query name="get.all.meals">
       <![CDATA[SELECT m FROM Meal m]]>
