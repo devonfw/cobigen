@@ -108,10 +108,46 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
+        List<Path> paths = new LinkedList<>();
+
         if (input instanceof OpenAPIFile) {
-            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
+            OpenApi3 astOpenApi = ((OpenAPIFile) input).getAST();
+            inputs.addAll(extractComponents(astOpenApi));
+
+            for (String key : astOpenApi.getPaths().keySet()) {
+                Path path = astOpenApi.getPaths().get(key);
+                paths.add(path);
+            }
+
+            inputs.addAll(extractComponentsFromPaths(paths, astOpenApi));
         }
         return inputs;
+    }
+
+    /**
+     * @param inputs
+     * @param paths
+     * @param astOpenApi
+     */
+    private List<ComponentDef> extractComponentsFromPaths(List<Path> paths, OpenApi3 astOpenApi) {
+        List<ComponentDef> components = new LinkedList<>();
+        for (Path path : paths) {
+            if (path.getExtensions().get(Constants.COMPONENT_EXT) != null) {
+                String componentName = path.getExtensions().get(Constants.COMPONENT_EXT).toString();
+                if (componentName != null && !componentName.isEmpty()) {
+                    ComponentDef componentDef = new ComponentDef();
+                    componentDef.setName(componentName);
+                    componentDef.setPaths(extractPaths(astOpenApi.getPaths(), componentName));
+
+                    // Sets a Map containing all the extensions of the info part of the OpenAPI file
+                    if (Overlay.isPresent((JsonOverlay<?>) astOpenApi.getInfo())) {
+                        componentDef.setUserPropertiesMap(astOpenApi.getInfo().getExtensions());
+                    }
+                    components.add(componentDef);
+                }
+            }
+        }
+        return components;
     }
 
     @Override
@@ -358,6 +394,7 @@ public class OpenAPIInputReader implements InputReader {
                         path.getOperations().add(operation);
                     }
                 }
+
                 pathDefs.add(path);
             }
         }
