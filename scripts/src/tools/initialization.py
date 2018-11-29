@@ -67,7 +67,24 @@ If you are unsure about this, please stop here and clarify, whether
 gpg.keyname = """)
         if not prompt_yesno_question("Make sure the gpg key '" + config.gpg_keyname + "' is loaded by tools like Kleopatra before continuing! Continue?"):
             sys.exit()
+        else:
+            #Check whether the user has gpg2 installed
+            if is_tool("gpg2"):
+                if not hasattr(config, "gpg_executable"):
+                    log_info("gpg2 installation found")
+                    config.gpg_executable = "gpg2"
+            elif is_tool("gpg"):
+                if not hasattr(config, "gpg_executable"):
+                    log_info("gpg installation found")
+                    config.gpg_executable = "gpg"
+            else:
+                log_error("gpg2 nor gpg are installed. Please install them on your computer (system path) or either use command -Dgpg.executable='gpg2'")
 
+def is_tool(name):
+    """Check whether `name` is on PATH and marked as executable."""
+    from shutil import which
+
+    return which(name) is not None
 
 def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo):
 
