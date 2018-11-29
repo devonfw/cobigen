@@ -11,6 +11,7 @@ class Config():
 
         self.oss: bool = False
         self.gpg_keyname: str
+        self.gpg_executable: str
 
         self.dry_run: bool = False
         self.debug: bool = False

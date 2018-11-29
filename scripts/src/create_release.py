@@ -69,6 +69,7 @@ report_messages = []
 
 
 def run_maven_process_and_handle_error(command: str, execpath: str=config.build_folder_abs):
+    log_info("Execute command '" + str + "'")
     returncode = maven.run_maven_process(execpath, command)
 
     if returncode == 1:
@@ -184,14 +185,13 @@ __log_step("Deploy artifacts to nexus and update sites...")
 def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
-    # no oss activation as this will cause the build to fail
     run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U", execpath=execpath)
 
 
