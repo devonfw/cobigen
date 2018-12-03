@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.eclipse.generator;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -168,6 +169,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
+            LOG.debug("Generating files...");
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
@@ -190,6 +192,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
+                LOG.debug("Generating with single non container input ...");
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
@@ -218,6 +221,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *             if anything during classpath resolving and class loading fails.
      */
     private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
+        LOG.debug("Resolve template util classes...");
         List<Class<?>> classes = Lists.newArrayList();
 
         IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
@@ -230,17 +234,24 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             // as the parent classpath to prevent classpath shading.
             inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
 
-            for (IPackageFragmentRoot roots : configJavaProject.getPackageFragmentRoots()) {
-                for (IJavaElement e : roots.getChildren()) {
-                    if (e instanceof IPackageFragment) {
-                        for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                            IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                            classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+            LOG.debug("Search fragment roots in project {}", configJavaProject.getElementName());
+            for (IPackageFragmentRoot root : configJavaProject.getPackageFragmentRoots()) {
+                if (!root.isExternal()) {
+                    LOG.debug("Search for compilation units in non-external fragment root '{}' ...",
+                        root.getElementName());
+                    for (IJavaElement e : root.getChildren()) {
+                        if (e instanceof IPackageFragment) {
+                            for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
+                                LOG.debug("Found '{}' in {} ...", cu.getElementName(), e.getElementName());
+                                IType type = EclipseJavaModelUtil.getJavaClassType(cu);
+                                classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+                            }
                         }
                     }
                 }
             }
         }
+        LOG.info("Util classes loaded: '{}' ...", classes);
         return classes;
     }
 
@@ -584,13 +595,25 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param generatedFiles
      *            paths to be calculated workspace dependent
      * @return the workspace relative path as a string or {@code null} if the path is not in the workspace.
+     * @throws IOException
+     *             if the project file could not be read
      */
-    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles) {
+    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles)
+        throws IOException {
         Set<String> workspaceDependentPaths = new HashSet<>();
         for (Path targetAbsolutePath : generatedFiles) {
             Path mostSpecificProject = null;
+
+            String canonicalPathString = targetAbsolutePath.toFile().getCanonicalPath();
+
+            if (canonicalPathString == null || canonicalPathString.isEmpty()) {
+                throw new IOException("The destination project could not be found");
+            }
+
+            Path targetCanonicalPath = Paths.get(canonicalPathString);
+
             for (Path projPath : projectsInWorkspace.keySet()) {
-                if (targetAbsolutePath.startsWith(projPath)) {
+                if (targetCanonicalPath.startsWith(projPath)) {
                     if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
                         mostSpecificProject = projPath;
                     }
@@ -599,11 +622,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             String path;
             if (mostSpecificProject != null) {
-                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
+                Path relProjPath = mostSpecificProject.relativize(targetCanonicalPath);
                 path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
                     .toString().replace("\\", "/");
             } else {
-                path = targetAbsolutePath.toString().replace("\\", "/");
+                path = targetCanonicalPath.toString().replace("\\", "/");
                 workspaceExternalPath.add(path);
             }
             workspaceDependentPaths.add(path);

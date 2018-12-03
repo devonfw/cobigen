@@ -1,4 +1,4 @@
-package utils;
+package com.devonfw.cobigen.templates.eclipse.test.utils;
 
 import java.lang.annotation.Annotation;
 

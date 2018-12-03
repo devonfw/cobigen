@@ -9,7 +9,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -21,6 +24,7 @@ import org.junit.runner.RunWith;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.HasBeenBuilt;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -63,10 +67,16 @@ public class OpenAPITest extends SystemTest {
     public void testBasicOpenAPIGeneration() throws Exception {
 
         // copy sample project to external location and import it into the workspace
-        File tmpFolder = tmpFolderRule.newFolder();
         String testProjName = "ExtTestProj";
-        FileUtils.copyDirectory(new File(resourcesRootPath + "input/" + testProjName), tmpFolder);
-        EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), true);
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjName);
+        FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
+            project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        EclipseUtils.updateMavenProject(bot, testProjName);
+        bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+
+        EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+        EclipseUtils.openErrorsTreeInProblemsView(bot);
 
         // expand the new file in the package explorer
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
@@ -75,16 +85,17 @@ public class OpenAPITest extends SystemTest {
 
         // execute CobiGen
         EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "CRUD REST services");
-        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+        // increase timeout as the openAPI parser is slow on initialization
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
 
         // check assertions
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-        IFile generationResult = proj
-            .getFile("src/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+        IFile generationResult = proj.getFile(
+            "src/main/java/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
 
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
@@ -118,10 +129,10 @@ public class OpenAPITest extends SystemTest {
                     "}");
         }
 
-        generationResult =
-            proj.getFile("src/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
+        generationResult = proj.getFile(
+            "src/main/java/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualToIgnoringWhitespace(
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
                 "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
                     "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
                     LINE_SEPARATOR + //
