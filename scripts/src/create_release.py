@@ -69,7 +69,7 @@ report_messages = []
 
 
 def run_maven_process_and_handle_error(command: str, execpath: str=config.build_folder_abs):
-    log_info("Execute command '" + str + "'")
+    log_info("Execute command '" + command + "'")
     returncode = maven.run_maven_process(execpath, command)
 
     if returncode == 1:
@@ -124,6 +124,7 @@ __log_step("Update wiki submodule...")
 continue_run = True
 if config.test_run:
     continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")
+    log_info("TODO: if this step is failing, it means you need to do a git submodule init and git submodule update")
 
 if continue_run:
     git_repo.update_submodule(config.wiki_submodule_path)
@@ -185,20 +186,23 @@ __log_step("Deploy artifacts to nexus and update sites...")
 def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable        
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U", execpath=execpath)
+    activation_str = ""
+    if oss:
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable    
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U "+activation_str, execpath=execpath)
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = ",oss -Dgpg.keyname="+config.gpg_keyname
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable 
     run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars" +
                                        activation_str+" -Dp2.upload=stable", execpath=execpath)
 
