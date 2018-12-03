@@ -40,6 +40,7 @@ class Config():
         self.build_folder_abs: str
         self.cobigenwiki_title_name: str
         self.tag_name: str
+        self.tag_core_name: str
         self.issue_label_name: str
         self.build_artifacts_root_search_path: str
 
@@ -48,6 +49,7 @@ class Config():
         self.next_version: str
 
         self.expected_milestone_name: str
+        self.expected_core_milestone_name: str
 
         self.wiki_submodule_path: str
         self.wiki_submodule_name: str
