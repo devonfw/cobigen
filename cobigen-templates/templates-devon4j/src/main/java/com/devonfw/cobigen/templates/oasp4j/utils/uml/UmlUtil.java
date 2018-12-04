@@ -30,8 +30,6 @@ public class UmlUtil {
      *            Boolean: Is implementation tag needed
      * @param isOverride
      *            Boolean: Is override tag needed
-     * @param className
-     *            name of the class
      * @return String: Contains all the generated text
      */
     public String generateConnectorsVariablesMethodsText(boolean isImpl, boolean isOverride) {

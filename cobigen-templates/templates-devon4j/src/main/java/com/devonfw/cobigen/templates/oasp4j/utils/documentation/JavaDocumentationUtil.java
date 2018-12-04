@@ -34,7 +34,7 @@ public class JavaDocumentationUtil {
      * Creates a list of parameters of a specific method as an asciidoc string, including its name, type,
      * description, constraints
      * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
+     *            {@link Class}&lt;?&gt; the class object of the pojo
      * @param methodName
      *            {@link String} the name of the method to get the parameter info of
      * @param javaDoc
@@ -185,7 +185,7 @@ public class JavaDocumentationUtil {
     /**
      * Checks if a request/response has a body
      * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
+     *            {@link Class}&lt;?&gt; the class object of the pojo
      * @param methodName
      *            The name of the operation to be checked
      * @param isResponse
@@ -332,7 +332,7 @@ public class JavaDocumentationUtil {
     /**
      * Helper method to find a class's specific method
      * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
+     *            {@link Class}&lt;?&gt; the class object of the pojo
      * @param methodName
      *            The name of the method to be found
      * @return The method object of the method to be found, null if it wasn't found

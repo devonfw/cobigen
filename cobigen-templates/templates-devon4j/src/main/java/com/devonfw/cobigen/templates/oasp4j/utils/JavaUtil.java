@@ -354,7 +354,7 @@ public class JavaUtil {
     /**
      * returns the class name of the return type of a specific method.
      * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
+     *            {@link Class}&lt;?&gt; the class object of the pojo
      * @param methodName
      *            {@link String} the name of the method
      * @return the class name of the return type of the specified method
@@ -403,7 +403,7 @@ public class JavaUtil {
     /**
      * Helper method to find a class's specific method
      * @param pojoClass
-     *            {@link Class}&lt;?> the class object of the pojo
+     *            {@link Class}&lt;?&gt; the class object of the pojo
      * @param methodName
      *            The name of the method to be found
      * @return The method object of the method to be found, null if it wasn't found
