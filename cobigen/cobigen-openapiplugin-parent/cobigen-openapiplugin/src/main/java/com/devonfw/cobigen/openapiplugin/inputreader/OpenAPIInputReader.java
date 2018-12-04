@@ -32,7 +32,8 @@ import com.jayway.jsonpath.Configuration;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
-import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.OpenApiParser;
+import com.reprezen.kaizen.oasparser.OpenApiParser.SwaggerParserException;
 import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
@@ -378,9 +379,10 @@ public class OpenAPIInputReader implements InputReader {
     private List<ParameterDef> extractParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
         RequestBody requestBody) {
         List<ParameterDef> parametersList = new LinkedList<>();
-        ParameterDef parameter = new ParameterDef();
+        ParameterDef parameter;
         for (Parameter param : parameters) {
-
+            parameter = new ParameterDef();
+            parameter.setIsBody(false);
             switch (param.getIn()) {
             case "path":
                 parameter.setInPath(true);
@@ -392,6 +394,7 @@ public class OpenAPIInputReader implements InputReader {
                 parameter.setInHeader(true);
                 break;
             }
+
             parameter.setName(param.getName());
             Schema schema = param.getSchema();
             Map<String, Object> constraints = extractConstraints(schema);
@@ -409,15 +412,17 @@ public class OpenAPIInputReader implements InputReader {
                 }
             }
             try {
-                if (Overlay.isReference(param, "schema")) {
+                if (Overlay.isReference(param, Constants.SCHEMA)) {
                     parameter.setIsEntity(true);
+                    parameter.setType(schema.getName());
+                } else {
+                    parameter.setType(schema.getType());
+                    parameter.setFormat(schema.getFormat());
                 }
             } catch (NullPointerException e) {
                 throw new CobiGenRuntimeException("Error at parameter " + param.getName()
                     + ". Invalid OpenAPI file, path parameters need to have a schema defined.");
             }
-            parameter.setType(schema.getType());
-            parameter.setFormat(schema.getFormat());
             parametersList.add(parameter);
         }
 
@@ -425,6 +430,7 @@ public class OpenAPIInputReader implements InputReader {
             Schema mediaSchema;
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
+                parameter.setIsBody(true);
                 parameter.setMediaType(media);
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
@@ -476,13 +482,25 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
+                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
-                        // System.out.println(schema);
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
+                            EntityDef eDef = new EntityDef();
+                            List<PropertyDef> propDefs = new LinkedList<>();
+                            for (Schema propertySchema : schema.getProperties().values()) {
+                                PropertyDef prop = new PropertyDef();
+                                prop.setDescription(propertySchema.getDescription());
+                                prop.setFormat(propertySchema.getFormat());
+                                prop.setName(propertySchema.getName());
+                                prop.setType(propertySchema.getType());
+                                propDefs.add(prop);
+                            }
+                            eDef.setName(schema.getName());
+                            eDef.setProperties(propDefs);
+                            response.setEntityRef(eDef);
                         } else if (schema.getType().equals(Constants.ARRAY)) {
                             if (schema.getItemsSchema() != null) {
                                 response.setType(schema.getItemsSchema().getName());
@@ -524,11 +542,15 @@ public class OpenAPIInputReader implements InputReader {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
-        OpenApi3 openApi = new OpenApi3Parser().parse(path.toUri());
-        if (openApi == null) {
-            throw new InputReaderException(path + " is not a valid OpenAPI file");
+        try {
+            OpenApi3 openApi = (OpenApi3) new OpenApiParser().parse(path.toUri());
+            if (openApi == null) {
+                throw new InputReaderException(path + " is not a valid OpenAPI file");
+            }
+            return new OpenAPIFile(path, openApi);
+        } catch (SwaggerParserException e) {
+            // SwaggerParserException indicates a wrong input file.
+            throw new InputReaderException("Reader does not support input type or input is faulty", e);
         }
-        return new OpenAPIFile(path, openApi);
     }
-
 }
