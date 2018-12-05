@@ -177,7 +177,7 @@ public class ResourcesPluginUtil {
      */
     public static String downloadJar(boolean isDownloadSource) throws MalformedURLException, IOException {
         String mavenUrl =
-            "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-oasp4j&v=LATEST";
+            "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-devon4j&v=LATEST";
         if (isDownloadSource) {
             mavenUrl = mavenUrl + "&c=sources";
         }
