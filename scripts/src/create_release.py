@@ -116,17 +116,20 @@ git_repo.commit("upgrade SNAPSHOT dependencies")
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
+if not prompt_yesno_question("Do you want to run the tests? WARNING: Your tests must pass succesfully, only answer NO when you already have passed the tests in a previous execution."):
+    run_maven_process_and_handle_error("mvn clean install -U -Dmaven.test.skip=true -Pp2-build-mars,p2-build-stable")
+else:
+    run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
 
 #############################
 __log_step("Update wiki submodule...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")
-    log_info("TODO: if this step is failing, it means you need to do a git submodule init and git submodule update")
+    continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")    
 
 if continue_run:
+    log_info("TODO: if this step fails, it means you need to do a git submodule init and git submodule update on branch " + config.branch_to_be_released)
     git_repo.update_submodule(config.wiki_submodule_path)
     git_repo.add_submodule(config.wiki_submodule_name)
     git_repo.commit("update wiki docs")
@@ -189,7 +192,7 @@ def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable        
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
+    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
@@ -200,11 +203,7 @@ def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
-    activation_str = ""
-    if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable 
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars" +
-                                       activation_str+" -Dp2.upload=stable", execpath=execpath)
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars -Dp2.upload=stable", execpath=execpath)
 
 
 if config.dry_run or config.test_run:
@@ -247,7 +246,11 @@ else:
     if (milestone.state == "closed"):
         log_info("Milestone '"+milestone.title + "' is already closed, please check.")
     else:
-        milestone.edit(milestone.title, "closed", milestone.description)
+        if milestone.description is None:
+            #TODO: milestone.description is sometimes None
+            milestone.edit(milestone.title, "closed", "Void description error")
+        else:
+            milestone.edit(milestone.title, "closed", milestone.description)
         log_info("New status of Milestone '" + milestone.title + "' is: " + milestone.state)
 
 #############################
@@ -262,9 +265,10 @@ if config.dry_run:
     log_info_dry("Would create a new milestone")
 else:
     if not github.create_next_release_milestone():
-        log_info("Aborting...")
-        git_repo.reset()
-        sys.exit()
+        log_eror("Failed to create the next release milestone (is it already created?), please create it manually...")
+        if not prompt_yesno_question("Do you still want to continue the execution?"):
+            git_repo.reset()
+            sys.exit()
 
 #############################
 __log_step("Merge master branch to "+config.branch_to_be_released+"...")
