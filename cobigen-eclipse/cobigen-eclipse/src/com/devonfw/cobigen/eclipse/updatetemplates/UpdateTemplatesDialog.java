@@ -99,7 +99,7 @@ public class UpdateTemplatesDialog extends Dialog {
         GridData rightGridData = new GridData(GridData.CENTER, GridData.CENTER, false, false);
         rightGridData.widthHint = 80;
         Label label = new Label(contentParent, SWT.NONE);
-        label.setText("templates-oasp4j");
+        label.setText("templates-devon4j");
         label.setLayoutData(leftGridData);
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
         return contentParent;
