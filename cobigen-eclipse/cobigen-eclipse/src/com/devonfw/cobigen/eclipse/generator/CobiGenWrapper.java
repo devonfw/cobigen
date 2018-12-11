@@ -1,10 +1,19 @@
 package com.devonfw.cobigen.eclipse.generator;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,6 +27,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -39,12 +49,14 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.devonfw.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
+import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -173,6 +185,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
+            if (utilClasses == null) {
+                // Call method to get utils from jar
+                utilClasses = resolveTemplateUtilClassesFromJar();
+            }
+
             // set override flags individually for every template
             for (TemplateTo template : templates) {
                 // if template is resolved to be generated (it has been selected manually in the generate
@@ -215,6 +232,99 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Resolves all classes, which have been defined in the template configuration folder from a jar.
+     * @return the list of classes
+     * @throws GeneratorProjectNotExistentException
+     *             if no generator configuration project called {@link ResourceConstants#CONFIG_PROJECT_NAME}
+     *             exists
+     * @throws IOException
+     *             {@link IOException} occurred
+     */
+    private List<Class<?>> resolveTemplateUtilClassesFromJar()
+        throws GeneratorProjectNotExistentException, IOException {
+        final List<Class<?>> result = new LinkedList<>();
+
+        IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+        String fileName = ResourcesPluginUtil.getJarPath(false);
+
+        if (fileName.equals("") || fileName == null) {
+            // This means there are no downloaded jars
+            return null;
+        }
+
+        File jarPath =
+            new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
+
+        ClassLoader inputClassLoader =
+            URLClassLoader.newInstance(new URL[] { jarPath.toURI().toURL() }, getClass().getClassLoader());
+
+        Path templateRoot;
+        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
+        if (contextConfigurationLocation == null
+            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
+            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
+            if (contextConfigurationLocation == null) {
+                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
+            } else {
+                templateRoot =
+                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
+            }
+        } else {
+            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
+        }
+        LOG.debug("Found context.xml @ " + contextConfigurationLocation.toString());
+        final List<String> foundClasses = new LinkedList<>();
+        if (contextConfigurationLocation.toString().startsWith("jar")) {
+            LOG.info("Processing configuration archive " + contextConfigurationLocation.toString());
+            try {
+                // Get the URI of the jar from the URL of the contained context.xml
+                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
+                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
+
+                // walk the jar file
+                LOG.debug("Searching for classes in " + jarUri.toString());
+                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.toString().endsWith(".class")) {
+                            LOG.debug("    * Found class file " + file.toString());
+                            // remove the leading '/' and the trailing '.class'
+                            String fileName = file.toString().substring(1, file.toString().length() - 6);
+                            // replace the path separator '/' with package separator '.' and add it to the
+                            // list of found files
+                            foundClasses.add(fileName.replace("/", "."));
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        LOG.warn(exc.getMessage());
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+                PlatformUIUtil.openErrorDialog(
+                    "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
+            }
+            for (String className : foundClasses) {
+                try {
+                    result.add(inputClassLoader.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    LOG.warn("Could not load " + className + " from classpath", e);
+                }
+            }
+        }
+
+        LOG.info("Util classes loaded: '{}' ...", result);
+
+        return result;
+    }
+
+    /**
      * Resolves all classes, which have been defined in the template configuration folder.
      * @return the list of classes
      * @throws Exception
@@ -250,6 +360,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     }
                 }
             }
+        } else {
+            return null;
         }
         LOG.info("Util classes loaded: '{}' ...", classes);
         return classes;
