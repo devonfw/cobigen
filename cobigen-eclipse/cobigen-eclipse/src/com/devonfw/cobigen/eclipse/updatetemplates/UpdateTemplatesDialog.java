@@ -113,6 +113,7 @@ public class UpdateTemplatesDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
+                    ResourcesPluginUtil.setUserWantsToDownloadTemplates(true);
                     ResourcesPluginUtil.downloadJar(false);
                     MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                         "Downloaded succesfully!", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);

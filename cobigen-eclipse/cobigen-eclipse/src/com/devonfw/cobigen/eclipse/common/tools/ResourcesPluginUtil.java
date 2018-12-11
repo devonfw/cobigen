@@ -70,7 +70,6 @@ public class ResourcesPluginUtil {
      * Filters the files on a directory so that we can check whether the templates jar are already downloaded
      */
     static FilenameFilter fileNameFilterJar = new FilenameFilter() {
-        boolean isSource = false;
 
         @Override
         public boolean accept(File dir, String name) {
@@ -91,7 +90,6 @@ public class ResourcesPluginUtil {
      * Filters the files on a directory so that we can check whether the templates jar are already downloaded
      */
     static FilenameFilter fileNameFilterSources = new FilenameFilter() {
-        boolean isSource = false;
 
         @Override
         public boolean accept(File dir, String name) {
@@ -420,4 +418,9 @@ public class ResourcesPluginUtil {
         IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
         return ws;
     }
+
+    public static void setUserWantsToDownloadTemplates(boolean userWantsToDownloadTemplates) {
+        ResourcesPluginUtil.userWantsToDownloadTemplates = userWantsToDownloadTemplates;
+    }
+
 }
