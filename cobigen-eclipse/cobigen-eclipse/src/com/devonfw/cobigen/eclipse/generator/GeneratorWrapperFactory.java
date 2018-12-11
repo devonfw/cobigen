@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -220,7 +221,11 @@ public class GeneratorWrapperFactory {
                         + " that you have no internet connection.");
             }
 
-            if (null == generatorProj.getLocationURI()) {
+            // We need to check whether it is a valid Java Project
+            IJavaProject configJavaProject = JavaCore.create(generatorProj);
+
+            // If it is not valid, we should use the jar
+            if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
                 String fileName = ResourcesPluginUtil.downloadJar(false);
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
                 File file =
