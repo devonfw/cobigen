@@ -148,6 +148,7 @@ else:
 #############################
 __log_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
+log_info("TODO: if this step fails, it means you need to check that your " + config.branch_to_be_released + " or master needs to commit the latest changes")
 os.chdir(config.root_path)
 git_repo.merge(config.branch_to_be_released, "master")
 
@@ -265,7 +266,7 @@ if config.dry_run:
     log_info_dry("Would create a new milestone")
 else:
     if not github.create_next_release_milestone():
-        log_eror("Failed to create the next release milestone (is it already created?), please create it manually...")
+        log_info("Failed to create the next release milestone (is it already created?), please create it manually...")
         if not prompt_yesno_question("Do you still want to continue the execution?"):
             git_repo.reset()
             sys.exit()
