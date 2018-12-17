@@ -50,6 +50,12 @@ import com.reprezen.kaizen.oasparser.model3.Server;
  */
 public class OpenAPIInputReader implements InputReader {
 
+    /**
+     * Components retrieved from an EntityDef. Used for not executing multiple times the retrieval of
+     * components
+     */
+    private List<ComponentDef> components;
+
     @Override
     public boolean isValidInput(Object input) {
         if (input != null && input.getClass().getPackage() != null
@@ -124,32 +130,6 @@ public class OpenAPIInputReader implements InputReader {
         return inputs;
     }
 
-    /**
-     * @param inputs
-     * @param paths
-     * @param astOpenApi
-     */
-    private List<ComponentDef> extractComponentsFromPaths(List<Path> paths, OpenApi3 astOpenApi) {
-        List<ComponentDef> components = new LinkedList<>();
-        for (Path path : paths) {
-            if (path.getExtensions().get(Constants.COMPONENT_EXT) != null) {
-                String componentName = path.getExtensions().get(Constants.COMPONENT_EXT).toString();
-                if (componentName != null && !componentName.isEmpty()) {
-                    ComponentDef componentDef = new ComponentDef();
-                    componentDef.setName(componentName);
-                    componentDef.setPaths(extractPaths(astOpenApi.getPaths(), componentName));
-
-                    // Sets a Map containing all the extensions of the info part of the OpenAPI file
-                    if (Overlay.isPresent((JsonOverlay<?>) astOpenApi.getInfo())) {
-                        componentDef.setUserPropertiesMap(astOpenApi.getInfo().getExtensions());
-                    }
-                    components.add(componentDef);
-                }
-            }
-        }
-        return components;
-    }
-
     @Override
     public Map<String, Object> getTemplateMethods(Object input) {
         return new HashMap<>();
@@ -158,6 +138,59 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset);
+    }
+
+    /**
+     * @param inputs
+     * @param paths
+     * @param astOpenApi
+     */
+    private List<ComponentDef> extractComponentsFromPaths(List<Path> paths, OpenApi3 astOpenApi) {
+        for (Path path : paths) {
+            if (path.getExtensions().get(Constants.COMPONENT_EXT) != null) {
+                String componentName = path.getExtensions().get(Constants.COMPONENT_EXT).toString();
+                if (componentName != null && !componentName.isEmpty()) {
+
+                    // items on a list are passed by reference, we can change it
+                    ComponentDef componentDef = getComponent(componentName);
+                    // If the component has no name, it means no component was found
+                    if (componentDef.getName() == null) {
+                        componentDef.setName(componentName);
+                        componentDef.setPaths(extractPaths(astOpenApi.getPaths(), componentName));
+                        setExtensionsToComponent(astOpenApi, componentDef);
+
+                        components.add(componentDef);
+                    } else {
+                        setExtensionsToComponent(astOpenApi, componentDef);
+                    }
+                }
+            }
+        }
+        return components;
+    }
+
+    /**
+     * @param astOpenApi
+     * @param componentDef
+     */
+    private void setExtensionsToComponent(OpenApi3 astOpenApi, ComponentDef componentDef) {
+        // Sets a Map containing all the extensions of the info part of the OpenAPI file
+        if (Overlay.isPresent((JsonOverlay<?>) astOpenApi.getInfo())) {
+            componentDef.setUserPropertiesMap(astOpenApi.getInfo().getExtensions());
+        }
+    }
+
+    /**
+     * @param componentName
+     * @return
+     */
+    private ComponentDef getComponent(String componentName) {
+        for (ComponentDef componentDef : components) {
+            if (componentDef.getName() == componentName) {
+                return componentDef;
+            }
+        }
+        return new ComponentDef();
     }
 
     /**
@@ -173,6 +206,8 @@ public class OpenAPIInputReader implements InputReader {
         header.setServers(extractServers(openApi));
         header.setInfo(extractInfo(openApi));
         List<EntityDef> objects = new LinkedList<>();
+        components = new LinkedList<>();
+
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
             entityDef.setName(key);
@@ -189,7 +224,8 @@ public class OpenAPIInputReader implements InputReader {
                         + "to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
             }
-            entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
+            String componentName = openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString();
+            entityDef.setComponentName(componentName);
 
             // If the path's tag was not found on the input file, throw invalid configuration
             if (openApi.getPaths().size() == 0) {
@@ -210,9 +246,11 @@ public class OpenAPIInputReader implements InputReader {
                 String keyMap = it.next();
                 entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
-            componentDef.setPaths(extractPaths(openApi.getPaths(),
-                openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
+            componentDef.setPaths(extractPaths(openApi.getPaths(), componentName));
+            componentDef.setName(componentName);
+            components.add(componentDef);
             entityDef.setComponent(componentDef);
+
             entityDef.setHeader(header);
             objects.add(entityDef);
         }
