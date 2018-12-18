@@ -141,9 +141,13 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * @param inputs
+     * Get a list of components defined at the paths part with the x-component tag. Returns a list of
+     * {@link ComponentDef}'s
      * @param paths
+     *            the paths of the OpenApi3 file
      * @param astOpenApi
+     *            OpenApi3 object which is the AST of the file
+     * @return a list of {@link ComponentDef}'s for each path that contains x-component tag
      */
     private List<ComponentDef> extractComponentsFromPaths(List<Path> paths, OpenApi3 astOpenApi) {
         for (Path path : paths) {
@@ -170,8 +174,11 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Sets the extension properties (x-.... tags) to the component
      * @param astOpenApi
+     *            OpenApi3 object which is the AST of the file
      * @param componentDef
+     *            component to set the extension properties to
      */
     private void setExtensionsToComponent(OpenApi3 astOpenApi, ComponentDef componentDef) {
         // Sets a Map containing all the extensions of the info part of the OpenAPI file
