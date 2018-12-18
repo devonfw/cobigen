@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -409,8 +413,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     public ComparableIncrement[] getAllIncrements() {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
-        List<IncrementTo> matchingIncrements;
-        matchingIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+        List<IncrementTo> matchingIncrements = Lists.newLinkedList();
+
+        for (Object input : getCurrentDistinctInputs()) {
+            matchingIncrements.addAll(cobiGen.getMatchingIncrements(input));
+        }
 
         // convert to comparable increments
         for (IncrementTo increment : matchingIncrements) {
@@ -617,7 +624,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return the mapping of destination paths to its templates
      */
     public <T extends IncrementTo> Map<String, Set<TemplateTo>> getTemplateDestinationPaths(Collection<T> increments) {
-        return getTemplateDestinationPaths(increments, getCurrentRepresentingInput());
+        Map<String, Set<TemplateTo>> result = Maps.newHashMap();
+
+        for (Object input : getCurrentDistinctInputs()) {
+            MapUtils.deepMapAddAll(result, getTemplateDestinationPaths(increments, input));
+        }
+        return result;
     }
 
     /**
@@ -651,6 +663,20 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     MapUtils.deepMapAddAll(result, cachedTemplatePaths);
                     continue;
                 }
+            }
+
+            // Now we need to check whether the input matches the increment
+            boolean inputNotMatchesIncrement = true;
+            for (IncrementTo inc : cobiGen.getMatchingIncrements(input)) {
+                // If at least one triggerID is present, then the input is valid for this increment
+                if (inc.getTriggerId().equals(increment.getTriggerId())) {
+                    inputNotMatchesIncrement = false;
+                    break;
+                }
+            }
+            // If it does not match, we should not keep the execution
+            if (inputNotMatchesIncrement) {
+                break;
             }
 
             // process normal
@@ -756,8 +782,32 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         List<Object> children = cobiGen.resolveContainers(inputs.get(0));
+
         // we have to return one of the children do enable correct variable solution in the user interface
         return children.get(0);
+    }
+
+    /**
+     * @return the currently set input to be generated with
+     */
+    public List<Object> getCurrentDistinctInputs() {
+        if (inputs == null || inputs.size() == 0) {
+            return null;
+        }
+
+        // we currently only supporting one container at a time as valid selection
+        List<Object> children = cobiGen.resolveContainers(inputs.get(0));
+
+        // We only want distinct values (objects with different types) from the list
+        children = children.stream().filter(distinctByType(Object::getClass)).collect(Collectors.toList());
+
+        // we have to return one of the children do enable correct variable solution in the user interface
+        return children;
+    }
+
+    public static <T> Predicate<T> distinctByType(Function<? super T, ?> typeExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(typeExtractor.apply(t));
     }
 
     /**
