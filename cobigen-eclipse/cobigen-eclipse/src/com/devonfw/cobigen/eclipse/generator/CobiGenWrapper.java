@@ -805,6 +805,17 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         return children;
     }
 
+    /**
+     * Lambda function used to filter a list by an item property. It will return a list of items that meet the
+     * condition without duplicates. For instance, we use this for just getting a list of the inputs that have
+     * different types (instead of having 5 entities and 4 components, we would have just one entity and one
+     * component on the list)
+     * @param <T>
+     *            Any kind of object will be used
+     * @param typeExtractor
+     *            the function (condition) that will be applied to the list
+     * @return a filtered list without duplicated values on the property
+     */
     public static <T> Predicate<T> distinctByType(Function<? super T, ?> typeExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(typeExtractor.apply(t));
