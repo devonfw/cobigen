@@ -181,12 +181,14 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Tries to get a component from the components list using as parameter the component name
      * @param componentName
-     * @return
+     *            component name to search
+     * @return the component if it was found on the list or otherwise a new ComponentDef
      */
     private ComponentDef getComponent(String componentName) {
         for (ComponentDef componentDef : components) {
-            if (componentDef.getName() == componentName) {
+            if (componentDef.getName().equals(componentName)) {
                 return componentDef;
             }
         }
