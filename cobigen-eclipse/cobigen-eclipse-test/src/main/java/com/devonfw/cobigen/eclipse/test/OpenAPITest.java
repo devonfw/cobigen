@@ -141,7 +141,7 @@ public class OpenAPITest extends SystemTest {
     }
 
     /**
-     * Test for external projects (not in workspace) taken as input for generation
+     * Testing generation for ComponentDefs
      * @throws Exception
      *             test fails
      */

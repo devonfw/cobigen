@@ -797,7 +797,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             return null;
         }
 
-        // we currently only supporting one container at a time as valid selection
         List<Object> children = cobiGen.resolveContainers(inputs.get(0));
 
         // We only want distinct values (objects with different types) from the list
