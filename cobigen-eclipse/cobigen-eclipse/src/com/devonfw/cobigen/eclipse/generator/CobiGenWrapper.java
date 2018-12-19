@@ -647,6 +647,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private <T extends IncrementTo> Map<String, Set<TemplateTo>> getTemplateDestinationPaths(Collection<T> increments,
         Object input) {
 
+        List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
+
         boolean cachingEnabled = input == getCurrentRepresentingInput();
 
         Map<String, Set<TemplateTo>> result = Maps.newHashMap();
@@ -667,16 +669,16 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             // Now we need to check whether the input matches the increment
             boolean inputNotMatchesIncrement = true;
-            for (IncrementTo inc : cobiGen.getMatchingIncrements(input)) {
+            for (IncrementTo inc : matchingIncrements) {
                 // If at least one triggerID is present, then the input is valid for this increment
                 if (inc.getTriggerId().equals(increment.getTriggerId())) {
                     inputNotMatchesIncrement = false;
                     break;
                 }
             }
-            // If it does not match, we should not keep the execution
+            // If it does not match, we should not keep the execution for this increment
             if (inputNotMatchesIncrement) {
-                break;
+                continue;
             }
 
             // process normal

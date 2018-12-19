@@ -139,4 +139,74 @@ public class OpenAPITest extends SystemTest {
                     "}");
         }
     }
+
+    /**
+     * Test for external projects (not in workspace) taken as input for generation
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testServiceBasedOpenAPIGeneration() throws Exception {
+
+        // copy sample project to external location and import it into the workspace
+        String testProjName = "ExtTestProj";
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjName);
+        FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
+            project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        EclipseUtils.updateMavenProject(bot, testProjName);
+        bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+
+        EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+        EclipseUtils.openErrorsTreeInProblemsView(bot);
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "devonfw.yml");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "View Component");
+        // increase timeout as the openAPI parser is slow on initialization
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+        IFile generationResult =
+            proj.getFile("src/main/java/app/api/sampledatamanagement/sampledatamanagementRestController.service.ts");
+
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
+                "import { SampleData } from '../model/sampledataEto';" + LINE_SEPARATOR + LINE_SEPARATOR + //
+                    "@Injectable() export class sampledatamanagementRestControllerService {" + LINE_SEPARATOR + //
+                    "public customMethod(query: string, observe: undefined, reportProgress: boolean): Observable < SampleData > {"
+                    + LINE_SEPARATOR + //
+                    "    return this.httpClient.get < SampleData > (`${this.basePath}/sampledatamanagement/sampledata/custom/{id}/${encodeURIComponent(String(query))}`;"
+                    + LINE_SEPARATOR + //
+                    "    }" + LINE_SEPARATOR + //
+                    "    public deleteCustomSampleData(query: string, observe: undefined, reportProgress: boolean): Observable < SampleData > {"
+                    + LINE_SEPARATOR + //
+                    "    return this.httpClient.get < SampleData > (`${this.basePath}/sampledatamanagement/Delegates to {@link Sampledatamanagement#deleteSampleData}.//sampledata/custom/{id}/${encodeURIComponent(String(query))}`;"
+                    + LINE_SEPARATOR + "}" + LINE_SEPARATOR
+                    + "public saveCustomSampleData(query: string, observe: undefined, reportProgress: boolean): Observable < SampleData > {"
+                    + LINE_SEPARATOR
+                    + "return this.httpClient.get < SampleData > (`${this.basePath}/sampledatamanagement/Delegates to {@link Sampledatamanagement#saveSampleData}.//sampledata/customSave/${encodeURIComponent(String(query))}`;"
+                    + LINE_SEPARATOR + "}" + LINE_SEPARATOR
+                    + "public findCustomSampleDataEtos(query: string, observe: undefined, reportProgress: boolean): Observable < SampleData > {"
+                    + LINE_SEPARATOR
+                    + "return this.httpClient.get < SampleData > (`${this.basePath}/sampledatamanagement/Delegates to {@link Moredatamanagement#findMoreDataEtos}.//sampledata/customSearch/${encodeURIComponent(String(query))}`;"
+                    + LINE_SEPARATOR + "}" + LINE_SEPARATOR + "}");
+        }
+
+        generationResult =
+            proj.getFile("src/main/java/app/api/moredatamanagement/moredatamanagementRestController.service.ts");
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
+                LINE_SEPARATOR + LINE_SEPARATOR + LINE_SEPARATOR + LINE_SEPARATOR + "@Injectable()" + LINE_SEPARATOR + //
+                    "export class moredatamanagementRestControllerService {" + LINE_SEPARATOR + //
+                    LINE_SEPARATOR + //
+                    "}");
+        }
+    }
 }
