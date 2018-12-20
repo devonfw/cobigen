@@ -8,4 +8,12 @@
       <variableAssignment type="property" key="entityName" value="name"/>
     </matcher>
   </trigger>
+  <trigger id="crud_openapi_angular_service_based_app" type="openapi" templateFolder="templates_service">
+    <containerMatcher type="element" value="openAPIFile"/>
+    <matcher type="element" value="ComponentDef">
+      <variableAssignment type="constant" key="domain" value="demo"/>
+      <variableAssignment type="property" key="component" value="name"/>
+      <variableAssignment type="property" key="etoName" value="name"/>
+    </matcher>
+  </trigger>
 </contextConfiguration>
