@@ -6,6 +6,8 @@
     <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="model.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
@@ -23,6 +25,7 @@
       <incrementRef ref="app_angular_env"/>
       <incrementRef ref="app_angular_i18n"/>
       <incrementRef ref="app_angular_oasp4j_component"/>
+      <incrementRef ref="app_angular_service_based"/>
     </increment>
     <increment name="app_angular_env" description="Server URL Registration">
       <templateRef ref="environment.ts"/>
@@ -31,6 +34,10 @@
     <increment name="app_angular_i18n" description="i18n">
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
+    </increment>
+    <increment name="app_angular_service_based" description="model">
+      <templateRef ref="model.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.ts"/>
     </increment>
     <increment name="app_angular_oasp4j_component" description="View Component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
