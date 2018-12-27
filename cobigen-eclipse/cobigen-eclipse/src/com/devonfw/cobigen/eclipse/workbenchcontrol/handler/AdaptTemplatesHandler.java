@@ -9,12 +9,8 @@ import java.util.Comparator;
 import java.util.UUID;
 
 import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -22,9 +18,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.m2e.core.ui.internal.actions.EnableNatureAction;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ICommandService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -73,18 +70,8 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                 try {
                     String fileName = ResourcesPluginUtil.downloadJar(true);
                     ResourcesPluginUtil.processJar(fileName);
-                    try {
-                        importProjectIntoWorkspace();
-                    } catch (NotDefinedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (NotEnabledException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (NotHandledException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+
+                    importProjectIntoWorkspace();
                     dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                         "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION,
                         new String[] { "Ok" }, 1);
@@ -107,20 +94,12 @@ public class AdaptTemplatesHandler extends AbstractHandler {
 
     /**
      * CobiGen_Templates folder created at main folder using source jar will be imported into workspace
-     * @throws NotHandledException
-     * @throws NotEnabledException
-     * @throws NotDefinedException
-     * @throws ExecutionException
      */
-    private void importProjectIntoWorkspace()
-        throws ExecutionException, NotDefinedException, NotEnabledException, NotHandledException {
+    private void importProjectIntoWorkspace() {
         ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 
-        ICommandService commandService =
-            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getService(ICommandService.class);
-
-        Command command = commandService.getCommand("org.eclipse.m2e.enableNatureAction");
-        command.executeWithChecks(new ExecutionEvent());
+        // Class that contains the logic of the command 'configure -> to Maven Project'
+        EnableNatureAction mavenConverter = new EnableNatureAction();
 
         progressMonitor.open();
         progressMonitor.getProgressMonitor().beginTask("Importing templates...", 0);
@@ -130,7 +109,15 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(project.getName());
             description.setLocation(new org.eclipse.core.runtime.Path(ws.toPortableString() + "/CobiGen_Templates"));
             project.create(description, null);
+
+            // We set the current project to be converted to a Maven project
+            ISelection sel = new StructuredSelection(project);
+            mavenConverter.selectionChanged(null, sel);
+
             project.open(null);
+
+            // Converts the current project to a Maven project
+            mavenConverter.run(null);
             progressMonitor.close();
 
         } catch (CoreException e) {
