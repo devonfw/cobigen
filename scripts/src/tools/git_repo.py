@@ -138,13 +138,11 @@ class GitRepo:
     def init_submodule(self, submodule_path: str) -> None:               
         self.__repo.git.submodule("init") 
         self.__repo.git.execute("git submodule init")        
-        
+        self.__repo.git.submodule("update")
                          
 
     def update_submodule(self, submodule_path: str) -> None:
-        sm_repo = GitRepo(self.__config, submodule_path)         
-        self.__repo.git.execute('git symbolic-ref HEAD refs/heads/master')        
-        self.__repo.git.execute('git reset')               
+        sm_repo = GitRepo(self.__config, submodule_path)                      
         sm_repo.checkout('master')     
         sm_repo.pull()
 
