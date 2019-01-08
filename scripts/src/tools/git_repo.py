@@ -1,7 +1,6 @@
 import sys
 import re
 import os
-
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from git.repo.base import Repo
 from typing import List
@@ -136,10 +135,15 @@ class GitRepo:
                 self.__repo.git.execute("git merge --abort")
                 self.reset()
                 sys.exit()
+    def init_submodule(self, submodule_path: str) -> None:               
+        self.__repo.git.submodule("init") 
+        self.__repo.git.execute("git submodule init")        
+        self.__repo.git.submodule("update")
+                         
 
     def update_submodule(self, submodule_path: str) -> None:
-        sm_repo = GitRepo(self.__config, submodule_path)
-        sm_repo.checkout('master')
+        sm_repo = GitRepo(self.__config, submodule_path)                      
+        sm_repo.checkout('master')     
         sm_repo.pull()
 
         log_info("Changing the "+self.__config.wiki_version_overview_page + " file, updating the version number...")
