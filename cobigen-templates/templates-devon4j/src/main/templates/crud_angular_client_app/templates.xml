@@ -20,7 +20,7 @@
   </templateScans>
 
   <increments>
-    <increment name="app_angular_structure" description="Angular OASP4J URL">
+    <increment name="app_angular_structure" description="Angular devon4ng URL">
         <templateRef ref="environment.ts"/>
         <templateRef ref="environment.prod.ts"/>
     </increment>
@@ -28,7 +28,7 @@
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
     </increment>
-    <increment name="app_angular_oasp4j_component" description="Angular OASP4J Component">
+    <increment name="app_angular_devon4ng_component" description="Angular devon4ng Component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.spec.ts"/>

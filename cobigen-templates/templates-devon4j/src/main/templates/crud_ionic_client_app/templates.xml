@@ -26,7 +26,7 @@
   </templateScans>
 
   <increments>
-    <increment name="app_ionic_structure" description="Ionic OASP4J URL">
+    <increment name="app_ionic_structure" description="Ionic devon4n URL">
       <templateRef ref="serverPath.ts"/>
     </increment>
     <increment name="ionic_i18n" description="Ionic i18n">
@@ -47,8 +47,8 @@
       <templateRef ref="${variables.etoName#lower_case}-list.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>      
+      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>
-</templatesConfiguration> 
+</templatesConfiguration>
