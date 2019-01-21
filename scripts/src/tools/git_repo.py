@@ -1,6 +1,7 @@
 import sys
 import re
 import os
+import shutil
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from git.repo.base import Repo
 from typing import List
@@ -10,12 +11,12 @@ from tools.user_interface import prompt_yesno_question
 from tools.config import Config
 from tools.logger import log_debug, log_info, log_error, log_info_dry
 
-
+global devonfw_submodule_path
 class GitRepo:
 
     def __init__(self, config: Config, path: str = None) -> None:
         self.__config: Config = config
-
+        
         try:
             if not path:
                 self.__repo = Repo(config.root_path)
@@ -52,6 +53,7 @@ class GitRepo:
     def update_and_clean(self):
         log_info("Executing update and cleanup (git pull origin && git submodule update && git clean -fd)")
         self.pull()
+        self.__repo.git.submodule("init")        
         self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
         if not self.is_working_copy_clean():
@@ -61,8 +63,8 @@ class GitRepo:
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
-        self.__repo.git.checkout(branch_name)
-        self.update_and_clean()
+        self.__repo.git.checkout(branch_name)        
+        #self.update_and_clean()
 
     def commit(self, commit_message: str):
         try:
@@ -135,17 +137,14 @@ class GitRepo:
                 self.__repo.git.execute("git merge --abort")
                 self.reset()
                 sys.exit()
-    def init_submodule(self, submodule_path: str) -> None:               
-        self.__repo.git.submodule("init") 
-        self.__repo.git.execute("git submodule init")        
-        self.__repo.git.submodule("update")
-                         
+    def init_submodule(self, submodule_path: str) -> None:       
+        log_info("init submodule method")                
 
     def update_submodule(self, submodule_path: str) -> None:
         sm_repo = GitRepo(self.__config, submodule_path)                      
         sm_repo.checkout('master')     
         sm_repo.pull()
-
+        
         log_info("Changing the "+self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl+" v"+self.__config.release_version
