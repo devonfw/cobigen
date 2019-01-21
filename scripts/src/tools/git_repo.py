@@ -1,7 +1,6 @@
 import sys
 import re
 import os
-import shutil
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from git.repo.base import Repo
 from typing import List
@@ -11,7 +10,7 @@ from tools.user_interface import prompt_yesno_question
 from tools.config import Config
 from tools.logger import log_debug, log_info, log_error, log_info_dry
 
-global devonfw_submodule_path
+
 class GitRepo:
 
     def __init__(self, config: Config, path: str = None) -> None:
