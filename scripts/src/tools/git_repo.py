@@ -63,7 +63,7 @@ class GitRepo:
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
         self.__repo.git.checkout(branch_name)        
-        #self.update_and_clean()
+        self.update_and_clean()
 
     def commit(self, commit_message: str):
         try:
@@ -136,8 +136,7 @@ class GitRepo:
                 self.__repo.git.execute("git merge --abort")
                 self.reset()
                 sys.exit()
-    def init_submodule(self, submodule_path: str) -> None:       
-        log_info("init submodule method")                
+               
 
     def update_submodule(self, submodule_path: str) -> None:
         sm_repo = GitRepo(self.__config, submodule_path)                      
