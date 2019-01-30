@@ -92,7 +92,7 @@
 </#macro>
 
 <#-- -------------------- -->
-<#-- OASP SPECIFIC MACROS -->
+<#-- Devon SPECIFIC MACROS -->
 <#-- -------------------- -->
 
 <#--
@@ -104,7 +104,7 @@
 <#assign typeVar = JavaUtil.getExtType(fieldType)>
 <#if typeVar?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
   <#if !JavaUtil.isCollection(classObject, field["@name"])> <#-- do not generate field for multiple relation -->
-     private ${typeVar?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
+     private ${typeVar?replace("[^<>,]+Entity","Long","r")} ${DevonUtil.resolveIdVariableName(classObject,field)};
   </#if>
 <#elseif typeVar?contains("Embeddable")>
   <#if isSearchCriteria>
@@ -140,14 +140,14 @@
 <#assign typeVar = JavaUtil.getExtType(fieldType)>
 <#if typeVar?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    <#if !JavaUtil.isCollection(classObject, field["@name"])> <#-- do not generate getters & setters for multiple relation -->
-      <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+      <#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
       <#if implementsInterface>@Override</#if>
-      public ${OaspUtil.getSimpleEntityTypeAsLongReference(typeVar)} ${OaspUtil.resolveIdGetter(typeVar,false,"")} <#if isInterface>;<#else>{
+      public ${DevonUtil.getSimpleEntityTypeAsLongReference(typeVar)} ${DevonUtil.resolveIdGetter(typeVar,false,"")} <#if isInterface>;<#else>{
         return ${idVar};
       }</#if>
     
       <#if implementsInterface>@Override</#if>
-      public void ${OaspUtil.resolveIdSetter(typeVar,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(typeVar)} ${idVar}) <#if isInterface>;<#else>{
+      public void ${DevonUtil.resolveIdSetter(typeVar,false,"")}(${DevonUtil.getSimpleEntityTypeAsLongReference(typeVar)} ${idVar}) <#if isInterface>;<#else>{
         this.${idVar} = ${idVar};
       }</#if>
    </#if>

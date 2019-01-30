@@ -19,10 +19,10 @@
   </templateScans>
 
   <increments>
-    <increment name="oasp4js-app" description="CRUD devon4ng Angular App">
+    <increment name="devon4js-app" description="CRUD devon4ng Angular App">
       <incrementRef ref="app_angular_env"/>
       <incrementRef ref="app_angular_i18n"/>
-      <incrementRef ref="app_angular_oasp4j_component"/>
+      <incrementRef ref="app_angular_devon4j_component"/>
     </increment>
     <increment name="app_angular_env" description="Server URL Registration">
       <templateRef ref="environment.ts"/>
@@ -32,7 +32,7 @@
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
     </increment>
-    <increment name="app_angular_oasp4j_component" description="View Component">
+    <increment name="app_angular_devon4j_component" description="View Component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.spec.ts"/>
