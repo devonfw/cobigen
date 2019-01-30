@@ -12,7 +12,7 @@
     "Language": "Idioma"
   },
   "header": {
-    "title": "OASP4JS",
+    "title": "devon4JS",
     "error": "LOGIN ERROR",
     "EN": "English",
     "ES": "Spanish"

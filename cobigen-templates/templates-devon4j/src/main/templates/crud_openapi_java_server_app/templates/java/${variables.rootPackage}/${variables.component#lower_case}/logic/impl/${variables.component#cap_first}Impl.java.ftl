@@ -51,7 +51,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     
         <#list model.component.paths as path>
   	<#list path.operations as operation>
-  		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
+  		<#if !DevonUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
         <#assign responses=operation.responses>
         <#list responses as response>

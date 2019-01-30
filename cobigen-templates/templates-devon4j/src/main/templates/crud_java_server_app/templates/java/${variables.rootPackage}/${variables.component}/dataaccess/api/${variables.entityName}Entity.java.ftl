@@ -21,7 +21,7 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
    <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
       @Override
       @Transient
-      public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field, false,"")} {
+      public ${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonUtil.resolveIdGetter(field, false,"")} {
     
       if (this.${field.name} == null) {
           return null;
@@ -29,9 +29,9 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
         return this.${field.name}.getId();
       }
     
-      <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+      <#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
       @Override
-      public void ${OaspUtil.resolveIdSetter(field,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+      public void ${DevonUtil.resolveIdSetter(field,false,"")}(${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
     
         if (${idVar} == null) {
           this.${field.name} = null;
