@@ -14,6 +14,7 @@ import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent }                           from '@angular/common/http';
 <#compress>
 import { Observable }                                        from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 <#assign entityRef = "false">
 
@@ -31,33 +32,15 @@ import { Observable }                                        from 'rxjs';
 import { ${entityRef.name} } from '../../model/${entityRef.name?lower_case}';
 </#if>
 </#compress>
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 
 @Injectable()
 export class ${variables.component?cap_first}RestControllerService {
 
-    protected basePath: string = 'https://localhost:8081';
+    protected basePath: string = environment.restPathRoot;
     public defaultHeaders: HttpHeaders = new HttpHeaders();
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string) {
-        if (basePath) {
-            this.basePath = basePath;
-        }
-    }
+    constructor(protected httpClient: HttpClient) {}
 
-    /**
-     * @param consumes string[] mime-types
-     * @return true: consumes contains 'multipart/form-data', false: otherwise
-     */
-    private canConsumeForm(consumes: string[]): boolean {
-        const form: string = 'multipart/form-data';
-        for (let consume of consumes) {
-            if (form === consume) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 <#list model.paths as path>
 <#list path.operations as operation>
@@ -81,13 +64,8 @@ export class ${variables.component?cap_first}RestControllerService {
      * <#if operation.operationId??>${operation.operationId}</#if>
      *
      * @param query query
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
      */
-    public <#if operation.operationId??>${operation.operationId}</#if>(query?: string, observe?: 'body', reportProgress?: boolean): Observable<<#if entityRef != "false">${entityRef.name}</#if>>;
-    public <#if operation.operationId??>${operation.operationId}</#if>(query?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<<#if entityRef != "false">${entityRef.name}</#if>>>;
-    public <#if operation.operationId??>${operation.operationId}</#if>(query?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<<#if entityRef != "false">${entityRef.name}</#if>>>;
-    public <#if operation.operationId??>${operation.operationId}</#if>(query?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public <#if operation.operationId??>${operation.operationId}</#if>(query?: string): Observable<<#if entityRef != "false">${entityRef.name}</#if>> {
 
         let queryParameters: HttpParams = new HttpParams();
         if (query !== undefined) {
@@ -97,21 +75,16 @@ export class ${variables.component?cap_first}RestControllerService {
         let headers: HttpHeaders = this.defaultHeaders;
 
         // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
+        const httpHeaderAccepts: string[] = [
             '*/*',
         ];
 
-        // to determine the Content-Type header
-        let consumes: string[] = [
-            'application/json',
-        ];
+        headers = headers.set("Accept", httpHeaderAccepts);
 
         return this.httpClient.get<<#if entityRef != "false">${entityRef.name}</#if>>(`${r"${this.basePath}"}/${variables.component?lower_case}<#if operation.summary??>/${operation.summary}</#if><#if path.pathURI??>${path.pathURI}</#if>${r"${encodeURIComponent(String(query))}"}`,
             {
                 params: queryParameters,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress,
+                headers: headers
             }
         );
     }
