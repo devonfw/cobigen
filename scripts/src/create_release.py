@@ -130,8 +130,7 @@ if config.test_run:
 
 if continue_run:
     log_info("TODO: if this step fails, it means you need to do a git submodule init and git submodule update on branch " + config.branch_to_be_released)
-    git_repo.assure_clean_working_copy()
-    git_repo.init_submodule(config.wiki_submodule_path)
+    git_repo.assure_clean_working_copy()    
     git_repo.update_submodule(config.wiki_submodule_path)
     git_repo.add_submodule(config.wiki_submodule_name)
     git_repo.commit("update wiki docs")
