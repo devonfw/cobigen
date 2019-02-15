@@ -11,4 +11,10 @@ public class Constants {
     /** Bundled TS Merger script */
     public static final String TSMERGER_JS = "ts-merger.js";
 
+    /** Needed engine name for executing JS */
+    public static final String ENGINE_JS = "Graal.js";
+
+    /** Export statement regex */
+    public static final String EXPORT_REGEX = "export\\s+([^\\s]+)";
+
 }
