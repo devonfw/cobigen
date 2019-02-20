@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,6 +42,17 @@ public class TypeScriptMerger implements Merger {
 
     /** Cached script engines to not evaluate dependent scripts again and again */
     private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
+
+    public static final Map<String, Boolean> EXPORT_TYPES;
+
+    static {
+        final Map<String, Boolean> exportTypes = new HashMap<>();
+        exportTypes.put("class", false);
+        exportTypes.put("interface", false);
+        exportTypes.put("const", false);
+
+        EXPORT_TYPES = Collections.unmodifiableMap(exportTypes);
+    }
 
     /**
      * Creates a new {@link TypeScriptMerger}
@@ -180,38 +192,16 @@ public class TypeScriptMerger implements Merger {
             if (matcher.find() == false) {
                 return false;
             }
+            String exportType = matcher.group(1).toLowerCase();
 
-            switch (matcher.group(1).toLowerCase()) {
-            case "class":
+            if (Constants.NOT_EXPORT_TYPES.get(exportType) == null) {
+                return true;
+            } else {
                 return false;
-            case "interface":
-                return false;
-            case "const":
-                return false;
-            case "function":
-                return false;
-            case "enum":
-                return false;
-            case "let":
-                return false;
-            case "var":
-                return false;
-            case "public":
-                return false;
-            case "namespace":
-                return false;
-            case "default":
-                return false;
-            case "=":
-                return false;
-            default:
-                break;
             }
         } else {
             return false;
         }
-
-        return true;
     }
 
 }

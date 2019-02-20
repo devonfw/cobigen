@@ -47,7 +47,7 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
         assertThat(mergedContents).contains("export { e, g } from 'f';");
-        assertThat(mergedContents).contains("interface a {");
+        assertThat(mergedContents).contains("export interface a {");
         assertThat(mergedContents).contains("private b: number;");
         // assertThat(mergedContents).containsPattern(regex);
 
@@ -62,7 +62,7 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
         assertThat(mergedContents).contains("export { e, g } from 'f';");
-        assertThat(mergedContents).contains("interface a {");
+        assertThat(mergedContents).contains("export interface a {");
         assertThat(mergedContents).contains("private b: number;");
         // assertThat(mergedContents).containsPattern(regex);
     }

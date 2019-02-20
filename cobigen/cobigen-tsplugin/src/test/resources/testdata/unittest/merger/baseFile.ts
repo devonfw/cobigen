@@ -17,6 +17,6 @@ class a {
 	}
 }
 
-interface a { 
+export interface a { 
   private b: number;
 }
