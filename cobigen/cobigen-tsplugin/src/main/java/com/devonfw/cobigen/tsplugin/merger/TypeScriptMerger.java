@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -91,7 +93,7 @@ public class TypeScriptMerger implements Merger {
 
         if (!scriptEngines.containsKey(scriptName)) {
 
-            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("nashorn");
+            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName(Constants.ENGINE_JS);
 
             Compilable jsCompilable = (Compilable) jsEngine;
             CompiledScript jsScript;
@@ -139,17 +141,18 @@ public class TypeScriptMerger implements Merger {
      * @return merged contents already beautified
      */
     private String runBeautifierExcludingImports(File base, String mergedContents) {
-        StringBuilder imports = new StringBuilder();
+        StringBuilder importsAndExports = new StringBuilder();
         StringBuilder body = new StringBuilder();
 
         try (StringReader inR = new StringReader(mergedContents); BufferedReader br = new BufferedReader(inR)) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("import ")) {
-                    imports.append(line);
-                    imports.append(LINE_SEP);
+                if (line.startsWith("import ") || isExportStatement(line)) {
+                    importsAndExports.append(line);
+                    importsAndExports.append(LINE_SEP);
                 } else {
                     body.append(line);
+                    body.append(LINE_SEP);
                 }
             }
         } catch (IOException e) {
@@ -160,7 +163,33 @@ public class TypeScriptMerger implements Merger {
             executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
                 "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
 
-        return imports + LINE_SEP + LINE_SEP + formattedBody;
+        return importsAndExports + LINE_SEP + LINE_SEP + formattedBody;
+    }
+
+    /**
+     * Check whether this line is an export statement, taking into account that "export class" is not an
+     * export statement.
+     * @param line
+     *            line to check whether it is an export
+     * @return true if it is a real export
+     */
+    private boolean isExportStatement(String line) {
+        if (line.startsWith("export ")) {
+            Pattern pattern = Pattern.compile(Constants.EXPORT_REGEX);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find() == false) {
+                return false;
+            }
+            String exportType = matcher.group(1).toLowerCase();
+
+            if (Constants.NOT_EXPORT_TYPES.get(exportType) == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 }
