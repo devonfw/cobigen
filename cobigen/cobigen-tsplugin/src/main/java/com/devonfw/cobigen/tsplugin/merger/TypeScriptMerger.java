@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -42,17 +41,6 @@ public class TypeScriptMerger implements Merger {
 
     /** Cached script engines to not evaluate dependent scripts again and again */
     private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
-
-    public static final Map<String, Boolean> EXPORT_TYPES;
-
-    static {
-        final Map<String, Boolean> exportTypes = new HashMap<>();
-        exportTypes.put("class", false);
-        exportTypes.put("interface", false);
-        exportTypes.put("const", false);
-
-        EXPORT_TYPES = Collections.unmodifiableMap(exportTypes);
-    }
 
     /**
      * Creates a new {@link TypeScriptMerger}

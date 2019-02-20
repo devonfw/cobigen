@@ -21,6 +21,7 @@ public class Constants {
     /** Export statement regex */
     public static final String EXPORT_REGEX = "export\\s+([^\\s]+)";
 
+    /** We want to check whether it is a real export statement, not like the type "export class a" */
     public static final Map<String, Boolean> NOT_EXPORT_TYPES;
 
     static {
