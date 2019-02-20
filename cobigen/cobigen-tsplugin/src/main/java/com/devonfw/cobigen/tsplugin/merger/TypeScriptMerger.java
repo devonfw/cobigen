@@ -93,7 +93,7 @@ public class TypeScriptMerger implements Merger {
 
         if (!scriptEngines.containsKey(scriptName)) {
 
-            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("Graal.js");
+            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName(Constants.ENGINE_JS);
 
             Compilable jsCompilable = (Compilable) jsEngine;
             CompiledScript jsScript;

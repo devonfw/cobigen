@@ -36,72 +36,6 @@
       <scope>test</scope>
     </dependency>
     
-    <!-- GraalJS needed dependencies start -->
-    <dependency>
-      <groupId>org.graalvm.sdk</groupId>
-      <artifactId>graal-sdk</artifactId>
-      <version>1.0.0-rc12</version>
-    </dependency>
-    <dependency>
-      <groupId>jline</groupId>
-      <artifactId>jline</artifactId>
-      <version>2.14.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm.truffle</groupId>
-      <artifactId>truffle-api</artifactId>
-      <version>1.0.0-rc12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>62.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-util</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-commons</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-analysis</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-tree</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    
-  <!-- GraalJS needed dependencies on Nexus3 -->
-    <dependency>
-      <groupId>org.graalvm</groupId>
-      <artifactId>graal-js</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm</groupId>
-      <artifactId>graaljs-scriptengine</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle.truffle.regex</groupId>
-      <artifactId>tregex</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-
-    <!-- GraalJS needed dependencies end -->
-    
   </dependencies>
 
   <build>
@@ -118,7 +52,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://registry.npmjs.org/@devonfw/ts-merger/-/ts-merger-2.1.1.tgz</url>
+              <url>https://registry.npmjs.org/@devonfw/ts-merger/-/ts-merger-2.2.3.tgz</url>
               <outputFileName>ts-merger.tgz</outputFileName>
               <skipCache>true</skipCache>
               <outputDirectory>${project.build.directory}/download</outputDirectory>

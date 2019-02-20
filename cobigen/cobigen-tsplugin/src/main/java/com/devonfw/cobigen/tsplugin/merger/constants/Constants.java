@@ -12,7 +12,7 @@ public class Constants {
     public static final String TSMERGER_JS = "ts-merger.js";
 
     /** Needed engine name for executing JS */
-    public static final String ENGINE_JS = "Graal.js";
+    public static final String ENGINE_JS = "nashorn";
 
     /** Export statement regex */
     public static final String EXPORT_REGEX = "export\\s+([^\\s]+)";
