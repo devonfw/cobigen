@@ -11,7 +11,7 @@ import javax.persistence.Transient;
  * Data access object for ${variables.entityName} entities
  */
 @Entity
-@javax.dataaccess.Table(name = "${variables.entityName}")
+@javax.persistence.Table(name = "${variables.entityName}")
 public class ${pojo.name} extends ApplicationPersistenceEntity implements ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
@@ -22,17 +22,17 @@ public class ${pojo.name} extends ApplicationPersistenceEntity implements ${vari
       @Override
       @Transient
       public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field, false,"")} {
-    
+
       if (this.${field.name} == null) {
           return null;
         }
         return this.${field.name}.getId();
       }
-    
+
       <#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
       @Override
       public void ${OaspUtil.resolveIdSetter(field,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
-    
+
         if (${idVar} == null) {
           this.${field.name} = null;
         } else {

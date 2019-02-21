@@ -5,8 +5,8 @@
   <artifactId>templates-devon4j</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>CobiGen OASP4J Templates</name>
-  <description>CobiGen OASP4J Templates</description>
+  <name>CobiGen devon4j Templates</name>
+  <description>CobiGen devon4j Templates</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>

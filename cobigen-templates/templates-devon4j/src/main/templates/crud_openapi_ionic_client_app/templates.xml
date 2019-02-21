@@ -27,12 +27,12 @@
   </templateScans>
 
   <increments>
-    <increment name="oasp4js-app" description="CRUD devon4ng Ionic App">
+    <increment name="devon4ng-app" description="CRUD devon4ng Ionic App">
       <incrementRef ref="app_ionic_structure"/>
       <incrementRef ref="ionic_i18n"/>
       <incrementRef ref="ionic_component"/>
     </increment>
-  
+
     <increment name="app_ionic_structure" description="Server URL Registration">
       <templateRef ref="serverPath.ts"/>
     </increment>
@@ -55,7 +55,7 @@
       <templateRef ref="${variables.etoName#lower_case}-list.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>      
+      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>
