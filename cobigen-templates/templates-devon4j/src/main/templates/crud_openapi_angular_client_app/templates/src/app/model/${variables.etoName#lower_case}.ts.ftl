@@ -14,17 +14,10 @@
 </#compress>
 
 export interface ${variables.etoName?cap_first} {
+<#compress>
 <#list model.properties as property>
     ${property.name}?: ${property.type};
 </#list>
-}
-
-<#compress>
-/**
- * <#if model.description??> Entity description: ${model.description} </#if>
-<#list model.properties as property>
- * <#if property.description??> Property description: ${property.description} </#if>
- * <#if property.format??> ${property.format} </#if>
-</#list>
 </#compress>
- */
+
+}

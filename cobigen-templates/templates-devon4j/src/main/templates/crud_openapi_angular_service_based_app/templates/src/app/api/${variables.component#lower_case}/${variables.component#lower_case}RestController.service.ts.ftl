@@ -39,27 +39,10 @@ export class ${variables.component?cap_first}RestControllerService {
     protected basePath: string = environment.restPathRoot;
     public defaultHeaders: HttpHeaders = new HttpHeaders();
 
-    constructor(protected httpClient: HttpClient) {}
-
-
+    constructor(private httpClient: HttpClient) {}
 <#list model.paths as path>
 <#list path.operations as operation>
-  <#if operation.type??>  // Operation type: ${operation.type}</#if>
-  <#if operation.description??>  // Operation description: ${operation.description}</#if>
-  <#if operation.tag??>  //  Operation tag:<#list operation.tags as tag> ${operation.tag} </#list></#if>
-  <#if operation.responses??>  //  <#list operation.responses as response> <#if response.type??> Response type: ${response.type}</#if>
-  <#if response.code??>  // Response code: ${response.code}</#if>
-  <#if response.description??>  // Response description: ${response.description}</#if>
-  <#if response.mediaTypes??>  // <#list response.mediaTypes as mediaType> Media Type: ${mediaType}</#list></#if>
-  <#if response.parameters??>  // <#list response.parameters as parameter> Parameter: ${parameter.mediaType}</#list></#if></#list></#if>
-  	
-  	<#if path.version??>	
-    /**
-     * Path version: ${path.version}
-     */
-  	</#if>
-  
-  
+
     /**
      * <#if operation.operationId??>${operation.operationId}</#if>
      *
@@ -79,16 +62,13 @@ export class ${variables.component?cap_first}RestControllerService {
             '*/*',
         ];
 
-        headers = headers.set("Accept", httpHeaderAccepts);
+        headers = headers.set('Accept', httpHeaderAccepts);
 
         return this.httpClient.get<<#if entityRef != "false">${entityRef.name}</#if>>(`${r"${this.basePath}"}/${variables.component?lower_case}<#if operation.summary??>/${operation.summary}</#if><#if path.pathURI??>${path.pathURI}</#if>${r"${encodeURIComponent(String(query))}"}`,
             {
                 params: queryParameters,
-                headers: headers
-            }
+                headers: headers,
+            },
         );
-    }
-  		</#list>
-	</#list>
-
+    }</#list></#list>
 }
