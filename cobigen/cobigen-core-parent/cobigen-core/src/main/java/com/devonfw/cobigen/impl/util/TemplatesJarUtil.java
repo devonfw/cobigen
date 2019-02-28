@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 
 /**
- *
+ * Utilities related to the templates jar. Includes the downloading, retrieval of the jar and the checkup of
+ * the templates version, to know if they are outdated.
  */
 public class TemplatesJarUtil {
 
@@ -34,11 +35,7 @@ public class TemplatesJarUtil {
 
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(lowercaseName);
-            if (m.find()) {
-                return true;
-            } else {
-                return false;
-            }
+            return m.find();
         }
     };
 
@@ -54,13 +51,69 @@ public class TemplatesJarUtil {
 
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(lowercaseName);
-            if (m.find()) {
-                return true;
-            } else {
-                return false;
-            }
+            return m.find();
         }
     };
+
+    /**
+     * @param groupId
+     *            of the artifact to download
+     * @param artifactId
+     *            of the artifact to download
+     * @param version
+     *            of the artifact to download
+     * @param isDownloadSource
+     *            true if downloading source jar file
+     * @param templatesDirectory
+     *            directory where the templates jar are located
+     * @return fileName Name of the file downloaded
+     * @throws MalformedURLException
+     *             {@link MalformedURLException} occurred
+     * @throws IOException
+     *             {@link IOException} occurred
+     */
+    public static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
+        File templatesDirectory) throws MalformedURLException, IOException {
+
+        // By default the version should be latest
+        if (version.isEmpty() || version == null) {
+            version = "LATEST";
+        }
+
+        String mavenUrl = "https://repository.sonatype.org/service/local/artifact/maven/"
+            + "redirect?r=central-proxy&g=" + groupId + "&a=" + artifactId + "&v=" + version;
+        ;
+        if (isDownloadSource) {
+            mavenUrl = mavenUrl + "&c=sources";
+        }
+
+        String fileName = "";
+
+        File[] jarFiles;
+
+        if (isDownloadSource) {
+            jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
+        } else {
+            jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
+        }
+
+        if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
+
+            HttpURLConnection conn = initializeConnection(mavenUrl);
+            InputStream inputStream = conn.getInputStream();
+            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+            Path targetPath = file.toPath();
+            if (!file.exists()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            conn.disconnect();
+        } else {
+            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
+
+        }
+        return fileName;
+    }
 
     /**
      * @param isDownloadSource
@@ -73,10 +126,9 @@ public class TemplatesJarUtil {
      * @throws IOException
      *             {@link IOException} occurred
      */
-    public static String downloadJar(boolean isDownloadSource, File templatesDirectory)
+    public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory)
         throws MalformedURLException, IOException {
-        String mavenUrl =
-            "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-devon4j&v=LATEST";
+        String mavenUrl = TemplatesJarConstants.DEVON4J_TEMPLATES_MAVEN_URL;
         if (isDownloadSource) {
             mavenUrl = mavenUrl + "&c=sources";
         }
@@ -153,7 +205,7 @@ public class TemplatesJarUtil {
                 if (versionNumbersLatest[i] > versionNumbers[i]) {
                     if (isDownloadSource == false) {
                         // we now need to download the latest sources
-                        downloadJar(true, templatesDirectory);
+                        downloadLatestDevon4jTemplates(true, templatesDirectory);
                     }
                     jarFile.delete();
                     return true;
