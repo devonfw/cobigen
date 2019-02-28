@@ -68,7 +68,18 @@ public class AdaptTemplatesHandler extends AbstractHandler {
 
             if (result == 0) {
                 try {
-                    String fileName = ResourcesPluginUtil.downloadJar(true);
+                    String fileName = ResourcesPluginUtil.getJarPath(true);
+                    if (fileName == null) {
+                        result = createUpdateTemplatesDialog();
+                        if (result == 1) {
+                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                                "Templates have not been found, please download them!");
+                            throw new NullPointerException("Templates have not been found!");
+                        } else {
+                            fileName = ResourcesPluginUtil.downloadJar(true);
+                        }
+
+                    }
                     ResourcesPluginUtil.processJar(fileName);
 
                     importProjectIntoWorkspace();
@@ -138,5 +149,19 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      */
     void deleteDirectoryStream(Path path) throws IOException {
         Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
+
+    /**
+     * Creates a new dialog so that the user can choose between updating the templates or not
+     * @return the result of this decision, 0 if he wants to update the templates, 1 if he does not
+     */
+    private static int createUpdateTemplatesDialog() {
+        MessageDialog dialog =
+            new MessageDialog(Display.getDefault().getActiveShell(), "Generator configuration project not found!", null,
+                "CobiGen_templates folder is not imported. Do you want to download latest templates and use it", 0,
+                new String[] { "Update", "Cancel" }, 1);
+        dialog.setBlockOnOpen(true);
+        return dialog.open();
+
     }
 }
