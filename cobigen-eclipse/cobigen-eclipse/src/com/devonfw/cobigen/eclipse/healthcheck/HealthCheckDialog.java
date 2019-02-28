@@ -78,7 +78,7 @@ public class HealthCheckDialog {
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
                 CobiGenFactory.create(generatorConfProj.getLocationURI());
             } else {
-                String fileName = ResourcesPluginUtil.downloadJar(false);
+                String fileName = ResourcesPluginUtil.getJarPath(false);
 
                 File jarPath =
                     new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
@@ -153,7 +153,7 @@ public class HealthCheckDialog {
             PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
             LOG.warn(healthyCheckMessage, e);
         } catch (Throwable e) {
-            healthyCheckMessage = "An unexpected error occurred!";
+            healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
             if (report != null && healthyCheckMessage != null) {
                 healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
             }
