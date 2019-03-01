@@ -100,12 +100,14 @@ public class TemplatesJarUtil {
         if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
 
             HttpURLConnection conn = initializeConnection(mavenUrl);
-            InputStream inputStream = conn.getInputStream();
-            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-            Path targetPath = file.toPath();
-            if (!file.exists()) {
-                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream inputStream = conn.getInputStream()) {
+
+                fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+                File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+                Path targetPath = file.toPath();
+                if (!file.exists()) {
+                    Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
             conn.disconnect();
         } else {
@@ -146,12 +148,14 @@ public class TemplatesJarUtil {
         if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
 
             HttpURLConnection conn = initializeConnection(mavenUrl);
-            InputStream inputStream = conn.getInputStream();
-            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-            Path targetPath = file.toPath();
-            if (!file.exists()) {
-                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream inputStream = conn.getInputStream()) {
+
+                fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+                File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+                Path targetPath = file.toPath();
+                if (!file.exists()) {
+                    Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
             conn.disconnect();
         } else {
@@ -192,9 +196,11 @@ public class TemplatesJarUtil {
 
             // We do the same for the latest jar in Maven, therefore we need to download it
             HttpURLConnection conn = initializeConnection(mavenUrl);
-            conn.getInputStream();
-            String latestJar = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-            m = matchJarVersion(latestJar, isDownloadSource);
+            try (InputStream inputStream = conn.getInputStream()) {
+                String latestJar = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+                m = matchJarVersion(latestJar, isDownloadSource);
+            }
+
             if (m.find() == false || m.group(2).isEmpty()) {
                 return false;
             }
