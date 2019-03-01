@@ -240,11 +240,9 @@ public class TemplatesJarUtil {
      *            true if we want to get source jar file path
      * @param templatesDirectory
      *            directory where the templates are located
-     * @return fileName Name of the jar downloaded or null if it was not found
+     * @return file of the jar downloaded or null if it was not found
      */
-    public static String getJarPath(boolean isSource, File templatesDirectory) {
-
-        String fileName = "";
+    public static File getJarFile(boolean isSource, File templatesDirectory) {
 
         File[] jarFiles;
 
@@ -255,12 +253,10 @@ public class TemplatesJarUtil {
         }
 
         if (jarFiles.length > 0) {
-            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
+            return jarFiles[0];
         } else {
             // There are no jars downlaoded
             return null;
         }
-
-        return fileName;
     }
 }
