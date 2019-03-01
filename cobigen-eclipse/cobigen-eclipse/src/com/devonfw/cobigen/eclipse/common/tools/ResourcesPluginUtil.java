@@ -186,9 +186,11 @@ public class ResourcesPluginUtil {
         progressMonitor.getProgressMonitor().beginTask("downloading latest templates...", 0);
 
         File templatesDirectory = getTemplatesDirectory();
-        fileName = TemplatesJarUtil.downloadJar(isDownloadSource, templatesDirectory);
-
-        progressMonitor.close();
+        try {
+            fileName = TemplatesJarUtil.downloadLatestDevon4jTemplates(isDownloadSource, templatesDirectory);
+        } finally {
+            progressMonitor.close();
+        }
 
         return fileName;
     }
