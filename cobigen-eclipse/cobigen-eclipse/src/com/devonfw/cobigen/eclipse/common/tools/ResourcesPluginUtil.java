@@ -205,7 +205,11 @@ public class ResourcesPluginUtil {
 
         File templatesDirectory = getTemplatesDirectory();
 
-        return TemplatesJarUtil.getJarPath(isSource, templatesDirectory);
+        File jarFile = TemplatesJarUtil.getJarFile(isSource, templatesDirectory);
+
+        String fileName = jarFile.getPath().substring(jarFile.getPath().lastIndexOf(File.separator) + 1);
+
+        return fileName;
     }
 
     /**
