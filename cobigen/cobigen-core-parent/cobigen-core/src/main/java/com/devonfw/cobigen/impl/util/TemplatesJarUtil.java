@@ -130,39 +130,9 @@ public class TemplatesJarUtil {
      */
     public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory)
         throws MalformedURLException, IOException {
-        String mavenUrl = TemplatesJarConstants.DEVON4J_TEMPLATES_MAVEN_URL;
-        if (isDownloadSource) {
-            mavenUrl = mavenUrl + "&c=sources";
-        }
 
-        String fileName = "";
-
-        File[] jarFiles;
-
-        if (isDownloadSource) {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
-        } else {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
-        }
-
-        if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
-
-            HttpURLConnection conn = initializeConnection(mavenUrl);
-            try (InputStream inputStream = conn.getInputStream()) {
-
-                fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-                File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-                Path targetPath = file.toPath();
-                if (!file.exists()) {
-                    Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            conn.disconnect();
-        } else {
-            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
-
-        }
-        return fileName;
+        return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
+            TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
     }
 
     /**

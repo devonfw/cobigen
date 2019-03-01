@@ -34,8 +34,12 @@ public class TemplatesJarConstants {
     public static final String SOURCES_VERSION_REGEX_CHECK = "templates-([^-]+)-(\\d+|\\d+(\\.\\d+)*)?\\-sources.jar";
 
     /**
-     * URL of the latest devon4j templates jar on Maven Central
+     * GroupId of the latest devon4j templates jar on Maven Central
      */
-    public static final String DEVON4J_TEMPLATES_MAVEN_URL =
-        "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-devon4j&v=LATEST";
+    public static final String DEVON4J_TEMPLATES_GROUPID = "com.devonfw.cobigen";
+
+    /**
+     * ArtifactId of the latest devon4j templates jar on Maven Central
+     */
+    public static final String DEVON4J_TEMPLATES_ARTIFACTID = "templates-devon4j";
 }
