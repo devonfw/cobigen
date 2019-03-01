@@ -217,8 +217,7 @@ public class GeneratorWrapperFactory {
 
             if (generatorProj == null) {
                 throw new GeneratorCreationException(
-                    "Configuration source could not be read.\nIf you were updating templates, it may mean"
-                        + " that you have no internet connection.");
+                    "Configuration source could not be read. Have you downloaded the templates?");
             }
 
             // We need to check whether it is a valid Java Project
@@ -226,7 +225,7 @@ public class GeneratorWrapperFactory {
 
             // If it is not valid, we should use the jar
             if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-                String fileName = ResourcesPluginUtil.downloadJar(false);
+                String fileName = ResourcesPluginUtil.getJarPath(false);
                 IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
                 File file =
                     new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
