@@ -4,13 +4,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -21,14 +25,31 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.
  */
 public class TypeScriptMerger implements Merger {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TypeScriptMerger.class);
+
+    /**
+     * Instance that handles all the operations performed to the external server, like initializing the
+     * connection and sending new requests
+     */
+    ExternalProcessHandler request = ExternalProcessHandler
+        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /** OS specific line separator */
     private static final String LINE_SEP = System.getProperty("line.separator");
@@ -63,7 +84,6 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-
         String baseFileContents;
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
@@ -71,11 +91,59 @@ public class TypeScriptMerger implements Merger {
             throw new MergeException(base, "Could not read base file!", e);
         }
 
-        String mergedContents =
-            executeJS(base, invocable -> invocable.invokeFunction("merge", baseFileContents, patch, patchOverrides),
-                Constants.TSMERGER_JS);
+        MergeTO mergeTO = new MergeTO(baseFileContents, patch, patchOverrides);
 
-        return runBeautifierExcludingImports(base, mergedContents);
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
+        // Used for sending serialized objects
+        ObjectWriter objWriter;
+
+        StringBuffer importsAndExports = new StringBuffer();
+        StringBuffer body = new StringBuffer();
+        try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
+
+            objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String jsonMergerTO = objWriter.writeValueAsString(mergeTO);
+
+            // We need to escape new lines because otherwise our JSON gets corrupted
+            jsonMergerTO = jsonMergerTO.replace("\\n", "\\\\n");
+
+            osw.write(jsonMergerTO);
+            osw.flush();
+            os.close();
+            conn.connect();
+
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+            String output = "";
+
+            LOG.info("Receiving output from Server....");
+            Stream<String> s = br.lines();
+            s.parallel().forEachOrdered((String line) -> {
+                if (line.startsWith("import ") || isExportStatement(line)) {
+                    importsAndExports.append(line);
+                    importsAndExports.append(LINE_SEP);
+                } else {
+                    body.append(line);
+                    body.append(LINE_SEP);
+                }
+            });
+
+        } catch (ConnectException e) {
+
+            LOG.error("Connection to server failed, attempt number " + 0 + ".", e);
+        } catch (IOException e) {
+
+            LOG.error("IO exception when merging", e);
+        } catch (IllegalStateException e) {
+
+            LOG.error("Closing connection on InputReader.", e);
+            request.terminateProcessConnection();
+        }
+        return runBeautifierExcludingImports(base, importsAndExports.toString(), body.toString());
     }
 
     /**
@@ -138,32 +206,16 @@ public class TypeScriptMerger implements Merger {
      *            base file just for exception handling
      * @param mergedContents
      *            merged typescript code
+     * @param string
      * @return merged contents already beautified
      */
-    private String runBeautifierExcludingImports(File base, String mergedContents) {
-        StringBuilder importsAndExports = new StringBuilder();
-        StringBuilder body = new StringBuilder();
+    private String runBeautifierExcludingImports(File base, String importsAndExports, String body) {
 
-        try (StringReader inR = new StringReader(mergedContents); BufferedReader br = new BufferedReader(inR)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("import ") || isExportStatement(line)) {
-                    importsAndExports.append(line);
-                    importsAndExports.append(LINE_SEP);
-                } else {
-                    body.append(line);
-                    body.append(LINE_SEP);
-                }
-            }
-        } catch (IOException e) {
-            throw new MergeException(base, "Could not process merged contents for formatting.", e);
-        }
+        String formattedBody = "";
+        // executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
+        // "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
 
-        String formattedBody =
-            executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
-                "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
-
-        return importsAndExports + LINE_SEP + LINE_SEP + formattedBody;
+        return importsAndExports + LINE_SEP + LINE_SEP + body;
     }
 
     /**
