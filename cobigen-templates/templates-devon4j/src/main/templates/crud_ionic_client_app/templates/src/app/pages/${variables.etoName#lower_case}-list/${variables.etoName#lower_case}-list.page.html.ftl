@@ -30,48 +30,48 @@
     <ion-item-sliding *ngFor="let ${variables.etoName?lower_case} of ${variables.etoName?lower_case}s; let i = index">
       <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
-          <ion-row>
+          <ion-row class="grid-margin">
           <#list pojo.fields as field>
             <ion-col>{{${variables.etoName?lower_case}.${field.name}}}</ion-col>
           </#list>
           </ion-row>
         </ion-grid>
       </ion-item>
-      <ion-item-options icon-start (ionSwipe)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
-        <button color="danger" ion-button expandable (click)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
-          <ion-icon name="trash"></ion-icon>
-        </button>
+      <ion-item-options side="end" (ionSwipe)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
+        <ion-item-option expandable color="danger" (click)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
+          <ion-icon size="large" name="trash"></ion-icon>
+        </ion-item-option>
       </ion-item-options>
-      <ion-item-options side="left" (ionSwipe)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
-        <button ion-button color="secondary" ion-button expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
-          <ion-icon name="brush"></ion-icon>
-        </button>
+      <ion-item-options side="start" (ionSwipe)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
+        <ion-item-option expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
+          <ion-icon  size="large" name="brush"></ion-icon>
+        </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
     <ion-infinite-scroll *ngIf="infiniteScrollEnabled" (ionInfinite)="doInfinite($event)">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
-  <ion-fab bottom right>
-    <button ion-fab color="blue">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary">
       <ion-icon name="arrow-dropright"></ion-icon>
-    </button>
+    </ion-fab-button>
     <ion-fab-list side="top">
-      <button ion-fab class="fabButton" (click)="create${variables.etoName?cap_first}()" >
+      <ion-fab-button color="primary" class="fabButton fab-button-size" (click)="create${variables.etoName?cap_first}()" >
         <ion-icon name="add-circle"></ion-icon>
-      </button>
+      </ion-fab-button>
       
-      <button ion-fab (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled  > 
+      <ion-fab-button color="primary" (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled> 
         <ion-icon name="brush"></ion-icon>
-      </button>
+      </ion-fab-button>
     
-      <button ion-fab (click)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled >
+      <ion-fab-button color="primary" (click)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
         <ion-icon name="trash"></ion-icon>
-      </button>
+      </ion-fab-button>
       
-      <button ion-fab (click)="search${variables.etoName?cap_first}s()" >
+      <ion-fab-button color="primary" (click)="search${variables.etoName?cap_first}s()" >
         <ion-icon name="search"></ion-icon>
-      </button>
+      </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
 
