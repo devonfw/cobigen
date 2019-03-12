@@ -17,6 +17,10 @@
     background-color: #dddddd; 
 }
 
+.grid-margin {
+    margin: 13px 8px 13px 0;
+}
+
 .crop{
     overflow: hidden;
     white-space: nowrap; 
@@ -24,17 +28,17 @@
 }
 
 .scroll-content {
-    padding-left: 7%!important;
-    padding-right: 9%!important;
+    --padding-left: 7%!important;
+    --padding-right: 9%!important;
 }
 
 .item-inner{
-    padding-right: 0%!important;
+    --padding-right: 0%!important;
 }
 
 .selected {
-    background: color($colors, light, base);
-    color : color($colors, dark, base);
+    --background: var(--color-light);
+    --color: var(--colors-dark);
 }
 
 .fab-md {
@@ -77,4 +81,23 @@
 a[disabled], button[disabled], [ion-button][disabled]{
     background-color: #e6e6e6!important;
     color: #b3b0b0!important;
+}
+
+ion-fab-list ion-fab-button {
+    height: 52px;
+    width: 52px;
+
+    ion-icon {
+        height: 24px;
+        width: 24px;
+    }
+}
+
+ion-fab ion-fab-button.fab-button-close-active {
+    --ion-color-base: #3561B1 !important;
+}
+
+ion-item-option ion-icon {
+    height: 24px;
+    width: 24px;
 }
