@@ -4,6 +4,6 @@ export interface ${variables.etoName?cap_first} {
     modificationCounter?: number;
     revision?: number;
   <#list model.properties as field>
-    ${field.name}:${JavaUtil.getAngularType(field.type)},
+    ${field.name}:${JavaUtil.getAngularType(field.type)};
     </#list>
 }
