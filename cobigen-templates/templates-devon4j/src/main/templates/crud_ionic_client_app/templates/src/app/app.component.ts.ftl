@@ -3,9 +3,10 @@ import { Platform } from '@ionic/angular';
 import { AuthServiceProvider } from './services/security/auth-service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-
 import { Plugins, Capacitor } from '@capacitor/core';
-const { SplashScreen, StatusBar } = Plugins;
+
+const SplashScreen = Plugins.SplashScreen;
+const StatusBar = Plugins.StatusBar;
 
 @Component({
   selector: 'app-root',

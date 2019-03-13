@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import {url} from '../../assets/serverPath';
+import { SERVER_URL } from '../../../environments/environment';
+
 /*
   Generated class for the BussinessOperator provider.
 
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class BusinessOperatorProvider {
 
-  public serverPath = url;
-  public restPath = url + 'services/rest/';
+  public serverPath = SERVER_URL;
+  public restPath = SERVER_URL + 'services/rest/';
 
 
   constructor() { }
@@ -21,7 +22,7 @@ export class BusinessOperatorProvider {
     login() {
         return this.restPath + 'login';
     }
-    
+
     /**
     * @returns The url to the logout service.
     */
