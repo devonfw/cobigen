@@ -1,4 +1,4 @@
-import { Pageable } from "./pageable";
+import { Pageable } from './pageable';
 
 /** Interface used for searching ${variables.etoName?lower_case}s by criteria on the server.*/
 export interface ${variables.etoName?cap_first}SearchCriteria {
