@@ -3,8 +3,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#lower_case}-detail.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}-list.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="${variables.etoName#lower_case}-rest.ts" mergeStrategy="tsmerge_override"/>
@@ -13,12 +13,15 @@
     <templateExtension ref="paginated-list-to.ts" />
     <templateExtension ref="pageable.ts" />
     <templateExtension ref="sort.ts" />
-    <templateExtension ref="${variables.etoName#lower_case}-detail.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName#lower_case}-list.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="environment.android.ts" />
+    <templateExtension ref="environment.prod.ts" />
+    <templateExtension ref="environment.ts" />
+    <templateExtension ref="app-routing.module.ts" />
+    <templateExtension ref="${variables.etoName#lower_case}-detail.page.html" mergeStrategy="html-ng*"/>
+    <templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="serverPath.ts" mergeStrategy="tsmerge_override"/>
   </templates>
 
   <templateScans>
@@ -26,8 +29,13 @@
   </templateScans>
 
   <increments>
-    <increment name="app_ionic_structure" description="Ionic devon4ng URL">
-      <templateRef ref="serverPath.ts"/>
+    <increment name="app_ionic_structure" description="Ionic devon4ng environments">
+      <templateRef ref="environment.android.ts" />
+      <templateRef ref="environment.prod.ts" />
+      <templateRef ref="environment.ts" />
+    </increment>
+    <increment name="ionic_routing" description="Ionic routing">
+      <templateRef ref="app-routing.module.ts"/>
     </increment>
     <increment name="ionic_i18n" description="Ionic i18n">
       <templateRef ref="es.json"/>
@@ -42,12 +50,12 @@
       <templateRef ref="pageable.ts"/>
       <templateRef ref="sort.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-rest.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.scss"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.scss"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.page.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.page.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-list.page.scss"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.scss"/>
       <templateRef ref="business-operator.ts"/>
     </increment>
   </increments>

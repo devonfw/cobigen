@@ -36,7 +36,7 @@ export class AppComponent {
           title: 'Home',
           route: 'home'
       }, {
-          title: '${variables.etoName?lower_case}',
+          title: '${variables.etoName?cap_first}',
           route: '${variables.etoName?lower_case}'
       }, ];
     });
