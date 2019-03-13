@@ -1,17 +1,17 @@
-import { BusinessOperatorProvider } from '../providers/shared/business-operator'
-import { Observable } from 'rxjs/Rx';
+import { BusinessOperatorProvider } from '../services/shared/business-operator';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ${variables.etoName?cap_first}SearchCriteria } from './interfaces/${variables.etoName?lower_case}-search-criteria';
 import { ${variables.etoName?cap_first} } from './interfaces/${variables.etoName?lower_case}';
-// import { HTTP } from '@ionic-native/http';
+
 /**
   Generated class for the ${variables.etoName?cap_first}Rest provider. Implements the REST service.
 
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
 */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ${variables.etoName?cap_first}Rest {
 
   constructor(public http: HttpClient, public BO: BusinessOperatorProvider) {
@@ -22,7 +22,7 @@ export class ${variables.etoName?cap_first}Rest {
   * @returns The found ${variables.etoName?lower_case} from the server.
   */
   get${variables.etoName?cap_first}(${variables.etoName?lower_case}: ${variables.etoName?cap_first}): Observable<any> {
-    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + "search", ${variables.etoName?lower_case}, {});
+    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}, {});
   }
 
   /**
@@ -37,8 +37,8 @@ export class ${variables.etoName?cap_first}Rest {
   * @param  ${variables.etoName?lower_case}SearchCriteria Object used for searching ${variables.etoName?lower_case}s by a criteria on the server.
   * @returns The first data page on the server.
   */
-  retrieveData(${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria): Observable<any> {
-    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + "search", ${variables.etoName?lower_case}SearchCriteria);
+  retrieveData(${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria): Observable<any> {
+    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}SearchCriteria);
   }
 
   /**
@@ -46,7 +46,7 @@ export class ${variables.etoName?cap_first}Rest {
   * @returns A list of the found ${variables.etoName?lower_case}s on the server.
   */
   search(${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria) {
-    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + "search", ${variables.etoName?lower_case}SearchCriteria, {})
+    return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}SearchCriteria, {});
   }
 
   /**

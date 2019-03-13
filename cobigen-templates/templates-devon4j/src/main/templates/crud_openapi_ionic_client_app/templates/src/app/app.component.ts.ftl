@@ -1,41 +1,65 @@
-
-import { HomePage } from '../pages/home/home';
-import { AuthServiceProvider } from '../providers/security/auth-service';
-import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { LoginPage } from '../pages/login/login';
-import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list'
+import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
+import { AuthServiceProvider } from './services/security/auth-service';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
+import { Plugins, Capacitor } from '@capacitor/core';
 
+const SplashScreen = Plugins.SplashScreen;
+const StatusBar = Plugins.StatusBar;
 
 @Component({
-  templateUrl: 'app.html'
+  selector: 'app-root',
+  templateUrl: 'app.component.html'
 })
-export class MyApp {
-  @ViewChild(Nav) nav: Nav;
-  rootPage:any = LoginPage;
-  pages:any;
-  
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private auth: AuthServiceProvider, private translate: TranslateService ) {
+export class AppComponent {
+  rootPage: any;
+  pages: any;
+
+  constructor(
+    private platform: Platform,
+    private auth: AuthServiceProvider,
+    private translate: TranslateService,
+    private router: Router,
+  ) {
+    this.initializeApp();
+
     platform.ready().then(() => {
-      statusBar.styleDefault();
-      splashScreen.hide();
-      
-      this.pages = [
-        { title: 'Home', component: HomePage},
-        { title :'${variables.etoName?lower_case}', component: ${variables.etoName?cap_first}List},
-      ];
+      // StatusBar.setStyle();
+      if (Capacitor.isPluginAvailable('SplashScreen')) {
+        SplashScreen.hide().catch(() => {
+          console.warn('Spashscreen not available');
+        });
+      }
+
+      this.pages = [{
+          title: 'Home',
+          route: 'home'
+      }, {
+          title: '${variables.etoName?cap_first}',
+          route: '${variables.etoName?lower_case}'
+      }, ];
     });
-    translate.setDefaultLang('en');
+    this.translate.setDefaultLang('en');
+    this.translate.currentLang = 'en';
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      // this.statusBar.styleDefault();
+      if (Capacitor.isPluginAvailable('SplashScreen')) {
+        SplashScreen.hide().catch(() => {
+          console.warn('Spashscreen not available');
+        });
+      }
+    });
   }
 
   isAuthenticated(){
     return this.auth.getAuthenticated();
   }
 
-  openPage(p){    
-    this.nav.setRoot(p.component);
+  openPage(p: { route: any; }) {
+      this.router.navigate([p.route]);
   }
 }
