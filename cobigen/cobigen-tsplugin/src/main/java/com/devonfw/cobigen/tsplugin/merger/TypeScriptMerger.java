@@ -204,7 +204,7 @@ public class TypeScriptMerger implements Merger {
             connectionExc.handle(e);
         }
 
-        return importsAndExports + LINE_SEP + LINE_SEP + body;
+        return importsAndExports + LINE_SEP + LINE_SEP + bodyBuffer.toString();
     }
 
     /**
