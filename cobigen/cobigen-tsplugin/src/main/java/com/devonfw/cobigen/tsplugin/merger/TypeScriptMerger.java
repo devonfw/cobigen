@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -16,15 +15,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
@@ -33,8 +27,11 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
+import com.devonfw.cobigen.tsplugin.merger.transferobjects.FileTO;
+import com.devonfw.cobigen.tsplugin.merger.transferobjects.MergeTO;
 
 /**
  * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.
@@ -50,6 +47,11 @@ public class TypeScriptMerger implements Merger {
      */
     ExternalProcessHandler request = ExternalProcessHandler
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+
+    /**
+     * Exception handler related to connectivity to the server
+     */
+    private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
 
     /** OS specific line separator */
     private static final String LINE_SEP = System.getProperty("line.separator");
@@ -94,31 +96,14 @@ public class TypeScriptMerger implements Merger {
         MergeTO mergeTO = new MergeTO(baseFileContents, patch, patchOverrides);
 
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
-        // Used for sending serialized objects
-        ObjectWriter objWriter;
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
         try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
 
-            objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String jsonMergerTO = objWriter.writeValueAsString(mergeTO);
-
-            // We need to escape new lines because otherwise our JSON gets corrupted
-            jsonMergerTO = jsonMergerTO.replace("\\n", "\\\\n");
-
-            osw.write(jsonMergerTO);
-            osw.flush();
-            os.close();
-            conn.connect();
-
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-            }
+            sendRequest(mergeTO, conn, os, osw);
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-            String output = "";
 
             LOG.info("Receiving output from Server....");
             Stream<String> s = br.lines();
@@ -132,88 +117,92 @@ public class TypeScriptMerger implements Merger {
                 }
             });
 
-        } catch (ConnectException e) {
-
-            LOG.error("Connection to server failed, attempt number " + 0 + ".", e);
-        } catch (IOException e) {
-
-            LOG.error("IO exception when merging", e);
         } catch (IllegalStateException e) {
 
             LOG.error("Closing connection on InputReader.", e);
             request.terminateProcessConnection();
+        } catch (Exception e) {
+            connectionExc.setConnectExceptionMessage("Connection to server failed, attempt number " + 0 + ".");
+            connectionExc.setIOExceptionMessage("IO exception when merging");
+
+            connectionExc.handle(e);
         }
-        return runBeautifierExcludingImports(base, importsAndExports.toString(), body.toString());
+        return runBeautifierExcludingImports(importsAndExports.toString(), body.toString());
     }
 
     /**
-     * Executes the call specified by {@code executable} parameter on the script given by {@code scriptName}
-     * with the javascript engine Nashorn.
-     * @param base
-     *            the existent base file just for error reporting
-     * @param scriptName
-     *            name of the script to be executed. Should exist in the root of the build path
-     * @param executable
-     *            {@link ScriptExecutable} running the script call itself
-     * @return return value of the script casted to {@link String}
+     * Sends a transfer object to the server, by using http connection
+     * @param dataTO
+     *            Data to transfer, it should be a serializable class
+     * @param conn
+     *            {@link HttpURLConnection} to the server, containing also the URL
+     * @param os
+     *            {@link OutputStream} that will be opened for sending data
+     * @param osw
+     *            {@link OutputStreamWriter} used for writing the data to be sent
+     * @throws IOException
+     *             when connection to the server failed
+     * @throws JsonGenerationException
+     *             When generating the JSON from the transfer object failed
+     * @throws JsonMappingException
+     *             When mapping the JSON from the transfer object failed
      */
-    private String executeJS(File base, ScriptExecutable executable, String scriptName) {
+    private void sendRequest(Object dataTO, HttpURLConnection conn, OutputStream os, OutputStreamWriter osw)
+        throws IOException, JsonGenerationException, JsonMappingException {
+        ObjectWriter objWriter;
+        objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String jsonMergerTO = objWriter.writeValueAsString(dataTO);
 
-        if (!scriptEngines.containsKey(scriptName)) {
+        // We need to escape new lines because otherwise our JSON gets corrupted
+        jsonMergerTO = jsonMergerTO.replace("\\n", "\\\\n");
 
-            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName(Constants.ENGINE_JS);
+        osw.write(jsonMergerTO);
+        osw.flush();
+        os.close();
+        conn.connect();
 
-            Compilable jsCompilable = (Compilable) jsEngine;
-            CompiledScript jsScript;
-            try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream("/" + scriptName))) {
-                jsScript = jsCompilable.compile(reader);
-            } catch (ScriptException e) {
-                throw new MergeException(base, "Could not compile " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on GitHub.", e);
-            } catch (IOException e) {
-                throw new MergeException(base, "Could not read " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
-            }
-
-            ScriptContext scriptCtxt = jsEngine.getContext();
-            Bindings engineScope = scriptCtxt.getBindings(ScriptContext.ENGINE_SCOPE);
-            try {
-                jsEngine.eval("global = {}"); // simulate global object
-                jsScript.eval(engineScope);
-            } catch (ScriptException e) {
-                throw new MergeException(base, "Could not evaluate " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
-            }
-
-            scriptEngines.put(scriptName, jsEngine);
-        }
-
-        Invocable jsInvocable = (Invocable) scriptEngines.get(scriptName);
-        try {
-            return (String) executable.exec(jsInvocable);
-        } catch (NoSuchMethodException e) {
-            throw new MergeException(base,
-                "Invalid API of " + scriptName + " script used. This is most properly a bug. Please report on Github.",
-                e);
-        } catch (ScriptException e) {
-            throw new MergeException(base, "Execution of the script " + scriptName + " raised an error.", e);
+        if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
         }
     }
 
     /**
      * Reads the output.ts temporary file to get the merged contents
-     * @param base
-     *            base file just for exception handling
-     * @param mergedContents
-     *            merged typescript code
-     * @param string
+     * @param importsAndExports
+     *            The part of the code where imports and exports are declared
+     * @param body
+     *            the rest of the body of the source file
      * @return merged contents already beautified
      */
-    private String runBeautifierExcludingImports(File base, String importsAndExports, String body) {
+    private String runBeautifierExcludingImports(String importsAndExports, String body) {
 
-        String formattedBody = "";
-        // executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
-        // "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
+        FileTO fileTO = new FileTO(body);
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
+
+        StringBuffer bodyBuffer = new StringBuffer();
+        try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
+
+            sendRequest(fileTO, conn, os, osw);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+            LOG.info("Receiving output from Server....");
+            Stream<String> s = br.lines();
+            s.parallel().forEachOrdered((String line) -> {
+                bodyBuffer.append(line);
+                bodyBuffer.append(LINE_SEP);
+            });
+
+        } catch (IllegalStateException e) {
+
+            LOG.error("Closing connection on InputReader.", e);
+            request.terminateProcessConnection();
+        } catch (Exception e) {
+            connectionExc.setConnectExceptionMessage("Connection to server failed, attempt number " + 0 + ".");
+            connectionExc.setIOExceptionMessage("IO exception when merging");
+
+            connectionExc.handle(e);
+        }
 
         return importsAndExports + LINE_SEP + LINE_SEP + body;
     }
