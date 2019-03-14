@@ -63,6 +63,11 @@ public class ExternalProcessHandler {
     public static ExternalProcessHandler externalProcessHandler = null;
 
     /**
+     * Exception handler related to connectivity to the server
+     */
+    private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
+
+    /**
      * Using singleton pattern, we will only have one instance of {@link ExternalProcessHandler}.
      *
      * @param hostName
@@ -143,7 +148,6 @@ public class ExternalProcessHandler {
      */
     public boolean initializeConnection() {
 
-        ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
         connectionExc
             .setMalformedURLExceptionMessage("MalformedURLException: Connection to server failed, MalformedURL.");
 
