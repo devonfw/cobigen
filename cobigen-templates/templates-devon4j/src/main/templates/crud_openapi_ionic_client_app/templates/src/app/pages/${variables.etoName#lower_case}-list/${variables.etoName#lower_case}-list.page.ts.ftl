@@ -211,9 +211,7 @@ export class ${variables.etoName?cap_first}List {
     });
     await modal.present();
     modal.onDidDismiss().then((data) => {
-      if(data.data == null) {
-        this.reload${variables.etoName?cap_first}List();
-      } else {
+      if(data.data !== null) {
         for (const i in cleanItem){
           if (data.data[i] !== cleanItem[i]) {
             data.data.modificationCounter++;
@@ -222,6 +220,8 @@ export class ${variables.etoName?cap_first}List {
         }
         this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1, data.data);
       }
+
+      this.reload${variables.etoName?cap_first}List();
     });
 
   }
@@ -230,6 +230,7 @@ export class ${variables.etoName?cap_first}List {
    * Presents a promt to the user to warn him about the deletion.
    */
   public async deleteSelected${variables.etoName?cap_first}() {
+    await this.slidingList.closeSlidingItems();
 
     this.deleteTranslations = this.getTranslation('${variables.component?lower_case}.${variables.etoName?lower_case}.operations.delete');
     for (const i of Object.keys(this.deleteButtons)){
