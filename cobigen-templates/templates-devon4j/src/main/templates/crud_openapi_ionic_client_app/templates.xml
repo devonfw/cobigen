@@ -13,10 +13,10 @@
     <templateExtension ref="paginated-list-to.ts" />
     <templateExtension ref="pageable.ts" />
     <templateExtension ref="sort.ts" />
-    <templateExtension ref="environment.android.ts" />
-    <templateExtension ref="environment.prod.ts" />
-    <templateExtension ref="environment.ts" />
-    <templateExtension ref="app-routing.module.ts" />
+    <templateExtension ref="environment.android.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="${variables.etoName#lower_case}-detail.page.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
