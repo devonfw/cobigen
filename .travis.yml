@@ -3,7 +3,7 @@ dist: xenial
 
 language: java
 
-jdk: oraclejdk8
+jdk: oraclejdk9
 
 cache:
   directories:
