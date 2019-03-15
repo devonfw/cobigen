@@ -14,7 +14,7 @@
 }
 
 .header-grid {
-    background-color: #dddddd; 
+    background-color: #dddddd;
 }
 
 .grid-margin {
@@ -23,8 +23,8 @@
 
 .crop{
     overflow: hidden;
-    white-space: nowrap; 
-    text-overflow: ellipsis;   
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .scroll-content {
@@ -37,12 +37,12 @@
 }
 
 .selected {
-    --background: var(--color-light);
-    --color: var(--colors-dark);
+    --background: #cbdeff;
+    --color: #222;
 }
 
 .fab-md {
-    margin-bottom: 10%!important;   
+    margin-bottom: 10%!important;
 }
 
 .fab-md:active {
