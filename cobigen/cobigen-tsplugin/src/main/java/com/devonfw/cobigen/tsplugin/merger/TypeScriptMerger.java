@@ -17,21 +17,17 @@ import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.to.FileTo;
+import com.devonfw.cobigen.api.to.MergeTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
-import com.devonfw.cobigen.tsplugin.merger.transferobjects.FileTO;
-import com.devonfw.cobigen.tsplugin.merger.transferobjects.MergeTO;
 
 /**
  * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.
@@ -45,7 +41,7 @@ public class TypeScriptMerger implements Merger {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    ExternalProcessHandler request = ExternalProcessHandler
+    private ExternalProcessHandler request = ExternalProcessHandler
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
@@ -93,7 +89,7 @@ public class TypeScriptMerger implements Merger {
             throw new MergeException(base, "Could not read base file!", e);
         }
 
-        MergeTO mergeTO = new MergeTO(baseFileContents, patch, patchOverrides);
+        MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
 
@@ -101,21 +97,22 @@ public class TypeScriptMerger implements Merger {
         StringBuffer body = new StringBuffer();
         try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
 
-            sendRequest(mergeTO, conn, os, osw);
+            request.sendRequest(mergeTo, conn, os, osw);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+            try (BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));) {
 
-            LOG.info("Receiving output from Server....");
-            Stream<String> s = br.lines();
-            s.parallel().forEachOrdered((String line) -> {
-                if (line.startsWith("import ") || isExportStatement(line)) {
-                    importsAndExports.append(line);
-                    importsAndExports.append(LINE_SEP);
-                } else {
-                    body.append(line);
-                    body.append(LINE_SEP);
-                }
-            });
+                LOG.info("Receiving output from Server....");
+                Stream<String> s = br.lines();
+                s.parallel().forEachOrdered((String line) -> {
+                    if (line.startsWith("import ") || isExportStatement(line)) {
+                        importsAndExports.append(line);
+                        importsAndExports.append(LINE_SEP);
+                    } else {
+                        body.append(line);
+                        body.append(LINE_SEP);
+                    }
+                });
+            }
 
         } catch (IllegalStateException e) {
 
@@ -131,42 +128,6 @@ public class TypeScriptMerger implements Merger {
     }
 
     /**
-     * Sends a transfer object to the server, by using http connection
-     * @param dataTO
-     *            Data to transfer, it should be a serializable class
-     * @param conn
-     *            {@link HttpURLConnection} to the server, containing also the URL
-     * @param os
-     *            {@link OutputStream} that will be opened for sending data
-     * @param osw
-     *            {@link OutputStreamWriter} used for writing the data to be sent
-     * @throws IOException
-     *             when connection to the server failed
-     * @throws JsonGenerationException
-     *             When generating the JSON from the transfer object failed
-     * @throws JsonMappingException
-     *             When mapping the JSON from the transfer object failed
-     */
-    private void sendRequest(Object dataTO, HttpURLConnection conn, OutputStream os, OutputStreamWriter osw)
-        throws IOException, JsonGenerationException, JsonMappingException {
-        ObjectWriter objWriter;
-        objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonMergerTO = objWriter.writeValueAsString(dataTO);
-
-        // We need to escape new lines because otherwise our JSON gets corrupted
-        jsonMergerTO = jsonMergerTO.replace("\\n", "\\\\n");
-
-        osw.write(jsonMergerTO);
-        osw.flush();
-        os.close();
-        conn.connect();
-
-        if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-            throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-        }
-    }
-
-    /**
      * Reads the output.ts temporary file to get the merged contents
      * @param importsAndExports
      *            The part of the code where imports and exports are declared
@@ -176,13 +137,13 @@ public class TypeScriptMerger implements Merger {
      */
     private String runBeautifierExcludingImports(String importsAndExports, String body) {
 
-        FileTO fileTO = new FileTO(body);
+        FileTo fileTo = new FileTo(body);
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
         try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
 
-            sendRequest(fileTO, conn, os, osw);
+            request.sendRequest(fileTo, conn, os, osw);
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
