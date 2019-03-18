@@ -56,6 +56,13 @@
       <version>7.4.0</version>
     </dependency>
 
+    <!-- enables JSON creation for the external process -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson-provider</artifactId>
+      <version>2.2.1.GA</version>
+    </dependency>
+
     <dependency>
       <groupId>net.sf.dozer</groupId>
       <artifactId>dozer</artifactId>
