@@ -1,16 +1,23 @@
 package com.devonfw.cobigen.impl.externalprocess;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler.ConnectionException;
+import com.devonfw.cobigen.impl.exceptions.HttpConnectionException;
 import com.devonfw.cobigen.impl.util.ProcessOutputUtil;
 
 /**
@@ -280,6 +287,50 @@ public class ExternalProcessHandler {
             connectionExc.handle(e);
         }
         return conn;
+    }
+
+    /**
+     * Sends a transfer object to the server, by using http connection
+     * @param dataTo
+     *            Data to transfer, it should be a serializable class
+     * @param conn
+     *            {@link HttpURLConnection} to the server, containing also the URL
+     * @param os
+     *            {@link OutputStream} that will be opened for sending data
+     * @param osw
+     *            {@link OutputStreamWriter} used for writing the data to be sent
+     * @return true if the status code was either 200 or 201, false otherwise
+     * @throws IOException
+     *             when connection to the server failed
+     * @throws JsonGenerationException
+     *             When generating the JSON from the transfer object failed
+     * @throws JsonMappingException
+     *             When mapping the JSON from the transfer object failed
+     */
+    public boolean sendRequest(Object dataTo, HttpURLConnection conn, OutputStream os, OutputStreamWriter osw)
+        throws IOException, JsonGenerationException, JsonMappingException {
+        ObjectWriter objWriter;
+        objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String jsonMergerTo = objWriter.writeValueAsString(dataTo);
+
+        // We need to escape new lines because otherwise our JSON gets corrupted
+        jsonMergerTo = jsonMergerTo.replace("\\n", "\\\\n");
+
+        osw.write(jsonMergerTo);
+        osw.flush();
+        os.close();
+        try {
+            conn.connect();
+
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK
+                || conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                throw new HttpConnectionException("Failed : HTTP error code : " + conn.getResponseCode());
+            }
+        } catch (HttpConnectionException e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
