@@ -91,7 +91,7 @@ public class TypeScriptMerger implements Merger {
 
         MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/merge");
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
@@ -138,7 +138,7 @@ public class TypeScriptMerger implements Merger {
     private String runBeautifierExcludingImports(String importsAndExports, String body) {
 
         FileTo fileTo = new FileTo(body);
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
         try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
