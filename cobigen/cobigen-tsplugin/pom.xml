@@ -95,7 +95,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-1.0.2.tgz</url>
+              <url>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-1.0.3.tgz</url>
               <outputFileName>nest-server.tgz</outputFileName>
               <skipCache>true</skipCache>
               <outputDirectory>${project.build.directory}/download</outputDirectory>

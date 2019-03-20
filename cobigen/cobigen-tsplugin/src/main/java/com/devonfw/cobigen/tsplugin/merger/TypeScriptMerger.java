@@ -73,6 +73,8 @@ public class TypeScriptMerger implements Merger {
     public TypeScriptMerger(String type, boolean patchOverrides) {
         this.type = type;
         this.patchOverrides = patchOverrides;
+        request.executingExe(Constants.EXE_PATH);
+        request.initializeConnection();
     }
 
     @Override
