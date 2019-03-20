@@ -35,6 +35,7 @@
       <incrementRef ref="ionic_routing"/>
       <incrementRef ref="ionic_i18n"/>
       <incrementRef ref="ionic_component"/>
+      <incrementRef ref="ionic_theme"/>
     </increment>
     <increment name="app_ionic_structure" description="Ionic devon4ng environments">
       <templateRef ref="environment.android.ts" />
@@ -65,6 +66,9 @@
       <templateRef ref="${variables.etoName#lower_case}-detail.page.html"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.page.scss"/>
       <templateRef ref="business-operator.ts"/>
+    </increment>
+    <increment name="ionic_theme" description="Ionic theme">
+      <templateRef ref="variables.scss"/>
     </increment>
   </increments>
 </templatesConfiguration>

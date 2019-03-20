@@ -178,7 +178,7 @@ export class ${variables.etoName?cap_first}List {
 
     await modal.present();
     modal.onDidDismiss().then((data) => {
-      if (data.data == null) {
+      if (data && data.data == null) {
         return;
       } else {
           this.infiniteScrollEnabled = true;
@@ -210,20 +210,11 @@ export class ${variables.etoName?cap_first}List {
       },
     });
     await modal.present();
-    modal.onDidDismiss().then((data) => {
-      if(data.data !== null) {
-        for (const i in cleanItem){
-          if (data.data[i] !== cleanItem[i]) {
-            data.data.modificationCounter++;
-            break;
-          }
-        }
+    modal.onDidDismiss().then((data: any) => {
+      if(data && data.data) {
         this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1, data.data);
       }
-
-      this.reload${variables.etoName?cap_first}List();
     });
-
   }
 
   /**
@@ -309,14 +300,12 @@ export class ${variables.etoName?cap_first}List {
    * @param  index The index of the selected ${variables.etoName?lower_case} that will be allowed to be updated or deleted.
    */
   public enableUpdateDeleteOperations(index: number) {
-
-    if (this.selectedItemIndex !== index){
+    if (this.selectedItemIndex !== index) {
       this.selectedItemIndex = index;
       this.deleteModifiedButtonsDisabled = false;
-    } else{
+    } else {
       this.selectedItemIndex = -1;
       this.deleteModifiedButtonsDisabled = true;
     }
   }
-
 }
