@@ -14,10 +14,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
-  
-  <div align=center style="font-size: 16px" padding >{{translations.message}}</div>
-  <form>
+<ion-content>
+  <div class="detail-message" padding >{{translations.message}}</div>
+  <form class="form-content">
   
     <#list pojo.fields as field>
     <ion-item lines="inset" class="formItem">
@@ -27,11 +26,8 @@
     </#list>
      
   </form>
-
 </ion-content>
-
 <ion-footer>
-  
   <ion-button class="buttonForm" [hidden]=!filterActive (click)="addOrModify()" expand="full">
     {{'${variables.component?lower_case}.${variables.etoName?lower_case}.commonbuttons.send' | translate}}
   </ion-button>
@@ -41,6 +37,4 @@
   <ion-button class="buttonForm" [hidden]=filterActive (click)="clearSearch()" expand="block">
     {{'${variables.component?lower_case}.${variables.etoName?lower_case}.operations.filter.clear' | translate}}
   </ion-button>
-
-
 </ion-footer>

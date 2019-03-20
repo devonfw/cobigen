@@ -59,7 +59,7 @@ export class AppComponent {
     return this.auth.getAuthenticated();
   }
 
-  openPage(p: { route: any; }) {
+  openPage(p: any) {
       this.router.navigate([p.route]);
   }
 }

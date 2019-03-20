@@ -58,5 +58,8 @@
       <templateRef ref="${variables.etoName#lower_case}-detail.page.scss"/>
       <templateRef ref="business-operator.ts"/>
     </increment>
+    <increment name="ionic_theme" description="Ionic theme">
+      <templateRef ref="variables.scss"/>
+    </increment>
   </increments>
 </templatesConfiguration>
