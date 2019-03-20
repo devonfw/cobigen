@@ -88,6 +88,19 @@
               <outputDirectory>${project.build.directory}/download</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>download-nest-server</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-1.0.2.tgz</url>
+              <outputFileName>nest-server.tgz</outputFileName>
+              <skipCache>true</skipCache>
+              <outputDirectory>${project.build.directory}/download</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -124,6 +137,22 @@
                 <untar src="${project.build.directory}/download/js-beautify.tgz" compression="gzip" dest="${project.build.directory}/download/js-beautify/"/>
                 <echo message="copy js-beautify.js"/>
                 <copy file="${project.build.directory}/download/js-beautify/package/js/lib/beautify.js" tofile="${project.build.directory}/generated-sources/js/beautify.js"/>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>process-nestserver-package</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="unpack nest-server.tgz"/>
+                <mkdir dir="${project.build.directory}/download/nest-server/"/>
+                <untar src="${project.build.directory}/download/nest-server.tgz" compression="gzip" dest="${project.build.directory}/download/nest-server/"/>
+                <echo message="copy js-beautify.js"/>
+                <copy file="${project.build.directory}/download/nest-server/package/nestserver.exe" tofile="${project.build.directory}/generated-sources/nest-server/nestserver.exe"/>
               </tasks>
             </configuration>
           </execution>
