@@ -14,7 +14,7 @@
 }
 
 .header-grid {
-    background-color: #dddddd;
+    background-color: #dddddd; 
 }
 
 .grid-margin {
@@ -23,13 +23,8 @@
 
 .crop{
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.scroll-content {
-    --padding-left: 7%!important;
-    --padding-right: 9%!important;
+    white-space: nowrap; 
+    text-overflow: ellipsis;   
 }
 
 .item-inner{
@@ -37,17 +32,17 @@
 }
 
 .selected {
-    --background: #cbdeff;
-    --color: #222;
+    --background: var(--color-light);
+    --color: var(--colors-dark);
 }
 
 .fab-md {
-    margin-bottom: 10%!important;
+    margin-bottom: 10%!important;   
 }
 
 .fab-md:active {
     color: #fff;
-    background-color: #488aff;
+    background-color: var(--color-primary);
 }
 
 
@@ -62,7 +57,7 @@
 
 // When the buttons are being shown
 .fab-in-list.show{
-    background-color: #488aff;
+    background-color: var(--color-primary);;
     color: #fff;
     transform: scale(1.3)!important;
     margin-bottom: 20%!important;

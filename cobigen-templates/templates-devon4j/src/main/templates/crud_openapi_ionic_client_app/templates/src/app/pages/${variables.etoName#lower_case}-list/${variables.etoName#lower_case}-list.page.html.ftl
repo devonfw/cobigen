@@ -26,7 +26,7 @@
   <ion-refresher (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ion-list>
+  <ion-list #slidingList>
     <ion-item-sliding *ngFor="let ${variables.etoName?lower_case} of ${variables.etoName?lower_case}s; let i = index">
       <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
         <ion-grid>
@@ -43,7 +43,7 @@
         </ion-item-option>
       </ion-item-options>
       <ion-item-options side="start" (ionSwipe)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
-        <ion-item-option expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
+        <ion-item-option expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()" color="secondary">
           <ion-icon  size="large" name="brush"></ion-icon>
         </ion-item-option>
       </ion-item-options>
@@ -60,15 +60,15 @@
       <ion-fab-button color="primary" class="fabButton fab-button-size" (click)="create${variables.etoName?cap_first}()" >
         <ion-icon name="add-circle"></ion-icon>
       </ion-fab-button>
-      
-      <ion-fab-button color="primary" (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled> 
+
+      <ion-fab-button color="primary" (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
         <ion-icon name="brush"></ion-icon>
       </ion-fab-button>
-    
+
       <ion-fab-button color="primary" (click)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
         <ion-icon name="trash"></ion-icon>
       </ion-fab-button>
-      
+
       <ion-fab-button color="primary" (click)="search${variables.etoName?cap_first}s()" >
         <ion-icon name="search"></ion-icon>
       </ion-fab-button>
