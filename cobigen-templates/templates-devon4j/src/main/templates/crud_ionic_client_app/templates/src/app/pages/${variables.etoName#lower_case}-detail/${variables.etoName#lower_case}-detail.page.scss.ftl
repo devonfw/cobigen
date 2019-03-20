@@ -8,10 +8,20 @@
     margin-left: 6%;
 }
 
+.detail-message {
+    text-align: center;
+    font-size: 16px;
+}
+
+.form-content {
+    padding-left: var(--form-content-pad-left);
+    padding-right: var(--form-content-pad-left);
+}
+
 .buttonForm{
-    --height: auto;
-    --padding-start:7%;
-    --padding-end:7%;
+    height: var(--form-button-height);
+    --padding-start: var(--form-button-pad-left);
+    --padding-end:var(--form-button-pad-right);;
 }
 
 .item.sc-ion-label-md-h, .item .sc-ion-label-md-h {
@@ -20,14 +30,14 @@
 
 ion-item {
     --padding-start: 0;
-    --highlight-color-valid: #3880ff;
-    border-bottom: solid transparent;
+    --highlight-height: 0;
+    border-bottom: 2px solid transparent;
 
     &.item-has-value {
-        border-bottom: solid #10dc60;
+        border-bottom: 2px solid var(--ion-color-secondary);
     }
 
     &.item-has-value:focus-within {
-        border-bottom: solid transparent;
+        border-bottom: 2px solid var(--ion-color-primary);
     }
 }
