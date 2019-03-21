@@ -12,7 +12,7 @@
     "Language": "Idioma"
   },
   "header": {
-    "title": "devon4JS",
+    "title": "devon4ng",
     "error": "LOGIN ERROR",
     "EN": "English",
     "ES": "Spanish"
