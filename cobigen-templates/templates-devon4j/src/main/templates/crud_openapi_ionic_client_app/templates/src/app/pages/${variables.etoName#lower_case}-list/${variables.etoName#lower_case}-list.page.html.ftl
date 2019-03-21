@@ -28,7 +28,7 @@
   </ion-refresher>
   <ion-list #slidingList>
     <ion-item-sliding *ngFor="let ${variables.etoName?lower_case} of ${variables.etoName?lower_case}s; let i = index">
-      <ion-item [class.selected]="i === selectedItemIndex" (click)="enableUpdateDeleteOperations(i)" >
+      <ion-item [class.selected]="i === selectedItemIndex" (tap)="enableUpdateDeleteOperations(i)" tappable>
         <ion-grid>
           <ion-row class="grid-margin">
           <#list model.properties as field>
@@ -38,12 +38,12 @@
         </ion-grid>
       </ion-item>
       <ion-item-options side="end" (ionSwipe)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
-        <ion-item-option expandable color="danger" (click)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()">
+        <ion-item-option expandable color="danger" (tap)="setSelectedItemIndex(i);deleteSelected${variables.etoName?cap_first}()" tappable>
           <ion-icon size="large" name="trash"></ion-icon>
         </ion-item-option>
       </ion-item-options>
       <ion-item-options side="start" (ionSwipe)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()">
-        <ion-item-option expandable (click)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()" color="secondary">
+        <ion-item-option expandable (tap)="setSelectedItemIndex(i);updateSelected${variables.etoName?cap_first}()" color="secondary" tappable>
           <ion-icon  size="large" name="brush"></ion-icon>
         </ion-item-option>
       </ion-item-options>
@@ -57,19 +57,19 @@
       <ion-icon name="arrow-dropright"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
-      <ion-fab-button color="primary" class="fabButton fab-button-size" (click)="create${variables.etoName?cap_first}()" >
+      <ion-fab-button color="primary" class="fabButton fab-button-size" (tap)="create${variables.etoName?cap_first}()">
         <ion-icon name="add-circle"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button color="primary" (click)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
+      <ion-fab-button color="primary" (tap)="updateSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
         <ion-icon name="brush"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button color="primary" (click)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
+      <ion-fab-button color="primary" (tap)="deleteSelected${variables.etoName?cap_first}()" [disabled] = deleteModifiedButtonsDisabled>
         <ion-icon name="trash"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button color="primary" (click)="search${variables.etoName?cap_first}s()" >
+      <ion-fab-button color="primary" (tap)="search${variables.etoName?cap_first}s()" >
         <ion-icon name="search"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
