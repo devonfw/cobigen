@@ -32,6 +32,8 @@ public class TypeScriptMergerTest {
     public void testMergingNoOverrides() throws MergeException {
         // arrange
         File baseFile = new File(testFileRootPath + "baseFile.ts");
+        // Next version should merge comments
+        // String regex = " * Should format correctly this line";
 
         // act
         String mergedContents =
@@ -44,6 +46,10 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
+        assertThat(mergedContents).contains("export { e, g } from 'f';");
+        assertThat(mergedContents).contains("export interface a {");
+        assertThat(mergedContents).contains("private b: number;");
+        // assertThat(mergedContents).containsPattern(regex);
 
         mergedContents =
             new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
@@ -55,6 +61,10 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
+        assertThat(mergedContents).contains("export { e, g } from 'f';");
+        assertThat(mergedContents).contains("export interface a {");
+        assertThat(mergedContents).contains("private b: number;");
+        // assertThat(mergedContents).containsPattern(regex);
     }
 
     /**
@@ -78,6 +88,11 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
+        assertThat(mergedContents).contains("export { e, g } from 'f';");
+        assertThat(mergedContents).contains("interface a {");
+        assertThat(mergedContents).contains("private b: string;");
+        // Next version should merge comments
+        // assertThat(mergedContents).contains("// Should contain this comment");
 
         mergedContents =
             new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
@@ -89,6 +104,11 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("import { c, f } from 'd'");
         assertThat(mergedContents).contains("import { a, e } from 'b'");
+        assertThat(mergedContents).contains("export { e, g } from 'f';");
+        assertThat(mergedContents).contains("interface a {");
+        assertThat(mergedContents).contains("private b: string;");
+        // Next version should merge comments
+        // assertThat(mergedContents).contains("// Should contain this comment");
     }
 
     /**

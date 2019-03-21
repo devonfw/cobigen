@@ -18,6 +18,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.m2e.core.ui.internal.actions.EnableNatureAction;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +68,20 @@ public class AdaptTemplatesHandler extends AbstractHandler {
 
             if (result == 0) {
                 try {
-                    String fileName = ResourcesPluginUtil.downloadJar(true);
+                    String fileName = ResourcesPluginUtil.getJarPath(true);
+                    if (fileName == null) {
+                        result = createUpdateTemplatesDialog();
+                        if (result == 1) {
+                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                                "Templates have not been found, please download them!");
+                            throw new NullPointerException("Templates have not been found!");
+                        } else {
+                            fileName = ResourcesPluginUtil.downloadJar(true);
+                        }
+
+                    }
                     ResourcesPluginUtil.processJar(fileName);
+
                     importProjectIntoWorkspace();
                     dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                         "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION,
@@ -94,6 +109,9 @@ public class AdaptTemplatesHandler extends AbstractHandler {
     private void importProjectIntoWorkspace() {
         ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 
+        // Class that contains the logic of the command 'configure -> to Maven Project'
+        EnableNatureAction mavenConverter = new EnableNatureAction();
+
         progressMonitor.open();
         progressMonitor.getProgressMonitor().beginTask("Importing templates...", 0);
         try {
@@ -102,8 +120,17 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(project.getName());
             description.setLocation(new org.eclipse.core.runtime.Path(ws.toPortableString() + "/CobiGen_Templates"));
             project.create(description, null);
+
+            // We set the current project to be converted to a Maven project
+            ISelection sel = new StructuredSelection(project);
+            mavenConverter.selectionChanged(null, sel);
+
             project.open(null);
+
+            // Converts the current project to a Maven project
+            mavenConverter.run(null);
             progressMonitor.close();
+
         } catch (CoreException e) {
             progressMonitor.close();
             e.printStackTrace();
@@ -122,5 +149,19 @@ public class AdaptTemplatesHandler extends AbstractHandler {
      */
     void deleteDirectoryStream(Path path) throws IOException {
         Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
+
+    /**
+     * Creates a new dialog so that the user can choose between updating the templates or not
+     * @return the result of this decision, 0 if he wants to update the templates, 1 if he does not
+     */
+    private static int createUpdateTemplatesDialog() {
+        MessageDialog dialog =
+            new MessageDialog(Display.getDefault().getActiveShell(), "Generator configuration project not found!", null,
+                "CobiGen_templates folder is not imported. Do you want to download latest templates and use it", 0,
+                new String[] { "Update", "Cancel" }, 1);
+        dialog.setBlockOnOpen(true);
+        return dialog.open();
+
     }
 }

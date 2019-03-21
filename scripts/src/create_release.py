@@ -129,9 +129,7 @@ if config.test_run:
     continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")    
 
 if continue_run:
-    log_info("TODO: if this step fails, it means you need to do a git submodule init and git submodule update on branch " + config.branch_to_be_released)
-    git_repo.assure_clean_working_copy()
-    git_repo.init_submodule(config.wiki_submodule_path)
+    log_info("TODO: if this step fails, it means you need to do a git submodule init and git submodule update on branch " + config.branch_to_be_released)    
     git_repo.update_submodule(config.wiki_submodule_path)
     git_repo.add_submodule(config.wiki_submodule_name)
     git_repo.commit("update wiki docs")

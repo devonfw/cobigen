@@ -19,7 +19,7 @@
                        destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/impl/rest/${variables.component#cap_first}RestServiceImpl.java"
                        mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestServiceCtos.java" 
-                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
+                       destinationPath="../api/src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
                        mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}SoapService.java" mergeStrategy="javamerge"/>

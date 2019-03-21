@@ -6,14 +6,11 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -37,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
+import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
@@ -75,26 +74,6 @@ public class ResourcesPluginUtil {
         public boolean accept(File dir, String name) {
             String lowercaseName = name.toLowerCase();
             String regex = ResourceConstants.JAR_FILE_REGEX_NAME;
-
-            Pattern p = Pattern.compile(regex);
-            Matcher m = p.matcher(lowercaseName);
-            if (m.find()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    };
-
-    /**
-     * Filters the files on a directory so that we can check whether the templates jar are already downloaded
-     */
-    static FilenameFilter fileNameFilterSources = new FilenameFilter() {
-
-        @Override
-        public boolean accept(File dir, String name) {
-            String lowercaseName = name.toLowerCase();
-            String regex = ResourceConstants.SOURCES_FILE_REGEX_NAME;
 
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(lowercaseName);
@@ -182,11 +161,8 @@ public class ResourcesPluginUtil {
      * Creates a new dialog so that the user can choose between updating the templates or not
      * @return the result of this decision, 0 if he wants to update the templates, 1 if he does not
      */
-    private static int createUpdateTemplatesDialog() {
-        MessageDialog dialog =
-            new MessageDialog(Display.getDefault().getActiveShell(), "Generator configuration project not found!", null,
-                "CobiGen_templates folder is not imported. Do you want to download latest templates and use it", 0,
-                new String[] { "Update", "Cancel" }, 1);
+    public static int createUpdateTemplatesDialog() {
+        UpdateTemplatesDialog dialog = new UpdateTemplatesDialog();
         dialog.setBlockOnOpen(true);
         return dialog.open();
 
@@ -202,45 +178,20 @@ public class ResourcesPluginUtil {
      *             {@link IOException} occurred
      */
     public static String downloadJar(boolean isDownloadSource) throws MalformedURLException, IOException {
-        String mavenUrl =
-            "https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.cobigen&a=templates-devon4j&v=LATEST";
-        if (isDownloadSource) {
-            mavenUrl = mavenUrl + "&c=sources";
-        }
 
         String fileName = "";
 
+        ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+        progressMonitor.open();
+        progressMonitor.getProgressMonitor().beginTask("downloading latest templates...", 0);
+
         File templatesDirectory = getTemplatesDirectory();
-
-        File[] jarFiles;
-
-        if (isDownloadSource) {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
-        } else {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
-        }
-
-        if (jarFiles.length <= 0) {
-            ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-            progressMonitor.open();
-            progressMonitor.getProgressMonitor().beginTask("downloading templates...", 0);
-
-            URL url = new URL(mavenUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-            InputStream inputStream = conn.getInputStream();
-            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-            Path targetPath = file.toPath();
-            if (!file.exists()) {
-                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            }
-            conn.disconnect();
+        try {
+            fileName = TemplatesJarUtil.downloadLatestDevon4jTemplates(isDownloadSource, templatesDirectory);
+        } finally {
             progressMonitor.close();
-        } else {
-            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
         }
+
         return fileName;
     }
 
@@ -248,25 +199,15 @@ public class ResourcesPluginUtil {
      * Returns the file path of the templates jar
      * @param isSource
      *            true if we want to get source jar file path
-     * @return fileName Name of the jar downloaded
+     * @return fileName Name of the jar downloaded or null if it was not found
      */
     public static String getJarPath(boolean isSource) {
 
-        String fileName = "";
-
         File templatesDirectory = getTemplatesDirectory();
 
-        File[] jarFiles;
+        File jarFile = TemplatesJarUtil.getJarFile(isSource, templatesDirectory);
 
-        if (isSource) {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
-        } else {
-            jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
-        }
-
-        if (jarFiles.length > 0) {
-            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
-        }
+        String fileName = jarFile.getPath().substring(jarFile.getPath().lastIndexOf(File.separator) + 1);
 
         return fileName;
     }
@@ -290,7 +231,9 @@ public class ResourcesPluginUtil {
      * @param fileName
      *            Name of source jar file downloaded
      * @throws IOException
+     *             {@link IOException} occurred
      * @throws MalformedURLException
+     *             {@link MalformedURLException} occurred
      */
     public static void processJar(String fileName) throws MalformedURLException, IOException {
         String pathForCobigenTemplates = "";
@@ -419,6 +362,11 @@ public class ResourcesPluginUtil {
         return ws;
     }
 
+    /**
+     * Set the boolean variable to notify that the user wants to download the templates
+     * @param userWantsToDownloadTemplates
+     *            true if users wants to download the templates
+     */
     public static void setUserWantsToDownloadTemplates(boolean userWantsToDownloadTemplates) {
         ResourcesPluginUtil.userWantsToDownloadTemplates = userWantsToDownloadTemplates;
     }
