@@ -57,19 +57,21 @@ public class OpenApiUtil {
         }
         if ((boolean) response.get("isArray")) {
             if ((boolean) response.get("isEntity")) {
-            	if(returnType.contains("Entity"))
-            		return "List<" + returnType + ">";
-            	else
-            		return "List<" + returnType + "Entity>";
+                if (returnType.contains("Entity")) {
+                    return "List<" + returnType + ">";
+                } else {
+                    return "List<" + returnType + "Entity>";
+                }
             } else {
                 return "List<" + returnType + ">";
             }
         } else if ((boolean) response.get("isPaginated")) {
             if ((boolean) response.get("isEntity")) {
-            	if(returnType.contains("Entity"))
-            		return "Page<" + returnType + ">";
-            	else
-            		return "Page<" + returnType + "Entity>";
+                if (returnType.contains("Entity")) {
+                    return "Page<" + returnType + ">";
+                } else {
+                    return "Page<" + returnType + "Entity>";
+                }
             } else {
                 return "Page<" + returnType + ">";
             }
@@ -181,10 +183,10 @@ public class OpenApiUtil {
         }
         return typeConverted;
     }
-    
+
     /**
-     * Returns the TypeScript type corresponding to the OpenAPI type definition. If the type could not be matched,
-     * the same value will be returned.
+     * Returns the TypeScript type corresponding to the OpenAPI type definition. If the type could not be
+     * matched, the same value will be returned.
      * @param parameter
      *            OpenAPI model of a parameter
      * @return the Java type
@@ -203,17 +205,17 @@ public class OpenApiUtil {
         if (type != null) {
             switch (type.toLowerCase()) {
             case "integer":
-            	typeConverted = "number";
+                typeConverted = "number";
                 break;
             case "number":
-            	typeConverted = "number";
+                typeConverted = "number";
                 break;
             default:
-                typeConverted = "void";
+                typeConverted = type;
                 break;
             }
         } else {
-            typeConverted = type;
+            typeConverted = "void";
         }
 
         if (isCollection) {
