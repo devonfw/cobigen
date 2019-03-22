@@ -29,6 +29,13 @@
   </templateScans>
 
   <increments>
+  <increment name="devon4ng-app" description="CRUD devon4ng Ionic App">
+      <incrementRef ref="app_ionic_structure"/>
+      <incrementRef ref="ionic_routing"/>
+      <incrementRef ref="ionic_i18n"/>
+      <incrementRef ref="ionic_component"/>
+      <incrementRef ref="ionic_theme"/>
+    </increment>
     <increment name="app_ionic_structure" description="Ionic devon4ng environments">
       <templateRef ref="environment.android.ts" />
       <templateRef ref="environment.prod.ts" />
