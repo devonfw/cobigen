@@ -52,7 +52,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://registry.npmjs.org/@devonfw/ts-merger/-/ts-merger-2.2.3.tgz</url>
+              <url>https://registry.npmjs.org/@devonfw/ts-merger/-/ts-merger-2.2.6.tgz</url>
               <outputFileName>ts-merger.tgz</outputFileName>
               <skipCache>true</skipCache>
               <outputDirectory>${project.build.directory}/download</outputDirectory>
