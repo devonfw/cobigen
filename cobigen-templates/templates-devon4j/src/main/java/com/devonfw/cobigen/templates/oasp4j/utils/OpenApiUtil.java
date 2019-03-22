@@ -207,15 +207,12 @@ public class OpenApiUtil {
             case "integer":
                 typeConverted = "number";
                 break;
-            case "number":
-                typeConverted = "number";
-                break;
             default:
                 typeConverted = type;
                 break;
             }
         } else {
-            typeConverted = "void";
+            typeConverted = "undefined";
         }
 
         if (isCollection) {
