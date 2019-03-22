@@ -25,16 +25,16 @@ export class ${variables.etoName?cap_first}Detail {
     sort: [
       {
         property: '${pojo.fields[0].name!}',
-        direction: 'ASC',
-      },
-    ],
+        direction: 'ASC'
+      }
+    ]
   };
   ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
 
   ${variables.etoName?lower_case}Received : ${variables.etoName?cap_first};
   clean${variables.etoName?cap_first} : ${variables.etoName?cap_first} = { <#list pojo.fields as field> ${field.name}:null,</#list> id:null, modificationCounter:null, revision:null };
 
-  translations = {title : 'Dialog', message: 'message' };
+  translations = { title: 'Dialog', message: 'message' };
   dialogType = '';
 
   /** If filterActive is true, then the dialog will be of type search. */
@@ -82,15 +82,15 @@ export class ${variables.etoName?cap_first}Detail {
   /**
    * Creates the add and modify dialog and returns the result data to it's creator.
    */
-  public addOrModify(){
-
+  public addOrModify() {
     this.clean${variables.etoName?cap_first}.id=null;
     for(const i of Object.keys(this.clean${variables.etoName?cap_first})){
       this.clean${variables.etoName?cap_first}[i] = this.${variables.etoName?lower_case}Received[i];
     }
 
-    this.${variables.etoName?lower_case}Rest.save(this.${variables.etoName?lower_case}Received).subscribe(
-      (data: ${variables.etoName?cap_first}) => {
+    this.${variables.etoName?lower_case}Rest
+    .save(this.${variables.etoName?lower_case}Received)
+    .subscribe((data: ${variables.etoName?cap_first}) => {
         this.viewCtrl.dismiss(data);
       });
   }
@@ -98,7 +98,7 @@ export class ${variables.etoName?cap_first}Detail {
   /**
    * Creates the search dialog.
    */
-  public search(){
+  public search() {
     for (const i in this.${variables.etoName?lower_case}Received) {
       if(this.${variables.etoName?lower_case}Received[i] === '') {
         delete this.${variables.etoName?lower_case}Received[i];
@@ -106,6 +106,7 @@ export class ${variables.etoName?cap_first}Detail {
         this.${variables.etoName?lower_case}SearchCriteria[i] = this.${variables.etoName?lower_case}Received[i];
       }
     }
+
     if(!this.${variables.etoName?lower_case}SearchCriteria) {
       return;
     }
@@ -122,15 +123,13 @@ export class ${variables.etoName?cap_first}Detail {
   /**
    * Clears all the search filters and returns the first data page.
    */
-  clearSearch(){
+  clearSearch() {
     this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = 0;
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
         let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
         dataArray = [this.${variables.etoName?lower_case}SearchCriteria, data];
         this.dismiss(dataArray);
-      }
-    );
+      });
   }
-
 }
