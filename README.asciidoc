@@ -78,7 +78,7 @@ CobiGen deployment has to be distinguished threefold
 
 |  `cobigen/cobigen-core/`,`cobigen-maven/` | MAVEN | `mvn clean deploy`
 
-|  `cobigen/cobigen-*/` (except core) | ECLIPSE | ```# Builds the Manifest and bundles the dependencies
+|  `cobigen/cobigen-*/` (except core). In case of deploying dev_javaplugin or dev_openapiplugin, go to `cobigen/cobigen-*-parent/cobigen-*`| ECLIPSE | ```# Builds the Manifest and bundles the dependencies
 mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
 mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
@@ -88,6 +88,19 @@ mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
 
 | `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental`
 |===
+
+== Debugging with Maven
+
+To debug Maven builds on any plug-in:
+
+. Step into the plug-in and start a console there.
+. Run `mvnDebug clean install`, it will output the port the debugger is listening to.
+. On Eclipse, right click your project -> Debug as -> Debug Configurations...
+. Add a new Remote Java Application that connects on a socket on the port that was outputted by Maven.
+. Hit debug and have fun!
+
+To debug Maven tests follow https://doc.nuxeo.com/corg/how-to-debug-a-test-run-with-maven/[this link]
+
 
 == Contribute
 

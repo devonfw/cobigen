@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Increment;
@@ -87,20 +89,60 @@ public class TemplatesConfigurationReader {
     /** The top-level folder where the templates are located. */
     private TemplateFolder rootTemplateFolder;
 
+    /** The {@link ConfigurationHolder} used for reading templates folder **/
+    private ConfigurationHolder configurationHolder;
+
+    /**
+     * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
+     * configuration file without a ConfigurationFolder
+     *
+     * @param projectRoot
+     *            root path for the templates, has to be an absolute path
+     * @param templateFolder
+     *            name of the folder containing the configuration and templates, has to be a relative path
+     * @throws InvalidConfigurationException
+     *             if the configuration is not valid against its xsd specification
+     */
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder) {
+        this(projectRoot, templateFolder, null);
+    }
+
     /**
      * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given
      * configuration file
      *
-     * @param templatesRoot
-     *            root path for the template configuration and templates
+     * @param projectRoot
+     *            root path for the templates, has to be an absolute path
+     * @param templateFolder
+     *            name of the folder containing the configuration and templates, has to be a relative path
+     * @param configurationHolder
+     *            The {@link ConfigurationHolder} used for reading templates folder
      * @throws InvalidConfigurationException
      *             if the configuration is not valid against its xsd specification
      */
-    public TemplatesConfigurationReader(Path templatesRoot) throws InvalidConfigurationException {
+    public TemplatesConfigurationReader(Path projectRoot, String templateFolder,
+        ConfigurationHolder configurationHolder) throws InvalidConfigurationException {
+        Path templateLocation;
 
-        rootTemplateFolder = TemplateFolder.create(templatesRoot);
-        configFilePath = templatesRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+        Path rootTemplatePath = projectRoot.resolve(templateFolder);
+        configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+
+        if (!Files.exists(configFilePath)) {
+            Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            sourceTemplatePath = sourceTemplatePath.resolve(templateFolder);
+            configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            templateLocation = sourceTemplatePath;
+
+            if (!Files.exists(configFilePath)) {
+                throw new InvalidConfigurationException(configFilePath, "Could not find templates configuration file.");
+            }
+        } else {
+            templateLocation = rootTemplatePath;
+        }
+        rootTemplateFolder = TemplateFolder.create(templateLocation);
+
         readConfiguration();
+        this.configurationHolder = configurationHolder;
     }
 
     /**
@@ -269,6 +311,7 @@ public class TemplatesConfigurationReader {
 
         String templatePath = scan.getTemplatePath();
         TemplatePath templateFolder = rootTemplateFolder.navigate(templatePath);
+
         if ((templateFolder == null) || templateFolder.isFile()) {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(), "The templatePath '"
                 + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
@@ -312,6 +355,7 @@ public class TemplatesConfigurationReader {
         }
 
         for (TemplatePath child : templateFolder.getChildren()) {
+
             if (child.isFolder()) {
                 scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
                     trigger, observedTemplateNames);
@@ -396,7 +440,11 @@ public class TemplatesConfigurationReader {
         String relocate = templateFolder.getVariables().get(PROPERTY_RELOCATE);
         if (relocate != null) {
             if (scanSourcePath != null) {
-                Path destinationPath = Paths.get(scanSourcePath).relativize(templateFile.getRootRelativePath());
+                // The relative template path has to be specifically parsed to string and back to a path so
+                // the templateFile and scanSourcePath are using the same file system. More info can be found
+                // at https://github.com/devonfw/tools-cobigen/issues/715
+                String templateFilePath = templateFile.getRootRelativePath().toString();
+                Path destinationPath = Paths.get(scanSourcePath).relativize(Paths.get(templateFilePath));
                 unresolvedDestinationPath =
                     relocate.replace(VARIABLE_CWD, destinationPath.toString().replace("\\", "/"));
             }
@@ -442,6 +490,44 @@ public class TemplatesConfigurationReader {
     }
 
     /**
+     * Loads an specific increment of the static configuration into the local representation. The return
+     * object must be a map because maybe this increment references other increments
+     *
+     * @return the mapping of increment names to the corresponding {@link Increment}
+     * @param templates
+     *            {@link Map} of all templates (see
+     *            {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
+     * @param trigger
+     *            {@link Trigger} for which the templates should be loaded
+     * @param incrementName
+     *            the increment to search
+     * @throws InvalidConfigurationException
+     *             if there is an invalid ref attribute
+     */
+    public Map<String, Increment> loadSpecificIncrement(Map<String, Template> templates, Trigger trigger,
+        String incrementName) throws InvalidConfigurationException {
+
+        Map<String, Increment> increments = new HashMap<>();
+        Increments incrementsNode = configNode.getIncrements();
+        if (incrementsNode != null) {
+            // We only add the specific increment we want
+            com.devonfw.cobigen.impl.config.entity.io.Increment source =
+                getSpecificIncrement(incrementsNode.getIncrement(), incrementName);
+            if (source == null) {
+                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                    "No increment found with name='" + incrementName + "' on the external templates.xml folder.");
+            }
+
+            increments.put(source.getName(), new Increment(source.getName(), source.getDescription(), trigger));
+
+            // Collect templates for our specific increment
+            Increment target = increments.get(source.getName());
+            addAllTemplatesRecursively(target, source, templates, increments);
+        }
+        return increments;
+    }
+
+    /**
      * Adds all templates defined within the increment and sub increments recursively.
      *
      * @param rootIncrement
@@ -460,27 +546,51 @@ public class TemplatesConfigurationReader {
     private void addAllTemplatesRecursively(Increment rootIncrement,
         com.devonfw.cobigen.impl.config.entity.io.Increment current, Map<String, Template> templates,
         Map<String, Increment> increments) throws InvalidConfigurationException {
-
         for (TemplateRef ref : current.getTemplateRef()) {
             Template temp = templates.get(ref.getRef());
             if (temp == null) {
-                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No template found for ref='" + ref.getRef() + "'!");
+                if (isExternalRef(ref.getRef())) {
+                    rootIncrement.addTemplate(loadExternalTemplate(ref));
+                } else {
+                    throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                        "No template found for ref='" + ref.getRef() + "'!");
+                }
+            } else {
+                rootIncrement.addTemplate(temp);
             }
-            rootIncrement.addTemplate(temp);
         }
 
         for (IncrementRef ref : current.getIncrementRef()) {
             Increment parentPkg = increments.get(current.getName());
             Increment childPkg = increments.get(ref.getRef());
-            if (childPkg == null) {
-                throw new InvalidConfigurationException(configFilePath.toUri().toString(),
-                    "No increment found for ref='" + ref.getRef() + "'!");
-            }
-            parentPkg.addIncrementDependency(childPkg);
 
-            com.devonfw.cobigen.impl.config.entity.io.Increment pkg = getIncrementDeclaration(ref);
-            addAllTemplatesRecursively(rootIncrement, pkg, templates, increments);
+            if (childPkg == null) {
+
+                // We try to find the increment inside our templates.xml file
+                Increments incrementsNode = configNode.getIncrements();
+                com.devonfw.cobigen.impl.config.entity.io.Increment source = null;
+                if (incrementsNode != null) {
+                    // We only add the specific increment we want
+                    source = getSpecificIncrement(incrementsNode.getIncrement(), ref.getRef());
+                    if (source != null) {
+                        addAllTemplatesRecursively(rootIncrement, source, templates, increments);
+                    }
+                    // We have not found the increment inside our templates.xml file, now let's see if this
+                    // incrementRef contains "::". That would mean we have to search on another folder.
+                    else if (isExternalRef(ref.getRef())) {
+                        parentPkg.addIncrementDependency(loadExternalIncrement(ref));
+                    } else {
+                        throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                            "No increment found for ref='" + ref.getRef() + "'!");
+                    }
+                }
+
+            } else {
+                parentPkg.addIncrementDependency(childPkg);
+
+                com.devonfw.cobigen.impl.config.entity.io.Increment pkg = getIncrementDeclaration(ref);
+                addAllTemplatesRecursively(rootIncrement, pkg, templates, increments);
+            }
         }
 
         for (TemplateScanRef ref : current.getTemplateScanRef()) {
@@ -488,12 +598,75 @@ public class TemplatesConfigurationReader {
             if (scannedTemplateNames == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                     "No templateScan found for ref='" + ref.getRef() + "'!");
-            }
-
-            for (String scannedTemplateName : scannedTemplateNames) {
-                rootIncrement.addTemplate(templates.get(scannedTemplateName));
+            } else {
+                for (String scannedTemplateName : scannedTemplateNames) {
+                    rootIncrement.addTemplate(templates.get(scannedTemplateName));
+                }
             }
         }
+    }
+
+    /**
+     * Tries to load an external template, returning the reference template
+     * @param ref
+     *            The reference to the template
+     * @return the referenced template
+     */
+    private Template loadExternalTemplate(TemplateRef ref) {
+        String[] split = splitExternalRef(ref.getRef());
+        String refTrigger = split[0];
+        String refTemplate = split[1];
+
+        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+            loadExternalConfig(refTrigger);
+
+        Template template = externalTemplatesConfiguration.getTemplate(refTemplate);
+
+        if (template == null) {
+            throw new InvalidConfigurationException("No Template found for ref=" + ref.getRef());
+        }
+
+        return template;
+    }
+
+    /**
+     * Tries to load an external increment. It loads the trigger of the external increment and all its
+     * increments for finding the needed one
+     * @param ref
+     *            incrementRef to load and store on the root increment
+     * @return the referenced child increment
+     */
+    private Increment loadExternalIncrement(IncrementRef ref) {
+        Increment childPkg;
+        String[] split = splitExternalRef(ref.getRef());
+        String refTrigger = split[0];
+        String refIncrement = split[1];
+
+        com.devonfw.cobigen.impl.config.TemplatesConfiguration externalTemplatesConfiguration =
+            loadExternalConfig(refTrigger);
+
+        Map<String, Increment> externalIncrements = externalTemplatesConfiguration.getIncrements();
+
+        childPkg = externalIncrements.get(refIncrement);
+
+        if (childPkg == null) {
+            throw new InvalidConfigurationException("No Increment found for ref=" + ref.getRef());
+        }
+
+        return childPkg;
+    }
+
+    /**
+     * Returns the TemplatesConfiguration file corresponding to the given trigger
+     * @param refTrigger
+     *            The trigger by which the TemplatesConfiguration shoul be searched
+     * @return The TemplatesConfiguration corresponding to the trigger
+     */
+    private com.devonfw.cobigen.impl.config.TemplatesConfiguration loadExternalConfig(String refTrigger) {
+
+        String contextPath = rootTemplateFolder.getPath().normalize().getParent().toString();
+        Trigger extTrigger = getExternalTrigger(refTrigger, contextPath);
+        return configurationHolder.readTemplatesConfiguration(extTrigger);
     }
 
     /**
@@ -518,10 +691,17 @@ public class TemplatesConfigurationReader {
         Iterator<com.devonfw.cobigen.impl.config.entity.io.Increment> allNamedIncrementsIt =
             xPathContext.iterate("//increment[@name]");
 
+        String incrementToSearch = source.getRef();
+        // Check whether we have an external incrementRef
+        if (isExternalRef(incrementToSearch)) {
+            String[] splitted = splitExternalRef(source.getRef());
+            incrementToSearch = splitted[1];
+        }
+
         com.devonfw.cobigen.impl.config.entity.io.Increment result = null;
         while (allNamedIncrementsIt.hasNext()) {
             com.devonfw.cobigen.impl.config.entity.io.Increment currentIncrement = allNamedIncrementsIt.next();
-            if (source.getRef().equals(currentIncrement.getName())) {
+            if (incrementToSearch.equals(currentIncrement.getName())) {
                 if (result == null) {
                     result = currentIncrement;
                 } else {
@@ -538,4 +718,69 @@ public class TemplatesConfigurationReader {
                 "No increment definition found for ref='" + source.getRef() + "'");
         }
     }
+
+    /**
+     * External ref's syntax is "triggerName::incrementName" . Therefore, this method splits the ref using
+     * "::" as the delimiter so that we can get both strings separately.
+     * @param ref
+     *            the increment ref to split
+     * @return an string array that will contain 2 elements
+     */
+    private String[] splitExternalRef(String ref) {
+        String[] split = ref.split(ConfigurationConstants.REFERENCE_DELIMITER);
+        if (split.length != 2) {
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "Invalid external ref for ref='" + ref + "', it should be 'nameOfFolder::nameOfIncrement'!");
+        }
+        return split;
+    }
+
+    /**
+     * Checks whether this increment ref is an external increment ref
+     * @param ref
+     *            the increment ref to check
+     * @return true if it is an external IncrementRef
+     */
+    private boolean isExternalRef(String ref) {
+        return ref.contains(ConfigurationConstants.REFERENCE_DELIMITER);
+    }
+
+    /**
+     * Tries to read the context.xml file for finding and returning an external trigger
+     * @param triggerToSearch
+     *            string containing the name of the trigger to search
+     * @param pathToContext
+     *            string containing the path to the context.xml file
+     * @return the found external trigger
+     */
+    private Trigger getExternalTrigger(String triggerToSearch, String pathToContext) {
+        ContextConfigurationReader contextConfigurationReader =
+            new ContextConfigurationReader(Paths.get(new File(pathToContext).toURI()));
+        Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
+        Trigger trig = triggers.get(triggerToSearch);
+        if (trig == null) {
+            throw new InvalidConfigurationException(configFilePath.toUri().toString(),
+                "Invalid external ref, no trigger '" + triggerToSearch + "' was found on your context.xml!");
+        }
+        return trig;
+    }
+
+    /**
+     * Tries to find an increment on a list of increments and return it
+     * @param increment
+     *            list of increments
+     * @param ref
+     *            name of the increment to get
+     * @return Increment if it was found, null if no increment with that name was found
+     */
+    public com.devonfw.cobigen.impl.config.entity.io.Increment getSpecificIncrement(
+        List<com.devonfw.cobigen.impl.config.entity.io.Increment> increment, String ref) {
+        for (com.devonfw.cobigen.impl.config.entity.io.Increment inc : increment) {
+            if (inc.getName().equals(ref)) {
+                return inc;
+            }
+        }
+        return null;
+    }
+
 }
