@@ -32,7 +32,7 @@
     <ion-item-sliding *ngFor="let ${variables.etoName?lower_case} of ${variables.etoName?lower_case}s; let i = index">
       <ion-item
         [class.selected]="i === selectedItemIndex"
-        (tap)="enableUpdateDeleteOperations(i)"
+        (click)="enableUpdateDeleteOperations(i)"
         tappable
       >
         <ion-grid>
@@ -50,7 +50,7 @@
         <ion-item-option
           expandable
           color="danger"
-	  (tap)="setSelectedItemIndex(i); deleteSelected${variables.etoName?cap_first}()"
+          (tap)="setSelectedItemIndex(i); deleteSelected${variables.etoName?cap_first}()"
           tappable
         >
           <ion-icon size="large" name="trash"></ion-icon>
@@ -58,11 +58,11 @@
       </ion-item-options>
       <ion-item-options
         side="start"
-	(ionSwipe)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
+        (ionSwipe)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
       >
         <ion-item-option
           expandable
-	  (tap)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
+          (tap)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
           color="secondary"
           tappable
         >
@@ -85,14 +85,14 @@
       <ion-fab-button
         color="primary"
         class="fabButton fab-button-size"
-	  (tap)="create${variables.etoName?cap_first}()"
+        (tap)="create${variables.etoName?cap_first}()"
       >
         <ion-icon name="add-circle"></ion-icon>
       </ion-fab-button>
 
       <ion-fab-button
         color="primary"
-	    (tap)="updateSelected${variables.etoName?cap_first}()"
+        (tap)="updateSelected${variables.etoName?cap_first}()"
         [disabled]="deleteModifiedButtonsDisabled"
       >
         <ion-icon name="brush"></ion-icon>
@@ -100,7 +100,7 @@
 
       <ion-fab-button
         color="primary"
-	  (tap)="deleteSelected${variables.etoName?cap_first}()"
+        (tap)="deleteSelected${variables.etoName?cap_first}()"
         [disabled]="deleteModifiedButtonsDisabled"
       >
         <ion-icon name="trash"></ion-icon>
