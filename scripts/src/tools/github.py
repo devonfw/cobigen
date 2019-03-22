@@ -130,8 +130,9 @@ class GitHub:
 
     def find_cobigen_core_milestone(self, version: str) -> Milestone:
         milestones: PaginatedList = self.__request_milestone_list()
-
-        search_title = self.__config.expected_milestone_name.replace(self.__config.release_version, version)
+                
+        search_title = self.__config.expected_core_milestone_name + version
+        log_debug("Trying to search milestone: " + search_title)
         for milestone in milestones:
             if milestone.title == search_title:
                 return milestone

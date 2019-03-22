@@ -43,6 +43,12 @@ public class ContextConfigurationReader {
     /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
 
+    /** Path of the context configuration file */
+    private Path contextFile;
+
+    /** Root of the context configuration file, used for passing to ContextConfiguration */
+    private Path contextRoot;
+
     /**
      * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given
      * context file
@@ -53,10 +59,26 @@ public class ContextConfigurationReader {
      *             if the configuration is not valid against its xsd specification
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
+		if (configRoot != null) {
+			contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+		}
+        if (!Files.exists(contextFile)) {
+            configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            if (!Files.exists(contextFile)) {
+                throw new InvalidConfigurationException(contextFile, "Could not find context configuration file.");
+            }
+        }
+        contextRoot = configRoot;
 
-        Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        String filePath = contextFile.toAbsolutePath().toString();
+        readConfiguration();
 
+    }
+
+    /**
+     * Reads the context configuration.
+     */
+    private void readConfiguration() {
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
@@ -66,7 +88,7 @@ public class ContextConfigurationReader {
             if (rootNode instanceof ContextConfiguration) {
                 BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
                 if (configVersion == null) {
-                    throw new InvalidConfigurationException(filePath,
+                    throw new InvalidConfigurationException(contextFile,
                         "The required 'version' attribute of node \"contextConfiguration\" has not been set");
                 } else {
                     VersionValidator validator =
@@ -74,7 +96,7 @@ public class ContextConfigurationReader {
                     validator.validate(configVersion.floatValue());
                 }
             } else {
-                throw new InvalidConfigurationException(filePath,
+                throw new InvalidConfigurationException(contextFile,
                     "Unknown Root Node. Use \"contextConfiguration\" as root Node");
             }
 
@@ -101,7 +123,7 @@ public class ContextConfigurationReader {
                 message = parseCause.getMessage();
             }
 
-            throw new InvalidConfigurationException(filePath, "Could not parse configuration file:\n" + message, e);
+            throw new InvalidConfigurationException(contextFile, "Could not parse configuration file:\n" + message, e);
         } catch (SAXException e) {
             // Should never occur. Programming error.
             throw new IllegalStateException(
@@ -112,10 +134,8 @@ public class ContextConfigurationReader {
             throw new InvalidConfigurationException(
                 "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         } catch (IOException e) {
-            throw new InvalidConfigurationException(contextFile.toUri().toString(),
-                "Could not read context configuration file.", e);
+            throw new InvalidConfigurationException(contextFile, "Could not read context configuration file.", e);
         }
-
     }
 
     /**
@@ -185,5 +205,12 @@ public class ContextConfigurationReader {
             variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
         }
         return variableAssignments;
+    }
+
+    /**
+     * @return the path of the context file
+     */
+    public Path getContextRoot() {
+        return contextRoot;
     }
 }

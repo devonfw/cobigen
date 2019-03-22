@@ -67,7 +67,24 @@ If you are unsure about this, please stop here and clarify, whether
 gpg.keyname = """)
         if not prompt_yesno_question("Make sure the gpg key '" + config.gpg_keyname + "' is loaded by tools like Kleopatra before continuing! Continue?"):
             sys.exit()
+        else:
+            #Check whether the user has gpg2 installed
+            if is_tool("gpg2"):
+                if not hasattr(config, "gpg_executable"):
+                    log_info("gpg2 installation found")
+                    config.gpg_executable = "gpg2"
+            elif is_tool("gpg"):
+                if not hasattr(config, "gpg_executable"):
+                    log_info("gpg installation found")
+                    config.gpg_executable = "gpg"
+            else:
+                log_error("gpg2 nor gpg are installed. Please install them on your computer (system path) or either use command -Dgpg.executable='gpg2'")
 
+def is_tool(name):
+    """Check whether `name` is on PATH and marked as executable."""
+    from shutil import which
+
+    return which(name) is not None
 
 def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo):
 
@@ -90,6 +107,7 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     config.build_artifacts_root_search_path = __get_build_artifacts_root_search_path(config)
     config.cobigenwiki_title_name = __get_cobigenwiki_title_name(config)
     config.tag_name = __get_tag_name(config) + config.release_version
+    config.tag_core_name = __get_tag_name_specific_branch(config, config.branch_core)
 
     if git_repo.exists_tag(config.tag_name):
         log_error("Git tag " + config.tag_name + " already exists. Maybe you entered the wrong release version? Please fix the problem and try again.")
@@ -98,6 +116,7 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     config.issue_label_name = config.tag_name[:-7]
 
     config.expected_milestone_name = config.tag_name[:-7] + "-v" + config.release_version
+    config.expected_core_milestone_name = config.tag_core_name[:-2] + "-v"
     milestone = github.find_release_milestone()
     if milestone:
         log_info("Milestone '"+milestone.title+"' found!")
@@ -195,6 +214,29 @@ def __get_tag_name(config: Config):
     }
 
     val = tag_name.get(config.branch_to_be_released, "")
+    if not val:
+        log_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py')
+        sys.exit()
+    return val
+
+def __get_tag_name_specific_branch(config: Config, branch_to_get_tag: str):
+    tag_name = {
+        config.branch_core: 'cobigen-core/v',
+        config.branch_mavenplugin: 'cobigen-maven/v',
+        config.branch_eclipseplugin: 'cobigen-eclipse/v',
+        config.branch_javaplugin: 'cobigen-javaplugin/v',
+        'dev_xmlplugin': 'cobigen-xmlplugin/v',
+        'dev_htmlmerger': 'cobigen-htmlplugin/v',
+        config.branch_openapiplugin: 'cobigen-openapiplugin/v',
+        'dev_tsplugin': 'cobigen-tsplugin/v',
+        'dev_textmerger': 'cobigen-textmerger/v',
+        'dev_propertyplugin': 'cobigen-propertyplugin/v',
+        'dev_jsonplugin': 'cobigen-jsonplugin/v',
+        'dev_tempeng_freemarker': 'cobigen-tempeng-freemarker/v',
+        'dev_tempeng_velocity': 'cobigen-tempeng-velocity/v',
+    }
+
+    val = tag_name.get(branch_to_get_tag, "")
     if not val:
         log_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py')
         sys.exit()

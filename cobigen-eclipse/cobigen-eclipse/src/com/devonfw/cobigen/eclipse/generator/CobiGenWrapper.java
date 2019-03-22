@@ -1,9 +1,19 @@
 package com.devonfw.cobigen.eclipse.generator;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,10 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -38,12 +53,14 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.devonfw.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
+import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -168,8 +185,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
+            LOG.debug("Generating files...");
             monitor.beginTask("Generating files...", templates.size());
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
+
+            if (utilClasses == null) {
+                // Call method to get utils from jar
+                utilClasses = resolveTemplateUtilClassesFromJar();
+            }
 
             // set override flags individually for every template
             for (TemplateTo template : templates) {
@@ -190,6 +213,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
+                LOG.debug("Generating with single non container input ...");
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
@@ -212,12 +236,106 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
+     * Resolves all classes, which have been defined in the template configuration folder from a jar.
+     * @return the list of classes
+     * @throws GeneratorProjectNotExistentException
+     *             if no generator configuration project called {@link ResourceConstants#CONFIG_PROJECT_NAME}
+     *             exists
+     * @throws IOException
+     *             {@link IOException} occurred
+     */
+    private List<Class<?>> resolveTemplateUtilClassesFromJar()
+        throws GeneratorProjectNotExistentException, IOException {
+        final List<Class<?>> result = new LinkedList<>();
+
+        IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+        String fileName = ResourcesPluginUtil.getJarPath(false);
+
+        if (fileName.equals("") || fileName == null) {
+            // This means there are no downloaded jars
+            return null;
+        }
+
+        File jarPath =
+            new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
+
+        ClassLoader inputClassLoader =
+            URLClassLoader.newInstance(new URL[] { jarPath.toURI().toURL() }, getClass().getClassLoader());
+
+        Path templateRoot;
+        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
+        if (contextConfigurationLocation == null
+            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
+            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
+            if (contextConfigurationLocation == null) {
+                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
+            } else {
+                templateRoot =
+                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
+            }
+        } else {
+            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
+        }
+        LOG.debug("Found context.xml @ " + contextConfigurationLocation.toString());
+        final List<String> foundClasses = new LinkedList<>();
+        if (contextConfigurationLocation.toString().startsWith("jar")) {
+            LOG.info("Processing configuration archive " + contextConfigurationLocation.toString());
+            try {
+                // Get the URI of the jar from the URL of the contained context.xml
+                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
+                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
+
+                // walk the jar file
+                LOG.debug("Searching for classes in " + jarUri.toString());
+                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.toString().endsWith(".class")) {
+                            LOG.debug("    * Found class file " + file.toString());
+                            // remove the leading '/' and the trailing '.class'
+                            String fileName = file.toString().substring(1, file.toString().length() - 6);
+                            // replace the path separator '/' with package separator '.' and add it to the
+                            // list of found files
+                            foundClasses.add(fileName.replace("/", "."));
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                        // Log errors but do not throw an exception
+                        LOG.warn(exc.getMessage());
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+                PlatformUIUtil.openErrorDialog(
+                    "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
+            }
+            for (String className : foundClasses) {
+                try {
+                    result.add(inputClassLoader.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    LOG.warn("Could not load " + className + " from classpath", e);
+                }
+            }
+        }
+
+        LOG.info("Util classes loaded: '{}' ...", result);
+
+        return result;
+    }
+
+    /**
      * Resolves all classes, which have been defined in the template configuration folder.
      * @return the list of classes
      * @throws Exception
      *             if anything during classpath resolving and class loading fails.
      */
     private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
+        LOG.debug("Resolve template util classes...");
         List<Class<?>> classes = Lists.newArrayList();
 
         IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
@@ -230,17 +348,26 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             // as the parent classpath to prevent classpath shading.
             inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
 
-            for (IPackageFragmentRoot roots : configJavaProject.getPackageFragmentRoots()) {
-                for (IJavaElement e : roots.getChildren()) {
-                    if (e instanceof IPackageFragment) {
-                        for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                            IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                            classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+            LOG.debug("Search fragment roots in project {}", configJavaProject.getElementName());
+            for (IPackageFragmentRoot root : configJavaProject.getPackageFragmentRoots()) {
+                if (!root.isExternal()) {
+                    LOG.debug("Search for compilation units in non-external fragment root '{}' ...",
+                        root.getElementName());
+                    for (IJavaElement e : root.getChildren()) {
+                        if (e instanceof IPackageFragment) {
+                            for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
+                                LOG.debug("Found '{}' in {} ...", cu.getElementName(), e.getElementName());
+                                IType type = EclipseJavaModelUtil.getJavaClassType(cu);
+                                classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
+                            }
                         }
                     }
                 }
             }
+        } else {
+            return null;
         }
+        LOG.info("Util classes loaded: '{}' ...", classes);
         return classes;
     }
 
@@ -286,8 +413,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     public ComparableIncrement[] getAllIncrements() {
 
         LinkedList<ComparableIncrement> result = Lists.newLinkedList();
-        List<IncrementTo> matchingIncrements;
-        matchingIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
+        List<IncrementTo> matchingIncrements = Lists.newLinkedList();
+
+        for (Object input : getCurrentDistinctInputs()) {
+            matchingIncrements.addAll(cobiGen.getMatchingIncrements(input));
+        }
 
         // convert to comparable increments
         for (IncrementTo increment : matchingIncrements) {
@@ -494,7 +624,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return the mapping of destination paths to its templates
      */
     public <T extends IncrementTo> Map<String, Set<TemplateTo>> getTemplateDestinationPaths(Collection<T> increments) {
-        return getTemplateDestinationPaths(increments, getCurrentRepresentingInput());
+        Map<String, Set<TemplateTo>> result = Maps.newHashMap();
+
+        for (Object input : getCurrentDistinctInputs()) {
+            MapUtils.deepMapAddAll(result, getTemplateDestinationPaths(increments, input));
+        }
+        return result;
     }
 
     /**
@@ -512,6 +647,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     private <T extends IncrementTo> Map<String, Set<TemplateTo>> getTemplateDestinationPaths(Collection<T> increments,
         Object input) {
 
+        List<IncrementTo> matchingIncrements = cobiGen.getMatchingIncrements(input);
+
         boolean cachingEnabled = input == getCurrentRepresentingInput();
 
         Map<String, Set<TemplateTo>> result = Maps.newHashMap();
@@ -528,6 +665,20 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     MapUtils.deepMapAddAll(result, cachedTemplatePaths);
                     continue;
                 }
+            }
+
+            // Now we need to check whether the input matches the increment
+            boolean inputNotMatchesIncrement = true;
+            for (IncrementTo inc : matchingIncrements) {
+                // If at least one triggerID is present, then the input is valid for this increment
+                if (inc.getTriggerId().equals(increment.getTriggerId())) {
+                    inputNotMatchesIncrement = false;
+                    break;
+                }
+            }
+            // If it does not match, we should not keep the execution for this increment
+            if (inputNotMatchesIncrement) {
+                continue;
             }
 
             // process normal
@@ -584,13 +735,25 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @param generatedFiles
      *            paths to be calculated workspace dependent
      * @return the workspace relative path as a string or {@code null} if the path is not in the workspace.
+     * @throws IOException
+     *             if the project file could not be read
      */
-    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles) {
+    public Set<String> getWorkspaceDependentTemplateDestinationPath(Collection<Path> generatedFiles)
+        throws IOException {
         Set<String> workspaceDependentPaths = new HashSet<>();
         for (Path targetAbsolutePath : generatedFiles) {
             Path mostSpecificProject = null;
+
+            String canonicalPathString = targetAbsolutePath.toFile().getCanonicalPath();
+
+            if (canonicalPathString == null || canonicalPathString.isEmpty()) {
+                throw new IOException("The destination project could not be found");
+            }
+
+            Path targetCanonicalPath = Paths.get(canonicalPathString);
+
             for (Path projPath : projectsInWorkspace.keySet()) {
-                if (targetAbsolutePath.startsWith(projPath)) {
+                if (targetCanonicalPath.startsWith(projPath)) {
                     if (mostSpecificProject == null || projPath.getNameCount() > mostSpecificProject.getNameCount()) {
                         mostSpecificProject = projPath;
                     }
@@ -599,11 +762,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             String path;
             if (mostSpecificProject != null) {
-                Path relProjPath = mostSpecificProject.relativize(targetAbsolutePath);
+                Path relProjPath = mostSpecificProject.relativize(targetCanonicalPath);
                 path = projectsInWorkspace.get(mostSpecificProject).getFullPath().toFile().toPath().resolve(relProjPath)
                     .toString().replace("\\", "/");
             } else {
-                path = targetAbsolutePath.toString().replace("\\", "/");
+                path = targetCanonicalPath.toString().replace("\\", "/");
                 workspaceExternalPath.add(path);
             }
             workspaceDependentPaths.add(path);
@@ -621,8 +784,42 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
         // we currently only supporting one container at a time as valid selection
         List<Object> children = cobiGen.resolveContainers(inputs.get(0));
+
         // we have to return one of the children do enable correct variable solution in the user interface
         return children.get(0);
+    }
+
+    /**
+     * @return the currently set input to be generated with
+     */
+    public List<Object> getCurrentDistinctInputs() {
+        if (inputs == null || inputs.size() == 0) {
+            return null;
+        }
+
+        List<Object> children = cobiGen.resolveContainers(inputs.get(0));
+
+        // We only want distinct values (objects with different types) from the list
+        children = children.stream().filter(distinctByType(Object::getClass)).collect(Collectors.toList());
+
+        // we have to return one of the children do enable correct variable solution in the user interface
+        return children;
+    }
+
+    /**
+     * Lambda function used to filter a list by an item property. It will return a list of items that meet the
+     * condition without duplicates. For instance, we use this for just getting a list of the inputs that have
+     * different types (instead of having 5 entities and 4 components, we would have just one entity and one
+     * component on the list)
+     * @param <T>
+     *            Any kind of object will be used
+     * @param typeExtractor
+     *            the function (condition) that will be applied to the list
+     * @return a filtered list without duplicated values on the property
+     */
+    public static <T> Predicate<T> distinctByType(Function<? super T, ?> typeExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(typeExtractor.apply(t));
     }
 
     /**
