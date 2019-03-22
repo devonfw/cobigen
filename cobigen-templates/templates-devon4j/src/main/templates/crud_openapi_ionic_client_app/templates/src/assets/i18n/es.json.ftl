@@ -25,7 +25,7 @@
   "${variables.component?uncap_first}": {
     "title": "${variables.component} Título",
     "description": "Esta es la plantilla básica de ionic",
-    "${variables.etoName?uncap_first}": {
+    "${variables.etoName?lower_case}": {
          <#list model.properties as property>
     "${property.name}":"${property.name}_ES",
     </#list>
