@@ -57,19 +57,21 @@ public class OpenApiUtil {
         }
         if ((boolean) response.get("isArray")) {
             if ((boolean) response.get("isEntity")) {
-            	if(returnType.contains("Entity"))
-            		return "List<" + returnType + ">";
-            	else
-            		return "List<" + returnType + "Entity>";
+                if (returnType.contains("Entity")) {
+                    return "List<" + returnType + ">";
+                } else {
+                    return "List<" + returnType + "Entity>";
+                }
             } else {
                 return "List<" + returnType + ">";
             }
         } else if ((boolean) response.get("isPaginated")) {
             if ((boolean) response.get("isEntity")) {
-            	if(returnType.contains("Entity"))
-            		return "Page<" + returnType + ">";
-            	else
-            		return "Page<" + returnType + "Entity>";
+                if (returnType.contains("Entity")) {
+                    return "Page<" + returnType + ">";
+                } else {
+                    return "Page<" + returnType + "Entity>";
+                }
             } else {
                 return "Page<" + returnType + ">";
             }
@@ -175,6 +177,49 @@ public class OpenApiUtil {
                 return "List<" + parameter.get("type") + ">";
             } else {
                 return "List<" + typeConverted + ">";
+            }
+        } else if (isEntity) {
+            return (String) parameter.get("type");
+        }
+        return typeConverted;
+    }
+
+    /**
+     * Returns the TypeScript type corresponding to the OpenAPI type definition. If the type could not be
+     * matched, the same value will be returned.
+     * @param parameter
+     *            OpenAPI model of a parameter
+     * @return the Java type
+     */
+    // getOaspTypeFromOpenAPI
+    public String toTypeScriptType(Map<String, Object> parameter) {
+        String typeConverted = null;
+        String type = (String) parameter.get("type");
+        boolean isCollection = false;
+        if (parameter.get("isCollection") != null) {
+            isCollection = (boolean) parameter.get("isCollection");
+        }
+
+        boolean isEntity = (boolean) parameter.get("isEntity");
+
+        if (type != null) {
+            switch (type.toLowerCase()) {
+            case "integer":
+                typeConverted = "number";
+                break;
+            default:
+                typeConverted = type;
+                break;
+            }
+        } else {
+            typeConverted = "undefined";
+        }
+
+        if (isCollection) {
+            if (isEntity) {
+                return parameter.get("type") + "[]";
+            } else {
+                return typeConverted + "[]";
             }
         } else if (isEntity) {
             return (String) parameter.get("type");
