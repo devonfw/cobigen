@@ -4,13 +4,27 @@ import { ${variables.etoName?cap_first}List } from './pages/${variables.etoName?
 import { AuthGuardService } from './services/authorization/auth-guard.service';
 
 const routes: Routes = [
-  { path: '', loadChildren: './pages/login/login.module#LoginPageModule', pathMatch: 'full' },
-  { path: 'home', loadChildren: './pages/home/home.module#HomePageModule', pathMatch: 'full', canActivate: [AuthGuardService]},
-  { path: '${variables.etoName?lower_case}', component: ${variables.etoName?cap_first}List, pathMatch: 'full', canActivate: [AuthGuardService]},
+  {
+    path: '',
+    loadChildren: './pages/login/login.module#LoginPageModule',
+    pathMatch: 'full'
+  },
+  {
+    path: 'home',
+    loadChildren: './pages/home/home.module#HomePageModule',
+    pathMatch: 'full',
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: '${variables.etoName?lower_case}',
+    component: ${variables.etoName?cap_first}List,
+    pathMatch: 'full',
+    canActivate: [AuthGuardService]
+    },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

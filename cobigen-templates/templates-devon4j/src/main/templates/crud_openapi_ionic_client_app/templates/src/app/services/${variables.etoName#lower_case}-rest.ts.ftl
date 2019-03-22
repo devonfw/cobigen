@@ -18,43 +18,42 @@ export class ${variables.etoName?cap_first}Rest {
   }
 
   /**
-  * @param  ${variables.etoName?lower_case} The item in the list.
-  * @returns The found ${variables.etoName?lower_case} from the server.
-  */
+   * @param  ${variables.etoName?lower_case} The item in the list.
+   * @returns The found ${variables.etoName?lower_case} from the server.
+   */
   get${variables.etoName?cap_first}(${variables.etoName?lower_case}: ${variables.etoName?cap_first}): Observable<any> {
     return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}, {});
   }
 
   /**
-  * @param  ${variables.etoName?lower_case} The ${variables.etoName?lower_case} to save to the database.
-  * @returns The result of the save operation.
-  */
+   * @param  ${variables.etoName?lower_case} The ${variables.etoName?lower_case} to save to the database.
+   * @returns The result of the save operation.
+   */
   save(${variables.etoName?lower_case}: ${variables.etoName?cap_first}) {
     return this.http.post(this.BO.${variables.etoName?lower_case}Service(), ${variables.etoName?lower_case}, {});
   }
 
   /**
-  * @param  ${variables.etoName?lower_case}SearchCriteria Object used for searching ${variables.etoName?lower_case}s by a criteria on the server.
-  * @returns The first data page on the server.
-  */
+   * @param  ${variables.etoName?lower_case}SearchCriteria Object used for searching ${variables.etoName?lower_case}s by a criteria on the server.
+   * @returns The first data page on the server.
+   */
   retrieveData(${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria): Observable<any> {
     return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}SearchCriteria);
   }
 
   /**
-  * @param  ${variables.etoName?lower_case}SearchCriteria Object used for searching ${variables.etoName?lower_case}s by a criteria on the server.
-  * @returns A list of the found ${variables.etoName?lower_case}s on the server.
-  */
+   * @param  ${variables.etoName?lower_case}SearchCriteria Object used for searching ${variables.etoName?lower_case}s by a criteria on the server.
+   * @returns A list of the found ${variables.etoName?lower_case}s on the server.
+   */
   search(${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria) {
     return this.http.post(this.BO.${variables.etoName?lower_case}Service() + 'search', ${variables.etoName?lower_case}SearchCriteria, {});
   }
 
   /**
-  * @param  id The id of the ${variables.etoName?lower_case} to delete.
-  * @returns The result of the delete operation.
-  */
+   * @param  id The id of the ${variables.etoName?lower_case} to delete.
+   * @returns The result of the delete operation.
+   */
   delete(id: number) {
     return this.http.delete(this.BO.${variables.etoName?lower_case}Service() + id, {});
   }
-
 }

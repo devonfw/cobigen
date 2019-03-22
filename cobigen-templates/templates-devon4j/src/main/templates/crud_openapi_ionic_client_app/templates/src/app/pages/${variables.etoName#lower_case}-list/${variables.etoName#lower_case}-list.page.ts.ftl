@@ -14,7 +14,6 @@ import { Pageable } from '../../services/interfaces/pageable';
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../services/interfaces/${variables.etoName?lower_case}-search-criteria';
 import { PaginatedListTo } from '../../services/interfaces/paginated-list-to';
 
-
 @Component({
   selector: '${variables.etoName?lower_case}-list',
   templateUrl: '${variables.etoName?lower_case}-list.page.html',
@@ -23,25 +22,27 @@ import { PaginatedListTo } from '../../services/interfaces/paginated-list-to';
 export class ${variables.etoName?cap_first}List {
   /** Contains the strings for the deletion prompt */
   deleteTranslations: any = {};
-    pageable: Pageable = {
+  pageable: Pageable = {
     pageSize: 15,
     pageNumber: 0,
     sort: [
       {
         property: '${model.properties[0].name!}',
-        direction: 'ASC',
-      },
-    ],
+        direction: 'ASC'
+      }
+    ]
   };
   ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list model.properties as field> ${field.name}:null,</#list> pageable : this.pageable };
   ${variables.etoName?lower_case}ListItem : ${variables.etoName?cap_first} = {<#list model.properties as field> ${field.name}:null,</#list> };
-  deleteButtonNames=['dismiss','confirm'];
-  deleteButtons=[
-                { text: '', handler: (data) => {  } },
-                { text: '', handler: (data) => {  } },
-                ];
-  @Input() deleteModifiedButtonsDisabled = true;
-  @Input() infiniteScrollEnabled = true;
+  deleteButtonNames = ['dismiss', 'confirm'];
+  deleteButtons = [
+    { text: '', handler: data => {} },
+    { text: '', handler: data => {} }
+  ];
+  @Input()
+  deleteModifiedButtonsDisabled = true;
+  @Input()
+  infiniteScrollEnabled = true;
 
   ${variables.etoName?lower_case}s: ${variables.etoName?cap_first}[] = [];
   selectedItemIndex = -1;
@@ -52,7 +53,7 @@ export class ${variables.etoName?cap_first}List {
     public alertCtrl: AlertController,
     public translate: TranslateService,
     public modalCtrl: ModalController,
-    public loadingCtrl: LoadingController,
+    public loadingCtrl: LoadingController
   ) {}
 
   @ViewChild('slidingList') slidingList: IonList;
@@ -65,7 +66,7 @@ export class ${variables.etoName?cap_first}List {
 
   private async ionViewWillEnterAsync() {
     const loading = await this.loadingCtrl.create({
-      message: 'Please wait...',
+      message: 'Please wait...'
     });
     await loading.present();
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
@@ -77,7 +78,7 @@ export class ${variables.etoName?cap_first}List {
       (err: any) => {
         loading.dismiss();
         console.log(err);
-      },
+      }
     );
   }
 
@@ -106,7 +107,6 @@ export class ${variables.etoName?cap_first}List {
    * @param  refresher Pull-to-refresh event.
    */
   public doRefresh(refresher) {
-
     setTimeout(() => {
       this.reload${variables.etoName?cap_first}List();
       refresher.target.complete();
@@ -128,9 +128,9 @@ export class ${variables.etoName?cap_first}List {
         this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
         this.infiniteScrollEnabled = true;
       },
-      (err) => {
+      err => {
         console.log(err);
-      },
+      }
     );
   }
 
@@ -154,8 +154,8 @@ export class ${variables.etoName?cap_first}List {
       component: ${variables.etoName?cap_first}Detail,
       componentProps: {
         dialog: 'add',
-        edit: null,
-      },
+        edit: null
+      }
     });
     await modal.present();
     modal.onDidDismiss().then(() => this.reload${variables.etoName?cap_first}List());
@@ -172,8 +172,8 @@ export class ${variables.etoName?cap_first}List {
       component: ${variables.etoName?cap_first}Detail,
       componentProps: {
         dialog: 'filter',
-        edit: null,
-      },
+        edit: null
+      }
     });
 
     await modal.present();
@@ -198,7 +198,7 @@ export class ${variables.etoName?cap_first}List {
       return;
     }
     const cleanItem = this.${variables.etoName?lower_case}ListItem;
-    for (const i of Object.keys(cleanItem)){
+    for (const i of Object.keys(cleanItem)) {
       cleanItem[i] = this.${variables.etoName?lower_case}s[this.selectedItemIndex][i];
     }
 
@@ -207,11 +207,11 @@ export class ${variables.etoName?cap_first}List {
       componentProps: {
         dialog: 'modify',
 	edit: this.${variables.etoName?lower_case}s[this.selectedItemIndex],
-      },
+      }
     });
     await modal.present();
     modal.onDidDismiss().then((data: any) => {
-      if(data && data.data) {
+      if (data && data.data) {
         this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1, data.data);
       }
     });
@@ -224,21 +224,23 @@ export class ${variables.etoName?cap_first}List {
     await this.slidingList.closeSlidingItems();
 
     this.deleteTranslations = this.getTranslation('${variables.component?lower_case}.${variables.etoName?lower_case}.operations.delete');
-    for (const i of Object.keys(this.deleteButtons)){
-      this.deleteButtons[i].text=this.deleteTranslations[this.deleteButtonNames[i]];
+    for (const i of Object.keys(this.deleteButtons)) {
+      this.deleteButtons[i].text = this.deleteTranslations[
+        this.deleteButtonNames[i]
+      ];
     }
     const prompt = await this.alertCtrl.create({
       header: this.deleteTranslations.title,
       message: this.deleteTranslations.message,
       buttons: [
-        { text: this.deleteButtons[0].text, handler: (data) => {} },
+        { text: this.deleteButtons[0].text, handler: data => {} },
         {
           text: this.deleteButtons[1].text,
-          handler: (data) => {
+          handler: data => {
             this.confirmDeletion();
-          },
-        },
-      ],
+          }
+        }
+      ]
     });
     await prompt.present();
   }
@@ -247,7 +249,6 @@ export class ${variables.etoName?cap_first}List {
    * Removes the current selected item.
    */
   private confirmDeletion() {
-
     if (!this.selectedItemIndex && this.selectedItemIndex !== 0) {
       return;
     }
@@ -259,9 +260,9 @@ export class ${variables.etoName?cap_first}List {
         this.selectedItemIndex = -1;
         this.deleteModifiedButtonsDisabled = true;
       },
-      (err) => {
+      err => {
         console.log(err);
-      },
+      }
     );
   }
 
@@ -285,12 +286,13 @@ export class ${variables.etoName?cap_first}List {
               } else {
                 this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
               }
+
               infiniteScroll.target.complete();
             },
-            (err) => {
+            err => {
               console.log(err);
-            },
-        );
+            }
+          );
       }, 300);
     }
   }
