@@ -207,6 +207,10 @@ public class ResourcesPluginUtil {
 
         File jarFile = TemplatesJarUtil.getJarFile(isSource, templatesDirectory);
 
+        if (jarFile == null) {
+            return "";
+        }
+
         String fileName = jarFile.getPath().substring(jarFile.getPath().lastIndexOf(File.separator) + 1);
 
         return fileName;
