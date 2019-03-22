@@ -3,8 +3,8 @@ import { Platform } from '@ionic/angular';
 import { AuthServiceProvider } from './services/security/auth-service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-import { Plugins, Capacitor } from '@capacitor/core';
 
+import { Plugins, Capacitor } from '@capacitor/core';
 const SplashScreen = Plugins.SplashScreen;
 const StatusBar = Plugins.StatusBar;
 
@@ -20,7 +20,7 @@ export class AppComponent {
     private platform: Platform,
     private auth: AuthServiceProvider,
     private translate: TranslateService,
-    private router: Router,
+    private router: Router
   ) {
     this.initializeApp();
 
@@ -32,13 +32,16 @@ export class AppComponent {
         });
       }
 
-      this.pages = [{
+      this.pages = [
+        {
           title: 'Home',
           route: 'home'
-      }, {
+        },
+        {
           title: '${variables.etoName?cap_first}',
           route: '${variables.etoName?lower_case}'
-      }, ];
+        }
+      ];
     });
     this.translate.setDefaultLang('en');
     this.translate.currentLang = 'en';
@@ -55,11 +58,11 @@ export class AppComponent {
     });
   }
 
-  isAuthenticated(){
+  isAuthenticated() {
     return this.auth.getAuthenticated();
   }
 
   openPage(p: any) {
-      this.router.navigate([p.route]);
+    this.router.navigate([p.route]);
   }
 }
