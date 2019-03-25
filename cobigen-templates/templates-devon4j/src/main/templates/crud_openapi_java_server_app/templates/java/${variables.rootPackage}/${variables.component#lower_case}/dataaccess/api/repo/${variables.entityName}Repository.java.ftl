@@ -27,8 +27,8 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
 
   /**
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo} with the criteria to search.
-   * @return the {@link Page} of the {@link ${variables.entityName}Entity} objects that matched the search when the pageable is
-   * set. If no pageable is set, it will return a unique page with all the objects from the database.
+   * @return the {@link Page} of the {@link ${variables.entityName}Entity} objects that matched the search.
+   * If no pageable is set, it will return a unique page with all the objects that matched the search.
    */
   default Page<${variables.entityName}Entity> findByCriteria(${variables.entityName}SearchCriteriaTo criteria) {
 
