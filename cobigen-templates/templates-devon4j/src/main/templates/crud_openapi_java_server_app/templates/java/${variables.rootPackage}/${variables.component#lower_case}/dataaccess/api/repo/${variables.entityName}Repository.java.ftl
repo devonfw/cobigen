@@ -27,8 +27,8 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
 
   /**
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo} with the criteria to search.
-   * @param pageRequest {@link Pageable} implementation used to set page properties like page size
-   * @return the {@link Page} of the {@link ${variables.entityName}Entity} objects that matched the search.
+   * @return the {@link Page} of the {@link ${variables.entityName}Entity} objects that matched the search when the pageable is
+   * set. If no pageable is set, it will return a unique page with all the objects from the database.
    */
   default Page<${variables.entityName}Entity> findByCriteria(${variables.entityName}SearchCriteriaTo criteria) {
 
@@ -66,7 +66,11 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
       </#compress>
     </#if>
     </#list>
-    addOrderBy(query, alias, criteria.getPageable().getSort());
+    if (criteria.getPageable() == null) {
+      criteria.setPageable(PageRequest.of(0, Integer.MAX_VALUE));
+    } else {
+      addOrderBy(query, alias, criteria.getPageable().getSort());
+    }
     
     return QueryUtil.get().findPaginated(criteria.getPageable(), query, true);
   }
