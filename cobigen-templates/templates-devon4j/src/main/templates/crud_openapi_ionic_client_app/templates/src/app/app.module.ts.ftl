@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
-  HttpClientModule
+  HttpClientModule,
 } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -12,15 +12,15 @@ import { AppRoutingModule } from './app-routing.module';
 import {
   TranslateModule,
   TranslateLoader,
-  TranslateService
+  TranslateService,
 } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FormsModule } from '@angular/forms';
 import { ComponentsModule } from './components/components.module';
 import { AuthGuardService } from './services/authorization/auth-guard.service';
-import { HttpinterceptorProvider } from './services/security/httpinterceptor';
+import { HttpinterceptorService } from './services/security/http-interceptor.service';
 import { ${variables.etoName?cap_first}Detail } from './pages/${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail.page';
-import { ${variables.etoName?cap_first}Rest } from './services/${variables.etoName?lower_case}-rest';
+import { ${variables.etoName?cap_first}RestService } from './services/${variables.etoName?lower_case}-rest.service';
 import { ${variables.etoName?cap_first}List } from './pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list.page';
 
 export function translateFactory(http: HttpClient) {
@@ -45,11 +45,11 @@ export function translateFactory(http: HttpClient) {
       loader: {
         provide: TranslateLoader,
         useFactory: translateFactory,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
     FormsModule,
-    ComponentsModule
+    ComponentsModule,
   ],
 
   providers: [
@@ -57,12 +57,12 @@ export function translateFactory(http: HttpClient) {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttpinterceptorProvider,
-      multi: true
+      useClass: HttpinterceptorService,
+      multi: true,
     },
-    ${variables.etoName?cap_first}Rest,
-    TranslateService
+    ${variables.etoName?cap_first}RestService,
+    TranslateService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
