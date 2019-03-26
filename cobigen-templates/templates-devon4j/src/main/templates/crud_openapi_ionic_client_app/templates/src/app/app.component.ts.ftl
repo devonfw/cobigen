@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import { AuthServiceProvider } from './services/security/auth-service';
+import { AuthService } from './services/security/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
@@ -10,7 +10,7 @@ const StatusBar = Plugins.StatusBar;
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html'
+  templateUrl: 'app.component.html',
 })
 export class AppComponent {
   rootPage: any;
@@ -18,14 +18,13 @@ export class AppComponent {
 
   constructor(
     private platform: Platform,
-    private auth: AuthServiceProvider,
+    private auth: AuthService,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
   ) {
     this.initializeApp();
 
     platform.ready().then(() => {
-      // StatusBar.setStyle();
       if (Capacitor.isPluginAvailable('SplashScreen')) {
         SplashScreen.hide().catch(() => {
           console.warn('Spashscreen not available');
@@ -35,12 +34,12 @@ export class AppComponent {
       this.pages = [
         {
           title: 'Home',
-          route: 'home'
+          route: 'home',
         },
         {
           title: '${variables.etoName?cap_first}',
-          route: '${variables.etoName?lower_case}'
-        }
+          route: '${variables.etoName?lower_case}',
+        },
       ];
     });
     this.translate.setDefaultLang('en');
@@ -49,7 +48,6 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // this.statusBar.styleDefault();
       if (Capacitor.isPluginAvailable('SplashScreen')) {
         SplashScreen.hide().catch(() => {
           console.warn('Spashscreen not available');

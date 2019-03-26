@@ -7,7 +7,7 @@
     <templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-rest.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-rest.service.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="${variables.etoName#lower_case}.ts" />
     <templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts" />
     <templateExtension ref="paginated-list-to.ts" />
@@ -21,7 +21,7 @@
     <templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
-    <templateExtension ref="business-operator.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="business-operator.service.ts" mergeStrategy="tsmerge_override"/>
   </templates>
 
   <templateScans>
@@ -56,14 +56,14 @@
       <templateRef ref="app.module.ts"/>
       <templateRef ref="pageable.ts"/>
       <templateRef ref="sort.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-rest.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-rest.service.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-list.page.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-list.page.html"/>
       <templateRef ref="${variables.etoName#lower_case}-list.page.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.page.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.page.html"/>
       <templateRef ref="${variables.etoName#lower_case}-detail.page.scss"/>
-      <templateRef ref="business-operator.ts"/>
+      <templateRef ref="business-operator.service.ts"/>
     </increment>
     <increment name="ionic_theme" description="Ionic theme">
       <templateRef ref="variables.scss"/>
