@@ -1,7 +1,7 @@
 import { NavParams, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { ${variables.etoName?cap_first}Rest } from '../../services/${variables.etoName?lower_case}-rest';
+import { ${variables.etoName?cap_first}RestService } from '../../services/${variables.etoName?lower_case}-rest.service';
 import { ${variables.etoName?cap_first} } from '../../services/interfaces/${variables.etoName?lower_case}';
 import { ${variables.etoName?cap_first}SearchCriteria } from '../../services/interfaces/${variables.etoName?lower_case}-search-criteria';
 import { Pageable } from '../../services/interfaces/pageable';
@@ -15,7 +15,7 @@ import { PaginatedListTo } from '../../services/interfaces/paginated-list-to';
 @Component({
   selector: '${variables.etoName?lower_case}-detail',
   templateUrl: '${variables.etoName?lower_case}-detail.page.html',
-  styleUrls: ['${variables.etoName?lower_case}-detail.page.scss']
+  styleUrls: ['${variables.etoName?lower_case}-detail.page.scss'],
 })
 export class ${variables.etoName?cap_first}Detail {
 
@@ -25,14 +25,26 @@ export class ${variables.etoName?cap_first}Detail {
     sort: [
       {
         property: '${pojo.fields[0].name!}',
-        direction: 'ASC'
-      }
-    ]
+        direction: 'ASC',
+      },
+    ],
   };
-  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
+  ${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria = {
+    <#list pojo.fields as field>
+    ${field.name}: null,
+    </#list>
+    pageable: this.pageable,
+  };
 
-  ${variables.etoName?lower_case}Received : ${variables.etoName?cap_first};
-  clean${variables.etoName?cap_first} : ${variables.etoName?cap_first} = { <#list pojo.fields as field> ${field.name}:null,</#list> id:null, modificationCounter:null, revision:null };
+  ${variables.etoName?lower_case}Received: ${variables.etoName?cap_first};
+  clean${variables.etoName?cap_first}: ${variables.etoName?cap_first} = {
+    <#list pojo.fields as field>
+    ${field.name}: null,
+    </#list>
+    id: null,
+    modificationCounter: null,
+    revision: null,
+  };
 
   translations = { title: 'Dialog', message: 'message' };
   dialogType = '';
@@ -44,20 +56,22 @@ export class ${variables.etoName?cap_first}Detail {
     public params: NavParams,
     public viewCtrl: ModalController,
     public translate: TranslateService,
-    public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}Rest
+    public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}RestService,
   ) {
 
     this.getTranslation(
-      '${variables.component?uncap_first}.${variables.etoName?lower_case}.operations.' + this.params.get('dialog')
+      '${variables.component?uncap_first}.${variables.etoName?lower_case}.operations.' + this.params.get('dialog'),
     );
     this.dialogType = this.params.get('dialog');
     this.${variables.etoName?lower_case}Received = this.params.get('edit');
     if(!this.${variables.etoName?lower_case}Received) {
       this.${variables.etoName?lower_case}Received = {
-        <#list pojo.fields as field> ${field.name}:null,</#list>
+        <#list pojo.fields as field>
+	${field.name}:null,
+	</#list>
       };
     }
-    if(this.dialogType === 'filter') {
+    if (this.dialogType === 'filter') {
       this.filterActive = false;
     }
   }
@@ -74,7 +88,9 @@ export class ${variables.etoName?cap_first}Detail {
    * Dismisses the current opened dialog and returns the result data to it's creator.
    * @param  data - Tuple containing all the objects which the server returns .
    */
-  private dismiss(data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>]) {
+  private dismiss(
+    data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>],
+  ) {
     this.viewCtrl.dismiss(data);
     this.filterActive = true;
   }
@@ -110,14 +126,19 @@ export class ${variables.etoName?cap_first}Detail {
     if(!this.${variables.etoName?lower_case}SearchCriteria) {
       return;
     }
-    this.${variables.etoName?lower_case}Rest.search(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
-      (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-        let dataArray : [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
+    this.${variables.etoName?lower_case}Rest
+    .search(this.${variables.etoName?lower_case}SearchCriteria)
+    .subscribe((data: PaginatedListTo<${variables.etoName?cap_first}>) => {
+        let dataArray: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>];
         dataArray = [this.${variables.etoName?lower_case}SearchCriteria, data];
         this.dismiss(dataArray);
-        this.${variables.etoName?lower_case}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
-      }
-    )
+        this.${variables.etoName?lower_case}SearchCriteria = {
+          <#list pojo.fields as field>
+	  ${field.name}: null,
+	  </#list>
+          pageable: this.pageable,
+        };
+      });
   }
 
   /**

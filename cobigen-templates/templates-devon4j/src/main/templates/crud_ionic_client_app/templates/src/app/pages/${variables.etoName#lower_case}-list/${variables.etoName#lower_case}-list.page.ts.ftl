@@ -5,9 +5,9 @@ import {
   ModalController,
   NavController,
   LoadingController,
-  IonList
+  IonList,
 } from '@ionic/angular';
-import { ${variables.etoName?cap_first}Rest } from '../../services/${variables.etoName?lower_case}-rest';
+import { ${variables.etoName?cap_first}RestService } from '../../services/${variables.etoName?lower_case}-rest.service';
 import { ${variables.etoName?cap_first}Detail } from '../${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail.page';
 import { ${variables.etoName?cap_first} } from '../../services/interfaces/${variables.etoName?lower_case}';
 import { Pageable } from '../../services/interfaces/pageable';
@@ -17,7 +17,7 @@ import { PaginatedListTo } from '../../services/interfaces/paginated-list-to';
 @Component({
   selector: '${variables.etoName?lower_case}-list',
   templateUrl: '${variables.etoName?lower_case}-list.page.html',
-  styleUrls: ['${variables.etoName?lower_case}-list.page.scss']
+  styleUrls: ['${variables.etoName?lower_case}-list.page.scss'],
 })
 export class ${variables.etoName?cap_first}List {
   /** Contains the strings for the deletion prompt */
@@ -28,16 +28,25 @@ export class ${variables.etoName?cap_first}List {
     sort: [
       {
         property: '${pojo.fields[0].name!}',
-        direction: 'ASC'
-      }
-    ]
+        direction: 'ASC',
+      },
+    ],
   };
-  ${variables.etoName?lower_case}SearchCriteria : ${variables.etoName?cap_first}SearchCriteria = { <#list pojo.fields as field> ${field.name}:null,</#list> pageable : this.pageable };
-  ${variables.etoName?lower_case}ListItem : ${variables.etoName?cap_first} = {<#list pojo.fields as field> ${field.name}:null,</#list> };
+  ${variables.etoName?lower_case}SearchCriteria: ${variables.etoName?cap_first}SearchCriteria = {
+    <#list pojo.fields as field>
+    ${field.name}: null,
+    </#list>
+    pageable: this.pageable,
+  };
+  ${variables.etoName?lower_case}ListItem: ${variables.etoName?cap_first} = {
+    <#list pojo.fields as field>
+    ${field.name}: null,
+    </#list>
+  };
   deleteButtonNames = ['dismiss', 'confirm'];
   deleteButtons = [
-    { text: '', handler: data => {} },
-    { text: '', handler: data => {} }
+    { text: '', handler: (data) => {} },
+    { text: '', handler: (data) => {} },
   ];
   @Input()
   deleteModifiedButtonsDisabled = true;
@@ -49,11 +58,11 @@ export class ${variables.etoName?cap_first}List {
 
   constructor(
     public navCtrl: NavController,
-    public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}Rest,
+    public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}RestService,
     public alertCtrl: AlertController,
     public translate: TranslateService,
     public modalCtrl: ModalController,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
   ) {}
 
   @ViewChild('slidingList') slidingList: IonList;
@@ -66,19 +75,18 @@ export class ${variables.etoName?cap_first}List {
 
   private async ionViewWillEnterAsync() {
     const loading = await this.loadingCtrl.create({
-      message: 'Please wait...'
+      message: 'Please wait...',
     });
     await loading.present();
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-
         this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
         loading.dismiss();
       },
       (err: any) => {
         loading.dismiss();
         console.log(err);
-      }
+      },
     );
   }
 
@@ -116,21 +124,20 @@ export class ${variables.etoName?cap_first}List {
   /**
    * Reloads the ${variables.etoName?lower_case} list, retrieving the first page.
    */
-  private reload${variables.etoName?cap_first}List(){
-
-    this.${variables.etoName?lower_case}s = [];
+  private reload${variables.etoName?cap_first}List() {
     this.pageable.pageNumber = 0;
     this.${variables.etoName?lower_case}SearchCriteria.pageable = this.pageable;
     this.deleteModifiedButtonsDisabled = true;
     this.selectedItemIndex = -1;
     this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
       (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-        this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
+        this.${variables.etoName?lower_case}s = [].concat(data.content);
         this.infiniteScrollEnabled = true;
       },
-      err => {
+      (err) => {
+        this.${variables.etoName?lower_case}s = [];
         console.log(err);
-      }
+      },
     );
   }
 
@@ -222,7 +229,9 @@ export class ${variables.etoName?cap_first}List {
   public async deleteSelected${variables.etoName?cap_first}() {
     await this.slidingList.closeSlidingItems();
 
-    this.deleteTranslations = this.getTranslation('${variables.component?lower_case}.${variables.etoName?lower_case}.operations.delete');
+    this.deleteTranslations = this.getTranslation(
+      '${variables.component?lower_case}.${variables.etoName?lower_case}.operations.delete',
+    );
     for (const i of Object.keys(this.deleteButtons)) {
       this.deleteButtons[i].text = this.deleteTranslations[
         this.deleteButtonNames[i]
@@ -232,14 +241,14 @@ export class ${variables.etoName?cap_first}List {
       header: this.deleteTranslations.title,
       message: this.deleteTranslations.message,
       buttons: [
-        { text: this.deleteButtons[0].text, handler: data => {} },
+        { text: this.deleteButtons[0].text, handler: (data) => {} },
         {
           text: this.deleteButtons[1].text,
-          handler: data => {
+          handler: (data) => {
             this.confirmDeletion();
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await prompt.present();
   }
@@ -259,9 +268,9 @@ export class ${variables.etoName?cap_first}List {
         this.selectedItemIndex = -1;
         this.deleteModifiedButtonsDisabled = true;
       },
-      err => {
+      (err) => {
         console.log(err);
-      }
+      },
     );
   }
 
@@ -270,17 +279,23 @@ export class ${variables.etoName?cap_first}List {
    * @param  infiniteScroll Infinite scroll event.
    */
   public doInfinite(infiniteScroll) {
-
     if (this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber < 0) {
       this.infiniteScrollEnabled = false;
     } else {
-      this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
+      this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber =
+        this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber + 1;
 
       setTimeout(() => {
-        this.${variables.etoName?lower_case}Rest.retrieveData(this.${variables.etoName?lower_case}SearchCriteria).subscribe(
+        this.${variables.etoName?lower_case}Rest
+          .retrieveData(this.${variables.etoName?lower_case}SearchCriteria)
+          .subscribe(
           (data: PaginatedListTo<${variables.etoName?cap_first}>) => {
-              if (data.content.length === 0 && this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber > 0){
-                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber = this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber - 1;
+              if (
+                data.content.length === 0 &&
+                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber > 0
+              ) {
+                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber =
+                this.${variables.etoName?lower_case}SearchCriteria.pageable.pageNumber - 1;
                 this.infiniteScrollEnabled = false;
               } else {
                 this.${variables.etoName?lower_case}s = this.${variables.etoName?lower_case}s.concat(data.content);
@@ -288,9 +303,9 @@ export class ${variables.etoName?cap_first}List {
 
               infiniteScroll.target.complete();
             },
-            err => {
+            (err) => {
               console.log(err);
-            }
+            },
           );
       }, 300);
     }
