@@ -69,7 +69,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             if (result == 0) {
                 try {
                     String fileName = ResourcesPluginUtil.getJarPath(true);
-                    if (fileName == null) {
+                    if (fileName.equals("")) {
                         result = createUpdateTemplatesDialog();
                         if (result == 1) {
                             MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
