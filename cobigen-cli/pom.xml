@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>picocli</groupId>
+  <artifactId>com.cobigen.picocli</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>picocli</name>        
+  
+  <dependencies>
+  <dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>core</artifactId>
+  <version>5.2.0</version>
+</dependency>
+  <dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>core-api</artifactId>
+  <version>5.2.0</version>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>javaplugin</artifactId>
+  <version>2.0.0</version>
+</dependency>
+
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>tsplugin</artifactId>
+  <version>2.1.0</version>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>xmlplugin</artifactId>
+  <version>4.0.0</version>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>textmerger</artifactId>
+  <version>2.0.0</version>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>openapiplugin</artifactId>
+  <version>2.2.0</version>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>maven-plugin</artifactId>
+  <version>4.1.0</version>
+  <type>maven-plugin</type>
+</dependency>
+<dependency>
+<groupId>org.freemarker</groupId>
+<artifactId>freemarker</artifactId>
+<version>2.3.23</version>
+<scope>compile</scope>
+</dependency>
+<dependency>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>tempeng-freemarker</artifactId>
+  <version>2.0.0</version>
+</dependency>
+
+<dependency>        
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.25</version>    
+    </dependency>
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-simple</artifactId>
+  <version>1.7.21</version>
+</dependency>
+    
+   <dependency>
+   <groupId>org.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>2.2.1</version>
+   </dependency>
+  </dependencies>
+  
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>com.cobigen.picocli.TestPicocli</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+  
+</project>
