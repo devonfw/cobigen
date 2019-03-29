@@ -22,9 +22,9 @@
     <router-outlet></router-outlet>
     <td-layout-footer-inner>
       <div layout="row" layout-align="center center" flex>
-        <span>DevonFW Application</span>
+        <span>devonfw Application</span>
         <span flex></span>
-        <span>Devonfw</span>
+        <span>devonfw</span>
       </div>
     </td-layout-footer-inner>
   </td-layout-manage-list>
