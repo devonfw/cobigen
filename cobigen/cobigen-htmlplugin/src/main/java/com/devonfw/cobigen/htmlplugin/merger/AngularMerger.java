@@ -89,7 +89,8 @@ public class AngularMerger implements Merger {
             }
 
         }
-        return String.valueOf(fileDocBase);
+
+        return fileDocBase.body().children().toString();
     }
 
     /**

@@ -184,6 +184,49 @@ public class OpenApiUtil {
     }
 
     /**
+     * Returns the TypeScript type corresponding to the OpenAPI type definition. If the type could not be
+     * matched, the same value will be returned.
+     * @param parameter
+     *            OpenAPI model of a parameter
+     * @return the Java type
+     */
+    // getOaspTypeFromOpenAPI
+    public String toTypeScriptType(Map<String, Object> parameter) {
+        String typeConverted = null;
+        String type = (String) parameter.get("type");
+        boolean isCollection = false;
+        if (parameter.get("isCollection") != null) {
+            isCollection = (boolean) parameter.get("isCollection");
+        }
+
+        boolean isEntity = (boolean) parameter.get("isEntity");
+
+        if (type != null) {
+            switch (type.toLowerCase()) {
+            case "integer":
+                typeConverted = "number";
+                break;
+            default:
+                typeConverted = type;
+                break;
+            }
+        } else {
+            typeConverted = "undefined";
+        }
+
+        if (isCollection) {
+            if (isEntity) {
+                return parameter.get("type") + "[]";
+            } else {
+                return typeConverted + "[]";
+            }
+        } else if (isEntity) {
+            return (String) parameter.get("type");
+        }
+        return typeConverted;
+    }
+
+    /**
      * Prints the service operation name based on the operationId or generates one based on the servicePath
      * while printing a comment how to get better service names.
      * @param operation
