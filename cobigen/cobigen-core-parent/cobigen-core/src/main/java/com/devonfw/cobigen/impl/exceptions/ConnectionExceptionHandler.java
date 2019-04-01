@@ -5,8 +5,12 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 
+import javax.xml.bind.UnmarshalException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.impl.util.ExceptionUtil;
 
 /**
  * Exception handler for all the connectivity issues with the external process
@@ -17,114 +21,10 @@ public class ConnectionExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionExceptionHandler.class);
 
     /**
-     * Exception message to show to the user when a connection exception is thrown
-     */
-    private String connectExceptionMessage;
-
-    /**
-     * Exception message to show to the user when a malformed URL exception is thrown
-     */
-    private String malformedURLExceptionMessage;
-
-    /**
-     * Exception message to show to the user when a IO exception is thrown
-     */
-    private String ioExceptionMessage;
-
-    /**
-     * Exception message to show to the user when a protocol exception is thrown
-     */
-    private String protocolExceptionMessage;
-
-    /**
-     * Exception message to show to the user when an illegal state exception is thrown
-     */
-    private String illegalStateExceptionMessage;
-
-    /**
      * Constructor for connection exception handling
      */
     public ConnectionExceptionHandler() {
-        connectExceptionMessage = "";
-        malformedURLExceptionMessage = "";
-        ioExceptionMessage = "";
-        protocolExceptionMessage = "";
 
-    }
-
-    /**
-     * @return connectExceptionMessage
-     */
-    public String getConnectExceptionMessage() {
-        return connectExceptionMessage;
-    }
-
-    /**
-     * @param connectExceptionMessage
-     *            message to throw when a new connection exception raised
-     */
-    public void setConnectExceptionMessage(String connectExceptionMessage) {
-        this.connectExceptionMessage = connectExceptionMessage;
-    }
-
-    /**
-     * @return Malformed URL exception
-     */
-    public String getMalformedURLExceptionMessage() {
-        return malformedURLExceptionMessage;
-    }
-
-    /**
-     * @param malformedURLExceptionMessage
-     *            message to throw when a new malformed URL exception raised
-     */
-    public void setMalformedURLExceptionMessage(String malformedURLExceptionMessage) {
-        this.malformedURLExceptionMessage = malformedURLExceptionMessage;
-    }
-
-    /**
-     * @return IoExceptionMessage
-     */
-    public String getIOExceptionMessage() {
-        return ioExceptionMessage;
-    }
-
-    /**
-     * @param ioExceptionMessage
-     *            message to throw when a new IO exception raised
-     */
-    public void setIOExceptionMessage(String ioExceptionMessage) {
-        this.ioExceptionMessage = ioExceptionMessage;
-    }
-
-    /**
-     * @return ProtocolExceptionMessage
-     */
-    public String getProtocolExceptionMessage() {
-        return protocolExceptionMessage;
-    }
-
-    /**
-     * @param protocolExceptionMessage
-     *            message to throw when a new protocol exception raised
-     */
-    public void setProtocolExceptionMessage(String protocolExceptionMessage) {
-        this.protocolExceptionMessage = protocolExceptionMessage;
-    }
-
-    /**
-     * @return IllegalStateExceptionMessage
-     */
-    public String getIllegalStateExceptionMessage() {
-        return illegalStateExceptionMessage;
-    }
-
-    /**
-     * @param illegalStateExceptionMessage
-     *            message to throw when a new Illegal State exception raised
-     */
-    public void setIllegalStateExceptionMessage(String illegalStateExceptionMessage) {
-        this.illegalStateExceptionMessage = illegalStateExceptionMessage;
     }
 
     /**
@@ -135,15 +35,22 @@ public class ConnectionExceptionHandler {
      */
     public ConnectionException handle(Exception e) {
 
-        boolean isConnectException = e instanceof ConnectException;
-        boolean isIOException = e instanceof IOException;
+        Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
+
+        String errorMessage = parseCause.getMessage();
+
+        boolean isConnectException = parseCause.getClass().isInstance(new ConnectException());
+        boolean isIOException = parseCause.getClass().isInstance(new IOException());
+        boolean isMalformedURLException = parseCause.getClass().isInstance(new MalformedURLException());
+        boolean isProtocolException = parseCause.getClass().isInstance(new ProtocolException());
+        boolean isIllegalStateException = parseCause.getClass().isInstance(new IllegalStateException());
 
         if (isConnectException) {
-            LOG.error(connectExceptionMessage);
+            LOG.error(errorMessage);
         }
 
         if (isIOException) {
-            LOG.error(ioExceptionMessage);
+            LOG.error(errorMessage);
         }
 
         if (isConnectException || isIOException) {
@@ -160,19 +67,19 @@ public class ConnectionExceptionHandler {
             return ConnectionException.IO;
         }
 
-        if (e instanceof MalformedURLException) {
-            LOG.error(malformedURLExceptionMessage);
+        if (isMalformedURLException) {
+            LOG.error(errorMessage);
             e.printStackTrace();
 
             return ConnectionException.MALFORMED_URL;
         }
 
-        if (e instanceof ProtocolException) {
+        if (isProtocolException) {
 
             return ConnectionException.PROTOCOL;
         }
 
-        if (e instanceof IllegalStateException) {
+        if (isIllegalStateException) {
 
             return ConnectionException.ILLEGAL_STATE;
         }

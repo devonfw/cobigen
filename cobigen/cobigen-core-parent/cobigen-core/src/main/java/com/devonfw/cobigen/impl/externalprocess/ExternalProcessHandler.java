@@ -7,6 +7,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.bind.UnmarshalException;
+
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -18,6 +20,7 @@ import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler.ConnectionException;
 import com.devonfw.cobigen.impl.exceptions.HttpConnectionException;
+import com.devonfw.cobigen.impl.util.ExceptionUtil;
 import com.devonfw.cobigen.impl.util.ProcessOutputUtil;
 
 /**
@@ -140,6 +143,8 @@ public class ExternalProcessHandler {
             }
             execution = true;
         } catch (IOException e) {
+            Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
+            LOG.info(parseCause.toString(), e);
             LOG.info("Error starting the external process server", e);
             execution = false;
         }
@@ -155,9 +160,6 @@ public class ExternalProcessHandler {
      */
     public boolean initializeConnection() {
 
-        connectionExc
-            .setMalformedURLExceptionMessage("MalformedURLException: Connection to server failed, MalformedURL.");
-
         for (int retry = 0; retry < 10; retry++) {
             try {
                 startConnection();
@@ -167,12 +169,10 @@ public class ExternalProcessHandler {
                     return true;
                 }
             } catch (Exception e) {
-                connectionExc.setConnectExceptionMessage(
-                    "ConnectException: Connection to server failed, attempt number " + retry + ".");
-                connectionExc
-                    .setIOExceptionMessage("IOException: Connection to server failed, attempt number " + retry + ".");
+                LOG.error("Connection to server failed, attempt number " + retry + ".");
 
                 if (connectionExc.handle(e).equals(ConnectionException.MALFORMED_URL)) {
+                    LOG.error("MalformedURLException: Connection to server failed, MalformedURL.", e);
                     return false;
                 }
 
@@ -283,6 +283,8 @@ public class ExternalProcessHandler {
             conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
 
         } catch (Exception e) {
+            Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
+            LOG.info(parseCause.toString(), e);
             ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
             connectionExc.handle(e);
         }
@@ -347,7 +349,7 @@ public class ExternalProcessHandler {
             return true;
         }
         if (process.isAlive()) {
-            process.destroy();
+            process.destroyForcibly();
             LOG.info("Closing process");
         }
         // Let's kill the process error handler
