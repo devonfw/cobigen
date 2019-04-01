@@ -1,5 +1,5 @@
 <#-- -------------------- -->
-<#-- DEVON SPECIFIC MACROS -->
+<#-- devonfw SPECIFIC MACROS -->
 <#-- -------------------- -->
 
 <#--

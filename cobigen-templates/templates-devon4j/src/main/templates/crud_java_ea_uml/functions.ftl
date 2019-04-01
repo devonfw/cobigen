@@ -92,7 +92,7 @@
 </#macro>
 
 <#-- -------------------- -->
-<#-- Devon SPECIFIC MACROS -->
+<#-- devonfw SPECIFIC MACROS -->
 <#-- -------------------- -->
 
 <#--
