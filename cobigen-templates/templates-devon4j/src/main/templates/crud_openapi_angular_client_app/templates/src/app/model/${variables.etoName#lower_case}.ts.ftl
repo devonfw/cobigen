@@ -16,7 +16,7 @@
 export interface ${variables.etoName?cap_first} {
 <#compress>
 <#list model.properties as property>
-    ${property.name}?: ${property.type};
+    ${property.name}?: ${OpenApiUtil.toTypeScriptType(property)};
 </#list>
 </#compress>
 
