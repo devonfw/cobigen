@@ -1,0 +1,11 @@
+DELEGATES_PREFERENCE=delegateValidatorList
+USER_BUILD_PREFERENCE=enabledBuildValidatorList
+USER_MANUAL_PREFERENCE=enabledManualValidatorList
+USER_PREFERENCE=saveAutomaticallyfalseprojectsCanOverridetruedisableAllValidationfalseversion1.2.701.v201707142105
+confirmDialog=true
+eclipse.preferences.version=1
+override=true
+saveAuto=false
+stateTS=0
+suspend=false
+vf.version=3
