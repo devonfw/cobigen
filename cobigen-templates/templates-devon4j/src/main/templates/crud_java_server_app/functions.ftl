@@ -1,5 +1,5 @@
 <#-- -------------------- -->
-<#-- OASP SPECIFIC MACROS -->
+<#-- devonfw SPECIFIC MACROS -->
 <#-- -------------------- -->
 
 <#--
@@ -9,7 +9,7 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
   <#if !JavaUtil.isCollection(classObject, field.name)> <#-- do not generate field for multiple relation -->
-   	 private ${field.type?replace("[^<>,]+Entity","Long","r")} ${OaspUtil.resolveIdVariableName(classObject,field)};
+   	 private ${field.type?replace("[^<>,]+Entity","Long","r")} ${DevonUtil.resolveIdVariableName(classObject,field)};
   </#if>
 <#elseif field.type?contains("Embeddable")>
 	<#if isSearchCriteria>
@@ -40,7 +40,7 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
    <#if !JavaUtil.isCollection(classObject, field.name)> <#-- do not generate getters & setters for multiple relation -->
-    	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+    	<#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
     	<#if !implementsInterface>
       /**
       * getter for ${field.name}Id attribute
@@ -48,7 +48,7 @@
       */
       </#if>
     	<#if implementsInterface>@Override</#if>
-    	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(field,false,"")} <#if isInterface>;<#else>{
+    	public ${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonUtil.resolveIdGetter(field,false,"")} <#if isInterface>;<#else>{
     		return ${idVar};
     	}</#if>
       <#if !implementsInterface>
@@ -58,7 +58,7 @@
       */
       </#if>      
     	<#if implementsInterface>@Override</#if>
-    	public void ${OaspUtil.resolveIdSetter(field,false,"")}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
+    	public void ${DevonUtil.resolveIdSetter(field,false,"")}(${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) <#if isInterface>;<#else>{
     		this.${idVar} = ${idVar};
     	}</#if>
    </#if>

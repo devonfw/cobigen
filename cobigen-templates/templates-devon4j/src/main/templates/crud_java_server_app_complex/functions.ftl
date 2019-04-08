@@ -1,5 +1,5 @@
 <#-- -------------------- -->
-<#-- OASP SPECIFIC MACROS -->
+<#-- devonfw SPECIFIC MACROS -->
 <#-- -------------------- -->
 
 <#--
@@ -22,16 +22,16 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
-	<#assign idVar = OaspUtil.resolveIdVariableName(classObject,field)>
+	<#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
 	<#if implementsInterface>
 	@Override</#if>
-	public ${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${OaspUtil.resolveIdGetter(classObject,field)} {
+	public ${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonUtil.resolveIdGetter(classObject,field)} {
 		return ${idVar};
 	}
 
 	<#if implementsInterface>
 	@Override</#if>
-	public void ${OaspUtil.resolveIdSetter(classObject,field)}(${OaspUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+	public void ${DevonUtil.resolveIdSetter(classObject,field)}(${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
 	}
 <#else>
