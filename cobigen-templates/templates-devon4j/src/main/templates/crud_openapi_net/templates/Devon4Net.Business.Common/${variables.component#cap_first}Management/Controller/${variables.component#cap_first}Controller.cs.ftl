@@ -145,7 +145,7 @@ namespace Devon4Net.Business.Common.${variables.component?cap_first}Management.C
     <#list model.component.paths as path>
 	    <#list path.operations as operation>
             <#list operation.parameters as parameter>
-                <#if !OaspUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)>
+                <#if !DevonUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)>
                     <#if !pathInUse?contains(path.pathURI)>
 
         /// <summary>
