@@ -4,18 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import javax.script.ScriptEngine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +52,6 @@ public class TypeScriptMerger implements Merger {
     /** The conflict resolving mode */
     private boolean patchOverrides;
 
-    /** Cached script engines to not evaluate dependent scripts again and again */
-    private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
-
     /**
      * Creates a new {@link TypeScriptMerger}
      *
@@ -73,8 +64,17 @@ public class TypeScriptMerger implements Merger {
     public TypeScriptMerger(String type, boolean patchOverrides) {
         this.type = type;
         this.patchOverrides = patchOverrides;
-        request.executingExe(Constants.EXE_PATH);
-        request.initializeConnection();
+        try {
+            // We first check if the server is already running
+            request.startConnection();
+            if (request.isNotConnected()) {
+                startServerConnection();
+            }
+        } catch (IOException e) {
+            // If it is not currently running, we need to execute it
+            LOG.info("Server is not currently running. Let's initialize it");
+            startServerConnection();
+        }
     }
 
     @Override
@@ -85,6 +85,9 @@ public class TypeScriptMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String baseFileContents;
+        if (request.isNotConnected()) {
+            startServerConnection();
+        }
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
         } catch (IOException e) {
@@ -97,11 +100,11 @@ public class TypeScriptMerger implements Merger {
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
-        try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
 
-            request.sendRequest(mergeTo, conn, os, osw);
+        if (request.sendRequest(mergeTo, conn, "UTF-8")) {
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));) {
+            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+                BufferedReader br = new BufferedReader(isr);) {
 
                 LOG.info("Receiving output from Server....");
                 Stream<String> s = br.lines();
@@ -114,19 +117,23 @@ public class TypeScriptMerger implements Merger {
                         body.append(LINE_SEP);
                     }
                 });
+
+                return runBeautifierExcludingImports(importsAndExports.toString(), body.toString());
+            } catch (Exception e) {
+
+                connectionExc.handle(e);
             }
-
-        } catch (IllegalStateException e) {
-
-            LOG.error("Closing connection on InputReader.", e);
-            request.terminateProcessConnection();
-        } catch (Exception e) {
-            connectionExc.setConnectExceptionMessage("Connection to server failed, attempt number " + 0 + ".");
-            connectionExc.setIOExceptionMessage("IO exception when merging");
-
-            connectionExc.handle(e);
         }
-        return runBeautifierExcludingImports(importsAndExports.toString(), body.toString());
+        // Merge was not successful
+        return baseFileContents;
+    }
+
+    /**
+     * Deploys the server and tries to initialize a new connection between CobiGen and the server
+     */
+    private void startServerConnection() {
+        request.executingExe(Constants.EXE_PATH, this.getClass());
+        request.initializeConnection();
     }
 
     /**
@@ -143,11 +150,11 @@ public class TypeScriptMerger implements Merger {
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
-        try (OutputStream os = conn.getOutputStream(); OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");) {
 
-            request.sendRequest(fileTo, conn, os, osw);
+        request.sendRequest(fileTo, conn, "UTF-8");
 
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+        try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+            BufferedReader br = new BufferedReader(isr);) {
 
             LOG.info("Receiving output from Server....");
             Stream<String> s = br.lines();
@@ -155,14 +162,7 @@ public class TypeScriptMerger implements Merger {
                 bodyBuffer.append(line);
                 bodyBuffer.append(LINE_SEP);
             });
-
-        } catch (IllegalStateException e) {
-
-            LOG.error("Closing connection on InputReader.", e);
-            request.terminateProcessConnection();
         } catch (Exception e) {
-            connectionExc.setConnectExceptionMessage("Connection to server failed, attempt number " + 0 + ".");
-            connectionExc.setIOExceptionMessage("IO exception when merging");
 
             connectionExc.handle(e);
         }

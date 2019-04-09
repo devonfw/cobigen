@@ -11,6 +11,7 @@ import java.io.Reader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
@@ -32,6 +33,15 @@ public class TypeScriptMergerTest {
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
+     * Starts the server and initializes the connection to it
+     */
+    @BeforeClass
+    public static void initializeServer() {
+        assertEquals(true, request.executingExe(Constants.EXE_PATH, TypeScriptMergerTest.class));
+        assertEquals(true, request.initializeConnection());
+    }
+
+    /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
      *
      * @test fails
@@ -40,9 +50,6 @@ public class TypeScriptMergerTest {
     public void testMergingNoOverrides() {
 
         try {
-
-            assertEquals(true, request.executingExe(Constants.EXE_PATH));
-            assertEquals(true, request.initializeConnection());
 
             // arrange
             File baseFile = new File(testFileRootPath + "baseFile.ts");
@@ -96,9 +103,6 @@ public class TypeScriptMergerTest {
 
         try {
 
-            assertEquals(request.executingExe(Constants.EXE_PATH), true);
-            assertEquals(true, request.initializeConnection());
-
             // arrange
             File baseFile = new File(testFileRootPath + "baseFile.ts");
 
@@ -149,9 +153,6 @@ public class TypeScriptMergerTest {
 
         try {
 
-            assertEquals(request.executingExe(Constants.EXE_PATH), true);
-            assertEquals(true, request.initializeConnection());
-
             // arrange
             File baseFile = new File(testFileRootPath + "massiveFile.ts");
 
@@ -181,7 +182,7 @@ public class TypeScriptMergerTest {
 
         try {
 
-            assertEquals(request.executingExe(Constants.EXE_PATH), true);
+            assertEquals(request.executingExe(Constants.EXE_PATH, this.getClass()), true);
             assertEquals(true, request.initializeConnection());
 
             String mergedContents =

@@ -24,7 +24,7 @@ public class Constants {
     /**
      * Path of the executable file where the server of the external process is stored
      */
-    public static final String EXE_PATH = "target/generated-sources/nest-server/nestserver.exe";
+    public static final String EXE_PATH = "/nestserver.exe";
 
     /** We want to check whether it is a real export statement, not like the type "export class a" */
     public static final Map<String, Boolean> NOT_EXPORT_TYPES;
