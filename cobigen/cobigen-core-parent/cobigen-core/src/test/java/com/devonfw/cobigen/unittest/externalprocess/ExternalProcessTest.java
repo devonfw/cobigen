@@ -13,11 +13,6 @@ import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 public class ExternalProcessTest {
 
     /**
-     * Root path to all resources used in this test case
-     */
-    private static String testFileRootPath = "src/test/resources/testdata/unittest/ExternalProcess/";
-
-    /**
      * Checks whether we are able to start and terminate a new external process
      */
     @Test
@@ -25,7 +20,7 @@ public class ExternalProcessTest {
         ExternalProcessHandler request = ExternalProcessHandler
             .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
-        assertEquals(true, request.executingExe(testFileRootPath + "\\DummyExe.exe"));
+        assertEquals(true, request.executingExe("/DummyExe.exe", this.getClass()));
         assertEquals(true, request.terminateProcessConnection());
     }
 }

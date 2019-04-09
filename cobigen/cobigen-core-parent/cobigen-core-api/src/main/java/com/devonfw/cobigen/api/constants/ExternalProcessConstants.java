@@ -27,4 +27,9 @@ public final class ExternalProcessConstants {
      * Connection timeout in milliseconds, so that requests don't get frozen
      */
     public static final int CONNECTION_TIMEOUT = 10000;
+
+    /**
+     * The number of times we should retry the request
+     */
+    public static final int NUMBER_OF_RETRIES = 3;
 }
