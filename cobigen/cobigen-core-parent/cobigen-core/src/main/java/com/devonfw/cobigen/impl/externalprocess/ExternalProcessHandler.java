@@ -118,6 +118,9 @@ public class ExternalProcessHandler {
      *
      * @param path
      *            of the executable file to execute
+     * @param activatorClass
+     *            class that activated the execution of the server. We need it to find the jar of the
+     *            activator class, which should contain the executable server inside its jar
      * @return true if it was able to execute the exe successfully
      */
     public boolean executingExe(String path, Class<?> activatorClass) {
@@ -181,15 +184,21 @@ public class ExternalProcessHandler {
     }
 
     /**
+     * Trying to resolve the path of the executable server. We had to implement several cases for running
+     * JUnit tests correctly, as calling this class from a test means that the exe is on the classpath.
      * @param activatorClass
+     *            class that activated the execution of the server. We need it to find the jar of the
+     *            activator class, which should contain the executable server inside its jar
+     * @return path of the executable server, if not found returns the jar path that contains the server
      *
      */
     private String getExePath(Class<?> activatorClass) {
         String filePath = "";
-        // We need to load the class that loaded this class because we are getting called from a plug-in
-        // for instance, ts-plugin is calling this class, and the exe is on the classpath of ts-plugin
         if (getClass().getResource(exePath) == null) {
 
+            // If we don't find it on the direct class path, it may mean that we are calling from another
+            // plug-in.
+            // For instance, when using the ts-plugin, our class path is not the current one.
             if (getClass().getClassLoader().getResource(exePath) == null) {
                 filePath = activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath();
             } else {
@@ -197,6 +206,7 @@ public class ExternalProcessHandler {
                 return filePath;
             }
         } else {
+            // When the exe is on the current class path
             filePath = getClass().getResource(exePath).getPath();
             return filePath;
         }
@@ -378,8 +388,8 @@ public class ExternalProcessHandler {
             }
             return false;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
+            LOG.info(parseCause.toString(), e);
         }
 
         return false;
@@ -437,9 +447,6 @@ public class ExternalProcessHandler {
         if (process == null) {
             return true;
         }
-        // if (!terminateProcess(process, "nestserver.exe")) {
-        // return false;
-        // }
         if (process.isAlive()) {
             process.destroyForcibly();
             LOG.info("Closing process instance");
