@@ -1,5 +1,9 @@
 package com.devonfw.cobigen.api.constants;
 
+import java.nio.file.Path;
+
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+
 /**
  * Constants related to the External Process plug-in like port to be used
  */
@@ -32,4 +36,9 @@ public final class ExternalProcessConstants {
      * The number of times we should retry the request
      */
     public static final int NUMBER_OF_RETRIES = 3;
+
+    /**
+     * Folder name where the different external processes are stored
+     */
+    public static final Path EXTERNAL_PROCESS_FOLDER = CobiGenPathUtil.getExternalProcessesPath("externalservers");
 }

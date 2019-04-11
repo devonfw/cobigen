@@ -1,7 +1,10 @@
 package com.devonfw.cobigen.impl.externalprocess;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -9,10 +12,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Properties;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.bind.UnmarshalException;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
@@ -68,7 +80,7 @@ public class ExternalProcessHandler {
     /**
      * Path of the executable file (the server)
      */
-    private String exePath = "";
+    private String exeName = "";
 
     /**
      * Singleton instance of {@link ExternalProcessHandler}.
@@ -125,35 +137,30 @@ public class ExternalProcessHandler {
      */
     public boolean executingExe(String path, Class<?> activatorClass) {
 
-        exePath = path;
+        exeName = path;
 
         boolean execution = false;
         try {
-            LOG.info("Loading server: " + exePath);
+            LOG.info("Loading server: " + exeName);
 
-            String filePath = getExePath(activatorClass);
+            String filePath = "", fileName = "", serverVersion = "", downloadURL = "";
+
+            Properties serverProperties = new Properties();
+            // We load the properties file from the input stream
+            if (activatorClass.getResourceAsStream("/externalserver/server.properties") != null) {
+                serverProperties.load(activatorClass.getResourceAsStream("/externalserver/server.properties"));
+                serverVersion = serverProperties.getProperty("server.version");
+                downloadURL = serverProperties.getProperty("server.url");
+                fileName = serverProperties.getProperty("server.name");
+            }
+
+            filePath = getExePath(serverVersion);
 
             if (new File(filePath).isFile()) {
                 process = new ProcessBuilder(filePath, String.valueOf(port)).start();
             } else {
-                filePath = activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-                File jarFile = new File(filePath);
-                String parentDirectory = jarFile.getParent();
-
-                // Is the exe file already available on our directory?
-                if (new File(parentDirectory + exePath).isFile()) {
-                    process = new ProcessBuilder(parentDirectory + exePath, String.valueOf(port)).start();
-                } else {
-                    // We need to extract the file to our current directory
-                    // Do we have write access?
-                    if (Files.isWritable(Paths.get(jarFile.getParent()))) {
-                        Files.copy(getClass().getResourceAsStream(exePath), Paths.get(parentDirectory + exePath));
-                        process = new ProcessBuilder(parentDirectory + exePath, String.valueOf(port)).start();
-                    } else {
-                        // We are not able to extract the server
-                        return false;
-                    }
-                }
+                filePath = downloadExe(downloadURL, filePath, fileName);
+                process = new ProcessBuilder(filePath, String.valueOf(port)).start();
             }
 
             // We try to get the error output
@@ -186,32 +193,115 @@ public class ExternalProcessHandler {
     /**
      * Trying to resolve the path of the executable server. We had to implement several cases for running
      * JUnit tests correctly, as calling this class from a test means that the exe is on the classpath.
-     * @param activatorClass
-     *            class that activated the execution of the server. We need it to find the jar of the
-     *            activator class, which should contain the executable server inside its jar
+     * @param serverVersion
      * @return path of the executable server, if not found returns the jar path that contains the server
      *
      */
-    private String getExePath(Class<?> activatorClass) {
+    private String getExePath(String serverVersion) {
         String filePath = "";
-        if (getClass().getResource(exePath) == null) {
+        if (getClass().getResource(exeName) == null) {
+            // activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath()
+            // TODO: Extension .exe is only for Windows
+            filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
+                + serverVersion + ".exe";
 
-            // If we don't find it on the direct class path, it may mean that we are calling from another
-            // plug-in.
-            // For instance, when using the ts-plugin, our class path is not the current one.
-            if (getClass().getClassLoader().getResource(exePath) == null) {
-                filePath = activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-            } else {
-                filePath = getClass().getClassLoader().getResource(exePath).getPath();
-                return filePath;
-            }
         } else {
             // When the exe is on the current class path
-            filePath = getClass().getResource(exePath).getPath();
+            filePath = getClass().getResource(exeName).getPath();
             return filePath;
         }
 
         return filePath;
+    }
+
+    /**
+     * @param downloadURL
+     * @param downloadURL
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    private String downloadExe(String downloadURL, String filePath, String fileName) throws IOException {
+
+        String tarFileName = "";
+        File jarFile = new File(filePath);
+        String parentDirectory = jarFile.getParent();
+
+        URL url = new URL(downloadURL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.connect();
+
+        // Downloading tar file
+        File tarFile;
+        Path tarPath;
+        try (InputStream inputStream = conn.getInputStream()) {
+
+            tarFileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+            tarFile = new File(parentDirectory + File.separator + tarFileName);
+            tarPath = tarFile.toPath();
+            if (!tarFile.exists()) {
+                Files.copy(inputStream, tarPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        conn.disconnect();
+
+        // We need to extract the file to our current directory
+        // Do we have write access?
+        if (Files.isWritable(Paths.get(parentDirectory))) {
+
+            try (InputStream is = new GZIPInputStream(new FileInputStream(tarPath.toString()));
+                TarArchiveInputStream tarInputStream =
+                    (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);) {
+
+                TarArchiveEntry entry;
+
+                // We remove the file extension
+                String extension = fileName.substring(fileName.lastIndexOf("."));
+                fileName = fileName.replace(extension, "");
+
+                while ((entry = tarInputStream.getNextTarEntry()) != null) {
+                    if (entry.isDirectory()) {
+                        continue;
+                    }
+                    if (entry.getName().contains(fileName)) {
+                        // We don't want the directories (src/main/server.exe), we just want to create the
+                        // file (server.exe)
+                        String currentFileName = entry.getName().substring(entry.getName().lastIndexOf("/") + 1);
+
+                        File curfile = new File(parentDirectory, currentFileName);
+
+                        try (FileOutputStream fos = new FileOutputStream(curfile)) {
+
+                            IOUtils.copy(tarInputStream, fos);
+
+                            fos.flush();
+                            // We need to wait until it has finished writing the file
+                            fos.getFD().sync();
+                            break;
+                        }
+
+                    }
+                }
+
+            } catch (ArchiveException e) {
+                Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
+                LOG.info(parseCause.toString(), e);
+                LOG.info("Error while extracting the external server", e);
+
+                throw new CobiGenRuntimeException(
+                    "Error while extracting the external server: " + parseCause.toString());
+            }
+        } else {
+            // We are not able to extract the server
+            Files.deleteIfExists(tarPath);
+            return "";
+        }
+
+        // Remove tar file
+        Files.deleteIfExists(tarPath);
+        return filePath;
+
     }
 
     /**
@@ -308,7 +398,7 @@ public class ExternalProcessHandler {
                 return false;
             }
         } catch (IOException e) {
-            LOG.error("Connection to server failed, port blocked. Trying other port...", e);
+            LOG.error("Connection to server failed...", e);
         }
 
         return true;
@@ -320,7 +410,7 @@ public class ExternalProcessHandler {
      * @param httpMethod
      *            HTTP method to use (POST, GET, PUT...)
      * @param headerProperty
-     *            Header property to use (content-type, content-lenght
+     *            Header property to use (content-type, content-length
      * @param mediaType
      *            type of media (application/json, text/plain...)
      * @param endpointURL
@@ -431,7 +521,7 @@ public class ExternalProcessHandler {
     public void restartServer() {
         terminateProcessConnection();
         port++;
-        executingExe(exePath, this.getClass());
+        executingExe(exeName, this.getClass());
     }
 
     /**
