@@ -17,12 +17,6 @@ public class Constants {
      */
     public static final String EXE_NAME = "nestserver";
 
-    /**
-     * Download URL of the external process
-     */
-    public static final String DOWNLOAD_URL =
-        "https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-1.0.6.tgz";
-
     /** We want to check whether it is a real export statement, not like the type "export class a" */
     public static final Map<String, Boolean> NOT_EXPORT_TYPES;
 
