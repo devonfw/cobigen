@@ -37,7 +37,7 @@ public class TypeScriptMergerTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_PATH, TypeScriptMergerTest.class));
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptMergerTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
@@ -182,7 +182,7 @@ public class TypeScriptMergerTest {
 
         try {
 
-            assertEquals(request.executingExe(Constants.EXE_PATH, this.getClass()), true);
+            assertEquals(request.executingExe(Constants.EXE_NAME, this.getClass()), true);
             assertEquals(true, request.initializeConnection());
 
             String mergedContents =

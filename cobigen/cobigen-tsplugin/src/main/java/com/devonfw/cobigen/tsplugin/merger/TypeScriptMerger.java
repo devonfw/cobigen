@@ -132,7 +132,7 @@ public class TypeScriptMerger implements Merger {
      * Deploys the server and tries to initialize a new connection between CobiGen and the server
      */
     private void startServerConnection() {
-        request.executingExe(Constants.EXE_PATH, this.getClass());
+        request.executingExe(Constants.EXE_NAME, this.getClass());
         request.initializeConnection();
     }
 

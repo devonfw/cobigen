@@ -25,7 +25,7 @@ public class ExternalProcessTest {
 
         try {
 
-            request.executingExe(Constants.EXE_PATH, this.getClass());
+            request.executingExe(Constants.EXE_NAME, this.getClass());
 
             assertEquals(true, request.initializeConnection());
         } finally {
