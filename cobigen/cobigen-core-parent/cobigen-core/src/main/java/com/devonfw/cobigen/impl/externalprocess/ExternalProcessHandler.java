@@ -215,11 +215,16 @@ public class ExternalProcessHandler {
     }
 
     /**
+     * Downloads the external server on the specified folder (which will normally be .cobigen folder)
      * @param downloadURL
-     * @param downloadURL
+     *            the URL that points to the file to download
      * @param filePath
-     * @return
+     *            path where the external server should be downloaded to
+     * @param fileName
+     *            name of the external server
+     * @return path of the external server
      * @throws IOException
+     *             {@link IOException} occured while downloading the file
      */
     private String downloadExe(String downloadURL, String filePath, String fileName) throws IOException {
 
