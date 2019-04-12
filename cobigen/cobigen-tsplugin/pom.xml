@@ -15,7 +15,7 @@
   <properties>
     <skip.deployment>false</skip.deployment>
     <server.version>1.0.7</server.version>
-    <server.url>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
+    <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
     <server.name>nestserver-${server.version}.exe</server.name>
   </properties>
 
@@ -59,26 +59,23 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>write-project-properties</goal>
-            </goals>
-            <configuration>
-              <outputFile>
-                src/main/resources/externalserver/server.properties
-              </outputFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <resources>
+    <!-- Needed for specifying the external server properties to a file -->
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>true</filtering>
+      <includes>
+        <include>**/META-INF/externalservers/server.properties</include>
+      </includes>
+    </resource>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/META-INF/externalservers/server.properties</exclude>
+      </excludes>
+    </resource>
+  </resources>
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
