@@ -69,15 +69,15 @@ public class JavaMerger implements Merger {
         } catch (IOException e) {
             throw new MergeException(base, "Cannot read base file.", e);
         } catch (ParseException e) {
-            throw new MergeException(base, "Cannot parse base file. Error in line: " + e.getLine() + " / column: "
-                + e.getColumn() + ": " + e.getMessage(), e);
+            throw new MergeException(base, "The syntax of the base file is invalid. Error in line: " + e.getLine()
+                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
         ModifyableJavaClass patchClass;
         try {
             patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
         } catch (ParseException e) {
-            throw new MergeException(base, "Cannot parse generated patch. Error in line: " + e.getLine() + " / column: "
-                + e.getColumn() + ": " + e.getMessage(), e);
+            throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
+                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
 
         if (baseClass == null) {
