@@ -147,8 +147,9 @@ public class ExternalProcessHandler {
 
             Properties serverProperties = new Properties();
             // We load the properties file from the input stream
-            if (activatorClass.getResourceAsStream("/externalserver/server.properties") != null) {
-                serverProperties.load(activatorClass.getResourceAsStream("/externalserver/server.properties"));
+            if (activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties") != null) {
+                serverProperties
+                    .load(activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties"));
                 serverVersion = serverProperties.getProperty("server.version");
                 downloadURL = serverProperties.getProperty("server.url");
                 fileName = serverProperties.getProperty("server.name");
@@ -194,6 +195,7 @@ public class ExternalProcessHandler {
      * Trying to resolve the path of the executable server. We had to implement several cases for running
      * JUnit tests correctly, as calling this class from a test means that the exe is on the classpath.
      * @param serverVersion
+     *            version of the server to download
      * @return path of the executable server, if not found returns the jar path that contains the server
      *
      */
@@ -201,9 +203,13 @@ public class ExternalProcessHandler {
         String filePath = "";
         if (getClass().getResource(exeName) == null) {
             // activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath()
-            // TODO: Extension .exe is only for Windows
-            filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
-                + serverVersion + ".exe";
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
+                    + serverVersion + ".exe";
+            } else {
+                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
+                    + serverVersion;
+            }
 
         } else {
             // When the exe is on the current class path
@@ -240,6 +246,7 @@ public class ExternalProcessHandler {
         // Downloading tar file
         File tarFile;
         Path tarPath;
+        LOG.info("Downloading server...");
         try (InputStream inputStream = conn.getInputStream()) {
 
             tarFileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
@@ -255,6 +262,7 @@ public class ExternalProcessHandler {
         // Do we have write access?
         if (Files.isWritable(Paths.get(parentDirectory))) {
 
+            LOG.info("Extracting server to users folder...");
             try (InputStream is = new GZIPInputStream(new FileInputStream(tarPath.toString()));
                 TarArchiveInputStream tarInputStream =
                     (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);) {
