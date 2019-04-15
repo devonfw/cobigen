@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +38,7 @@ import com.devonfw.cobigen.textmerger.TextAppender;
 import com.devonfw.cobigen.textmerger.TextMergerPluginActivator;
 import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
+
 import com.google.common.collect.Lists;
 
 import picocli.CommandLine;
@@ -58,12 +60,15 @@ public class TestPicocli {
 		File jarPath = new File("template_Jar/cobigen_jar");
 		//URL resource = TestPicocli.class.getResource("/cobigen_jar");
 		File jarFileDir = jarPath.getAbsoluteFile();	
+		
+		//EmployeeEntity life =  cls.newInstance();
 		if (!jarPath.exists()) {
 			jarPath.mkdir();
 
 		}
-
+ 
 		try {
+			
 			TemplatesJarUtil.downloadLatestDevon4jTemplates(true, jarFileDir);
 			createjarFile.validateFile(inputFile);
 			createjarFile.createJarAndGenerateIncr(inputFile);

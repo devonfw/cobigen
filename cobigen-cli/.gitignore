@@ -1,3 +1,4 @@
+.metadata
 # Compiled class file
 *.class
 
@@ -25,4 +26,3 @@ hs_err_pid*
 target/
 .settings/
 .classpath/
-.metadata/
