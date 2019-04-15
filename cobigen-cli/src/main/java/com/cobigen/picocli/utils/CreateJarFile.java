@@ -168,7 +168,7 @@ public class CreateJarFile {
 		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
 		logger.info("get jar file");
 		URLClassLoader classLoader = null;
-
+		File root = new File("C:\\Users\\syadav9\\Desktop\\employeemanagement\\dataaccess\\api");
 		// Call method to get utils from jar
 		try {
 		
@@ -195,10 +195,10 @@ public class CreateJarFile {
 					compiler.run(null, null, null, inputFile.toString());
 
 					// Load and instantiate compiled class.
-					URLClassLoader clsLoader = URLClassLoader.newInstance(new URL[] { inputFile.toURI().toURL() });
+					URLClassLoader clsLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
 					Class<?> cls = null;
 					try {
-						cls = Class.forName("EmployeeEntity", true, clsLoader);
+						cls = Class.forName("com.cobigen.picocli.utils.EmployeeEntity", true, this.getClass().getClassLoader());
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -220,7 +220,7 @@ public class CreateJarFile {
 						System.out.println("Increments Available = " + matchingIncrements.get(0).getDescription());
 					}
 					//Class<?> userInput =  input.getClass() ;
-					cg.generate(input, matchingIncrements, Paths.get("C:\\Users\\syadav9\\Desktop\\temp"),false,utilClasses);
+					cg.generate(cls, matchingIncrements, Paths.get("C:\\Users\\syadav9\\Desktop\\temp"),false,utilClasses);
 					System.out.println("Successfully generated Template");
 				} catch (MojoFailureException e) {
 					// TODO Auto-generated catch block
