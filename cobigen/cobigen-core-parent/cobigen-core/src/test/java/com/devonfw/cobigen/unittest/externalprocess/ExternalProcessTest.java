@@ -20,7 +20,7 @@ public class ExternalProcessTest {
         ExternalProcessHandler request = ExternalProcessHandler
             .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
-        assertEquals(true, request.executingExe("/DummyExe.exe", this.getClass()));
+        assertEquals(true, request.executingExe("/DummyExe", this.getClass()));
         assertEquals(true, request.terminateProcessConnection());
     }
 }
