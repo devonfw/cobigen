@@ -214,6 +214,10 @@ public class ExternalProcessHandler {
         } else {
             // When the exe is on the current class path
             filePath = getClass().getResource(exeName).getPath();
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                filePath = filePath + ".exe";
+            }
+
             return filePath;
         }
 
