@@ -10,9 +10,6 @@ node {
 		try {	
 			stage('prepare') {
 				step([$class: 'WsCleanup'])
-				echo "JAIME TEST"
-				sh "pwd"
-				sh "ls"
 			}
 
 			// will hold the current branch name
@@ -81,11 +78,6 @@ node {
 						// load jenkins managed global maven settings file
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							try {
-								if(origin_branch == 'dev_core') {
-								   	echo "JAIME TEST"
-									sh "pwd"
-									sh "ls"
-								}
 								if(origin_branch == 'master') {
 									// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 									wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
