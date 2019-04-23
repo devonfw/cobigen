@@ -79,8 +79,12 @@ node {
 						configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 							try {
 								if(origin_branch == 'dev_core') {
+									// We need to add permissions to an exe file that is used on a test
+									// First we compile the tests, so that the exe file is packaged
 									sh "mvn -s ${MAVEN_SETTINGS} clean test-compile -U"
+									// We give permissions to that exe file
 								   	sh "chmod 777 $WORKSPACE/cobigen/cobigen-core-parent/cobigen-core/target/classes/DummyExe"
+									// We don't execute "clean" because that would remove the permissions we have just granted
 									sh "mvn -s ${MAVEN_SETTINGS} install -U"
 								}
 								else if(origin_branch == 'master') {
