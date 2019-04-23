@@ -174,6 +174,7 @@ public class ExternalProcessHandler {
                     return false;
                 }
                 retry++;
+                // This means the executable has already finished
                 if (process.exitValue() == 0) {
                     return true;
                 }
