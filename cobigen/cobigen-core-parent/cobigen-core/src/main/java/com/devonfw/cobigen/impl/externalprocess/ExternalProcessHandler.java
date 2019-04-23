@@ -174,6 +174,9 @@ public class ExternalProcessHandler {
                     return false;
                 }
                 retry++;
+                if (process.exitValue() == 0) {
+                    return true;
+                }
                 LOG.info("Waiting process to be alive");
             }
             if (retry > 10) {

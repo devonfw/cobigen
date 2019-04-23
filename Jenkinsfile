@@ -81,7 +81,6 @@ node {
 								if(origin_branch == 'dev_core') {
 									sh "mvn -s ${MAVEN_SETTINGS} clean test-compile -U"
 								   	sh "chmod 777 $WORKSPACE/cobigen/cobigen-core-parent/cobigen-core/target/classes/DummyExe"
-									sh ".$WORKSPACE/cobigen/cobigen-core-parent/cobigen-core/target/classes/DummyExe"
 									sh "mvn -s ${MAVEN_SETTINGS} install -U"
 								}
 								else if(origin_branch == 'master') {
