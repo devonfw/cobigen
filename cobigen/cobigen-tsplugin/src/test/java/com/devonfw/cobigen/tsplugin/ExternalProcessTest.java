@@ -19,7 +19,7 @@ public class ExternalProcessTest {
     @Test
     public void checkPortIsBlocked() {
 
-        // Port 80 is always blocked, so let's try to check what happens
+        // Port 80 is always blocked, so let's try to check what happens.
         ExternalProcessHandler request =
             ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
 
