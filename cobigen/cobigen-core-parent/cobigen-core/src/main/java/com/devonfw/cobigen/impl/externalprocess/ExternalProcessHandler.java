@@ -93,6 +93,11 @@ public class ExternalProcessHandler {
     private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
 
     /**
+     * Holds properties of the external process like file name, path, URL to download...
+     */
+    private ExternalProcessProperties processProperties;
+
+    /**
      * Using singleton pattern, we will only have one instance of {@link ExternalProcessHandler}.
      *
      * @param hostName
@@ -128,39 +133,42 @@ public class ExternalProcessHandler {
      * Tries to execute, as a new process, the executable file specified on the parameter. Also initializes
      * the error handler.
      *
-     * @param path
+     * @param name
      *            of the executable file to execute
      * @param activatorClass
      *            class that activated the execution of the server. We need it to find the jar of the
      *            activator class, which should contain the executable server inside its jar
      * @return true if it was able to execute the exe successfully
      */
-    public boolean executingExe(String path, Class<?> activatorClass) {
+    public boolean executingExe(String name, Class<?> activatorClass) {
 
-        exeName = path;
+        exeName = name;
 
         boolean execution = false;
         try {
             LOG.info("Loading server: " + exeName);
 
-            String filePath = "", fileName = "", serverVersion = "", downloadURL = "";
+            if (processProperties == null) {
+                // We load the properties file from the input stream
+                if (activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties") != null) {
 
-            Properties serverProperties = new Properties();
-            // We load the properties file from the input stream
-            if (activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties") != null) {
-                serverProperties
-                    .load(activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties"));
-                serverVersion = serverProperties.getProperty("server.version");
-                downloadURL = serverProperties.getProperty("server.url");
-                fileName = serverProperties.getProperty("server.name");
+                    Properties serverProperties = new Properties();
+                    serverProperties
+                        .load(activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties"));
+
+                    processProperties = new ExternalProcessProperties(serverProperties);
+
+                } else {
+                    processProperties = new ExternalProcessProperties(exeName);
+                }
             }
 
-            filePath = getExePath(serverVersion);
+            String filePath = processProperties.getFilePath();
 
             if (new File(filePath).isFile()) {
                 process = new ProcessBuilder(filePath, String.valueOf(port)).start();
             } else {
-                filePath = downloadExe(downloadURL, filePath, fileName);
+                filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
                 process = new ProcessBuilder(filePath, String.valueOf(port)).start();
             }
 
@@ -206,13 +214,18 @@ public class ExternalProcessHandler {
     private String getExePath(String serverVersion) {
         String filePath = "";
         if (getClass().getResource(exeName) == null) {
-            // activatorClass.getProtectionDomain().getCodeSource().getLocation().getPath()
-            if (System.getProperty("os.name").startsWith("Windows")) {
+
+            String osName = System.getProperty("os.name").toLowerCase();
+
+            if (osName.indexOf("win") >= 0) {
                 filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
                     + serverVersion + ".exe";
+            } else if (osName.indexOf("mac") >= 0) {
+                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName
+                    + "-macos-" + serverVersion;
             } else {
-                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
-                    + serverVersion;
+                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName
+                    + "-linux-" + serverVersion;
             }
 
         } else {
@@ -276,10 +289,6 @@ public class ExternalProcessHandler {
                     (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);) {
 
                 TarArchiveEntry entry;
-
-                // We remove the file extension
-                String extension = fileName.substring(fileName.lastIndexOf("."));
-                fileName = fileName.replace(extension, "");
 
                 while ((entry = tarInputStream.getNextTarEntry()) != null) {
                     if (entry.isDirectory()) {
