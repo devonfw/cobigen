@@ -16,7 +16,8 @@
     <skip.deployment>false</skip.deployment>
     <server.version>1.0.7</server.version>
     <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
-    <server.name>nestserver-${server.version}.exe</server.name>
+    <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
+    <server.name>nestserver</server.name>
   </properties>
 
   <dependencies>
@@ -36,7 +37,7 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
