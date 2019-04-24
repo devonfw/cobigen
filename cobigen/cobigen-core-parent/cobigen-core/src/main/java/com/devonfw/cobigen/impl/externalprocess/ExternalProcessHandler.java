@@ -176,19 +176,20 @@ public class ExternalProcessHandler {
             errorHandler = new ProcessOutputUtil(process.getErrorStream(), "UTF-8");
 
             int retry = 0;
-            while (!process.isAlive() && retry <= 10) {
+            while (!process.isAlive() && retry <= 20) {
                 if (processHasErrors()) {
                     terminateProcessConnection();
                     return false;
                 }
                 retry++;
+                Thread.sleep(10000);
                 // This means the executable has already finished
                 if (process.exitValue() == 0) {
                     return true;
                 }
                 LOG.info("Waiting process to be alive");
             }
-            if (retry > 10) {
+            if (retry > 20) {
                 return false;
             }
             execution = true;
@@ -198,6 +199,9 @@ public class ExternalProcessHandler {
             LOG.info("Error starting the external process server", e);
             execution = false;
             throw new CobiGenRuntimeException("Error starting the external process: " + parseCause.toString());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return execution;
 
