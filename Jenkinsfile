@@ -239,7 +239,7 @@ def givePermissionsToExternalProcesses() {
 	// We want to traverse all the external processes and give them exeuction permissions
 	final foundFiles = sh(script: 'ls -1 /home/pl/.cobigen/externalservers/', returnStdout: true).split()
 	for (int i = 0; i < foundFiles.size(); i++) {
-		sh "chmod 777 ${foundFiles[i]}"
+		sh "chmod 777 /home/pl/.cobigen/externalservers/${foundFiles[i]}"
 	}
 
 }
