@@ -81,8 +81,7 @@ node {
 								if(origin_branch == 'dev_core') {
 									// We need to add permissions to an exe file that is used on a test
 									// First we compile the tests, so that the exe file is packaged
-									sh "mvn -s ${MAVEN_SETTINGS} clean compile -U"
-									sh "mvn -s ${MAVEN_SETTINGS} clean test-compile -U"
+									sh "mvn -s ${MAVEN_SETTINGS} clean package -Dmaven.test.skip=true -U"
 									// We give permissions to that exe file
 								   	sh "chmod 777 $WORKSPACE/cobigen/cobigen-core-parent/cobigen-core/target/classes/DummyExe"
 									// We don't execute "clean" because that would remove the permissions we have just granted
