@@ -82,7 +82,7 @@ public class ExternalProcessProperties {
         if (osName.indexOf("win") >= 0) {
             downloadURL = propertiesFile.getProperty("server.url");
         } else if (osName.indexOf("mac") >= 0) {
-            downloadURL = propertiesFile.getProperty("server.url.mac");
+            downloadURL = propertiesFile.getProperty("server.url.macos");
         } else {
             downloadURL = propertiesFile.getProperty("server.url.linux");
         }

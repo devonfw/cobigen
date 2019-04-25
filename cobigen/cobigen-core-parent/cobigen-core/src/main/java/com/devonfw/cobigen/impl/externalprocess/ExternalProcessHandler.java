@@ -176,20 +176,19 @@ public class ExternalProcessHandler {
             errorHandler = new ProcessOutputUtil(process.getErrorStream(), "UTF-8");
 
             int retry = 0;
-            while (!process.isAlive() && retry <= 20) {
+            while (!process.isAlive() && retry <= 10) {
                 if (processHasErrors()) {
                     terminateProcessConnection();
                     return false;
                 }
                 retry++;
-                Thread.sleep(10000);
                 // This means the executable has already finished
                 if (process.exitValue() == 0) {
                     return true;
                 }
                 LOG.info("Waiting process to be alive");
             }
-            if (retry > 20) {
+            if (retry > 10) {
                 return false;
             }
             execution = true;
@@ -199,50 +198,9 @@ public class ExternalProcessHandler {
             LOG.info("Error starting the external process server", e);
             execution = false;
             throw new CobiGenRuntimeException("Error starting the external process: " + parseCause.toString());
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return execution;
 
-    }
-
-    /**
-     * Trying to resolve the path of the executable server. We had to implement several cases for running
-     * JUnit tests correctly, as calling this class from a test means that the exe is on the classpath.
-     * @param serverVersion
-     *            version of the server to download
-     * @return path of the executable server, if not found returns the jar path that contains the server
-     *
-     */
-    private String getExePath(String serverVersion) {
-        String filePath = "";
-        if (getClass().getResource(exeName) == null) {
-
-            String osName = System.getProperty("os.name").toLowerCase();
-
-            if (osName.indexOf("win") >= 0) {
-                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName + "-"
-                    + serverVersion + ".exe";
-            } else if (osName.indexOf("mac") >= 0) {
-                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName
-                    + "-macos-" + serverVersion;
-            } else {
-                filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + exeName
-                    + "-linux-" + serverVersion;
-            }
-
-        } else {
-            // When the exe is on the current class path
-            filePath = getClass().getResource(exeName).getPath();
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                filePath = filePath + ".exe";
-            }
-
-            return filePath;
-        }
-
-        return filePath;
     }
 
     /**
@@ -255,13 +213,14 @@ public class ExternalProcessHandler {
      *            name of the external server
      * @return path of the external server
      * @throws IOException
-     *             {@link IOException} occured while downloading the file
+     *             {@link IOException} occurred while downloading the file
      */
     private String downloadExe(String downloadURL, String filePath, String fileName) throws IOException {
 
         String tarFileName = "";
-        File jarFile = new File(filePath);
-        String parentDirectory = jarFile.getParent();
+        String currentFileName = "";
+        File exeFile = new File(filePath);
+        String parentDirectory = exeFile.getParent();
 
         URL url = new URL(downloadURL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -301,7 +260,7 @@ public class ExternalProcessHandler {
                     if (entry.getName().contains(fileName)) {
                         // We don't want the directories (src/main/server.exe), we just want to create the
                         // file (server.exe)
-                        String currentFileName = entry.getName().substring(entry.getName().lastIndexOf("/") + 1);
+                        currentFileName = getLastPartOfPath(entry.getName());
 
                         File curfile = new File(parentDirectory, currentFileName);
 
@@ -312,6 +271,7 @@ public class ExternalProcessHandler {
                             fos.flush();
                             // We need to wait until it has finished writing the file
                             fos.getFD().sync();
+
                             break;
                         }
 
@@ -334,8 +294,44 @@ public class ExternalProcessHandler {
 
         // Remove tar file
         Files.deleteIfExists(tarPath);
+        // Now we remove old versions of this file
+        removeOldVersions(fileName, currentFileName);
         return filePath;
 
+    }
+
+    /**
+     * Returns the last part of a path. So if we have "src/test/java" it will return "java"
+     * @param path
+     *            to perform the operation
+     * @return string with the result
+     */
+    private String getLastPartOfPath(String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * If found, remove all the files that contain this file name. This is used for removing versions of the
+     * current file
+     * @param fileName
+     *            name of the external server (e.g. "nestserver")
+     * @param currentFileName
+     *            name of the current external server including the version number and its extension (e.g.
+     *            "nestserver-1.0.7.exe")
+     * @throws IOException
+     *             {@link IOException} occurred while removing the file
+     */
+    private void removeOldVersions(String fileName, String currentFileName) throws IOException {
+        File folder = new File(ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString());
+        File[] listOfFiles = folder.listFiles();
+
+        for (File currFile : listOfFiles) {
+            if (getLastPartOfPath(currFile.getName()).contains(fileName)
+                && !getLastPartOfPath(currFile.getName()).equals(currentFileName)) {
+                // Remove old version of file
+                Files.deleteIfExists(currFile.toPath());
+            }
+        }
     }
 
     /**
@@ -346,7 +342,7 @@ public class ExternalProcessHandler {
      */
     public boolean initializeConnection() {
 
-        for (int retry = 0; retry < 10; retry++) {
+        for (int retry = 0; retry < 20; retry++) {
             try {
                 startConnection();
 
@@ -356,6 +352,13 @@ public class ExternalProcessHandler {
                 }
             } catch (Exception e) {
                 LOG.error("Connection to server failed, attempt number " + retry + ".");
+                try {
+                    LOG.info("Sleeping...");
+                    Thread.sleep(10000);
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 if (connectionExc.handle(e).equals(ConnectionException.MALFORMED_URL)) {
                     LOG.error("MalformedURLException: Connection to server failed, MalformedURL.", e);
                     return false;
