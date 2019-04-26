@@ -27,12 +27,11 @@ public class TestPicocliTest {
 	public void testMain() {
 		try {
 			 File baseFile = new File(testFileRootPath + "EmployeeEntity.java");
-			 String args = "main";
-			 logger.info("Please enter input from command prompt");
-				Scanner in = new Scanner(System.in);
-				String s = in. nextLine();
-				assertEquals(baseFile.toString(), s);
-			TestPicocli.main(args);
+			 
+			String args[]=new String[1] ;
+				args[0]= baseFile.getAbsolutePath();
+				
+			TestPicocli.main(args[0]);
 			
 			
 			
