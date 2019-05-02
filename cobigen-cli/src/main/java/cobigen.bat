@@ -41,7 +41,7 @@ ECHO "Welcome to cobigen and below are increment available for your input"
 set arg0=%0
 set arg1=%1
 set arg2=%2 
-javac TestPicocli.java
+
 set /p answer= $cg -g increment=%arg1%
 
 java -jar C:\MyData\IDE4\workspaces\com.cobigen.picocli\src\main\java\cobigen.jar 
