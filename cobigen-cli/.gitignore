@@ -2,7 +2,7 @@
 # Compiled class file
 *.class
 target/
-*.settings
+settings/
 *.classpath
 metadata/
 
