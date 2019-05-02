@@ -51,9 +51,17 @@ public class TestPicocli {
 
 	public static void main(String... args) throws Exception {
 		logger.info("start main method");
-		logger.info("Please enter input from command prompt");
+		
+		String userInput="";
+		if(args==null || args[0].length()<1 )
+		{
+			logger.info("Please enter input from command prompt");
 		Scanner inputReader = new Scanner(System.in);
-		String userInput = inputReader.nextLine();
+		 userInput = inputReader.nextLine();
+		}
+		else{
+			userInput = args[0];
+		}
 		File inputFile = new File(userInput);
 		CreateJarFile createjarFile = new CreateJarFile();
 			
