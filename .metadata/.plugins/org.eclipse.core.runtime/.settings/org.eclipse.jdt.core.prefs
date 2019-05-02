@@ -1,7 +1,0 @@
-JRE_LIB=C\:/MyData/IDE4/software/java/additionalJDK/17045/jre/lib/rt.jar
-JRE_SRC=C\:/MyData/IDE4/software/java/additionalJDK/17045/src.zip
-eclipse.preferences.version=1
-org.eclipse.jdt.core.classpathVariable.JRE_SRC(non\ modifiable)=C\:/Program Files/Java/jdk1.8.0_181/src.zip
-org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.8
-org.eclipse.jdt.core.compiler.compliance=1.8
-org.eclipse.jdt.core.compiler.source=1.8

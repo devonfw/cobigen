@@ -22,3 +22,5 @@ cobigen/cobigen-openapiplugin/src/main/resources/lib/
 .pydevproject
 objectdb
 .mypy_cache
+.metadata/
+cobigen-cli/.metadata/
