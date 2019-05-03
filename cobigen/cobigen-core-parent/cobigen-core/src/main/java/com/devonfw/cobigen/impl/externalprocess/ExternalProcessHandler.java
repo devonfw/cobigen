@@ -179,7 +179,9 @@ public class ExternalProcessHandler {
             while (!process.isAlive() && retry <= 10) {
                 if (processHasErrors()) {
                     terminateProcessConnection();
-                    return false;
+                    // If the process outputs errors, it means that we were able to start it successfully,
+                    // that's why we return true
+                    return true;
                 }
                 retry++;
                 // This means the executable has already finished
@@ -189,6 +191,7 @@ public class ExternalProcessHandler {
                 LOG.info("Waiting process to be alive");
             }
             if (retry > 10) {
+                // We were not able to start the process
                 return false;
             }
             execution = true;
@@ -311,8 +314,8 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * If found, remove all the files that contain this file name. This is used for removing versions of the
-     * current file
+     * If found, remove all the files that contain this file name. This is used for removing not needed
+     * versions of the current external process.
      * @param fileName
      *            name of the external server (e.g. "nestserver")
      * @param currentFileName
@@ -354,7 +357,7 @@ public class ExternalProcessHandler {
                 LOG.error("Connection to server failed, attempt number " + retry + ".");
                 try {
                     LOG.info("Sleeping...");
-                    Thread.sleep(10000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -395,7 +398,7 @@ public class ExternalProcessHandler {
     private boolean acquirePort() {
 
         // If there is any error, probably it is because the port is blocked
-        if (isNotConnected() || processHasErrors()) {
+        if (isNotConnected() && processHasErrors()) {
             restartServer();
         } else {
             return true;
@@ -435,7 +438,7 @@ public class ExternalProcessHandler {
                 return false;
             }
         } catch (IOException e) {
-            LOG.error("Connection to server failed...", e);
+            LOG.error("Connection to server failed, maybe the server is not yet deployed...");
         }
 
         return true;
@@ -510,6 +513,8 @@ public class ExternalProcessHandler {
                     return true;
                 }
                 if (shouldNotRetry(conn.getResponseCode())) {
+                    LOG.error("Sending the request failed. The response message is the following: "
+                        + conn.getResponseMessage());
                     return false;
                 }
             }
