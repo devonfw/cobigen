@@ -5,7 +5,7 @@ ${camelCase?cap_first?replace("[A-Z]", "_$0", 'r')?upper_case?replace('_', ' ')?
 
 package ${variables.rootPackage}.general.common.api.constants;
 
-import io.oasp.module.security.common.api.accesscontrol.AccessControlPermission;
+import com.devonfw.module.security.common.api.accesscontrol.AccessControlPermission;
 
 /**
 * Contains constants for the keys of all

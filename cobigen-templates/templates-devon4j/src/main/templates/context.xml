@@ -41,12 +41,12 @@
   </trigger>
   <trigger id="constants_security_permissions" type="xml" templateFolder="constants/security_permissions">
     <matcher type="nodename" value="access-control-schema">
-      <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
     </matcher>
   </trigger>
   <trigger id="constants_named_queries" type="xml" templateFolder="constants/named_queries">
     <matcher type="nodename" value="entity-mappings">
-      <variableAssignment type="constant" key="rootPackage" value="io.oasp.gastronomy.restaurant"/>
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
     </matcher>
   </trigger>
   <trigger id="crud_angular_client_app" type="java" templateFolder="crud_angular_client_app">
