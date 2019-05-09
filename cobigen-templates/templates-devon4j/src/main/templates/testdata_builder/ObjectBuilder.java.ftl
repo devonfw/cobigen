@@ -30,8 +30,7 @@ public class ${pojo.name}Builder {
    * @return the builder for fluent population of fields.
    */
   public ${pojo.name}Builder ${field.name}(final ${field.type} ${field.name}) {
-    Consumer<${pojo.name}> apply = target -> target.set${field.name?cap_first}(${field.name});
-        this.parameterToBeApplied.add(apply);
+        this.parameterToBeApplied.add(target -> target.set${field.name?cap_first}(${field.name}));
 
         return this;
     }
