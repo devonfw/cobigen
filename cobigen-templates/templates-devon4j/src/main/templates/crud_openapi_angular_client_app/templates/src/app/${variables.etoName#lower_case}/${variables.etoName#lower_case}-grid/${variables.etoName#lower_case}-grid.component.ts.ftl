@@ -29,7 +29,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         pageSize: 8,
         pageNumber: 0,
         sort: [{
-            property: '${model.properties[0].name!}',
+            <#if (model.properties[0].name)??> property: '${model.properties[0].name!}',</#if>
             direction: 'ASC'
         }]
     };
