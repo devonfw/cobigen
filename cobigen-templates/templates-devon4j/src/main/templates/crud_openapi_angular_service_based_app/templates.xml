@@ -7,6 +7,8 @@
     <templateExtension ref="api.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="model.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}.ts" mergeStrategy="tsmerge"/>    
   </templates>
 
   <templateScans>
@@ -25,6 +27,10 @@
     <increment name="app_angular_devon4j_component" description="API">
       <templateRef ref="${variables.component#lower_case}RestController.service.ts"/>
       <templateRef ref="api.ts"/>
+    </increment>
+    <increment name="app_angular_service_based" description="model">
+      <templateRef ref="model.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.ts"/>
     </increment>
   </increments>
 </templatesConfiguration>
