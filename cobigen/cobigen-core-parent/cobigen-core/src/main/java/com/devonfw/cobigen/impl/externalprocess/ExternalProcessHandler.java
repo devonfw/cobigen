@@ -277,7 +277,9 @@ public class ExternalProcessHandler {
                             // We need to wait until it has finished writing the file
                             fos.getFD().sync();
 
-                            Files.setPosixFilePermissions(curfile.toPath(), Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE));
+                            Files.setPosixFilePermissions(curfile.toPath(),
+                                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.GROUP_EXECUTE,
+                                    PosixFilePermission.OTHERS_EXECUTE));
                             break;
                         }
                     }
