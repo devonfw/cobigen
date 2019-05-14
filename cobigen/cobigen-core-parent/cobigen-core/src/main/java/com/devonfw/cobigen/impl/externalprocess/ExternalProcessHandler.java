@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
@@ -25,6 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.Sets;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
@@ -275,9 +277,9 @@ public class ExternalProcessHandler {
                             // We need to wait until it has finished writing the file
                             fos.getFD().sync();
 
+                            Files.setPosixFilePermissions(curfile.toPath(), Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE));
                             break;
                         }
-
                     }
                 }
 
