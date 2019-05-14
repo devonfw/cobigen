@@ -278,8 +278,9 @@ public class ExternalProcessHandler {
                             fos.getFD().sync();
 
                             Files.setPosixFilePermissions(curfile.toPath(),
-                                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.GROUP_EXECUTE,
-                                    PosixFilePermission.OTHERS_EXECUTE));
+                                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
+                                    PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
+                                    PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
                             break;
                         }
                     }
