@@ -166,13 +166,15 @@ public class ExternalProcessHandler {
             }
 
             String filePath = processProperties.getFilePath();
-
-            if (new File(filePath).isFile()) {
-                process = new ProcessBuilder(filePath, String.valueOf(port)).start();
-            } else {
+            if (!new File(filePath).isFile()) {
                 filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
-                process = new ProcessBuilder(filePath, String.valueOf(port)).start();
             }
+            Files.setPosixFilePermissions(Paths.get(filePath),
+                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
+                    PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
+
+            process = new ProcessBuilder(filePath, String.valueOf(port)).start();
 
             // We try to get the error output
             errorHandler = new ProcessOutputUtil(process.getErrorStream(), "UTF-8");
@@ -198,11 +200,8 @@ public class ExternalProcessHandler {
             }
             execution = true;
         } catch (IOException e) {
-            Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
-            LOG.info(parseCause.toString(), e);
-            LOG.info("Error starting the external process server", e);
             execution = false;
-            throw new CobiGenRuntimeException("Error starting the external process: " + parseCause.toString());
+            throw new CobiGenRuntimeException("Error starting the external process.");
         }
         return execution;
 
@@ -266,33 +265,21 @@ public class ExternalProcessHandler {
                         // We don't want the directories (src/main/server.exe), we just want to create the
                         // file (server.exe)
                         currentFileName = getLastPartOfPath(entry.getName());
-
                         File curfile = new File(parentDirectory, currentFileName);
 
                         try (FileOutputStream fos = new FileOutputStream(curfile)) {
-
                             IOUtils.copy(tarInputStream, fos);
 
                             fos.flush();
                             // We need to wait until it has finished writing the file
                             fos.getFD().sync();
-
-                            Files.setPosixFilePermissions(curfile.toPath(),
-                                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
-                                    PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
-                                    PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
                             break;
                         }
                     }
                 }
 
             } catch (ArchiveException e) {
-                Throwable parseCause = ExceptionUtil.getCause(e, Exception.class, UnmarshalException.class);
-                LOG.info(parseCause.toString(), e);
-                LOG.info("Error while extracting the external server", e);
-
-                throw new CobiGenRuntimeException(
-                    "Error while extracting the external server: " + parseCause.toString());
+                throw new CobiGenRuntimeException("Error while extracting the external server.", e);
             }
         } else {
             // We are not able to extract the server
