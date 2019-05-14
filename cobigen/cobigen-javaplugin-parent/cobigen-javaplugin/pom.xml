@@ -60,7 +60,7 @@
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-util-pojo</artifactId>
-      <version>7.4.0</version>
+      <version>8.6.0</version>
     </dependency>
   </dependencies>
 
