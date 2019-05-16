@@ -71,11 +71,6 @@
   <version>1.7.21</version>
 </dependency>
     
-   <dependency>
-   <groupId>org.picocli</groupId>
-      <artifactId>picocli</artifactId>
-      <version>2.2.1</version>
-   </dependency>
       <dependency>
    <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-parser</artifactId>

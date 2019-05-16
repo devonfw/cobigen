@@ -6,11 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -29,18 +24,13 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.runtime-3.1.0.jar/org.eclipse.core.runtime-3.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.resources-3.11.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.osgi-3.13.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.contenttype-3.7.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.expressions-3.6.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.filesystem-1.7.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.jobs-3.10.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.core.runtime-3.15.100.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.equinox.app-1.4.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.equinox.common-3.10.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.equinox.preferences-3.7.200.jar"/>
-	<classpathentry kind="lib" path="C:/Users/syadav9/Desktop/CobiGen/org.eclipse.equinox.registry-3.8.200.jar"/>
-	<classpathentry kind="lib" path="C:/MyData/IDE4/workspaces/com.cobigen.picocli/src/main/resources/com.devonfw.cobigen.eclipse_4.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/Downloads/picocli-2.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/Desktop/CobiGen/workspaces/cobigen-development/dev_eclipseplugin/cobigen-eclipse/cobigen-eclipse/target/com.devonfw.cobigen.eclipse-4.4.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-java-impl/1.0.0-SNAPSHOT/mmm-code-java-impl-1.0.0-SNAPSHOT.jar" sourcepath="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-java-impl/1.0.0-SNAPSHOT/mmm-code-java-impl-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-api/1.0.0-SNAPSHOT/mmm-code-api-1.0.0-SNAPSHOT.jar" sourcepath="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-api/1.0.0-SNAPSHOT/mmm-code-api-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-java-maven/1.0.0-SNAPSHOT/mmm-code-java-maven-1.0.0-SNAPSHOT.jar" sourcepath="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-java-maven/1.0.0-SNAPSHOT/mmm-code-java-maven-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-util-io/7.5.1/mmm-util-io-7.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-base/1.0.0-SNAPSHOT/mmm-code-base-1.0.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/jdiazgon/.m2/repository/net/sf/m-m-m/mmm-code-java-parser/1.0.0-SNAPSHOT/mmm-code-java-parser-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
