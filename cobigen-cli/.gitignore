@@ -5,7 +5,6 @@ target/
 .settings/
 *.classpath
 metadata/
-templates_jar/
 
 # Log file
 *.log

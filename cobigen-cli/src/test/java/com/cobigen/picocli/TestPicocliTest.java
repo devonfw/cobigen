@@ -14,7 +14,7 @@ public class TestPicocliTest {
     private static Logger logger = LoggerFactory.getLogger(TestPicocliTest.class);
 
     /** Test resources root path */
-    private static String testFileRootPath = "src/test/resources/testdata/unittest/";
+    private static String testFileRootPath = "src/test/resources/testdata/";
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -27,7 +27,7 @@ public class TestPicocliTest {
     @Test
     public void testMain() {
         try {
-            File baseFile = new File(testFileRootPath + "EmployeeEntity.java");
+            File baseFile = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
             String args[] = new String[1];
             args[0] = baseFile.getAbsolutePath();

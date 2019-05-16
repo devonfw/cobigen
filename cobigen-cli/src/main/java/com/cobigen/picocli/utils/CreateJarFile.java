@@ -56,7 +56,7 @@ public class CreateJarFile {
 
     File jarFile = new File("template_Jar/cobigen_jar/templates-devon4j-3.1.0.jar");
 
-    File jarPath = new File("template_Jar/cobigen_jar");
+    File jarPath = new File("templates_jar");
 
     File jarFileDir = jarPath.getAbsoluteFile();
 
@@ -187,23 +187,25 @@ public class CreateJarFile {
                 try {
 
                     JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-                    JavaContext context = provider.createFromLocalMavenProject(new File(
-                        "C:\\Users\\jdiazgon\\Desktop\\Devon-dist_3.0.0\\workspaces\\itapoc\\jwtsample\\core"));
+                    JavaContext context = provider.createFromLocalMavenProject(inputFile);
 
                     context.getClassLoader();
 
                     CodeSource source = context.getSource();
 
-                    context.getType("com.devonfw.poc.jwtsample.employeemanagement.dataaccess.api.EmployeeEntity");
+                    context.getType("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
 
                     try {
                         context.getClassLoader()
-                            .loadClass("com.devonfw.poc.jwtsample.employeemanagement.dataaccess.api.EmployeeEntity");
+                            .loadClass("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                    input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+                    File classFile = inputFile.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/"
+                        + "dataaccess/api/SampleDataEntity.java").toFile();
+
+                    input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
 
                     List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
                     for (IncrementTo inc : matchingIncrements) {
@@ -211,7 +213,7 @@ public class CreateJarFile {
                         System.out.println("Increments Available = " + inc.getDescription());
                     }
 
-                    cg.generate(input, matchingIncrements, Paths.get(inputFile.getParentFile().getAbsolutePath()),
+                    cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
                         false, utilClasses);
                     System.out.println("Successfully generated templates.\n");
                 } catch (MojoFailureException e) {
