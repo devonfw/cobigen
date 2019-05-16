@@ -5,6 +5,7 @@ target/
 .settings/
 *.classpath
 metadata/
+src/test/resources/testdata/unittest/src
 
 # Log file
 *.log
