@@ -8,6 +8,7 @@ target/
 *.classpath
 metadata/
 src/test/resources/testdata/unittest/src
+src/test/resources/testdata/localmavenproject/maven.project/core/src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/src
 
 # Log file
 *.log

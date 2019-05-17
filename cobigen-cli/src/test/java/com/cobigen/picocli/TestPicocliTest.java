@@ -3,6 +3,7 @@ package com.cobigen.picocli;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -25,10 +26,9 @@ public class TestPicocliTest {
     }
 
     @Test
-    public void testMain() {
+    public void testMain() throws IOException {
+        File baseFile = new File(testFileRootPath + "localmavenproject/maven.project/core/");
         try {
-            File baseFile = new File(testFileRootPath + "localmavenproject/maven.project/core/");
-
             String args[] = new String[1];
             args[0] = baseFile.getAbsolutePath();
 
@@ -37,6 +37,10 @@ public class TestPicocliTest {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             fail(e.getMessage());
+        } finally {
+            File generatedFiles = baseFile.toPath()
+                .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/src").toFile();
+            // FileUtils.deleteDirectory(generatedFiles);
         }
     }
 
