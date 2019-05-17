@@ -10,19 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.cobigen.picocli.utils.ValidateMavenProject;
-import com.devonfw.cobigen.api.CobiGen;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.extension.Merger;
-import com.devonfw.cobigen.api.to.IncrementTo;
-
-import org.apache.commons.io.Charsets;
-import org.apache.maven.plugin.MojoFailureException;
-import org.eclipse.core.resources.ResourcesPlugin;
-import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
-import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
-import com.devonfw.cobigen.eclipse.generator.java.JavaInputGeneratorWrapper;
-import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 import picocli.CommandLine.Command;
@@ -36,39 +23,37 @@ public class TestPicocli {
 
     /**
      * Main starting point of the CLI. Here we parse the arguments from the user.
-		String cwd = System.getProperty("user.dir");
-		System.out.println("current path = "+System.getProperty("user.dir"));
-		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-		validateMavenProject.findPom(new File(cwd));
-		String userInput="";
-		//if(project is not valid )
-		//{
-		if(args==null || args.length<1 )
-		{
-			logger.info("Please enter input from command prompt");
-		Scanner inputReader = new Scanner(System.in);
-		 userInput = inputReader.nextLine();
-		}
-		else{
-			userInput = args[0];
-			logger.info("Your current directory is " + userInput);
-		}
-		//}
-		File inputFile = new File(userInput);
-		CreateJarFile createjarFile = new CreateJarFile();
-			
-		File jarPath = new File("templates_jar");
-		//URL resource = TestPicocli.class.getResource("/cobigen_jar");
-		File jarFileDir = jarPath.getAbsoluteFile();	
-		
-		//EmployeeEntity life =  cls.newInstance();
-		if (!jarPath.exists()) {
-			jarPath.mkdir();
-
-        String userInput = getUserInput(args);
+     * @param args
+     *            list of arguments the user has passed
+     */
+    public static void main(String... args) {
+        String cwd = System.getProperty("user.dir");
+        System.out.println("current path = " + System.getProperty("user.dir"));
+        ValidateMavenProject validateMavenProject = new ValidateMavenProject();
+        validateMavenProject.findPom(new File(cwd));
+        String userInput = "";
+        // if(project is not valid )
+        // {
+        if (args == null || args.length < 1) {
+            logger.info("Please enter input from command prompt");
+            Scanner inputReader = new Scanner(System.in);
+            userInput = inputReader.nextLine();
+        } else {
+            userInput = args[0];
+            logger.info("Your current directory is " + userInput);
+        }
+        // }
         File inputFile = new File(userInput);
-
         CreateJarFile createjarFile = new CreateJarFile();
+
+        File jarPath = new File("templates_jar");
+        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
+        File jarFileDir = jarPath.getAbsoluteFile();
+
+        // EmployeeEntity life = cls.newInstance();
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
+        }
 
         // We get the templates that will be used for generation
         getTemplatesJar(false);
