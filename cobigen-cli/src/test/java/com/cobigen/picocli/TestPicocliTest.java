@@ -40,6 +40,7 @@ public class TestPicocliTest {
         } finally {
             File generatedFiles = baseFile.toPath()
                 .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/src").toFile();
+            // If you want to remove the generated files
             // FileUtils.deleteDirectory(generatedFiles);
         }
     }
