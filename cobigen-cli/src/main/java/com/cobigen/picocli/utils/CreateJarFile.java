@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
+import net.sf.mmm.code.api.source.CodeSource;
+import net.sf.mmm.code.impl.java.JavaContext;
+import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
@@ -188,35 +189,41 @@ public class CreateJarFile {
                 CobiGen cg = CobiGenFactory.create(jarFile.toURI());
                 Object input = null;
                 try {
-                    // Compile source file.
-                    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler() ;
-                   
-                    compiler.run(null, null, null, inputFile.toString());
-                   
-                    // Load and instantiate compiled class.
-                    ClassLoader clsLoader = new URLClassLoader(new URL[] { root.toURI().toURL() });
+       
+                    JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
+                    JavaContext context = provider.createFromLocalMavenProject(inputFile);
 
-                    input = InputPreProcessor.process(cg, inputFile, this.getClass().getClassLoader());
+                    context.getClassLoader();
                     System.out.println("input for getMatchingIncrements => "+input);
+                    CodeSource source = context.getSource();
+
+                    context.getType("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
+
+                    try {
+                        context.getClassLoader()
+                            .loadClass("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    File classFile = inputFile.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/"
+                        + "dataaccess/api/SampleDataEntity.java").toFile();
+
+                    input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
+
                     List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
                     for (IncrementTo inc : matchingIncrements) {
 
                         System.out.println("Increments Available = " + inc.getDescription());
                     }
 
-                    cg.generate(input, matchingIncrements, Paths.get("C:\\\\Users\\\\syadav9\\\\Desktop\\\\temp"), false,
-                        utilClasses);
-                    System.out.println("Successfully generated Template");
+                    cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
+                        false, utilClasses);
+                    System.out.println("Successfully generated templates.\n");
                 } catch (MojoFailureException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
-                List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-                if (matchingIncrements.size() > 0) {
-
-                    System.out.println("Increments Available = " + matchingIncrements.get(0).getDescription());
-                }
             } catch (InvalidConfigurationException e) {
                 // if the context configuration is not valid
                 e.printStackTrace();
@@ -247,20 +254,15 @@ public class CreateJarFile {
     }
 
     /**
-     * Validating user input file is correct or not
+     * Validating user input file is correct or not. We check if file exists and it can be read
      *
      * @param inputFile
      *            user input file
+     * @return true when file is valid
      */
     public boolean validateFile(File inputFile) {
         if (!inputFile.exists() || !inputFile.canRead()) {
-            logger.info("The file " + inputFile.getAbsolutePath() + " is not a valid input for CobiGen.");
-            try {
-                throw new Exception("Could not read input file " + inputFile.getAbsolutePath());
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            logger.error("The file " + inputFile.getAbsolutePath() + " is not a valid input for CobiGen.");
             return false;
         }
         return true;

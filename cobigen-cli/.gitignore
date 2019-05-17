@@ -2,9 +2,12 @@
 # Compiled class file
 *.class
 target/
+!/src/test/resources/testdata/localmavenproject/maven.project/api/target
+!/src/test/resources/testdata/localmavenproject/maven.project/core/target
 .settings/
 *.classpath
 metadata/
+src/test/resources/testdata/unittest/src
 
 # Log file
 *.log
