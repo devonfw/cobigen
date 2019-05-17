@@ -1,7 +1,11 @@
 package com.cobigen.picocli.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -53,9 +57,9 @@ public class CreateJarFile {
         super();
     }
 
-    File jarFile = new File("template_Jar/cobigen_jar/templates-devon4j-3.1.0.jar");
+    File jarFile = new File("templates_jar/templates-devon4j-3.1.0.jar");
 
-    File jarPath = new File("template_Jar/cobigen_jar");
+    File jarPath = new File("templates_jar");
 
     File jarFileDir = jarPath.getAbsoluteFile();
 
@@ -185,14 +189,15 @@ public class CreateJarFile {
                 Object input = null;
                 try {
                     // Compile source file.
-                    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler() ;
+                   
                     compiler.run(null, null, null, inputFile.toString());
-
+                   
                     // Load and instantiate compiled class.
                     ClassLoader clsLoader = new URLClassLoader(new URL[] { root.toURI().toURL() });
 
                     input = InputPreProcessor.process(cg, inputFile, this.getClass().getClassLoader());
-
+                    System.out.println("input for getMatchingIncrements => "+input);
                     List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
                     for (IncrementTo inc : matchingIncrements) {
 

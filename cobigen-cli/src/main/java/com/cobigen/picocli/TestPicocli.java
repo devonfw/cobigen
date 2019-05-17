@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobigen.picocli.utils.CreateJarFile;
+import com.cobigen.picocli.utils.ValidateMavenProject;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.Merger;
@@ -50,10 +51,15 @@ public class TestPicocli {
 	GenerateMojo generateMojo = new GenerateMojo();
 
 	public static void main(String... args) throws Exception {
-		logger.info("start main method");
-		
+		logger.info("start main method");		
+		String cwd = System.getProperty("user.dir");
+		System.out.println("current path = "+System.getProperty("user.dir"));
+		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
+		validateMavenProject.findPom(new File(cwd));
 		String userInput="";
-		if(args==null || args[0].length()<1 )
+		//if(project is not valid )
+		//{
+		if(args==null || args.length<1 )
 		{
 			logger.info("Please enter input from command prompt");
 		Scanner inputReader = new Scanner(System.in);
@@ -61,11 +67,13 @@ public class TestPicocli {
 		}
 		else{
 			userInput = args[0];
+			logger.info("Your current directory is " + userInput);
 		}
+		//}
 		File inputFile = new File(userInput);
 		CreateJarFile createjarFile = new CreateJarFile();
 			
-		File jarPath = new File("template_Jar/cobigen_jar");
+		File jarPath = new File("templates_jar");
 		//URL resource = TestPicocli.class.getResource("/cobigen_jar");
 		File jarFileDir = jarPath.getAbsoluteFile();	
 		
