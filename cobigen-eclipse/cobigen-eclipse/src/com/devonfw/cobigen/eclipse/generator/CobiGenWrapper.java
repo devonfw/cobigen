@@ -568,6 +568,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
                 consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
             }
+
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
             return isOverridableFile(templates);
         }
@@ -582,10 +583,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *         <code>false</code> otherwise
      */
     private boolean isOverridableFile(Set<TemplateTo> templates) {
-        for (TemplateTo template : templates) {
-            if (template.getMergeStrategy() != null
-                && template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
-                return true;
+        if (templates != null) {
+            for (TemplateTo template : templates) {
+                if (template.getMergeStrategy() != null
+                    && template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
+                    return true;
+                }
             }
         }
         return false;
