@@ -544,10 +544,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *         <code>false</code> otherwise
      */
     private boolean isMergableFile(Set<TemplateTo> templates) {
-        for (TemplateTo template : templates) {
-            if (template.getMergeStrategy() != null
-                && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
-                return true;
+        if (templates != null) {
+            for (TemplateTo template : templates) {
+                if (template.getMergeStrategy() != null
+                    && !template.getMergeStrategy().equals(ConfigurationConstants.MERGE_STRATEGY_OVERRIDE)) {
+                    return true;
+                }
             }
         }
         return false;
