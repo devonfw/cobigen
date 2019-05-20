@@ -1,7 +1,13 @@
 package com.devonfw.cobigen.impl.externalprocess;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 
@@ -9,6 +15,9 @@ import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
  * Contains the properties related to the external process like its name, file path or the URL to download it
  */
 public class ExternalProcessProperties {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ExternalProcessProperties.class);
 
     /**
      * Path to the external process
@@ -109,9 +118,15 @@ public class ExternalProcessProperties {
 
         } else {
             // When the exe is on the current class path
-            filePath = getClass().getResource(fileName).getPath();
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                filePath = filePath + ".exe";
+            URI resourceURI;
+            try {
+                resourceURI = getClass().getResource(fileName).toURI();
+                filePath = Paths.get(resourceURI).toString();
+                if (System.getProperty("os.name").startsWith("Windows")) {
+                    filePath = filePath + ".exe";
+                }
+            } catch (URISyntaxException e) {
+                LOG.error("Error while getting the exe file into URI format.", e);
             }
         }
 
@@ -183,6 +198,14 @@ public class ExternalProcessProperties {
      */
     public void setDownloadURL(String downloadURL) {
         this.downloadURL = downloadURL;
+    }
+
+    /**
+     * get current operative system
+     * @return current operative system as String
+     */
+    public String getOsName() {
+        return osName;
     }
 
 }

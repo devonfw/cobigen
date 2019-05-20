@@ -169,10 +169,21 @@ public class ExternalProcessHandler {
             if (!new File(filePath).isFile()) {
                 filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
             }
-            Files.setPosixFilePermissions(Paths.get(filePath),
-                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
-                    PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
+
+            // Depending on the operative system, we need to set permissions in a different way
+            if (processProperties.getOsName().indexOf("win") >= 0) {
+                File exeFile = new File(filePath);
+                try {
+                    exeFile.setExecutable(true, false);
+                } catch (SecurityException e) {
+                    LOG.error("Not able to set executable permissions on the file", e);
+                }
+            } else {
+                Files.setPosixFilePermissions(Paths.get(filePath),
+                    Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
+                        PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
+                        PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
+            }
 
             process = new ProcessBuilder(filePath, String.valueOf(port)).start();
 
