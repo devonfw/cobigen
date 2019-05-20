@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -17,7 +17,6 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
@@ -26,7 +25,7 @@ import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 public class TypeScriptMergerTest {
 
     /** Test resources root path */
-    private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
 
     /** Initializing connection with server */
     private static ExternalProcessHandler request = ExternalProcessHandler

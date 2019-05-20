@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import static org.junit.Assert.assertEquals;
 

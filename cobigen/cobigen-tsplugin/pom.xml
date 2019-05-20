@@ -38,6 +38,14 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
+    
+    <!-- Used for converting JSON to Hashmaps -->
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20180813</version>
+    </dependency>
+        
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
