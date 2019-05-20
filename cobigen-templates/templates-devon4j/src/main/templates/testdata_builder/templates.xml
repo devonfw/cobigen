@@ -5,17 +5,14 @@
         <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
         <template name="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override"/>
         <template name="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge"/>
-        <template name="P" destinationPath="src/test/java/${variables.rootPackage}/common/builders/P.java" templateFile="P.java.ftl"/>
     </templates>
     <increments>
         <increment name="testdata_builder" description="Testdata builder">
-            <templateRef ref="P"/>
             <templateRef ref="entityBuilder"/>
             <templateRef ref="entityBuilder_fillMandatoryFields"/>
             <templateRef ref="entityBuilder_customFunctions"/>
         </increment>
         <increment name="testdata_builder_persistable" description="Testdata builder (persistable)">
-            <templateRef ref="P"/>
             <templateRef ref="entityBuilder"/>
             <templateRef ref="entityBuilder_fillMandatoryFields"/>
             <templateRef ref="entityBuilder_customFunctions"/>
