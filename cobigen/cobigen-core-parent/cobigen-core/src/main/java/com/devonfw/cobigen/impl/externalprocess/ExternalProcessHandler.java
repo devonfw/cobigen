@@ -350,9 +350,8 @@ public class ExternalProcessHandler {
                 try {
                     LOG.info("Sleeping...");
                     Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                } catch (InterruptedException interrupted) {
+                    LOG.error("Error while trying to sleep the execution.");
                 }
                 if (connectionExc.handle(e).equals(ConnectionException.MALFORMED_URL)) {
                     LOG.error("MalformedURLException: Connection to server failed, MalformedURL.", e);
@@ -581,7 +580,6 @@ public class ExternalProcessHandler {
                 errorHandler.join();
             } catch (InterruptedException e) {
                 LOG.info("Error while trying to close the process error handler", e);
-                e.printStackTrace();
                 return false;
             }
         }
