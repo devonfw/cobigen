@@ -87,9 +87,6 @@ node {
 									}
 								} else if (origin_branch == 'dev_eclipseplugin') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean package -U -Pp2-build-mars,p2-build-ci"
-								} else if (origin_branch == 'dev_tsplugin') {
-										givePermissionsToExternalProcesses()
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -U"
 								} else {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -U"
 								}
@@ -232,16 +229,6 @@ def justTemplatesChanged() {
 		}
 	}
 	return true
-}
-
-def givePermissionsToExternalProcesses() {
-
-	// We want to traverse all the external processes and give them exeuction permissions
-	final foundFiles = sh(script: 'ls -1 /home/pl/.cobigen/externalservers/', returnStdout: true).split()
-	for (int i = 0; i < foundFiles.size(); i++) {
-		sh "chmod 777 /home/pl/.cobigen/externalservers/${foundFiles[i]}"
-	}
-
 }
 
 def notifyFailed() {
