@@ -170,20 +170,7 @@ public class ExternalProcessHandler {
                 filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
             }
 
-            // Depending on the operative system, we need to set permissions in a different way
-            if (processProperties.getOsName().indexOf("win") >= 0) {
-                File exeFile = new File(filePath);
-                try {
-                    exeFile.setExecutable(true, false);
-                } catch (SecurityException e) {
-                    LOG.error("Not able to set executable permissions on the file", e);
-                }
-            } else {
-                Files.setPosixFilePermissions(Paths.get(filePath),
-                    Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
-                        PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
-                        PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
-            }
+            setPermissions(filePath);
 
             process = new ProcessBuilder(filePath, String.valueOf(port)).start();
 
@@ -216,6 +203,30 @@ public class ExternalProcessHandler {
         }
         return execution;
 
+    }
+
+    /**
+     * Sets permissions to the executable file, so that it can be executed
+     * @param filePath
+     *            path to the file we want to change its permissions
+     * @throws IOException
+     *             throws {@link IOException}
+     */
+    private void setPermissions(String filePath) throws IOException {
+        // Depending on the operative system, we need to set permissions in a different way
+        if (processProperties.getOsName().indexOf("win") >= 0) {
+            File exeFile = new File(filePath);
+            try {
+                exeFile.setExecutable(true, false);
+            } catch (SecurityException e) {
+                LOG.error("Not able to set executable permissions on the file", e);
+            }
+        } else {
+            Files.setPosixFilePermissions(Paths.get(filePath),
+                Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_READ,
+                    PosixFilePermission.OTHERS_EXECUTE, PosixFilePermission.OTHERS_READ));
+        }
     }
 
     /**
