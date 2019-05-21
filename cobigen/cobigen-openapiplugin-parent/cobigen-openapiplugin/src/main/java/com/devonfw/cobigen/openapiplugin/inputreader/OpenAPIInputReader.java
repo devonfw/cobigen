@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
@@ -413,33 +415,53 @@ public class OpenAPIInputReader implements InputReader {
      * @return list of {@link PathDef}'s
      */
     private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
+        Matcher matcher;
+        Pattern pattern;
+        String match, root_component = null, version = null;
+
         List<PathDef> pathDefs = new LinkedList<>();
+
         for (String pathKey : paths.keySet()) {
             if (pathKey.toLowerCase().contains(componentName.toLowerCase())) {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
-                for (int i = 3; i < mp.length; i++) {
-                    pathUri = pathUri.concat(mp[i] + "/");
-                }
-                PathDef path = new PathDef(pathUri, mp[2]);
-                if (pathKey.toLowerCase().contains(mp[1].toLowerCase())) {
-                    for (String opKey : paths.get(pathKey).getOperations().keySet()) {
-                        OperationDef operation = new OperationDef(opKey);
-                        operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
-                        operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
-                        operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
-                            paths.get(pathKey).getOperation(opKey).getTags()));
-                        operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
-                        if (path.getOperations() == null) {
-                            path.setOperations(new ArrayList<OperationDef>());
-                        }
-                        operation.getParameters()
-                            .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
-                                paths.get(pathKey).getOperation(opKey).getTags(),
-                                paths.get(pathKey).getOperation(opKey).getRequestBody()));
-                        path.getOperations().add(operation);
+
+                try {
+                    match = "^\\/[^\\/]+\\/+[^\\/]+\\/(.+)";
+                    pattern = Pattern.compile(match);
+                    matcher = pattern.matcher(pathKey);
+                    matcher.find();
+                    pathUri += matcher.group(1);
+                    if (pathUri.charAt(pathUri.length() - 1) != "/".charAt(0)) {
+                        pathUri += "/";
                     }
+                } catch (IllegalStateException e) {
+                    ;
+                }
+
+                root_component = mp[1];
+                if (mp.length > 2) {
+                    version = mp[2];
+                }
+
+                PathDef path = new PathDef(pathUri, version);
+
+                for (String opKey : paths.get(pathKey).getOperations().keySet()) {
+                    OperationDef operation = new OperationDef(opKey);
+                    operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
+                    operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
+                    operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
+                    operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
+                        paths.get(pathKey).getOperation(opKey).getTags()));
+                    operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
+                    if (path.getOperations() == null) {
+                        path.setOperations(new ArrayList<OperationDef>());
+                    }
+                    operation.getParameters()
+                        .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
+                            paths.get(pathKey).getOperation(opKey).getTags(),
+                            paths.get(pathKey).getOperation(opKey).getRequestBody()));
+                    path.getOperations().add(operation);
                 }
 
                 pathDefs.add(path);
