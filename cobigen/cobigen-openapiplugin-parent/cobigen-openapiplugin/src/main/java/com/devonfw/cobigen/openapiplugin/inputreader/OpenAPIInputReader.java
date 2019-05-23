@@ -417,7 +417,7 @@ public class OpenAPIInputReader implements InputReader {
     private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
         Matcher matcher;
         Pattern pattern;
-        String match, root_component = null, version = null;
+        String match, rootComponent = null, version = null;
 
         List<PathDef> pathDefs = new LinkedList<>();
 
@@ -426,20 +426,17 @@ public class OpenAPIInputReader implements InputReader {
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
 
-                try {
-                    match = "^\\/[^\\/]+\\/+[^\\/]+\\/(.+)";
-                    pattern = Pattern.compile(match);
-                    matcher = pattern.matcher(pathKey);
-                    matcher.find();
+                match = "^\\/[^\\/]+\\/+[^\\/]+\\/(.+)";
+                pattern = Pattern.compile(match);
+                matcher = pattern.matcher(pathKey);
+                boolean matchFound = matcher.find();
+                if (matchFound) {
                     pathUri += matcher.group(1);
-                    if (pathUri.charAt(pathUri.length() - 1) != "/".charAt(0)) {
+                    if (!pathUri.substring(pathUri.length() - 1).equals("/")) {
                         pathUri += "/";
                     }
-                } catch (IllegalStateException e) {
-                    ;
                 }
-
-                root_component = mp[1];
+                rootComponent = mp[1];
                 if (mp.length > 2) {
                     version = mp[2];
                 }
