@@ -418,6 +418,7 @@ public class OpenAPIInputReader implements InputReader {
         Matcher matcher;
         Pattern pattern;
         String match, rootComponent = null, version = null;
+        boolean matchFound = false;
 
         List<PathDef> pathDefs = new LinkedList<>();
 
@@ -429,7 +430,7 @@ public class OpenAPIInputReader implements InputReader {
                 match = "^\\/[^\\/]+\\/+[^\\/]+\\/(.+)";
                 pattern = Pattern.compile(match);
                 matcher = pattern.matcher(pathKey);
-                boolean matchFound = matcher.find();
+                matchFound = matcher.find();
                 if (matchFound) {
                     pathUri += matcher.group(1);
                     if (!pathUri.substring(pathUri.length() - 1).equals("/")) {
