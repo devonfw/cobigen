@@ -203,6 +203,13 @@ node {
 					build job: 'dev_mavenplugin', wait: false, parameters: [[$class:'StringParameterValue', name:'TRIGGER_SHA', value:env.GIT_COMMIT], [$class:'StringParameterValue', name:'TRIGGER_REPO', value: repo]]
 				}
 			}
+			
+			post {
+				cleanup {
+					cleanWs()
+					deleteDir()
+				}
+			}
 
 		} catch(e) {
 			if (currentBuild.result != 'UNSTABLE') {
@@ -210,17 +217,18 @@ node {
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
+			
+			post {
+				cleanup {
+					cleanWs()
+					deleteDir()
+				}
+			}
+			
 			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
-	
-	post {
-		cleanup {
-			cleanWs()
-			deleteDir()
-		}
-	}
 }
 
 def isPRBuild() {
