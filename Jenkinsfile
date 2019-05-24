@@ -211,11 +211,9 @@ node {
 			}
 			notifyFailed()
 			
-			post {
-				cleanup {
-					cleanWs()
-					deleteDir()
-				}
+			stage('clean up') {
+				cleanWs()
+				deleteDir()
 			}
 			
 			throw e
@@ -223,11 +221,9 @@ node {
 		setBuildStatus("Complete","SUCCESS")
 	//}
 	
-	post {
-		cleanup {
-			cleanWs()
-			deleteDir()
-		}
+	stage('clean up') {
+		cleanWs()
+		deleteDir()
 	}
 }
 
