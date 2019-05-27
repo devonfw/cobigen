@@ -3,6 +3,7 @@ package com.cobigen.picocli;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -26,44 +27,52 @@ public class TestPicocli {
      * @param args
      *            list of arguments the user has passed
      */
-    public static void main(String... args) {
-        String cwd = System.getProperty("user.dir");
-        System.out.println("current path = " + System.getProperty("user.dir"));
-        ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-        validateMavenProject.findPom(new File(cwd));
-        String userInput = "";
-        // if(project is not valid )
-        // {
-        if (args == null || args.length < 1) {
-            logger.info("Please enter input from command prompt");
-            Scanner inputReader = new Scanner(System.in);
-            userInput = inputReader.nextLine();
-        } else {
-            userInput = args[0];
-            logger.info("Your current directory is " + userInput);
-        }
-        // }
-        File inputFile = new File(userInput);
-        CreateJarFile createjarFile = new CreateJarFile();
+	public static void main(String... args) {
+		String cwd = System.getProperty("user.dir");
+		System.out.println("current path = " + System.getProperty("user.dir"));
+		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
+		validateMavenProject.findPom(new File(cwd));
+		System.out.println("cwd = > " + cwd);
+		String userInput = "";
+		File inputFile = null;
 
-        File jarPath = new File("templates_jar");
-        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
-        File jarFileDir = jarPath.getAbsoluteFile();
+		if (args == null || args.length < 1) {
 
-        // EmployeeEntity life = cls.newInstance();
-        if (!jarPath.exists()) {
-            jarPath.mkdir();
-        }
+			logger.info("Your current directory is " + userInput);			
+			Scanner inputReader = new Scanner(System.in);
+			userInput = inputReader.nextLine();
+		} else {
 
-        // We get the templates that will be used for generation
-        getTemplatesJar(false);
+			logger.info("Your current directory is " + userInput);
+		}
+		// }
+		if (args.length > 0) {
+			for (int i = 0; i <= 1; i++)
+				inputFile = new File(args[1]);
+			System.out.println("input===> " + inputFile);
 
-        createjarFile.validateFile(inputFile);
-        createjarFile.createJarAndGenerateIncr(inputFile);
+		}
+		CreateJarFile createjarFile = new CreateJarFile();
 
-        logger.info("successfully call cobigen create method");
+		File jarPath = new File("templates_jar");
+		// URL resource = TestPicocli.class.getResource("/cobigen_jar");
+		File jarFileDir = jarPath.getAbsoluteFile();
 
-    }
+		// EmployeeEntity life = cls.newInstance();
+		if (!jarPath.exists()) {
+			jarPath.mkdir();
+		}
+
+		// We get the templates that will be used for generation
+		getTemplatesJar(false);
+
+		createjarFile.validateFile(inputFile);
+		System.out.println("Input file in testPicocli is =>" + inputFile);
+		createjarFile.createJarAndGenerateIncr(inputFile);
+
+		logger.info("successfully call cobigen create method");
+
+	}
 
     /**
      * Tries to find the templates jar. If it was not found, it will download it and then return it.

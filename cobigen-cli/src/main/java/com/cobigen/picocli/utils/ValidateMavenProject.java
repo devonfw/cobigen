@@ -20,7 +20,7 @@ public class ValidateMavenProject {
 			if (lastDot > 0) {
 				basename = filename.substring(0, lastDot);
 				pomFile = new File(source.getParent(), basename + POM_EXTENSION);
-				if (pomFile.exists()) {
+				if (pomFile.exists() || pomFile.toString().contains("pom.xml")) {
 					logger.info("User is in valid maven project project ");
 					return pomFile;
 					
@@ -48,6 +48,7 @@ public class ValidateMavenProject {
 	    String POM_XML = "pom.xml";
 		File pomFile = new File(folder, POM_XML);
 	    if (pomFile.exists()) {
+	    	logger.info("You are in a project folder,I assume you want to generate code from/in this project . If this is the wrong folder enter change folder.");
 	      return pomFile;
 	    }
 	    if (recursion > 4) {

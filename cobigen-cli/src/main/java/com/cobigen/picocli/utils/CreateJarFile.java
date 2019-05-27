@@ -44,6 +44,7 @@ import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.javaplugin.JavaTriggerInterpreter;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
+import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
 import com.devonfw.cobigen.textmerger.TextAppender;
 import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
@@ -70,7 +71,7 @@ public class CreateJarFile {
 
     /** Current registered input objects */
     private List<Object> inputs;
-
+    
     /**
      * Resolves all classes, which have been defined in the template configuration folder from a jar.
      *
@@ -167,6 +168,7 @@ public class CreateJarFile {
     public void createJarAndGenerateIncr(File inputFile) {
         jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
         logger.info("get jar file");
+        logger.info("Input file is in Createjarfile = "+inputFile);
         URLClassLoader classLoader = null;
         File root = inputFile.getParentFile();
         // Call method to get utils from jar
@@ -185,32 +187,29 @@ public class CreateJarFile {
 
         if (jarFile != null) {
             try {
-
+            	registerPlugin();
                 CobiGen cg = CobiGenFactory.create(jarFile.toURI());
                 Object input = null;
                 try {
-       
-                    JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
+                	
+                    JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();                
                     JavaContext context = provider.createFromLocalMavenProject(inputFile);
 
-                    context.getClassLoader();
                     System.out.println("input for getMatchingIncrements => "+input);
-                    CodeSource source = context.getSource();
-
-                    context.getType("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
+                   // context.getOrCreateSource(null, null) ;
 
                     try {
                         context.getClassLoader()
-                            .loadClass("com.maven.project.sampledatamanagement.dataaccess.api.SampleDataEntity");
+                            .loadClass("com.devonfw.poc.jwtsample.authormanagement.dataaccess.api.AuthorEntity");
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                    File classFile = inputFile.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/"
-                        + "dataaccess/api/SampleDataEntity.java").toFile();
+                    File classFile = inputFile.toPath().resolve("src/main/java/com/devonfw/poc/jwtsample/authormanagement/"
+                        + "dataaccess/api/AuthorEntity.java").toFile();
 
                     input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
-
+                    System.out.println("input before getmatchingIncrement= "+input.toString()+"class= "+input.getClass());
                     List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
                     for (IncrementTo inc : matchingIncrements) {
 
@@ -220,6 +219,7 @@ public class CreateJarFile {
                     cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
                         false, utilClasses);
                     System.out.println("Successfully generated templates.\n");
+                    logger.info("Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "+ "cg generate"+ " ?  ");
                 } catch (MojoFailureException e) {
                     e.printStackTrace();
                 }
@@ -249,8 +249,13 @@ public class CreateJarFile {
         XmlTriggerInterpreter xmlTriggerInterpreter = new XmlTriggerInterpreter("xml");
         PluginRegistry.registerTriggerInterpreter(xmlTriggerInterpreter);
 
-        List<Merger> merger = Lists.newLinkedList();
-        merger.add(new TextAppender("textmergerActivator", false));
+        PluginRegistry.registerMerger(new TextAppender("textmergerActivator", false));
+        PluginRegistry.registerMerger(new TextAppender("jsonmerger", false));
+        PluginRegistry.registerMerger(new TextAppender("propertymerger", false));        
+        PluginRegistry.registerMerger(new TextAppender("angularmerger", false));
+        OpenAPITriggerInterpreter openApi = new OpenAPITriggerInterpreter("openapi");
+        PluginRegistry.registerTriggerInterpreter(openApi);
+        
     }
 
     /**
