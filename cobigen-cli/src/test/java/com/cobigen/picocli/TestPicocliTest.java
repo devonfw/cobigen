@@ -27,10 +27,15 @@ public class TestPicocliTest {
 
     @Test
     public void testMain() throws IOException {
-        File baseFile = new File(testFileRootPath + "localmavenproject/maven.project/core/");
+        File inputFile = new File(testFileRootPath + "localmavenproject/maven.project/core/");
+        File baseProject = inputFile.toPath()
+            .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java")
+            .toFile();
+
         try {
-            String args[] = new String[1];
-            args[0] = baseFile.getAbsolutePath();
+            String args[] = new String[2];
+            args[0] = baseProject.getAbsolutePath();
+            args[1] = inputFile.getAbsolutePath();
 
             TestPicocli.main(args);
 
@@ -38,7 +43,7 @@ public class TestPicocliTest {
             // TODO Auto-generated catch block
             fail(e.getMessage());
         } finally {
-            File generatedFiles = baseFile.toPath()
+            File generatedFiles = baseProject.toPath()
                 .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/src").toFile();
             // If you want to remove the generated files
             // FileUtils.deleteDirectory(generatedFiles);

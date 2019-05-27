@@ -2,6 +2,7 @@ package com.maven.project.sampledatamanagement.dataaccess.api;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.validation.constraints.Size;
 
 import com.maven.project.sampledatamanagement.common.api.SampleData;
 
@@ -21,7 +22,7 @@ public class SampleDataEntity implements SampleData {
   @Column(name = "AGE")
   private Integer age;
 
-  @Column(name = "MAIL")
+  @Size(max = 30, min = 3)
   private String mail;
 
   private static final long serialVersionUID = 1L;

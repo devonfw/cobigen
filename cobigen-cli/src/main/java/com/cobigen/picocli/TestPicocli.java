@@ -3,7 +3,6 @@ package com.cobigen.picocli;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -20,6 +19,10 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "TestPicocli", header = "%n@|TestPicocli Hello world demo|@")
 public class TestPicocli {
+
+    /**
+     * Logger to output useful information to the user
+     */
     private static Logger logger = LoggerFactory.getLogger(TestPicocli.class);
 
     /**
@@ -27,47 +30,59 @@ public class TestPicocli {
      * @param args
      *            list of arguments the user has passed
      */
-	public static void main(String... args) {
-		String cwd = System.getProperty("user.dir");
-		System.out.println("current path = " + System.getProperty("user.dir"));
-		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-		validateMavenProject.findPom(new File(cwd));
-		String userInput = "";
-		File inputFile = null;
+    public static void main(String... args) {
+        String cwd = System.getProperty("user.dir");
+        String userInput = "";
+        File inputFile = null;
 
-		if (args == null || args.length < 1) {
+        if (args == null || args.length < 1) {
 
-			logger.info("Your current directory is " + userInput);
-			Scanner inputReader = new Scanner(System.in);
-			userInput = inputReader.nextLine();
-		} else {
+            logger.info("Welcome to CobiGen.\n"
+                + "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n"
+                + "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
+                + "with [-h] you can get more infos about the commands you want to use or the increment you want to generate");
 
-			logger.info("Your current directory is " + userInput);
-		}
-		// }
-		if (args.length > 0) {
-			for (int i = 0; i <= 1; i++)
-				inputFile = new File(args[1]);
+            System.out.println("current path = " + System.getProperty("user.dir"));
+            ValidateMavenProject validateMavenProject = new ValidateMavenProject();
+            validateMavenProject.findPom(new File(cwd));
 
-		}
-		CreateJarFile createjarFile = new CreateJarFile();
+            try (Scanner inputReader = new Scanner(System.in)) {
+                userInput = inputReader.nextLine();
+            }
+        } else {
+            if (args.length == 1) {
+                logger.error(
+                    "You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");
+                // TODO: Ask user for input
+            } else if (args.length == 2) {
+                inputFile = new File(args[1]);
+            } else {
+                logger.error(
+                    "Too many arguments have been provided, you need to provide two: <path_of_input_file> <path_of_project>");
+                // TODO: Ask user for input
+            }
+        }
+        CreateJarFile createjarFile = new CreateJarFile();
 
-		File jarPath = new File("templates_jar");
-		// URL resource = TestPicocli.class.getResource("/cobigen_jar");
-		File jarFileDir = jarPath.getAbsoluteFile();
+        File jarPath = new File("templates_jar");
+        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
+        File jarFileDir = jarPath.getAbsoluteFile();
 
-		// EmployeeEntity life = cls.newInstance();
-		if (!jarPath.exists()) {
-			jarPath.mkdir();
-		}
+        // EmployeeEntity life = cls.newInstance();
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
+        }
 
-		// We get the templates that will be used for generation
-		getTemplatesJar(false);
+        // We get the templates that will be used for generation
+        getTemplatesJar(false);
 
-		createjarFile.validateFile(inputFile);
-		createjarFile.createJarAndGenerateIncr(inputFile);
+        if (createjarFile.validateFile(inputFile)) {
+            createjarFile.createJarAndGenerateIncr(inputFile);
+        } else {
+            // TODO: ask user to prompt input file again
+        }
 
-	}
+    }
 
     /**
      * Tries to find the templates jar. If it was not found, it will download it and then return it.

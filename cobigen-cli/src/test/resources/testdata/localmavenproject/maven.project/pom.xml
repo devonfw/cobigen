@@ -5,11 +5,26 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Test_Local_Maven_Project</name>
-  
-  
+
+
   <modules>
     <module>api</module>
     <module>core</module>
   </modules>
-  
+
+      <profiles>
+      <profile>
+      <!-- separate eclipse build from command-line... -->
+      <id>eclipse</id>
+      <activation>
+        <property>
+          <name>eclipse.application</name>
+        </property>
+      </activation>
+      <build>
+        <directory>eclipse-target</directory>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

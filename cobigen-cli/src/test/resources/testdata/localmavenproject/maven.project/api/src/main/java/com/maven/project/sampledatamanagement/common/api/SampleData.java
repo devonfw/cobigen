@@ -5,6 +5,8 @@ import com.devonfw.module.basic.common.api.entity.GenericEntity;
 public interface SampleData extends GenericEntity<Long> {
 
   /**
+   * getter
+   * 
    * @return nameId
    */
 

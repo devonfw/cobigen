@@ -1,4 +1,4 @@
-ECHO ON
+ECHO OFF
 echo "Current Java Version is"
 echo %JAVA_HOME%
 setlocal enableDelayedExpansion
@@ -19,14 +19,9 @@ ECHO "cg check"
 ECHO "cg revert"
 ECHO "with [-h] you can get more infos about the commands you want to use or the increment you want to generate"
 
-    
-set arg0=%0
-set arg1=%1
-set arg2=%2 
+set /p inputFile= $cg %command% %option0% %option1%
 
-set /p inputFile= $cg g %arg1% %arg2%
-
-java -jar cobigen.jar %inputFile% %pathOfProject%
+java -jar cobigen.jar %inputFile%
 
 pause
 

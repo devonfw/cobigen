@@ -1,11 +1,7 @@
 package com.cobigen.picocli.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -23,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import net.sf.mmm.code.api.source.CodeSource;
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 
@@ -34,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -48,7 +42,6 @@ import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
 import com.devonfw.cobigen.textmerger.TextAppender;
 import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
-import com.google.common.collect.Lists;
 
 public class CreateJarFile {
     private static Logger logger = LoggerFactory.getLogger(CreateJarFile.class);
@@ -71,7 +64,7 @@ public class CreateJarFile {
 
     /** Current registered input objects */
     private List<Object> inputs;
-    
+
     /**
      * Resolves all classes, which have been defined in the template configuration folder from a jar.
      *
@@ -165,80 +158,79 @@ public class CreateJarFile {
      * @param User
      *            input entity file
      */
-	public void createJarAndGenerateIncr(File inputFile) {
-		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+    public void createJarAndGenerateIncr(File inputFile) {
+        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
 
-		URLClassLoader classLoader = null;
-		File root = inputFile.getParentFile();
-		// Call method to get utils from jar
-		try {
+        URLClassLoader classLoader = null;
+        File root = inputFile.getParentFile();
+        // Call method to get utils from jar
+        try {
 
-			utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
-		} catch (GeneratorProjectNotExistentException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+        } catch (GeneratorProjectNotExistentException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
 
-		// JavaParser. parse(inputFile.getAbsolutePath());
+        // JavaParser. parse(inputFile.getAbsolutePath());
 
-		if (jarFile != null) {
-			try {
-				registerPlugin();
-				CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-				Object input = null;
-				try {
+        if (jarFile != null) {
+            try {
+                registerPlugin();
+                CobiGen cg = CobiGenFactory.create(jarFile.toURI());
+                Object input = null;
+                try {
 
-					JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-					JavaContext context = provider.createFromLocalMavenProject(inputFile);
+                    JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
+                    JavaContext context = provider.createFromLocalMavenProject(inputFile);
 
-					System.out.println("input for getMatchingIncrements => " + input);
-					// context.getOrCreateSource(null, null) ;
+                    System.out.println("input for getMatchingIncrements => " + input);
+                    // context.getOrCreateSource(null, null) ;
 
-					try {
-						context.getClassLoader()
-								.loadClass("com.devonfw.poc.jwtsample.authormanagement.dataaccess.api.AuthorEntity");
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
+                    try {
+                        context.getClassLoader()
+                            .loadClass("com.devonfw.poc.jwtsample.authormanagement.dataaccess.api.AuthorEntity");
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-					File classFile = inputFile.toPath()
-							.resolve("src/main/java/com/devonfw/poc/jwtsample/authormanagement/"
-									+ "dataaccess/api/AuthorEntity.java")
-							.toFile();
+                    File classFile =
+                        inputFile.toPath().resolve("src/main/java/com/devonfw/poc/jwtsample/authormanagement/"
+                            + "dataaccess/api/AuthorEntity.java").toFile();
 
-					input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
-					System.out.println(
-							"input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
-					List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-					for (IncrementTo inc : matchingIncrements) {
+                    input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
+                    System.out.println(
+                        "input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
+                    List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
+                    for (IncrementTo inc : matchingIncrements) {
 
-						System.out.println("Increments Available = " + inc.getDescription());
-					}
+                        System.out.println("Increments Available = " + inc.getDescription());
+                    }
 
-					cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
-							false, utilClasses);
-					System.out.println("Successfully generated templates.\n");
-					logger.info(
-							"Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "
-									+ "cg generate" + " ?  ");
-				} catch (MojoFailureException e) {
-					e.printStackTrace();
-				}
+                    cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
+                        false, utilClasses);
+                    System.out.println("Successfully generated templates.\n");
+                    logger.info(
+                        "Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "
+                            + "cg generate" + " ?  ");
+                } catch (MojoFailureException e) {
+                    e.printStackTrace();
+                }
 
-			} catch (InvalidConfigurationException e) {
-				// if the context configuration is not valid
-				e.printStackTrace();
-			} catch (IOException e) {
-				// If I/O operation failed then it will throw exception
-				e.printStackTrace();
-			}
+            } catch (InvalidConfigurationException e) {
+                // if the context configuration is not valid
+                e.printStackTrace();
+            } catch (IOException e) {
+                // If I/O operation failed then it will throw exception
+                e.printStackTrace();
+            }
 
-		}
+        }
 
-	}
+    }
 
     /**
      * Registers the given triggerInterpreter,tsmerge, to be registered
@@ -254,11 +246,11 @@ public class CreateJarFile {
 
         PluginRegistry.registerMerger(new TextAppender("textmergerActivator", false));
         PluginRegistry.registerMerger(new TextAppender("jsonmerger", false));
-        PluginRegistry.registerMerger(new TextAppender("propertymerger", false));        
+        PluginRegistry.registerMerger(new TextAppender("propertymerger", false));
         PluginRegistry.registerMerger(new TextAppender("angularmerger", false));
         OpenAPITriggerInterpreter openApi = new OpenAPITriggerInterpreter("openapi");
         PluginRegistry.registerTriggerInterpreter(openApi);
-        
+
     }
 
     /**
@@ -269,8 +261,18 @@ public class CreateJarFile {
      * @return true when file is valid
      */
     public boolean validateFile(File inputFile) {
-        if (!inputFile.exists() || !inputFile.canRead()) {
-            logger.error("The file " + inputFile.getAbsolutePath() + " is not a valid input for CobiGen.");
+        if (inputFile == null) {
+            return false;
+        }
+
+        if (!inputFile.exists()) {
+            logger.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
+            return false;
+        }
+
+        if (!inputFile.canRead()) {
+            logger.error("The input file " + inputFile.getAbsolutePath()
+                + " cannot be read. Please check file permissions on the file");
             return false;
         }
         return true;
