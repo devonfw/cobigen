@@ -32,13 +32,12 @@ public class TestPicocli {
 		System.out.println("current path = " + System.getProperty("user.dir"));
 		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
 		validateMavenProject.findPom(new File(cwd));
-		System.out.println("cwd = > " + cwd);
 		String userInput = "";
 		File inputFile = null;
 
 		if (args == null || args.length < 1) {
 
-			logger.info("Your current directory is " + userInput);			
+			logger.info("Your current directory is " + userInput);
 			Scanner inputReader = new Scanner(System.in);
 			userInput = inputReader.nextLine();
 		} else {
@@ -49,7 +48,6 @@ public class TestPicocli {
 		if (args.length > 0) {
 			for (int i = 0; i <= 1; i++)
 				inputFile = new File(args[1]);
-			System.out.println("input===> " + inputFile);
 
 		}
 		CreateJarFile createjarFile = new CreateJarFile();
@@ -67,10 +65,7 @@ public class TestPicocli {
 		getTemplatesJar(false);
 
 		createjarFile.validateFile(inputFile);
-		System.out.println("Input file in testPicocli is =>" + inputFile);
 		createjarFile.createJarAndGenerateIncr(inputFile);
-
-		logger.info("successfully call cobigen create method");
 
 	}
 
