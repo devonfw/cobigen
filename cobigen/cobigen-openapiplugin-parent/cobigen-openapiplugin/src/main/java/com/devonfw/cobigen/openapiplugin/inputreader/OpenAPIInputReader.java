@@ -439,9 +439,11 @@ public class OpenAPIInputReader implements InputReader {
                         pathUri += "/";
                     }
                 }
-                rootComponent = mp[1];
-                if (mp.length > 2) {
-                    version = mp[2];
+                if (mp.length > 1) {
+                    rootComponent = mp[1];
+                    if (mp.length > 2) {
+                        version = mp[2];
+                    }
                 }
 
                 PathDef path = new PathDef(rootComponent, pathUri, version);
