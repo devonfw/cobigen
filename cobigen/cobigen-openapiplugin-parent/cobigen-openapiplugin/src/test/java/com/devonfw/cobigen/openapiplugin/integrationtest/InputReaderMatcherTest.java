@@ -147,7 +147,6 @@ public class InputReaderMatcherTest {
 
     }
 
-    // DEBUG END
     /**
      * Tests variable assignment resolution of ATTRIBUTE type, thus that the user can define any custom
      * variables inside the schema of OpenAPI files. <br>
