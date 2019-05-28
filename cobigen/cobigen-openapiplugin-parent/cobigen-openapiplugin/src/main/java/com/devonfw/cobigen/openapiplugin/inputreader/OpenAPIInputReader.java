@@ -572,6 +572,7 @@ public class OpenAPIInputReader implements InputReader {
         ResponseDef response;
         List<String> mediaTypes = new LinkedList<>();
         List<ResponseDef> resps = new LinkedList<>();
+        String schemaType;
         for (String resp : responses.keySet()) {
             response = new ResponseDef();
             response.setCode(resp);
@@ -586,6 +587,7 @@ public class OpenAPIInputReader implements InputReader {
                     Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
+                        schemaType = schema.getType();
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
@@ -602,7 +604,7 @@ public class OpenAPIInputReader implements InputReader {
                             eDef.setName(schema.getName());
                             eDef.setProperties(propDefs);
                             response.setEntityRef(eDef);
-                        } else if (schema.getType().equals(Constants.ARRAY)) {
+                        } else if (Constants.ARRAY.equals(schemaType)) {
                             if (schema.getItemsSchema() != null) {
                                 response.setType(schema.getItemsSchema().getName());
                                 response.setIsEntity(true);
@@ -615,12 +617,12 @@ public class OpenAPIInputReader implements InputReader {
                                 response.setIsArray(true);
                             }
 
-                        } else if (schema.getType() != null) {
-                            response.setType(schema.getType());
+                        } else if (schemaType != null) {
+                            response.setType(schemaType);
                         } else {
                             response.setIsVoid(true);
                         }
-                    } else {
+                    } else if (schemaReference != null) {
                         String refString = schemaReference.getRefString();
                         throw new InvalidConfigurationException(
                             "Referenced entity " + refString.substring(refString.lastIndexOf('/'))
