@@ -25,7 +25,10 @@ Component Data
       <#if op.operationId??>.${op.operationId}</#if>
       [cols='1s,6m']
       |===
-      |<#if op.type??>${DocumentationUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${path.rootComponent}/${path.version}${path.pathURI}
+       <@compress single_line=true>
+      |<#if op.type??>${DocumentationUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> 
+      |${getServer()}/<#if path.rootComponent??>${path.rootComponent}/<#if path.version??>${path.version}${path.pathURI}</#if></#if>
+      </@compress>
       |Description |<#if op.description??>${op.description}<#else>-</#if>
     
       <#if hasRequestBody(op)>.2+<</#if>|Request 
