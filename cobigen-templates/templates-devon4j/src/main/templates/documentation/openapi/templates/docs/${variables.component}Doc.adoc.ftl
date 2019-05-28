@@ -25,7 +25,7 @@ Component Data
       <#if op.operationId??>.${op.operationId}</#if>
       [cols='1s,6m']
       |===
-      |<#if op.type??>${DocumentationUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${model.componentName}/${path.version}${path.pathURI}
+      |<#if op.type??>${DocumentationUtil.getTypeWithAsciidocColour(op.type)}<#else>-</#if> |${getServer()}/${path.rootComponent}/${path.version}${path.pathURI}
       |Description |<#if op.description??>${op.description}<#else>-</#if>
     
       <#if hasRequestBody(op)>.2+<</#if>|Request 
