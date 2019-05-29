@@ -87,14 +87,17 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         CheckboxTreeViewer incrementSelector = page.getPackageSelector();
+
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
                 .setSelectedResources(resourcesTree.getCheckedElements());
             refreshNodes(event);
         } else if (event.getSource().equals(incrementSelector)) {
-            performCheckLogic(event, incrementSelector);
+            // performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
+            performCheckLogicForALLIncrement(incrementSelector, checkedElements);
+            Set<Object> checkedElementsTest = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
             performCheckLogicForALLIncrement(incrementSelector, checkedElements);
 
             Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
