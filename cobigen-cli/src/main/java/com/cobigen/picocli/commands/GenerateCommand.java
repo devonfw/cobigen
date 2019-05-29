@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.handlers.CommandsHandler;
+
 /**
  * This class handles the generation command
  */
@@ -20,7 +22,29 @@ public class GenerateCommand {
      * User input file
      */
     File inputFile = null;
+    
+    private static GenerateCommand generateCommand;
+    
+ /**
+  * static block initialization for exception handling
+  */
+ 	static {
+ 		try {
+ 			generateCommand = new GenerateCommand();
+ 		} catch (Exception e) {
+ 			throw new RuntimeException("Exception occure in creation of singlton instance");
+ 		}
+ 	}
 
+    /**
+     * private constructor restricted to this class itself 
+     * */ 
+ 	private GenerateCommand() {
+ 	};
+
+ 	public static GenerateCommand getInstance() {
+ 		return generateCommand;
+ 	}
     /**
      * Constructor for {@link GenerateCommand}
      * @param args
@@ -33,7 +57,7 @@ public class GenerateCommand {
     /**
      * @param args
      */
-    private void validateArguments(ArrayList<String> args) {
+    public void validateArguments(ArrayList<String> args) {
         if (args.size() == 1) {
             logger.error(
                 "You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");

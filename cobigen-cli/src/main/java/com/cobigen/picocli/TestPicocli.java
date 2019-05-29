@@ -8,6 +8,8 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.commands.GenerateCommand;
+import com.cobigen.picocli.handlers.CommandsHandler;
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.cobigen.picocli.utils.ValidateMavenProject;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
@@ -31,37 +33,13 @@ public class TestPicocli {
      *            list of arguments the user has passed
      */
     public static void main(String... args) {
+    	CommandsHandler CmdHandler = CommandsHandler.getInstance();
+    	CmdHandler.executeCommand(args);
         String cwd = System.getProperty("user.dir");
         String userInput = "";
+        
         File inputFile = null;
-
-        if (args == null || args.length < 1) {
-
-            logger.info("Welcome to CobiGen.\n"
-                + "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n"
-                + "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
-                + "with [-h] you can get more infos about the commands you want to use or the increment you want to generate");
-
-            System.out.println("current path = " + System.getProperty("user.dir"));
-            ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-            validateMavenProject.findPom(new File(cwd));
-
-            try (Scanner inputReader = new Scanner(System.in)) {
-                userInput = inputReader.nextLine();
-            }
-        } else {
-            if (args.length == 1) {
-                logger.error(
-                    "You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");
-                // TODO: Ask user for input
-            } else if (args.length == 2) {
-                inputFile = new File(args[1]);
-            } else {
-                logger.error(
-                    "Too many arguments have been provided, you need to provide two: <path_of_input_file> <path_of_project>");
-                // TODO: Ask user for input
-            }
-        }
+        
         CreateJarFile createjarFile = new CreateJarFile();
 
         File jarPath = new File("templates_jar");
@@ -117,24 +95,6 @@ public class TestPicocli {
         return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
     }
 
-    /**
-     * Retrieves the input from the user
-     * @param args
-     *            list of arguments that were passed to this CLI
-     * @return user input as String
-     */
-    private static String getUserInput(String... args) {
-        String userInput = "";
-        if (args == null || args.length == 0 || args[0].length() < 1) {
-            logger.info("Please enter input from command prompt");
-            try (Scanner inputReader = new Scanner(System.in)) {
-
-                userInput = inputReader.nextLine();
-            }
-        } else {
-            userInput = args[0];
-        }
-        return userInput;
-    }
+    
 
 }

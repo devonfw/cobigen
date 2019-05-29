@@ -16,81 +16,102 @@ import com.cobigen.picocli.utils.ValidateMavenProject;
  */
 public class CommandsHandler {
 
-    /**
-     * Logger to output useful information to the user
-     */
-    private static Logger logger = LoggerFactory.getLogger(CommandsHandler.class);
+	/**
+	 * Logger to output useful information to the user
+	 */
+	private static Logger logger = LoggerFactory.getLogger(CommandsHandler.class);
+	private ArrayList<String> argsList;
+	private static CommandsHandler cmdHandler;
+	/**
+	  * static block initialization for exception handling
+	  */
+	static {
+		try {
+			cmdHandler = new CommandsHandler();
+		} catch (Exception e) {
+			throw new RuntimeException("Exception occure in creation of singlton instance");
+		}
+	}
+	/**
+     * private constructor restricted to this class itself 
+     */ 
+	private CommandsHandler() {
+	};
 
-    private ArrayList<String> argsList;
+	public static CommandsHandler getInstance() {
+		return cmdHandler;
+	}
 
-    /**
-     * Constructor for {@link CommandsHandler}
-     * @param args
-     *            String array with all the user arguments
-     */
-    public CommandsHandler(String... args) {
-        argsList = new ArrayList<>(Arrays.asList(args));
-        if (args == null || args.length < 1) {
+	/**
+	 * 
+	 * @param args String array with all the user arguments
+	 */
+	public void  executeCommand(String... args) {
+		argsList = new ArrayList<>(Arrays.asList(args));
+		if (args == null || args.length < 1) {
 
-            logger.info("Welcome to CobiGen.\n"
-                + "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n"
-                + "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
-                + "with [-h] you can get more infos about the commands you want to use or the increment you want to generate");
+			logger.info("Welcome to CobiGen.\n"
+					+ "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n"
+					+ "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
+					+ "with [-h] you can get more infos about the commands you want to use or the increment you want to generate");
 
-            useCurrentWorkingDirectory();
-        } else {
-            dispatchCommand(args[0]);
-        }
-    }
+			useCurrentWorkingDirectory();
+		} else {
+			dispatchCommand(args[0]);
+		}
+	}
 
-    /**
-     * Dispatches the command to the correct class. If the command is not valid, program gets terminated
-     * @param command
-     *            command to dispatch
-     */
-    private void dispatchCommand(String command) {
+	/**
+	 * Dispatches the command to the correct class. If the command is not valid,
+	 * program gets terminated
+	 * 
+	 * @param command command to dispatch
+	 */
+	private void dispatchCommand(String command) {
 
-        ArrayList<String> options = argsList;
-        options.remove(0);
+		ArrayList<String> options = argsList;
+		
+		options.remove(0);
 
-        switch (command) {
-        case "g":
-            new GenerateCommand(options);
-            break;
-        case "generate":
-            new GenerateCommand(options);
-            break;
+		switch (command) {
+		case "g":
+			new GenerateCommand(options);
+			break;
+		case "generate":
+			new GenerateCommand(options);
+			break;
 
-        default:
-            logger.error("Command not understood, please try again");
-            System.exit(0);
-            break;
-        }
+		default:
+			logger.error("Command not understood, please try again");
+			System.exit(0);
+			break;
+		}
 
-    }
+	}
 
-    /**
-    *
-    */
-    private void useCurrentWorkingDirectory() {
-        // current working directory where the CLI is getting executed
-        String cwd = System.getProperty("user.dir");
+	/**
+	*
+	*/
+	private void useCurrentWorkingDirectory() {
+		// current working directory where the CLI is getting executed
+		String cwd = System.getProperty("user.dir");
 
-        ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-        validateMavenProject.findPom(new File(cwd));
+		ValidateMavenProject validateMavenProject = new ValidateMavenProject();
+		validateMavenProject.findPom(new File(cwd));
 
-        String userInput = getUserInput();
-    }
+		String userInput = getUserInput();
+	}
 
-    /**
-     * Asks the user for input and returns the value
-     * @return String containing the user input
-     */
-    private String getUserInput() {
-        try (Scanner inputReader = new Scanner(System.in)) {
-            String userInput = inputReader.nextLine();
-            return userInput;
-        }
-    }
+	/**
+	 * Asks the user for input and returns the value
+	 * 
+	 * @return String containing the user input
+	 */
+	public String getUserInput() {
+		try (Scanner inputReader = new Scanner(System.in)) {
+			String userInput = inputReader.nextLine();
+			return userInput;
+		}
+	}
 
 }
