@@ -32,35 +32,29 @@ public class TestPicocli {
      * @param args
      *            list of arguments the user has passed
      */
-    public static void main(String... args) {
-    	CommandsHandler CmdHandler = CommandsHandler.getInstance();
-    	CmdHandler.executeCommand(args);
-        String cwd = System.getProperty("user.dir");
-        String userInput = "";
-        
-        File inputFile = null;
-        
-        CreateJarFile createjarFile = new CreateJarFile();
+	public static void main(String... args) {
+		CommandsHandler CmdHandler = CommandsHandler.getInstance();
+		CmdHandler.executeCommand(args);
 
-        File jarPath = new File("templates_jar");
-        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
-        File jarFileDir = jarPath.getAbsoluteFile();
+		File inputFile = null;
 
-        // EmployeeEntity life = cls.newInstance();
-        if (!jarPath.exists()) {
-            jarPath.mkdir();
-        }
+		CreateJarFile createjarFile = new CreateJarFile();
+		File jarPath = new File("templates_jar");
 
-        // We get the templates that will be used for generation
-        getTemplatesJar(false);
+		if (!jarPath.exists()) {
+			jarPath.mkdir();
+		}
 
-        if (createjarFile.validateFile(inputFile)) {
-            createjarFile.createJarAndGenerateIncr(inputFile);
-        } else {
-            // TODO: ask user to prompt input file again
-        }
+		// We get the templates that will be used for generation
+		getTemplatesJar(false);
 
-    }
+		if (createjarFile.validateFile(inputFile)) {
+			createjarFile.createJarAndGenerateIncr(inputFile);
+		} else {
+			// TODO: ask user to prompt input file again
+		}
+
+	}
 
     /**
      * Tries to find the templates jar. If it was not found, it will download it and then return it.

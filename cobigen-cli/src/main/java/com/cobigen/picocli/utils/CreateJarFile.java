@@ -26,6 +26,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.commands.GenerateCommand;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -158,79 +159,44 @@ public class CreateJarFile {
      * @param User
      *            input entity file
      */
-    public void createJarAndGenerateIncr(File inputFile) {
-        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+	public void createJarAndGenerateIncr(File inputFile) {
+		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
 
-        URLClassLoader classLoader = null;
-        File root = inputFile.getParentFile();
-        // Call method to get utils from jar
-        try {
+		URLClassLoader classLoader = null;
+		File root = inputFile.getParentFile();
+		// Call method to get utils from jar
+		try {
 
-            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
-        } catch (GeneratorProjectNotExistentException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        } catch (IOException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
+			utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+		} catch (GeneratorProjectNotExistentException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
-        // JavaParser. parse(inputFile.getAbsolutePath());
+		// JavaParser. parse(inputFile.getAbsolutePath());
 
-        if (jarFile != null) {
-            try {
-                registerPlugin();
-                CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-                Object input = null;
-                try {
+		if (jarFile != null) {
+			try {
+				registerPlugin();
+				CobiGen cg = CobiGenFactory.create(jarFile.toURI());
+				Object input = null;
+				GenerateCommand generateCommand = GenerateCommand.getInstance();
+				generateCommand.generateTemplate(inputFile, input, cg, utilClasses);
 
-                    JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-                    JavaContext context = provider.createFromLocalMavenProject(inputFile);
+			} catch (InvalidConfigurationException e) {
+				// if the context configuration is not valid
+				e.printStackTrace();
+			} catch (IOException e) {
+				// If I/O operation failed then it will throw exception
+				e.printStackTrace();
+			}
 
-                    System.out.println("input for getMatchingIncrements => " + input);
-                    // context.getOrCreateSource(null, null) ;
+		}
 
-                    try {
-                        context.getClassLoader()
-                            .loadClass("com.devonfw.poc.jwtsample.authormanagement.dataaccess.api.AuthorEntity");
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    File classFile =
-                        inputFile.toPath().resolve("src/main/java/com/devonfw/poc/jwtsample/authormanagement/"
-                            + "dataaccess/api/AuthorEntity.java").toFile();
-
-                    input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
-                    System.out.println(
-                        "input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
-                    List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-                    for (IncrementTo inc : matchingIncrements) {
-
-                        System.out.println("Increments Available = " + inc.getDescription());
-                    }
-
-                    cg.generate(input, matchingIncrements, Paths.get(classFile.getParentFile().getAbsolutePath()),
-                        false, utilClasses);
-                    System.out.println("Successfully generated templates.\n");
-                    logger.info(
-                        "Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "
-                            + "cg generate" + " ?  ");
-                } catch (MojoFailureException e) {
-                    e.printStackTrace();
-                }
-
-            } catch (InvalidConfigurationException e) {
-                // if the context configuration is not valid
-                e.printStackTrace();
-            } catch (IOException e) {
-                // If I/O operation failed then it will throw exception
-                e.printStackTrace();
-            }
-
-        }
-
-    }
+	}
 
     /**
      * Registers the given triggerInterpreter,tsmerge, to be registered
