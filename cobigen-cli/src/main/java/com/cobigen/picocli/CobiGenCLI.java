@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.cobigen.picocli.commands.GenerateCommand;
 import com.cobigen.picocli.handlers.CommandsHandler;
 import com.cobigen.picocli.utils.CreateJarFile;
-import com.cobigen.picocli.utils.ValidateMavenProject;
+import com.cobigen.picocli.utils.ValidationUtils;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 import picocli.CommandLine.Command;

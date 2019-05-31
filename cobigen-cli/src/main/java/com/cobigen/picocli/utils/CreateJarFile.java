@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import net.sf.mmm.code.impl.java.JavaContext;
-import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
-
-import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +26,6 @@ import com.cobigen.picocli.commands.GenerateCommand;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
@@ -38,7 +33,6 @@ import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.javaplugin.JavaTriggerInterpreter;
-import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
 import com.devonfw.cobigen.textmerger.TextAppender;
 import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
@@ -97,9 +91,6 @@ public class CreateJarFile {
                 final Path path = fs.getPath(pathTemplate[1]);
 
                 templateRoot = Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
-                // templateRoot =
-                // Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent()
-                // .getParent();
             }
         } else {
             templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
@@ -159,44 +150,44 @@ public class CreateJarFile {
      * @param User
      *            input entity file
      */
-	public void createJarAndGenerateIncr(File inputFile) {
-		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+    public void createJarAndGenerateIncr(File inputFile) {
+        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
 
-		URLClassLoader classLoader = null;
-		File root = inputFile.getParentFile();
-		// Call method to get utils from jar
-		try {
+        URLClassLoader classLoader = null;
+        File root = inputFile.getParentFile();
+        // Call method to get utils from jar
+        try {
 
-			utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
-		} catch (GeneratorProjectNotExistentException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+        } catch (GeneratorProjectNotExistentException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
 
-		// JavaParser. parse(inputFile.getAbsolutePath());
+        // JavaParser. parse(inputFile.getAbsolutePath());
 
-		if (jarFile != null) {
-			try {
-				registerPlugin();
-				CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-				Object input = null;
-				GenerateCommand generateCommand = GenerateCommand.getInstance();
-				generateCommand.generateTemplate(inputFile, input, cg, utilClasses);
+        if (jarFile != null) {
+            try {
+                registerPlugin();
+                CobiGen cg = CobiGenFactory.create(jarFile.toURI());
+                Object input = null;
+                GenerateCommand generateCommand = GenerateCommand.getInstance();
+                generateCommand.generateTemplate(inputFile, input, cg, utilClasses);
 
-			} catch (InvalidConfigurationException e) {
-				// if the context configuration is not valid
-				e.printStackTrace();
-			} catch (IOException e) {
-				// If I/O operation failed then it will throw exception
-				e.printStackTrace();
-			}
+            } catch (InvalidConfigurationException e) {
+                // if the context configuration is not valid
+                e.printStackTrace();
+            } catch (IOException e) {
+                // If I/O operation failed then it will throw exception
+                e.printStackTrace();
+            }
 
-		}
+        }
 
-	}
+    }
 
     /**
      * Registers the given triggerInterpreter,tsmerge, to be registered

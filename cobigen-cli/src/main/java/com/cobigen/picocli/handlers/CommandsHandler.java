@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobigen.picocli.commands.GenerateCommand;
-import com.cobigen.picocli.utils.ValidateMavenProject;
+import com.cobigen.picocli.utils.ValidationUtils;
 
 /**
  * This class handles the user commands passed to the CLI
@@ -46,7 +46,7 @@ public class CommandsHandler {
     }
 
     /**
-     * 
+     *
      * @param args
      *            String array with all the user arguments
      */
@@ -67,7 +67,7 @@ public class CommandsHandler {
 
     /**
      * Dispatches the command to the correct class. If the command is not valid, program gets terminated
-     * 
+     *
      * @param command
      *            command to dispatch
      */
@@ -100,15 +100,14 @@ public class CommandsHandler {
         // current working directory where the CLI is getting executed
         String cwd = System.getProperty("user.dir");
 
-        ValidateMavenProject validateMavenProject = new ValidateMavenProject();
-        validateMavenProject.findPom(new File(cwd));
+        ValidationUtils.findPom(new File(cwd));
 
         String userInput = getUserInput();
     }
 
     /**
      * Asks the user for input and returns the value
-     * 
+     *
      * @return String containing the user input
      */
     public String getUserInput() {
