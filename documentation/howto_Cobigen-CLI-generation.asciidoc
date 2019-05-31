@@ -1,0 +1,85 @@
+:toc:
+toc::[]
+
+= Cobigen Command line Interface generation
+
+== Cobigen CLI : we can generate a file using command line interface instead of using Eclipse .
+
+Following are the step need to be follow up .
+
+= Build Configuration
+Using the following configuration you will be able to customize your generation as follows:
+
+
+•<destinationRoot> specifies the root directory the relative destinationPath of CobiGen templates configuration should depend on. Default ${basedir}
+
+
+•<inputPackage> declares a package name to be used as input for batch generation. This refers directly to the CobiGen Java Plug-in container matchers of type package configuration.
+
+
+•<inputFile> declares a file to be used as input. The CobiGen maven plug-in will try to parse this file to get an appropriate input to be interpreted by any CobiGen plug-in.
+
+
+•<increment> specifies an increment ID to be generated. You can specify one single increment with content ALL to generate all increments matching the input(s).
+
+
+•<template> specifies a template ID to be generated. You can specify one single template with content ALL to generate all templates matching the input(s).
+
+
+•<forceOverride> specifies an overriding behavior, which enables non-mergable resources to be completely rewritten by generated contents. For mergable resources this flag indicates, that conflicting fragments during merge will be replaced by generated content. Default: false
+
+
+•<failOnNothingGenerated> specifies whether the build should fail if the execution does not generate anything.
+== Example for a simple build configuration
+
+<build>
+  <plugins>
+    <plugin>
+       ...
+      <configuration>
+        <destinationRoot>${basedir}</destinationRoot>
+        <inputPackages>
+          <inputPackage>package.to.be.used.as.input</inputPackage>
+        </inputPackages>
+        <inputFiles>
+          <inputFile>path/to/file/to/be/used/as/input</inputFile>
+        </inputFiles>
+        <increments>
+          <increment>IncrementID</increment>
+        </increments>
+        <templates>
+          <template>TemplateID</template>
+        </templates>
+        <forceOverride>false</forceOverride>
+      </configuration>
+        ...
+    </plugin>
+  </plugins>
+</build>
+
+
+
+== CLI Execution step :
+Open console and give path of bat file and parameter .
+like cobigen.bat  -u=sky abc.tx "C:\Devon"
+
+Another way is : Open console type cobigen.bat  input_file output_file.
+Command line argument can be separated into option and positional parameter.Option have a name and parameter are usually value .
+
+After that some increment populated with Id and user select that id means he can provide input according 
+that file will be generated .
+User can also provide the specific path where he want to store file .
+ After execution of bat file below sample output will be come .
+  Increment : Specifies an increment ID to be generated. You can specify one single increment with content ALL to generate all increments matching the input(s)
+ Cobigen increment are available .   User can select multiple increment .
+
+	1 = CRUD REST Services
+	2 = ETOs
+	3 = CTOs
+	4 = Entity infrastructure
+	5 = CRUD Logic
+
+    If user select like 234 then ETOs,CTOs,Entity infrastructure files will be generate .
+
+
+

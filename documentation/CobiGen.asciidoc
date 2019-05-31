@@ -1,0 +1,93 @@
+= CobiGen -- Code-based incremental Generator
+:title-logo-image: images/logo/cobigen_logo.png
+
+:leveloffset: 0
+[preface]
+== Document Description
+This document contains the documentation of the CobiGen core module as well as all CobiGen plug-ins and the CobiGen eclipse integration.
+
+**Current versions:**
+
+* CobiGen - Eclipse Plug-in v4.3.2
+* CobiGen - Maven Build Plug-in v4.1.0
+
+---
+
+* CobiGen v5.2.0
+* CobiGen - Java Plug-in v2.0.0
+* CobiGen - XML Plug-in v4.0.0
+* CobiGen - TypeScript Plug-in v2.1.1
+* CobiGen - Property Plug-in v2.0.0
+* CobiGen - Text Merger v2.0.0
+* CobiGen - JSON Plug-in v2.0.0
+* CobiGen - HTML Plug-in v2.0.1
+* CobiGen - Open API Plug-in v2.2.0
+* CobiGen - FreeMaker Template Engine v2.0.0
+* CobiGen - Velocity Template Engine v2.0.0
+
+**Authors:**
+
+* Malte Brunnlieb
+* Jaime Diaz Gonzalez
+* Steffen Holzer
+* Ruben Diaz Martinez
+* Joerg Hohwiller
+* Fabian Kreis
+* Lukas Goerlach
+* Krati Shah
+* Christian Richter
+* Erik Grüner
+* Mike Schumacher
+* Marco Rose
+
+[preface]
+include::Guide-to-the-Reader[]
+
+:leveloffset: 0
+:toc:
+
+:leveloffset: 0
+include::Home[]
+
+include::cobigen-usecases[]
+
+:leveloffset: 0
+= CobiGen
+:leveloffset: 2
+include::cobigen-core_configuration[]
+
+:leveloffset: 0
+=== Plug-ins
+:leveloffset: 3
+include::cobigen-javaplugin[]
+
+include::cobigen-propertyplugin[]
+
+include::cobigen-xmlplugin[]
+
+include::cobigen-textmerger[]
+
+include::cobigen-jsonplugin[]
+
+include::cobigen-tsplugin[]
+
+include::cobigen-htmlplugin[]
+
+:leveloffset: 0
+= Maven Build Integration
+:leveloffset: 2
+include::cobigen-maven_configuration[]
+
+:leveloffset: 0
+= Eclipse Integration
+:leveloffset: 2
+include::cobigen-eclipse_installation[]
+
+include::cobigen-eclipse_usage[]
+
+include::cobigen-eclipse_logging[]
+
+:leveloffset: 0
+= Template Development
+:leveloffset: 2
+include::cobigen-templates_helpful-links[]
