@@ -2,6 +2,7 @@ package com.cobigen.picocli.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -59,12 +60,22 @@ public class CreateJarFile {
 
     File jarFileDir = jarPath.getAbsoluteFile();
 
-    List<Class<?>> utilClasses;
+    private List<Class<?>> utilClasses;
 
-    Class<? extends Scanner> lineNum;
+    
+
+	Class<? extends Scanner> lineNum;
 
     /** Current registered input objects */
     private List<Object> inputs;
+    
+    /**
+     * getter for Util classes
+     * */
+    public List<Class<?>> getUtilClasses() {
+		return utilClasses;
+	}
+    
 
     /**
      * Resolves all classes, which have been defined in the template configuration folder from a jar.
@@ -159,32 +170,17 @@ public class CreateJarFile {
      * @param User
      *            input entity file
      */
-	public void createJarAndGenerateIncr(File inputFile) {
-		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
-
-		URLClassLoader classLoader = null;
-		File root = inputFile.getParentFile();
-		// Call method to get utils from jar
-		try {
-
-			utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
-		} catch (GeneratorProjectNotExistentException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
+	public CobiGen initializeCobiGen() {
+		getTemplates();
 		// JavaParser. parse(inputFile.getAbsolutePath());
 
+		CobiGen cg = null;
 		if (jarFile != null) {
 			try {
 				registerPlugin();
-				CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-				Object input = null;
-				GenerateCommand generateCommand = GenerateCommand.getInstance();
-				generateCommand.generateTemplate(inputFile, input, cg, utilClasses);
+				cg = CobiGenFactory.create(jarFile.toURI());
+
+				return cg;
 
 			} catch (InvalidConfigurationException e) {
 				// if the context configuration is not valid
@@ -195,7 +191,24 @@ public class CreateJarFile {
 			}
 
 		}
+		return cg;
 
+	}
+
+	public  List<Class<?>> getTemplates() {
+		jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+
+		try {
+
+			utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+		} catch (GeneratorProjectNotExistentException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		return utilClasses;
 	}
 
     /**
@@ -243,5 +256,39 @@ public class CreateJarFile {
         }
         return true;
     }
+    
+    /**
+     * Tries to find the templates jar. If it was not found, it will download it and then return it.
+     * @param isSource
+     *            true if we want to get source jar file path
+     * @return the jar file of the templates
+     */
+    public  File getTemplatesJar(boolean isSource) {
+        File jarPath = new File("templates_jar");
+        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
+        File jarFileDir = jarPath.getAbsoluteFile();
+
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
+        }
+
+        // We first check if we already have the CobiGen_Templates jar downloaded
+        if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
+            try {
+                TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+            } catch (MalformedURLException e) {
+                // if a path of one of the class path entries is not a valid URL
+                logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
+            } catch (IOException e) {
+                // IOException occurred
+                logger.error(
+                    "Problem while downloading the templates, most probably you are facing connection issues.\n\n"
+                        + "Please try again later.",
+                    e);
+            }
+        }
+        return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
+    }
+
 
 }

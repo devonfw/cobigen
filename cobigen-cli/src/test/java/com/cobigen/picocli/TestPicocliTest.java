@@ -33,9 +33,10 @@ public class TestPicocliTest {
             .toFile();
 
         try {
-            String args[] = new String[2];
-            args[0] = baseProject.getAbsolutePath();
-            args[1] = inputFile.getAbsolutePath();
+            String args[] = new String[3];
+            args[0] = "generate";
+            args[1] = baseProject.getAbsolutePath();
+            args[2] = inputFile.getAbsolutePath();
 
             TestPicocli.main(args);
 

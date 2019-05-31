@@ -68,7 +68,7 @@ public class CommandsHandler {
 	 * @param command command to dispatch
 	 */
 	private void dispatchCommand(String command) {
-
+		System.out.println("command->"+command);
 		ArrayList<String> options = argsList;
 		
 		options.remove(0);
@@ -79,9 +79,11 @@ public class CommandsHandler {
 			break;
 		case "generate":
 			new GenerateCommand(options);
+			
 			break;
 
 		default:
+			logger.info("in default");
 			logger.error("Command not understood, please try again");
 			System.exit(0);
 			break;
