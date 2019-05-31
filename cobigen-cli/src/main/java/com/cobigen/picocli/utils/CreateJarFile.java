@@ -2,6 +2,7 @@ package com.cobigen.picocli.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -59,6 +60,13 @@ public class CreateJarFile {
 
     /** Current registered input objects */
     private List<Object> inputs;
+
+    /**
+     * getter for templates utils classes
+     */
+    public List<Class<?>> getUtilClasses() {
+        return utilClasses;
+    }
 
     /**
      * Resolves all classes, which have been defined in the template configuration folder from a jar.
@@ -173,9 +181,8 @@ public class CreateJarFile {
             try {
                 registerPlugin();
                 CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-                Object input = null;
                 GenerateCommand generateCommand = GenerateCommand.getInstance();
-                generateCommand.generateTemplate(inputFile, input, cg, utilClasses);
+                generateCommand.generateTemplate(inputFile, cg, utilClasses);
 
             } catch (InvalidConfigurationException e) {
                 // if the context configuration is not valid
@@ -187,6 +194,51 @@ public class CreateJarFile {
 
         }
 
+    }
+
+    /**
+     * @param User
+     *            input entity file
+     */
+    public CobiGen initializeCobiGen() {
+        getTemplates();
+        // JavaParser. parse(inputFile.getAbsolutePath());
+
+        CobiGen cg = null;
+        if (jarFile != null) {
+            try {
+                registerPlugin();
+                cg = CobiGenFactory.create(jarFile.toURI());
+
+                return cg;
+
+            } catch (InvalidConfigurationException e) {
+                // if the context configuration is not valid
+                e.printStackTrace();
+            } catch (IOException e) {
+                // If I/O operation failed then it will throw exception
+                e.printStackTrace();
+            }
+
+        }
+        return cg;
+
+    }
+
+    public List<Class<?>> getTemplates() {
+        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+
+        try {
+
+            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+        } catch (GeneratorProjectNotExistentException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+        return utilClasses;
     }
 
     /**
@@ -211,28 +263,36 @@ public class CreateJarFile {
     }
 
     /**
-     * Validating user input file is correct or not. We check if file exists and it can be read
-     *
-     * @param inputFile
-     *            user input file
-     * @return true when file is valid
+     * Tries to find the templates jar. If it was not found, it will download it and then return it.
+     * @param isSource
+     *            true if we want to get source jar file path
+     * @return the jar file of the templates
      */
-    public boolean validateFile(File inputFile) {
-        if (inputFile == null) {
-            return false;
+    public File getTemplatesJar(boolean isSource) {
+        File jarPath = new File("templates_jar");
+        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
+        File jarFileDir = jarPath.getAbsoluteFile();
+
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
         }
 
-        if (!inputFile.exists()) {
-            logger.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
-            return false;
+        // We first check if we already have the CobiGen_Templates jar downloaded
+        if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
+            try {
+                TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+            } catch (MalformedURLException e) {
+                // if a path of one of the class path entries is not a valid URL
+                logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
+            } catch (IOException e) {
+                // IOException occurred
+                logger.error(
+                    "Problem while downloading the templates, most probably you are facing connection issues.\n\n"
+                        + "Please try again later.",
+                    e);
+            }
         }
-
-        if (!inputFile.canRead()) {
-            logger.error("The input file " + inputFile.getAbsolutePath()
-                + " cannot be read. Please check file permissions on the file");
-            return false;
-        }
-        return true;
+        return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
     }
 
 }

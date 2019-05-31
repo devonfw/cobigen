@@ -9,7 +9,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.handlers.CommandsHandler;
+
+import com.cobigen.picocli.utils.CreateJarFile;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
@@ -30,9 +31,9 @@ public class GenerateCommand {
     /**
      * User input file
      */
-    File inputFile = null;
-    
+    File inputFile = null;	
     private static GenerateCommand generateCommand;
+    CreateJarFile createJarFile = new CreateJarFile();
     
  /**
   * static block initialization for exception handling
@@ -60,33 +61,47 @@ public class GenerateCommand {
      *            String array with all the user arguments
      */
     public GenerateCommand(ArrayList<String> args) {
-        validateArguments(args);
+        if(validateArguments(args))
+        	// We get the templates that will be used for generation
+        	createJarFile.getTemplatesJar(false);
+        	CobiGen cg = createJarFile.initializeCobiGen();         	
+        	// call mmm library to get the classloader  
+        	
+        	generateTemplate(inputFile,  cg,createJarFile.getUtilClasses());
     }
 
     /**
      * @param args
      */
-    public void validateArguments(ArrayList<String> args) {
-        if (args.size() == 1) {
-            logger.error(
-                "You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");
-            System.exit(0);
-        } else if (args.size() == 2) {
-            inputFile = new File(args.get(1));
-        } else {
-            logger.error(
-                "Too many arguments have been provided, you need to provide two: <path_of_input_file> <path_of_project>");
-            System.exit(0);
-        }
-    }
-    public void generateTemplate(File inputFile,Object input, CobiGen cg ,List<Class<?>> utilClasses) {
+	public Boolean validateArguments(ArrayList<String> args) {
+		System.out.println("args size= " + args.size());
+		int argSize = args.size();
+		switch (argSize) {
+		case 1:
+			logger.error(
+					"You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");
+			System.exit(0);
+			return false;
+		case 2:
+			inputFile = new File(args.get(1));
+			return true;
+		case 0:
+			logger.error("Please provide input parameter");
+			return false;
+		default:
+			logger.error(
+					"Too many arguments have been provided, you need to provide two: <path_of_input_file> <path_of_project>");
+			System.exit(0);
+			return false;
+
+		}
+
+	}
+    public void generateTemplate(File inputFile, CobiGen cg ,List<Class<?>> utilClasses) {
     	  try {
 
               JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
               JavaContext context = provider.createFromLocalMavenProject(inputFile);
-
-              System.out.println("input for getMatchingIncrements => " + input);
-              // context.getOrCreateSource(null, null) ;
 
               try {
                   context.getClassLoader()
@@ -99,7 +114,7 @@ public class GenerateCommand {
                   inputFile.toPath().resolve("src/main/java/com/devonfw/poc/jwtsample/authormanagement/"
                       + "dataaccess/api/AuthorEntity.java").toFile();
 
-              input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
+             Object  input = InputPreProcessor.process(cg, classFile, context.getClassLoader());
               System.out.println(
                   "input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
               List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);

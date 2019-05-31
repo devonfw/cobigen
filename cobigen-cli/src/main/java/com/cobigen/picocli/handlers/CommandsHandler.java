@@ -46,7 +46,7 @@ public class CommandsHandler {
     }
 
     /**
-     *
+     * 
      * @param args
      *            String array with all the user arguments
      */
@@ -67,12 +67,12 @@ public class CommandsHandler {
 
     /**
      * Dispatches the command to the correct class. If the command is not valid, program gets terminated
-     *
+     * 
      * @param command
      *            command to dispatch
      */
     private void dispatchCommand(String command) {
-
+        System.out.println("command->" + command);
         ArrayList<String> options = argsList;
 
         options.remove(0);
@@ -86,6 +86,7 @@ public class CommandsHandler {
             break;
 
         default:
+            logger.info("in default");
             logger.error("Command not understood, please try again");
             System.exit(0);
             break;
@@ -107,7 +108,7 @@ public class CommandsHandler {
 
     /**
      * Asks the user for input and returns the value
-     *
+     * 
      * @return String containing the user input
      */
     public String getUserInput() {
