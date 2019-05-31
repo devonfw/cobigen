@@ -20,41 +20,41 @@ import picocli.CommandLine.Command;
  * Starting point of the CobiGen CLI. Contains the main method.
  */
 @Command(name = "TestPicocli", header = "%n@|TestPicocli Hello world demo|@")
-public class TestPicocli {
+public class CobiGenCLI {
 
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(TestPicocli.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Main starting point of the CLI. Here we parse the arguments from the user.
      * @param args
      *            list of arguments the user has passed
      */
-	public static void main(String... args) {
-		CommandsHandler CmdHandler = CommandsHandler.getInstance();
-		CmdHandler.executeCommand(args);
+    public static void main(String... args) {
+        CommandsHandler CmdHandler = CommandsHandler.getInstance();
+        CmdHandler.executeCommand(args);
 
-		File inputFile = null;
+        File inputFile = null;
 
-		CreateJarFile createjarFile = new CreateJarFile();
-		File jarPath = new File("templates_jar");
+        CreateJarFile createjarFile = new CreateJarFile();
+        File jarPath = new File("templates_jar");
 
-		if (!jarPath.exists()) {
-			jarPath.mkdir();
-		}
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
+        }
 
-		// We get the templates that will be used for generation
-		getTemplatesJar(false);
+        // We get the templates that will be used for generation
+        getTemplatesJar(false);
 
-		if (createjarFile.validateFile(inputFile)) {
-			createjarFile.createJarAndGenerateIncr(inputFile);
-		} else {
-			// TODO: ask user to prompt input file again
-		}
+        if (createjarFile.validateFile(inputFile)) {
+            createjarFile.createJarAndGenerateIncr(inputFile);
+        } else {
+            // TODO: ask user to prompt input file again
+        }
 
-	}
+    }
 
     /**
      * Tries to find the templates jar. If it was not found, it will download it and then return it.
@@ -88,7 +88,5 @@ public class TestPicocli {
         }
         return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
     }
-
-    
 
 }
