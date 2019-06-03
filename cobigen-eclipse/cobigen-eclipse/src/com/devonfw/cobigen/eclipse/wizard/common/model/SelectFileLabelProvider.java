@@ -311,10 +311,6 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
                 CheckStateListener listener = new CheckStateListener(cobigenWrapper, null, batch);
                 listener.performCheckLogic(event, incrementSelector);
-                // Set<Object> checkedElements = new
-                // HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
-                // listener.performCheckLogicForALLIncrement(incrementSelector, checkedElements);
-                // performCheckLogic(event, packageSelector);
 
                 Set<Object> selectedElements =
                     new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
