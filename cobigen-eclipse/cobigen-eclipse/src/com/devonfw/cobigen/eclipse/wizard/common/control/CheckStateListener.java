@@ -94,10 +94,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
                 .setSelectedResources(resourcesTree.getCheckedElements());
             refreshNodes(event);
         } else if (event.getSource().equals(incrementSelector)) {
-            // performCheckLogic(event, incrementSelector);
             Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
-            performCheckLogicForALLIncrement(incrementSelector, checkedElements);
-            Set<Object> checkedElementsTest = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
             performCheckLogicForALLIncrement(incrementSelector, checkedElements);
 
             Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
@@ -236,46 +233,6 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
             page.setPageComplete(true);
         } else {
             page.setPageComplete(false);
-        }
-    }
-
-    /**
-     * Performs an intelligent check logic such that the same element in different paths will be checked
-     * simultaneously, parents will be unselected if at least one child is not selected, and parents will be
-     * automatically selected if all children of the parent are selected
-     * @param event
-     *            triggering {@link CheckStateChangedEvent}
-     * @param packageSelector
-     *            current {@link CheckboxTreeViewer} for the package selection
-     */
-    private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
-
-        SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
-        TreePath[] paths = cp.getAllPaths(event.getElement());
-        for (TreePath path : paths) {
-            packageSelector.setSubtreeChecked(path, event.getChecked());
-        }
-
-        TreePath[] parents = cp.getParents(event.getElement());
-        if (event.getChecked()) {
-            for (TreePath parent : parents) {
-                boolean allChecked = true;
-                for (Object child : cp.getChildren(parent)) {
-                    if (!packageSelector.getChecked(parent.createChildPath(child))) {
-                        allChecked = false;
-                        break;
-                    }
-                }
-                if (allChecked) {
-                    packageSelector.setChecked(parent, true);
-                }
-            }
-        } else {
-            for (TreePath parent : parents) {
-                if (parent.getSegmentCount() > 0) {
-                    packageSelector.setChecked(parent, false);
-                }
-            }
         }
     }
 

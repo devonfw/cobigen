@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -301,6 +302,15 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return path;
     }
 
+    /**
+     * Performs an intelligent check logic such that the same element in different paths will be checked
+     * simultaneously, parents will be unselected if at least one child is not selected, and parents will be
+     * automatically selected if all children of the parent are selected
+     * @param event
+     *            triggering {@link CheckStateChangedEvent}
+     * @param packageSelector
+     *            current {@link CheckboxTreeViewer} for the package selection
+     */
     private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
 
         if (event.getSource().equals(packageSelector)) {
@@ -324,6 +334,24 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
                         packageSelector.setChecked(parent, true);
                     }
                 }
+
+                if (event.getElement().toString().contains("All")) {
+                    packageSelector.setAllChecked(true);
+                }
+
+                // checks if all child increments are checked and checks All-Checkbox
+                boolean allChecked = true;
+                for (TreeItem item : packageSelector.getTree().getItems()) {
+
+                    if (!item.getChecked() && !item.getText().contains("All")) {
+                        allChecked = false;
+                        break;
+                    }
+                }
+                if (allChecked) {
+                    packageSelector.getTree().getItem(0).setChecked(true);
+                }
+
             } else {
                 for (TreePath parent : parents) {
                     if (parent.getSegmentCount() > 0) {
