@@ -181,8 +181,6 @@ public class CreateJarFile {
             try {
                 registerPlugin();
                 CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-                GenerateCommand generateCommand = GenerateCommand.getInstance();
-                generateCommand.generateTemplate(inputFile, cg, utilClasses);
 
             } catch (InvalidConfigurationException e) {
                 // if the context configuration is not valid

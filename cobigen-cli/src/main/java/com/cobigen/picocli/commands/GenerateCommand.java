@@ -9,12 +9,12 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
+import net.sf.mmm.code.base.source.BaseSource;
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 
@@ -32,6 +32,7 @@ public class GenerateCommand {
      * User input file
      */
     File inputFile = null;	
+    File inputProject = null;
     private static GenerateCommand generateCommand;
     CreateJarFile createJarFile = new CreateJarFile();
     
@@ -67,7 +68,7 @@ public class GenerateCommand {
         	CobiGen cg = createJarFile.initializeCobiGen();         	
         	// call mmm library to get the classloader  
         	
-        	generateTemplate(inputFile,  cg,createJarFile.getUtilClasses());
+        	generateTemplate(inputFile, inputProject, cg,createJarFile.getUtilClasses());
     }
 
     /**
@@ -83,7 +84,8 @@ public class GenerateCommand {
 			System.exit(0);
 			return false;
 		case 2:
-			inputFile = new File(args.get(1));
+			inputFile = new File(args.get(0));
+			inputProject = new File(args.get(1));
 			return true;
 		case 0:
 			logger.error("Please provide input parameter");
@@ -97,13 +99,17 @@ public class GenerateCommand {
 		}
 
 	}
-    public void generateTemplate(File inputFile, CobiGen cg ,List<Class<?>> utilClasses) {
+    public void generateTemplate(File inputFile, File inputProject, CobiGen cg ,List<Class<?>> utilClasses) {
     	  try {
 
               JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-              JavaContext context = provider.createFromLocalMavenProject(inputFile);
+              JavaContext context = provider.createFromLocalMavenProject(inputProject);
 
               try {
+            	  BaseSource bla = context.getOrCreateSource(null, new File("C:\\MyData\\IDE4\\workspaces\\cobigen-master\\tools-cobigen\\cobigen-cli\\src\\test\\resources\\testdata\\localmavenproject\\maven.project\\core\\src\\main\\java"));
+            	  
+            	  bla.getContext().getOrCreateType("SampleDataEntity",false).getQualifiedName();
+            	  
                   context.getClassLoader()
                       .loadClass("com.devonfw.poc.jwtsample.authormanagement.dataaccess.api.AuthorEntity");
               } catch (ClassNotFoundException e) {

@@ -97,13 +97,20 @@ public class CommandsHandler {
     /**
     *
     */
-    private void useCurrentWorkingDirectory() {
+    private String useCurrentWorkingDirectory() {
         // current working directory where the CLI is getting executed
         String cwd = System.getProperty("user.dir");
 
-        ValidationUtils.findPom(new File(cwd));
+        File pomFile = ValidationUtils.findPom(new File(cwd));
+        if(pomFile==null) {
+        	logger.info("You are not in valid maven project. Please provide two arguments: <path_of_input_file> <path_of_project>");
+        	String userInput = getUserInput();
+        	return userInput;
+        }
 
-        String userInput = getUserInput();
+        return cwd;
+        
+        
     }
 
     /**

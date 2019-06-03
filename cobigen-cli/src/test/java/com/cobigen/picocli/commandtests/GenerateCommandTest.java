@@ -26,6 +26,8 @@ public class GenerateCommandTest {
     @Test
     public void generateFromEntityTest() throws IOException {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
+        System.out.println("Path => Inside generateEntityTest "+baseProject.getAbsoluteFile());
+        
         File inputFile = baseProject.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java")
             .toFile();

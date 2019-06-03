@@ -74,6 +74,8 @@ public final class ValidationUtils {
         if (pomFile.exists()) {
             logger.info("You are in a project folder, I assume you want to generate code from/in this project . "
                 + "If this is the wrong folder enter \"change folder\".");
+            
+            // TODO> IMPLEMENT MESSAGES RELATED TO VALID MAVEN PROJECT
             return pomFile;
         }
         if (recursion > 4) {
