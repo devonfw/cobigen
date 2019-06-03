@@ -524,10 +524,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public boolean isMergableFile(String path, Collection<IncrementTo> consideredIncrements) {
         if (path != null) {
-            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
-                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
-                consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
-            }
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
             if (templates != null) {
                 return isMergableFile(templates);
@@ -566,11 +562,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     public boolean isOverridableFile(String path, Collection<IncrementTo> consideredIncrements) {
         if (path != null) {
-            if (consideredIncrements.contains(new ComparableIncrement(ALL_INCREMENT_ID, ALL_INCREMENT_NAME, null,
-                Lists.<TemplateTo> newLinkedList(), Lists.<IncrementTo> newLinkedList()))) {
-                consideredIncrements = cobiGen.getMatchingIncrements(getCurrentRepresentingInput());
-            }
-
             Set<TemplateTo> templates = getTemplateDestinationPaths(consideredIncrements).get(path);
             return isOverridableFile(templates);
         }
