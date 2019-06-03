@@ -23,12 +23,10 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -40,6 +38,7 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
+import com.devonfw.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
@@ -302,74 +301,20 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         return path;
     }
 
-    /**
-     * Performs an intelligent check logic such that the same element in different paths will be checked
-     * simultaneously, parents will be unselected if at least one child is not selected, and parents will be
-     * automatically selected if all children of the parent are selected
-     * @param event
-     *            triggering {@link CheckStateChangedEvent}
-     * @param packageSelector
-     *            current {@link CheckboxTreeViewer} for the package selection
-     */
-    private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
-
-        if (event.getSource().equals(packageSelector)) {
-            SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
-            TreePath[] paths = cp.getAllPaths(event.getElement());
-            for (TreePath path : paths) {
-                packageSelector.setSubtreeChecked(path, event.getChecked());
-            }
-
-            TreePath[] parents = cp.getParents(event.getElement());
-            if (event.getChecked()) {
-                for (TreePath parent : parents) {
-                    boolean allChecked = true;
-                    for (Object child : cp.getChildren(parent)) {
-                        if (!packageSelector.getChecked(parent.createChildPath(child))) {
-                            allChecked = false;
-                            break;
-                        }
-                    }
-                    if (allChecked) {
-                        packageSelector.setChecked(parent, true);
-                    }
-                }
-
-                if (event.getElement().toString().contains("All")) {
-                    packageSelector.setAllChecked(true);
-                }
-
-                // checks if all child increments are checked and checks All-Checkbox
-                boolean allChecked = true;
-                for (TreeItem item : packageSelector.getTree().getItems()) {
-
-                    if (!item.getChecked() && !item.getText().contains("All")) {
-                        allChecked = false;
-                        break;
-                    }
-                }
-                if (allChecked) {
-                    packageSelector.getTree().getItem(0).setChecked(true);
-                }
-
-            } else {
-                for (TreePath parent : parents) {
-                    if (parent.getSegmentCount() > 0) {
-                        packageSelector.setChecked(parent, false);
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void checkStateChanged(CheckStateChangedEvent event) {
         synchronized (selectedIncrements) {
             // Increments selection has been changed
             if (event.getSource() instanceof CheckboxTreeViewer) {
 
-                CheckboxTreeViewer packageSelector = (CheckboxTreeViewer) event.getSource();
-                performCheckLogic(event, packageSelector);
+                CheckboxTreeViewer incrementSelector = (CheckboxTreeViewer) event.getSource();
+
+                CheckStateListener listener = new CheckStateListener(cobigenWrapper, null, batch);
+                listener.performCheckLogic(event, incrementSelector);
+                // Set<Object> checkedElements = new
+                // HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
+                // listener.performCheckLogicForALLIncrement(incrementSelector, checkedElements);
+                // performCheckLogic(event, packageSelector);
 
                 Set<Object> selectedElements =
                     new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
