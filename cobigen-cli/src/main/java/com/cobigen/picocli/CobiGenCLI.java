@@ -1,18 +1,8 @@
 package com.cobigen.picocli;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.cobigen.picocli.commands.GenerateCommand;
 import com.cobigen.picocli.handlers.CommandsHandler;
-import com.cobigen.picocli.utils.CreateJarFile;
-import com.cobigen.picocli.utils.ValidationUtils;
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 import picocli.CommandLine.Command;
 
@@ -23,24 +13,21 @@ import picocli.CommandLine.Command;
 public class CobiGenCLI {
 
     /**
-     * Logger to output useful information to the user
+     * Main starting point of the CLI. Here we parse the arguments from the user.
+     *
+     * @param args
+     *            list of arguments the user has passed
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
-
-	/**
-	 * Main starting point of the CLI. Here we parse the arguments from the user.
-	 * 
-	 * @param args list of arguments the user has passed
-	 */
     public static void main(String... args) {
         CommandsHandler CmdHandler = CommandsHandler.getInstance();
-        CmdHandler.executeCommand(args);
+        File jarPath = new File("templates_jar");
 
-		File jarPath = new File("templates_jar");
-
+        // Create a folder where the templates will be stored
         if (!jarPath.exists()) {
             jarPath.mkdir();
         }
+
+        CmdHandler.executeCommand(args);
 
     }
 

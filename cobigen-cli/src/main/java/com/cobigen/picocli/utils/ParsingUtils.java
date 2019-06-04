@@ -19,6 +19,14 @@ import net.sf.mmm.util.io.api.RuntimeIoException;
  */
 public class ParsingUtils {
 
+    /**
+     * Creates a new {@link BasePackage}
+     * @param source
+     *            of the current context {@link BaseSource}
+     * @param qName
+     *            the qualified name of the parent {@link CodeName}
+     * @return A new {@link BasePackage}
+     */
     private static BasePackage createPackage(BaseSource source, CodeName qName) {
 
         BasePackage parentPkg = source.getRootPackage();
@@ -37,16 +45,33 @@ public class ParsingUtils {
         return new BasePackage(parentPkg, simpleName, null, null, false);
     }
 
-    private static BaseFile createFile(String qualifiedName, JavaContext context) {
+    /**
+     * Creates a new {@link BaseFile}
+     * @param className
+     *            name of the class
+     * @param context
+     *            current java project context
+     * @return A new {@link BaseFile}
+     */
+    private static BaseFile createFile(String className, JavaContext context) {
 
-        CodeName qName = context.parseName(qualifiedName);
+        CodeName qName = context.parseName(className);
         BasePackage pkg = createPackage(context.getSource(), qName.getParent());
         return new BaseFile(pkg, qName.getSimpleName());
     }
 
-    public static String getQualifiedName(File inputFile, String qualifiedName, JavaContext context) {
+    /**
+     * Gets the full qualified name of the input file
+     * @param inputFile
+     *            Java file we want to get its qualified name
+     * @param context
+     *            current java project context
+     * @return The full qualified name of the input file
+     */
+    public static String getQualifiedName(File inputFile, JavaContext context) {
 
-        BaseFile file = createFile(qualifiedName, context);
+        String className = inputFile.getName().replace(".java", "");
+        BaseFile file = createFile(className, context);
         JavaSourceCodeParserImpl parser = JavaSourceCodeParserImpl.get();
 
         try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {

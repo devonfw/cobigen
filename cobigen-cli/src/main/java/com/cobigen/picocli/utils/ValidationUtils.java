@@ -5,6 +5,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.constants.MessagesConstants;
+import com.cobigen.picocli.handlers.CommandsHandler;
+
 /**
  * Utilities class for validating user's input
  */
@@ -19,6 +22,55 @@ public final class ValidationUtils {
      * Extension of a POM file
      */
     private static final String POM_EXTENSION = "xml";
+
+    /**
+     * Validating user input file is correct or not. We check if file exists and it can be read
+     *
+     * @param inputFile
+     *            user input file
+     * @return true when file is valid
+     */
+    public boolean validateFile(File inputFile) {
+        if (inputFile == null) {
+            return false;
+        }
+
+        if (!inputFile.exists()) {
+            logger.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
+            return false;
+        }
+
+        if (!inputFile.canRead()) {
+            logger.error("The input file " + inputFile.getAbsolutePath()
+                + " cannot be read. Please check file permissions on the file");
+            return false;
+        }
+        return true;
+    }
+
+    public static String chooseWorkingDirectory(String userArgs) {
+
+        String workingDirectory = "";
+        switch (userArgs) {
+        case "change folder":
+            logger.info("Please provide which folder you want to use: ");
+            workingDirectory = CommandsHandler.getUserInput();
+            break;
+        case "from":
+            // current working directory where the CLI is getting executed
+            workingDirectory = System.getProperty("user.dir");
+            break;
+        case "in":
+            logger.error(MessagesConstants.COMMAND_NOT_YET_SUPPORTED);
+            System.exit(0);
+            break;
+        default:
+            logger.error(MessagesConstants.COMMAND_NOT_UNDERSTOOD);
+            System.exit(0);
+            break;
+        }
+        return workingDirectory;
+    }
 
     /**
      * Tries to find a pom.xml file in the passed folder
@@ -74,40 +126,15 @@ public final class ValidationUtils {
         if (pomFile.exists()) {
             logger.info("You are in a project folder, I assume you want to generate code from/in this project . "
                 + "If this is the wrong folder enter \"change folder\".");
-            
-            // TODO> IMPLEMENT MESSAGES RELATED TO VALID MAVEN PROJECT
-            logger.info("Do you want to generate code from a file in this project or do you want to generate code in this location from another file ? from/in.");
+
+            logger.info(
+                "Do you want to generate code from a file in this project or do you want to generate code in this location from another file ? from/in.");
             return pomFile;
         }
         if (recursion > 4) {
             return null;
         }
         return findPomFromFolder(folder.getParentFile(), recursion + 1);
-    }
-
-    /**
-     * Validating user input file is correct or not. We check if file exists and it can be read
-     *
-     * @param inputFile
-     *            user input file
-     * @return true when file is valid
-     */
-    public boolean validateFile(File inputFile) {
-        if (inputFile == null) {
-            return false;
-        }
-
-        if (!inputFile.exists()) {
-            logger.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
-            return false;
-        }
-
-        if (!inputFile.canRead()) {
-            logger.error("The input file " + inputFile.getAbsolutePath()
-                + " cannot be read. Please check file permissions on the file");
-            return false;
-        }
-        return true;
     }
 
 }
