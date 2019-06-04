@@ -276,15 +276,15 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
                 }
 
                 // checks if all child increments are checked and checks All-Checkbox
-                boolean allChecked2 = true;
+                boolean allChecked = true;
                 for (TreeItem item : packageSelector.getTree().getItems()) {
 
                     if (!item.getChecked() && !item.getText().contains("All")) {
-                        allChecked2 = false;
+                        allChecked = false;
                         break;
                     }
                 }
-                if (allChecked2) {
+                if (allChecked) {
                     packageSelector.getTree().getItem(0).setChecked(true);
                 }
 
