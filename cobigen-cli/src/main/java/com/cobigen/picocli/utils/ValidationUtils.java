@@ -76,6 +76,7 @@ public final class ValidationUtils {
                 + "If this is the wrong folder enter \"change folder\".");
             
             // TODO> IMPLEMENT MESSAGES RELATED TO VALID MAVEN PROJECT
+            logger.info("Do you want to generate code from a file in this project or do you want to generate code in this location from another file ? from/in.");
             return pomFile;
         }
         if (recursion > 4) {
