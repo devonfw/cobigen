@@ -124,9 +124,9 @@ public class GenerateCommand {
             List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
             for (IncrementTo inc : matchingIncrements) {
 
-                System.out.println("Increments Available = " + inc.getDescription());
+                logger.info("Here are the option you have for your choice .Which increments do you want to generate ? Please list the increments you want separated by comma . " + inc.getDescription());
             }
-
+            
             cg.generate(input, matchingIncrements, Paths.get(inputFile.getParentFile().getAbsolutePath()), false,
                 utilClasses);
             System.out.println("Successfully generated templates.\n");
