@@ -4,6 +4,6 @@
   <#if seen_properties?seq_contains(property.type) == false>
       <#if property.isEntity> export { ${property.type?cap_first} } from './${property.type}'; </#if>
       <#assign seen_properties = seen_properties + [property.type]>
-    </#if>
+  </#if>
 </#list>
 </#compress>
