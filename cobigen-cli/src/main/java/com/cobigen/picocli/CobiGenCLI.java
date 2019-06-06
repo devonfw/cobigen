@@ -18,6 +18,11 @@ public class CobiGenCLI {
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
+     * Picocli command line object
+     */
+    private final static CommandLine commandLine = new CommandLine(new CobiGenCommand());
+
+    /**
      * Main starting point of the CLI. Here we parse the arguments from the user.
      *
      * @param args
@@ -25,12 +30,18 @@ public class CobiGenCLI {
      */
     public static void main(String... args) {
 
-        CommandLine commandLine = new CommandLine(new CobiGenCommand());
         commandLine.parseArgs(args);
         if (commandLine.execute(args) == 0) {
             logger.debug("Commands were executed correctly");
         }
 
+    }
+
+    /**
+     * @return the {@link CommandLine} object of this current execution
+     */
+    public static CommandLine getCLI() {
+        return commandLine;
     }
 
 }

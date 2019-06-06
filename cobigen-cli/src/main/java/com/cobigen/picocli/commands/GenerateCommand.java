@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.CobiGenCLI;
 import com.cobigen.picocli.constants.MessagesConstants;
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.cobigen.picocli.utils.ParsingUtils;
@@ -129,6 +130,7 @@ public class GenerateCommand implements Callable<Integer> {
      *            Initialized CobiGen instance
      * @param utilClasses
      *            util classes loaded from the templates jar
+     *
      */
     public void generateTemplate(File inputFile, File inputProject, CobiGen cg, List<Class<?>> utilClasses) {
         try {
@@ -138,7 +140,13 @@ public class GenerateCommand implements Callable<Integer> {
 
             String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
 
-            context.getClassLoader().loadClass(qualifiedName);
+            try {
+                context.getClassLoader().loadClass(qualifiedName);
+            } catch (NoClassDefFoundError e) {
+                CobiGenCLI.getCLI().getErr().println("Compiled class " + e.getMessage()
+                    + " has not been found. Most probably you need to build the project of your current input file.");
+                System.exit(1);
+            }
 
             Object input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
             System.out.println("input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
@@ -149,8 +157,7 @@ public class GenerateCommand implements Callable<Integer> {
                         + inc.getDescription());
             }
 
-            cg.generate(input, matchingIncrements, Paths.get(inputFile.getParentFile().getAbsolutePath()), false,
-                utilClasses);
+            cg.generate(input, matchingIncrements, Paths.get(outputProject.getAbsolutePath()), false, utilClasses);
             System.out.println("Successfully generated templates.\n");
             logger.info(
                 "Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "
