@@ -5,8 +5,8 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.commands.CobiGenCommand;
 import com.cobigen.picocli.constants.MessagesConstants;
-import com.cobigen.picocli.handlers.CommandsHandler;
 
 /**
  * Utilities class for validating user's input
@@ -54,7 +54,7 @@ public final class ValidationUtils {
         switch (userArgs) {
         case "change folder":
             logger.info("Please provide which folder you want to use: ");
-            workingDirectory = CommandsHandler.getUserInput();
+            workingDirectory = CobiGenCommand.getUserInput();
             break;
         case "from":
             // current working directory where the CLI is getting executed

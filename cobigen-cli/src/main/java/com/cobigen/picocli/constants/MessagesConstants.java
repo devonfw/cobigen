@@ -14,4 +14,12 @@ public class MessagesConstants {
         + "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
         + "with [-h] you can get more infos about the commands you want to use or the increment you want to generate";
 
+    public static final String GENERATE_DESCRIPTION =
+        "Using an input file (Java entity or ETO, OpenAPI definition, XML...) can generate code to a location on your computer";
+
+    public static final String INPUT_FILE_DESCRIPTION =
+        "Input file (Java entity or ETO, OpenAPI definition, XML...) that will be parsed by CobiGen and generate code from it.";
+
+    public static final String OUTPUT_PROJECT_DESCRIPTION = "Project where the generated code will be stored.";
+
 }

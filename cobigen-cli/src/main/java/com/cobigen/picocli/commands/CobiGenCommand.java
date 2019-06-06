@@ -1,4 +1,4 @@
-package com.cobigen.picocli.handlers;
+package com.cobigen.picocli.commands;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,44 +8,36 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.commands.GenerateCommand;
 import com.cobigen.picocli.constants.MessagesConstants;
 import com.cobigen.picocli.utils.ValidationUtils;
 
+import picocli.CommandLine.Command;
+
 /**
- * This class handles the user commands passed to the CLI
+ * This class defines the main CobiGen command
  */
-public class CommandsHandler {
+@Command(description = MessagesConstants.WELCOME_MESSAGE, name = "cobigen", aliases = { "cg" },
+    mixinStandardHelpOptions = true, version = "CobiGen CLI 1.0", subcommands = { GenerateCommand.class })
+public class CobiGenCommand implements Runnable {
 
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CommandsHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCommand.class);
 
     private static final Scanner inputReader = new Scanner(System.in);
 
     private ArrayList<String> argsList;
 
-    private static CommandsHandler cmdHandler;
-    /**
-     * static block initialization for exception handling
-     */
-    static {
-        try {
-            cmdHandler = new CommandsHandler();
-        } catch (Exception e) {
-            throw new RuntimeException("Exception occurred in creation of singleton instance");
+    @Override
+    public void run() {
+        File jarPath = new File("templates_jar");
+
+        // Create a folder where the templates will be stored
+        if (!jarPath.exists()) {
+            jarPath.mkdir();
         }
-    }
 
-    /**
-     * private constructor restricted to this class itself
-     */
-    private CommandsHandler() {
-    };
-
-    public static CommandsHandler getInstance() {
-        return cmdHandler;
     }
 
     /**

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
@@ -13,53 +14,57 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.handlers.CommandsHandler;
+import com.cobigen.picocli.constants.MessagesConstants;
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.cobigen.picocli.utils.ParsingUtils;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+
 /**
  * This class handles the generation command
  */
-public class GenerateCommand {
+@Command(description = MessagesConstants.GENERATE_DESCRIPTION, name = "generate", aliases = { "g" },
+    mixinStandardHelpOptions = true)
+public class GenerateCommand implements Callable<Integer> {
+
+    /**
+     * @param inputFile
+     * @param outputProject
+     */
+    public GenerateCommand() {
+        super();
+    }
+
+    /**
+     * User input file
+     */
+    @Parameters(index = "0", description = MessagesConstants.INPUT_FILE_DESCRIPTION)
+    File inputFile = null;
+
+    /**
+     * User output project
+     */
+    @Parameters(index = "1", description = MessagesConstants.OUTPUT_PROJECT_DESCRIPTION)
+    File outputProject = null;
 
     /**
      * Logger to output useful information to the user
      */
     private static Logger logger = LoggerFactory.getLogger(GenerateCommand.class);
 
-    /**
-     * User input file
-     */
-    File inputFile = null;
+    private CreateJarFile createJarFile = new CreateJarFile();
 
-    File inputProject = null;
+    @Override
+    public Integer call() throws Exception {
+        createJarFile.getTemplatesJar(false);
+        CobiGen cg = createJarFile.initializeCobiGen();
 
-    private static GenerateCommand generateCommand;
-
-    CreateJarFile createJarFile = new CreateJarFile();
-
-    /**
-     * static block initialization for exception handling
-     */
-    static {
-        try {
-            generateCommand = new GenerateCommand();
-        } catch (Exception e) {
-            throw new RuntimeException("Exception occure in creation of singlton instance");
-        }
-    }
-
-    /**
-     * private constructor restricted to this class itself
-     */
-    private GenerateCommand() {
-    };
-
-    public static GenerateCommand getInstance() {
-        return generateCommand;
+        generateTemplate(inputFile, outputProject, cg, createJarFile.getUtilClasses());
+        return 0;
     }
 
     /**
@@ -70,14 +75,14 @@ public class GenerateCommand {
     public GenerateCommand(ArrayList<String> args) {
         while (validateArguments(args) == false) {
             // Arguments are not valid, let's ask again for them
-            String[] userArgs = CommandsHandler.getUserInput().split(" ");
+            String[] userArgs = CobiGenCommand.getUserInput().split(" ");
             args = (ArrayList<String>) Arrays.asList(userArgs);
 
         }
         createJarFile.getTemplatesJar(false);
         CobiGen cg = createJarFile.initializeCobiGen();
 
-        generateTemplate(inputFile, inputProject, cg, createJarFile.getUtilClasses());
+        generateTemplate(inputFile, outputProject, cg, createJarFile.getUtilClasses());
     }
 
     /**
@@ -100,7 +105,7 @@ public class GenerateCommand {
             return false;
         case 2:
             inputFile = new File(args.get(0));
-            inputProject = new File(args.get(1));
+            outputProject = new File(args.get(1));
             return true;
         default:
             logger.error(
@@ -139,10 +144,11 @@ public class GenerateCommand {
             System.out.println("input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
             List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
             for (IncrementTo inc : matchingIncrements) {
-
-                logger.info("Here are the option you have for your choice .Which increments do you want to generate ? Please list the increments you want separated by comma . " + inc.getDescription());
+                logger.info(
+                    "Here are the option you have for your choice .Which increments do you want to generate ? Please list the increments you want separated by comma . "
+                        + inc.getDescription());
             }
-            
+
             cg.generate(input, matchingIncrements, Paths.get(inputFile.getParentFile().getAbsolutePath()), false,
                 utilClasses);
             System.out.println("Successfully generated templates.\n");
@@ -156,4 +162,5 @@ public class GenerateCommand {
         }
 
     }
+
 }
