@@ -71,6 +71,11 @@ public class InputInterpreterImpl implements InputInterpreter {
         return null;
     }
 
+    @Override
+    public boolean isMostLikelyReadable(String type, Path path) {
+        return getInputReader(type).isMostLikelyReadable(path);
+    }
+
     /**
      * @param type
      *            of the input
