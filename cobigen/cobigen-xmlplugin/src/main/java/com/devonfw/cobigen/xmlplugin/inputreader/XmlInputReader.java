@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -249,5 +250,12 @@ public class XmlInputReader implements InputReader {
             }
         }
         throw new IllegalArgumentException("Currently folders are not supported as Input by XmlInputReader#read");
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(Path path) {
+        String validExtension = "xml";
+        String fileExtension = FilenameUtils.getExtension(path.toString());
+        return validExtension.equals(fileExtension);
     }
 }
