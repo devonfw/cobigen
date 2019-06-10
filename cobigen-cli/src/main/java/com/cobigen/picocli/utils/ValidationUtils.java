@@ -48,6 +48,12 @@ public final class ValidationUtils {
         return true;
     }
 
+    /**
+     * Method that tries to get user input related to the root output path.
+     * @param userArgs
+     *            user arguments
+     * @return root output path as string
+     */
     public static String chooseWorkingDirectory(String userArgs) {
 
         String workingDirectory = "";
@@ -87,9 +93,9 @@ public final class ValidationUtils {
             int lastDot = filename.lastIndexOf('.');
             if (lastDot > 0) {
                 basename = filename.substring(0, lastDot);
-                pomFile = new File(source.getParent(), basename + POM_EXTENSION);
+                pomFile = new File(source.getParent(), basename + '.' + POM_EXTENSION);
                 if (pomFile.exists() || pomFile.toString().contains("pom.xml")) {
-                    logger.info("User is in valid maven project project ");
+                    logger.info("This is a valid maven project project ");
                     return pomFile;
 
                 }
@@ -102,8 +108,9 @@ public final class ValidationUtils {
                     return pomFile;
                 }
             }
+            return findPomFromFolder(new File(source.getParent()));
         } else if (source.isDirectory()) {
-            return findPomFromFolder(source, 0);
+            return findPomFromFolder(source);
         }
         return null;
     }
@@ -116,7 +123,7 @@ public final class ValidationUtils {
      *            current recursion level
      * @return the pom.xml file if it was found, null otherwise
      */
-    private static File findPomFromFolder(File folder, int recursion) {
+    private static File findPomFromFolder(File folder) {
 
         if (folder == null) {
             return null;
@@ -124,17 +131,9 @@ public final class ValidationUtils {
         String POM_XML = "pom.xml";
         File pomFile = new File(folder, POM_XML);
         if (pomFile.exists()) {
-            logger.info("You are in a project folder, I assume you want to generate code from/in this project . "
-                + "If this is the wrong folder enter \"change folder\".");
-
-            logger.info(
-                "Do you want to generate code from a file in this project or do you want to generate code in this location from another file ? from/in.");
             return pomFile;
         }
-        if (recursion > 4) {
-            return null;
-        }
-        return findPomFromFolder(folder.getParentFile(), recursion + 1);
+        return findPomFromFolder(folder.getParentFile());
     }
 
 }

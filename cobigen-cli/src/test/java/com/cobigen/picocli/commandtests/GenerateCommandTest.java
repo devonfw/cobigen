@@ -19,12 +19,13 @@ public class GenerateCommandTest {
     private static String testFileRootPath = "src/test/resources/testdata/";
 
     /**
-     * Integration test of the generation of templates from a Java Entity. It will generate all the templates.
+     * Integration test of the generation of templates from a Java Entity. It will generate all the templates
+     * in the project folder passed.
      * @throws IOException
      *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromEntityTest() throws IOException {
+    public void generateFromEntityWithProjectTest() throws IOException {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
         System.out.println("Path => Inside generateEntityTest " + baseProject.getAbsoluteFile());
 

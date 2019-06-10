@@ -23,6 +23,13 @@ public class CobiGenCLI {
     private final static CommandLine commandLine = new CommandLine(new CobiGenCommand());
 
     /**
+     * @return the {@link CommandLine} object of this current execution
+     */
+    public static CommandLine getCLI() {
+        return commandLine;
+    }
+
+    /**
      * Main starting point of the CLI. Here we parse the arguments from the user.
      *
      * @param args
@@ -30,18 +37,10 @@ public class CobiGenCLI {
      */
     public static void main(String... args) {
 
-        commandLine.parseArgs(args);
         if (commandLine.execute(args) == 0) {
             logger.debug("Commands were executed correctly");
         }
 
-    }
-
-    /**
-     * @return the {@link CommandLine} object of this current execution
-     */
-    public static CommandLine getCLI() {
-        return commandLine;
     }
 
 }

@@ -2,8 +2,6 @@ package com.cobigen.picocli.commands;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -14,10 +12,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.CobiGenCLI;
 import com.cobigen.picocli.constants.MessagesConstants;
 import com.cobigen.picocli.utils.CreateJarFile;
 import com.cobigen.picocli.utils.ParsingUtils;
+import com.cobigen.picocli.utils.ValidationUtils;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
@@ -33,8 +31,7 @@ import picocli.CommandLine.Parameters;
 public class GenerateCommand implements Callable<Integer> {
 
     /**
-     * @param inputFile
-     * @param outputProject
+     * Constructor needed for Picocli
      */
     public GenerateCommand() {
         super();
@@ -49,8 +46,8 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * User output project
      */
-    @Parameters(index = "1", description = MessagesConstants.OUTPUT_PROJECT_DESCRIPTION)
-    File outputProject = null;
+    @Parameters(index = "1", arity = "0..1", description = MessagesConstants.OUTPUT_PROJECT_DESCRIPTION)
+    File outputRootPath = null;
 
     /**
      * Logger to output useful information to the user
@@ -61,62 +58,57 @@ public class GenerateCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        createJarFile.getTemplatesJar(false);
-        CobiGen cg = createJarFile.initializeCobiGen();
 
-        generateTemplate(inputFile, outputProject, cg, createJarFile.getUtilClasses());
-        return 0;
-    }
+        if (areArgumentsValid()) {
+            logger.debug("Input file and output root path confirmed to be valid.");
+            createJarFile.getTemplatesJar(false);
+            CobiGen cg = createJarFile.initializeCobiGen();
 
-    /**
-     * Constructor for {@link GenerateCommand}
-     * @param args
-     *            String array with all the user arguments
-     */
-    public GenerateCommand(ArrayList<String> args) {
-        while (validateArguments(args) == false) {
-            // Arguments are not valid, let's ask again for them
-            String[] userArgs = CobiGenCommand.getUserInput().split(" ");
-            args = (ArrayList<String>) Arrays.asList(userArgs);
-
+            generateTemplate(inputFile, getProjectRoot(inputFile), cg, createJarFile.getUtilClasses());
+            return 0;
         }
-        createJarFile.getTemplatesJar(false);
-        CobiGen cg = createJarFile.initializeCobiGen();
 
-        generateTemplate(inputFile, outputProject, cg, createJarFile.getUtilClasses());
+        return 1;
     }
 
     /**
-     * Validates the user arguments in the context of the generate command. Therefore, we suppose that the
-     * arguments passed here are only related to generating.
-     * @param args
-     *            arguments related to generation
+     * Validates the user arguments in the context of the generate command.
      * @return true when these arguments are correct
      */
-    public Boolean validateArguments(ArrayList<String> args) {
-        System.out.println("args size= " + args.size());
-        int argSize = args.size();
-        switch (argSize) {
-        case 0:
-            logger.error("Please provide two arguments: <path_of_input_file> <path_of_project>");
-            return false;
-        case 1:
-            logger.error(
-                "You need to provide two arguments: <path_of_input_file> <path_of_project> and your second parameter was not found.");
-            return false;
-        case 2:
-            inputFile = new File(args.get(0));
-            outputProject = new File(args.get(1));
-            return true;
-        default:
-            logger.error(
-                "Too many arguments have been provided, you need to provide two: <path_of_input_file> <path_of_project>");
-            // Arguments are not valid, we should stop here
-            System.exit(0);
-            return false;
+    public Boolean areArgumentsValid() {
 
+        if (inputFile.exists()) {
+
+            // As outputRootPath is an optional parameter, it means that it can be null
+            if (outputRootPath == null || outputRootPath.exists()) {
+                return true;
+            } else {
+                logger.error("Your <outputRootPath> does not exist, please use a valid path.");
+                return false;
+            }
+
+        } else {
+            logger.error("Your <inputFile> does not exist, please use a valid file.");
         }
+        return false;
+    }
 
+    /**
+     * Tries to find the root folder of the project in order to build the classpath. This method is trying to
+     * find the first pom.xml file and then getting the folder where is located
+     * @param inputFile
+     *            passed by the user
+     * @return the project folder
+     *
+     */
+    private File getProjectRoot(File inputFile) {
+
+        File pomFile = ValidationUtils.findPom(inputFile);
+        if (pomFile != null) {
+            return pomFile.getParentFile();
+        }
+        logger.debug("Projec root could not be found, therefore it is null.");
+        return null;
     }
 
     /**
@@ -133,41 +125,62 @@ public class GenerateCommand implements Callable<Integer> {
      *
      */
     public void generateTemplate(File inputFile, File inputProject, CobiGen cg, List<Class<?>> utilClasses) {
+
+        JavaContext context = getJavaContext(inputFile, inputProject);
+
         try {
-
-            JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-            JavaContext context = provider.createFromLocalMavenProject(inputProject);
-
-            String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
-
-            try {
-                context.getClassLoader().loadClass(qualifiedName);
-            } catch (NoClassDefFoundError e) {
-                CobiGenCLI.getCLI().getErr().println("Compiled class " + e.getMessage()
-                    + " has not been found. Most probably you need to build the project of your current input file.");
-                System.exit(1);
-            }
-
             Object input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-            System.out.println("input before getmatchingIncrement= " + input.toString() + "class= " + input.getClass());
             List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-            for (IncrementTo inc : matchingIncrements) {
+
+            // If user did not specify the output path of the generated files, we can use the current project
+            // folder
+            if (outputRootPath == null) {
                 logger.info(
-                    "Here are the option you have for your choice .Which increments do you want to generate ? Please list the increments you want separated by comma . "
-                        + inc.getDescription());
+                    "As you did not specify where the code will be generated, we will use the project of your current"
+                        + " input file.");
+                outputRootPath = inputProject;
             }
 
-            cg.generate(input, matchingIncrements, Paths.get(outputProject.getAbsolutePath()), false, utilClasses);
-            System.out.println("Successfully generated templates.\n");
-            logger.info(
-                "Do you want to generate more code in or out this folder enter these shortcuts or give the correct path with help of "
-                    + "cg generate" + " ?  ");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.info("Here are the option you have for your choice. Which increments do you want to generate?"
+                + " Please list the increments you want separated by comma:");
+            int i = 0;
+            for (IncrementTo inc : matchingIncrements) {
+                logger.info("(" + ++i + ") " + inc.getDescription());
+            }
+
+            cg.generate(input, matchingIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            logger.info("Successfully generated templates.\n");
+
         } catch (MojoFailureException e) {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Tries to get the Java context by creating a new class loader of the input project that is able to load
+     * the input file. We need this in order to perform reflection on the templates.
+     * @param inputFile
+     *            input file the user wants to generate code from
+     * @param inputProject
+     *            input project where the input file is located. We need this in order to build the classpath
+     *            of the input file
+     * @return the Java context created from the input project
+     */
+    private JavaContext getJavaContext(File inputFile, File inputProject) {
+        JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
+        JavaContext context = provider.createFromLocalMavenProject(inputProject);
+
+        String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
+
+        try {
+            context.getClassLoader().loadClass(qualifiedName);
+        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+            logger.error("Compiled class " + e.getMessage()
+                + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
+            System.exit(1);
+        }
+        return context;
     }
 
 }
