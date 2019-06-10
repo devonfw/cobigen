@@ -72,7 +72,7 @@ public class ParsingUtils {
 
         String className = inputFile.getName().replace(".java", "");
         BaseFile file = createFile(className, context);
-        JavaSourceCodeParserImpl parser = JavaSourceCodeParserImpl.get();
+        JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl();
 
         try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {
             return parser.parseQualifiedName(reader, file);

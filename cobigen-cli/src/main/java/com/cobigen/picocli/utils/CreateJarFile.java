@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -23,7 +24,6 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.commands.GenerateCommand;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -95,10 +95,16 @@ public class CreateJarFile {
                 final Map<String, String> env = new HashMap<>();
 
                 String[] pathTemplate = contextConfigurationLocation.toString().split("!");
-                final FileSystem fs = FileSystems.newFileSystem(URI.create(pathTemplate[0]), env);
+                FileSystem fs;
+                try {
+                    fs = FileSystems.getFileSystem(URI.create(pathTemplate[0]));
+                } catch (FileSystemNotFoundException e) {
+                    fs = FileSystems.newFileSystem(URI.create(pathTemplate[0]), env);
+                }
                 final Path path = fs.getPath(pathTemplate[1]);
 
                 templateRoot = Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
+
             }
         } else {
             templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));

@@ -64,7 +64,7 @@ public class GenerateCommand implements Callable<Integer> {
             createJarFile.getTemplatesJar(false);
             CobiGen cg = createJarFile.initializeCobiGen();
 
-            generateTemplate(inputFile, getProjectRoot(inputFile), cg, createJarFile.getUtilClasses());
+            generateTemplates(inputFile, getProjectRoot(inputFile), cg, createJarFile.getUtilClasses());
             return 0;
         }
 
@@ -124,12 +124,17 @@ public class GenerateCommand implements Callable<Integer> {
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplate(File inputFile, File inputProject, CobiGen cg, List<Class<?>> utilClasses) {
-
-        JavaContext context = getJavaContext(inputFile, inputProject);
+    public void generateTemplates(File inputFile, File inputProject, CobiGen cg, List<Class<?>> utilClasses) {
 
         try {
-            Object input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+            Object input;
+            // If it is a Java file, we need the class loader
+            if (inputFile.getName().endsWith(".java")) {
+                JavaContext context = getJavaContext(inputFile, inputProject);
+                input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+            } else {
+                input = InputPreProcessor.process(cg, inputFile, null);
+            }
             List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
 
             // If user did not specify the output path of the generated files, we can use the current project
@@ -152,6 +157,7 @@ public class GenerateCommand implements Callable<Integer> {
             logger.info("Successfully generated templates.\n");
 
         } catch (MojoFailureException e) {
+            logger.error("Invalid input for CobiGen, please check your input file.");
             e.printStackTrace();
         }
 
