@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.eclipse.generator.generic;
 
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -36,7 +37,6 @@ public class FileInputConverter {
      *             if any exception occurred during converting the inputs or creating the generator
      */
     public static List<Object> convertInput(CobiGen cobigen, List<Object> resources) throws GeneratorCreationException {
-
         List<Object> convertedInputs = Lists.newLinkedList();
         String inputType = null;
 
@@ -51,17 +51,24 @@ public class FileInputConverter {
                         "Could not deterime charset for file " + inputFile.getLocationURI() + " reading with UTF-8.");
                     charset = Charset.forName("UTF-8");
                 }
-
+                Path inputFilePath = Paths.get(inputFile.getLocationURI());
                 String readerType;
+
+                if (cobigen.isMostLikelyReadable("xml", inputFilePath)) {
+                    readerType = "xml";
+                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                    continue;
+                }
+
+                else if (cobigen.isMostLikelyReadable("openapi", inputFilePath)) {
+                    readerType = "openapi";
+                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                    continue;
+                }
                 {
                     readerType = "xml";
-                    if (inputType != null && !inputType.equals(readerType)) {
-                        throw new GeneratorCreationException(
-                            "Invalid combination of inputs. Please just select files of same language.");
-                    }
                     try {
-                        convertedInputs.add(cobigen.read(readerType, Paths.get(inputFile.getLocationURI()), charset));
-                        inputType = readerType;
+                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
                         continue;
                     } catch (InputReaderException e) {
                         LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
@@ -75,13 +82,8 @@ public class FileInputConverter {
                 // https://github.com/swagger-api/swagger-parser/issues/496
                 {
                     readerType = "openapi";
-                    if (inputType != null && !inputType.equals(readerType)) {
-                        throw new GeneratorCreationException(
-                            "Invalid combination of inputs. Please just select files of same language.");
-                    }
                     try {
-                        convertedInputs.add(cobigen.read(readerType, Paths.get(inputFile.getLocationURI()), charset));
-                        inputType = readerType;
+                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
                         continue;
                     } catch (InputReaderException e) {
                         throw new GeneratorCreationException(
@@ -97,5 +99,45 @@ public class FileInputConverter {
             }
         }
         return convertedInputs;
+    }
+
+    /**
+     * Reads the input file content and convert it to CobiGen valid input.
+     * @param cobigen
+     *            initialized {@link CobiGen} instance
+     * @param convertedInputs
+     *            the converted {@link List} of CobiGen inputs
+     * @param inputType
+     *            Type of input file
+     * @param readerType
+     *            Type of the used reader
+     * @param inputFilePath
+     *            the {@link Path} to the object. Can also point to a folder
+     * @param charset
+     *            of the input to be used
+     * @throws GeneratorCreationException
+     *             States that an exception occured during generator instance creation
+     */
+    private static void readAndAddInput(CobiGen cobigen, List<Object> convertedInputs, String inputType,
+        String readerType, Path inputFilePath, Charset charset) throws GeneratorCreationException {
+        checkSameType(inputType, readerType);
+        convertedInputs.add(cobigen.read(readerType, inputFilePath, charset));
+        inputType = readerType;
+    }
+
+    /**
+     * Checks whether the two given types are equal. Throws an exception if not.
+     * @param inputType
+     *            Type of input file
+     * @param readerType
+     *            Type of the used reader
+     * @throws GeneratorCreationException
+     *             States that an exception occured during generator instance creation
+     */
+    private static void checkSameType(String inputType, String readerType) throws GeneratorCreationException {
+        if (inputType != null && !inputType.equals(readerType)) {
+            throw new GeneratorCreationException(
+                "Invalid combination of inputs. Please just select files of same language.");
+        }
     }
 }
