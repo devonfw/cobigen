@@ -92,6 +92,7 @@ public interface InputReader {
      * @return true, if it is most likely, that the file can be read by this input reader's read method<br>
      *         false, if the reader is most likely not able to read the file.
      */
+    @SuppressWarnings("unused")
     default public boolean isMostLikelyReadable(Path path) {
         return false;
     }
