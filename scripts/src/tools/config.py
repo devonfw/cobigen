@@ -1,8 +1,3 @@
-import os
-import sys
-from tools.logger import log_error
-
-
 class Config():
 
     def __init__(self):

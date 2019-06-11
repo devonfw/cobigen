@@ -1,17 +1,17 @@
-import os
-import sys
-import re
 import getopt
+import os
+import re
+import sys
 
-from git.exc import InvalidGitRepositoryError
 from git.cmd import Git
+from git.exc import InvalidGitRepositoryError
 
-from tools.validation import is_valid_branch
-from tools.user_interface import prompt_enter_value, prompt_yesno_question
 from tools.config import Config
-from tools.github import GitHub
 from tools.git_repo import GitRepo
+from tools.github import GitHub
 from tools.logger import log_info, log_error
+from tools.user_interface import prompt_enter_value, prompt_yesno_question
+from tools.validation import is_valid_branch
 
 
 def init_non_git_config(config: Config):
