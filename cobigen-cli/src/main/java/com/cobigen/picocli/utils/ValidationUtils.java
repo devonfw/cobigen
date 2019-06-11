@@ -5,6 +5,7 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.CobiGenCLI;
 import com.cobigen.picocli.commands.CobiGenCommand;
 import com.cobigen.picocli.constants.MessagesConstants;
 
@@ -16,7 +17,7 @@ public final class ValidationUtils {
     /**
      * Logger useful for printing information
      */
-    private static Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Extension of a POM file

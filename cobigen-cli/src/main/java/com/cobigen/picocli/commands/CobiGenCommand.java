@@ -1,16 +1,15 @@
 package com.cobigen.picocli.commands;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.CobiGenCLI;
 import com.cobigen.picocli.constants.MessagesConstants;
 
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 
 /**
  * This class defines the main CobiGen command
@@ -22,14 +21,9 @@ public class CobiGenCommand implements Runnable {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCommand.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     private static final Scanner inputReader = new Scanner(System.in);
-
-    private ArrayList<String> argsList;
-
-    @Option(names = { "--verbose", "-v" }, negatable = true)
-    boolean verbose;
 
     @Override
     public void run() {
@@ -40,15 +34,6 @@ public class CobiGenCommand implements Runnable {
         if (!jarPath.exists()) {
             jarPath.mkdir();
         }
-
-    }
-
-    /**
-     * @return
-     */
-    private String getInputFile() {
-        logger.info("Please provide the input file you want to use for generation");
-        return getUserInput();
     }
 
     /**

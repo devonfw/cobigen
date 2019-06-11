@@ -23,6 +23,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.CobiGenCLI;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -43,7 +44,7 @@ import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
  * the plugins
  */
 public class CobiGenUtils {
-    private static Logger logger = LoggerFactory.getLogger(CobiGenUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     File jarFile;
 

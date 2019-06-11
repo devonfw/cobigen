@@ -12,7 +12,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cobigen.picocli.CobiGenCLI;
 import com.cobigen.picocli.constants.MessagesConstants;
+import com.cobigen.picocli.logger.CLILogger;
 import com.cobigen.picocli.utils.CobiGenUtils;
 import com.cobigen.picocli.utils.ParsingUtils;
 import com.cobigen.picocli.utils.ValidationUtils;
@@ -20,7 +22,9 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
+import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
@@ -49,10 +53,13 @@ public class GenerateCommand implements Callable<Integer> {
     @Parameters(index = "1", arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
     File outputRootPath = null;
 
+    @Option(names = { "--verbose", "-v" }, negatable = true)
+    boolean verbose;
+
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(GenerateCommand.class);
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Utils class for CobiGen related operations
@@ -61,6 +68,10 @@ public class GenerateCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+
+        if (verbose) {
+            CLILogger.setLevel(Level.DEBUG);
+        }
 
         if (areArgumentsValid()) {
             logger.debug("Input file and output root path confirmed to be valid.");

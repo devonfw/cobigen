@@ -4,7 +4,6 @@
     <!-- Send debug messages to System.out -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-        
         <pattern>%message%n</pattern>       
     </encoder>
     </appender>  
