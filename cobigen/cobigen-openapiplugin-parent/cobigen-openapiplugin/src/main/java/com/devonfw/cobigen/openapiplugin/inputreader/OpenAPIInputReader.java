@@ -663,7 +663,7 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public boolean isMostLikelyReadable(java.nio.file.Path path) {
         List<String> validExtensions = Arrays.asList("yaml", "yml");
-        String fileExtension = FilenameUtils.getExtension(path.toString());
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
         return validExtensions.contains(fileExtension);
     }
 }
