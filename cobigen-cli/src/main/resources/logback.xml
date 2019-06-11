@@ -2,15 +2,15 @@
 <configuration>
  
     <!-- Send debug messages to System.out -->
-    <appender name="Console-Appender" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-        <pattern>%msg%n</pattern>
-        <outputPatternAsHeader>true</outputPatternAsHeader>
+        
+        <pattern>%message%n</pattern>       
     </encoder>
     </appender>  
  
     <!-- By default, the level of the root level is set to DEBUG -->
     <root>
-    <appender-ref ref="Console-Appender"/>
+    <appender-ref ref="console"/>
 </root>
 </configuration>

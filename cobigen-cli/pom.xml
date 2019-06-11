@@ -96,7 +96,15 @@
         <groupId>com.devonfw.cobigen</groupId>
           <artifactId>jsonplugin</artifactId>
           <version>2.0.0</version>
-      </dependency>     
+      </dependency>
+      
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>1.7.25</version>
+      </dependency>
+      
+     
       
       <dependency>
          <groupId>net.sf.m-m-m</groupId>
@@ -134,25 +142,24 @@
         <version>4.3.2</version>
       </dependency>
       
-    <!-- SLF4J - API -->
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.7</version>
-    </dependency>
+      
 
-    <!-- logback -->
-    <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.1.2</version>
-    </dependency>
+	<!-- SLF4J - API -->
+    
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-api</artifactId>
+	    <version>1.7.7</version>
+	</dependency>
+
+	 <!-- logback -->
+	<dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-classic</artifactId>
+	    <version>1.1.2</version>
+	</dependency>
  
-    <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.1.2</version>
-    </dependency>
+
       <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
@@ -160,6 +167,7 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+ 
    </dependencies>
    
    <build>
@@ -181,7 +189,12 @@
                      <mainClass>com.cobigen.picocli.CobiGenCLI</mainClass>
                   </manifest>
                </archive>
+               
+               
             </configuration>
+            
+
+ 
 
          </plugin>
       </plugins>
