@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -254,8 +255,8 @@ public class XmlInputReader implements InputReader {
 
     @Override
     public boolean isMostLikelyReadable(Path path) {
-        String validExtension = "xml";
+        List<String> validExtensions = Arrays.asList("xml", "xmi");
         String fileExtension = FilenameUtils.getExtension(path.toString());
-        return validExtension.equals(fileExtension);
+        return validExtensions.contains(fileExtension);
     }
 }
