@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobigen.picocli.constants.MessagesConstants;
-import com.cobigen.picocli.utils.CreateJarFile;
+import com.cobigen.picocli.utils.CobiGenUtils;
 import com.cobigen.picocli.utils.ParsingUtils;
 import com.cobigen.picocli.utils.ValidationUtils;
 import com.devonfw.cobigen.api.CobiGen;
@@ -46,7 +46,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * User output project
      */
-    @Parameters(index = "1", arity = "0..1", description = MessagesConstants.OUTPUT_PROJECT_DESCRIPTION)
+    @Parameters(index = "1", arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
     File outputRootPath = null;
 
     /**
@@ -54,17 +54,20 @@ public class GenerateCommand implements Callable<Integer> {
      */
     private static Logger logger = LoggerFactory.getLogger(GenerateCommand.class);
 
-    private CreateJarFile createJarFile = new CreateJarFile();
+    /**
+     * Utils class for CobiGen related operations
+     */
+    private CobiGenUtils cobigenUtils = new CobiGenUtils();
 
     @Override
     public Integer call() throws Exception {
 
         if (areArgumentsValid()) {
             logger.debug("Input file and output root path confirmed to be valid.");
-            createJarFile.getTemplatesJar(false);
-            CobiGen cg = createJarFile.initializeCobiGen();
+            cobigenUtils.getTemplatesJar(false);
+            CobiGen cg = cobigenUtils.initializeCobiGen();
 
-            generateTemplates(inputFile, getProjectRoot(inputFile), cg, createJarFile.getUtilClasses());
+            generateTemplates(inputFile, getProjectRoot(inputFile), cg, cobigenUtils.getUtilClasses());
             return 0;
         }
 

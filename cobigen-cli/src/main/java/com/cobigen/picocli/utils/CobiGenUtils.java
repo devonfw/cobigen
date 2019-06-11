@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,24 +38,18 @@ import com.devonfw.cobigen.textmerger.TextAppender;
 import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
 
-public class CreateJarFile {
-    private static Logger logger = LoggerFactory.getLogger(CreateJarFile.class);
+/**
+ * Utils class for CobiGen related operations. For instance, creates a new CobiGen instance and registers all
+ * the plugins
+ */
+public class CobiGenUtils {
+    private static Logger logger = LoggerFactory.getLogger(CobiGenUtils.class);
 
-    private static Class<?> clazz;
-
-    public CreateJarFile() {
-        super();
-    }
-
-    File jarFile = new File("templates_jar/templates-devon4j-3.1.0.jar");
+    File jarFile;
 
     File jarPath = new File("templates_jar");
 
-    File jarFileDir = jarPath.getAbsoluteFile();
-
     List<Class<?>> utilClasses;
-
-    Class<? extends Scanner> lineNum;
 
     /** Current registered input objects */
     private List<Object> inputs;
@@ -206,7 +199,6 @@ public class CreateJarFile {
      */
     public CobiGen initializeCobiGen() {
         getTemplates();
-        // JavaParser. parse(inputFile.getAbsolutePath());
 
         CobiGen cg = null;
         if (jarFile != null) {
@@ -233,7 +225,6 @@ public class CreateJarFile {
         jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
 
         try {
-
             utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
         } catch (GeneratorProjectNotExistentException e2) {
             // TODO Auto-generated catch block
@@ -273,8 +264,6 @@ public class CreateJarFile {
      * @return the jar file of the templates
      */
     public File getTemplatesJar(boolean isSource) {
-        File jarPath = new File("templates_jar");
-        // URL resource = TestPicocli.class.getResource("/cobigen_jar");
         File jarFileDir = jarPath.getAbsoluteFile();
 
         if (!jarPath.exists()) {

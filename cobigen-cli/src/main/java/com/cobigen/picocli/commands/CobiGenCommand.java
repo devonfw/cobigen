@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.cobigen.picocli.constants.MessagesConstants;
 
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * This class defines the main CobiGen command
@@ -27,8 +28,12 @@ public class CobiGenCommand implements Runnable {
 
     private ArrayList<String> argsList;
 
+    @Option(names = { "--verbose", "-v" }, negatable = true)
+    boolean verbose;
+
     @Override
     public void run() {
+
         File jarPath = new File("templates_jar");
 
         // Create a folder where the templates will be stored
