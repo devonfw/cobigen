@@ -40,7 +40,7 @@ public class CobiGenCLI {
         if (commandLine.execute(args) == 0) {
             logger.debug("Commands were executed correctly");
         }
-
+        	
     }
 
 }

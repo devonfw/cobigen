@@ -4,9 +4,13 @@
    <groupId>picocli</groupId>
    <artifactId>com.cobigen.picocli</artifactId>
    <version>0.0.1-SNAPSHOT</version>
-   <name>picocli</name>
-   
-   
+   <name>picocli</name>   
+   <properties>
+    <junit.version>4.11</junit.version>
+    <logback.version>1.1.2</logback.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4j-api.version>1.7.7</slf4j-api.version>
+  </properties>
    <dependencies>
       <dependency>
          <groupId>com.devonfw.cobigen</groupId>
@@ -100,11 +104,7 @@
          <version>1.7.25</version>
       </dependency>
       
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-simple</artifactId>
-         <version>1.7.21</version>
-      </dependency>
+     
       
       <dependency>
          <groupId>net.sf.m-m-m</groupId>
@@ -141,8 +141,39 @@
         <artifactId>com.devonfw.cobigen.eclipse</artifactId>
         <version>4.3.2</version>
       </dependency>
+      
+      
+
+<!-- SLF4J - API -->
+    
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.7</version>
+</dependency>
+
+ <!-- logback -->
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.1.2</version>
+</dependency>
+ 
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-core</artifactId>
+    <version>1.1.2</version>
+</dependency>
+      <!-- JUnit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
  
    </dependencies>
+   
    <build>
       <plugins>
          <plugin>
@@ -159,10 +190,16 @@
             <configuration>
                <archive>
                   <manifest>
-                     <mainClass>com.cobigen.picocli.TestPicocli</mainClass>
+                     <mainClass>com.cobigen.picocli.CobiGenCLI</mainClass>
                   </manifest>
                </archive>
+               
+               
             </configuration>
+            
+
+ 
+
          </plugin>
       </plugins>
    </build>
