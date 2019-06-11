@@ -48,7 +48,14 @@
       <version>2.0.0</version>
       <scope>test</scope>
     </dependency>
-
+    
+    <!-- for file utility functions -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    
     <!-- QDox for Java parsing -->
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
