@@ -1,7 +1,8 @@
-import git
 import os
-import sys
 import subprocess
+import sys
+
+import git
 
 from tools.config import Config
 from tools.logger import log_error, log_info

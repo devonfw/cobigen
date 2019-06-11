@@ -1,21 +1,20 @@
-import sys
-import os
 import getpass
+import os
+import sys
 
-from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
-from github.MainClass import Github
-from github.Issue import Issue
-from github.PaginatedList import PaginatedList
-from github.Milestone import Milestone
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
+from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
+from github.Issue import Issue
+from github.MainClass import Github
+from github.Milestone import Milestone
+from github.PaginatedList import PaginatedList
 from github.Repository import Repository
-from github.GithubObject import NotSet
 
-from tools.user_interface import prompt_yesno_question,  prompt_enter_value
 from tools.config import Config
 from tools.github_cache import GitHubCache
 from tools.logger import log_error, log_info, log_info_dry, log_debug
+from tools.user_interface import prompt_yesno_question, prompt_enter_value
 
 
 class GitHub:

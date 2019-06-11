@@ -1,14 +1,15 @@
-import sys
-import re
 import os
+import re
+import sys
+from fileinput import FileInput
+from typing import List
+
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from git.repo.base import Repo
-from typing import List
-from fileinput import FileInput
 
-from tools.user_interface import prompt_yesno_question
 from tools.config import Config
 from tools.logger import log_debug, log_info, log_error, log_info_dry
+from tools.user_interface import prompt_yesno_question
 
 
 class GitRepo:
