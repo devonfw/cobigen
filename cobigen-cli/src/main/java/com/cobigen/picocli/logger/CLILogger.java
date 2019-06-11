@@ -10,26 +10,26 @@ import ch.qos.logback.core.ConsoleAppender;
 
 public class CLILogger {
 
-	public static void laypoutLogger() {
-		/**
-		 * Customize logger
-		 */
-		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-		LoggerContext loggerContext = rootLogger.getLoggerContext();
-		// we are not interested in auto-configuration
-		loggerContext.reset();
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setContext(loggerContext);
-		encoder.setPattern("%-5level %message%n");
-		encoder.start();
-		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
-		appender.setContext(loggerContext);
-		appender.setEncoder(encoder);
-		appender.start();
-		rootLogger.addAppender(appender);
+    public static void layoutLogger() {
+        /**
+         * Customize logger
+         */
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        LoggerContext loggerContext = rootLogger.getLoggerContext();
+        // we are not interested in auto-configuration
+        loggerContext.reset();
+        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(loggerContext);
+        encoder.setPattern("[%-5level] %message%n");
+        encoder.start();
+        ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+        appender.setContext(loggerContext);
+        appender.setEncoder(encoder);
+        appender.start();
+        rootLogger.addAppender(appender);
 
-		/**
-		 * Customization of logger end
-		 */
-	}
+        /**
+         * Customization of logger end
+         */
+    }
 }

@@ -34,7 +34,7 @@ public class CobiGenCLI {
 	 * @param args list of arguments the user has passed
 	 */
 	public static void main(String... args) {
-		CLILogger.laypoutLogger();
+		CLILogger.layoutLogger();
 		if (commandLine.execute(args) == 0) {
 			logger.debug("Commands were executed correctly");
 		}
