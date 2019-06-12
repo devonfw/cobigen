@@ -6,16 +6,18 @@ toc::[]
 We are going to show you **how to** generate a CRUD Ionic application from an **ETO**
 using CobiGen. 
 
-NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-Devonfw-3.0.0-CobiGen-PoC-E2E_v3.8.pdf[this document].
+NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-Devonfw-3.0.0-CobiGen-PoC-E2E_v3.11.pdf[this document].
 
 == Prerequisites
 
 Before starting, make sure you already have in your computer:
 
-- link:https://ionicframework.com/docs/intro/installation/[Ionic]: by following the steps defined on that page.
+- link:https://ionicframework.com/docs/installation/cli[Ionic]: by following the steps defined on that page.
 It includes installing:
 ** link:https://nodejs.org/en/[NodeJS]: We have to use "NPM" for downloading packages.
-** Ionic CLI and Cordova.
+** Ionic CLI.
+
+- link:https://capacitor.ionicframework.com/docs/getting-started/[Capacitor]: Necessary to access to native device features.
 
 If _CobiGen_Templates_ are not already downloaded, follow the next steps:
 
@@ -49,8 +51,10 @@ image::images/howtos/ionic-gen/rightClick.png[Eclipse CobiGen generation,width="
 * Select the Ionic increments for generating as shown below. _Increments group a set of templates for generating
 different projects_.
 ..  **Ionic List** used for generating the page containing the list.
-..  **Ionic devon4j URL** is for stating the server path.
-..  **Ionic i18n** used for generating the different language translations for the _translationService_ (currently English and Spanish)
+..  **Ionic devon4ng environments**  is for stating the server path.
+..  **Ionic i18n** used for generating the different language translations for the _translationService_ (currently English and Spanish).
+..  **Ionic routing** adds an app-routing.module.ts file to allow navigation similar to the one available in Angular.
+..  **Ionic theme** generates the variables.scss file which contains variables to style the application.
 
 image::images/howtos/ionic-gen/wizardCobiGen.png[CobiGen Ionic Wizard,width="500"link="images/howtos/ionic-gen/wizardCobiGen.png"]
 
@@ -61,17 +65,54 @@ image::images/howtos/ionic-gen/pathOfGeneration.png[Generation path,width="500"l
 
 Now that we have generated the files, lets start testing them:
 
-* First change the **server path** of your application. For doing that, modify _src/assets/ServerPath.ts_.
+* First change the **SERVER_URL** of your application. For doing that, modify _src/environments/environments.ts_, also modify _src/environments/environments.android.ts_ (android) and _src/environments/environments.prod.ts_ (production) if you want to test in different environments.
 
 * Check that there are no duplicated imports. Sometimes there are duplicated imports in _src/app/app.module.ts_.
 This happens because the merger of CobiGen prefers to duplicate rather than to delete.
 
-* Run ``Ionic serve`` on your console and install the dependencies if needed (``Looks like a fresh checkout! No ./node_modules directory found. Would you like to install the dependencies -> Yes``)
+* Run ``npm install`` to install all the required dependencies.
+
+* Run ```ionic serve`` on your console.
 
 After following all these steps, your application should start. However, remember that you will need your **server** to be running for acessing to the list page.
 
+== Running it on Android
+
+To run the application in an android emulated device, it is necessary to have Android Studio and Android SDK. After its installation, the following commands have to be run on your console:
+
+* ``npx cap init "name-for-the-app (between quotes)" "id-for-the-app (between quotes)"``
+
+* ``ionic build --configuration=android``. To use this command, you must add an android build configuration at angular.json
+
+    "build": {
+      ...
+      "configurations": {
+        ...
+        "android": {
+          "fileReplacements": [
+            {
+              "replace": "src/environments/environment.ts",
+              "with": "src/environments/environment.android.ts"
+            }
+          ]
+        },
+      }
+    }
 
 
+* ``npx cap add android``
 
+* ``npx cap copy``
 
+* ``npx cap open android``
+
+The last steps are done in Android studio: make the project, make the app, build and APK and run in a device.
+
+image::images/howtos/ionic-gen/and-vsc-make.png[Click on make project,width="500" link="images/howtos/ionic-gen/and-vsc-make.png"]
+
+image::images/howtos/ionic-gen/and-vsc-make-app.png[click on make app,width="500" link="images/howtos/ionic-gen/and-vsc-make-app.png"]
+
+image::images/howtos/ionic-gen/and-vsc-build-apk.png[click on build APK,width="500" link="images/howtos/ionic-gen/and-vsc-build-apk.png"]
+
+image::images/howtos/ionic-gen/and-vsc-build-run.png[click on running device,width="500" link="images/howtos/ionic-gen/and-vsc-build-run.png"]
 

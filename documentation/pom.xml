@@ -8,14 +8,14 @@
   <name>CobiGen Wiki</name>
 
   <parent>
-    <groupId>io.oasp</groupId>
-    <artifactId>oasp-docgen</artifactId>
-    <version>1.0.0</version>
+    <groupId>com.devonfw.tools</groupId>
+    <artifactId>devon-docgen</artifactId>
+    <version>2.0.0</version>
   </parent>
 
   <properties>
-    <oasp.wiki.page>CobiGen</oasp.wiki.page>
-    <oasp.asciidoc.pdf.stylesdir>./theme</oasp.asciidoc.pdf.stylesdir>
+    <docgen.wiki.page>CobiGen</docgen.wiki.page>
+    <docgen.asciidoc.pdf.stylesdir>./theme</docgen.asciidoc.pdf.stylesdir>
   </properties>
 
 </project>

@@ -11,6 +11,7 @@
 * link:-client-generatiohowto_EAn[Enterprise Architect UML diagram Generation]
 * link:howto_Cobigen-CLI-generation[Cobigen CLI Manual]
 * link:howto_update_CobiGen[Update CobiGen]
+* link:howto_devon4net[.Net generation]
 
 === Configuration
 * link:cobigen-core_configuration[CobiGen Configuration]

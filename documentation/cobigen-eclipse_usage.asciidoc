@@ -102,11 +102,7 @@ Update Template: Select Entity file and right click then select cobigen Update T
 
 Adapt Template: Select any file and right click, then select cobigen -> _Adapt Templates_ .If cobigen templates jar is not available then it downloads them automatically. If Cobigen templates is already present then it will override existing template in workspace and click on OK then imported template successfully message will be come.
 
-Now you need to convert the _CobiGen_Templates_ project to a Maven project, for doing so right-click the project -> Configure -> Convert to Maven project.
-
-image:images/howtos/ide-setup/22_convert_to_maven_project.png[]
-
-Finally, please change the Java version of the project to 1.8 so that you don't have any compilers.
+Finally, please change the Java version of the project to 1.8 so that you don't have any compilation errors.
 
 
 
