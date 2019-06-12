@@ -76,6 +76,33 @@ public class GenerateCommandTest {
     }
 
     /**
+     * Integration test of the generation of templates using a pattern glob.
+     * @throws IOException
+     *             when the test was not able to remove the just generated templates
+     */
+    @Test
+    public void generateUsingPatternGlobTest() throws IOException {
+        String patternGlob = testFileRootPath
+            + "localmavenproject/maven.project/core/src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java";
+        File outputRootPath = new File(testFileRootPath + "generatedcode/root");
+
+        String args[] = new String[3];
+        args[0] = "g";
+        args[1] = patternGlob;
+        args[2] = outputRootPath.getAbsolutePath();
+
+        CobiGenCLI.main(args);
+
+        File generatedFiles = outputRootPath.toPath()
+            .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
+
+        assertTrue(generatedFiles.exists());
+        // If you want to remove the generated files
+        FileUtils.deleteDirectory(outputRootPath.toPath().resolve("src").toFile());
+        FileUtils.deleteDirectory(outputRootPath.getParentFile().toPath().resolve("api").toFile());
+    }
+
+    /**
      * Integration test of the generation of templates from an OpenAPI file. It will generate all the
      * templates in the output root path passed.
      * @throws IOException

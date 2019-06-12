@@ -106,7 +106,7 @@ public class CobiGenUtils {
         logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
         if (contextConfigurationLocation.toString().startsWith("jar")) {
-            logger.info("Processing configuration archive " + contextConfigurationLocation.toString());
+            logger.debug("Processing configuration archive " + contextConfigurationLocation.toString());
             try {
                 // Get the URI of the jar from the URL of the contained context.xml
                 URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);

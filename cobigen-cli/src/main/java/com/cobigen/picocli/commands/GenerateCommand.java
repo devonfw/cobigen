@@ -1,6 +1,8 @@
 package com.cobigen.picocli.commands;
 
 import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -73,6 +75,9 @@ public class GenerateCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
+        // Pattern globs
+        getFilesPatternGlob();
+
         if (areArgumentsValid()) {
             logger.debug("Input file and output root path confirmed to be valid.");
             cobigenUtils.getTemplatesJar(false);
@@ -83,6 +88,19 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         return 1;
+    }
+
+    /**
+     *
+     */
+    private void getFilesPatternGlob() {
+
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputFile.toString());
+
+        /*
+         * Path filename = outputRootPath.toPath(); if (matcher.matches(filename)) {
+         * System.out.println(filename); }
+         */
     }
 
     /**
@@ -121,8 +139,8 @@ public class GenerateCommand implements Callable<Integer> {
         if (pomFile != null) {
             return pomFile.getParentFile();
         }
-        logger.debug("Projec root could not be found, therefore it is null.");
-        return null;
+        logger.debug("Projec root could not be found, therefore we use your current input file location.");
+        return inputFile.getParentFile();
     }
 
     /**
