@@ -65,34 +65,34 @@ public class FileInputConverter {
                     readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
                     continue;
                 }
-                {
-                    readerType = "xml";
-                    try {
-                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
-                        continue;
-                    } catch (InputReaderException e) {
-                        LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
-                            readerType, e);
-                        // try next
-                    } catch (PluginNotAvailableException e) {
-                        LOG.trace(e.getMessage(), e);
-                    }
+
+                readerType = "xml";
+                try {
+                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                    continue;
+                } catch (InputReaderException e) {
+                    LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
+                        readerType, e);
+                    // try next
+                } catch (PluginNotAvailableException e) {
+                    LOG.trace(e.getMessage(), e);
                 }
+
                 // try openapi as last chance as it takes too many resources:
                 // https://github.com/swagger-api/swagger-parser/issues/496
-                {
-                    readerType = "openapi";
-                    try {
-                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
-                        continue;
-                    } catch (InputReaderException e) {
-                        throw new GeneratorCreationException(
-                            "Could not read file " + inputFile.getLocationURI() + " with any input reader", e);
-                    } catch (PluginNotAvailableException e) {
-                        throw new GeneratorCreationException("Could not read file " + inputFile.getLocationURI()
-                            + " as no Plug-in for type '" + readerType + "' could be found.", e);
-                    }
+
+                readerType = "openapi";
+                try {
+                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                    continue;
+                } catch (InputReaderException e) {
+                    throw new GeneratorCreationException(
+                        "Could not read file " + inputFile.getLocationURI() + " with any input reader", e);
+                } catch (PluginNotAvailableException e) {
+                    throw new GeneratorCreationException("Could not read file " + inputFile.getLocationURI()
+                        + " as no Plug-in for type '" + readerType + "' could be found.", e);
                 }
+
             } else {
                 throw new GeneratorCreationException(
                     "Invalid combination of inputs. Please just select same file types in a mass selection.");
