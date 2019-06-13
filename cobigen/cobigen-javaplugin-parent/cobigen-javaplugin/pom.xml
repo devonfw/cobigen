@@ -27,19 +27,25 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -48,14 +54,7 @@
       <version>2.0.0</version>
       <scope>test</scope>
     </dependency>
-    
-    <!-- for file utility functions -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-    
+
     <!-- QDox for Java parsing -->
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
