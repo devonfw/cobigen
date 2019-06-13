@@ -39,18 +39,26 @@ log_step("Initialization...")
 #############################
 
 check_running_in_bash()
-exit_if_not_executed_in_ide_environment()
+#exit_if_not_executed_in_ide_environment()
 
 config = Config()
 init_non_git_config(config)
+
+sys.exit()
 
 git_repo = GitRepo(config)
 git_repo.assure_clean_working_copy()
 
 github = GitHub(config)
+
+#HERE
 init_git_dependent_config(config, github, git_repo)
 
 exit_if_origin_is_not_correct(config)
+
+#DEBUG
+sys.exit()
+#END DEBUG
 
 if(config.debug):
     log_debug("Current config:")
