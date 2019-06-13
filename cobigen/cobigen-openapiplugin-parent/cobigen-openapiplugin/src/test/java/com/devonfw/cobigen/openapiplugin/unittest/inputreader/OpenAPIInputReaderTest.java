@@ -61,8 +61,8 @@ public class OpenAPIInputReaderTest {
         List<EntityDef> collectEntities = inputObjects.stream().filter(e -> isEntityDef(e)).map(e -> (EntityDef) e)
             .filter(e -> e.getName().equals("Table")).collect(Collectors.toList());
         assertThat(collectEntities).hasSize(1);
-        assertThat(collectEntities.get(0).getComponent().getPaths()).hasSize(2).flatExtracting(e -> e.getOperations())
-            .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null);
+        assertThat(collectEntities.get(0).getComponent().getPaths()).hasSize(3).flatExtracting(e -> e.getOperations())
+            .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null, null);
     }
 
     @Test
