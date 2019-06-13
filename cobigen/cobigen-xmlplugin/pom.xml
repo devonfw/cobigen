@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>lexeme</artifactId>
@@ -32,22 +32,22 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
-    
+
     <!--  for file utility functions -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-    
+
     <!-- Just for systemtests to allow usage of CobiGen -->
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
