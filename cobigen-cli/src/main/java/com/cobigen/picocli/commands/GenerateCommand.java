@@ -2,6 +2,8 @@ package com.cobigen.picocli.commands;
 
 import java.io.File;
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,6 +25,7 @@ import com.cobigen.picocli.utils.ValidationUtils;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
+import com.github.javaparser.utils.Log;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -75,9 +78,6 @@ public class GenerateCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
-        // Pattern globs
-        getFilesPatternGlob();
-
         if (areArgumentsValid()) {
             logger.debug("Input file and output root path confirmed to be valid.");
             cobigenUtils.getTemplatesJar(false);
@@ -91,38 +91,76 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     *
-     */
-    private void getFilesPatternGlob() {
-
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputFile.toString());
-
-        /*
-         * Path filename = outputRootPath.toPath(); if (matcher.matches(filename)) {
-         * System.out.println(filename); }
-         */
-    }
-
-    /**
      * Validates the user arguments in the context of the generate command.
      * @return true when these arguments are correct
      */
     public Boolean areArgumentsValid() {
 
+        // Input file can be: C:\folder\input.java
         if (inputFile.exists()) {
-
-            // As outputRootPath is an optional parameter, it means that it can be null
-            if (outputRootPath == null || outputRootPath.exists()) {
-                return true;
-            } else {
-                logger.error("Your <outputRootPath> does not exist, please use a valid path.");
+            if (inputFile.isDirectory()) {
+                logger.error("You have specified a directory as input. CobiGen cannot understand that.");
                 return false;
             }
+            return isOutputRootPathValid();
 
         } else {
+            // Input file can be: folder\input.java We should use current working directory
+            try {
+                Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
+
+                if (inputFilePath.toFile().exists()) {
+                    inputFile = inputFilePath.toFile();
+                    return isOutputRootPathValid();
+                }
+            } catch (InvalidPathException e) {
+                logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
+                    + " cannot be converted to a path");
+            }
+
+            if (getFilesPatternGlob()) {
+                // Now we are in the case that maybe the user is using pattern globs like: folder\*.java
+
+                return isOutputRootPathValid();
+            }
+
             logger.error("Your <inputFile> does not exist, please use a valid file.");
+            return false;
         }
-        return false;
+    }
+
+    /**
+     * Checks whether the current output root path is valid. It can be either null because it is an optional
+     * parameter or either a folder that exists.
+     * @return true if it is a valid output root path
+     */
+    private Boolean isOutputRootPathValid() {
+        // As outputRootPath is an optional parameter, it means that it can be null
+        if (outputRootPath == null || outputRootPath.exists()) {
+            return true;
+        } else {
+            logger.error("Your <outputRootPath> does not exist, please use a valid path.");
+            return false;
+        }
+    }
+
+    /**
+    *
+    */
+    private Boolean getFilesPatternGlob() {
+
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputFile.toString());
+
+        Path filename = Paths.get(System.getProperty("user.dir"));
+        Log.info("Files matched by your glob: ");
+        if (matcher.matches(filename)) {
+            Log.info(filename.getFileName().toString());
+        } else {
+            return false;
+        }
+
+        return true;
+
     }
 
     /**
@@ -140,6 +178,7 @@ public class GenerateCommand implements Callable<Integer> {
             return pomFile.getParentFile();
         }
         logger.debug("Projec root could not be found, therefore we use your current input file location.");
+        logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
         return inputFile.getParentFile();
     }
 
@@ -175,6 +214,8 @@ public class GenerateCommand implements Callable<Integer> {
                 logger.info(
                     "As you did not specify where the code will be generated, we will use the project of your current"
                         + " input file.");
+                logger.debug("Generating to: " + inputProject.getAbsolutePath());
+
                 outputRootPath = inputProject;
             }
 
@@ -192,7 +233,6 @@ public class GenerateCommand implements Callable<Integer> {
             logger.error("Invalid input for CobiGen, please check your input file.");
             e.printStackTrace();
         }
-
     }
 
     /**

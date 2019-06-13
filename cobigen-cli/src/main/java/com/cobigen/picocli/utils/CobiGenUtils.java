@@ -27,16 +27,23 @@ import com.cobigen.picocli.CobiGenCLI;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
+import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
+import com.devonfw.cobigen.htmlplugin.HTMLPluginActivator;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
+import com.devonfw.cobigen.javaplugin.JavaPluginActivator;
 import com.devonfw.cobigen.javaplugin.JavaTriggerInterpreter;
+import com.devonfw.cobigen.jsonplugin.JSONPluginActivator;
 import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
-import com.devonfw.cobigen.textmerger.TextAppender;
-import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
+import com.devonfw.cobigen.propertyplugin.PropertyMergerPluginActivator;
+import com.devonfw.cobigen.textmerger.TextMergerPluginActivator;
+import com.devonfw.cobigen.tsplugin.TypeScriptPluginActivator;
+import com.devonfw.cobigen.xmlplugin.XmlPluginActivator;
 import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
 
 /**
@@ -179,7 +186,7 @@ public class CobiGenUtils {
 
         if (jarFile != null) {
             try {
-                registerPlugin();
+                registerPlugins();
                 CobiGen cg = CobiGenFactory.create(jarFile.toURI());
 
             } catch (InvalidConfigurationException e) {
@@ -204,7 +211,7 @@ public class CobiGenUtils {
         CobiGen cg = null;
         if (jarFile != null) {
             try {
-                registerPlugin();
+                registerPlugins();
                 cg = CobiGenFactory.create(jarFile.toURI());
 
                 return cg;
@@ -238,24 +245,60 @@ public class CobiGenUtils {
     }
 
     /**
-     * Registers the given triggerInterpreter,tsmerge, to be registered
+     * Registers the given different CobiGen plugins
      */
-    public void registerPlugin() {
+    public void registerPlugins() {
+        // Java Trigger Interpreter
         JavaTriggerInterpreter javaTriger = new JavaTriggerInterpreter("java");
         PluginRegistry.registerTriggerInterpreter(javaTriger);
-        //
-        TypeScriptMerger tsmerger = new TypeScriptMerger("tsmerge", false);
-        PluginRegistry.registerMerger(tsmerger);
+
+        // Java merger
+        JavaPluginActivator javaPluginActivator = new JavaPluginActivator();
+        registerAllMergers(javaPluginActivator);
+
+        // XML Trigger interpreter
         XmlTriggerInterpreter xmlTriggerInterpreter = new XmlTriggerInterpreter("xml");
         PluginRegistry.registerTriggerInterpreter(xmlTriggerInterpreter);
 
-        PluginRegistry.registerMerger(new TextAppender("textmergerActivator", false));
-        PluginRegistry.registerMerger(new TextAppender("jsonmerger", false));
-        PluginRegistry.registerMerger(new TextAppender("propertymerger", false));
-        PluginRegistry.registerMerger(new TextAppender("angularmerger", false));
+        // XML merger
+        XmlPluginActivator xmlPluginActivator = new XmlPluginActivator();
+        registerAllMergers(xmlPluginActivator);
+
+        // TypeScript merger
+        TypeScriptPluginActivator typeScriptPluginActivator = new TypeScriptPluginActivator();
+        registerAllMergers(typeScriptPluginActivator);
+
+        // OpenAPI Trigger interpreter
         OpenAPITriggerInterpreter openApi = new OpenAPITriggerInterpreter("openapi");
         PluginRegistry.registerTriggerInterpreter(openApi);
 
+        // HTML merger
+        HTMLPluginActivator htmlPluginActivator = new HTMLPluginActivator();
+        registerAllMergers(htmlPluginActivator);
+
+        // JSON merger
+        JSONPluginActivator jsonPluginActivator = new JSONPluginActivator();
+        registerAllMergers(jsonPluginActivator);
+
+        // Property merger
+        PropertyMergerPluginActivator propertyMergerPluginActivator = new PropertyMergerPluginActivator();
+        registerAllMergers(propertyMergerPluginActivator);
+
+        // Text merger
+        TextMergerPluginActivator textMergerPluginActivator = new TextMergerPluginActivator();
+        registerAllMergers(textMergerPluginActivator);
+
+    }
+
+    /**
+     * Register all mergers defined on that GeneratorPluginActivator
+     * @param pluginActivator
+     *            plugin activator that binds all mergers
+     */
+    private void registerAllMergers(GeneratorPluginActivator pluginActivator) {
+        for (Merger merger : pluginActivator.bindMerger()) {
+            PluginRegistry.registerMerger(merger);
+        }
     }
 
     /**
