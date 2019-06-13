@@ -106,15 +106,14 @@ exit_if_not_executed_in_ide_environment()
 config = Config()
 loaded_config_flag = __load_config_file(config)
 init_non_git_config(config)
-
+__store_config(config)
 
 git_repo = GitRepo(config)
 git_repo.assure_clean_working_copy()
 
 github = GitHub(config)
 init_git_dependent_config(config, github, git_repo)
-if not loaded_config_flag:
-    __store_config(config)
+__store_config(config)
 exit_if_origin_is_not_correct(config)
 
 if(config.debug):
