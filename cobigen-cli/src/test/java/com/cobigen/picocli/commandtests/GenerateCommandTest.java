@@ -59,10 +59,11 @@ public class GenerateCommandTest {
     public void generateFromEntityWithOutputRootPathTest() throws IOException {
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
-        String args[] = new String[3];
+        String args[] = new String[4];
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
-        args[2] = outputRootPath.getAbsolutePath();
+        args[2] = "--out";
+        args[3] = outputRootPath.getAbsolutePath();
 
         CobiGenCLI.main(args);
 
@@ -86,10 +87,11 @@ public class GenerateCommandTest {
             + "localmavenproject/maven.project/core/src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java";
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
-        String args[] = new String[3];
+        String args[] = new String[4];
         args[0] = "g";
         args[1] = patternGlob;
-        args[2] = outputRootPath.getAbsolutePath();
+        args[2] = "--out";
+        args[3] = outputRootPath.getAbsolutePath();
 
         CobiGenCLI.main(args);
 
@@ -114,10 +116,11 @@ public class GenerateCommandTest {
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
 
-        String args[] = new String[3];
+        String args[] = new String[4];
         args[0] = "generate";
         args[1] = openApiFile.getAbsolutePath();
-        args[2] = outputRootFile.getAbsolutePath();
+        args[2] = "--out";
+        args[3] = outputRootFile.getAbsolutePath();
 
         // Act
         CobiGenCLI.main(args);

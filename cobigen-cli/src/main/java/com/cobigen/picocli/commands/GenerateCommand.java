@@ -1,11 +1,10 @@
 package com.cobigen.picocli.commands;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -25,7 +24,6 @@ import com.cobigen.picocli.utils.ValidationUtils;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-import com.github.javaparser.utils.Log;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -49,13 +47,13 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * User input file
      */
-    @Parameters(index = "0", description = MessagesConstants.INPUT_FILE_DESCRIPTION)
-    File inputFile = null;
+    @Parameters(index = "0", arity = "1..*", split = ",", description = MessagesConstants.INPUT_FILE_DESCRIPTION)
+    ArrayList<File> inputFiles = null;
 
     /**
      * User output project
      */
-    @Parameters(index = "1", arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
+    @Option(names = { "--out", "-o" }, arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
     File outputRootPath = null;
 
     @Option(names = { "--verbose", "-v" }, negatable = true)
@@ -79,11 +77,13 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (areArgumentsValid()) {
-            logger.debug("Input file and output root path confirmed to be valid.");
+            logger.debug("Input files and output root path confirmed to be valid.");
             cobigenUtils.getTemplatesJar(false);
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
-            generateTemplates(inputFile, getProjectRoot(inputFile), cg, cobigenUtils.getUtilClasses());
+            for (File inputFile : inputFiles) {
+                generateTemplates(inputFile, getProjectRoot(inputFile), cg, cobigenUtils.getUtilClasses());
+            }
             return 0;
         }
 
@@ -91,42 +91,66 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * Validates the user arguments in the context of the generate command.
+     * Validates the user arguments in the context of the generate command. Tries to check whether all the
+     * input files and the output root path are valid.
      * @return true when these arguments are correct
      */
     public Boolean areArgumentsValid() {
 
-        // Input file can be: C:\folder\input.java
-        if (inputFile.exists()) {
+        Boolean allInputFileExists = true;
+
+        for (File inputFile : inputFiles) {
+            // Input file can be: C:\folder\input.java
+            if (inputFile.exists() == false) {
+                logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
+                    + " .But we will keep trying, maybe you are using wildcards or relative paths");
+                allInputFileExists = false;
+            }
             if (inputFile.isDirectory()) {
-                logger.error("You have specified a directory as input. CobiGen cannot understand that.");
+                logger.error("Your input file: " + inputFile.getAbsolutePath()
+                    + " is a directory. CobiGen cannot understand that. Please use files.");
                 return false;
             }
+        }
+
+        if (allInputFileExists) {
             return isOutputRootPathValid();
 
         } else {
-            // Input file can be: folder\input.java We should use current working directory
-            try {
-                Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
-
-                if (inputFilePath.toFile().exists()) {
-                    inputFile = inputFilePath.toFile();
-                    return isOutputRootPathValid();
-                }
-            } catch (InvalidPathException e) {
-                logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
-                    + " cannot be converted to a path");
-            }
-
-            if (getFilesPatternGlob()) {
-                // Now we are in the case that maybe the user is using pattern globs like: folder\*.java
-
+            // Input file can be: folder\input.java. We should use current working directory
+            if (parseRelativePath()) {
                 return isOutputRootPathValid();
             }
 
             logger.error("Your <inputFile> does not exist, please use a valid file.");
             return false;
         }
+    }
+
+    /**
+     * @return
+     *
+     */
+    private Boolean parseRelativePath() {
+        int index = 0;
+        Boolean allInputFileExists = true;
+        for (File inputFile : inputFiles) {
+            try {
+                Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
+
+                if (inputFilePath.toFile().exists()) {
+                    inputFiles.set(index, inputFilePath.toFile());
+                } else {
+                    allInputFileExists = false;
+                }
+            } catch (InvalidPathException e) {
+                logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFiles.toString()
+                    + " cannot be converted to a path");
+                allInputFileExists = false;
+            }
+            index++;
+        }
+        return allInputFileExists;
     }
 
     /**
@@ -142,25 +166,6 @@ public class GenerateCommand implements Callable<Integer> {
             logger.error("Your <outputRootPath> does not exist, please use a valid path.");
             return false;
         }
-    }
-
-    /**
-    *
-    */
-    private Boolean getFilesPatternGlob() {
-
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + inputFile.toString());
-
-        Path filename = Paths.get(System.getProperty("user.dir"));
-        Log.info("Files matched by your glob: ");
-        if (matcher.matches(filename)) {
-            Log.info(filename.getFileName().toString());
-        } else {
-            return false;
-        }
-
-        return true;
-
     }
 
     /**
