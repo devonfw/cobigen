@@ -56,6 +56,9 @@ public class GenerateCommand implements Callable<Integer> {
     @Option(names = { "--out", "-o" }, arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
     File outputRootPath = null;
 
+    /**
+     * If this options is enabled, we will print also debug messages
+     */
     @Option(names = { "--verbose", "-v" }, negatable = true)
     boolean verbose;
 
@@ -97,14 +100,17 @@ public class GenerateCommand implements Callable<Integer> {
      */
     public Boolean areArgumentsValid() {
 
-        Boolean allInputFileExists = true;
-
+        int index = 0;
         for (File inputFile : inputFiles) {
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
                 logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
-                    + " .But we will keep trying, maybe you are using wildcards or relative paths");
-                allInputFileExists = false;
+                    + " . But we will keep trying, maybe you are using relative paths");
+
+                // Input file can be: folder\input.java. We should use current working directory
+                if (parseRelativePath(inputFile, index) == false) {
+                    return false;
+                }
             }
             if (inputFile.isDirectory()) {
                 logger.error("Your input file: " + inputFile.getAbsolutePath()
@@ -112,45 +118,34 @@ public class GenerateCommand implements Callable<Integer> {
                 return false;
             }
         }
+        return isOutputRootPathValid();
 
-        if (allInputFileExists) {
-            return isOutputRootPathValid();
-
-        } else {
-            // Input file can be: folder\input.java. We should use current working directory
-            if (parseRelativePath()) {
-                return isOutputRootPathValid();
-            }
-
-            logger.error("Your <inputFile> does not exist, please use a valid file.");
-            return false;
-        }
     }
 
     /**
-     * @return
+     * Tries to parse a relative path with the current working directory
+     * @param inputFile
+     *            input file which we are going to parse to find out whether it is a valid file
+     * @param index
+     *            location of the input file in the ArrayList of inputs
+     * @return true only if the parsed file exists, false otherwise
      *
      */
-    private Boolean parseRelativePath() {
-        int index = 0;
-        Boolean allInputFileExists = true;
-        for (File inputFile : inputFiles) {
-            try {
-                Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
+    private Boolean parseRelativePath(File inputFile, int index) {
+        try {
+            Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
 
-                if (inputFilePath.toFile().exists()) {
-                    inputFiles.set(index, inputFilePath.toFile());
-                } else {
-                    allInputFileExists = false;
-                }
-            } catch (InvalidPathException e) {
-                logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFiles.toString()
-                    + " cannot be converted to a path");
-                allInputFileExists = false;
+            if (inputFilePath.toFile().exists()) {
+                inputFiles.set(index, inputFilePath.toFile());
+                return true;
             }
-            index++;
+        } catch (InvalidPathException e) {
+            logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
+                + " cannot be converted to a path");
+            logger
+                .error("Your <inputFile> " + inputFile.getAbsolutePath() + " does not exist, please use a valid file.");
         }
-        return allInputFileExists;
+        return false;
     }
 
     /**
@@ -231,6 +226,7 @@ public class GenerateCommand implements Callable<Integer> {
                 logger.info("(" + ++i + ") " + inc.getDescription());
             }
 
+            logger.info("Generating templates, this can take a while...");
             cg.generate(input, matchingIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             logger.info("Successfully generated templates.\n");
 
