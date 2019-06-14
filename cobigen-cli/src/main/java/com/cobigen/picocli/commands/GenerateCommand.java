@@ -61,7 +61,8 @@ public class GenerateCommand implements Callable<Integer> {
      */
     @Option(names = { "--verbose", "-v" }, negatable = true)
     boolean verbose;
-
+    @Option(names = { "--increments", "-i" },split=",", description ="List of increments")
+    List<Integer> increments;
     /**
      * Logger to output useful information to the user
      */
@@ -222,12 +223,18 @@ public class GenerateCommand implements Callable<Integer> {
             logger.info("Here are the option you have for your choice. Which increments do you want to generate?"
                 + " Please list the increments you want separated by comma:");
             int i = 0;
+            ArrayList<IncrementTo> userIncrements = new ArrayList<IncrementTo>();
             for (IncrementTo inc : matchingIncrements) {
+            	userIncrements.add(matchingIncrements.get(i));
                 logger.info("(" + ++i + ") " + inc.getDescription());
+            }
+            for(int j=0; j<userIncrements.size(); j++)
+            {
+            logger.info("Increments are going to be generated "+userIncrements.get(j));
             }
 
             logger.info("Generating templates, this can take a while...");
-            cg.generate(input, matchingIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            cg.generate(input, userIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             logger.info("Successfully generated templates.\n");
 
         } catch (MojoFailureException e) {
