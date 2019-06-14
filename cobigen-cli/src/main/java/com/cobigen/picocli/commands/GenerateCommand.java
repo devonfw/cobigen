@@ -184,7 +184,7 @@ public class GenerateCommand implements Callable<Integer> {
         }
         logger.debug("Projec root could not be found, therefore we use your current input file location.");
         logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
-        return inputFile.getParentFile();
+        return inputFile.getAbsoluteFile().getParentFile();
     }
 
     /**

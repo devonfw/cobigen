@@ -109,7 +109,7 @@ public final class ValidationUtils {
                     return pomFile;
                 }
             }
-            return findPomFromFolder(new File(source.getParent()));
+            return findPomFromFolder(source.getAbsoluteFile().getParentFile());
         } else if (source.isDirectory()) {
             return findPomFromFolder(source);
         }
