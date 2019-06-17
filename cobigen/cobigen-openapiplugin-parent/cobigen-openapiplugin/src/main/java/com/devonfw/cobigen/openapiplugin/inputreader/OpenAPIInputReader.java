@@ -359,6 +359,7 @@ public class OpenAPIInputReader implements InputReader {
             String propertyName = prop.getKey();
             Schema propertySchema = prop.getValue();
             PropertyDef propModel;
+
             if (propertySchema.getType().equals(Constants.ARRAY)) {
                 if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
                     && propertySchema.getItemsSchema() != null
@@ -389,6 +390,22 @@ public class OpenAPIInputReader implements InputReader {
                     propModel.setFormat(propertySchema.getFormat());
                 }
             }
+
+            if (propertySchema.hasEnums()) {
+                Collection<Object> enums = propertySchema.getEnums();
+
+                List<String> enumElements = new ArrayList<String>();
+                for (Object element : enums) {
+                    String test = element.toString();
+                    enumElements.add(test);
+                }
+                propModel.setEnumElements(enumElements);
+
+                String test = "gvfh";
+
+                // enums;
+            }
+
             propModel.setName(propertyName);
             propModel.setDescription(propertySchema.getDescription());
 
