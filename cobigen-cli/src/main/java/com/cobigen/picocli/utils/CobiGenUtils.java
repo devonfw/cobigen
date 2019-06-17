@@ -29,6 +29,7 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
@@ -55,7 +56,7 @@ public class CobiGenUtils {
 
     File jarFile;
 
-    File jarPath = new File("templates_jar");
+    File jarPath = CobiGenPathUtil.getTemplatesFolderPath().toFile();
 
     List<Class<?>> utilClasses;
 
@@ -309,10 +310,6 @@ public class CobiGenUtils {
      */
     public File getTemplatesJar(boolean isSource) {
         File jarFileDir = jarPath.getAbsoluteFile();
-
-        if (!jarPath.exists()) {
-            jarPath.mkdir();
-        }
 
         // We first check if we already have the CobiGen_Templates jar downloaded
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {

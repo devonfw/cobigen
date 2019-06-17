@@ -18,8 +18,13 @@ public class MessagesConstants {
         "Using an input file (Java entity or ETO, OpenAPI definition, XML...) can generate code to a location on your computer";
 
     public static final String INPUT_FILE_DESCRIPTION =
-        "Input file (Java entity or ETO, OpenAPI definition, XML...) that will be parsed by CobiGen and generate code from it.";
+        "Input files (Java entity or ETO, OpenAPI definition, XML...) that will be parsed by CobiGen and generate code from them."
+            + " You can use glob patterns on the path, for using multiple input files. "
+            + "Also you can specify input files one by one separated by whitespace.";
 
     public static final String OUTPUT_ROOT_PATH_DESCRIPTION = "Location where the generated code will be stored.";
+
+    public static final String VERBOSE_OPTION_DESCRIPTION =
+        "If this options is enabled, we will print also debug messages";
 
 }

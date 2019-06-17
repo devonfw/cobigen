@@ -59,7 +59,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * If this options is enabled, we will print also debug messages
      */
-    @Option(names = { "--verbose", "-v" }, negatable = true)
+    @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
 
     /**
