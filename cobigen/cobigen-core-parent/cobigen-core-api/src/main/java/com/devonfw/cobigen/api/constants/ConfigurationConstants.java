@@ -22,6 +22,9 @@ public class ConfigurationConstants {
     /** Name of the CobiGen home folder, placed on the users home directory */
     public static final String COBIGEN_HOME_FOLDER = ".cobigen";
 
+    /** Name of the templates folder */
+    public static final String TEMPLATES_FOLDER = "templates";
+
     /** Resource folder containing templates */
     public static final String TEMPLATE_RESOURCE_FOLDER = "src/main/templates";
 
