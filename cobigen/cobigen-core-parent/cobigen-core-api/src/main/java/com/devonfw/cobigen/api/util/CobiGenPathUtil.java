@@ -13,7 +13,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 public class CobiGenPathUtil {
 
     /**
-     * Returns the CobiGen home directory, or creates a new one if it was not present
+     * Returns the CobiGen home directory, or creates a new one if it does not exist
      * @return {@link Path} of the CobiGen home directory
      */
     public static Path getCobiGenFolderPath() {
@@ -36,8 +36,32 @@ public class CobiGenPathUtil {
     }
 
     /**
+     * Returns the templates home directory (which is located inside CobiGen home folder), or creates a new
+     * one if it does not exist
+     * @return {@link Path} of the templates home directory
+     */
+    public static Path getTemplatesFolderPath() {
+
+        Path templatesPath = getCobiGenFolderPath().resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+
+        // We first check whether we already have a directory
+        if (Files.exists(templatesPath)) {
+            return templatesPath;
+        }
+
+        if (templatesPath.toFile().mkdir()) {
+            return templatesPath;
+        } else {
+            // Folder has not been created
+            return null;
+        }
+    }
+
+    /**
      * Returns the directory where the external processes are located, or creates a new one if it was not
      * present
+     * @param processPath
+     *            name of the process
      * @return {@link Path} of the external processes home directory
      */
     public static Path getExternalProcessesPath(String processPath) {
