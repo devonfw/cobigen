@@ -38,12 +38,11 @@ public class PropertyDef {
         setSameComponent(false);
     }
 
-    // #####
     public void setEnumElements(List<String> enumElements) {
         this.enumElements = enumElements;
     }
 
-    public List getEnumElments() {
+    public List<String> getEnumElements() {
         return enumElements;
     }
 
