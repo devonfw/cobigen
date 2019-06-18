@@ -1,21 +1,20 @@
-import sys
-import os
 import getpass
+import os
+import sys
 
-from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
-from github.MainClass import Github
-from github.Issue import Issue
-from github.PaginatedList import PaginatedList
-from github.Milestone import Milestone
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
+from github.GithubException import UnknownObjectException, GithubException, BadCredentialsException
+from github.Issue import Issue
+from github.MainClass import Github
+from github.Milestone import Milestone
+from github.PaginatedList import PaginatedList
 from github.Repository import Repository
-from github.GithubObject import NotSet
 
-from tools.user_interface import prompt_yesno_question,  prompt_enter_value
 from tools.config import Config
 from tools.github_cache import GitHubCache
 from tools.logger import log_error, log_info, log_info_dry, log_debug
+from tools.user_interface import prompt_yesno_question, prompt_enter_value
 
 
 class GitHub:
@@ -44,12 +43,18 @@ class GitHub:
     # This script is responsible for the authentication of git user
     def __authenticate_git_user(self):
         while True:
-            if prompt_yesno_question("Are you using two-factor authentication on GitHub?"):
+            if not hasattr(self.__config, "two_factor_authentication"):
+                self.__config.two_factor_authentication = prompt_yesno_question(
+                    "Are you using two-factor authentication on GitHub?")
+            if self.__config.two_factor_authentication:
                 self.__config.git_token = getpass.getpass("> Please enter your token: ")
                 while not self.__config.git_token:
                     self.__config.git_token = getpass.getpass("> Please enter your token: ")
             else:
-                self.__config.git_username = prompt_enter_value("your git user name")
+                if not hasattr(self.__config, "git_username"):
+                    self.__config.git_username = prompt_enter_value("your git user name")
+                else:
+                    log_info("The stored Github username is {}".format(self.__config.git_username))
                 self.__config.git_password = getpass.getpass("> Please enter your password: ")
                 while not self.__config.git_password:
                     self.__config.git_password = getpass.getpass("> Please enter your password: ")
@@ -88,14 +93,17 @@ class GitHub:
         if self.__config.dry_run:
             log_info_dry('Skipping creation of issue with title ' + str(title))
             return 0
-        if self.__config.debug and not prompt_yesno_question('[DEBUG] Would now create GitHub issue with title="' + title + '", milestone='+str(milestone)+'. Continue?'):
+        if self.__config.debug and not prompt_yesno_question(
+            '[DEBUG] Would now create GitHub issue with title="' + title + '", milestone=' + str(
+                milestone) + '. Continue?'):
             sys.exit()
 
         log_info('Create GitHub issue with title "' + title + '"...')
 
         try:
             issue: Issue = self.__repo.create_issue(title=title, body=body, milestone=milestone,
-                                                    labels=[self.__config.issue_label_name, "CI/CD"], assignee=self.__github.get_user().login)
+                                                    labels=[self.__config.issue_label_name, "CI/CD"],
+                                                    assignee=self.__github.get_user().login)
             self.__config.github_issue_no = issue.number
             self.__cache.issues.update({issue.number: issue})
             return self.__config.github_issue_no
@@ -130,7 +138,7 @@ class GitHub:
 
     def find_cobigen_core_milestone(self, version: str) -> Milestone:
         milestones: PaginatedList = self.__request_milestone_list()
-                
+
         search_title = self.__config.expected_core_milestone_name + version
         log_debug("Trying to search milestone: " + search_title)
         for milestone in milestones:
@@ -139,9 +147,10 @@ class GitHub:
         return None
 
     def create_next_release_milestone(self) -> Milestone:
-        new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version, self.__config.next_version)
+        new_mile_title = self.__config.expected_milestone_name.replace(self.__config.release_version,
+                                                                       self.__config.next_version)
         if self.__config.dry_run:
-            log_info_dry("Would now create a new milestone with title '"+new_mile_title+"'.")
+            log_info_dry("Would now create a new milestone with title '" + new_mile_title + "'.")
             return None
 
         log_info("Creating milestone '" + new_mile_title + "' for next release...")
@@ -174,22 +183,26 @@ class GitHub:
 
         try:
             release: GitRelease = self.__repo.create_git_release(self.__config.tag_name, release_title,
-                                                                 release_text, draft=False, prerelease=False, target_commitish="master")
+                                                                 release_text, draft=False, prerelease=False,
+                                                                 target_commitish="master")
 
             content_type = "application/java-archive"
             if self.__config.branch_to_be_released == self.__config.branch_eclipseplugin:
                 content_type = "application/zip"
 
-            for root, dirs, files in os.walk(os.path.join(self.__config.build_folder_abs, self.__config.build_artifacts_root_search_path)):
-                dirs[:] = [d for d in dirs if d not in [".settings", "src", "repository", "repository-upload", "classes", "apidocs"]]
+            for root, dirs, files in os.walk(
+                os.path.join(self.__config.build_folder_abs, self.__config.build_artifacts_root_search_path)):
+                dirs[:] = [d for d in dirs if
+                           d not in [".settings", "src", "repository", "repository-upload", "classes", "apidocs"]]
                 for fname in files:
                     fpath = os.path.join(root, fname)
                     # To prevent uploading of unnecessary zip/jar files.
                     if (fname.endswith("jar") or fname.endswith("zip")) and self.__config.release_version in fname:
-                        log_info("Uploading file "+fname+"...")
+                        log_info("Uploading file " + fname + "...")
                         try:
-                            asset: GitReleaseAsset = release.upload_asset(path=fpath, label=fname, content_type=content_type)
-                            log_info("Uploaded "+str(asset.size)+"kb!")
+                            asset: GitReleaseAsset = release.upload_asset(path=fpath, label=fname,
+                                                                          content_type=content_type)
+                            log_info("Uploaded " + str(asset.size) + "kb!")
                         except GithubException as e:
                             log_error("Upload failed!")
                             if self.__config.debug:
