@@ -61,8 +61,10 @@ public class GenerateCommand implements Callable<Integer> {
      */
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
-    @Option(names = { "--increments", "-i" },split=",", description ="List of increments")
+
+    @Option(names = { "--increments", "-i" }, split = ",", description = "List of increments")
     List<Integer> increments;
+
     /**
      * Logger to output useful information to the user
      */
@@ -225,12 +227,11 @@ public class GenerateCommand implements Callable<Integer> {
             int i = 0;
             ArrayList<IncrementTo> userIncrements = new ArrayList<IncrementTo>();
             for (IncrementTo inc : matchingIncrements) {
-            	userIncrements.add(matchingIncrements.get(i));
+                userIncrements.add(matchingIncrements.get(i));
                 logger.info("(" + ++i + ") " + inc.getDescription());
             }
-            for(int j=0; j<userIncrements.size(); j++)
-            {
-            logger.info("Increments are going to be generated "+userIncrements.get(j));
+            for (int j = 0; j < userIncrements.size(); j++) {
+                // logger.info("Increments are going to be generated "+userIncrements.get(j));
             }
 
             logger.info("Generating templates, this can take a while...");

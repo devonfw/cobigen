@@ -80,8 +80,7 @@ public class CobiGenUtils {
      * @throws IOException
      *             {@link IOException} occurred
      */
-    List<Class<?>> resolveTemplateUtilClassesFromJar(File jarPath)
-        throws GeneratorProjectNotExistentException, IOException {
+    List<Class<?>> resolveTemplateUtilClassesFromJar(File jarPath) throws IOException {
         final List<Class<?>> result = new LinkedList<>();
         Path templateRoot;
         ClassLoader inputClassLoader =

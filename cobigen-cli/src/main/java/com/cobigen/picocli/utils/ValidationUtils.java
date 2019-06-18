@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobigen.picocli.CobiGenCLI;
-import com.cobigen.picocli.commands.CobiGenCommand;
-import com.cobigen.picocli.constants.MessagesConstants;
 
 /**
  * Utilities class for validating user's input
@@ -47,36 +45,6 @@ public final class ValidationUtils {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Method that tries to get user input related to the root output path.
-     * @param userArgs
-     *            user arguments
-     * @return root output path as string
-     */
-    public static String chooseWorkingDirectory(String userArgs) {
-
-        String workingDirectory = "";
-        switch (userArgs) {
-        case "change folder":
-            logger.info("Please provide which folder you want to use: ");
-            workingDirectory = CobiGenCommand.getUserInput();
-            break;
-        case "from":
-            // current working directory where the CLI is getting executed
-            workingDirectory = System.getProperty("user.dir");
-            break;
-        case "in":
-            logger.error(MessagesConstants.COMMAND_NOT_YET_SUPPORTED);
-            System.exit(0);
-            break;
-        default:
-            logger.error(MessagesConstants.COMMAND_NOT_UNDERSTOOD);
-            System.exit(0);
-            break;
-        }
-        return workingDirectory;
     }
 
     /**
