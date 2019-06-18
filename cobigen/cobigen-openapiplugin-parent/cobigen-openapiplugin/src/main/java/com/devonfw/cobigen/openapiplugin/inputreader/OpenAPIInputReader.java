@@ -394,16 +394,11 @@ public class OpenAPIInputReader implements InputReader {
             if (propertySchema.hasEnums()) {
                 Collection<Object> enums = propertySchema.getEnums();
 
-                List<String> enumElements = new ArrayList<String>();
+                List<String> enumElements = new ArrayList<>();
                 for (Object element : enums) {
-                    String test = element.toString();
-                    enumElements.add(test);
+                    enumElements.add(element.toString());
                 }
                 propModel.setEnumElements(enumElements);
-
-                String test = "gvfh";
-
-                // enums;
             }
 
             propModel.setName(propertyName);
