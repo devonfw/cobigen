@@ -230,8 +230,10 @@ public class GenerateCommand implements Callable<Integer> {
                 userIncrements.add(matchingIncrements.get(i));
                 logger.info("(" + ++i + ") " + inc.getDescription());
             }
+
+            logger.info("Following Increments are going to be generated:");
             for (int j = 0; j < userIncrements.size(); j++) {
-                // logger.info("Increments are going to be generated "+userIncrements.get(j));
+                logger.info(userIncrements.get(j).getDescription());
             }
 
             logger.info("Generating templates, this can take a while...");
