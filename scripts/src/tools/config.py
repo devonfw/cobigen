@@ -1,8 +1,3 @@
-import os
-import sys
-from tools.logger import log_error
-
-
 class Config():
 
     def __init__(self):
@@ -12,6 +7,7 @@ class Config():
         self.oss: bool = False
         self.gpg_keyname: str
         self.gpg_executable: str
+        self.gpg_loaded: bool = False
 
         self.dry_run: bool = False
         self.debug: bool = False

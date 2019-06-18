@@ -1,17 +1,14 @@
 import os
-import sys
 import subprocess
-
-from _winapi import CREATE_NEW_CONSOLE
+import sys
 from asyncio.subprocess import PIPE
-from lxml import etree
 from typing import List, Tuple
+
+from lxml import etree
 
 from tools.config import Config
 from tools.github import GitHub
-from tools.logger import log_info, log_error, log_debug
-
-from tools.user_interface import prompt_enter_value, prompt_yesno_question
+from tools.logger import log_info, log_error
 
 
 class Maven:
