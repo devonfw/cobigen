@@ -210,10 +210,21 @@ node {
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
+			
+			stage('clean up') {
+				cleanWs()
+				deleteDir()
+			}
+			
 			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
+	
+	stage('clean up') {
+		cleanWs()
+		deleteDir()
+	}
 }
 
 def isPRBuild() {
@@ -252,4 +263,6 @@ def setBuildStatus(String message, String state) {
 		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${state}"
 		echo "Exception ${e.toString()}:${e.getMessage()}"
 	}
+	
+
 }
