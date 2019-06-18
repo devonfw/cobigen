@@ -38,6 +38,7 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
+import com.devonfw.cobigen.eclipse.wizard.common.control.CheckStateListener;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.IJavaElementStub;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.IResourceStub;
 import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourceTreeNode;
@@ -103,6 +104,7 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
 
         this.cobigenWrapper = cobigenWrapper;
         this.batch = batch;
+
     }
 
     @Override
@@ -304,6 +306,12 @@ public class SelectFileLabelProvider extends LabelProvider implements IColorProv
         synchronized (selectedIncrements) {
             // Increments selection has been changed
             if (event.getSource() instanceof CheckboxTreeViewer) {
+
+                CheckboxTreeViewer incrementSelector = (CheckboxTreeViewer) event.getSource();
+
+                CheckStateListener listener = new CheckStateListener(cobigenWrapper, null, batch);
+                listener.performCheckLogic(event, incrementSelector);
+
                 Set<Object> selectedElements =
                     new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
 
