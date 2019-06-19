@@ -35,9 +35,11 @@ public class GenerateCommandTest {
     public void generateFromEntityTest() throws IOException {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
-        String args[] = new String[2];
+        String args[] = new String[4];
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
+        args[2] = "--increments";
+        args[3] = "8";
 
         CobiGenCLI.main(args);
 
@@ -59,39 +61,13 @@ public class GenerateCommandTest {
     public void generateFromEntityWithOutputRootPathTest() throws IOException {
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
-        String args[] = new String[4];
+        String args[] = new String[6];
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
         args[2] = "--out";
         args[3] = outputRootPath.getAbsolutePath();
-
-        CobiGenCLI.main(args);
-
-        File generatedFiles = outputRootPath.toPath()
-            .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
-
-        assertTrue(generatedFiles.exists());
-        // If you want to remove the generated files
-        FileUtils.deleteDirectory(outputRootPath.toPath().resolve("src").toFile());
-        FileUtils.deleteDirectory(outputRootPath.getParentFile().toPath().resolve("api").toFile());
-    }
-
-    /**
-     * Integration test of the generation of templates using a pattern glob.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
-     */
-    @Test
-    public void generateUsingPatternGlobTest() throws IOException {
-        String patternGlob = testFileRootPath
-            + "localmavenproject/maven.project/core/src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java";
-        File outputRootPath = new File(testFileRootPath + "generatedcode/root");
-
-        String args[] = new String[4];
-        args[0] = "g";
-        args[1] = patternGlob;
-        args[2] = "--out";
-        args[3] = outputRootPath.getAbsolutePath();
+        args[4] = "--increments";
+        args[5] = "0";
 
         CobiGenCLI.main(args);
 
@@ -116,11 +92,13 @@ public class GenerateCommandTest {
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
 
-        String args[] = new String[4];
+        String args[] = new String[6];
         args[0] = "generate";
         args[1] = openApiFile.getAbsolutePath();
         args[2] = "--out";
         args[3] = outputRootFile.getAbsolutePath();
+        args[4] = "--increments";
+        args[5] = "1,15,22";
 
         // Act
         CobiGenCLI.main(args);
@@ -136,16 +114,12 @@ public class GenerateCommandTest {
 
         generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
         assertTrue(generatedFiles.exists());
+        FileUtils.deleteDirectory(generatedFiles);
 
         // If you want to remove the generated files
         FileUtils.deleteDirectory(rootPath.resolve("src").toFile());
         FileUtils.deleteDirectory(rootPath.resolve("docs").toFile());
         FileUtils.deleteDirectory(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-
-        Path frontEndPath = generatedFiles.getParentFile().toPath();
-        FileUtils.deleteDirectory(generatedFiles);
-        FileUtils.deleteDirectory(frontEndPath.resolve("devon4ng-application-template").toFile());
-        FileUtils.deleteDirectory(frontEndPath.resolve("devon4net-application-template").toFile());
     }
 
 }

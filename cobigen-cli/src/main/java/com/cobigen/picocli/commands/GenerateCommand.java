@@ -238,11 +238,12 @@ public class GenerateCommand implements Callable<Integer> {
                 outputRootPath = inputProject;
             }
 
-            ArrayList<IncrementTo> userIncrements = new ArrayList<>();
+            List<IncrementTo> userIncrements = new ArrayList<>();
+            logger.info("(0) All");
             for (IncrementTo inc : matchingIncrements) {
                 logger.info("(" + ++i + ") " + inc.getDescription());
             }
-            logger.info("--------------------------------------");
+            System.out.println("---------------------------------------------");
             if (increments == null || increments.size() < 1) {
                 logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
                     + " Please list the increments number you want separated by comma:");
@@ -260,12 +261,19 @@ public class GenerateCommand implements Callable<Integer> {
 
             } else {
                 logger.info(
-                    "Those are the all the increments that you can select with your input file, but you have chosen:");
+                    "Those are all the increments that you can select with your input file, but you have chosen:");
             }
 
             for (int j = 0; j < increments.size(); j++) {
                 try {
                     int selectedIncrementNumber = increments.get(j);
+
+                    // We need to generate all
+                    if (selectedIncrementNumber == 0) {
+                        logger.info("(0) All");
+                        userIncrements = matchingIncrements;
+                        break;
+                    }
                     userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
                     logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
                 } catch (IndexOutOfBoundsException e) {
