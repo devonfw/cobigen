@@ -54,9 +54,15 @@ import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
 public class CobiGenUtils {
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
-    File jarFile;
+    /**
+     * File of the templates jar
+     */
+    File templatesJar;
 
-    File jarPath = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+    /**
+     * Directory where all our templates jar are located
+     */
+    File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
 
     List<Class<?>> utilClasses;
 
@@ -165,37 +171,21 @@ public class CobiGenUtils {
      * @param User
      *            input entity file
      */
-    public void createJarAndGenerateIncr(File inputFile) {
-        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+    public void createJarAndGenerateIncr() {
+        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
-        URLClassLoader classLoader = null;
-        File root = inputFile.getParentFile();
         // Call method to get utils from jar
         try {
 
-            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
-        } catch (GeneratorProjectNotExistentException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
+            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
         } catch (IOException e2) {
             // TODO Auto-generated catch block
             e2.printStackTrace();
         }
 
-        // JavaParser. parse(inputFile.getAbsolutePath());
+        if (templatesJar != null) {
 
-        if (jarFile != null) {
-            try {
-                registerPlugins();
-                CobiGen cg = CobiGenFactory.create(jarFile.toURI());
-
-            } catch (InvalidConfigurationException e) {
-                // if the context configuration is not valid
-                e.printStackTrace();
-            } catch (IOException e) {
-                // If I/O operation failed then it will throw exception
-                e.printStackTrace();
-            }
+            registerPlugins();
 
         }
 
@@ -209,10 +199,10 @@ public class CobiGenUtils {
         getTemplates();
 
         CobiGen cg = null;
-        if (jarFile != null) {
+        if (templatesJar != null) {
             try {
                 registerPlugins();
-                cg = CobiGenFactory.create(jarFile.toURI());
+                cg = CobiGenFactory.create(templatesJar.toURI());
 
                 return cg;
 
@@ -230,10 +220,10 @@ public class CobiGenUtils {
     }
 
     public List<Class<?>> getTemplates() {
-        jarFile = TemplatesJarUtil.getJarFile(false, jarPath);
+        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
         try {
-            utilClasses = resolveTemplateUtilClassesFromJar(jarFile);
+            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
         } catch (GeneratorProjectNotExistentException e2) {
             // TODO Auto-generated catch block
             e2.printStackTrace();
@@ -308,7 +298,7 @@ public class CobiGenUtils {
      * @return the jar file of the templates
      */
     public File getTemplatesJar(boolean isSource) {
-        File jarFileDir = jarPath.getAbsoluteFile();
+        File jarFileDir = jarsDirectory.getAbsoluteFile();
 
         // We first check if we already have the CobiGen_Templates jar downloaded
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
