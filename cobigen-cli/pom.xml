@@ -135,14 +135,6 @@
       <artifactId>mmm-util-core</artifactId>
       <version>7.5.1</version>
     </dependency>
-      
-      <dependency>
-        <groupId>com.devonfw.cobigen</groupId>
-        <artifactId>com.devonfw.cobigen.eclipse</artifactId>
-        <version>4.3.2</version>
-      </dependency>
-      
-      
 
 	<!-- SLF4J - API -->
     
@@ -188,14 +180,8 @@
                   <manifest>
                      <mainClass>com.cobigen.picocli.CobiGenCLI</mainClass>
                   </manifest>
-               </archive>
-               
-               
+               </archive>   
             </configuration>
-            
-
- 
-
          </plugin>
       </plugins>
    </build>
