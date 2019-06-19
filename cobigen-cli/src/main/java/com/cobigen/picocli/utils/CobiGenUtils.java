@@ -30,9 +30,6 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.htmlplugin.HTMLPluginActivator;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
@@ -80,9 +77,8 @@ public class CobiGenUtils {
      * Resolves all classes, which have been defined in the template configuration folder from a jar.
      *
      * @return the list of classes
-     * @throws GeneratorProjectNotExistentException
-     *             if no generator configuration project called {@link ResourceConstants#CONFIG_PROJECT_NAME}
-     *             exists
+     *
+     *         if no generator configuration project exists
      * @throws IOException
      *             {@link IOException} occurred
      */
@@ -151,8 +147,6 @@ public class CobiGenUtils {
                 });
             } catch (IOException e) {
                 logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-                PlatformUIUtil.openErrorDialog(
-                    "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
             }
             for (String className : foundClasses) {
                 try {
@@ -224,9 +218,6 @@ public class CobiGenUtils {
 
         try {
             utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
-        } catch (GeneratorProjectNotExistentException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
         } catch (IOException e2) {
             // TODO Auto-generated catch block
             e2.printStackTrace();
