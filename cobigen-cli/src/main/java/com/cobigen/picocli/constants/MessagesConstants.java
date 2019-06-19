@@ -48,4 +48,10 @@ public class MessagesConstants {
     public static final String VERBOSE_OPTION_DESCRIPTION =
         "If this options is enabled, we will print also debug messages";
 
+    /**
+     * Message constant: description of the increments option
+     */
+    public static final String INCREMENTS_OPTION_DESCRIPTION =
+        "List of increments that will be generated. They need to be specified with numbers separated by comma.";
+
 }
