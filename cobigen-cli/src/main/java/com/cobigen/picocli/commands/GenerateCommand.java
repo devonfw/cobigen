@@ -121,6 +121,7 @@ public class GenerateCommand implements Callable<Integer> {
 
                 // Input file can be: folder\input.java. We should use current working directory
                 if (parseRelativePath(inputFile, index) == false) {
+                    logger.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
                     return false;
                 }
             }
@@ -155,8 +156,6 @@ public class GenerateCommand implements Callable<Integer> {
         } catch (InvalidPathException e) {
             logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
                 + " cannot be converted to a path");
-            logger
-                .error("Your <inputFile> " + inputFile.getAbsolutePath() + " does not exist, please use a valid file.");
         }
         return false;
     }

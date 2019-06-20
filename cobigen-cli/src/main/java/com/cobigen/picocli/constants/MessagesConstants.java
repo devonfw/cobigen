@@ -35,7 +35,7 @@ public class MessagesConstants {
     public static final String INPUT_FILE_DESCRIPTION =
         "Input files (Java entity or ETO, OpenAPI definition, XML...) that will be parsed by CobiGen and generate code from them."
             + " You can use glob patterns on the path, for using multiple input files. "
-            + "Also you can specify input files one by one separated by whitespace.";
+            + "Also you can specify input files one by one separated by comma.";
 
     /**
      * Message constant: description of the output root path option
