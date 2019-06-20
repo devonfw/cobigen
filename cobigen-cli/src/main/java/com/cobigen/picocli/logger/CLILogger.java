@@ -10,7 +10,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-
+/**
+ * This class declare layout logger and logger level  
+ */
 public class CLILogger {
 
     private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
@@ -33,7 +35,9 @@ public class CLILogger {
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(appender);
     }
-
+/**
+ *  This method declare level of logger
+ */
     public static void setLevel(Level level) {
         rootLogger.setLevel(level);
     }
