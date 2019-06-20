@@ -289,7 +289,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
-            e.printStackTrace();
+            
         }
     }
 
