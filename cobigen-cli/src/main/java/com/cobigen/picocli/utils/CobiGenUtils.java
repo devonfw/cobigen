@@ -49,6 +49,7 @@ import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
  * the plugins
  */
 public class CobiGenUtils {
+
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
@@ -173,8 +174,9 @@ public class CobiGenUtils {
 
             utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
         } catch (IOException e2) {
-           logger.error("Unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-            
+            logger.error(
+                "Unable to resolves all classes, which have been defined in the template configuration folder from a jar");
+
         }
 
         if (templatesJar != null) {
@@ -202,7 +204,7 @@ public class CobiGenUtils {
 
             } catch (InvalidConfigurationException e) {
                 // if the context configuration is not valid
-               logger.error("Invalid configuration of context ");
+                logger.error("Invalid configuration of context ");
             } catch (IOException e) {
                 // If I/O operation failed then it will throw exception
                 logger.error("I/O operation is failed ");
@@ -219,8 +221,9 @@ public class CobiGenUtils {
         try {
             utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
         } catch (IOException e2) {
-            logger.error("IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-            
+            logger.error(
+                "IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
+
         }
         return utilClasses;
     }

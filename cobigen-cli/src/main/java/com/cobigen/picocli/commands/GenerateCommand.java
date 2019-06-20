@@ -214,17 +214,18 @@ public class GenerateCommand implements Callable<Integer> {
         List<Class<?>> utilClasses) {
 
         try {
-            int i = 0;
             Object input;
+            String extension = inputFile.getName().toLowerCase();
+            Boolean isJavaInput = extension.endsWith(".java");
+            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
             // If it is a Java file, we need the class loader
-            if (inputFile.getName().endsWith(".java")) {
+            if (isJavaInput) {
                 JavaContext context = getJavaContext(inputFile, inputProject);
                 input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
             } else {
                 input = InputPreProcessor.process(cg, inputFile, null);
             }
-            List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
 
             // If user did not specify the output path of the generated files, we can use the current project
             // folder
@@ -237,49 +238,11 @@ public class GenerateCommand implements Callable<Integer> {
                 outputRootPath = inputProject;
             }
 
-            List<IncrementTo> userIncrements = new ArrayList<>();
-            logger.info("(0) All");
-            for (IncrementTo inc : matchingIncrements) {
-                logger.info("(" + ++i + ") " + inc.getDescription());
+            List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
+            if (matchingIncrements.isEmpty()) {
+                printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
-            System.out.println("---------------------------------------------");
-            if (increments == null || increments.size() < 1) {
-                logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
-                    + " Please list the increments number you want separated by comma:");
-
-                increments = new ArrayList<>();
-                for (String userInc : getUserInput().split(",")) {
-                    try {
-                        increments.add(Integer.parseInt(userInc));
-                    } catch (NumberFormatException e) {
-                        logger.error(
-                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-                        System.exit(1);
-                    }
-                }
-
-            } else {
-                logger.info(
-                    "Those are all the increments that you can select with your input file, but you have chosen:");
-            }
-
-            for (int j = 0; j < increments.size(); j++) {
-                try {
-                    int selectedIncrementNumber = increments.get(j);
-
-                    // We need to generate all
-                    if (selectedIncrementNumber == 0) {
-                        logger.info("(0) All");
-                        userIncrements = matchingIncrements;
-                        break;
-                    }
-                    userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
-                    logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
-                } catch (IndexOutOfBoundsException e) {
-                    logger.error("The increment number you have specified is out of bounds!");
-                    System.exit(1);
-                }
-            }
+            List<IncrementTo> userIncrements = incrementsSelection(increments, matchingIncrements);
 
             logger.info("Generating templates, this can take a while...");
             GenerationReportTo report =
@@ -289,8 +252,90 @@ public class GenerateCommand implements Callable<Integer> {
 
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
-            
+
         }
+    }
+
+    /**
+     * Prints an error message to the user for informing that no triggers have been matched. Depending on the
+     * type of the input file will print different messages.
+     * @param inputFile
+     *            User input file
+     * @param isJavaInput
+     *            true when input file is Java
+     * @param isOpenApiInput
+     *            true when input file is OpenAPI
+     */
+    private void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
+        logger.error("Your input file '" + inputFile.getName()
+            + "' is not valid as input for any generation purpose. It does not match any trigger.");
+        if (isJavaInput) {
+            logger.error("Check that your Java input file is following devon4j naming convention. "
+                + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
+        } else if (isOpenApiInput) {
+            logger.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
+                + "More info here https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage");
+        }
+        System.exit(1);
+    }
+
+    /**
+     * Method that handles the increments selection and prints some messages to the console
+     * @param increments
+     *            user selected increments
+     * @param matchingIncrements
+     *            all the increments that match the current input file
+     * @return The final increments that will be used for generation
+     */
+    private List<IncrementTo> incrementsSelection(ArrayList<Integer> increments, List<IncrementTo> matchingIncrements) {
+
+        // Print all matching increments
+        int i = 0;
+        List<IncrementTo> userIncrements = new ArrayList<>();
+        logger.info("(0) All");
+        for (IncrementTo inc : matchingIncrements) {
+            logger.info("(" + ++i + ") " + inc.getDescription());
+        }
+        System.out.println("---------------------------------------------");
+
+        if (increments == null || increments.size() < 1) {
+            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
+                + " Please list the increments number you want separated by comma:");
+
+            increments = new ArrayList<>();
+            for (String userInc : getUserInput().split(",")) {
+                try {
+                    increments.add(Integer.parseInt(userInc));
+                } catch (NumberFormatException e) {
+                    logger.error(
+                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                    System.exit(1);
+                }
+            }
+
+        } else {
+            logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
+        }
+
+        // Print user selected increments
+        for (int j = 0; j < increments.size(); j++) {
+            try {
+                int selectedIncrementNumber = increments.get(j);
+
+                // We need to generate all
+                if (selectedIncrementNumber == 0) {
+                    logger.info("(0) All");
+                    userIncrements = matchingIncrements;
+                    break;
+                }
+                userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
+                logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("The increment number you have specified is out of bounds!");
+                System.exit(1);
+            }
+        }
+        return userIncrements;
     }
 
     /**
