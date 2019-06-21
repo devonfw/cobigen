@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>picocli</groupId>
-  <artifactId>com.cobigen.picocli</artifactId>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>cli</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>picocli</name>
+  <name>cobigen-cli</name>
 
   <properties>
     <junit.version>4.11</junit.version>
@@ -177,7 +177,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.cobigen.picocli.CobiGenCLI</mainClass>
+              <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
             </manifest>
           </archive>
         </configuration>

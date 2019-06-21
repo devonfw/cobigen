@@ -1,9 +1,9 @@
-package com.cobigen.picocli;
+package com.devonfw.cobigen.cli;
 
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.commands.CobiGenCommand;
-import com.cobigen.picocli.logger.CLILogger;
+import com.devonfw.cobigen.cli.commands.CobiGenCommand;
+import com.devonfw.cobigen.cli.logger.CLILogger;
 
 import ch.qos.logback.classic.Logger;
 import picocli.CommandLine;

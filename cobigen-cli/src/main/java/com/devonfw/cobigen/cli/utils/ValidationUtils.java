@@ -1,11 +1,11 @@
-package com.cobigen.picocli.utils;
+package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.CobiGenCLI;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 
 /**
  * Utilities class for validating user's input

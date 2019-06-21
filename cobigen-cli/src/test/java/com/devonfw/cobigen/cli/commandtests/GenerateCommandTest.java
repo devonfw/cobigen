@@ -1,4 +1,4 @@
-package com.cobigen.picocli.commandtests;
+package com.devonfw.cobigen.cli.commandtests;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import com.cobigen.picocli.CobiGenCLI;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 
 /**
  * Tests the usage of the generate command

@@ -1,4 +1,4 @@
-package com.cobigen.picocli.utils;
+package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,13 +23,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.CobiGenCLI;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.htmlplugin.HTMLPluginActivator;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;

@@ -1,10 +1,10 @@
-package com.cobigen.picocli.commands;
+package com.devonfw.cobigen.cli.commands;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.CobiGenCLI;
-import com.cobigen.picocli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 
 import picocli.CommandLine.Command;
 

@@ -1,4 +1,4 @@
-package com.cobigen.picocli.commands;
+package com.devonfw.cobigen.cli.commands;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
@@ -16,15 +16,15 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobigen.picocli.CobiGenCLI;
-import com.cobigen.picocli.constants.MessagesConstants;
-import com.cobigen.picocli.logger.CLILogger;
-import com.cobigen.picocli.utils.CobiGenUtils;
-import com.cobigen.picocli.utils.ParsingUtils;
-import com.cobigen.picocli.utils.ValidationUtils;
+import com.devonfw.cobigen.cli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.logger.CLILogger;
+import com.devonfw.cobigen.cli.utils.CobiGenUtils;
+import com.devonfw.cobigen.cli.utils.ParsingUtils;
+import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
 import ch.qos.logback.classic.Level;
@@ -371,7 +371,7 @@ public class GenerateCommand implements Callable<Integer> {
      */
     private JavaContext getJavaContext(File inputFile, File inputProject) {
         JavaSourceProviderUsingMaven provider = new JavaSourceProviderUsingMaven();
-        JavaContext context = provider.createFromLocalMavenProject(inputProject);
+        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
 
         String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
 

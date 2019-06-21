@@ -1,4 +1,4 @@
-package com.cobigen.picocli.constants;
+package com.devonfw.cobigen.cli.constants;
 
 /**
  * Messages constants printed to the user
@@ -19,9 +19,7 @@ public class MessagesConstants {
      * Message constant: welcome message when user executes CobiGen help
      */
     public static final String WELCOME_MESSAGE = "Welcome to CobiGen.\n"
-        + "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n"
-        + "Available Commands:\n" + "cg generate (g)\n" + "cg update\n" + "cg check\n" + "cg revert\n"
-        + "with [-h] you can get more infos about the commands you want to use or the increment you want to generate";
+        + "The Code-based incemental Generator for end to end code generation tasks, mostly used in Java projects.\n";
 
     /**
      * Message constant: description of the generate command

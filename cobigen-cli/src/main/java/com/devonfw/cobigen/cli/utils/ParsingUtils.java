@@ -1,4 +1,4 @@
-package com.cobigen.picocli.utils;
+package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
 import java.io.FileReader;
