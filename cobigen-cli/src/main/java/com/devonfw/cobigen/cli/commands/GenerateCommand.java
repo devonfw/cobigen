@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
@@ -57,9 +58,21 @@ public class GenerateCommand implements Callable<Integer> {
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
 
+    /**
+     * This option is provide multiple choice of available increments
+     */
     @Option(names = { "--increments", "-i" }, split = ",",
         description = MessagesConstants.INCREMENTS_OPTION_DESCRIPTION)
+    /**
+     * Initialize increments variable
+     */
     ArrayList<Integer> increments = null;
+
+    /**
+     * This option provide specified list of template
+     */
+    @Option(names = { "--templates", "-t" }, split = ",", description = MessagesConstants.TEMPLATES_OPTION_DESCRIPTION)
+    ArrayList<Integer> templates = null;
 
     /**
      * Logger to output useful information to the user
@@ -95,19 +108,29 @@ public class GenerateCommand implements Callable<Integer> {
             cobigenUtils.getTemplatesJar(false);
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
-            List<IncrementTo> finalIncrements = null;
-            if (inputFiles.size() > 1) {
-                finalIncrements = preprocessIncrements(cg);
-            }
+            if (increments == null && templates != null) {
+                // User specified only templates, not increments
+                for (File inputFile : inputFiles) {
+                    generateTemplates(inputFile, getProjectRoot(inputFile), templates, cg,
+                        cobigenUtils.getUtilClasses());
+                }
+            } else {
 
-            for (File inputFile : inputFiles) {
-                generateTemplates(inputFile, getProjectRoot(inputFile), finalIncrements, cg,
-                    cobigenUtils.getUtilClasses());
+                List<IncrementTo> finalIncrements = null;
+                if (inputFiles.size() > 1) {
+                    finalIncrements = preprocessIncrements(cg);
+                }
+                for (File inputFile : inputFiles) {
+                    generateIncrements(inputFile, getProjectRoot(inputFile), finalIncrements, cg,
+                        cobigenUtils.getUtilClasses());
+                }
+
             }
             return 0;
         }
 
         return 1;
+
     }
 
     /**
@@ -245,6 +268,70 @@ public class GenerateCommand implements Callable<Integer> {
      * @param inputProject
      *            input project where the input file is located. We need this in order to build the classpath
      *            of the input file
+     * @param templates
+     *            user selected templates
+     * @param cg
+     *            Initialized CobiGen instance
+     * @param utilClasses
+     *            util classes loaded from the templates jar
+     *
+     */
+    public void generateTemplates(File inputFile, File inputProject, ArrayList<Integer> templates, CobiGen cg,
+        List<Class<?>> utilClasses) {
+        try {
+            Object input;
+            String extension = inputFile.getName().toLowerCase();
+            Boolean isJavaInput = extension.endsWith(".java");
+            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
+
+            // If it is a Java file, we need the class loader
+            if (isJavaInput) {
+                JavaContext context = getJavaContext(inputFile, inputProject);
+                input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+            } else {
+                input = InputPreProcessor.process(cg, inputFile, null);
+            }
+
+            // If user did not specify the output path of the generated files, we can use the current project
+            // folder
+            if (outputRootPath == null) {
+                logger.info(
+                    "As you did not specify where the code will be generated, we will use the project of your current"
+                        + " input file.");
+                logger.debug("Generating to: " + inputProject.getAbsolutePath());
+
+                outputRootPath = inputProject;
+            }
+
+            // TODO failing method -> check why
+            // Object input = checkInput(inputProject, inputProject, cg, isJavaInput);
+
+            List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
+            if (matchingTemplates.isEmpty()) {
+                printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+            }
+            // TODO selection for Strings
+            List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
+
+            logger.info("Generating templates, this can take a while...");
+            GenerationReportTo report =
+                cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+
+            checkGenerationReport(report);
+        } catch (MojoFailureException e) {
+            logger.error("Invalid input for CobiGen, please check your input file.");
+
+        }
+
+    }
+
+    /**
+     * Generates new increments using the inputFile from the inputProject.
+     * @param inputFile
+     *            input file the user wants to generate code from
+     * @param inputProject
+     *            input project where the input file is located. We need this in order to build the classpath
+     *            of the input file
      * @param finalIncrements
      *            the list of increments that the user is going to use for generation
      * @param cg
@@ -253,9 +340,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplates(File inputFile, File inputProject, List<IncrementTo> finalIncrements, CobiGen cg,
+    public void generateIncrements(File inputFile, File inputProject, List<IncrementTo> finalIncrements, CobiGen cg,
         List<Class<?>> utilClasses) {
-
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
@@ -289,7 +375,7 @@ public class GenerateCommand implements Callable<Integer> {
                 finalIncrements = incrementsSelection(increments, matchingIncrements);
             }
 
-            logger.info("Generating templates, this can take a while...");
+            logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
             GenerationReportTo report =
                 cg.generate(input, finalIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
 
@@ -300,6 +386,48 @@ public class GenerateCommand implements Callable<Integer> {
 
         }
     }
+
+    // /**
+    // * Checks if the inputfile is valid and if the user specified an output path
+    // * @param inputFile
+    // * input file the user wants to generate code from
+    // * @param inputProject
+    // * input project where the input file is located. We need this in order to build the classpath
+    // * of the input file
+    // * @param cg
+    // * Initialized CobiGen instance
+    // * @param isJavaInput
+    // * boolean value if file is java input
+    // * @return input returns the valid input Object
+    // *
+    // */
+    // private Object checkInput(File inputFile, File inputProject, CobiGen cg, Boolean isJavaInput) {
+    // Object input = null;
+    // try {
+    // // If it is a Java file, we need the class loader
+    // if (isJavaInput) {
+    // JavaContext context = getJavaContext(inputFile, inputProject);
+    // input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+    // } else {
+    // input = InputPreProcessor.process(cg, inputFile, null);
+    // }
+    //
+    // // If user did not specify the output path of the generated files, we can use the current project
+    // // folder
+    // if (outputRootPath == null) {
+    // logger.info(
+    // "As you did not specify where the code will be generated, we will use the project of your current"
+    // + " input file.");
+    // logger.debug("Generating to: " + inputProject.getAbsolutePath());
+    //
+    // outputRootPath = inputProject;
+    // }
+    // } catch (MojoFailureException e) {
+    // logger.error("Invalid input for CobiGen, please check your input file.");
+    // e.printStackTrace();
+    // }
+    // return input;
+    // }
 
     /**
      * Set the output root path and also print a message warnign this
@@ -335,6 +463,66 @@ public class GenerateCommand implements Callable<Integer> {
                 + "More info here https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage");
         }
         System.exit(1);
+    }
+
+    /**
+     * Method that handles the templates selection and prints some messages to the console
+     * @param templates
+     *            user selected templates
+     * @param matchingTemplates
+     *            all the templates that match the current input file
+     * @return The final templates that will be used for generation
+     */
+    private List<TemplateTo> templatesSelection(ArrayList<Integer> templates, List<TemplateTo> matchingTemplates) {
+        // Print all matching increments
+        int i = 0;
+        List<TemplateTo> userTemplates = new ArrayList<>();
+        logger.info("(0) All");
+        for (TemplateTo temp : matchingTemplates) {
+            logger.info("(" + ++i + ") " + temp.getId());
+        }
+        System.out.println("---------------------------------------------");
+
+        // TODO
+        if (templates == null || templates.size() < 1) {
+            logger.info("Here are the options you have for your choice. Which templates do you want to generate?"
+                + " Please list the templates number you want separated by comma:");
+
+            templates = new ArrayList<>();
+            for (String userInc : getUserInput().split(",")) {
+                try {
+                    templates.add(Integer.parseInt(userInc));
+                } catch (NumberFormatException e) {
+                    logger.error(
+                        "Error parsing your input. You need to specify templates using numbers separated by comma (2,5,6).");
+                    System.exit(1);
+                }
+            }
+
+        } else {
+            logger.info("Those are all the templates that you can select with your input file, but you have chosen:");
+        }
+
+        // Print user selected templates
+        for (int j = 0; j < templates.size(); j++) {
+            try {
+                int selectedTemplatesNumber = templates.get(j);
+
+                // We need to generate all
+                if (selectedTemplatesNumber == 0) {
+                    logger.info("(0) All");
+                    userTemplates = matchingTemplates;
+                    break;
+                }
+                userTemplates.add(j, matchingTemplates.get(selectedTemplatesNumber - 1));
+                logger.info("(" + selectedTemplatesNumber + ") " + userTemplates.get(j).getId());
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("The increment number you have specified is out of bounds!");
+                System.exit(1);
+            }
+        }
+
+        return userTemplates;
     }
 
     /**
@@ -403,7 +591,7 @@ public class GenerateCommand implements Callable<Integer> {
      */
     private void checkGenerationReport(GenerationReportTo report) {
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
-            logger.info("Successfully generated templates.\n");
+            logger.info("Successfull generation.\n");
         } else {
             logger.error("Generation failed due to the following problems:");
             for (Throwable throwable : report.getErrors()) {
@@ -428,8 +616,8 @@ public class GenerateCommand implements Callable<Integer> {
      * @return the Java context created from the input project
      */
     private JavaContext getJavaContext(File inputFile, File inputProject) {
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
 
+        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
         String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
 
         try {
