@@ -58,10 +58,18 @@ public class GenerateCommand implements Callable<Integer> {
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
 
+    /**
+     * This option is provide multiple choice of available increments 
+     */
     @Option(names = { "--increments", "-i" }, split = ",",
         description = MessagesConstants.INCREMENTS_OPTION_DESCRIPTION)
+    /**
+     * Initialize  increments variable
+     */
     ArrayList<Integer> increments = null;
-
+    /**
+     * This option provide specified list of template
+     */
     @Option(names = { "--templates", "-t" }, split = ",", description = MessagesConstants.TEMPLATES_OPTION_DESCRIPTION)
     ArrayList<Integer> templates = null;
 

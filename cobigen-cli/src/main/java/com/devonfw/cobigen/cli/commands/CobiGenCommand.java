@@ -25,5 +25,5 @@ public class CobiGenCommand implements Runnable {
 
         // Nothing to do here, this is the master command
     }
-
+    
 }
