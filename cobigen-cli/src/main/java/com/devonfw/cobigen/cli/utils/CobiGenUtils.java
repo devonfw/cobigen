@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.htmlplugin.HTMLPluginActivator;
@@ -310,6 +312,37 @@ public class CobiGenUtils {
             }
         }
         return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
+    }
+
+    /**
+     * Returns a list that retains only the elements in this list that are contained in the specified
+     * collection (optional operation). In other words, the resultant list removes from this list all of its
+     * elements that are not contained in the specified collection.
+     *
+     * @param currentList
+     *            list containing elements to be retained in this list
+     * @param listToIntersect
+     *            second list to be used for the intersection
+     * @return
+     * @return <tt>resultant list</tt> containing increments that are in both lists
+     */
+    public static List<IncrementTo> retainAll(List<IncrementTo> currentList, List<IncrementTo> listToIntersect) {
+
+        List<IncrementTo> resultantList = new ArrayList<>();
+
+        for (IncrementTo currentIncrement : currentList) {
+            String currentIncrementDesc = currentIncrement.getDescription().trim().toLowerCase();
+            for (IncrementTo intersectIncrement : listToIntersect) {
+
+                String intersectIncrementDesc = intersectIncrement.getDescription().trim().toLowerCase();
+
+                if (currentIncrementDesc.equals(intersectIncrementDesc)) {
+                    resultantList.add(currentIncrement);
+                    break;
+                }
+            }
+        }
+        return resultantList;
     }
 
 }

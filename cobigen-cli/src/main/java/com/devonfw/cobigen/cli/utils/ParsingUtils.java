@@ -15,7 +15,7 @@ import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
 
 /**
- * This class contains logic to parse the input file of the user in order to find useful information
+ * This class contains mmm utils logic to parse the input file of the user in order to find useful information
  */
 public class ParsingUtils {
 

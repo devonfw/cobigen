@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +104,44 @@ public final class ValidationUtils {
             return pomFile;
         }
         return findPomFromFolder(folder.getParentFile());
+    }
+
+    /**
+     * Checks whether all the user input files are of the same type
+     * @param inputFiles
+     *            user input files
+     * @return true when all input files are equal
+     */
+    public static Boolean areInputFilesSameType(ArrayList<File> inputFiles) {
+
+        for (int i = 0; i < inputFiles.size() - 1; i++) {
+            String extensionCurrentFile = inputFiles.get(i).getName().toLowerCase();
+            String extensionNextFile = inputFiles.get(i + 1).getName().toLowerCase();
+
+            if (extensionCurrentFile.equals(extensionNextFile) == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks whether the current output root path is valid. It can be either null because it is an optional
+     * parameter or either a folder that exists.
+     * @param outputRootPath
+     *            where the user wants to generate the code
+     *
+     * @return true if it is a valid output root path
+     */
+    public static Boolean isOutputRootPathValid(File outputRootPath) {
+        // As outputRootPath is an optional parameter, it means that it can be null
+        if (outputRootPath == null || outputRootPath.exists()) {
+            return true;
+        } else {
+            logger.error("Your <outputRootPath> does not exist, please use a valid path.");
+            return false;
+        }
     }
 
 }
