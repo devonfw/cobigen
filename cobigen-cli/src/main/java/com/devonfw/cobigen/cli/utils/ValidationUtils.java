@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 
 /**
- * Utilities class for validating user's input
+ * Utilities class for validating user's input and generation
  */
 public final class ValidationUtils {
 
@@ -142,6 +143,49 @@ public final class ValidationUtils {
             logger.error("Your <outputRootPath> does not exist, please use a valid path.");
             return false;
         }
+    }
+
+    /**
+     * Checks the generation report in order to find possible errors and warnings
+     * @param report
+     *            the generation report returned by the CobiGen.generate method
+     */
+    public static void checkGenerationReport(GenerationReportTo report) {
+        if (report.getErrors() == null || report.getErrors().isEmpty()) {
+            logger.info("Successfull generation.\n");
+        } else {
+            logger.error("Generation failed due to the following problems:");
+            for (Throwable throwable : report.getErrors()) {
+                logger.error(throwable.getMessage());
+            }
+        }
+
+        for (String warning : report.getWarnings()) {
+            logger.debug("Warning: " + warning);
+        }
+    }
+
+    /**
+     * Prints an error message to the user informing that no triggers have been matched. Depending on the type
+     * of the input file will print different messages.
+     * @param inputFile
+     *            User input file
+     * @param isJavaInput
+     *            true when input file is Java
+     * @param isOpenApiInput
+     *            true when input file is OpenAPI
+     */
+    public static void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
+        logger.error("Your input file '" + inputFile.getName()
+            + "' is not valid as input for any generation purpose. It does not match any trigger.");
+        if (isJavaInput) {
+            logger.error("Check that your Java input file is following devon4j naming convention. "
+                + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
+        } else if (isOpenApiInput) {
+            logger.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
+                + "More info here https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage");
+        }
+        System.exit(1);
     }
 
 }

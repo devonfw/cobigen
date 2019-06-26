@@ -1,16 +1,11 @@
 package com.devonfw.cobigen.cli.commands;
 
 import java.io.File;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
-
-import net.sf.mmm.code.impl.java.JavaContext;
-import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
@@ -26,7 +21,6 @@ import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
-import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -59,7 +53,7 @@ public class GenerateCommand implements Callable<Integer> {
     boolean verbose;
 
     /**
-     * This option is provide multiple choice of available increments
+     * This option provides the use of multiple available increments
      */
     @Option(names = { "--increments", "-i" }, split = ",",
         description = MessagesConstants.INCREMENTS_OPTION_DESCRIPTION)
@@ -111,7 +105,7 @@ public class GenerateCommand implements Callable<Integer> {
             if (increments == null && templates != null) {
                 // User specified only templates, not increments
                 for (File inputFile : inputFiles) {
-                    generateTemplates(inputFile, getProjectRoot(inputFile), templates, cg,
+                    generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), templates, cg,
                         cobigenUtils.getUtilClasses());
                 }
             } else {
@@ -121,10 +115,9 @@ public class GenerateCommand implements Callable<Integer> {
                     finalIncrements = preprocessIncrements(cg);
                 }
                 for (File inputFile : inputFiles) {
-                    generateIncrements(inputFile, getProjectRoot(inputFile), finalIncrements, cg,
+                    generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
                         cobigenUtils.getUtilClasses());
                 }
-
             }
             return 0;
         }
@@ -154,18 +147,12 @@ public class GenerateCommand implements Callable<Integer> {
             Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
             try {
-                // If it is a Java file, we need the class loader
-                if (isJavaInput) {
-                    JavaContext context = getJavaContext(inputFile, getProjectRoot(inputFile));
-                    input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-                } else {
-                    input = InputPreProcessor.process(cg, inputFile, null);
-                }
+                input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
                 List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
 
                 if (matchingIncrements.isEmpty()) {
-                    printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+                    ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
                 }
 
                 if (firstIteration) {
@@ -200,7 +187,7 @@ public class GenerateCommand implements Callable<Integer> {
                     + " . But we will keep trying, maybe you are using relative paths");
 
                 // Input file can be: folder\input.java. We should use current working directory
-                if (parseRelativePath(inputFile, index) == false) {
+                if (ParsingUtils.parseRelativePath(inputFiles, inputFile, index) == false) {
                     logger.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
                     return false;
                 }
@@ -213,51 +200,6 @@ public class GenerateCommand implements Callable<Integer> {
         }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
-    }
-
-    /**
-     * Tries to parse a relative path with the current working directory
-     *
-     * @param inputFile
-     *            input file which we are going to parse to find out whether it is a valid file
-     * @param index
-     *            location of the input file in the ArrayList of inputs
-     * @return true only if the parsed file exists, false otherwise
-     *
-     */
-    private Boolean parseRelativePath(File inputFile, int index) {
-        try {
-            Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
-
-            if (inputFilePath.toFile().exists()) {
-                inputFiles.set(index, inputFilePath.toFile());
-                return true;
-            }
-        } catch (InvalidPathException e) {
-            logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
-                + " cannot be converted to a path");
-        }
-        return false;
-    }
-
-    /**
-     * Tries to find the root folder of the project in order to build the classpath. This method is trying to
-     * find the first pom.xml file and then getting the folder where is located
-     *
-     * @param inputFile
-     *            passed by the user
-     * @return the project folder
-     *
-     */
-    private File getProjectRoot(File inputFile) {
-
-        File pomFile = ValidationUtils.findPom(inputFile);
-        if (pomFile != null) {
-            return pomFile.getParentFile();
-        }
-        logger.debug("Projec root could not be found, therefore we use your current input file location.");
-        logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
-        return inputFile.getAbsoluteFile().getParentFile();
     }
 
     /**
@@ -284,13 +226,7 @@ public class GenerateCommand implements Callable<Integer> {
             Boolean isJavaInput = extension.endsWith(".java");
             Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
-            // If it is a Java file, we need the class loader
-            if (isJavaInput) {
-                JavaContext context = getJavaContext(inputFile, inputProject);
-                input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-            } else {
-                input = InputPreProcessor.process(cg, inputFile, null);
-            }
+            input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
             // If user did not specify the output path of the generated files, we can use the current project
             // folder
@@ -308,7 +244,7 @@ public class GenerateCommand implements Callable<Integer> {
 
             List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
             if (matchingTemplates.isEmpty()) {
-                printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+                ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
             // TODO selection for Strings
             List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
@@ -317,7 +253,7 @@ public class GenerateCommand implements Callable<Integer> {
             GenerationReportTo report =
                 cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
 
-            checkGenerationReport(report);
+            ValidationUtils.checkGenerationReport(report);
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
@@ -348,18 +284,12 @@ public class GenerateCommand implements Callable<Integer> {
             Boolean isJavaInput = extension.endsWith(".java");
             Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
-            // If it is a Java file, we need the class loader
-            if (isJavaInput) {
-                JavaContext context = getJavaContext(inputFile, inputProject);
-                input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-            } else {
-                input = InputPreProcessor.process(cg, inputFile, null);
-            }
+            input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
             List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
 
             if (matchingIncrements.isEmpty()) {
-                printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+                ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
 
             if (outputRootPath == null) {
@@ -379,7 +309,7 @@ public class GenerateCommand implements Callable<Integer> {
             GenerationReportTo report =
                 cg.generate(input, finalIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
 
-            checkGenerationReport(report);
+            ValidationUtils.checkGenerationReport(report);
 
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
@@ -406,7 +336,7 @@ public class GenerateCommand implements Callable<Integer> {
     // try {
     // // If it is a Java file, we need the class loader
     // if (isJavaInput) {
-    // JavaContext context = getJavaContext(inputFile, inputProject);
+    // JavaContext context = ParsingUtils.getJavaContext(inputFile, inputProject);
     // input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
     // } else {
     // input = InputPreProcessor.process(cg, inputFile, null);
@@ -430,7 +360,7 @@ public class GenerateCommand implements Callable<Integer> {
     // }
 
     /**
-     * Set the output root path and also print a message warnign this
+     * Set the output root path and also print a message warning this
      * @param inputProject
      *            value to set the output root path
      */
@@ -440,29 +370,6 @@ public class GenerateCommand implements Callable<Integer> {
         logger.debug("Generating to: " + inputProject.getAbsolutePath());
 
         outputRootPath = inputProject;
-    }
-
-    /**
-     * Prints an error message to the user for informing that no triggers have been matched. Depending on the
-     * type of the input file will print different messages.
-     * @param inputFile
-     *            User input file
-     * @param isJavaInput
-     *            true when input file is Java
-     * @param isOpenApiInput
-     *            true when input file is OpenAPI
-     */
-    private void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
-        logger.error("Your input file '" + inputFile.getName()
-            + "' is not valid as input for any generation purpose. It does not match any trigger.");
-        if (isJavaInput) {
-            logger.error("Check that your Java input file is following devon4j naming convention. "
-                + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
-        } else if (isOpenApiInput) {
-            logger.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
-                + "More info here https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage");
-        }
-        System.exit(1);
     }
 
     /**
@@ -582,52 +489,6 @@ public class GenerateCommand implements Callable<Integer> {
             }
         }
         return userIncrements;
-    }
-
-    /**
-     * Checks the generation report in order to find possible errors and warnings
-     * @param report
-     *            the generation report returned by the CobiGen.generate method
-     */
-    private void checkGenerationReport(GenerationReportTo report) {
-        if (report.getErrors() == null || report.getErrors().isEmpty()) {
-            logger.info("Successfull generation.\n");
-        } else {
-            logger.error("Generation failed due to the following problems:");
-            for (Throwable throwable : report.getErrors()) {
-                logger.error(throwable.getMessage());
-            }
-        }
-
-        for (String warning : report.getWarnings()) {
-            logger.debug("Warning: " + warning);
-        }
-    }
-
-    /**
-     * Tries to get the Java context by creating a new class loader of the input project that is able to load
-     * the input file. We need this in order to perform reflection on the templates.
-     *
-     * @param inputFile
-     *            input file the user wants to generate code from
-     * @param inputProject
-     *            input project where the input file is located. We need this in order to build the classpath
-     *            of the input file
-     * @return the Java context created from the input project
-     */
-    private JavaContext getJavaContext(File inputFile, File inputProject) {
-
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
-        String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
-
-        try {
-            context.getClassLoader().loadClass(qualifiedName);
-        } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            logger.error("Compiled class " + e.getMessage()
-                + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
-            System.exit(1);
-        }
-        return context;
     }
 
     /**

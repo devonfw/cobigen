@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import net.sf.mmm.code.api.CodeName;
 import net.sf.mmm.code.base.BaseFile;
@@ -11,13 +15,51 @@ import net.sf.mmm.code.base.BasePackage;
 import net.sf.mmm.code.base.source.BaseSource;
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.parser.JavaSourceCodeParserImpl;
+import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.cli.CobiGenCLI;
+
 /**
- * This class contains mmm utils logic to parse the input file of the user in order to find useful information
+ * This class contains utilities for parsing user input. It also contains mmm logic to parse user's input file
+ * in order to find needed information
  */
 public class ParsingUtils {
+
+    /**
+     * Logger to output useful information to the user
+     */
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+
+    /**
+     * Tries to get the Java context by creating a new class loader of the input project that is able to load
+     * the input file. We need this in order to perform reflection on the templates.
+     *
+     * @param inputFile
+     *            input file the user wants to generate code from
+     * @param inputProject
+     *            input project where the input file is located. We need this in order to build the classpath
+     *            of the input file
+     * @return the Java context created from the input project
+     */
+    public static JavaContext getJavaContext(File inputFile, File inputProject) {
+
+        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
+        String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
+
+        try {
+            context.getClassLoader().loadClass(qualifiedName);
+        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+            logger.error("Compiled class " + e.getMessage()
+                + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
+            System.exit(1);
+        }
+        return context;
+    }
 
     /**
      * Creates a new {@link BasePackage}
@@ -79,6 +121,53 @@ public class ParsingUtils {
         } catch (IOException e) {
             throw new RuntimeIoException(e, IoMode.READ);
         }
+    }
+
+    /**
+     * Tries to parse a relative path with the current working directory
+     * @param inputFiles
+     *            list of all input files from the user
+     *
+     * @param inputFile
+     *            input file which we are going to parse to find out whether it is a valid file
+     * @param index
+     *            location of the input file in the ArrayList of inputs
+     * @return true only if the parsed file exists, false otherwise
+     *
+     */
+    public static Boolean parseRelativePath(ArrayList<File> inputFiles, File inputFile, int index) {
+        try {
+            Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
+
+            if (inputFilePath.toFile().exists()) {
+                inputFiles.set(index, inputFilePath.toFile());
+                return true;
+            }
+        } catch (InvalidPathException e) {
+            logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
+                + " cannot be converted to a path");
+        }
+        return false;
+    }
+
+    /**
+     * Tries to find the root folder of the project in order to build the classpath. This method is trying to
+     * find the first pom.xml file and then getting the folder where is located
+     *
+     * @param inputFile
+     *            passed by the user
+     * @return the project folder
+     *
+     */
+    public static File getProjectRoot(File inputFile) {
+
+        File pomFile = ValidationUtils.findPom(inputFile);
+        if (pomFile != null) {
+            return pomFile.getParentFile();
+        }
+        logger.debug("Projec root could not be found, therefore we use your current input file location.");
+        logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
+        return inputFile.getAbsoluteFile().getParentFile();
     }
 
 }

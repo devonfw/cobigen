@@ -21,6 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.mmm.code.impl.java.JavaContext;
+
+import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +42,7 @@ import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.javaplugin.JavaPluginActivator;
 import com.devonfw.cobigen.javaplugin.JavaTriggerInterpreter;
 import com.devonfw.cobigen.jsonplugin.JSONPluginActivator;
+import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
 import com.devonfw.cobigen.propertyplugin.PropertyMergerPluginActivator;
 import com.devonfw.cobigen.textmerger.TextMergerPluginActivator;
@@ -323,7 +327,6 @@ public class CobiGenUtils {
      *            list containing elements to be retained in this list
      * @param listToIntersect
      *            second list to be used for the intersection
-     * @return
      * @return <tt>resultant list</tt> containing increments that are in both lists
      */
     public static List<IncrementTo> retainAll(List<IncrementTo> currentList, List<IncrementTo> listToIntersect) {
@@ -343,6 +346,28 @@ public class CobiGenUtils {
             }
         }
         return resultantList;
+    }
+
+    /**
+     * Processes the given input file to be converted into a valid CobiGen input. Also if the input is Java,
+     * will create the needed class loader
+     * @param cg
+     * @param inputFile
+     * @param isJavaInput
+     * @return
+     * @throws MojoFailureException
+     */
+    public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
+        throws MojoFailureException {
+        Object input;
+        // If it is a Java file, we need the class loader
+        if (isJavaInput) {
+            JavaContext context = ParsingUtils.getJavaContext(inputFile, ParsingUtils.getProjectRoot(inputFile));
+            input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+        } else {
+            input = InputPreProcessor.process(cg, inputFile, null);
+        }
+        return input;
     }
 
 }
