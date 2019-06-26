@@ -1,12 +1,19 @@
 package com.devonfw.cobigen.cli.commands;
 
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.text.similarity.JaccardDistance;
 import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +40,8 @@ import picocli.CommandLine.Parameters;
 @Command(description = MessagesConstants.GENERATE_DESCRIPTION, name = "generate", aliases = { "g" },
     mixinStandardHelpOptions = true)
 public class GenerateCommand implements Callable<Integer> {
+
+    final double SELECTION_THRESHOLD = 0.3;
 
     /**
      * User input file
@@ -66,7 +75,10 @@ public class GenerateCommand implements Callable<Integer> {
      * This option provide specified list of template
      */
     @Option(names = { "--templates", "-t" }, split = ",", description = MessagesConstants.TEMPLATES_OPTION_DESCRIPTION)
-    ArrayList<Integer> templates = null;
+    /**
+     * Initialize templates variable
+     */
+    ArrayList<String> templates = null;
 
     /**
      * Logger to output useful information to the user
@@ -218,7 +230,7 @@ public class GenerateCommand implements Callable<Integer> {
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplates(File inputFile, File inputProject, ArrayList<Integer> templates, CobiGen cg,
+    public void generateTemplates(File inputFile, File inputProject, ArrayList<String> templates, CobiGen cg,
         List<Class<?>> utilClasses) {
         try {
             Object input;
@@ -246,7 +258,7 @@ public class GenerateCommand implements Callable<Integer> {
             if (matchingTemplates.isEmpty()) {
                 ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
-            // TODO selection for Strings
+
             List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
 
             logger.info("Generating templates, this can take a while...");
@@ -380,7 +392,7 @@ public class GenerateCommand implements Callable<Integer> {
      *            all the templates that match the current input file
      * @return The final templates that will be used for generation
      */
-    private List<TemplateTo> templatesSelection(ArrayList<Integer> templates, List<TemplateTo> matchingTemplates) {
+    private List<TemplateTo> templatesSelection(ArrayList<String> templates, List<TemplateTo> matchingTemplates) {
         // Print all matching increments
         int i = 0;
         List<TemplateTo> userTemplates = new ArrayList<>();
@@ -390,7 +402,6 @@ public class GenerateCommand implements Callable<Integer> {
         }
         System.out.println("---------------------------------------------");
 
-        // TODO
         if (templates == null || templates.size() < 1) {
             logger.info("Here are the options you have for your choice. Which templates do you want to generate?"
                 + " Please list the templates number you want separated by comma:");
@@ -398,7 +409,7 @@ public class GenerateCommand implements Callable<Integer> {
             templates = new ArrayList<>();
             for (String userInc : getUserInput().split(",")) {
                 try {
-                    templates.add(Integer.parseInt(userInc));
+                    templates.add(userInc);
                 } catch (NumberFormatException e) {
                     logger.error(
                         "Error parsing your input. You need to specify templates using numbers separated by comma (2,5,6).");
@@ -411,25 +422,109 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         // Print user selected templates
-        for (int j = 0; j < templates.size(); j++) {
-            try {
-                int selectedTemplatesNumber = templates.get(j);
+        String digitMatch = "\\d+";
 
-                // We need to generate all
-                if (selectedTemplatesNumber == 0) {
+        for (int selectedTempNum = 0; selectedTempNum < templates.size(); selectedTempNum++) {
+
+            String currentTemplate = templates.get(selectedTempNum);
+
+            // If given increment is Integer
+            if (currentTemplate.matches(digitMatch)) {
+                try {
+                    int selectedIncrementNumber = Integer.parseInt(currentTemplate);
+
+                    // We need to generate all
+                    if (selectedIncrementNumber == 0) {
+                        logger.info("(0) All");
+                        userTemplates = matchingTemplates;
+                        break;
+                    }
+                    userTemplates.add(selectedTempNum, matchingTemplates.get(selectedIncrementNumber - 1));
+                    logger.info("(" + selectedIncrementNumber + ") " + userTemplates.get(selectedTempNum).getId());
+                } catch (IndexOutOfBoundsException e) {
+                    logger.error("The increment number you have specified is out of bounds!");
+                    System.exit(1);
+                }
+
+            }
+            // // We need to generate all
+            // if (selectedTemplatesString == "0" || selectedTemplatesString.toLowerCase().contains("all")) {
+            // logger.info("(0) All");
+            // userTemplates = matchingTemplates;
+            // break;
+            // }
+
+            // If String representation is given
+            else {
+                // Select all increments
+                if ("all".toUpperCase().equals(currentTemplate.toUpperCase())) {
                     logger.info("(0) All");
                     userTemplates = matchingTemplates;
                     break;
                 }
-                userTemplates.add(j, matchingTemplates.get(selectedTemplatesNumber - 1));
-                logger.info("(" + selectedTemplatesNumber + ") " + userTemplates.get(j).getId());
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("The increment number you have specified is out of bounds!");
-                System.exit(1);
+
+                List<TemplateTo> chosenTemplates = getClosestTemplates(currentTemplate, matchingTemplates);
+
+                if (chosenTemplates.size() > 0) {
+                    logger.info(
+                        "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
+                    logger.info("(0) " + "All");
+                    for (TemplateTo temp : chosenTemplates) {
+                        logger.info("(" + (chosenTemplates.indexOf(temp) + 1) + ") " + temp.getId());
+                    }
+
+                }
+                logger.info("Please enter the number(s) of increment(s) that you want to generate.");
+
+                for (String userInc : getUserInput().split(",")) {
+                    try {
+                        if ("0".equals(userInc)) {
+                            System.out.println("DEBUG: All added");
+                            userTemplates = chosenTemplates;
+                            break;
+                        }
+                        TemplateTo currentTemplateTo = chosenTemplates.get(Integer.parseInt(userInc) - 1);
+                        if (!userTemplates.contains(currentTemplateTo)) {
+                            System.out.println("DEBUG: " + currentTemplateTo.getId() + " added");
+                            userTemplates.add(currentTemplateTo);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.error(
+                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                        System.exit(1);
+
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        logger.error("Error parsing your input. Please give a valid number from the list above.");
+                        System.exit(1);
+                    }
+                }
             }
         }
-
         return userTemplates;
+
+    }
+
+    private ArrayList<TemplateTo> getClosestTemplates(String template, List<TemplateTo> matchingTemplates) {
+
+        Map<TemplateTo, Double> scores = new HashMap<TemplateTo, Double>();
+        for (TemplateTo temp : matchingTemplates) {
+            String tempId = temp.getId();
+            JaccardDistance distance = new JaccardDistance();
+            // LevenshteinDistance distance = new LevenshteinDistance();
+            scores.put(temp, distance.apply(tempId.toUpperCase(), template.toUpperCase()));
+        }
+        Map<TemplateTo, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
+            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+
+        ArrayList<TemplateTo> chosenIncrements = new ArrayList<>();
+        for (TemplateTo temp : sorted.keySet()) {
+            String incDescription = temp.getId();
+            if (incDescription.toUpperCase().contains(template.toUpperCase())
+                || sorted.get(temp) <= SELECTION_THRESHOLD) {
+                chosenIncrements.add(temp);
+            }
+        }
+        return chosenIncrements;
     }
 
     /**
