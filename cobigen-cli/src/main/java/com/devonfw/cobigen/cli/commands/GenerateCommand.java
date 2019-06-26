@@ -116,8 +116,12 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (increments == null && templates != null) {
                 // User specified only templates, not increments
+                List<TemplateTo> finalTemplates = null;
+                if (inputFiles.size() > 1) {
+                    finalTemplates = preprocessTemplates(cg);
+                }
                 for (File inputFile : inputFiles) {
-                    generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), templates, cg,
+                    generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
                         cobigenUtils.getUtilClasses());
                 }
             } else {
@@ -136,6 +140,51 @@ public class GenerateCommand implements Callable<Integer> {
 
         return 1;
 
+    }
+
+    /**
+     * For each input file it is going to get its matching templates and then performs an intersection between
+     * all of them, so that the user gets only the templates that will work
+     * @param cg
+     *            CobiGen initialized instance
+     * @return List of templates that the user will be able to use
+     *
+     */
+    private List<TemplateTo> preprocessTemplates(CobiGen cg) {
+
+        Boolean firstIteration = true;
+        List<TemplateTo> finalTemplates = new ArrayList<>();
+
+        for (File inputFile : inputFiles) {
+
+            Object input;
+            String extension = inputFile.getName().toLowerCase();
+            Boolean isJavaInput = extension.endsWith(".java");
+            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
+
+            try {
+                input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
+
+                List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
+
+                if (matchingTemplates.isEmpty()) {
+                    ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+                }
+
+                if (firstIteration) {
+                    finalTemplates.addAll(matchingTemplates);
+                    firstIteration = false;
+                } else {
+                    // We do the intersection between the previous increments and the new ones
+                    finalTemplates = CobiGenUtils.retainAllTemplates(finalTemplates, matchingTemplates);
+                }
+            } catch (MojoFailureException e) {
+                logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
+
+            }
+        }
+
+        return templatesSelection(templates, finalTemplates);
     }
 
     /**
@@ -172,7 +221,7 @@ public class GenerateCommand implements Callable<Integer> {
                     firstIteration = false;
                 } else {
                     // We do the intersection between the previous increments and the new ones
-                    finalIncrements = CobiGenUtils.retainAll(finalIncrements, matchingIncrements);
+                    finalIncrements = CobiGenUtils.retainAllIncrements(finalIncrements, matchingIncrements);
                 }
             } catch (MojoFailureException e) {
                 logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
@@ -230,7 +279,7 @@ public class GenerateCommand implements Callable<Integer> {
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplates(File inputFile, File inputProject, ArrayList<String> templates, CobiGen cg,
+    public void generateTemplates(File inputFile, File inputProject, List<TemplateTo> finalTemplates, CobiGen cg,
         List<Class<?>> utilClasses) {
         try {
             Object input;
@@ -240,23 +289,23 @@ public class GenerateCommand implements Callable<Integer> {
 
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
-            // If user did not specify the output path of the generated files, we can use the current project
-            // folder
-            if (outputRootPath == null) {
-                logger.info(
-                    "As you did not specify where the code will be generated, we will use the project of your current"
-                        + " input file.");
-                logger.debug("Generating to: " + inputProject.getAbsolutePath());
-
-                outputRootPath = inputProject;
-            }
-
-            // TODO failing method -> check why
-            // Object input = checkInput(inputProject, inputProject, cg, isJavaInput);
-
             List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
+
             if (matchingTemplates.isEmpty()) {
                 ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+            }
+
+            if (outputRootPath == null) {
+                // If user did not specify the output path of the generated files, we can use the current
+                // project folder
+                setOutputRootPath(inputProject);
+            }
+
+            if (finalTemplates != null) {
+                // We need this to allow the use of multiple input files of different types
+                finalTemplates = CobiGenUtils.retainAllTemplates(matchingTemplates, finalTemplates);
+            } else {
+                finalTemplates = templatesSelection(templates, matchingTemplates);
             }
 
             List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
@@ -312,7 +361,7 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (finalIncrements != null) {
                 // We need this to allow the use of multiple input files of different types
-                finalIncrements = CobiGenUtils.retainAll(matchingIncrements, finalIncrements);
+                finalIncrements = CobiGenUtils.retainAllIncrements(matchingIncrements, finalIncrements);
             } else {
                 finalIncrements = incrementsSelection(increments, matchingIncrements);
             }
@@ -328,48 +377,6 @@ public class GenerateCommand implements Callable<Integer> {
 
         }
     }
-
-    // /**
-    // * Checks if the inputfile is valid and if the user specified an output path
-    // * @param inputFile
-    // * input file the user wants to generate code from
-    // * @param inputProject
-    // * input project where the input file is located. We need this in order to build the classpath
-    // * of the input file
-    // * @param cg
-    // * Initialized CobiGen instance
-    // * @param isJavaInput
-    // * boolean value if file is java input
-    // * @return input returns the valid input Object
-    // *
-    // */
-    // private Object checkInput(File inputFile, File inputProject, CobiGen cg, Boolean isJavaInput) {
-    // Object input = null;
-    // try {
-    // // If it is a Java file, we need the class loader
-    // if (isJavaInput) {
-    // JavaContext context = ParsingUtils.getJavaContext(inputFile, inputProject);
-    // input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-    // } else {
-    // input = InputPreProcessor.process(cg, inputFile, null);
-    // }
-    //
-    // // If user did not specify the output path of the generated files, we can use the current project
-    // // folder
-    // if (outputRootPath == null) {
-    // logger.info(
-    // "As you did not specify where the code will be generated, we will use the project of your current"
-    // + " input file.");
-    // logger.debug("Generating to: " + inputProject.getAbsolutePath());
-    //
-    // outputRootPath = inputProject;
-    // }
-    // } catch (MojoFailureException e) {
-    // logger.error("Invalid input for CobiGen, please check your input file.");
-    // e.printStackTrace();
-    // }
-    // return input;
-    // }
 
     /**
      * Set the output root path and also print a message warning this
@@ -447,12 +454,6 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
             }
-            // // We need to generate all
-            // if (selectedTemplatesString == "0" || selectedTemplatesString.toLowerCase().contains("all")) {
-            // logger.info("(0) All");
-            // userTemplates = matchingTemplates;
-            // break;
-            // }
 
             // If String representation is given
             else {
