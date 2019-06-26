@@ -75,6 +75,7 @@ public class CobiGenUtils {
 
     /**
      * getter for templates utils classes
+     * @return list of UtilClasses
      */
     public List<Class<?>> getUtilClasses() {
         return utilClasses;
@@ -196,6 +197,7 @@ public class CobiGenUtils {
     /**
      * @param User
      *            input entity file
+     * @return 
      */
     public CobiGen initializeCobiGen() {
         getTemplates();
@@ -221,6 +223,9 @@ public class CobiGenUtils {
 
     }
 
+    /**
+     * @return list of all classes, which have been defined in the template configuration folder from a jar
+     */
     public List<Class<?>> getTemplates() {
         templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 

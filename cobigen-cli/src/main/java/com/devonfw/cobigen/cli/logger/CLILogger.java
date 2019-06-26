@@ -17,6 +17,9 @@ public class CLILogger {
 
     private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
+    /**
+     * This method is setting the custom layout of logger 
+     */
     public static void layoutLogger() {
         LoggerContext loggerContext = rootLogger.getLoggerContext();
         // we are not interested in auto-configuration
@@ -37,6 +40,7 @@ public class CLILogger {
     }
 /**
  *  This method declare level of logger
+ * @param level 
  */
     public static void setLevel(Level level) {
         rootLogger.setLevel(level);
