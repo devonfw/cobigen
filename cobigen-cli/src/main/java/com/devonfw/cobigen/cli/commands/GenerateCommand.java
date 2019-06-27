@@ -122,8 +122,11 @@ public class GenerateCommand implements Callable<Integer> {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
                 for (File inputFile : inputFiles) {
-                    generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
-                        cobigenUtils.getUtilClasses());
+                    // generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates,
+                    // cg,
+                    // cobigenUtils.getUtilClasses());
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
+                        cobigenUtils.getUtilClasses(), TemplateTo.class);
                 }
             } else {
 
@@ -132,8 +135,11 @@ public class GenerateCommand implements Callable<Integer> {
                     finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
                 for (File inputFile : inputFiles) {
-                    generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
-                        cobigenUtils.getUtilClasses());
+                    // generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements,
+                    // cg,
+                    // cobigenUtils.getUtilClasses());
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
+                        cobigenUtils.getUtilClasses(), IncrementTo.class);
                 }
             }
             return 0;
@@ -154,7 +160,7 @@ public class GenerateCommand implements Callable<Integer> {
      *
      */
     private List<? extends GenerableArtifact> preprocess(CobiGen cg, Class<?> c) {
-        Boolean TemplatesOrIncrements = c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
         Boolean firstIteration = true;
         List<? extends GenerableArtifact> finalTos = new ArrayList<>();
 
@@ -246,23 +252,28 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * Generates new templates using the inputFile from the inputProject.
+     * Generates new templates or increments using the inputFile from the inputProject.
      *
      * @param inputFile
      *            input file the user wants to generate code from
      * @param inputProject
      *            input project where the input file is located. We need this in order to build the classpath
      *            of the input file
-     * @param templates
-     *            user selected templates
+     * @param finalTos
+     *            the list of increments or templates that the user is going to use for generation
      * @param cg
      *            Initialized CobiGen instance
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
      * @param utilClasses
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplates(File inputFile, File inputProject, List<TemplateTo> finalTemplates, CobiGen cg,
-        List<Class<?>> utilClasses) {
+    public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
+        List<Class<?>> utilClasses, Class<?> c) {
+
+        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
@@ -271,9 +282,10 @@ public class GenerateCommand implements Callable<Integer> {
 
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
-            List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
+            List<? extends GenerableArtifact> matching =
+                TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
-            if (matchingTemplates.isEmpty()) {
+            if (matching.isEmpty()) {
                 ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
 
@@ -283,77 +295,29 @@ public class GenerateCommand implements Callable<Integer> {
                 setOutputRootPath(inputProject);
             }
 
-            if (finalTemplates != null) {
+            if (finalTos != null) {
                 // We need this to allow the use of multiple input files of different types
-                finalTemplates = CobiGenUtils.retainAllTemplates(matchingTemplates, finalTemplates);
+                finalTos = TemplatesOrIncrements
+                    ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
+                    : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
             } else {
-                finalTemplates = templatesSelection(templates, matchingTemplates);
+                finalTos = TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(matching))
+                    : templatesSelection(templates, toTemplateTo(matching));
             }
 
-            List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
+            List<TemplateTo> userTemplates = null;
+            GenerationReportTo report = null;
 
-            logger.info("Generating templates, this can take a while...");
-            GenerationReportTo report =
-                cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
-
-            ValidationUtils.checkGenerationReport(report);
-        } catch (MojoFailureException e) {
-            logger.error("Invalid input for CobiGen, please check your input file.");
-
-        }
-
-    }
-
-    /**
-     * Generates new increments using the inputFile from the inputProject.
-     * @param inputFile
-     *            input file the user wants to generate code from
-     * @param inputProject
-     *            input project where the input file is located. We need this in order to build the classpath
-     *            of the input file
-     * @param finalIncrements
-     *            the list of increments that the user is going to use for generation
-     * @param cg
-     *            Initialized CobiGen instance
-     * @param utilClasses
-     *            util classes loaded from the templates jar
-     *
-     */
-    public void generateIncrements(File inputFile, File inputProject, List<IncrementTo> finalIncrements, CobiGen cg,
-        List<Class<?>> utilClasses) {
-        try {
-            Object input;
-            String extension = inputFile.getName().toLowerCase();
-            Boolean isJavaInput = extension.endsWith(".java");
-            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
-
-            input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
-
-            List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-
-            if (matchingIncrements.isEmpty()) {
-                ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
-            }
-
-            if (outputRootPath == null) {
-                // If user did not specify the output path of the generated files, we can use the current
-                // project folder
-                setOutputRootPath(inputProject);
-            }
-
-            if (finalIncrements != null) {
-                // We need this to allow the use of multiple input files of different types
-                finalIncrements = CobiGenUtils.retainAllIncrements(matchingIncrements, finalIncrements);
+            if (!TemplatesOrIncrements) {
+                userTemplates = templatesSelection(templates, toTemplateTo(matching));
+                logger.info("Generating templates, this can take a while...");
+                report =
+                    cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             } else {
-                finalIncrements = incrementsSelection(increments, matchingIncrements);
+                logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
-
-            logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
-            GenerationReportTo report =
-                cg.generate(input, finalIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
-
             ValidationUtils.checkGenerationReport(report);
-
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
@@ -603,6 +567,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            the user's wished increment
      * @param matchingIncrements
      *            all increments that are valid to the input file(s)
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
      * @return Increments matching the search string
      */
     private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
