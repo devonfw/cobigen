@@ -69,7 +69,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Initialize increments variable
      */
-    ArrayList<Integer> increments = null;
+    ArrayList<String> increments = null;
 
     /**
      * This option provide specified list of template
@@ -511,7 +511,6 @@ public class GenerateCommand implements Callable<Integer> {
         for (TemplateTo temp : matchingTemplates) {
             String tempId = temp.getId();
             JaccardDistance distance = new JaccardDistance();
-            // LevenshteinDistance distance = new LevenshteinDistance();
             scores.put(temp, distance.apply(tempId.toUpperCase(), template.toUpperCase()));
         }
         Map<TemplateTo, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
@@ -527,65 +526,157 @@ public class GenerateCommand implements Callable<Integer> {
         }
         return chosenIncrements;
     }
+    
+	/**
+	 * Method that handles the increments selection and prints some messages to the
+	 * console
+	 * 
+	 * @param increments
+	 *            user selected increments
+	 * @param matchingIncrements
+	 *            all the increments that match the current input file
+	 * @return The final increments that will be used for generation
+	 */
+	private List<IncrementTo> incrementsSelection(ArrayList<String> increments, List<IncrementTo> matchingIncrements) {
 
+		// Print all matching increments
+		int i = 0;
+		List<IncrementTo> userIncrements = new ArrayList<>();
+
+		logger.info("(0) All");
+		for (IncrementTo inc : matchingIncrements) {
+			String incDescription = inc.getDescription();
+
+			logger.info("(" + ++i + ") " + incDescription);
+
+		}
+
+		System.out.println("---------------------------------------------");
+
+		if (increments == null || increments.size() < 1) {
+			logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
+					+ " Please list the increments number you want separated by comma:");
+
+			increments = new ArrayList<>();
+			for (String userInc : getUserInput().split(",")) {
+				try {
+					increments.add(userInc);
+				} catch (NumberFormatException e) {
+					logger.error(
+							"Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+					System.exit(1);
+				}
+			}
+		} else {
+			logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
+		}
+
+		// Print user selected increments
+		String digitMatch = "\\d+";
+		for (int j = 0; j < increments.size(); j++) {
+			String currentIncrement = increments.get(j);
+
+			// If given increment is Integer
+			if (currentIncrement.matches(digitMatch)) {
+				try {
+					int selectedIncrementNumber = Integer.parseInt(currentIncrement);
+
+					// We need to generate all
+					if (selectedIncrementNumber == 0) {
+						logger.info("(0) All");
+						userIncrements = matchingIncrements;
+						break;
+					}
+					userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
+					logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
+				} catch (IndexOutOfBoundsException e) {
+					logger.error("The increment number you have specified is out of bounds!");
+					System.exit(1);
+				}
+			}
+
+			// If String representation is given
+			else {
+				// Select all increments
+				if ("all".toUpperCase().equals(currentIncrement.toUpperCase())) {
+					logger.info("(0) All");
+					userIncrements = matchingIncrements;
+					break;
+				}
+
+				ArrayList<IncrementTo> chosenIncrements = getClosestIncrement(currentIncrement, matchingIncrements);
+
+				if (chosenIncrements.size() > 0) {
+					logger.info(
+							"Here are the increments that may match your search. Please list the increments number you want separated by comma.");
+					logger.info("(0) " + "All");
+					for (IncrementTo inc : chosenIncrements) {
+						logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
+					}
+
+				}
+				logger.info("Please enter the number(s) of increment(s) that you want to generate.");
+
+				for (String userInc : getUserInput().split(",")) {
+					try {
+						if ("0".equals(userInc)) {
+							System.out.println("DEBUG: All added");
+							userIncrements = chosenIncrements;
+							break;
+						}
+						IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
+						if (!userIncrements.contains(currentIncrementTo)) {
+							System.out.println("DEBUG: " + currentIncrementTo.getDescription() + " added");
+							userIncrements.add(currentIncrementTo);
+						}
+					} catch (NumberFormatException e) {
+						logger.error(
+								"Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+						System.exit(1);
+
+					} catch (ArrayIndexOutOfBoundsException e) {
+						logger.error("Error parsing your input. Please give a valid number from the list above.");
+						System.exit(1);
+					}
+				}
+			}
+		}
+		return userIncrements;
+
+	}
+	
     /**
-     * Method that handles the increments selection and prints some messages to the console
-     * @param increments
-     *            user selected increments
+     * Search for increments matching the user input.
+     * Increments similar to the given search string or containing it are returned.
+     * @param increment 
+     * 					the user's wished increment
      * @param matchingIncrements
-     *            all the increments that match the current input file
-     * @return The final increments that will be used for generation
+     * 					all increments that are valid to the input file(s)
+     * @return
+     * 					Increments matching the search string
      */
-    private List<IncrementTo> incrementsSelection(ArrayList<Integer> increments, List<IncrementTo> matchingIncrements) {
+	private ArrayList<IncrementTo> getClosestIncrement(String increment, List<IncrementTo> matchingIncrements) {
+		
+		Map<IncrementTo, Double> scores = new HashMap<IncrementTo, Double>();
+		for (IncrementTo inc : matchingIncrements) {
+			String incDescription = inc.getDescription();
+			JaccardDistance distance = new JaccardDistance();
+			scores.put(inc, distance.apply(incDescription.toUpperCase(), increment.toUpperCase()));
+		}
+		Map<IncrementTo, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
+				.collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
 
-        // Print all matching increments
-        int i = 0;
-        List<IncrementTo> userIncrements = new ArrayList<>();
-        logger.info("(0) All");
-        for (IncrementTo inc : matchingIncrements) {
-            logger.info("(" + ++i + ") " + inc.getDescription());
-        }
-        System.out.println("---------------------------------------------");
+		ArrayList<IncrementTo> chosenIncrements = new ArrayList<>();
+		for (IncrementTo inc : sorted.keySet()) {
+			String incDescription = inc.getDescription();
+			if (incDescription.toUpperCase().contains(increment.toUpperCase())
+					|| sorted.get(inc) <= SELECTION_THRESHOLD) {
+				chosenIncrements.add(inc);
+			}
+		}
+		return chosenIncrements;
+	}
 
-        if (increments == null || increments.size() < 1) {
-            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
-                + " Please list the increments number you want separated by comma:");
-
-            increments = new ArrayList<>();
-            for (String userInc : getUserInput().split(",")) {
-                try {
-                    increments.add(Integer.parseInt(userInc));
-                } catch (NumberFormatException e) {
-                    logger.error(
-                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-                    System.exit(1);
-                }
-            }
-
-        } else {
-            logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
-        }
-
-        // Print user selected increments
-        for (int j = 0; j < increments.size(); j++) {
-            try {
-                int selectedIncrementNumber = increments.get(j);
-
-                // We need to generate all
-                if (selectedIncrementNumber == 0) {
-                    logger.info("(0) All");
-                    userIncrements = matchingIncrements;
-                    break;
-                }
-                userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
-                logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("The increment number you have specified is out of bounds!");
-                System.exit(1);
-            }
-        }
-        return userIncrements;
-    }
 
     /**
      * Asks the user for input and returns the value
@@ -595,7 +686,7 @@ public class GenerateCommand implements Callable<Integer> {
     public static String getUserInput() {
         String userInput = "";
         userInput = inputReader.nextLine();
-        return userInput;
-    }
+		return userInput;
+	}
 
 }
