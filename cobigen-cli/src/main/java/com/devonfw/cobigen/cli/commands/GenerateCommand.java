@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
@@ -118,7 +119,7 @@ public class GenerateCommand implements Callable<Integer> {
                 // User specified only templates, not increments
                 List<TemplateTo> finalTemplates = null;
                 if (inputFiles.size() > 1) {
-                    finalTemplates = preprocessTemplates(cg);
+                    finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
                 for (File inputFile : inputFiles) {
                     generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
@@ -128,7 +129,7 @@ public class GenerateCommand implements Callable<Integer> {
 
                 List<IncrementTo> finalIncrements = null;
                 if (inputFiles.size() > 1) {
-                    finalIncrements = preprocessIncrements(cg);
+                    finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
                 for (File inputFile : inputFiles) {
                     generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
@@ -143,17 +144,19 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * For each input file it is going to get its matching templates and then performs an intersection between
-     * all of them, so that the user gets only the templates that will work
+     * For each input file it is going to get its matching templates or increments and then performs an
+     * intersection between all of them, so that the user gets only the templates or increments that will work
      * @param cg
      *            CobiGen initialized instance
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
      * @return List of templates that the user will be able to use
      *
      */
-    private List<TemplateTo> preprocessTemplates(CobiGen cg) {
-
+    private List<? extends GenerableArtifact> preprocess(CobiGen cg, Class<?> c) {
+        Boolean TemplatesOrIncrements = c.getSimpleName().equals(TemplateTo.class.getSimpleName());
         Boolean firstIteration = true;
-        List<TemplateTo> finalTemplates = new ArrayList<>();
+        List<? extends GenerableArtifact> finalTos = new ArrayList<>();
 
         for (File inputFile : inputFiles) {
 
@@ -164,72 +167,51 @@ public class GenerateCommand implements Callable<Integer> {
 
             try {
                 input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
+                List<? extends GenerableArtifact> matching =
+                    TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
-                List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
-
-                if (matchingTemplates.isEmpty()) {
+                if (matching.isEmpty()) {
                     ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
                 }
 
                 if (firstIteration) {
-                    finalTemplates.addAll(matchingTemplates);
+                    finalTos = matching;
                     firstIteration = false;
                 } else {
                     // We do the intersection between the previous increments and the new ones
-                    finalTemplates = CobiGenUtils.retainAllTemplates(finalTemplates, matchingTemplates);
+                    finalTos = TemplatesOrIncrements
+                        ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
+                        : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
                 }
+
             } catch (MojoFailureException e) {
                 logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
 
             }
-        }
 
-        return templatesSelection(templates, finalTemplates);
+        }
+        return TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(finalTos))
+            : templatesSelection(templates, toTemplateTo(finalTos));
     }
 
     /**
-     * For each input file it is going to get its matching increments and then performs an intersection
-     * between all of them, so that the user gets only the increments that will work
-     * @param cg
-     *            CobiGen initialized instance
-     * @return List of Increments that the user will be able to use
-     *
+     * Casting class, from List<subclasses of GenerableArtifact> to List<IncrementTo>
+     * @param matching
+     *            List containing instances of subclasses of GenerableArtifact
+     * @return casted list containing instances of subclasses of IncrementTo
      */
-    private List<IncrementTo> preprocessIncrements(CobiGen cg) {
+    private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
+        return (List<IncrementTo>) matching;
+    }
 
-        Boolean firstIteration = true;
-        List<IncrementTo> finalIncrements = new ArrayList<>();
-
-        for (File inputFile : inputFiles) {
-
-            Object input;
-            String extension = inputFile.getName().toLowerCase();
-            Boolean isJavaInput = extension.endsWith(".java");
-            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
-
-            try {
-                input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
-
-                List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-
-                if (matchingIncrements.isEmpty()) {
-                    ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
-                }
-
-                if (firstIteration) {
-                    finalIncrements.addAll(matchingIncrements);
-                    firstIteration = false;
-                } else {
-                    // We do the intersection between the previous increments and the new ones
-                    finalIncrements = CobiGenUtils.retainAllIncrements(finalIncrements, matchingIncrements);
-                }
-            } catch (MojoFailureException e) {
-                logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
-
-            }
-        }
-
-        return incrementsSelection(increments, finalIncrements);
+    /**
+     * Casting class, from List<subclasses of GenerableArtifact> to List<TemplateTo>
+     * @param matching
+     *            List containing instances of subclasses of GenerableArtifact
+     * @return casted list containing instances of subclasses of TemplateTo
+     */
+    private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
+        return (List<TemplateTo>) matching;
     }
 
     /**
@@ -526,157 +508,154 @@ public class GenerateCommand implements Callable<Integer> {
         }
         return chosenIncrements;
     }
-    
-	/**
-	 * Method that handles the increments selection and prints some messages to the
-	 * console
-	 * 
-	 * @param increments
-	 *            user selected increments
-	 * @param matchingIncrements
-	 *            all the increments that match the current input file
-	 * @return The final increments that will be used for generation
-	 */
-	private List<IncrementTo> incrementsSelection(ArrayList<String> increments, List<IncrementTo> matchingIncrements) {
 
-		// Print all matching increments
-		int i = 0;
-		List<IncrementTo> userIncrements = new ArrayList<>();
-
-		logger.info("(0) All");
-		for (IncrementTo inc : matchingIncrements) {
-			String incDescription = inc.getDescription();
-
-			logger.info("(" + ++i + ") " + incDescription);
-
-		}
-
-		System.out.println("---------------------------------------------");
-
-		if (increments == null || increments.size() < 1) {
-			logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
-					+ " Please list the increments number you want separated by comma:");
-
-			increments = new ArrayList<>();
-			for (String userInc : getUserInput().split(",")) {
-				try {
-					increments.add(userInc);
-				} catch (NumberFormatException e) {
-					logger.error(
-							"Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-					System.exit(1);
-				}
-			}
-		} else {
-			logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
-		}
-
-		// Print user selected increments
-		String digitMatch = "\\d+";
-		for (int j = 0; j < increments.size(); j++) {
-			String currentIncrement = increments.get(j);
-
-			// If given increment is Integer
-			if (currentIncrement.matches(digitMatch)) {
-				try {
-					int selectedIncrementNumber = Integer.parseInt(currentIncrement);
-
-					// We need to generate all
-					if (selectedIncrementNumber == 0) {
-						logger.info("(0) All");
-						userIncrements = matchingIncrements;
-						break;
-					}
-					userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
-					logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
-				} catch (IndexOutOfBoundsException e) {
-					logger.error("The increment number you have specified is out of bounds!");
-					System.exit(1);
-				}
-			}
-
-			// If String representation is given
-			else {
-				// Select all increments
-				if ("all".toUpperCase().equals(currentIncrement.toUpperCase())) {
-					logger.info("(0) All");
-					userIncrements = matchingIncrements;
-					break;
-				}
-
-				ArrayList<IncrementTo> chosenIncrements = getClosestIncrement(currentIncrement, matchingIncrements);
-
-				if (chosenIncrements.size() > 0) {
-					logger.info(
-							"Here are the increments that may match your search. Please list the increments number you want separated by comma.");
-					logger.info("(0) " + "All");
-					for (IncrementTo inc : chosenIncrements) {
-						logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
-					}
-
-				}
-				logger.info("Please enter the number(s) of increment(s) that you want to generate.");
-
-				for (String userInc : getUserInput().split(",")) {
-					try {
-						if ("0".equals(userInc)) {
-							System.out.println("DEBUG: All added");
-							userIncrements = chosenIncrements;
-							break;
-						}
-						IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
-						if (!userIncrements.contains(currentIncrementTo)) {
-							System.out.println("DEBUG: " + currentIncrementTo.getDescription() + " added");
-							userIncrements.add(currentIncrementTo);
-						}
-					} catch (NumberFormatException e) {
-						logger.error(
-								"Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-						System.exit(1);
-
-					} catch (ArrayIndexOutOfBoundsException e) {
-						logger.error("Error parsing your input. Please give a valid number from the list above.");
-						System.exit(1);
-					}
-				}
-			}
-		}
-		return userIncrements;
-
-	}
-	
     /**
-     * Search for increments matching the user input.
-     * Increments similar to the given search string or containing it are returned.
-     * @param increment 
-     * 					the user's wished increment
+     * Method that handles the increments selection and prints some messages to the console
+     * 
+     * @param increments
+     *            user selected increments
      * @param matchingIncrements
-     * 					all increments that are valid to the input file(s)
-     * @return
-     * 					Increments matching the search string
+     *            all the increments that match the current input file
+     * @return The final increments that will be used for generation
      */
-	private ArrayList<IncrementTo> getClosestIncrement(String increment, List<IncrementTo> matchingIncrements) {
-		
-		Map<IncrementTo, Double> scores = new HashMap<IncrementTo, Double>();
-		for (IncrementTo inc : matchingIncrements) {
-			String incDescription = inc.getDescription();
-			JaccardDistance distance = new JaccardDistance();
-			scores.put(inc, distance.apply(incDescription.toUpperCase(), increment.toUpperCase()));
-		}
-		Map<IncrementTo, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
-				.collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+    private List<IncrementTo> incrementsSelection(ArrayList<String> increments, List<IncrementTo> matchingIncrements) {
 
-		ArrayList<IncrementTo> chosenIncrements = new ArrayList<>();
-		for (IncrementTo inc : sorted.keySet()) {
-			String incDescription = inc.getDescription();
-			if (incDescription.toUpperCase().contains(increment.toUpperCase())
-					|| sorted.get(inc) <= SELECTION_THRESHOLD) {
-				chosenIncrements.add(inc);
-			}
-		}
-		return chosenIncrements;
-	}
+        // Print all matching increments
+        int i = 0;
+        List<IncrementTo> userIncrements = new ArrayList<>();
 
+        logger.info("(0) All");
+        for (IncrementTo inc : matchingIncrements) {
+            String incDescription = inc.getDescription();
+
+            logger.info("(" + ++i + ") " + incDescription);
+
+        }
+
+        System.out.println("---------------------------------------------");
+
+        if (increments == null || increments.size() < 1) {
+            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
+                + " Please list the increments number you want separated by comma:");
+
+            increments = new ArrayList<>();
+            for (String userInc : getUserInput().split(",")) {
+                try {
+                    increments.add(userInc);
+                } catch (NumberFormatException e) {
+                    logger.error(
+                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                    System.exit(1);
+                }
+            }
+        } else {
+            logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
+        }
+
+        // Print user selected increments
+        String digitMatch = "\\d+";
+        for (int j = 0; j < increments.size(); j++) {
+            String currentIncrement = increments.get(j);
+
+            // If given increment is Integer
+            if (currentIncrement.matches(digitMatch)) {
+                try {
+                    int selectedIncrementNumber = Integer.parseInt(currentIncrement);
+
+                    // We need to generate all
+                    if (selectedIncrementNumber == 0) {
+                        logger.info("(0) All");
+                        userIncrements = matchingIncrements;
+                        break;
+                    }
+                    userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
+                    logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
+                } catch (IndexOutOfBoundsException e) {
+                    logger.error("The increment number you have specified is out of bounds!");
+                    System.exit(1);
+                }
+            }
+
+            // If String representation is given
+            else {
+                // Select all increments
+                if ("all".toUpperCase().equals(currentIncrement.toUpperCase())) {
+                    logger.info("(0) All");
+                    userIncrements = matchingIncrements;
+                    break;
+                }
+
+                ArrayList<IncrementTo> chosenIncrements = getClosestIncrement(currentIncrement, matchingIncrements);
+
+                if (chosenIncrements.size() > 0) {
+                    logger.info(
+                        "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
+                    logger.info("(0) " + "All");
+                    for (IncrementTo inc : chosenIncrements) {
+                        logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
+                    }
+
+                }
+                logger.info("Please enter the number(s) of increment(s) that you want to generate.");
+
+                for (String userInc : getUserInput().split(",")) {
+                    try {
+                        if ("0".equals(userInc)) {
+                            System.out.println("DEBUG: All added");
+                            userIncrements = chosenIncrements;
+                            break;
+                        }
+                        IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
+                        if (!userIncrements.contains(currentIncrementTo)) {
+                            System.out.println("DEBUG: " + currentIncrementTo.getDescription() + " added");
+                            userIncrements.add(currentIncrementTo);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.error(
+                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                        System.exit(1);
+
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        logger.error("Error parsing your input. Please give a valid number from the list above.");
+                        System.exit(1);
+                    }
+                }
+            }
+        }
+        return userIncrements;
+
+    }
+
+    /**
+     * Search for increments matching the user input. Increments similar to the given search string or
+     * containing it are returned.
+     * @param increment
+     *            the user's wished increment
+     * @param matchingIncrements
+     *            all increments that are valid to the input file(s)
+     * @return Increments matching the search string
+     */
+    private ArrayList<IncrementTo> getClosestIncrement(String increment, List<IncrementTo> matchingIncrements) {
+
+        Map<IncrementTo, Double> scores = new HashMap<IncrementTo, Double>();
+        for (IncrementTo inc : matchingIncrements) {
+            String incDescription = inc.getDescription();
+            JaccardDistance distance = new JaccardDistance();
+            scores.put(inc, distance.apply(incDescription.toUpperCase(), increment.toUpperCase()));
+        }
+        Map<IncrementTo, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
+            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+
+        ArrayList<IncrementTo> chosenIncrements = new ArrayList<>();
+        for (IncrementTo inc : sorted.keySet()) {
+            String incDescription = inc.getDescription();
+            if (incDescription.toUpperCase().contains(increment.toUpperCase())
+                || sorted.get(inc) <= SELECTION_THRESHOLD) {
+                chosenIncrements.add(inc);
+            }
+        }
+        return chosenIncrements;
+    }
 
     /**
      * Asks the user for input and returns the value
@@ -686,7 +665,7 @@ public class GenerateCommand implements Callable<Integer> {
     public static String getUserInput() {
         String userInput = "";
         userInput = inputReader.nextLine();
-		return userInput;
-	}
+        return userInput;
+    }
 
 }
