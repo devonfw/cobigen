@@ -1,68 +1,80 @@
-<div layout="row" class="pad-sm" flex>
-  <mat-card flex>
+<div class="page-container">
+  <mat-card>
     <mat-card-header>
       <mat-card-title>{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.title' | translate }}</mat-card-title>
       <mat-card-subtitle>{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.subtitle' | translate }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <button mat-button flex class="push-right-sm" [matTooltip]="'buttons.addItem' | translate" (click)="openDialog()">
+      <button mat-button class="data-action-button" [matTooltip]="'buttons.addItem' | translate" (click)="openDialog()">
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-button flex class="push-right-sm" [disabled]="!selectedRow" [matTooltip]="'buttons.editItem' | translate" (click)="openEditDialog()">
+      <button mat-button class="data-action-button" [disabled]="!selectedRow" [matTooltip]="'buttons.editItem' | translate" (click)="openEditDialog()">
         <mat-icon>mode_edit</mat-icon>
       </button>
-      <button mat-button flex class="push-right-sm" [disabled]="!selectedRow" [matTooltip]="'buttons.deleteItem' | translate" (click)="openConfirm()">
+      <button mat-button class="data-action-button" [disabled]="!selectedRow" [matTooltip]="'buttons.deleteItem' | translate" (click)="openConfirm()">
         <mat-icon>delete</mat-icon>
       </button>
 
       <form (ngSubmit)="filter()" #filterForm="ngForm">
-        <td-expansion-panel label="Filters">
-          <div layout="row" class="pad-left-md pad-right-md" style="align-items:center; border-bottom: 1px solid lightgrey" flex>
-            <div layout-xs="column" class="justify-space-around" style="align-items:center" hide-gt-xs flex>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+              <mat-panel-title>Filters</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="filter-form-fields">
+            <div class="filter-form-fields-mobile justify-space-around">
             <#list pojo.fields as field>
               <mat-form-field color="accent">
-                <input matInput placeholder="${field.name?cap_first}" [(ngModel)]="searchTerms.${field.name}" name="${field.name}">
+                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?lower_case}" name="${field.name?lower_case}">
               </mat-form-field>
             </#list>
             </div>
-            <div layout-gt-xs="row" class="justify-space-around" style="align-items:center" hide-xs flex>
+            <div class="filter-form-fields-desktop justify-space-around">
             <#list pojo.fields as field>
-              <mat-form-field color="accent" class="pad-sm" flex>
-                <input matInput type="${JavaUtil.getAngularType(field.type)}" placeholder="${field.name?cap_first}" [(ngModel)]="searchTerms.${field.name}" name="${field.name}">
+              <mat-form-field color="accent">
+                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?lower_case}" name="${field.name?lower_case}">
               </mat-form-field>
             </#list>
             </div>
           </div>
           <div class="align-right">
-            <button mat-button type="button" (click)="searchReset(filterForm)" class="text-upper property-text-bold">Clear filters</button>
-            <button mat-raised-button type="submit" color="accent" class="text-upper property-text-bold">Apply filters</button>
+            <button mat-button type="button" (click)="searchReset(filterForm)" class="text-upper">Clear filters</button>
+            <button mat-raised-button type="submit" color="accent" class="text-upper">Apply filters</button>
           </div>
-        </td-expansion-panel>
+        </mat-expansion-panel>
       </form>
       <mat-divider></mat-divider>
-      <td-data-table #dataTable
-        [data]="data"
-        [columns]="columns"
-        [sortable]="true"
-        [selectable]="true"
-        [multiple]="false"
-        (rowSelect)="selectEvent($event)"
-        (sortChange)="sort($event)">
-      </td-data-table>
-      <div class="mat-padding" *ngIf="!dataTable.hasData" layout="row" layout-align="center center">
+      <div class="table-container" style="width:100%; overflow:auto;">
+        <table mat-table [dataSource]="data" matSort (matSortChange)="sort($event)" style="width:100%">
+
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef style="width:42px;">
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="selectEvent(row)"
+                            [checked]="selection.isSelected(row)"
+                            [aria-label]="checkboxLabel(row)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+          <#list pojo.fields as field>
+          <!-- ${field.name?capitalize} Column -->
+          <ng-container matColumnDef="${field.name?lower_case}">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header style="width:197px;"> {{columns[${field?index}].label}} </th>
+            <td mat-cell *matCellDef="let element"> {{element.${field.name?lower_case}}} </td>
+          </ng-container>
+
+          </#list>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+      <div class="mat-padding" *ngIf="data.length===0">
         <h3>No results to display.</h3>
       </div>
-      <td-paging-bar #pagingBar [pageSize]="pageSize" [total]="totalItems" (change)="page($event)">
-        <span hide-xs>Rows per page:</span>
-        <mat-select [style.width.px]="50" [(ngModel)]="pageSize">
-          <mat-option *ngFor="let size of pageSizes" [value]="size">
-            {{ size }}
-          </mat-option>
-        </mat-select>
-        <span>{{pagingBar.range}}
-          <span hide-xs hide-sm hide-md>of {{pagingBar.total}}</span>
-        </span>
-      </td-paging-bar>
+      <mat-paginator #pagingBar [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" [showFirstLastButtons]="true" (page)="page($event)">
+      </mat-paginator>
     </mat-card-content>
   </mat-card>
 </div>

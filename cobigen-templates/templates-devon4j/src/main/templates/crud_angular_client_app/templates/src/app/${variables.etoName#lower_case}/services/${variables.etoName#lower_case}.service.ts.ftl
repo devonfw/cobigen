@@ -3,9 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { SearchCriteria } from '../../core/interfaces/search-criteria';
-import { Sort } from '../../core/interfaces/sort';
-import { Pageable } from '../../core/interfaces/pageable';
-
 
 @Injectable()
 export class ${variables.etoName?cap_first}Service {
@@ -17,7 +14,7 @@ export class ${variables.etoName?cap_first}Service {
     size: number,
     page: number,
     searchTerms: any,
-    sort: Sort[],
+    sort: any[],
   ): Observable<any> {
     const searchCriteria: SearchCriteria = {
       pageable: {
@@ -26,7 +23,7 @@ export class ${variables.etoName?cap_first}Service {
         sort: sort,
       },
     <#list pojo.fields as field>
-      ${field.name}: searchTerms.${field.name},
+      ${field.name?lower_case}: searchTerms.${field.name?lower_case},
     </#list>
     };
     return this.http.post<any>(this.urlService + 'search', searchCriteria);
@@ -37,7 +34,7 @@ export class ${variables.etoName?cap_first}Service {
       id: data.id,
       modificationCounter: data.modificationCounter,
     <#list pojo.fields as field>
-      ${field.name}: data.${field.name},
+      ${field.name?lower_case}: data.${field.name?lower_case},
     </#list>
     };
     return this.http.post(this.urlService, obj);
