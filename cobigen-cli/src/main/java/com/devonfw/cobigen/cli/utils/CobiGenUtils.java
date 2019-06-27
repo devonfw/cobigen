@@ -391,7 +391,7 @@ public class CobiGenUtils {
      * @param cg
      * @param inputFile
      * @param isJavaInput
-     * @return
+     * @return valid cobiGen input
      * @throws MojoFailureException
      */
     public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
