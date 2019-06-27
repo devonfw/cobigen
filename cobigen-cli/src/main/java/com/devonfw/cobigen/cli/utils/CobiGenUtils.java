@@ -198,7 +198,7 @@ public class CobiGenUtils {
     /**
      * @param User
      *            input entity file
-     * @return
+     * @return This method return instance of CobiGen Object
      */
     public CobiGen initializeCobiGen() {
         getTemplates();
