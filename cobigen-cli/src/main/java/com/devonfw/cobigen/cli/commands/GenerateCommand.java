@@ -122,9 +122,6 @@ public class GenerateCommand implements Callable<Integer> {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
                 for (File inputFile : inputFiles) {
-                    // generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates,
-                    // cg,
-                    // cobigenUtils.getUtilClasses());
                     generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
                         cobigenUtils.getUtilClasses(), TemplateTo.class);
                 }
@@ -135,9 +132,6 @@ public class GenerateCommand implements Callable<Integer> {
                     finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
                 for (File inputFile : inputFiles) {
-                    // generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements,
-                    // cg,
-                    // cobigenUtils.getUtilClasses());
                     generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
                         cobigenUtils.getUtilClasses(), IncrementTo.class);
                 }
