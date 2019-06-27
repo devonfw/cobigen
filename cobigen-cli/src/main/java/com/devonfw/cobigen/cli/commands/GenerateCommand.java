@@ -391,8 +391,6 @@ public class GenerateCommand implements Callable<Integer> {
 
         }
 
-        System.out.println("---------------------------------------------");
-
         if (increments == null || increments.size() < 1) {
             logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
                 + " Please list the increments number you want separated by comma:");
@@ -463,13 +461,11 @@ public class GenerateCommand implements Callable<Integer> {
                 for (String userInc : getUserInput().split(",")) {
                     try {
                         if ("0".equals(userInc)) {
-                            System.out.println("DEBUG: All added");
                             userIncrements = chosenIncrements;
                             break;
                         }
                         IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
                         if (!userIncrements.contains(currentIncrementTo)) {
-                            System.out.println("DEBUG: " + currentIncrementTo.getDescription() + " added");
                             userIncrements.add(currentIncrementTo);
                         }
                     } catch (NumberFormatException e) {
@@ -504,8 +500,6 @@ public class GenerateCommand implements Callable<Integer> {
         for (TemplateTo temp : matchingTemplates) {
             logger.info("(" + ++i + ") " + temp.getId());
         }
-        System.out.println("---------------------------------------------");
-
         if (templates == null || templates.size() < 1) {
             logger.info("Here are the options you have for your choice. Which templates do you want to generate?"
                 + " Please list the templates number you want separated by comma:");
@@ -579,13 +573,11 @@ public class GenerateCommand implements Callable<Integer> {
                 for (String userInc : getUserInput().split(",")) {
                     try {
                         if ("0".equals(userInc)) {
-                            System.out.println("DEBUG: All added");
                             userTemplates = chosenTemplates;
                             break;
                         }
                         TemplateTo currentTemplateTo = chosenTemplates.get(Integer.parseInt(userInc) - 1);
                         if (!userTemplates.contains(currentTemplateTo)) {
-                            System.out.println("DEBUG: " + currentTemplateTo.getId() + " added");
                             userTemplates.add(currentTemplateTo);
                         }
                     } catch (NumberFormatException e) {
