@@ -154,7 +154,7 @@ public class GenerateCommand implements Callable<Integer> {
      *
      */
     private List<? extends GenerableArtifact> preprocess(CobiGen cg, Class<?> c) {
-        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+        Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         Boolean firstIteration = true;
         List<? extends GenerableArtifact> finalTos = new ArrayList<>();
 
@@ -168,7 +168,7 @@ public class GenerateCommand implements Callable<Integer> {
             try {
                 input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
                 List<? extends GenerableArtifact> matching =
-                    TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
+                    isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
                 if (matching.isEmpty()) {
                     ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
@@ -179,7 +179,7 @@ public class GenerateCommand implements Callable<Integer> {
                     firstIteration = false;
                 } else {
                     // We do the intersection between the previous increments and the new ones
-                    finalTos = TemplatesOrIncrements
+                    finalTos = isIncrements
                         ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
                         : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
                 }
@@ -190,7 +190,7 @@ public class GenerateCommand implements Callable<Integer> {
             }
 
         }
-        return TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(finalTos))
+        return isIncrements ? incrementsSelection(increments, toIncrementTo(finalTos))
             : templatesSelection(templates, toTemplateTo(finalTos));
     }
 
@@ -266,7 +266,7 @@ public class GenerateCommand implements Callable<Integer> {
     public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
         List<Class<?>> utilClasses, Class<?> c) {
 
-        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+        Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
 
         try {
             Object input;
@@ -277,7 +277,7 @@ public class GenerateCommand implements Callable<Integer> {
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
             List<? extends GenerableArtifact> matching =
-                TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
+                isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
             if (matching.isEmpty()) {
                 ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
@@ -291,24 +291,21 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (finalTos != null) {
                 // We need this to allow the use of multiple input files of different types
-                finalTos = TemplatesOrIncrements
-                    ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
-                    : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
+                finalTos =
+                    isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
+                        : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
             } else {
-                finalTos = TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(matching))
+                finalTos = isIncrements ? incrementsSelection(increments, toIncrementTo(matching))
                     : templatesSelection(templates, toTemplateTo(matching));
             }
 
-            List<TemplateTo> userTemplates = null;
             GenerationReportTo report = null;
 
-            if (!TemplatesOrIncrements) {
-                userTemplates = templatesSelection(templates, toTemplateTo(matching));
-                logger.info("Generating templates, this can take a while...");
-                report =
-                    cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
-            } else {
+            if (!isIncrements) {
                 logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            } else {
+                logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
             ValidationUtils.checkGenerationReport(report);
@@ -328,7 +325,7 @@ public class GenerateCommand implements Callable<Integer> {
 
     /**
      * Method that handles the increments selection and prints some messages to the console
-     * 
+     *
      * @param increments
      *            user selected increments
      * @param matchingIncrements
@@ -567,11 +564,11 @@ public class GenerateCommand implements Callable<Integer> {
      */
     private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
         Class<?> c) {
-        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+        Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         Map<? super GenerableArtifact, Double> scores = new HashMap<>();
 
         for (int i = 0; i < matching.size(); i++) {
-            String description = TemplatesOrIncrements ? ((IncrementTo) matching.get(i)).getDescription()
+            String description = isIncrements ? ((IncrementTo) matching.get(i)).getDescription()
                 : ((TemplateTo) matching.get(i)).getId();
             JaccardDistance distance = new JaccardDistance();
             scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
@@ -584,9 +581,9 @@ public class GenerateCommand implements Callable<Integer> {
 
         for (Object artifact : sorted.keySet()) {
             GenerableArtifact tmp;
-            tmp = TemplatesOrIncrements ? (IncrementTo) artifact : (TemplateTo) artifact;
+            tmp = isIncrements ? (IncrementTo) artifact : (TemplateTo) artifact;
             String description =
-                TemplatesOrIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
+                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
             if (description.toUpperCase().contains(userInput.toUpperCase())
                 || sorted.get(artifact) <= SELECTION_THRESHOLD) {
                 chosen.add(tmp);

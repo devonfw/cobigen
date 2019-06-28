@@ -141,9 +141,19 @@ public class GenerateCommandTest {
 
         File generatedFiles =
             baseProject.toPath().resolve("src/main/java/com/maven/project/general/logic/base").toFile();
-
         assertTrue(generatedFiles.exists());
-        // If you want to remove the generated files
+
+        FileUtils.deleteDirectory(generatedFiles);
+
+        generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/common").toFile();
+        assertTrue(generatedFiles.exists());
+
+        FileUtils.deleteDirectory(generatedFiles);
+
+        generatedFiles = baseProject.getParentFile().toPath()
+            .resolve("api/src/main/java/com/maven/project/sampledatamanagement/logic").toFile();
+        assertTrue(generatedFiles.exists());
+
         FileUtils.deleteDirectory(generatedFiles);
     }
 
