@@ -1,9 +1,15 @@
 package com.devonfw.cobigen.cli.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
@@ -14,16 +20,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +50,11 @@ import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
-import com.devonfw.cobigen.htmlplugin.HTMLPluginActivator;
+import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
-import com.devonfw.cobigen.javaplugin.JavaPluginActivator;
-import com.devonfw.cobigen.javaplugin.JavaTriggerInterpreter;
-import com.devonfw.cobigen.jsonplugin.JSONPluginActivator;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-import com.devonfw.cobigen.openapiplugin.OpenAPITriggerInterpreter;
-import com.devonfw.cobigen.propertyplugin.PropertyMergerPluginActivator;
-import com.devonfw.cobigen.textmerger.TextMergerPluginActivator;
-import com.devonfw.cobigen.tsplugin.TypeScriptPluginActivator;
-import com.devonfw.cobigen.xmlplugin.XmlPluginActivator;
-import com.devonfw.cobigen.xmlplugin.XmlTriggerInterpreter;
 
 /**
  * Utils class for CobiGen related operations. For instance, creates a new CobiGen instance and registers all
@@ -172,32 +178,7 @@ public class CobiGenUtils {
     /**
      * @param User
      *            input entity file
-     */
-    public void createJarAndGenerateIncr() {
-        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-
-        // Call method to get utils from jar
-        try {
-
-            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
-        } catch (IOException e2) {
-            logger.error(
-                "Unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-
-        }
-
-        if (templatesJar != null) {
-
-            registerPlugins();
-
-        }
-
-    }
-
-    /**
-     * @param User
-     *            input entity file
-     * @return 
+     * @return
      */
     public CobiGen initializeCobiGen() {
         getTemplates();
@@ -240,49 +221,145 @@ public class CobiGenUtils {
     }
 
     /**
+     * @param fs
+     * @param to
+     * @throws IOException
+     */
+    public void extractPom(FileSystem fs, Path to) throws IOException {
+        Path from = fs.getPath("META-INF", "maven", MavenConstants.COBIGEN_GROUP_ID, "javaplugin");
+
+        try (final Stream<Path> sources = Files.walk(from)) {
+            sources.forEach(src -> {
+                if (src.getFileName().toString().equals("pom.xml")) {
+                    try {
+                        logger.debug("Extracting file {} to {}", from, to);
+                        Files.copy(src, to, StandardCopyOption.REPLACE_EXISTING);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to unzip file.", e);
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * @param jar
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws MalformedURLException
+     */
+    public void addJarToClasspath(File jar) throws NoSuchMethodException, SecurityException, IllegalAccessException,
+        IllegalArgumentException, InvocationTargetException, MalformedURLException {
+        // Get the ClassLoader class
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        Class<?> clazz = cl.getClass();
+
+        // Get the protected addURL method from the parent URLClassLoader class
+        Method method = clazz.getSuperclass().getDeclaredMethod("addURL", new Class[] { URL.class });
+
+        // Run projected addURL method to add JAR to classpath
+        method.setAccessible(true);
+        method.invoke(cl, new Object[] { jar.toURI().toURL() });
+    }
+
+    /**
      * Registers the given different CobiGen plugins
      */
     public void registerPlugins() {
-        // Java Trigger Interpreter
-        JavaTriggerInterpreter javaTriger = new JavaTriggerInterpreter("java");
-        PluginRegistry.registerTriggerInterpreter(javaTriger);
 
-        // Java merger
-        JavaPluginActivator javaPluginActivator = new JavaPluginActivator();
-        registerAllMergers(javaPluginActivator);
+        try {
+            // Get location of the current CLI jar
+            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-        // XML Trigger interpreter
-        XmlTriggerInterpreter xmlTriggerInterpreter = new XmlTriggerInterpreter("xml");
-        PluginRegistry.registerTriggerInterpreter(xmlTriggerInterpreter);
+            File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
+            if (!pomFile.exists()) {
+                try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
+                    Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
+                }
+            }
 
-        // XML merger
-        XmlPluginActivator xmlPluginActivator = new XmlPluginActivator();
-        registerAllMergers(xmlPluginActivator);
+            File cpFile = rootCLIPath.resolve(MavenConstants.OUTPUT_FILE).toFile();
+            if (!cpFile.exists()) {
+                logger.info(
+                    "As this is your first execution of the CLI, we are going to download the needed dependencies...");
+                InvocationRequest request = new DefaultInvocationRequest();
+                request.setPomFile(pomFile);
+                request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
+                    "-Dmdep.outputFile=" + MavenConstants.OUTPUT_FILE));
 
-        // TypeScript merger
-        TypeScriptPluginActivator typeScriptPluginActivator = new TypeScriptPluginActivator();
-        registerAllMergers(typeScriptPluginActivator);
+                Invoker invoker = new DefaultInvoker();
+                InvocationResult result = invoker.execute(request);
+                if (result.getExitCode() != 0) {
+                    logger.error(
+                        "Error while getting all the needed transitive dependencies. Please check your internet connection.");
+                }
+            }
 
-        // OpenAPI Trigger interpreter
-        OpenAPITriggerInterpreter openApi = new OpenAPITriggerInterpreter("openapi");
-        PluginRegistry.registerTriggerInterpreter(openApi);
+            // Read classPath.txt file and add to the class path all dependencies
+            try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
+                String line = br.readLine();
 
-        // HTML merger
-        HTMLPluginActivator htmlPluginActivator = new HTMLPluginActivator();
-        registerAllMergers(htmlPluginActivator);
+                for (String jarToAdd : line.split(";")) {
+                    addJarToClasspath(new File(jarToAdd));
+                }
+            }
 
-        // JSON merger
-        JSONPluginActivator jsonPluginActivator = new JSONPluginActivator();
-        registerAllMergers(jsonPluginActivator);
+        } catch (MavenInvocationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (URISyntaxException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (NoSuchMethodException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (SecurityException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IllegalAccessException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IllegalArgumentException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (InvocationTargetException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
-        // Property merger
-        PropertyMergerPluginActivator propertyMergerPluginActivator = new PropertyMergerPluginActivator();
-        registerAllMergers(propertyMergerPluginActivator);
+    }
 
-        // Text merger
-        TextMergerPluginActivator textMergerPluginActivator = new TextMergerPluginActivator();
-        registerAllMergers(textMergerPluginActivator);
+    /**
+     * @param locationCLI
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    private File downloadPlugin(File locationCLI) throws MalformedURLException, IOException {
+        // Download plug-in jar from Maven
+        String downloadedJarName =
+            TemplatesJarUtil.downloadJar(MavenConstants.COBIGEN_GROUP_ID, "javaplugin", "LATEST", false, locationCLI);
 
+        File pluginJar = locationCLI.toPath().resolve(downloadedJarName).toFile();
+
+        // We need to extract the pom.xml from the jar
+        final URI jarFileUri = URI.create("jar:file:" + pluginJar.toURI().getPath());
+        final FileSystem fs = FileSystems.newFileSystem(jarFileUri, new HashMap<>());
+        extractPom(fs, locationCLI.toPath().resolve(MavenConstants.POM));
+
+        return pluginJar;
     }
 
     /**
@@ -357,10 +434,15 @@ public class CobiGenUtils {
      * Processes the given input file to be converted into a valid CobiGen input. Also if the input is Java,
      * will create the needed class loader
      * @param cg
+     *            CobiGen instance
      * @param inputFile
+     *            user's input file
      * @param isJavaInput
-     * @return
+     *            whether the input is Java
+     * @return Valid CobiGen input
      * @throws MojoFailureException
+     *             throws {@link MojoFailureException} when the input file could not be converted to a valid
+     *             CobiGen input
      */
     public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
         throws MojoFailureException {

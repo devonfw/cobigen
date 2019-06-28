@@ -152,7 +152,7 @@ public final class ValidationUtils {
      */
     public static void checkGenerationReport(GenerationReportTo report) {
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
-            logger.info("Successfull generation.\n");
+            logger.info("Successful generation.\n");
         } else {
             logger.error("Generation failed due to the following problems:");
             for (Throwable throwable : report.getErrors()) {
