@@ -105,7 +105,10 @@ public class GenerateCommand implements Callable<Integer> {
     public GenerateCommand() {
         super();
     }
-
+    /*
+	 * @see java.util.concurrent.Callable#call()
+	 */
+	@SuppressWarnings("javadoc")
     @Override
     public Integer call() throws Exception {
 
@@ -203,7 +206,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            List containing instances of subclasses of GenerableArtifact
      * @return casted list containing instances of subclasses of IncrementTo
      */
-    private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
+    @SuppressWarnings("unchecked")
+	private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
         return (List<IncrementTo>) matching;
     }
 
@@ -213,7 +217,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            List containing instances of subclasses of GenerableArtifact
      * @return casted list containing instances of subclasses of TemplateTo
      */
-    private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
+    @SuppressWarnings("unchecked")
+	private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
         return (List<TemplateTo>) matching;
     }
 
@@ -405,7 +410,8 @@ public class GenerateCommand implements Callable<Integer> {
                     break;
                 }
 
-                ArrayList<IncrementTo> chosenIncrements =
+                @SuppressWarnings("unchecked")
+				ArrayList<IncrementTo> chosenIncrements =
                     (ArrayList<IncrementTo>) search(currentIncrement, matchingIncrements, IncrementTo.class);
 
                 if (chosenIncrements.size() > 1) {
@@ -500,7 +506,8 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
                 // List<TemplateTo> chosenTemplates = getClosestTemplates(currentTemplate, matchingTemplates);
-                ArrayList<TemplateTo> chosenTemplates =
+                @SuppressWarnings("unchecked")
+				ArrayList<TemplateTo> chosenTemplates =
                     (ArrayList<TemplateTo>) search(currentTemplate, matchingTemplates, TemplateTo.class);
 
                 if (chosenTemplates.size() > 1) {
@@ -560,7 +567,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            class type, specifies whether Templates or Increments should be preprocessed
      * @return Increments or templates matching the search string
      */
-    private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
+    @SuppressWarnings("unchecked")
+	private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
         Class<?> c) {
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         Map<? super GenerableArtifact, Double> scores = new HashMap<>();

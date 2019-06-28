@@ -68,11 +68,12 @@ public class CobiGenUtils {
      * Directory where all our templates jar are located
      */
     File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
-
+    /**
+     * Declare utiClasses as List
+     * */
     List<Class<?>> utilClasses;
 
-    /** Current registered input objects */
-    private List<Object> inputs;
+    
 
     /**
      * getter for templates utils classes
@@ -93,6 +94,7 @@ public class CobiGenUtils {
      */
     List<Class<?>> resolveTemplateUtilClassesFromJar(File jarPath) throws IOException {
         final List<Class<?>> result = new LinkedList<>();
+        @SuppressWarnings("unused")
         Path templateRoot;
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { jarPath.toURI().toURL() }, getClass().getClassLoader());
@@ -173,7 +175,7 @@ public class CobiGenUtils {
     /**
      * @param User
      *            input entity file
-     * @return
+     * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
         getTemplates();

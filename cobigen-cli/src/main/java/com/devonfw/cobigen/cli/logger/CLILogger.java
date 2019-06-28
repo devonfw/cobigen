@@ -14,7 +14,10 @@ import ch.qos.logback.core.ConsoleAppender;
  * This class declare layout logger and logger level  
  */
 public class CLILogger {
-
+	
+	/**
+	 * Getting logger instance from LoggerFactory for reset logger layout
+	 */
     private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
