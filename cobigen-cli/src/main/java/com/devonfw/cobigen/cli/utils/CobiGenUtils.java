@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -20,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +26,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
@@ -45,15 +42,12 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
-import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
@@ -222,54 +216,8 @@ public class CobiGenUtils {
     }
 
     /**
-     * @param fs
-     * @param to
-     * @throws IOException
-     */
-    public void extractPom(FileSystem fs, Path to) throws IOException {
-        Path from = fs.getPath("META-INF", "maven", MavenConstants.COBIGEN_GROUP_ID, "javaplugin");
-
-        try (final Stream<Path> sources = Files.walk(from)) {
-            sources.forEach(src -> {
-                if (src.getFileName().toString().equals("pom.xml")) {
-                    try {
-                        logger.debug("Extracting file {} to {}", from, to);
-                        Files.copy(src, to, StandardCopyOption.REPLACE_EXISTING);
-
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to unzip file.", e);
-                    }
-                }
-            });
-        }
-
-    }
-
-    /**
-     * @param jar
-     * @throws NoSuchMethodException
-     * @throws SecurityException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws MalformedURLException
-     */
-    public void addJarToClasspath(File jar) throws NoSuchMethodException, SecurityException, IllegalAccessException,
-        IllegalArgumentException, InvocationTargetException, MalformedURLException {
-        // Get the ClassLoader class
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        Class<?> clazz = cl.getClass();
-
-        // Get the protected addURL method from the parent URLClassLoader class
-        Method method = clazz.getSuperclass().getDeclaredMethod("addURL", new Class[] { URL.class });
-
-        // Run projected addURL method to add JAR to classpath
-        method.setAccessible(true);
-        method.invoke(cl, new Object[] { jar.toURI().toURL() });
-    }
-
-    /**
-     * Registers the given different CobiGen plugins
+     * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
+     * location and then adding the needed URLs to the class loader.
      */
     public void registerPlugins() {
 
@@ -278,99 +226,106 @@ public class CobiGenUtils {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-            File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
-            if (!pomFile.exists()) {
-                try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
-                    Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
-                }
-            }
+            File pomFile = extractArtifitialPom(rootCLIPath);
 
-            File cpFile = rootCLIPath.resolve(MavenConstants.OUTPUT_FILE).toFile();
+            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             if (!cpFile.exists()) {
-                logger.info(
-                    "As this is your first execution of the CLI, we are going to download the needed dependencies...");
-                InvocationRequest request = new DefaultInvocationRequest();
-                request.setPomFile(pomFile);
-                request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
-                    "-Dmdep.outputFile=" + MavenConstants.OUTPUT_FILE));
-
-                Invoker invoker = new DefaultInvoker();
-                InvocationResult result = invoker.execute(request);
-                if (result.getExitCode() != 0) {
-                    logger.error(
-                        "Error while getting all the needed transitive dependencies. Please check your internet connection.");
-                }
+                buildCobiGenDependencies(pomFile);
             }
 
             // Read classPath.txt file and add to the class path all dependencies
             try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
-                String line = br.readLine();
+                String allJars = br.readLine();
 
-                for (String jarToAdd : line.split(";")) {
-                    addJarToClasspath(new File(jarToAdd));
-                }
+                addJarsToClassLoader(allJars);
+            } catch (IOException e) {
+                logger.error("Unable to read classPath.txt file.", e);
             }
 
-        } catch (MavenInvocationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (NoSuchMethodException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (SecurityException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IllegalAccessException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IllegalArgumentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (InvocationTargetException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (MalformedURLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (URISyntaxException e) {
+            logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
 
     }
 
     /**
-     * @param locationCLI
-     * @return
-     * @throws MalformedURLException
-     * @throws IOException
+     * Executes a Maven class path build command which will download all the transitive dependencies needed
+     * for the CLI
+     * @param pomFile
+     *            POM file that defines the needed CobiGen dependencies to build
      */
-    private File downloadPlugin(File locationCLI) throws MalformedURLException, IOException {
-        // Download plug-in jar from Maven
-        String downloadedJarName =
-            TemplatesJarUtil.downloadJar(MavenConstants.COBIGEN_GROUP_ID, "javaplugin", "LATEST", false, locationCLI);
+    private void buildCobiGenDependencies(File pomFile) {
+        logger.info(
+            "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
+        try {
+            InvocationRequest request = new DefaultInvocationRequest();
+            request.setPomFile(pomFile);
+            request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
+                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
 
-        File pluginJar = locationCLI.toPath().resolve(downloadedJarName).toFile();
+            Invoker invoker = new DefaultInvoker();
+            InvocationResult result;
 
-        // We need to extract the pom.xml from the jar
-        final URI jarFileUri = URI.create("jar:file:" + pluginJar.toURI().getPath());
-        final FileSystem fs = FileSystems.newFileSystem(jarFileUri, new HashMap<>());
-        extractPom(fs, locationCLI.toPath().resolve(MavenConstants.POM));
+            result = invoker.execute(request);
 
-        return pluginJar;
+            if (result.getExitCode() != 0) {
+                logger.error(
+                    "Error while getting all the needed transitive dependencies. Please check your internet connection.");
+            }
+        } catch (MavenInvocationException e) {
+
+            logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
+        }
     }
 
     /**
-     * Register all mergers defined on that GeneratorPluginActivator
-     * @param pluginActivator
-     *            plugin activator that binds all mergers
+     * Extracts an artificial POM which defines all the CobiGen plug-ins that are needed
+     * @param rootCLIPath
+     *            path where the artificial POM will be extracted to
+     * @return the extracted POM file
      */
-    private void registerAllMergers(GeneratorPluginActivator pluginActivator) {
-        for (Merger merger : pluginActivator.bindMerger()) {
-            PluginRegistry.registerMerger(merger);
+    private File extractArtifitialPom(Path rootCLIPath) {
+        File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
+        if (!pomFile.exists()) {
+            try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
+                Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
+            } catch (IOException e1) {
+                logger.error(
+                    "Failed to extract CobiGen plugins pom into your computer. Maybe you need to use admin permissions.");
+            }
+        }
+        return pomFile;
+    }
+
+    /**
+     * Adds a jar file into the current class loader
+     * @param allJars
+     *            file to load
+     */
+    public void addJarsToClassLoader(String allJars) {
+        try {
+            // Get the ClassLoader class
+            ClassLoader cl = ClassLoader.getSystemClassLoader();
+            Class<?> clazz = cl.getClass();
+
+            // Get the protected addURL method from the parent URLClassLoader class
+            Method method = clazz.getSuperclass().getDeclaredMethod("addURL", new Class[] { URL.class });
+
+            for (String jarToAdd : allJars.split(";")) {
+                File jar = new File(jarToAdd);
+
+                // Run projected addURL method to add JAR to class path
+                method.setAccessible(true);
+                method.invoke(cl, new Object[] { jar.toURI().toURL() });
+            }
+        } catch (MalformedURLException e) {
+            logger.error("Not able to form URL of jar file.", e);
+        } catch (SecurityException e) {
+            logger.error(
+                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
+        } catch (ReflectiveOperationException e) {
+            logger.error(
+                "Failed to execute reflective method to add a new URL to the current class loader. This is a bug");
         }
     }
 
