@@ -42,7 +42,7 @@ import picocli.CommandLine.Parameters;
     mixinStandardHelpOptions = true)
 public class GenerateCommand implements Callable<Integer> {
 
-    final double SELECTION_THRESHOLD = 0.3;
+    final double SELECTION_THRESHOLD = 0.1;
 
     /**
      * User input file
@@ -402,7 +402,7 @@ public class GenerateCommand implements Callable<Integer> {
                 ArrayList<IncrementTo> chosenIncrements =
                     (ArrayList<IncrementTo>) search(currentIncrement, matchingIncrements, IncrementTo.class);
 
-                if (chosenIncrements.size() > 0) {
+                if (chosenIncrements.size() > 1) {
                     logger.info(
                         "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
                     logger.info("(0) " + "All");
@@ -410,7 +410,10 @@ public class GenerateCommand implements Callable<Integer> {
                         logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
                     }
 
+                } else if (chosenIncrements.size() == 1) {
+                    userIncrements.add(chosenIncrements.get(0));
                 }
+
                 logger.info("Please enter the number(s) of increment(s) that you want to generate.");
 
                 for (String userInc : getUserInput().split(",")) {
@@ -514,7 +517,7 @@ public class GenerateCommand implements Callable<Integer> {
                 ArrayList<TemplateTo> chosenTemplates =
                     (ArrayList<TemplateTo>) search(currentTemplate, matchingTemplates, TemplateTo.class);
 
-                if (chosenTemplates.size() > 0) {
+                if (chosenTemplates.size() > 1) {
                     logger.info(
                         "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
                     logger.info("(0) " + "All");
@@ -522,7 +525,10 @@ public class GenerateCommand implements Callable<Integer> {
                         logger.info("(" + (chosenTemplates.indexOf(temp) + 1) + ") " + temp.getId());
                     }
 
+                } else if (chosenTemplates.size() == 1) {
+                    userTemplates.add(chosenTemplates.get(0));
                 }
+
                 logger.info("Please enter the number(s) of increment(s) that you want to generate.");
 
                 for (String userInc : getUserInput().split(",")) {
@@ -545,6 +551,7 @@ public class GenerateCommand implements Callable<Integer> {
                         System.exit(1);
                     }
                 }
+
             }
         }
         return userTemplates;
@@ -554,13 +561,13 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Search for increments matching the user input. Increments similar to the given search string or
      * containing it are returned.
-     * @param increment
-     *            the user's wished increment
-     * @param matchingIncrements
-     *            all increments that are valid to the input file(s)
+     * @param userInput
+     *            the user's wished increment or template
+     * @param matching
+     *            all increments or templates that are valid to the input file(s)
      * @param c
      *            class type, specifies whether Templates or Increments should be preprocessed
-     * @return Increments matching the search string
+     * @return Increments or templates matching the search string
      */
     private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
         Class<?> c) {
