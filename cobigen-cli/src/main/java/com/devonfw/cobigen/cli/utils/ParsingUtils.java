@@ -49,6 +49,7 @@ public class ParsingUtils {
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
         JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
+
         String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
 
         try {

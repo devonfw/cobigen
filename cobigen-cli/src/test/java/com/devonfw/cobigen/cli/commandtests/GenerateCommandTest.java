@@ -122,4 +122,29 @@ public class GenerateCommandTest {
         FileUtils.deleteDirectory(outputRootFile.getParentFile().toPath().resolve("api").toFile());
     }
 
+    /**
+     * Integration test of the generation of templates from a Java Entity with number selection.
+     * @throws IOException
+     *             when the test was not able to remove the just generated templates
+     */
+    @Test
+    public void generateTemplatesFromEntityTest() throws IOException {
+        File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
+
+        String args[] = new String[4];
+        args[0] = "generate";
+        args[1] = entityInputFile.getAbsolutePath();
+        args[2] = "-t";
+        args[3] = "1,5,7";
+
+        CobiGenCLI.main(args);
+
+        File generatedFiles =
+            baseProject.toPath().resolve("src/main/java/com/maven/project/general/logic/base").toFile();
+
+        assertTrue(generatedFiles.exists());
+        // If you want to remove the generated files
+        FileUtils.deleteDirectory(generatedFiles);
+    }
+
 }

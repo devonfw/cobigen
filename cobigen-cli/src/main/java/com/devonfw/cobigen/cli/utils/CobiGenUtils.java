@@ -48,6 +48,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.to.IncrementTo;
+import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
@@ -401,9 +402,9 @@ public class CobiGenUtils {
     }
 
     /**
-     * Returns a list that retains only the elements in this list that are contained in the specified
-     * collection (optional operation). In other words, the resultant list removes from this list all of its
-     * elements that are not contained in the specified collection.
+     * For Increments Returns a list that retains only the elements in this list that are contained in the
+     * specified collection (optional operation). In other words, the resultant list removes from this list
+     * all of its elements that are not contained in the specified collection.
      *
      * @param currentList
      *            list containing elements to be retained in this list
@@ -411,7 +412,8 @@ public class CobiGenUtils {
      *            second list to be used for the intersection
      * @return <tt>resultant list</tt> containing increments that are in both lists
      */
-    public static List<IncrementTo> retainAll(List<IncrementTo> currentList, List<IncrementTo> listToIntersect) {
+    public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
+        List<IncrementTo> listToIntersect) {
 
         List<IncrementTo> resultantList = new ArrayList<>();
 
@@ -431,6 +433,36 @@ public class CobiGenUtils {
     }
 
     /**
+     * For Templates Returns a list that retains only the elements in this list that are contained in the
+     * specified collection (optional operation). In other words, the resultant list removes from this list
+     * all of its elements that are not contained in the specified collection.
+     *
+     * @param currentList
+     *            list containing elements to be retained in this list
+     * @param listToIntersect
+     *            second list to be used for the intersection
+     * @return <tt>resultant list</tt> containing increments that are in both lists
+     */
+    public static List<TemplateTo> retainAllTemplates(List<TemplateTo> currentList, List<TemplateTo> listToIntersect) {
+
+        List<TemplateTo> resultantList = new ArrayList<>();
+
+        for (TemplateTo currentTemplate : currentList) {
+            String currentTemplateDesc = currentTemplate.getId().trim().toLowerCase();
+            for (TemplateTo intersectTemplate : listToIntersect) {
+
+                String intersectTemplateDesc = intersectTemplate.getId().trim().toLowerCase();
+
+                if (currentTemplateDesc.equals(intersectTemplateDesc)) {
+                    resultantList.add(currentTemplate);
+                    break;
+                }
+            }
+        }
+        return resultantList;
+    }
+
+    /**
      * Processes the given input file to be converted into a valid CobiGen input. Also if the input is Java,
      * will create the needed class loader
      * @param cg
@@ -438,8 +470,7 @@ public class CobiGenUtils {
      * @param inputFile
      *            user's input file
      * @param isJavaInput
-     *            whether the input is Java
-     * @return Valid CobiGen input
+     * @return valid cobiGen input
      * @throws MojoFailureException
      *             throws {@link MojoFailureException} when the input file could not be converted to a valid
      *             CobiGen input

@@ -1,17 +1,25 @@
 package com.devonfw.cobigen.cli.commands;
 
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.text.similarity.JaccardDistance;
 import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
@@ -33,6 +41,8 @@ import picocli.CommandLine.Parameters;
 @Command(description = MessagesConstants.GENERATE_DESCRIPTION, name = "generate", aliases = { "g" },
     mixinStandardHelpOptions = true)
 public class GenerateCommand implements Callable<Integer> {
+
+    final double SELECTION_THRESHOLD = 0.3;
 
     /**
      * User input file
@@ -60,13 +70,16 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Initialize increments variable
      */
-    ArrayList<Integer> increments = null;
+    ArrayList<String> increments = null;
 
     /**
      * This option provide specified list of template
      */
     @Option(names = { "--templates", "-t" }, split = ",", description = MessagesConstants.TEMPLATES_OPTION_DESCRIPTION)
-    ArrayList<Integer> templates = null;
+    /**
+     * Initialize templates variable
+     */
+    ArrayList<String> templates = null;
 
     /**
      * Logger to output useful information to the user
@@ -104,19 +117,23 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (increments == null && templates != null) {
                 // User specified only templates, not increments
+                List<TemplateTo> finalTemplates = null;
+                if (inputFiles.size() > 1) {
+                    finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
+                }
                 for (File inputFile : inputFiles) {
-                    generateTemplates(inputFile, ParsingUtils.getProjectRoot(inputFile), templates, cg,
-                        cobigenUtils.getUtilClasses());
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
+                        cobigenUtils.getUtilClasses(), TemplateTo.class);
                 }
             } else {
 
                 List<IncrementTo> finalIncrements = null;
                 if (inputFiles.size() > 1) {
-                    finalIncrements = preprocessIncrements(cg);
+                    finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
                 for (File inputFile : inputFiles) {
-                    generateIncrements(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
-                        cobigenUtils.getUtilClasses());
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
+                        cobigenUtils.getUtilClasses(), IncrementTo.class);
                 }
             }
             return 0;
@@ -127,17 +144,19 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * For each input file it is going to get its matching increments and then performs an intersection
-     * between all of them, so that the user gets only the increments that will work
+     * For each input file it is going to get its matching templates or increments and then performs an
+     * intersection between all of them, so that the user gets only the templates or increments that will work
      * @param cg
      *            CobiGen initialized instance
-     * @return List of Increments that the user will be able to use
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
+     * @return List of templates that the user will be able to use
      *
      */
-    private List<IncrementTo> preprocessIncrements(CobiGen cg) {
-
+    private List<? extends GenerableArtifact> preprocess(CobiGen cg, Class<?> c) {
+        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
         Boolean firstIteration = true;
-        List<IncrementTo> finalIncrements = new ArrayList<>();
+        List<? extends GenerableArtifact> finalTos = new ArrayList<>();
 
         for (File inputFile : inputFiles) {
 
@@ -148,27 +167,51 @@ public class GenerateCommand implements Callable<Integer> {
 
             try {
                 input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
+                List<? extends GenerableArtifact> matching =
+                    TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
-                List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-
-                if (matchingIncrements.isEmpty()) {
+                if (matching.isEmpty()) {
                     ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
                 }
 
                 if (firstIteration) {
-                    finalIncrements.addAll(matchingIncrements);
+                    finalTos = matching;
                     firstIteration = false;
                 } else {
                     // We do the intersection between the previous increments and the new ones
-                    finalIncrements = CobiGenUtils.retainAll(finalIncrements, matchingIncrements);
+                    finalTos = TemplatesOrIncrements
+                        ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
+                        : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
                 }
+
             } catch (MojoFailureException e) {
                 logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
 
             }
-        }
 
-        return incrementsSelection(increments, finalIncrements);
+        }
+        return TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(finalTos))
+            : templatesSelection(templates, toTemplateTo(finalTos));
+    }
+
+    /**
+     * Casting class, from List<subclasses of GenerableArtifact> to List<IncrementTo>
+     * @param matching
+     *            List containing instances of subclasses of GenerableArtifact
+     * @return casted list containing instances of subclasses of IncrementTo
+     */
+    private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
+        return (List<IncrementTo>) matching;
+    }
+
+    /**
+     * Casting class, from List<subclasses of GenerableArtifact> to List<TemplateTo>
+     * @param matching
+     *            List containing instances of subclasses of GenerableArtifact
+     * @return casted list containing instances of subclasses of TemplateTo
+     */
+    private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
+        return (List<TemplateTo>) matching;
     }
 
     /**
@@ -203,23 +246,28 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * Generates new templates using the inputFile from the inputProject.
+     * Generates new templates or increments using the inputFile from the inputProject.
      *
      * @param inputFile
      *            input file the user wants to generate code from
      * @param inputProject
      *            input project where the input file is located. We need this in order to build the classpath
      *            of the input file
-     * @param templates
-     *            user selected templates
+     * @param finalTos
+     *            the list of increments or templates that the user is going to use for generation
      * @param cg
      *            Initialized CobiGen instance
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
      * @param utilClasses
      *            util classes loaded from the templates jar
      *
      */
-    public void generateTemplates(File inputFile, File inputProject, ArrayList<Integer> templates, CobiGen cg,
-        List<Class<?>> utilClasses) {
+    public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
+        List<Class<?>> utilClasses, Class<?> c) {
+
+        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
@@ -228,67 +276,10 @@ public class GenerateCommand implements Callable<Integer> {
 
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
-            // If user did not specify the output path of the generated files, we can use the current project
-            // folder
-            if (outputRootPath == null) {
-                logger.info(
-                    "As you did not specify where the code will be generated, we will use the project of your current"
-                        + " input file.");
-                logger.debug("Generating to: " + inputProject.getAbsolutePath());
+            List<? extends GenerableArtifact> matching =
+                TemplatesOrIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
-                outputRootPath = inputProject;
-            }
-
-            // TODO failing method -> check why
-            // Object input = checkInput(inputProject, inputProject, cg, isJavaInput);
-
-            List<TemplateTo> matchingTemplates = cg.getMatchingTemplates(input);
-            if (matchingTemplates.isEmpty()) {
-                ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
-            }
-            // TODO selection for Strings
-            List<TemplateTo> userTemplates = templatesSelection(templates, matchingTemplates);
-
-            logger.info("Generating templates, this can take a while...");
-            GenerationReportTo report =
-                cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
-
-            ValidationUtils.checkGenerationReport(report);
-        } catch (MojoFailureException e) {
-            logger.error("Invalid input for CobiGen, please check your input file.");
-
-        }
-
-    }
-
-    /**
-     * Generates new increments using the inputFile from the inputProject.
-     * @param inputFile
-     *            input file the user wants to generate code from
-     * @param inputProject
-     *            input project where the input file is located. We need this in order to build the classpath
-     *            of the input file
-     * @param finalIncrements
-     *            the list of increments that the user is going to use for generation
-     * @param cg
-     *            Initialized CobiGen instance
-     * @param utilClasses
-     *            util classes loaded from the templates jar
-     *
-     */
-    public void generateIncrements(File inputFile, File inputProject, List<IncrementTo> finalIncrements, CobiGen cg,
-        List<Class<?>> utilClasses) {
-        try {
-            Object input;
-            String extension = inputFile.getName().toLowerCase();
-            Boolean isJavaInput = extension.endsWith(".java");
-            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
-
-            input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
-
-            List<IncrementTo> matchingIncrements = cg.getMatchingIncrements(input);
-
-            if (matchingIncrements.isEmpty()) {
+            if (matching.isEmpty()) {
                 ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
             }
 
@@ -298,78 +289,157 @@ public class GenerateCommand implements Callable<Integer> {
                 setOutputRootPath(inputProject);
             }
 
-            if (finalIncrements != null) {
+            if (finalTos != null) {
                 // We need this to allow the use of multiple input files of different types
-                finalIncrements = CobiGenUtils.retainAll(matchingIncrements, finalIncrements);
+                finalTos = TemplatesOrIncrements
+                    ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
+                    : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
             } else {
-                finalIncrements = incrementsSelection(increments, matchingIncrements);
+                finalTos = TemplatesOrIncrements ? incrementsSelection(increments, toIncrementTo(matching))
+                    : templatesSelection(templates, toTemplateTo(matching));
             }
 
-            logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
-            GenerationReportTo report =
-                cg.generate(input, finalIncrements, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            List<TemplateTo> userTemplates = null;
+            GenerationReportTo report = null;
 
+            if (!TemplatesOrIncrements) {
+                userTemplates = templatesSelection(templates, toTemplateTo(matching));
+                logger.info("Generating templates, this can take a while...");
+                report =
+                    cg.generate(input, userTemplates, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            } else {
+                logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+            }
             ValidationUtils.checkGenerationReport(report);
-
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
         }
     }
 
-    // /**
-    // * Checks if the inputfile is valid and if the user specified an output path
-    // * @param inputFile
-    // * input file the user wants to generate code from
-    // * @param inputProject
-    // * input project where the input file is located. We need this in order to build the classpath
-    // * of the input file
-    // * @param cg
-    // * Initialized CobiGen instance
-    // * @param isJavaInput
-    // * boolean value if file is java input
-    // * @return input returns the valid input Object
-    // *
-    // */
-    // private Object checkInput(File inputFile, File inputProject, CobiGen cg, Boolean isJavaInput) {
-    // Object input = null;
-    // try {
-    // // If it is a Java file, we need the class loader
-    // if (isJavaInput) {
-    // JavaContext context = ParsingUtils.getJavaContext(inputFile, inputProject);
-    // input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
-    // } else {
-    // input = InputPreProcessor.process(cg, inputFile, null);
-    // }
-    //
-    // // If user did not specify the output path of the generated files, we can use the current project
-    // // folder
-    // if (outputRootPath == null) {
-    // logger.info(
-    // "As you did not specify where the code will be generated, we will use the project of your current"
-    // + " input file.");
-    // logger.debug("Generating to: " + inputProject.getAbsolutePath());
-    //
-    // outputRootPath = inputProject;
-    // }
-    // } catch (MojoFailureException e) {
-    // logger.error("Invalid input for CobiGen, please check your input file.");
-    // e.printStackTrace();
-    // }
-    // return input;
-    // }
-
-    /**
-     * Set the output root path and also print a message warning this
-     * @param inputProject
-     *            value to set the output root path
-     */
     private void setOutputRootPath(File inputProject) {
         logger.info("As you did not specify where the code will be generated, we will use the project of your current"
             + " input file.");
         logger.debug("Generating to: " + inputProject.getAbsolutePath());
 
         outputRootPath = inputProject;
+    }
+
+    /**
+     * Method that handles the increments selection and prints some messages to the console
+     * 
+     * @param increments
+     *            user selected increments
+     * @param matchingIncrements
+     *            all the increments that match the current input file
+     * @return The final increments that will be used for generation
+     */
+    private List<IncrementTo> incrementsSelection(ArrayList<String> increments, List<IncrementTo> matchingIncrements) {
+
+        // Print all matching increments
+        int i = 0;
+        List<IncrementTo> userIncrements = new ArrayList<>();
+
+        logger.info("(0) All");
+        for (IncrementTo inc : matchingIncrements) {
+            String incDescription = inc.getDescription();
+
+            logger.info("(" + ++i + ") " + incDescription);
+
+        }
+
+        if (increments == null || increments.size() < 1) {
+            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
+                + " Please list the increments number you want separated by comma:");
+
+            increments = new ArrayList<>();
+            for (String userInc : getUserInput().split(",")) {
+                try {
+                    increments.add(userInc);
+                } catch (NumberFormatException e) {
+                    logger.error(
+                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                    System.exit(1);
+                }
+            }
+        } else {
+            logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
+        }
+
+        // Print user selected increments
+        String digitMatch = "\\d+";
+        for (int j = 0; j < increments.size(); j++) {
+            String currentIncrement = increments.get(j);
+
+            // If given increment is Integer
+            if (currentIncrement.matches(digitMatch)) {
+                try {
+                    int selectedIncrementNumber = Integer.parseInt(currentIncrement);
+
+                    // We need to generate all
+                    if (selectedIncrementNumber == 0) {
+                        logger.info("(0) All");
+                        userIncrements = matchingIncrements;
+                        break;
+                    }
+                    userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
+                    logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
+                } catch (IndexOutOfBoundsException e) {
+                    logger.error("The increment number you have specified is out of bounds!");
+                    System.exit(1);
+                }
+            }
+
+            // If String representation is given
+            else {
+                // Select all increments
+                if ("all".toUpperCase().equals(currentIncrement.toUpperCase())) {
+                    logger.info("(0) All");
+                    userIncrements = matchingIncrements;
+                    break;
+                }
+
+                // ArrayList<IncrementTo> chosenIncrements = getClosestIncrement(currentIncrement,
+                // matchingIncrements);
+                ArrayList<IncrementTo> chosenIncrements =
+                    (ArrayList<IncrementTo>) search(currentIncrement, matchingIncrements, IncrementTo.class);
+
+                if (chosenIncrements.size() > 0) {
+                    logger.info(
+                        "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
+                    logger.info("(0) " + "All");
+                    for (IncrementTo inc : chosenIncrements) {
+                        logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
+                    }
+
+                }
+                logger.info("Please enter the number(s) of increment(s) that you want to generate.");
+
+                for (String userInc : getUserInput().split(",")) {
+                    try {
+                        if ("0".equals(userInc)) {
+                            userIncrements = chosenIncrements;
+                            break;
+                        }
+                        IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
+                        if (!userIncrements.contains(currentIncrementTo)) {
+                            userIncrements.add(currentIncrementTo);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.error(
+                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                        System.exit(1);
+
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        logger.error("Error parsing your input. Please give a valid number from the list above.");
+                        System.exit(1);
+                    }
+                }
+            }
+        }
+        return userIncrements;
+
     }
 
     /**
@@ -380,7 +450,7 @@ public class GenerateCommand implements Callable<Integer> {
      *            all the templates that match the current input file
      * @return The final templates that will be used for generation
      */
-    private List<TemplateTo> templatesSelection(ArrayList<Integer> templates, List<TemplateTo> matchingTemplates) {
+    private List<TemplateTo> templatesSelection(ArrayList<String> templates, List<TemplateTo> matchingTemplates) {
         // Print all matching increments
         int i = 0;
         List<TemplateTo> userTemplates = new ArrayList<>();
@@ -388,9 +458,6 @@ public class GenerateCommand implements Callable<Integer> {
         for (TemplateTo temp : matchingTemplates) {
             logger.info("(" + ++i + ") " + temp.getId());
         }
-        System.out.println("---------------------------------------------");
-
-        // TODO
         if (templates == null || templates.size() < 1) {
             logger.info("Here are the options you have for your choice. Which templates do you want to generate?"
                 + " Please list the templates number you want separated by comma:");
@@ -398,7 +465,7 @@ public class GenerateCommand implements Callable<Integer> {
             templates = new ArrayList<>();
             for (String userInc : getUserInput().split(",")) {
                 try {
-                    templates.add(Integer.parseInt(userInc));
+                    templates.add(userInc);
                 } catch (NumberFormatException e) {
                     logger.error(
                         "Error parsing your input. You need to specify templates using numbers separated by comma (2,5,6).");
@@ -411,84 +478,122 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         // Print user selected templates
-        for (int j = 0; j < templates.size(); j++) {
-            try {
-                int selectedTemplatesNumber = templates.get(j);
+        String digitMatch = "\\d+";
 
-                // We need to generate all
-                if (selectedTemplatesNumber == 0) {
+        for (int selectedTempNum = 0; selectedTempNum < templates.size(); selectedTempNum++) {
+
+            String currentTemplate = templates.get(selectedTempNum);
+
+            // If given increment is Integer
+            if (currentTemplate.matches(digitMatch)) {
+                try {
+                    int selectedIncrementNumber = Integer.parseInt(currentTemplate);
+
+                    // We need to generate all
+                    if (selectedIncrementNumber == 0) {
+                        logger.info("(0) All");
+                        userTemplates = matchingTemplates;
+                        break;
+                    }
+                    userTemplates.add(selectedTempNum, matchingTemplates.get(selectedIncrementNumber - 1));
+                    logger.info("(" + selectedIncrementNumber + ") " + userTemplates.get(selectedTempNum).getId());
+                } catch (IndexOutOfBoundsException e) {
+                    logger.error("The increment number you have specified is out of bounds!");
+                    System.exit(1);
+                }
+
+            }
+
+            // If String representation is given
+            else {
+                // Select all increments
+                if ("all".toUpperCase().equals(currentTemplate.toUpperCase())) {
                     logger.info("(0) All");
                     userTemplates = matchingTemplates;
                     break;
                 }
-                userTemplates.add(j, matchingTemplates.get(selectedTemplatesNumber - 1));
-                logger.info("(" + selectedTemplatesNumber + ") " + userTemplates.get(j).getId());
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("The increment number you have specified is out of bounds!");
-                System.exit(1);
+
+                // List<TemplateTo> chosenTemplates = getClosestTemplates(currentTemplate, matchingTemplates);
+                ArrayList<TemplateTo> chosenTemplates =
+                    (ArrayList<TemplateTo>) search(currentTemplate, matchingTemplates, TemplateTo.class);
+
+                if (chosenTemplates.size() > 0) {
+                    logger.info(
+                        "Here are the increments that may match your search. Please list the increments number you want separated by comma.");
+                    logger.info("(0) " + "All");
+                    for (TemplateTo temp : chosenTemplates) {
+                        logger.info("(" + (chosenTemplates.indexOf(temp) + 1) + ") " + temp.getId());
+                    }
+
+                }
+                logger.info("Please enter the number(s) of increment(s) that you want to generate.");
+
+                for (String userInc : getUserInput().split(",")) {
+                    try {
+                        if ("0".equals(userInc)) {
+                            userTemplates = chosenTemplates;
+                            break;
+                        }
+                        TemplateTo currentTemplateTo = chosenTemplates.get(Integer.parseInt(userInc) - 1);
+                        if (!userTemplates.contains(currentTemplateTo)) {
+                            userTemplates.add(currentTemplateTo);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.error(
+                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
+                        System.exit(1);
+
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        logger.error("Error parsing your input. Please give a valid number from the list above.");
+                        System.exit(1);
+                    }
+                }
             }
         }
-
         return userTemplates;
+
     }
 
     /**
-     * Method that handles the increments selection and prints some messages to the console
-     * @param increments
-     *            user selected increments
+     * Search for increments matching the user input. Increments similar to the given search string or
+     * containing it are returned.
+     * @param increment
+     *            the user's wished increment
      * @param matchingIncrements
-     *            all the increments that match the current input file
-     * @return The final increments that will be used for generation
+     *            all increments that are valid to the input file(s)
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
+     * @return Increments matching the search string
      */
-    private List<IncrementTo> incrementsSelection(ArrayList<Integer> increments, List<IncrementTo> matchingIncrements) {
+    private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
+        Class<?> c) {
+        Boolean TemplatesOrIncrements = !c.getSimpleName().equals(TemplateTo.class.getSimpleName());
+        Map<? super GenerableArtifact, Double> scores = new HashMap<>();
 
-        // Print all matching increments
-        int i = 0;
-        List<IncrementTo> userIncrements = new ArrayList<>();
-        logger.info("(0) All");
-        for (IncrementTo inc : matchingIncrements) {
-            logger.info("(" + ++i + ") " + inc.getDescription());
-        }
-        System.out.println("---------------------------------------------");
-
-        if (increments == null || increments.size() < 1) {
-            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
-                + " Please list the increments number you want separated by comma:");
-
-            increments = new ArrayList<>();
-            for (String userInc : getUserInput().split(",")) {
-                try {
-                    increments.add(Integer.parseInt(userInc));
-                } catch (NumberFormatException e) {
-                    logger.error(
-                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-                    System.exit(1);
-                }
-            }
-
-        } else {
-            logger.info("Those are all the increments that you can select with your input file, but you have chosen:");
+        for (int i = 0; i < matching.size(); i++) {
+            String description = TemplatesOrIncrements ? ((IncrementTo) matching.get(i)).getDescription()
+                : ((TemplateTo) matching.get(i)).getId();
+            JaccardDistance distance = new JaccardDistance();
+            scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
         }
 
-        // Print user selected increments
-        for (int j = 0; j < increments.size(); j++) {
-            try {
-                int selectedIncrementNumber = increments.get(j);
+        Map<? super GenerableArtifact, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
+            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
 
-                // We need to generate all
-                if (selectedIncrementNumber == 0) {
-                    logger.info("(0) All");
-                    userIncrements = matchingIncrements;
-                    break;
-                }
-                userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
-                logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("The increment number you have specified is out of bounds!");
-                System.exit(1);
+        ArrayList<? super GenerableArtifact> chosen = new ArrayList<>();
+
+        for (Object artifact : sorted.keySet()) {
+            GenerableArtifact tmp;
+            tmp = TemplatesOrIncrements ? (IncrementTo) artifact : (TemplateTo) artifact;
+            String description =
+                TemplatesOrIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
+            if (description.toUpperCase().contains(userInput.toUpperCase())
+                || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                chosen.add(tmp);
             }
         }
-        return userIncrements;
+
+        return (ArrayList<? extends GenerableArtifact>) chosen;
     }
 
     /**
