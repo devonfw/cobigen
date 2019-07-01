@@ -90,8 +90,6 @@ public final class ValidationUtils {
      * Recursively tries to find a pom.xml file in the parent folders
      * @param folder
      *            folder where we want to recursively find the pom.xml
-     * @param recursion
-     *            current recursion level
      * @return the pom.xml file if it was found, null otherwise
      */
     private static File findPomFromFolder(File folder) {

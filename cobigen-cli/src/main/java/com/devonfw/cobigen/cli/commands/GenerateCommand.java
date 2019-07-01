@@ -105,10 +105,7 @@ public class GenerateCommand implements Callable<Integer> {
     public GenerateCommand() {
         super();
     }
-    /*
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@SuppressWarnings("javadoc")
+
     @Override
     public Integer call() throws Exception {
 
@@ -196,8 +193,8 @@ public class GenerateCommand implements Callable<Integer> {
             }
 
         }
-        return isIncrements ? incrementsSelection(increments, toIncrementTo(finalTos))
-            : templatesSelection(templates, toTemplateTo(finalTos));
+        return isIncrements ? generableArtifactSelection(increments, toIncrementTo(finalTos), IncrementTo.class)
+            : generableArtifactSelection(templates, toIncrementTo(finalTos), TemplateTo.class);
     }
 
     /**
@@ -207,7 +204,7 @@ public class GenerateCommand implements Callable<Integer> {
      * @return casted list containing instances of subclasses of IncrementTo
      */
     @SuppressWarnings("unchecked")
-	private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
+    private List<IncrementTo> toIncrementTo(List<? extends GenerableArtifact> matching) {
         return (List<IncrementTo>) matching;
     }
 
@@ -218,7 +215,7 @@ public class GenerateCommand implements Callable<Integer> {
      * @return casted list containing instances of subclasses of TemplateTo
      */
     @SuppressWarnings("unchecked")
-	private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
+    private List<TemplateTo> toTemplateTo(List<? extends GenerableArtifact> matching) {
         return (List<TemplateTo>) matching;
     }
 
@@ -303,8 +300,9 @@ public class GenerateCommand implements Callable<Integer> {
                     isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
                         : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
             } else {
-                finalTos = isIncrements ? incrementsSelection(increments, toIncrementTo(matching))
-                    : templatesSelection(templates, toTemplateTo(matching));
+                finalTos =
+                    isIncrements ? generableArtifactSelection(increments, toIncrementTo(matching), IncrementTo.class)
+                        : generableArtifactSelection(templates, toIncrementTo(matching), TemplateTo.class);
             }
 
             GenerationReportTo report = null;
@@ -339,64 +337,59 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Method that handles the increments selection and prints some messages to the console
      *
-     * @param increments
+     * @param userInput
      *            user selected increments
-     * @param matchingIncrements
+     * @param matching
      *            all the increments that match the current input file
+     * @param c
+     *            class type, specifies whether Templates or Increments should be preprocessed
      * @return The final increments that will be used for generation
      */
-    private List<IncrementTo> incrementsSelection(ArrayList<String> increments, List<IncrementTo> matchingIncrements) {
+    private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
+        List<? extends GenerableArtifact> matching, Class<?> c) {
 
-        // Print all matching increments
-        int i = 0;
-        List<IncrementTo> userIncrements = new ArrayList<>();
+        Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
+        List<GenerableArtifact> userSelection = new ArrayList<>();
+        String artifactType = isIncrements ? "increment" : "template";
 
-        if (increments == null || increments.size() < 1) {
-            logger.info("(0) All");
-            for (IncrementTo inc : matchingIncrements) {
-                String incDescription = inc.getDescription();
+        if (userInput == null || userInput.size() < 1) {
+            // Print all matching generable artifacts
+            printAllMatchingIncrements(matching, isIncrements, artifactType);
 
-                logger.info("(" + ++i + ") " + incDescription);
-
+            userInput = new ArrayList<>();
+            for (String userArtifact : getUserInput().split(",")) {
+                userInput.add(userArtifact);
             }
-
-            logger.info("Here are the options you have for your choice. Which increments do you want to generate?"
-                + " Please list the increments number you want separated by comma:");
-
-            increments = new ArrayList<>();
-            for (String userInc : getUserInput().split(",")) {
-                try {
-                    increments.add(userInc);
-                } catch (NumberFormatException e) {
-                    logger.error(
-                        "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-                    System.exit(1);
-                }
-            }
-        } else {
-            logger.info("The increments that you have chosen are:");
         }
 
         // Print user selected increments
-        String digitMatch = "\\d+";
-        for (int j = 0; j < increments.size(); j++) {
-            String currentIncrement = increments.get(j);
+        for (int j = 0; j < userInput.size(); j++) {
+            String currentSelectedArtifact = userInput.get(j);
 
-            // If given increment is Integer
-            if (currentIncrement.matches(digitMatch)) {
+            String digitMatch = "\\d+";
+            // If given generable artifact is Integer
+            if (currentSelectedArtifact.matches(digitMatch)) {
                 try {
-                    int selectedIncrementNumber = Integer.parseInt(currentIncrement);
+                    int selectedArtifactNumber = Integer.parseInt(currentSelectedArtifact);
+                    int index = selectedArtifactNumber - 1;
 
                     // We need to generate all
-                    if (selectedIncrementNumber == 0) {
+                    if (selectedArtifactNumber == 0) {
                         logger.info("(0) All");
-                        userIncrements = matchingIncrements;
-                        break;
+                        userSelection = (List<GenerableArtifact>) matching;
+                        return userSelection;
                     }
-                    userIncrements.add(j, matchingIncrements.get(selectedIncrementNumber - 1));
-                    logger.info("(" + selectedIncrementNumber + ") " + userIncrements.get(j).getDescription());
+                    userSelection.add(j, matching.get(index));
+
+                    String artifactDescription = isIncrements ? ((IncrementTo) matching.get(index)).getDescription()
+                        : ((TemplateTo) matching.get(index)).getId();
+                    logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The increment number you have specified is out of bounds!");
+                    logger.error("The " + artifactType + " number you have specified is out of bounds!");
+                    System.exit(1);
+                } catch (NumberFormatException e) {
+                    logger.error("Error parsing your input. You need to specify " + artifactType
+                        + "s using numbers separated by comma (2,5,6).");
                     System.exit(1);
                 }
             }
@@ -404,161 +397,126 @@ public class GenerateCommand implements Callable<Integer> {
             // If String representation is given
             else {
                 // Select all increments
-                if ("all".toUpperCase().equals(currentIncrement.toUpperCase())) {
+                if ("all".toUpperCase().equals(currentSelectedArtifact.toUpperCase())) {
                     logger.info("(0) All");
-                    userIncrements = matchingIncrements;
-                    break;
+                    userSelection = (List<GenerableArtifact>) matching;
+                    return userSelection;
                 }
 
-                @SuppressWarnings("unchecked")
-				ArrayList<IncrementTo> chosenIncrements =
-                    (ArrayList<IncrementTo>) search(currentIncrement, matchingIncrements, IncrementTo.class);
-
-                if (chosenIncrements.size() > 1) {
-                    logger.info("Here are the increments that may match your search.");
-                    logger.info("(0) " + "All");
-                    for (IncrementTo inc : chosenIncrements) {
-                        logger.info("(" + (chosenIncrements.indexOf(inc) + 1) + ") " + inc.getDescription());
-                    }
-
-                } else if (chosenIncrements.size() == 1) {
-                    userIncrements.add(chosenIncrements.get(0));
+                ArrayList<GenerableArtifact> possibleArtifacts = new ArrayList<>();
+                if (isIncrements) {
+                    possibleArtifacts =
+                        (ArrayList<GenerableArtifact>) search(currentSelectedArtifact, matching, IncrementTo.class);
+                } else {
+                    possibleArtifacts =
+                        (ArrayList<GenerableArtifact>) search(currentSelectedArtifact, matching, TemplateTo.class);
                 }
 
-                logger.info("Please enter the number(s) of increment(s) that you want to generate separated by comma.");
-
-                for (String userInc : getUserInput().split(",")) {
-                    try {
-                        if ("0".equals(userInc)) {
-                            userIncrements = chosenIncrements;
-                            break;
-                        }
-                        IncrementTo currentIncrementTo = chosenIncrements.get(Integer.parseInt(userInc) - 1);
-                        if (!userIncrements.contains(currentIncrementTo)) {
-                            userIncrements.add(currentIncrementTo);
-                        }
-                    } catch (NumberFormatException e) {
-                        logger.error(
-                            "Error parsing your input. You need to specify increments using numbers separated by comma (2,5,6).");
-                        System.exit(1);
-
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        logger.error("Error parsing your input. Please give a valid number from the list above.");
-                        System.exit(1);
-                    }
+                if (possibleArtifacts.size() > 1) {
+                    printFoundArtifacts(possibleArtifacts, isIncrements, artifactType);
+                } else if (possibleArtifacts.size() == 1) {
+                    String artifactDescription =
+                        isIncrements ? ((IncrementTo) possibleArtifacts.get(0)).getDescription()
+                            : ((TemplateTo) possibleArtifacts.get(0)).getId();
+                    logger.info("Exact match found: " + artifactDescription + ".");
+                    userSelection.add(possibleArtifacts.get(0));
+                    return userSelection;
                 }
+
+                logger.info("Please enter the number(s) of " + artifactType
+                    + "(s) that you want to generate separated by comma.");
+
+                userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
             }
         }
-        return userIncrements;
+        return userSelection;
 
     }
 
     /**
-     * Method that handles the templates selection and prints some messages to the console
-     * @param templates
-     *            user selected templates
-     * @param matchingTemplates
-     *            all the templates that match the current input file
-     * @return The final templates that will be used for generation
+     * Prints the complete list of generable artifacts (increments or templates) that one input file can use
+     * @param matching
+     *            all the increments that match the current input file
+     * @param isIncrements
+     *            true if we want to generate increments
+     * @param artifactType
+     *            type of artifact (increment or template)
      */
-    private List<TemplateTo> templatesSelection(ArrayList<String> templates, List<TemplateTo> matchingTemplates) {
-        List<TemplateTo> userTemplates = new ArrayList<>();
+    private void printAllMatchingIncrements(List<? extends GenerableArtifact> matching, Boolean isIncrements,
+        String artifactType) {
 
-        // Print user selected templates
-        String digitMatch = "\\d+";
-
-        for (int selectedTempNum = 0; selectedTempNum < templates.size(); selectedTempNum++) {
-
-            String currentTemplate = templates.get(selectedTempNum);
-
-            // If given template is Integer
-            if (currentTemplate.matches(digitMatch)) {
-                try {
-                    int selectedTemplateNumber = Integer.parseInt(currentTemplate);
-
-                    // We need to generate all
-                    if (selectedTemplateNumber == 0) {
-                        logger.info("(0) All");
-                        userTemplates = matchingTemplates;
-                        break;
-                    }
-
-                    if (userTemplates.size() == 0) {
-                        logger.info("The templates that you have chosen are:");
-                    }
-
-                    userTemplates.add(selectedTempNum, matchingTemplates.get(selectedTemplateNumber - 1));
-                    logger.info("(" + selectedTemplateNumber + ") " + userTemplates.get(selectedTempNum).getId());
-                } catch (IndexOutOfBoundsException e) {
-                    logger.error("The template number you have specified is out of bounds!");
-                    System.exit(1);
-                }
-
-            }
-
-            // If String representation is given
-            else {
-                // Select all templates
-                if ("all".toUpperCase().equals(currentTemplate.toUpperCase())) {
-                    logger.info("(0) All");
-                    userTemplates = matchingTemplates;
-                    break;
-                }
-
-                // List<TemplateTo> chosenTemplates = getClosestTemplates(currentTemplate, matchingTemplates);
-                @SuppressWarnings("unchecked")
-				ArrayList<TemplateTo> chosenTemplates =
-                    (ArrayList<TemplateTo>) search(currentTemplate, matchingTemplates, TemplateTo.class);
-
-                if (chosenTemplates.size() > 1) {
-                    logger.info(
-                        "Here are the templates that may match your search. Please list the templates number you want separated by comma.");
-                    logger.info("(0) " + "All");
-                    for (TemplateTo temp : chosenTemplates) {
-                        logger.info("(" + (chosenTemplates.indexOf(temp) + 1) + ") " + temp.getId());
-                    }
-
-                } else if (chosenTemplates.size() == 1) {
-                    userTemplates.add(chosenTemplates.get(0));
-                }
-                logger.info("Please enter the number(s) of template(s) that you want to generate.");
-
-                for (String userInc : getUserInput().split(",")) {
-                    try {
-                        if ("0".equals(userInc)) {
-                            userTemplates = chosenTemplates;
-                            break;
-                        }
-                        TemplateTo currentTemplateTo = chosenTemplates.get(Integer.parseInt(userInc) - 1);
-
-                        if (userTemplates.size() == 0) {
-                            logger.info("The templates that you have chosen are:");
-                        }
-
-                        if (!userTemplates.contains(currentTemplateTo)) {
-                            userTemplates.add(currentTemplateTo);
-                            logger.info("(" + userInc + ") " + currentTemplateTo.getId());
-                        }
-                    } catch (NumberFormatException e) {
-                        logger.error(
-                            "Error parsing your input. You need to specify templates using numbers separated by comma (2,5,6).");
-                        System.exit(1);
-
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        logger.error("Error parsing your input. Please give a valid number from the list above.");
-                        System.exit(1);
-                    }
-                }
-
-            }
+        int index = 0;
+        logger.info("(0) All");
+        for (GenerableArtifact artifact : matching) {
+            String artifactDescription =
+                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
+            logger.info("(" + ++index + ") " + artifactDescription);
         }
-        return userTemplates;
-
+        logger
+            .info("Here are the options you have for your choice. Which " + artifactType + "s do you want to generate?"
+                + " Please list the " + artifactType + "s number you want separated by comma:");
     }
 
     /**
-     * Search for increments matching the user input. Increments similar to the given search string or
-     * containing it are returned.
+     * Prints all the generable artifacts (increments or templates) that have matched the string search
+     *
+     * @param possibleArtifacts
+     *            list of possible artifacts the user can select
+     * @param isIncrements
+     *            true if we want to generate increments
+     * @param artifactType
+     *            type of artifact (increment or template)
+     *
+     */
+    private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
+        String artifactType) {
+        logger.info("Here are the " + artifactType + "s that may match your search.");
+        logger.info("(0) " + "All");
+        for (GenerableArtifact artifact : possibleArtifacts) {
+            String artifactDescription =
+                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
+            logger.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
+        }
+    }
+
+    /**
+     * Handles the selection of generable artifacts (increments or templates) by String.
+     * @param userSelection
+     *            previous selected artifacts that user wants to generate
+     * @param possibleArtifacts
+     *            list of possible artifacts the user can select
+     * @param artifactType
+     *            type of artifact (increment or template)
+     * @return final user selection including previous ones
+     */
+    private List<GenerableArtifact> artifactStringSelection(List<GenerableArtifact> userSelection,
+        ArrayList<GenerableArtifact> possibleArtifacts, String artifactType) {
+        for (String userArtifact : getUserInput().split(",")) {
+            try {
+                if ("0".equals(userArtifact)) {
+                    userSelection = possibleArtifacts;
+                    return userSelection;
+                }
+                GenerableArtifact currentArtifact = possibleArtifacts.get(Integer.parseInt(userArtifact) - 1);
+                if (!userSelection.contains(currentArtifact)) {
+                    userSelection.add(currentArtifact);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Error parsing your input. You need to specify " + artifactType
+                    + "s using numbers separated by comma (2,5,6).");
+                System.exit(1);
+
+            } catch (ArrayIndexOutOfBoundsException e) {
+                logger.error("Error parsing your input. Please give a valid number from the list above.");
+                System.exit(1);
+            }
+        }
+        return userSelection;
+    }
+
+    /**
+     * Search for generable artifacts (increments or templates) matching the user input. Generable artifacts
+     * similar to the given search string or containing it are returned.
      * @param userInput
      *            the user's wished increment or template
      * @param matching
@@ -568,7 +526,7 @@ public class GenerateCommand implements Callable<Integer> {
      * @return Increments or templates matching the search string
      */
     @SuppressWarnings("unchecked")
-	private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
+    private ArrayList<? extends GenerableArtifact> search(String userInput, List<? extends GenerableArtifact> matching,
         Class<?> c) {
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         Map<? super GenerableArtifact, Double> scores = new HashMap<>();

@@ -52,11 +52,14 @@ import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
 /**
- * Utils class for CobiGen related operations. For instance, creates a new CobiGen instance and registers all
- * the plugins
+ * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
+ * all the plug-ins
  */
 public class CobiGenUtils {
 
+    /**
+     * Logger instance for the CLI
+     */
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
@@ -68,12 +71,11 @@ public class CobiGenUtils {
      * Directory where all our templates jar are located
      */
     File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+
     /**
      * Declare utiClasses as List
-     * */
+     */
     List<Class<?>> utilClasses;
-
-    
 
     /**
      * getter for templates utils classes
@@ -84,7 +86,9 @@ public class CobiGenUtils {
     }
 
     /**
-     * Resolves all classes, which have been defined in the template configuration folder from a jar.
+     * Resolves all utilities classes, which have been defined in the templates jar.
+     * @param templatesJar
+     *            templates jar where we will try to find the list of classes
      *
      * @return the list of classes
      *
@@ -92,12 +96,10 @@ public class CobiGenUtils {
      * @throws IOException
      *             {@link IOException} occurred
      */
-    List<Class<?>> resolveTemplateUtilClassesFromJar(File jarPath) throws IOException {
+    List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
         final List<Class<?>> result = new LinkedList<>();
-        @SuppressWarnings("unused")
-        Path templateRoot;
         ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { jarPath.toURI().toURL() }, getClass().getClassLoader());
+            URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
         URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
         if (contextConfigurationLocation == null
             || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
@@ -117,11 +119,11 @@ public class CobiGenUtils {
                 }
                 final Path path = fs.getPath(pathTemplate[1]);
 
-                templateRoot = Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
+                Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
 
             }
         } else {
-            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
+            Paths.get(URI.create(contextConfigurationLocation.toString()));
         }
         logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
@@ -173,8 +175,7 @@ public class CobiGenUtils {
     }
 
     /**
-     * @param User
-     *            input entity file
+     * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
@@ -209,7 +210,7 @@ public class CobiGenUtils {
 
         try {
             utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
-        } catch (IOException e2) {
+        } catch (IOException e) {
             logger.error(
                 "IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
 
@@ -228,7 +229,7 @@ public class CobiGenUtils {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-            File pomFile = extractArtifitialPom(rootCLIPath);
+            File pomFile = extractArtificialPom(rootCLIPath);
 
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             if (!cpFile.exists()) {
@@ -286,7 +287,7 @@ public class CobiGenUtils {
      *            path where the artificial POM will be extracted to
      * @return the extracted POM file
      */
-    private File extractArtifitialPom(Path rootCLIPath) {
+    private File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
             try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
@@ -427,6 +428,7 @@ public class CobiGenUtils {
      * @param inputFile
      *            user's input file
      * @param isJavaInput
+     *            true if input is Java code
      * @return valid cobiGen input
      * @throws MojoFailureException
      *             throws {@link MojoFailureException} when the input file could not be converted to a valid
