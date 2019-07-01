@@ -12,6 +12,7 @@
 * link:howto_Cobigen-CLI-generation[Cobigen CLI Manual]
 * link:howto_update_CobiGen[Update CobiGen]
 * link:howto_devon4net[.Net generation]
+* link:howto_Release-creation[Release creation]
 
 === Configuration
 * link:cobigen-core_configuration[CobiGen Configuration]

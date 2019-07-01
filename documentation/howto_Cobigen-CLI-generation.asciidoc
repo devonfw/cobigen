@@ -3,190 +3,56 @@ toc::[]
 
 = Cobigen Command line Interface generation
 
-== Cobigen CLI : we can generate a file using command line interface instead of using Eclipse .
+Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This allows us to decouple CobiGen from Eclipse.
 
-Following are the step need to be follow up .
+= Commands and options
+Using the following command and option you will be able to customize your generation as follows:
 
-= Build Configuration
-Using the following configuration you will be able to customize your generation as follows:
+• `cobigen,cg` :  Cobigen code generator name.
 
+• `generate`   : This command  stand for generate template .
 
-•<destinationRoot> specifies the root directory the relative destinationPath of CobiGen templates configuration should depend on. Default ${basedir}
+• `InputGlob`  : The glob pattern of the input file or the whole path of the input file from which the code will be generated.
 
+• `increment`  : specifies an increment ID to be generated. You can specify one single increment with content ALL to generate all increments matching the input(s).
 
-•<inputPackage> declares a package name to be used as input for batch generation. This refers directly to the CobiGen Java Plug-in container matchers of type package configuration.
+• `--outputRootPath,-out`: The project file path in which you want to generate your code. In small project you don’t need to give a targetPath, cobigen should recognize this and should automatically use this project .
 
+• `template` : specifies a template ID to be generated. You can specify one single template with content ALL to generate all templates matching the input(s).
 
-•<inputFile> declares a file to be used as input. The CobiGen maven plug-in will try to parse this file to get an appropriate input to be interpreted by any CobiGen plug-in.
+• `Option -v` : This option is for debug information, verbose log .
 
+• `Option -h` : This option for the help about the selected command.
 
-•<increment> specifies an increment ID to be generated. You can specify one single increment with content ALL to generate all increments matching the input(s).
+• `--increment (-i)` : This is for as you want increment you can provide selected list value with comma.
 
-
-•<template> specifies a template ID to be generated. You can specify one single template with content ALL to generate all templates matching the input(s).
-
-
-•<forceOverride> specifies an overriding behavior, which enables non-mergable resources to be completely rewritten by generated contents. For mergable resources this flag indicates, that conflicting fragments during merge will be replaced by generated content. Default: false
-
-
-•<failOnNothingGenerated> specifies whether the build should fail if the execution does not generate anything.
-== Example for a simple build configuration
-
-<build>
-  <plugins>
-    <plugin>
-       ...
-      <configuration>
-        <destinationRoot>${basedir}</destinationRoot>
-        <inputPackages>
-          <inputPackage>package.to.be.used.as.input</inputPackage>
-        </inputPackages>
-        <inputFiles>
-          <inputFile>path/to/file/to/be/used/as/input</inputFile>
-        </inputFiles>
-        <increments>
-          <increment>IncrementID</increment>
-        </increments>
-        <templates>
-          <template>TemplateID</template>
-        </templates>
-        <forceOverride>false</forceOverride>
-      </configuration>
-        ...
-    </plugin>
-  </plugins>
-</build>
-
+• `--out` : This option is specified the target of generate template .
 
 == CLI Execution step :
-Open console and give path of bat file and parameter .
-like cobigen.bat  -u=sky abc.tx "C:\Devon"
+First of all need to execute cobigen.bat file .
 
-Another way is : Open console type cobigen.bat  input_file output_file.
-Command line argument can be separated into option and positional parameter.Option have a name and parameter are usually value .
+First of all unzip the cobigen CLI doc file then execute the cobigen.bat file .
+after that provide value in below formate .
 
-After executing of cobigen bat file first it will check which java version is install .
-"Current Java Version is"
-C:\Program Files\Java\jdk1.8.0_181
+cobigen generate <inputFile> --out <outputRootPath>
 
-1 - jdk1.8.0_181
+Suppose if you are not providing input file like below then below output will be come .
 
-2 - jre1.8.0_131
+image::images/WithoutParam.PNG[Generation path, link="images/WithoutParam.PNG"]
 
-3 - jre1.8.0_181
+Below are example of with input file .
 
-Enter number to Set the JAVA_HOME and PATH  1
-you picked 1 - jdk1.8.0_181
+image::images/CLIArgumentImage.PNG[Generation path, link="images/CLIArgumentImage.PNG"]
 
-C:\Program Files\Java\jdk1.8.0_181
+In this image -i is as increment optional ,You can provide option how much increment you want to generate .
 
-Setting JAVA_HOME
-Please enter input file path
-like ex - C:\Users\syadav9\Desktop\employeemanagement\employeemanagement\dataaccess\api\EmployeeEntity.java
-After that please press enter then it will be generate template like below  .
+Increments: The increment you want to generate, with the option -i , increment list like -i 2,3,4  .
 
-[main] INFO com.cobigen.picocli.utils.CreateJarFile - get jar file
-[main] INFO com.cobigen.picocli.utils.CreateJarFile - Processing configuration archive jar:file:/C:/MyData/IDE4/workspaces/cobigen-master/tools-cobigen/cobigen-cli/template_Jar/cobigen_jar/templates-devon4j-3.1.0.jar!/src/main/templates/context.xml
+Suppose if not provide any increment then it will be ask to user please provide yours choice increments .
+Below are some example .
 
-[main] INFO com.devonfw.cobigen.impl.extension.ServiceLookup - Loading plug-ins
+image::images/WithoutIncrOutPut.PNG[Generation path, link="images/WithoutIncrOutPut.PNG"]
+After choose some increment by user like below .
 
-[main] INFO com.devonfw.cobigen.impl.extension.PluginRegistry - Register CobiGen Plug-in 
-
-'com.devonfw.cobigen.javaplugin.JavaPluginActivator'.
-[main] INFO com.devonfw.cobigen.impl.extension.PluginRegistry - Register CobiGen Plug-in 'com.devonfw.cobigen.tsplugin.TypeScriptPluginActivator'.
-[main] INFO com.devonfw.cobigen.impl.extension.PluginRegistry - Register CobiGen Plug-in 'com.devonfw.cobigen.xmlplugin.XmlPluginActivator'.
-[main] INFO com.devonfw.cobigen.impl.extension.PluginRegistry - Register CobiGen Plug-in 'com.devonfw.cobigen.textmerger.TextMergerPluginActivator'.
-[main] INFO com.devonfw.cobigen.impl.extension.PluginRegistry - Register CobiGen Plug-in 'com.devonfw.cobigen.openapiplugin.OpenAPIPluginActivator'.
-[main] INFO com.devonfw.cobigen.impl.extension.ServiceLookup - Loading template engines
-[main] INFO com.devonfw.cobigen.impl.extension.TemplateEngineRegistry - Register template engine 'com.devonfw.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine'.
-
-Increments Available = CRUD UC logic
-
-Increments Available = CRUD UC logic (CTOs)
-
-Increments Available = CRUD REST services
-
-Increments Available = CRUD REST services (CTOs)
-
-Increments Available = TO's
-
-Increments Available = Entity infrastructure
-
-Increments Available = CTO's
-
-Increments Available = CRUD SpringData Repository
-
-Increments Available = Testdata builder (persistable)
-
-Increments Available = Testdata builder
-
-[main] WARN com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - The Java class 'com.devonfw.cobigen.templates.oasp4j.utils.uml.Connector' could not been instantiated for template processing and thus will be missing in the model.
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Temporary working directory: C:\Users\syadav9\AppData\Local\Temp\cobigen-6094916444846824010
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeemanagementRestService.java       FROM ${variables.component#cap_first}RestService.java   TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/service/api/rest/EmployeemanagementRestService.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeemanagementRestService.java       FROM ${variables.component#cap_first}RestServiceCtos.java TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/service/api/rest/EmployeemanagementRestService.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeemanagementRestServiceImpl.java   FROM ${variables.component#cap_first}RestServiceImpl.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/service/impl/rest/EmployeemanagementRestServiceImpl.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    EmployeemanagementRestServiceImpl.java   FROM ${variables.component#cap_first}RestServiceImplCtos.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/service/impl/rest/EmployeemanagementRestServiceImpl.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating Employee.java                            FROM ${variables.entityName}.java                       TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/common/api/Employee.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeeCto.java                         FROM ${variables.entityName}Cto.java                    TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/to/EmployeeCto.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeeEntity.java                      FROM ${variables.entityName}Entity.java                 TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/dataaccess/api/EmployeeEntity.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeeEto.java                         FROM ${variables.entityName}Eto.java                    TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/to/EmployeeEto.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeeRepository.java    
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractBeanMapperSupport.java           FROM AbstractBeanMapperSupport.java                     TO src/main/java/com/devonfw/poc/jwtsample/general/common/base/AbstractBeanMapperSupport.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractComponentFacade.java             FROM AbstractComponentFacade.java                       TO src/main/java/com/devonfw/poc/jwtsample/general/logic/base/AbstractComponentFacade.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractSearchCriteriaTo.java            FROM AbstractSearchCriteriaTo.java                      TO ../api/src/main/java/com/devonfw/poc/jwtsample/general/common/api/to/AbstractSearchCriteriaTo.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating ApplicationEntity.java    FROM ApplicationEntity.java   TO src/main/java/com/devonfw/poc/jwtsample/general/common/api/ApplicationEntity.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating ApplicationPersistenceEntity.java        FROM ApplicationPersistenceEntity.java                  TO src/main/java/com/devonfw/poc/jwtsample/general/dataaccess/api/ApplicationPersistenceEntity.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating P.java                      FROM P  TO src/test/java/com/devonfw/poc/jwtsample/common/builders/P.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating Employeemanagement.java                  FROM crud_complex_${variables.component#cap_first}.java TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/Employeemanagement.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating Employeemanagement.java                  FROM crud_complex_${variables.component#cap_first}Ctos.java TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/Employeemanagement.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeemanagementImpl.java              FROM crud_complex_${variables.component#cap_first}Impl.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/impl/EmployeemanagementImpl.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    EmployeemanagementImpl.java              FROM crud_complex_${variables.component#cap_first}ImplCtos.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/impl/EmployeemanagementImpl.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractEmployeeUc.java                  FROM crud_complex_Abstract${variables.entityName}Uc.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/base/usecase/AbstractEmployeeUc.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractLogic.java         FROM crud_complex_AbstractLogic.java   TO src/main/java/com/devonfw/poc/jwtsample/general/logic/base/AbstractLogic.java 
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating AbstractUc.java            FROM crud_complex_AbstractUc.java TO src/main/java/com/devonfw/poc/jwtsample/general/logic/base/AbstractUc.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating UcFindEmployee.java        FROM crud_complex_UcFind${variables.entityName}.java    TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/usecase/UcFindEmployee.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating UcFindEmployee.java                      FROM crud_complex_UcFind${variables.entityName}Ctos.java TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/usecase/UcFindEmployee.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating UcFindEmployeeImpl.java                  FROM crud_complex_UcFind${variables.entityName}Impl.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/impl/usecase/UcFindEmployeeImpl.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    UcFindEmployeeImpl.java                  FROM crud_complex_UcFind${variables.entityName}ImplCtos.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/impl/usecase/UcFindEmployeeImpl.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating UcManageEmployee.java                    FROM crud_complex_UcManage${variables.entityName}.java  TO ../api/src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/api/usecase/UcManageEmployee.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating UcManageEmployeeImpl.java  FROM crud_complex_UcManage${variables.entityName}Impl.java TO src/main/java/com/devonfw/poc/jwtsample/employeemanagement/logic/impl/usecase/UcManageEmployeeImpl.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generating EmployeeEntityBuilder.java    FROM entityBuilder    TO src/test/java/com/devonfw/poc/jwtsample/common/builders/EmployeeEntityBuilder.java
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    EmployeeEntityBuilder.java               FROM entityBuilder_customFunctions                      TO src/test/java/com/devonfw/poc/jwtsample/common/builders/EmployeeEntityBuilder.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    EmployeeEntityBuilder.java               FROM entityBuilder_fillMandatoryFields                  TO src/test/java/com/devonfw/poc/jwtsample/common/builders/EmployeeEntityBuilder.java 
-
-[main] INFO com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Merging    EmployeeEntityBuilder.java               FROM entityBuilder_persistable                          TO src/test/java/com/devonfw/poc/jwtsample/common/builders/EmployeeEntityBuilder.java 
-
-[main] WARN com.devonfw.cobigen.impl.generator.GenerationProcessorImpl - Generation finished non-successful. Generated contents can be reviewed in file:///C:/Users/syadav9/AppData/Local/Temp/cobigen-6094916444846824010/
-Successfully generated Template
-
-
+image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
 
