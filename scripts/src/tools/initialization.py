@@ -1,17 +1,17 @@
-import os
-import sys
-import re
 import getopt
+import os
+import re
+import sys
 
-from git.exc import InvalidGitRepositoryError
 from git.cmd import Git
+from git.exc import InvalidGitRepositoryError
 
-from tools.validation import is_valid_branch
-from tools.user_interface import prompt_enter_value, prompt_yesno_question
 from tools.config import Config
-from tools.github import GitHub
 from tools.git_repo import GitRepo
+from tools.github import GitHub
 from tools.logger import log_info, log_error
+from tools.user_interface import prompt_enter_value, prompt_yesno_question
+from tools.validation import is_valid_branch
 
 
 def init_non_git_config(config: Config):
@@ -57,7 +57,8 @@ def init_non_git_config(config: Config):
     config.wiki_submodule_name = "documentation/" + config.git_repo_name + ".wiki"
     config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "documentation", config.git_repo_name + ".wiki"))
 
-    config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
+    if not config.oss:
+        config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
     if config.oss:
         if not hasattr(config, "gpg_keyname"):
             config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
@@ -65,20 +66,23 @@ If you are unsure about this, please stop here and clarify, whether
   * you created a pgp key and
   * published it!
 gpg.keyname = """)
-        if not prompt_yesno_question("Make sure the gpg key '" + config.gpg_keyname + "' is loaded by tools like Kleopatra before continuing! Continue?"):
-            sys.exit()
+
+        if not config.gpg_loaded:
+            config.gpg_loaded = prompt_yesno_question("Make sure the gpg key '" + config.gpg_keyname + "' is loaded by tools like Kleopatra before continuing! Continue?")
+            if not config.gpg_loaded:
+                sys.exit()
+
+        #Check whether the user has gpg2 installed
+        if is_tool("gpg2"):
+            if not hasattr(config, "gpg_executable"):
+                log_info("gpg2 installation found")
+                config.gpg_executable = "gpg2"
+        elif is_tool("gpg"):
+            if not hasattr(config, "gpg_executable"):
+                log_info("gpg installation found")
+                config.gpg_executable = "gpg"
         else:
-            #Check whether the user has gpg2 installed
-            if is_tool("gpg2"):
-                if not hasattr(config, "gpg_executable"):
-                    log_info("gpg2 installation found")
-                    config.gpg_executable = "gpg2"
-            elif is_tool("gpg"):
-                if not hasattr(config, "gpg_executable"):
-                    log_info("gpg installation found")
-                    config.gpg_executable = "gpg"
-            else:
-                log_error("gpg2 nor gpg are installed. Please install them on your computer (system path) or either use command -Dgpg.executable='gpg2'")
+            log_error("gpg2 nor gpg are installed. Please install them on your computer (system path) or either use command -Dgpg.executable='gpg2'")
 
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
@@ -88,19 +92,28 @@ def is_tool(name):
 
 def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo):
 
-    while(True):
-        config.branch_to_be_released = prompt_enter_value("the name of the branch to be released")
-        if(is_valid_branch(config)):
-            break
+    if not hasattr(config,"branch_to_be_released"):
+        while(True):
+            config.branch_to_be_released = prompt_enter_value("the name of the branch to be released")
+            if(is_valid_branch(config)):
+                break
+    else:
+        log_info("Branch to be released: {}".format(config.branch_to_be_released))
 
-    config.release_version = ""
     version_pattern = re.compile(r'[0-9]\.[0-9]\.[0-9]')
-    while(not version_pattern.match(config.release_version)):
-        config.release_version = prompt_enter_value("release version number without 'v' in front")
+    if not hasattr(config,"release_version"):
+        config.release_version = ""
+        while not version_pattern.match(config.release_version):
+            config.release_version = prompt_enter_value("release version number without 'v' in front")
+    else:
+        log_info("Release version: {}".format(config.release_version))
 
-    config.next_version = ""
-    while(not version_pattern.match(config.next_version)):
-        config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
+    if not hasattr(config, "next_version"):
+        config.next_version = ""
+        while not version_pattern.match(config.next_version):
+            config.next_version = prompt_enter_value("next version number (after releasing) without 'v' in front")
+    else:
+        log_info("Next version: {}".format(config.next_version))
 
     config.build_folder = __get_build_folder(config)
     config.build_folder_abs = os.path.join(config.root_path, config.build_folder)
@@ -123,29 +136,31 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     else:
         log_error("Milestone not found! Searched for milestone with name '" + config.expected_milestone_name+"'. Aborting...")
         sys.exit()
-
-    while(True):
-        github_issue_no: str = prompt_enter_value(
-            "release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
-        if github_issue_no == 'new':
-            issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
-            config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone)
-            if not config.github_issue_no:
-                log_error("Could not create issue! Aborting...")
-                sys.exit()
-            else:
-                log_info('Successfully created issue #' + str(github_issue_no))
-            break
-        else:
-            try:
-                if github.find_issue(int(github_issue_no)):
-                    config.github_issue_no = int(github_issue_no)
-                    log_info("Issue #" + str(config.github_issue_no) + " found remotely!")
-                    break
+    if not hasattr(config,"github_issue_no"):
+        while(True):
+            github_issue_no: str = prompt_enter_value(
+                "release issue number without # prefix in case you already created one or type 'new' to create an issue automatically")
+            if github_issue_no == 'new':
+                issue_text = "This issue has been automatically created. It serves as a container for all release related commits"
+                config.github_issue_no = github.create_issue("Release " + config.expected_milestone_name, body=issue_text, milestone=milestone)
+                if not config.github_issue_no:
+                    log_error("Could not create issue! Aborting...")
+                    sys.exit()
                 else:
-                    log_error("Issue with number #" + str(config.github_issue_no) + " not found! Typo?")
-            except ValueError:
-                log_error("Please enter a number.")
+                    log_info('Successfully created issue #' + str(github_issue_no))
+                break
+            else:
+                try:
+                    if github.find_issue(int(github_issue_no)):
+                        config.github_issue_no = int(github_issue_no)
+                        log_info("Issue #" + str(config.github_issue_no) + " found remotely!")
+                        break
+                    else:
+                        log_error("Issue with number #" + str(config.github_issue_no) + " not found! Typo?")
+                except ValueError:
+                    log_error("Please enter a number.")
+    else:
+        log_info("Github issue no: {}".format(config.github_issue_no))
 
 
 def __get_build_folder(config: Config):
