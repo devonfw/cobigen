@@ -11,7 +11,7 @@ export class ${variables.etoName?cap_first}DialogComponent {
   title: string;
   items: any = {
   <#list pojo.fields as field>
-    ${field.name?lower_case}: '',
+    ${field.name?uncap_first}: '',
   </#list>
   };
 
@@ -25,7 +25,7 @@ export class ${variables.etoName?cap_first}DialogComponent {
     } else {
       this.title = this.getTranslation('${variables.component}.editTitle');
       <#list pojo.fields as field>
-        this.items.${field.name?lower_case}: dialogData.${field.name?lower_case};
+        this.items.${field.name?uncap_first}: dialogData.${field.name?uncap_first};
       </#list>
       this.items.id = dialogData.id;
       this.items.modificationCounter = dialogData.modificationCounter;

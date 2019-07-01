@@ -24,14 +24,14 @@
             <div class="filter-form-fields-mobile justify-space-around">
             <#list pojo.fields as field>
               <mat-form-field color="accent">
-                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?lower_case}" name="${field.name?lower_case}">
+                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
               </mat-form-field>
             </#list>
             </div>
             <div class="filter-form-fields-desktop justify-space-around">
             <#list pojo.fields as field>
               <mat-form-field color="accent">
-                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?lower_case}" name="${field.name?lower_case}">
+                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
               </mat-form-field>
             </#list>
             </div>
@@ -60,9 +60,9 @@
           </ng-container>
           <#list pojo.fields as field>
           <!-- ${field.name?capitalize} Column -->
-          <ng-container matColumnDef="${field.name?lower_case}">
+          <ng-container matColumnDef="${field.name?uncap_first}">
             <th mat-header-cell *matHeaderCellDef mat-sort-header style="width:197px;"> {{columns[${field?index}].label}} </th>
-            <td mat-cell *matCellDef="let element"> {{element.${field.name?lower_case}}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.${field.name?uncap_first}}} </td>
           </ng-container>
 
           </#list>

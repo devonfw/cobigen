@@ -51,7 +51,7 @@
       "navDataSubDescription": "${variables.etoName?cap_first}_EN_Descripción",          
       "columns": {
       <#list pojo.fields as field>
-        "${field.name?lower_case}": "${field.name?cap_first}_ES"<#if field?has_next>,</#if>
+        "${field.name?uncap_first}": "${field.name?cap_first}_ES"<#if field?has_next>,</#if>
       </#list>
       }
     }

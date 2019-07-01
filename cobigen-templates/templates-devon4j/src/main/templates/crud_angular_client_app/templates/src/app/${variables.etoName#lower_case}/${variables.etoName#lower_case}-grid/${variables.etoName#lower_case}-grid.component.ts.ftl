@@ -31,30 +31,28 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   columns: any[] = [
   <#list pojo.fields as field>
     {
-      name: '${field.name?lower_case}',
-      label: this.getTranslation('${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?lower_case}'),
+      name: '${field.name?uncap_first}',
+      label: this.getTranslation('${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}'),
     },
   </#list>
   ];
   displayedColumns: string[] = [
     'select',
     <#list pojo.fields as field>
-      '${field.name?lower_case}',
+      '${field.name?uncap_first}',
     </#list>
     ];
   pageSize: number = 8;
   pageSizes: string[] = ['8', '16', '24'];
-  <#compress>
   selectedRow: any;
 
   dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>;
   totalItems: number;
   searchTerms: any = {
   <#list pojo.fields as field>
-    ${field.name?lower_case}: undefined,
+    ${field.name?uncap_first}: undefined,
   </#list>
   };
-  </#compress>
   selection: SelectionModel<any> = new SelectionModel<any>(false, []);
   constructor(
     private translate: TranslateService,
