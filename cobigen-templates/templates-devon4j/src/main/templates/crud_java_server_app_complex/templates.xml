@@ -48,8 +48,6 @@
       <templateRef ref="crud_complex_UcManage${variables.entityName}Impl.java"/>
     </increment>
     <increment name="logic_complex_ctos" description="CRUD UC logic (CTOs)">
-      <templateRef ref="crud_complex_AbstractUc.java"/>
-      <templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java"/>
       <templateRef ref="crud_complex_UcFind${variables.entityName}Ctos.java"/>
       <templateRef ref="crud_complex_UcFind${variables.entityName}ImplCtos.java"/>
       <templateRef ref="crud_complex_${variables.component#cap_first}Ctos.java"/>
