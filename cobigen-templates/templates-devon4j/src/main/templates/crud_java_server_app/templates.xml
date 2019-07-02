@@ -64,6 +64,8 @@
       <templateRef ref="${variables.component#cap_first}RestService.java"/>
     </increment>
     <increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
+      <templateRef ref="AbstractBeanMapperSupport.java"/>
+      <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
     </increment>
