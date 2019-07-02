@@ -42,7 +42,7 @@ public class TypeScriptMergerTest {
     }
 
     /**
-     * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
+     * Checks if the ts-merger can be launched and if the output is correct with patchOverrides = false
      *
      * @test fails
      */
@@ -55,7 +55,7 @@ public class TypeScriptMergerTest {
             File baseFile = new File(testFileRootPath + "baseFile.ts");
 
             // Next version should merge comments
-            // String regex = " * Should format correctly this line";
+            String regex = " * Should format correctly this line";
 
             // act
             String mergedContents =
@@ -71,7 +71,7 @@ public class TypeScriptMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("export interface a {");
             assertThat(mergedContents).contains("private b: number;");
-            // assertThat(mergedContents).containsPattern(regex);
+            assertThat(mergedContents).containsPattern(regex);
 
             mergedContents =
                 new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
@@ -120,8 +120,7 @@ public class TypeScriptMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("interface a {");
             assertThat(mergedContents).contains("private b: string;");
-            // Next version should merge comments
-            // assertThat(mergedContents).contains("// Should contain this comment");
+            assertThat(mergedContents).contains("// Should contain this comment");
 
             mergedContents =
                 new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
@@ -136,8 +135,7 @@ public class TypeScriptMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("interface a {");
             assertThat(mergedContents).contains("private b: string;");
-            // Next version should merge comments
-            // assertThat(mergedContents).contains("// Should contain this comment");
+            assertThat(mergedContents).contains("// Should contain this comment");
         } finally {
             request.terminateProcessConnection();
         }
