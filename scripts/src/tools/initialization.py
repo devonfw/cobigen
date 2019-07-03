@@ -54,8 +54,8 @@ def init_non_git_config(config: Config):
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
 
-    config.wiki_submodule_name = "documentation/" + config.git_repo_name + ".wiki"
-    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "documentation", config.git_repo_name + ".wiki"))
+    config.wiki_submodule_name = "cobigen-documentation/" + config.git_repo_name + ".wiki"
+    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
 
     if not config.oss:
         config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
