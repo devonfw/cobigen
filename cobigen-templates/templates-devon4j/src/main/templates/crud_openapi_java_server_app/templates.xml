@@ -69,10 +69,7 @@
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="ctos" description="CTO's">
-      <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
-      <templateRef ref="${variables.entityName}Eto.java"/>
-      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="logic_impl_complex" description="CRUD UC logic">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
