@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
     <templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge"/>
@@ -8,11 +7,11 @@
     <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="${variables.etoName#lower_case}-rest.service.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.ts" />
-    <templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts" />
-    <templateExtension ref="paginated-list-to.ts" />
-    <templateExtension ref="pageable.ts" />
-    <templateExtension ref="sort.ts" />
+    <templateExtension ref="${variables.etoName#lower_case}.ts"/>
+    <templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts"/>
+    <templateExtension ref="paginated-list-to.ts"/>
+    <templateExtension ref="pageable.ts"/>
+    <templateExtension ref="sort.ts"/>
     <templateExtension ref="environment.android.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
@@ -38,9 +37,9 @@
       <incrementRef ref="ionic_theme"/>
     </increment>
     <increment name="app_ionic_structure" description="Ionic devon4ng environments">
-      <templateRef ref="environment.android.ts" />
-      <templateRef ref="environment.prod.ts" />
-      <templateRef ref="environment.ts" />
+      <templateRef ref="environment.android.ts"/>
+      <templateRef ref="environment.prod.ts"/>
+      <templateRef ref="environment.ts"/>
     </increment>
     <increment name="ionic_routing" description="Ionic routing">
       <templateRef ref="app-routing.module.ts"/>
