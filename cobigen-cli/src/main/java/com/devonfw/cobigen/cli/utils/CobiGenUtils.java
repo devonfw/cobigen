@@ -27,8 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.mmm.code.impl.java.JavaContext;
-
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -50,6 +48,8 @@ import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
+
+import net.sf.mmm.code.impl.java.JavaContext;
 
 /**
  * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
@@ -314,7 +314,7 @@ public class CobiGenUtils {
             // Get the protected addURL method from the parent URLClassLoader class
             Method method = clazz.getSuperclass().getDeclaredMethod("addURL", new Class[] { URL.class });
 
-            for (String jarToAdd : allJars.split(";")) {
+            for (String jarToAdd : allJars.split(File.pathSeparator)) {
                 File jar = new File(jarToAdd);
 
                 // Run projected addURL method to add JAR to class path
