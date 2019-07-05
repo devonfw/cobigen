@@ -94,8 +94,7 @@
     </dependency>
   </dependencies>
 
-  <build>
-  <pluginManagement>
+  <build> 
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -137,7 +136,6 @@
           </archive>
         </configuration>
       </plugin>
-    </plugins>
-    </pluginManagement>
+    </plugins>    
   </build>
 </project>
