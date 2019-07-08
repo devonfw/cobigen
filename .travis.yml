@@ -12,13 +12,13 @@ env:
     - secure: SyWbv1nirguuzC0oUMBh2IlBbGd2DpxXHBGhbANm+OozF2iXAfLtw1IKTiUxIK/X0abx2PeWczCtouTlg4HLLREsAgJ1kZRVRDdoDJxal3UCGREo6eCwHnRMsXPBSkifcoMuipD9tbhs122aMlHpDO60NAtZtUZbVtnrlB9etcM=
 stages:
   - name: Documentation
-    if: (branch = develop) AND (type = push)
+    if: type = push
 jobs:
   include:
     - stage: Documentation
       script:
         # Clone repositories
-        - git clone -b develop --single-branch https://${GH_REPO_SOURCE}
+        - git clone -b master --single-branch https://${GH_REPO_SOURCE}
         - git clone https://${GH_REPO_DEST}
         - git clone https://${GH_REPO_CONSOLIDATE}
         # Update wiki repository with documentation folder contents
