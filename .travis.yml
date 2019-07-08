@@ -9,7 +9,7 @@ env:
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_CONSOLIDATE}.git"
-    - secure: TDblHyouV+9rYPfIzq7Ovz/jnXXjwnlKy183Go5kJSioXuXsy/crWFdYZT5WJNb4N3g3589Ry5kgkSlnkSrynUNQa+YZvgqcLCn+kB/PAJq/JaBVaRhvel6hEnlFOowm0N2M6eS0bCQ29+uEJq38CTVQZRBlxmPyrI5MFGYiUiERsTBM8Em9w9ygl8FadVv37ttMF3yCAqnVE7Q2c9KRra0Hl41Zs+DXkzZ7W+Aj2+S95QBirvC7h9EpNYVllyt7/n2Z2a8/GXkqzldpZrCKq7JCaIAHSeLlnRI7wocDLBxBszKdS80gQ81JnZ/inM5mHgVJnFCwdM4mIEndk9ehrIGowxyeyP/Qo0mWhRDjUtprZ6jyyQgaHVvcuWImIl5uUIfnr9/Cpt0kCRvRYb/NAHwC9BLqKehy940i0SQlN4sfZQlsmweXVuGb2It5TpFBehvEnxBwKDSjXUJMxA0X6yUf68eKnBWIqgwH0ys3AUjb/vmG4cNhXZEovfjOJrlE2UEWjoBfT8hBL4d9LA5Prakj+bWqLflg8hwt+/XnsUcz2eCkBl33YIKfAvlh/bw+DbUArUlMiLwAX3xKBzeJPIgZzhiG1Vd7Swkh2yuDiTBKTVHWect9vDLt1N69ZC/vXfPKq17OnFKIQAMNKjiUUQZxSwlnsV0/bDKzn7ohaHI=
+    - secure: SyWbv1nirguuzC0oUMBh2IlBbGd2DpxXHBGhbANm+OozF2iXAfLtw1IKTiUxIK/X0abx2PeWczCtouTlg4HLLREsAgJ1kZRVRDdoDJxal3UCGREo6eCwHnRMsXPBSkifcoMuipD9tbhs122aMlHpDO60NAtZtUZbVtnrlB9etcM=
 stages:
   - name: Documentation
     if: (branch = develop) AND (type = push)
