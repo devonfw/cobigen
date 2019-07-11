@@ -123,6 +123,9 @@ public class TypeScriptMerger implements Merger {
 
                 connectionExc.handle(e);
             }
+        } else {
+            throw new MergeException(base, "Execution of the TypeScript merger raised an internal error."
+                + " Check your file syntax and if error occurs again, please report it on tools-cobigen GitHub.");
         }
         // Merge was not successful
         return baseFileContents;
