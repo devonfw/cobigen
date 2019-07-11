@@ -9,17 +9,13 @@ import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 /** List of constants used on the {@link TypeScriptMerger} */
 public class Constants {
 
-    /** Bundled JS Beautifier script */
-    public static final String BEAUTIFY_JS = "beautify.js";
-
-    /** Bundled TS Merger script */
-    public static final String TSMERGER_JS = "ts-merger.js";
-
-    /** Needed engine name for executing JS */
-    public static final String ENGINE_JS = "nashorn";
-
     /** Export statement regex */
     public static final String EXPORT_REGEX = "export\\s+([^\\s]+)";
+
+    /**
+     * Path of the executable file where the server of the external process is stored
+     */
+    public static final String EXE_NAME = "nestserver";
 
     /** We want to check whether it is a real export statement, not like the type "export class a" */
     public static final Map<String, Boolean> NOT_EXPORT_TYPES;
