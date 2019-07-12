@@ -3,32 +3,32 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}-alert.component.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.service.spec.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.module.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}-routing.module.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-alert.component.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.service.spec.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.module.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-routing.module.ts" mergeStrategy="override"/>
+    <templateExtension ref="app.module.ts" mergeStrategy="override"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
-    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.ts" mergeStrategy="override"/>
+    <templateExtension ref="environment.prod.ts" mergeStrategy="override"/>
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="override"/>
     <templateExtension ref="home.component.html" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="datadetailstest.model.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="httpresponse.model.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="actions_index.ts" destinationPath="../../../workspaces_vs/devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="effects_index.ts" destinationPath="../../../workspaces_vs/devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="reducers_index.ts" destinationPath="../../../workspaces_vs/devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="selectors_index.ts" destinationPath="../../../workspaces_vs/devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="tsmerge"/>
+    <templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="override"/>
+    <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override"/>
+    <templateExtension ref="httpresponse.model.ts" mergeStrategy="override"/>
+    <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="override"/>
+    <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="effects_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="reducers_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="selectors_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="override"/>
   </templates>
 
   <templateScans>
