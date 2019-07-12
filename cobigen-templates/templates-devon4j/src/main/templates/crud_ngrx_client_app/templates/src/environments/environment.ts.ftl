@@ -3,9 +3,14 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `angular-cli.json`.
 
-export const environment = {
+export const environment: {
+  production: boolean;
+  restPathRoot: string;
+  restServiceRoot: string;
+  security: 'csrf' | 'jwt';
+} = {
   production: false,
-  restPathRoot: 'http://localhost:8081/${variables.domain}-server/',
-  restServiceRoot: 'http://localhost:8081/${variables.domain}-server/services/rest/',
+  restPathRoot: 'http://localhost:8081/',
+  restServiceRoot: 'http://localhost:8081/services/rest/',
   security: 'csrf',
 };

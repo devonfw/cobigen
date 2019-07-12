@@ -8,6 +8,18 @@ import { ${variables.etoName?cap_first}Service } from '../../../${variables.etoN
 import { ${variables.etoName?cap_first}Model } from '../../models/${variables.etoName?lower_case}.model';
 import {
   ${variables.etoName?cap_first}ActionTypes,
+  CreateData,
+  CreateDataSuccess,
+  CreateDataFail,
+  DeleteDataSuccess,
+  DeleteDataFail,
+  UpdateData,
+  UpdateDataSuccess,
+  UpdateDataFail,
+  DeleteData,
+  LoadData,
+  LoadDataSuccess,
+  LoadDataFail,
 } from '../actions/${variables.etoName?lower_case}.actions';
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';

@@ -3,7 +3,7 @@
  */
 export interface ${variables.etoName?cap_first}Model {
   <#list pojo.fields as field>
-  ${field.name?uncap_first}: ${JavaUtil.getAngularType(field.type)};
+  ${field.name?uncap_first}?: ${JavaUtil.getAngularType(field.type)};
   </#list>
   id?: number;
   size?: number;

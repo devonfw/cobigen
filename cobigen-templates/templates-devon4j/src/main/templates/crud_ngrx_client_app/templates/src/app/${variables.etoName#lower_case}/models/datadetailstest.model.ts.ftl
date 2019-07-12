@@ -18,7 +18,7 @@ export const generateUser: any = (): TestDataDetails => {
   return {
     id: 0,
     <#list pojo.fields as field>
-    ${field.name?uncap_first}: <#if JavaUtil.getAngularType(field.type) == 'number'>20 <#else>'${field.name?uncap_first}'</#if>;
+    ${field.name?uncap_first}: <#if JavaUtil.getAngularType(field.type) == 'number'>20 <#else>'${field.name?uncap_first}'</#if>,
     </#list>
 	pageSize: 8,
 	pageSizes: [8, 16, 24],
