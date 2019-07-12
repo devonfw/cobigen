@@ -24,11 +24,7 @@ export class ${variables.etoName?cap_first}DialogComponent {
       this.title = this.getTranslation('${variables.component}.addTitle');
     } else {
       this.title = this.getTranslation('${variables.component}.editTitle');
-      <#list pojo.fields as field>
-        this.items.${field.name?uncap_first}: dialogData.${field.name?uncap_first};
-      </#list>
-      this.items.id = dialogData.id;
-      this.items.modificationCounter = dialogData.modificationCounter;
+      this.items = { ...dialogData };
     }
   }
 
