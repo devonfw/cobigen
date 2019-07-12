@@ -4,31 +4,44 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.to.FileTo;
+import com.devonfw.cobigen.api.to.MergeTo;
+import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
+import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * The {@link TypeScriptMerger} merges a patch and the base file. There will be no merging on statement level.
  */
 public class TypeScriptMerger implements Merger {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(TypeScriptMerger.class);
+
+    /**
+     * Instance that handles all the operations performed to the external server, like initializing the
+     * connection and sending new requests
+     */
+    private ExternalProcessHandler request = ExternalProcessHandler
+        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+
+    /**
+     * Exception handler related to connectivity to the server
+     */
+    private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
 
     /** OS specific line separator */
     private static final String LINE_SEP = System.getProperty("line.separator");
@@ -38,9 +51,6 @@ public class TypeScriptMerger implements Merger {
 
     /** The conflict resolving mode */
     private boolean patchOverrides;
-
-    /** Cached script engines to not evaluate dependent scripts again and again */
-    private Map<String, ScriptEngine> scriptEngines = new HashMap<>(2);
 
     /**
      * Creates a new {@link TypeScriptMerger}
@@ -54,6 +64,17 @@ public class TypeScriptMerger implements Merger {
     public TypeScriptMerger(String type, boolean patchOverrides) {
         this.type = type;
         this.patchOverrides = patchOverrides;
+        try {
+            // We first check if the server is already running
+            request.startConnection();
+            if (request.isNotConnected()) {
+                startServerConnection();
+            }
+        } catch (IOException e) {
+            // If it is not currently running, we need to execute it
+            LOG.info("Server is not currently running. Let's initialize it");
+            startServerConnection();
+        }
     }
 
     @Override
@@ -63,107 +84,93 @@ public class TypeScriptMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-
         String baseFileContents;
+        if (request.isNotConnected()) {
+            startServerConnection();
+        }
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file!", e);
         }
 
-        String mergedContents =
-            executeJS(base, invocable -> invocable.invokeFunction("merge", baseFileContents, patch, patchOverrides),
-                Constants.TSMERGER_JS);
+        MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
-        return runBeautifierExcludingImports(base, mergedContents);
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/merge");
+
+        StringBuffer importsAndExports = new StringBuffer();
+        StringBuffer body = new StringBuffer();
+
+        if (request.sendRequest(mergeTo, conn, "UTF-8")) {
+
+            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+                BufferedReader br = new BufferedReader(isr);) {
+
+                LOG.info("Receiving output from Server....");
+                Stream<String> s = br.lines();
+                s.parallel().forEachOrdered((String line) -> {
+                    if (line.startsWith("import ") || isExportStatement(line)) {
+                        importsAndExports.append(line);
+                        importsAndExports.append(LINE_SEP);
+                    } else {
+                        body.append(line);
+                        body.append(LINE_SEP);
+                    }
+                });
+
+                return runBeautifierExcludingImports(importsAndExports.toString(), body.toString());
+            } catch (Exception e) {
+
+                connectionExc.handle(e);
+            }
+        } else {
+            throw new MergeException(base, "Execution of the TypeScript merger raised an internal error."
+                + " Check your file syntax and if error occurs again, please report it on tools-cobigen GitHub.");
+        }
+        // Merge was not successful
+        return baseFileContents;
     }
 
     /**
-     * Executes the call specified by {@code executable} parameter on the script given by {@code scriptName}
-     * with the javascript engine Nashorn.
-     * @param base
-     *            the existent base file just for error reporting
-     * @param scriptName
-     *            name of the script to be executed. Should exist in the root of the build path
-     * @param executable
-     *            {@link ScriptExecutable} running the script call itself
-     * @return return value of the script casted to {@link String}
+     * Deploys the server and tries to initialize a new connection between CobiGen and the server
      */
-    private String executeJS(File base, ScriptExecutable executable, String scriptName) {
-
-        if (!scriptEngines.containsKey(scriptName)) {
-
-            ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName(Constants.ENGINE_JS);
-
-            Compilable jsCompilable = (Compilable) jsEngine;
-            CompiledScript jsScript;
-            try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream("/" + scriptName))) {
-                jsScript = jsCompilable.compile(reader);
-            } catch (ScriptException e) {
-                throw new MergeException(base, "Could not compile " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on GitHub.", e);
-            } catch (IOException e) {
-                throw new MergeException(base, "Could not read " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
-            }
-
-            ScriptContext scriptCtxt = jsEngine.getContext();
-            Bindings engineScope = scriptCtxt.getBindings(ScriptContext.ENGINE_SCOPE);
-            try {
-                jsEngine.eval("global = {}"); // simulate global object
-                jsScript.eval(engineScope);
-            } catch (ScriptException e) {
-                throw new MergeException(base, "Could not evaluate " + scriptName
-                    + " script on initialization. This is most properly a bug. Please report on Github.", e);
-            }
-
-            scriptEngines.put(scriptName, jsEngine);
-        }
-
-        Invocable jsInvocable = (Invocable) scriptEngines.get(scriptName);
-        try {
-            return (String) executable.exec(jsInvocable);
-        } catch (NoSuchMethodException e) {
-            throw new MergeException(base,
-                "Invalid API of " + scriptName + " script used. This is most properly a bug. Please report on Github.",
-                e);
-        } catch (ScriptException e) {
-            throw new MergeException(base, "Execution of the script " + scriptName + " raised an error.", e);
-        }
+    private void startServerConnection() {
+        request.executingExe(Constants.EXE_NAME, this.getClass());
+        request.initializeConnection();
     }
 
     /**
      * Reads the output.ts temporary file to get the merged contents
-     * @param base
-     *            base file just for exception handling
-     * @param mergedContents
-     *            merged typescript code
+     * @param importsAndExports
+     *            The part of the code where imports and exports are declared
+     * @param body
+     *            the rest of the body of the source file
      * @return merged contents already beautified
      */
-    private String runBeautifierExcludingImports(File base, String mergedContents) {
-        StringBuilder importsAndExports = new StringBuilder();
-        StringBuilder body = new StringBuilder();
+    private String runBeautifierExcludingImports(String importsAndExports, String body) {
 
-        try (StringReader inR = new StringReader(mergedContents); BufferedReader br = new BufferedReader(inR)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("import ") || isExportStatement(line)) {
-                    importsAndExports.append(line);
-                    importsAndExports.append(LINE_SEP);
-                } else {
-                    body.append(line);
-                    body.append(LINE_SEP);
-                }
-            }
-        } catch (IOException e) {
-            throw new MergeException(base, "Could not process merged contents for formatting.", e);
+        FileTo fileTo = new FileTo(body);
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
+
+        StringBuffer bodyBuffer = new StringBuffer();
+
+        request.sendRequest(fileTo, conn, "UTF-8");
+
+        try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+            BufferedReader br = new BufferedReader(isr);) {
+
+            LOG.info("Receiving output from Server....");
+            Stream<String> s = br.lines();
+            s.parallel().forEachOrdered((String line) -> {
+                bodyBuffer.append(line);
+                bodyBuffer.append(LINE_SEP);
+            });
+        } catch (Exception e) {
+
+            connectionExc.handle(e);
         }
 
-        String formattedBody =
-            executeJS(base, invocable -> invocable.invokeMethod(((ScriptEngine) invocable).eval("global"),
-                "js_beautify", body.toString()), Constants.BEAUTIFY_JS);
-
-        return importsAndExports + LINE_SEP + LINE_SEP + formattedBody;
+        return importsAndExports + LINE_SEP + LINE_SEP + bodyBuffer.toString();
     }
 
     /**

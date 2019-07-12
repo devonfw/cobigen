@@ -1,0 +1,52 @@
+:toc:
+toc::[]
+
+= Enterprise Architect client generation
+
+We are going to show you **how to** generate source code from an link:http://sparxsystems.com/products/ea/[Enterprise Architect] diagram
+using CobiGen. 
+
+== Prerequisites
+
+If _CobiGen_Templates_ is not already imported into your workspace, follow the next steps:
+
+- Click on the Eclipse's menu _File > Import > Existing Projects into Workspace_ and browse to select the `workspaces/main/CobiGen_Templates` directory. 
+
+- Click _Finish_ and you should have the _CobiGen_Templates_ as a new project in Eclipse's workspace.
+
+Also verify that you have the **latest templates of CobiGen**. Your templates folder must contain the `crud_java_ea_uml` folder.
+If you do not see it, please follow the next steps:
+
+** Download the link:https://e-3d.capgemini.com/sites/ESC113658/proj13658/Lists/REF_release/Attachments/2/win_accumulative_patch_22062018.zip[accumulative patch].
+
+** Open the zip file and extract its content inside the root folder of your Devonfw distribution **Devon-dist_2.4.0/**
+
+After following those steps correctly, you should have the latest version of the templates ready to use.
+
+
+
+== Generation
+
+In this tutorial, we are going to generate the entity infrastructure using as input a class diagram, modelled with link:http://sparxsystems.com/products/ea/[Enterprise Architect] (EA). First, create a class diagram, an example is shown on figure below:
+
+image::images/howtos/EA-gen/classdiagram.png[Eclipse CobiGen generation,width="500"link="images/howtos/EA-gen/classdiagram.png"]
+
+When you are finished, you will have to export that UML diagram into an XMI version 2.1 file. This is the file format that CobiGen understands. See below a figure showing this process:
+
+image::images/howtos/EA-gen/exporting.png[Eclipse CobiGen generation,width="500"link="images/howtos/EA-gen/exporting.png"]
+
+To open that window, see link:http://sparxsystems.com/enterprise_architect_user_guide/13.5/model_publishing/exporttoxmi.html[this] tutorial.
+
+After having that exported file, change its extension from `xmi` to `xml`. Then create an link:https://github.com/devonfw/devon4j/wiki/tutorial-newapp[devon4j project] and import the exported file into the `core` of your devon4j project.
+
+Now we are going to start the generation, right-click your exported file and select  _CobiGen > Generate_, finally select the entity infrastructure increment:
+
+image::images/howtos/EA-gen/generating.png[Eclipse CobiGen generation,width="500"link="images/howtos/EA-gen/generating.png"]
+
+After following all these steps, your generated files should be inside `src\main\java` folder. If you want an XMI example, you will find it link:https://github.com/devonfw/tools-cobigen/blob/master/cobigen/cobigen-xmlplugin/src/test/resources/testdata/integrationtest/uml-classdiag/completeUmlXmi.xml[here].
+
+
+
+
+
+
