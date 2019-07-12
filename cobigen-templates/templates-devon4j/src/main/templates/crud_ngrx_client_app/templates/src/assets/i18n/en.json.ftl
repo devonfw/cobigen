@@ -49,7 +49,7 @@
       "navDataSubDescription": "${variables.etoName?cap_first}_EN_Description",
       "columns": {
       <#list pojo.fields as field>
-        "${field.name?uncap_first}": "${field.name?cap_first}_EN"<#if field?has_next>,</#if>
+        "${field.name?lower_case}": "${field.name?cap_first}_EN"<#if field?has_next>,</#if>
       </#list>
       }
     }

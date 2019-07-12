@@ -24,14 +24,14 @@
             <div class="filter-form-fields-mobile justify-space-around">
             <#list pojo.fields as field>
               <mat-form-field color="accent">
-                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
+                <input matInput placeholder="${field.name?cap_first}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
               </mat-form-field>
             </#list>
             </div>
             <div class="filter-form-fields-desktop justify-space-around">
             <#list pojo.fields as field>
               <mat-form-field color="accent">
-                <input matInput placeholder="${field.name?capitalize}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
+                <input matInput placeholder="${field.name?cap_first}" [(ngModel)]="searchTerms.${field.name?uncap_first}" name="${field.name?uncap_first}">
               </mat-form-field>
             </#list>
             </div>
@@ -45,7 +45,7 @@
       <mat-divider></mat-divider>
       <div class="table-container" style="width:100%; overflow:auto;">
         <table mat-table [dataSource]="data" matSort (matSortChange)="sort($event)" style="width:100%">
-
+		
           <!-- Checkbox Column -->
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef style="width:42px;">
@@ -58,6 +58,7 @@
               </mat-checkbox>
             </td>
           </ng-container>
+		  
           <#list pojo.fields as field>
           <!-- ${field.name?capitalize} Column -->
           <ng-container matColumnDef="${field.name?uncap_first}">
@@ -70,10 +71,10 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
-      <div class="mat-padding" *ngIf="data.length===0">
+      <div class="mat-padding" *ngIf="data?.length===0">
         <h3>No results to display.</h3>
       </div>
-      <mat-paginator #pagingBar [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" [showFirstLastButtons]="true" (page)="page($event)">
+	  <mat-paginator #pagingBar [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" [showFirstLastButtons]="true" (page)="page($event)">
       </mat-paginator>
     </mat-card-content>
   </mat-card>

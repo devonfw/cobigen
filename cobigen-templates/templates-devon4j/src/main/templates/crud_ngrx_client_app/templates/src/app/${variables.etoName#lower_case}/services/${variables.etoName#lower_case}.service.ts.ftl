@@ -4,8 +4,12 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { SearchCriteria } from '../../core/interfaces/search-criteria';
 import { Sort } from '../../core/interfaces/sort';
+import { ${variables.etoName?cap_first}Model } from '../models/${variables.etoName?lower_case}.model';
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root',
+})
 export class ${variables.etoName?cap_first}Service {
   private urlService: string = environment.restServiceRoot +
   '${variables.component?lower_case}/v1/${variables.etoName?lower_case}/';
@@ -16,7 +20,7 @@ export class ${variables.etoName?cap_first}Service {
     page: number,
     searchTerms: any,
     sort: Sort[],
-  ): Observable<any> {
+  ): Observable<{ content: ${variables.etoName?cap_first}Model[] }> {
     const searchCriteria: SearchCriteria = {
       pageable: {
         pageSize: size,
@@ -27,10 +31,20 @@ export class ${variables.etoName?cap_first}Service {
       ${field.name?uncap_first}: searchTerms.${field.name?uncap_first},
     </#list>
     };
-    return this.http.post<any>(this.urlService + 'search', searchCriteria);
+    return this.http.post<{ content: ${variables.etoName?cap_first}Model[] }>(this.urlService + 'search', searchCriteria);
   }
 
   save${variables.etoName?cap_first}(data: any): Observable<Object> {
+    const obj: any = {
+      id: data.id,
+    <#list pojo.fields as field>
+      ${field.name?uncap_first}: data.${field.name?uncap_first},
+    </#list>
+    };
+    return this.http.post(this.urlService, obj);
+  }
+  
+  edit${variables.etoName?cap_first}(data: any): Observable<Object> {
     const obj: any = {
       id: data.id,
       modificationCounter: data.modificationCounter,
@@ -38,16 +52,17 @@ export class ${variables.etoName?cap_first}Service {
       ${field.name?uncap_first}: data.${field.name?uncap_first},
     </#list>
     };
-    return this.http.post(this.urlService, obj);
-  }
 
-  delete${variables.etoName?cap_first}(id: number): Observable<Object> {
-    return this.http.delete(this.urlService + id);
+    return this.http.post(this.urlService, obj);
   }
 
   search${variables.etoName?cap_first}(criteria: any): Observable<Object> {
     return this.http.post(this.urlService + 'search', {
       criteria: criteria,
     });
+  }
+
+  delete${variables.etoName?cap_first}(id: number): Observable<Object> {
+    return this.http.delete(this.urlService + id);
   }
 }
