@@ -8,6 +8,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind$
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
