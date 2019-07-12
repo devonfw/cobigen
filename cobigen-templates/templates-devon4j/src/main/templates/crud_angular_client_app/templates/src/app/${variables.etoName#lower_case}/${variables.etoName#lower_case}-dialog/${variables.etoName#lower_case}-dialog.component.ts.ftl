@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -11,7 +11,7 @@ export class ${variables.etoName?cap_first}DialogComponent {
   title: string;
   items: any = {
   <#list pojo.fields as field>
-    ${field.name}: '',
+    ${field.name?uncap_first}: '',
   </#list>
   };
 
@@ -24,7 +24,11 @@ export class ${variables.etoName?cap_first}DialogComponent {
       this.title = this.getTranslation('${variables.component}.addTitle');
     } else {
       this.title = this.getTranslation('${variables.component}.editTitle');
-      this.items = dialogData;
+      <#list pojo.fields as field>
+        this.items.${field.name?uncap_first}: dialogData.${field.name?uncap_first};
+      </#list>
+      this.items.id = dialogData.id;
+      this.items.modificationCounter = dialogData.modificationCounter;
     }
   }
 
