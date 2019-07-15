@@ -3,56 +3,55 @@ toc::[]
 
 = Cobigen Command line Interface generation
 
-Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This allows us to decouple CobiGen from Eclipse.
+Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
-= Commands and options
+== Commands and options
 Using the following command and option you will be able to customize your generation as follows:
 
-• `cobigen,cg` :  Cobigen code generator name.
+• `cobigen, cg`:  Main entry point of the CLI. If no arguments are passed, man page will be printed.
 
-• `generate`   : This command  stand for generate template .
+• `[generate, g]`: Command used for code generation.
 
-• `InputGlob`  : The glob pattern of the input file or the whole path of the input file from which the code will be generated.
+** `InputGlob`: Glob pattern of the input file or the whole path of the input file from which the code will be generated.
 
-• `increment`  : specifies an increment ID to be generated. You can specify one single increment with content ALL to generate all increments matching the input(s).
+** `< --increment, -i >`  : Specifies an increment ID to be generated. You can also search increments by name and CobiGen will output the resultant list.
 
-• `--outputRootPath,-out`: The project file path in which you want to generate your code. In small project you don’t need to give a targetPath, cobigen should recognize this and should automatically use this project .
+** `< --template, -t >` : specifies a template ID to be generated. You can also search templates by name and CobiGen will output the resultant list.
 
-• `template` : specifies a template ID to be generated. You can specify one single template with content ALL to generate all templates matching the input(s).
+** `< --outputRootPath, -out >`: The project file path in which you want to generate your code. If no output path is given, CobiGen will use the project of your input file.
 
-• `Option -v` : This option is for debug information, verbose log .
+• `< --verbose, -v >` : Prints debug information, verbose log.
 
-• `Option -h` : This option for the help about the selected command.
+• `< --help, -h >` : Prints man page.
 
-• `--increment (-i)` : This is for as you want increment you can provide selected list value with comma.
 
-• `--out` : This option is specified the target of generate template .
+== CLI Execution steps:
+CobiGen CLI is installed inside your devonfw distribution. In order to execute it follow the next steps:
 
-== CLI Execution step :
-First of all need to execute cobigen.bat file .
+1. Run `console.bat`, this will open a console.
+2. Execute `cobigen` or `cg` and the man page should be printed.
+3. Use a valid CobiGen input file and run `cobigen generate <pathToInputFile>`. *Note:* On the first execution of the CLI, CobiGen will download all the needed dependencies, please be patient.
+4. A list of increments will be printed so that you can start the generation.
 
-First of all unzip the cobigen CLI doc file then execute the cobigen.bat file .
-after that provide value in below formate .
-
-cobigen generate <inputFile> --out <outputRootPath>
-
-Suppose if you are not providing input file like below then below output will be come .
+Preview of the man page for `generate` command:
 
 image::images/WithoutParam.PNG[Generation path, link="images/WithoutParam.PNG"]
 
-Below are example of with input file .
+== Examples
 
-image::images/CLIArgumentImage.PNG[Generation path, link="images/CLIArgumentImage.PNG"]
+A selection of commands that you can use with the CLI:
 
-In this image -i is as increment optional ,You can provide option how much increment you want to generate .
-
-Increments: The increment you want to generate, with the option -i , increment list like -i 2,3,4  .
-
-Suppose if not provide any increment then it will be ask to user please provide yours choice increments .
-Below are some example .
-
-image::images/WithoutIncrOutPut.PNG[Generation path, link="images/WithoutIncrOutPut.PNG"]
-After choose some increment by user like below .
+* `cobigen generate foo\bar\EmployeeEntity.java`: As no output path has been defined, CobiGen will try to find the `pom.xml` of the current project in order to set the generation root path.
+* `cobigen generate foo\bar\*.java --out other\project`: Will retrieve all the Java files on that input folder and generate the code on the path specified by `--out`.
+* `cg g foo\bar\webServices.yml --increment TO`: Performs a string search using `TO` and will print the closest increments like in the following image:
 
 image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
+
+* `cg g foo\bar\webServices.yml -i 1,4,6`: Directly generates increments with IDs `1`, `4` and `6`. CobiGen will not request you any other input.
+
+== Troubleshooting
+
+When generating code from a Java file, CobiGen makes use of Java reflection for generating templates. In order to do that, the CLI needs to find the compiled source code of your project.
+
+If you find an error like `Compiled class foo\bar\EmployeeEntity.java has not been found`, it means you need to run `mvn clean install` so that a new `target` folder gets created with the needed compiled sources.
 
