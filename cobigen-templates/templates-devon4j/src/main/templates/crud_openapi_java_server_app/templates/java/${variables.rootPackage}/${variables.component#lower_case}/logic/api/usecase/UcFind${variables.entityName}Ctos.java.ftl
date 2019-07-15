@@ -1,6 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
