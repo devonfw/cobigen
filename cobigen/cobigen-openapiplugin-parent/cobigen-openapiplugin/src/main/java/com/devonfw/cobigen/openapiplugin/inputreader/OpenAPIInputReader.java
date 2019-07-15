@@ -3,6 +3,7 @@ package com.devonfw.cobigen.openapiplugin.inputreader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
@@ -359,6 +362,7 @@ public class OpenAPIInputReader implements InputReader {
             String propertyName = prop.getKey();
             Schema propertySchema = prop.getValue();
             PropertyDef propModel;
+
             if (propertySchema.getType().equals(Constants.ARRAY)) {
                 if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
                     && propertySchema.getItemsSchema() != null
@@ -389,6 +393,17 @@ public class OpenAPIInputReader implements InputReader {
                     propModel.setFormat(propertySchema.getFormat());
                 }
             }
+
+            if (propertySchema.hasEnums()) {
+                Collection<Object> enums = propertySchema.getEnums();
+
+                List<String> enumElements = new ArrayList<>();
+                for (Object element : enums) {
+                    enumElements.add(element.toString());
+                }
+                propModel.setEnumElements(enumElements);
+            }
+
             propModel.setName(propertyName);
             propModel.setDescription(propertySchema.getDescription());
 
@@ -679,5 +694,12 @@ public class OpenAPIInputReader implements InputReader {
             // SwaggerParserException indicates a wrong input file.
             throw new InputReaderException("Reader does not support input type or input is faulty", e);
         }
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(java.nio.file.Path path) {
+        List<String> validExtensions = Arrays.asList("yaml", "yml");
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        return validExtensions.contains(fileExtension);
     }
 }

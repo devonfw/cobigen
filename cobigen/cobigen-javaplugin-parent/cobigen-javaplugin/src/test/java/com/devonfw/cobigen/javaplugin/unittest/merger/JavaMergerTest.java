@@ -423,6 +423,27 @@ public class JavaMergerTest {
     }
 
     /**
+     * Tests whether static and object Initializers are getting merged
+     * https://github.com/devonfw/tools-cobigen/issues/791
+     *
+     * @throws IOException
+     *             shouldn't happen
+     * @throws MergeException
+     *             shoudln't happen either
+     */
+    @Test
+    public void testStaticIntializer() throws IOException, MergeException {
+
+        File base = new File(testFileRootPath + "BaseFile_staticInitializer.java");
+        File patch = new File(testFileRootPath + "PatchFile_staticInitializer.java");
+
+        JavaSource mergedSource = getMergedSource(base, patch, true);
+        JavaClass mergedClass = mergedSource.getClasses().get(0);
+        assertThat(mergedClass.getInitializers().size()).isEqualTo(3);
+
+    }
+
+    /**
      * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
      * @param baseFile
      *            base file
