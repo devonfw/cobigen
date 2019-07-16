@@ -7,7 +7,7 @@ import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variable
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 import javax.inject.Named;
