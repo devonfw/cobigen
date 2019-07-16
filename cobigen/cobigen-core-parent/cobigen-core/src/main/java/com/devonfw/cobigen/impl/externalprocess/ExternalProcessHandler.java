@@ -508,7 +508,7 @@ public class ExternalProcessHandler {
         objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonMergerTo;
         try (OutputStream os = conn.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(os, charsetName);) {
+            OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName(charsetName).newEncoder());) {
 
             jsonMergerTo = objWriter.writeValueAsString(dataTo);
             // We need to escape new lines because otherwise our JSON gets corrupted
