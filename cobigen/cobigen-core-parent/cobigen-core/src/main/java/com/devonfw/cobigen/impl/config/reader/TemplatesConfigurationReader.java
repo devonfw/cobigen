@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -664,8 +663,7 @@ public class TemplatesConfigurationReader {
      */
     private com.devonfw.cobigen.impl.config.TemplatesConfiguration loadExternalConfig(String refTrigger) {
 
-        String contextPath = rootTemplateFolder.getPath().normalize().getParent().toString();
-        Trigger extTrigger = getExternalTrigger(refTrigger, contextPath);
+        Trigger extTrigger = getExternalTrigger(refTrigger);
         return configurationHolder.readTemplatesConfiguration(extTrigger);
     }
 
@@ -749,13 +747,11 @@ public class TemplatesConfigurationReader {
      * Tries to read the context.xml file for finding and returning an external trigger
      * @param triggerToSearch
      *            string containing the name of the trigger to search
-     * @param pathToContext
-     *            string containing the path to the context.xml file
      * @return the found external trigger
      */
-    private Trigger getExternalTrigger(String triggerToSearch, String pathToContext) {
+    private Trigger getExternalTrigger(String triggerToSearch) {
         ContextConfigurationReader contextConfigurationReader =
-            new ContextConfigurationReader(Paths.get(new File(pathToContext).toURI()));
+            new ContextConfigurationReader(configurationHolder.readContextConfiguration().getConfigurationPath());
         Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
         Trigger trig = triggers.get(triggerToSearch);
         if (trig == null) {
