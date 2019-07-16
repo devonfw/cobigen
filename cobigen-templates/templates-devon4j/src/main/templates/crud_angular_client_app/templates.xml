@@ -43,6 +43,7 @@
       <templateRef ref="${variables.etoName#lower_case}-grid.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-grid.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.html"/>
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
