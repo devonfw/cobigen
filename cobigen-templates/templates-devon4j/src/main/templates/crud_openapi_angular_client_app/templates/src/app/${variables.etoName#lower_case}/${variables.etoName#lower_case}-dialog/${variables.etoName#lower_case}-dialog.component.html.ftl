@@ -2,8 +2,8 @@
 <form (ngSubmit)="dialogRef.close(items)" #dialogForm="ngForm">
   <#list model.properties as property>
   <mat-form-field>
-    <input matInput type="${OpenApiUtil.toJavaType(property, false)}" name = "${property.name}" [placeholder]= "'${variables.component}.${variables.etoName}.columns.${property.name}' | translate"
-      [(ngModel)] = "items.${property.name}" required>
+    <input matInput type="${OpenApiUtil.toJavaType(property, false)}" name = "${property.name?uncap_first}" [placeholder]= "'${variables.component}.${variables.etoName}.columns.${property.name?uncap_first}' | translate"
+      [(ngModel)] = "items.${property.name?uncap_first}" required>
   </mat-form-field>
   </#list>
   <mat-dialog-actions>
