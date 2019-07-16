@@ -4,7 +4,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-
+import org.springframework.validation.annotation.Validated;
 import java.util.Objects;
 
 import javax.inject.Named;
