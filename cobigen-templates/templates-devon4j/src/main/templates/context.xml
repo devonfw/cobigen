@@ -57,6 +57,14 @@
       <variableAssignment type="regex" key="etoName" value="5"/>
     </matcher>
   </trigger>
+  <trigger id="crud_ngrx_client_app" type="java" templateFolder="crud_ngrx_client_app">
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+      <variableAssignment type="regex" key="rootPackage" value="1"/>
+      <variableAssignment type="regex" key="domain" value="3"/>
+      <variableAssignment type="regex" key="component" value="4"/>
+      <variableAssignment type="regex" key="etoName" value="5"/>
+    </matcher>
+  </trigger>
   <trigger id="crud_java_ea_uml" type="xml" templateFolder="crud_java_ea_uml">
     <containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']"/>
     <matcher type="xpath" value="self::node()[@xmi:type='uml:Class']/ancestor::uml:Model">
