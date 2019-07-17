@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
@@ -98,6 +98,8 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     this.store.dispatch(new LoadData(this.getSearchCriteria()));
     this.get${variables.etoName?cap_first}();
   }
+
+  ngOnDestroy(): void {}
 
   get${variables.etoName?cap_first}(): void {
     this.${variables.etoName?lower_case}Total$.pipe(untilDestroyed(this)).subscribe(
