@@ -1,6 +1,6 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl.usecase;
 
-import com.devonfw.poc.jwtsample.authormanagement.logic.api.to.AuthorCto;
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
