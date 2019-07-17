@@ -32,8 +32,8 @@
                 <router-outlet></router-outlet>
               </div>
               <mat-toolbar class="public-footer">
-                <span>DevonFW Application</span>
-                <span>Devonfw</span>
+                <span>devonfw Application</span>
+                <span>devonfw</span>
               </mat-toolbar>
             </div>
           </mat-sidenav-content>

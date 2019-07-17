@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CoreModule } from '../../core/core.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoName?lower_case}-grid.component';
-import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?cap_first}.service';
+import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
 
 describe('${variables.etoName?cap_first}GridComponent', () => {
   beforeEach(async(() => {
