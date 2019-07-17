@@ -1,13 +1,18 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl.usecase;
 
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Named;
