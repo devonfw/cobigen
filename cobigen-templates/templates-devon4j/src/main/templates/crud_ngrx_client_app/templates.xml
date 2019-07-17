@@ -25,10 +25,11 @@
     <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="override"/>
-    <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="effects_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="reducers_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="selectors_index.ts" destinationPath="../../devon4ng-ngrx-cobigen-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="store_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="effects_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="reducers_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="selectors_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="override"/>
   </templates>
 
   <templateScans>
@@ -57,6 +58,7 @@
       <templateRef ref="${variables.etoName#lower_case}-grid.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.scss"/>
       <templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.spec.ts"/>
@@ -66,6 +68,7 @@
       <templateRef ref="datadetailstest.model.ts"/>
       <templateRef ref="httpresponse.model.ts"/>
       <templateRef ref="searchcriteriadata.model.ts"/>
+      <templateRef ref="store_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.actions.ts"/>
       <templateRef ref="actions_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.effects.ts"/>
