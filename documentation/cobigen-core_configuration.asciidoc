@@ -161,14 +161,14 @@ The `<templates>` node groups multiple `<template>` declarations, which enables 
 .Example Template Configuration
 ```xml
 <templates>
-    <template id="..." destinationPath="..." templateFile="..." mergeStrategy="..." targetCharset="..." />
+    <template name="..." destinationPath="..." templateFile="..." mergeStrategy="..." targetCharset="..." />
     ...
 </templates>
 ```
 
 A template declaration consist of multiple information:
 
-* The attribute `id` specifies an unique ID within the templates configuration, which will later be reused in the xref:increment-node[increment definitions].
+* The attribute `name` specifies an unique ID within the templates configuration, which will later be reused in the xref:increment-node[increment definitions].
 * The attribute `destinationPath` specifies the destination path the template will be generated to. It is possible to use all variables defined by xref:variableassignment-node[variable assignments] within the path declaration using the FreeMarker syntax `${variables.*}`. While resolving the variable expressions, each dot within the value will be automatically replaced by a slash. This behavior is accounted for by the transformations of Java packages to paths as CobiGen has first been developed in the context of the Java world. Furthermore, the destination path variable resolution provides the following additional built-in operators analogue to the FreeMarker syntax:
 ** `?cap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_cap_first[FreeMarker]
 ** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[FreeMarker]
