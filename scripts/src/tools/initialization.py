@@ -145,11 +145,13 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     config.expected_milestone_name = config.tag_name[:-7] + "-v" + config.release_version
     config.expected_core_milestone_name = config.tag_core_name[:-2] + "-v"
     milestone = github.find_release_milestone()
+    """
     if milestone:
         log_info("Milestone '"+milestone.title+"' found!")
     else:
         log_error("Milestone not found! Searched for milestone with name '" + config.expected_milestone_name+"'. Aborting...")
         sys.exit()
+    """
     if not hasattr(config,"github_issue_no"):
         while(True):
             github_issue_no: str = prompt_enter_value(
