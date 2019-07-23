@@ -56,12 +56,10 @@ class GitRepo:
         self.__repo.git.submodule("init")
         self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
-        """
         if not self.is_working_copy_clean():
             log_error("Reset and cleanup did not work out. Other branches have local commits not yet pushed:")
             log_info("\n" + self.__list_unpushed_commits())
             sys.exit()
-        """
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
