@@ -193,8 +193,7 @@ public class GenerateCommandTest {
 				.toFile();
 		geneatedList.add(generateFiles);
 		generateFiles = outputRootFile.toPath().resolve("src/main/java/com/maven/project/general/common").toFile();
-		geneatedList.add(generateFiles);
-		
+		geneatedList.add(generateFiles);		
 		geneatedList.add(outputRootFile.toPath().resolve("src/").toFile());
 		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
 		GenerateCommandTest.isDeleteGeneratedFiles(geneatedList);
