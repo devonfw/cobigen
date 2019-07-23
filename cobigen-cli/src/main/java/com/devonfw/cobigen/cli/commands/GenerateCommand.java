@@ -297,8 +297,8 @@ public class GenerateCommand implements Callable<Integer> {
             if (finalTos != null) {
                 // We need this to allow the use of multiple input files of different types
                 finalTos =
-                    isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(finalTos), toIncrementTo(matching))
-                        : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
+                    isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(matching), toIncrementTo(finalTos))
+                        : CobiGenUtils.retainAllTemplates(toTemplateTo(matching), toTemplateTo(finalTos));
             } else {
                 finalTos =
                     isIncrements ? generableArtifactSelection(increments, toIncrementTo(matching), IncrementTo.class)
