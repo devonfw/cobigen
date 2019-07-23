@@ -154,13 +154,14 @@ class GitRepo:
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
-        with FileInput(os.path.join(self.__config.wiki_submodule_path,"documentation", self.__config.wiki_version_overview_page),
+        modified_file = os.path.join(self.__config.wiki_submodule_path,"documentation", self.__config.wiki_version_overview_page)
+        with FileInput(modified_file,
                        inplace=True) as file:
             for line in file:
                 line = re.sub(r'' + version_decl + r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
-        sm_repo.add([self.__config.wiki_version_overview_page], False)
+        sm_repo.add([modified_file], False)
         sm_repo.commit("update wiki docs")
         sm_repo.push()
 
@@ -187,11 +188,6 @@ class GitRepo:
             log_info("Working copy clean.")
 
     def is_working_copy_clean(self, check_all_branches=False) -> bool:
-        #print("DEBUG")
-        #print(self.__repo.git.execute(
-        #    "git diff --shortstat".split(" ")) )
-        #print(self.has_uncommitted_files())
-        #print(self.has_unpushed_commits())
         return self.__repo.git.execute(
             "git diff --shortstat".split(" ")) == "" and not self.has_uncommitted_files() and not self.has_unpushed_commits()
 
