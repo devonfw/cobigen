@@ -79,7 +79,7 @@ public class GenerateCommandTest {
 		// If you want to remove the generated files
 		geneatedList.add(outputRootPath.toPath().resolve("src").toFile());
 		geneatedList.add(outputRootPath.getParentFile().toPath().resolve("api").toFile());
-		GenerateCommandTest.isDeleteGeneratedFiles(geneatedList);
+		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
 		geneatedList.clear();
     }
 
@@ -117,14 +117,13 @@ public class GenerateCommandTest {
      		geneatedList.add(rootPath.resolve("src").toFile());
      		geneatedList.add(rootPath.resolve("docs").toFile());
      		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-     		GenerateCommandTest.isDeleteGeneratedFiles(geneatedList);
+     		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
      		geneatedList.clear();
     }
     /**
      * This method is check whether generated file is exist or not  
      */
-	private static Boolean isDeleteGeneratedFiles(ArrayList<File> generateFiles) {
-		boolean deletedFiles = false;
+	private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
 		for (File generatedFile : generateFiles) {
 			assertTrue(generatedFile.exists());
@@ -134,7 +133,7 @@ public class GenerateCommandTest {
 				continue;
 			}
 		}
-		return deletedFiles;
+		
 	}
 
     /**
@@ -162,7 +161,7 @@ public class GenerateCommandTest {
 		generatedFiles = baseProject.getParentFile().toPath()
 				.resolve("api/src/main/java/com/maven/project/sampledatamanagement/logic").toFile();
 		geneatedList.add(generatedFiles);
-		GenerateCommandTest.isDeleteGeneratedFiles(geneatedList);
+		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
 		geneatedList.clear();
     }
     
@@ -197,7 +196,7 @@ public class GenerateCommandTest {
 		
 		geneatedList.add(outputRootFile.toPath().resolve("src/").toFile());
 		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-		GenerateCommandTest.isDeleteGeneratedFiles(geneatedList);
+		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
 		geneatedList.clear();
 	}
 
