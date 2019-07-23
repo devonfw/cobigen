@@ -177,7 +177,6 @@ public class GenerateCommandTest {
 		String args[] = new String[6];
 		args[0] = "generate";
 		args[1] = openApiFile.getAbsolutePath() + "," + entityInputFile.getAbsolutePath();
-
 		args[2] = "--out";
 		args[3] = outputRootFile.getAbsolutePath();
 		args[4] = "--increments";
