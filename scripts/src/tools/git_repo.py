@@ -56,10 +56,12 @@ class GitRepo:
         self.__repo.git.submodule("init")
         self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
+        """
         if not self.is_working_copy_clean():
             log_error("Reset and cleanup did not work out. Other branches have local commits not yet pushed:")
             log_info("\n" + self.__list_unpushed_commits())
             sys.exit()
+        """
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
@@ -152,7 +154,7 @@ class GitRepo:
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
-        with FileInput(os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page),
+        with FileInput(os.path.join(self.__config.wiki_submodule_path,"documentation", self.__config.wiki_version_overview_page),
                        inplace=True) as file:
             for line in file:
                 line = re.sub(r'' + version_decl + r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
@@ -185,6 +187,11 @@ class GitRepo:
             log_info("Working copy clean.")
 
     def is_working_copy_clean(self, check_all_branches=False) -> bool:
+        #print("DEBUG")
+        #print(self.__repo.git.execute(
+        #    "git diff --shortstat".split(" ")) )
+        #print(self.has_uncommitted_files())
+        #print(self.has_unpushed_commits())
         return self.__repo.git.execute(
             "git diff --shortstat".split(" ")) == "" and not self.has_uncommitted_files() and not self.has_unpushed_commits()
 
