@@ -49,6 +49,7 @@ public class GenerateCommandTest {
         File generatedFiles = baseProject.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
         geneatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
         geneatedList.clear();
     }
 
