@@ -196,8 +196,16 @@ public class TypeScriptInputReader implements InputReader {
         if (request.isNotConnected()) {
             startServerConnection();
         }
-
-        InputFileTo inputFile = new InputFileTo(path.toString(), inputCharset.name());
+        
+        String fileContents;
+        String fileName = path.getFileName().toString();
+        try {
+            fileContents = new String(Files.readAllBytes(path), inputCharset);
+        } catch (IOException e) {
+            throw new InputReaderException("Could not read input file!" + fileName, e);
+        }
+        
+        InputFileTo inputFile = new InputFileTo(fileName,fileContents, inputCharset.name());
 
         HttpURLConnection conn =
             request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
