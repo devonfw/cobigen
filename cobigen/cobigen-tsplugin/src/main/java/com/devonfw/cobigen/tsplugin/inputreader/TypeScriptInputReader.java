@@ -200,7 +200,10 @@ public class TypeScriptInputReader implements InputReader {
         String fileContents;
         String fileName = path.getFileName().toString();
         try {
-            fileContents = new String(Files.readAllBytes(path), inputCharset);
+            
+            fileContents = String.join("", Files.readAllLines(path, inputCharset));
+            System.out.println("DEBUG -- File content");
+            System.out.println(fileContents);
         } catch (IOException e) {
             throw new InputReaderException("Could not read input file!" + fileName, e);
         }
