@@ -16,32 +16,46 @@ from tools.validation import is_valid_branch
 
 def init_non_git_config(config: Config):
     __process_params(config)
-
-    while True:
-        if not hasattr(config, 'root_path') or not config.root_path:
-            root_path = prompt_enter_value("path of the repository to work on")
-        else:
-            root_path = config.root_path  # set by script param
-        if not os.path.exists(root_path):
+    def __check_path(path):
+        if not os.path.exists(path):
             log_error("Path does not exist.")
-            config.root_path = ""
-            continue
-        if not os.path.isdir(root_path):
+        if not os.path.isdir(path):
             log_error("Path is not a directory.")
-            config.root_path = ""
-            continue
-        if os.path.realpath(__file__).startswith(os.path.abspath(root_path)):
-            log_error("Please copy and run the create release script in another place outside of the repository and execute again.")
-            sys.exit()
+        return os.path.exists(path) & os.path.isdir(path)
 
-        try:
-            Git(root_path)
-        except InvalidGitRepositoryError:
-            log_error("Path is not a git repository.")
+    def __set_path(config: Config, attr : str):
+        msg = {
+            'root_path' : "path of the repository to work on",
+        }
+        while True:
+            if not hasattr(config, attr) or not getattr(config, attr):
+                path = prompt_enter_value(msg[attr])
+            else:
+                path = getattr(config, attr)  # set by script param
 
-        config.root_path = root_path
-        log_info("Executing release in path '" + str(config.root_path)+"'")
-        break
+            if not __check_path(path):
+                setattr(config, attr, "")
+                continue
+
+            if (attr == "root_path") & (os.path.realpath(__file__).startswith(os.path.abspath(path))):
+                log_error(
+                    "Please copy and run the create release script in another place outside of the repository and execute again.")
+                sys.exit()
+
+            try:
+                Git(path)
+            except InvalidGitRepositoryError:
+                log_error("Path is not a git repository.")
+
+            setattr(config,attr,path)
+
+            info = {
+                "root_path": "Executing release in path '",
+            }
+            log_info(info[attr] + str(getattr(config,attr)) + "'")
+            break
+
+    __set_path(config,"root_path")
 
     if not hasattr(config, 'github_repo'):
         config.github_repo = ""
@@ -54,14 +68,12 @@ def init_non_git_config(config: Config):
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
 
-    config.wiki_submodule_name = "cobigen-documentation/" + config.git_repo_name + ".wiki"
-    config.wiki_submodule_path = os.path.abspath(os.path.join(config.root_path, "cobigen-documentation", config.git_repo_name + ".wiki"))
 
     if not config.oss:
         config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
     if config.oss:
         if not hasattr(config, "gpg_keyname"):
-            config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing. 
+            config.gpg_keyname = prompt_enter_value("""Please provide your gpg.keyname for build artifact signing.
 If you are unsure about this, please stop here and clarify, whether
   * you created a pgp key and
   * published it!
@@ -100,6 +112,8 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     else:
         log_info("Branch to be released: {}".format(config.branch_to_be_released))
 
+    config.wiki_submodule_name = __get_wiki_name_specific_branch(config, config.branch_to_be_released)
+    config.wiki_submodule_path = os.path.abspath(config.root_path)
     version_pattern = re.compile(r'[0-9]\.[0-9]\.[0-9]')
     if not hasattr(config,"release_version"):
         config.release_version = ""
@@ -257,6 +271,28 @@ def __get_tag_name_specific_branch(config: Config, branch_to_get_tag: str):
         sys.exit()
     return val
 
+def __get_wiki_name_specific_branch(config: Config, branch_to_get_wikiname: str):
+    wiki_name = {
+        config.branch_core: 'cobigen-core',
+        config.branch_mavenplugin: 'cobigen-maven',
+        config.branch_eclipseplugin: 'cobigen-eclipse',
+        config.branch_javaplugin: 'cobigen-javaplugin',
+        'dev_xmlplugin': 'cobigen-xmlplugin',
+        'dev_htmlmerger': 'cobigen-htmlplugin',
+        config.branch_openapiplugin: 'cobigen-openapiplugin',
+        'dev_tsplugin': 'cobigen-tsplugin',
+        'dev_textmerger': 'cobigen-textmerger',
+        'dev_propertyplugin': 'cobigen-propertyplugin',
+        'dev_jsonplugin': 'cobigen-jsonplugin',
+        'dev_tempeng_freemarker': 'cobigen-tempeng-freemarker',
+        'dev_tempeng_velocity': 'cobigen-tempeng-velocity',
+        'master': 'master-cobigen',
+    }
+    if branch_to_get_wikiname not in wiki_name:
+        log_error('Branch name unknown to script. Please edit function get_tag_name in scripts/**/__config.py')
+        sys.exit()
+    return wiki_name[branch_to_get_wikiname]
+
 
 def __get_build_artifacts_root_search_path(config: Config):
     target_folders = {
@@ -312,7 +348,7 @@ This script automates the deployment of CobiGen modules.
 [WARNING]: The script will access and change the Github repository. Do not use it unless you want to deploy modules.
 
 Options:
-  -c / --cleanup-silently [CAUTION] Will silently reset/clean your working copy automatically. 
+  -c / --cleanup-silently [CAUTION] Will silently reset/clean your working copy automatically.
                           This will also delete non-tracked files from your local file system!
                           You will not be asked anymore!
   -d / --debug:           Script stops after each automatic step and asks the user to continue.
@@ -320,8 +356,8 @@ Options:
   -h / --help:            Provides a short help about the intention and possible options.
   -k / --gpg-key          GPG key for code signing (for OSS release only)
   -r / --local-repo       Local repository clone to work on for the release
-  -t / --test:            Script runs on a different repo for testing purpose. It also uses predefined 
+  -t / --test:            Script runs on a different repo for testing purpose. It also uses predefined
                           names and variables to shorten up the process.
   -y / --dry-run:         Will prevent from pushing to the remote repository, changing anything on GitHub
-                          Issues/Milestones etc. 
+                          Issues/Milestones etc.
     """)
