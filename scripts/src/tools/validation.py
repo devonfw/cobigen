@@ -29,7 +29,7 @@ def is_valid_branch(config: Config) -> bool:
 
 
 def exit_if_origin_is_not_correct(config: Config):
-    remote_origin = git.cmd.Git(config.root_path).execute("git remote -v")
+    remote_origin = git.cmd.Git(config.root_path).execute("git remote -v".split(" "))
     if config.github_repo not in remote_origin:
         log_error("Origin of the current repository is not '" + config.github_repo + "', Please go to correct directory.")
         sys.exit()

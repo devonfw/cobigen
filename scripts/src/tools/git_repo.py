@@ -34,7 +34,7 @@ class GitRepo:
             branch = branch_name
         try:
             log_info('Pull changes from origin ...')
-            self.__repo.git.execute("git pull origin " + branch)
+            self.__repo.git.execute("git pull origin {}".format(branch).split(" "))
         except GitCommandError:
             log_error("Pull from origin/" + branch + " on " + self.__repo.working_tree_dir +
                       " is not possible as you might have uncommitted or untracked files. Fix the working tree, and then try again.")
@@ -152,13 +152,14 @@ class GitRepo:
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
-        with FileInput(os.path.join(self.__config.wiki_submodule_path, self.__config.wiki_version_overview_page),
+        modified_file = os.path.join(self.__config.wiki_submodule_path,"documentation", self.__config.wiki_version_overview_page)
+        with FileInput(modified_file,
                        inplace=True) as file:
             for line in file:
                 line = re.sub(r'' + version_decl + r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
-        sm_repo.add([self.__config.wiki_version_overview_page], False)
+        sm_repo.add([modified_file], False)
         sm_repo.commit("update wiki docs")
         sm_repo.push()
 
@@ -166,7 +167,7 @@ class GitRepo:
         return tag_name in self.__repo.tags
 
     def get_changed_files_of_last_commit(self) -> List[str]:
-        return str(self.__repo.git.execute("git diff HEAD^ HEAD --name-only")).strip().splitlines()
+        return str(self.__repo.git.execute("git diff HEAD^ HEAD --name-only".split(" "))).strip().splitlines()
 
     def create_tag_on_last_commit(self) -> None:
         self.__repo.create_tag(self.__config.tag_name)
@@ -186,16 +187,16 @@ class GitRepo:
 
     def is_working_copy_clean(self, check_all_branches=False) -> bool:
         return self.__repo.git.execute(
-            "git diff --shortstat") == "" and not self.has_uncommitted_files() and not self.has_unpushed_commits()
+            "git diff --shortstat".split(" ")) == "" and not self.has_uncommitted_files() and not self.has_unpushed_commits()
 
     def __list_uncommitted_files(self) -> str:
-        return self.__repo.git.execute("git status --porcelain")
+        return self.__repo.git.execute("git status --porcelain".split(" "))
 
     def has_uncommitted_files(self) -> bool:
         return self.__list_uncommitted_files() != ""
 
     def __list_unpushed_commits(self) -> str:
-        return self.__repo.git.execute("git log --branches --not --remotes")
+        return self.__repo.git.execute("git log --branches --not --remotes".split(" "))
 
     def has_unpushed_commits(self) -> bool:
         return self.__list_unpushed_commits() != ""
