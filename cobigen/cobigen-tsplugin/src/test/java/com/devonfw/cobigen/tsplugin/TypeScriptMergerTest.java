@@ -29,8 +29,8 @@ public class TypeScriptMergerTest {
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
     /** Initializing connection with server */
-    private static ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private static ExternalProcessHandler request =
+        ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 81);
 
     /**
      * Starts the server and initializes the connection to it

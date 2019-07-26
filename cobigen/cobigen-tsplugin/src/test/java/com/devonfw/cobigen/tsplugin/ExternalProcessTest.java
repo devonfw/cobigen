@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +23,28 @@ public class ExternalProcessTest {
     private static final Logger LOG = LoggerFactory.getLogger(ExternalProcessTest.class);
 
     /**
+     * Initializing connection with server on port 80 as it is always blocked, so let's try to check what
+     * happens.
+     */
+    private static ExternalProcessHandler request =
+        ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
+
+    /**
+     * Starts the server and initializes the connection to it
+     */
+    @BeforeClass
+    public static void initializeServer() {
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, ExternalProcessTest.class));
+        assertEquals(true, request.initializeConnection());
+    }
+
+    /**
      * Tries to connect to a port that is always blocked (80) and then tries again with other port numbers
      */
     @Test
     public void checkPortIsBlocked() {
 
-        // Port 80 is always blocked, so let's try to check what happens.
-        ExternalProcessHandler request =
-            ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
-
         try {
-
-            request.executingExe(Constants.EXE_NAME, this.getClass());
 
             String s;
             Process p;
