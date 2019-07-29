@@ -23,21 +23,21 @@ import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 /**
  * Test methods for different TS mergers of the plugin
  */
-public class TypeScriptMergerTest {
+public class ExternalTsMergerTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
 
     /** Initializing connection with server */
-    private static ExternalProcessHandler request =
-        ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 81);
+    private static ExternalProcessHandler request = ExternalProcessHandler
+        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Starts the server and initializes the connection to it
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptMergerTest.class));
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, ExternalTsMergerTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
