@@ -1,14 +1,13 @@
 class Config():
 
     def __init__(self):
-        self.wiki_version_overview_page: str = "CobiGen.asciidoc"
+        self.wiki_version_overview_page: str = "master-cobigen.asciidoc"
         self.root_path: str
 
         self.oss: bool = False
         self.gpg_keyname: str
         self.gpg_executable: str
         self.gpg_loaded: bool = False
-
         self.dry_run: bool = False
         self.debug: bool = False
         self.test_run: bool = False

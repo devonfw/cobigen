@@ -23,7 +23,7 @@ import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 /**
  * Test methods for different TS mergers of the plugin
  */
-public class TypeScriptMergerTest {
+public class ExternalTsMergerTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
@@ -37,7 +37,7 @@ public class TypeScriptMergerTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptMergerTest.class));
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, ExternalTsMergerTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
