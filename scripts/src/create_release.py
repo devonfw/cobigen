@@ -186,16 +186,15 @@ else:
     run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
 
 #############################
-__log_step("Update wiki submodule...")
+__log_step("Update documentation...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")    
+    continue_run = prompt_yesno_question("[TEST] Would now update documentation. Continue (yes) or skip (no)?")    
 
 if continue_run:
-    log_info("TODO: if this step fails, it means you need to do a git submodule init and git submodule update on branch " + config.branch_to_be_released)    
-    git_repo.update_submodule(config.wiki_submodule_path)
-    git_repo.add_submodule(config.wiki_submodule_name)
+    log_info("TODO: if this step fails, it means that when checking out to master, some files were not removed. Please do git status on master to check that.")    
+    git_repo.update_documentation()
     git_repo.commit("update wiki docs")
     git_repo.push()
 
@@ -225,7 +224,7 @@ list_of_changed_files = git_repo.get_changed_files_of_last_commit()
 is_pom_changed = False
 for file_name in list_of_changed_files:
     file_name = file_name.replace('/', os.sep)
-    if not file_name.startswith(config.build_folder) and not file_name == config.wiki_submodule_name.replace('/', os.sep):
+    if not file_name.startswith(config.build_folder):
         if not prompt_yesno_question("Changed file " + file_name + " is outside the component folder path "+config.build_folder+".\nThis should not be the normal case! Please check these changes are necessary. Continue?"):
             git_repo.reset()
             sys.exit()
