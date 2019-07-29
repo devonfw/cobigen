@@ -101,9 +101,9 @@ public class TypeScriptMerger implements Merger {
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
 
-        if (request.sendRequest(mergeTo, conn, "UTF-8")) {
+        if (request.sendRequest(mergeTo, conn, targetCharset)) {
 
-            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream(), targetCharset);
                 BufferedReader br = new BufferedReader(isr);) {
 
                 LOG.info("Receiving output from Server....");
@@ -118,7 +118,7 @@ public class TypeScriptMerger implements Merger {
                     }
                 });
 
-                return runBeautifierExcludingImports(importsAndExports.toString(), body.toString());
+                return runBeautifierExcludingImports(importsAndExports.toString(), body.toString(), targetCharset);
             } catch (Exception e) {
 
                 connectionExc.handle(e);
@@ -145,18 +145,20 @@ public class TypeScriptMerger implements Merger {
      *            The part of the code where imports and exports are declared
      * @param body
      *            the rest of the body of the source file
+     * @param targetCharset
+     *            target char set of the file to be read and write
      * @return merged contents already beautified
      */
-    private String runBeautifierExcludingImports(String importsAndExports, String body) {
+    private String runBeautifierExcludingImports(String importsAndExports, String body, String targetCharset) {
 
         FileTo fileTo = new FileTo(body);
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
 
-        request.sendRequest(fileTo, conn, "UTF-8");
+        request.sendRequest(fileTo, conn, targetCharset);
 
-        try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+        try (InputStreamReader isr = new InputStreamReader(conn.getInputStream(), targetCharset);
             BufferedReader br = new BufferedReader(isr);) {
 
             LOG.info("Receiving output from Server....");
