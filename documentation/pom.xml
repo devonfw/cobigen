@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <docgen.wiki.page>CobiGen</docgen.wiki.page>
+    <docgen.wiki.page>master-cobigen</docgen.wiki.page>
     <docgen.asciidoc.pdf.stylesdir>./theme</docgen.asciidoc.pdf.stylesdir>
   </properties>
 
