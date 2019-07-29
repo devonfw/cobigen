@@ -17,10 +17,10 @@ import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 /**
  * Tests general functionalities of the server
  */
-public class ExternalProcessTest {
+public class PortBlockedTest {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ExternalProcessTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PortBlockedTest.class);
 
     /**
      * Initializing connection with server on port 80 as it is always blocked, so let's try to check what
@@ -34,7 +34,7 @@ public class ExternalProcessTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, ExternalProcessTest.class));
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, PortBlockedTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
