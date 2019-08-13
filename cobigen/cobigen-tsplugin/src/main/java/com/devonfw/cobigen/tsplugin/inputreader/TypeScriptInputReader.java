@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.extension.InputReader;
-import com.devonfw.cobigen.api.to.FileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.inputreader.to.InputFileTo;
@@ -79,36 +78,41 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-
-        String basecontents = null;
+        String fileContents = null;
+        String inputCharset = "UTF-8";
         File file = new File(input.toString());
-
+        Path path =  file.toPath();
         if (request.isNotConnected()) {
             startServerConnection();
         }
-        try {
-            basecontents = new String(Files.readAllBytes(file.toPath()));
-        } catch (IOException e) {
+     
 
-        }
-
-        FileTo fileTo = new FileTo(basecontents);
+        // File content is not needed, as only the file extension is checked
+        fileContents = new String("");
+        String fileName = path.getFileName().toString();
+        InputFileTo inputFile = new InputFileTo(fileName,fileContents, inputCharset);
+        
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
 
-        if (request.sendRequest(fileTo, conn, "UTF-8")) {
-
+        if (request.sendRequest(inputFile, conn, "UTF-8")) {
+            
+            StringBuffer response = new StringBuffer();
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
-
+                
+                LOG.info("Receiving response from Server....");
+                Stream<String> s = br.lines();
+                s.parallel().forEachOrdered((String line) -> {
+                    response.append(line);
+                });
+                return Boolean.parseBoolean(response.toString());
             }
-
             catch (Exception e) {
 
                 connectionExc.handle(e);
             }
         }
         return false;
-
     }
 
     @Override
@@ -202,8 +206,8 @@ public class TypeScriptInputReader implements InputReader {
         try {
             
             fileContents = String.join("", Files.readAllLines(path, inputCharset));
-            System.out.println("DEBUG -- File content");
-            System.out.println(fileContents);
+            // System.out.println("DEBUG -- File content");
+            // System.out.println(fileContents);
         } catch (IOException e) {
             throw new InputReaderException("Could not read input file!" + fileName, e);
         }
